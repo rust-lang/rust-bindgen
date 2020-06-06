@@ -1599,7 +1599,11 @@ impl CodeGenerator for CompInfo {
                 let inner_item = ctx.resolve_item(base.ty);
                 let mut inner = inner_item.to_rust_ty_or_opaque(ctx, &());
                 inner.append_implicit_template_params(ctx, &inner_item);
-                let field_name = ctx.rust_ident(&base.field_name);
+                let field_name = ctx.rust_ident(
+                        ctx.parse_callbacks()
+                            .and_then(|cb| cb.member_name(&base.field_name, MemberType::Variable))
+                            .unwrap_or(base.field_name.clone())
+                    );
 
                 struct_layout.saw_base(inner_item.expect_type());
 
@@ -1958,7 +1962,12 @@ impl CodeGenerator for CompInfo {
                                     let name = field.name().unwrap();
                                     field.offset().and_then(|offset| {
                                         let field_offset = offset / 8;
-                                        let field_name = ctx.rust_ident(name);
+                                        let field_name = ctx.rust_ident(
+                                                ctx.parse_callbacks()
+                                                    .and_then(|cb| cb.member_name(&name, MemberType::Variable))
+                                                    .unwrap_or(name.to_string())
+                                                    .as_str()
+                                            );
 
                                         Some(quote! {
                                             assert_eq!(
