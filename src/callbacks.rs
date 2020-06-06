@@ -21,7 +21,7 @@ impl Default for MacroParsingBehavior {
     }
 }
 
-/// An enum to specifying member type.
+/// An enum specifying member type.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum MemberType {
     /// A member function.
