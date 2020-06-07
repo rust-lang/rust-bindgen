@@ -47,6 +47,28 @@ No MSRV bump policy has been established yet, so MSRV may increase in any releas
 
 [API reference documentation is on docs.rs](https://docs.rs/bindgen)
 
+## Environment Variables
+
+In addition to the [library API](https://docs.rs/bindgen) and [executable command-line API][bindgen-cmdline],
+`bindgen` can be controlled through environment variables.
+
+End-users should set these environment variables to modify `bindgen`'s behavior without modifying the source code of direct consumers of `bindgen`.
+
+- `BINDGEN_EXTRA_CLANG_ARGS`: extra arguments to pass to `clang`
+    - Arguments are whitespace-separated
+    - Use shell-style quoting to pass through whitespace
+    - Examples:
+        - Specify alternate sysroot: `--sysroot=/path/to/sysroot`
+        - Add include search path with spaces: `-I"/path/with spaces"`
+
+Additionally, `bindgen` uses `libclang` to parse C and C++ header files.
+To modify how `bindgen` searches for `libclang`, see the [`clang-sys` documentation][clang-sys-env].
+For more details on how `bindgen` uses `libclang`, see the [`bindgen` users guide][bindgen-book-clang].
+
 ## Contributing
 
 [See `CONTRIBUTING.md` for hacking on `bindgen`!](./CONTRIBUTING.md)
+
+[bindgen-cmdline]: https://rust-lang.github.io/rust-bindgen/command-line-usage.html
+[clang-sys-env]: https://github.com/KyleMayes/clang-sys#environment-variables
+[bindgen-book-clang]: https://rust-lang.github.io/rust-bindgen/requirements.html#clang
