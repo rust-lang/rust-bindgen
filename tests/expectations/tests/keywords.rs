@@ -8,40 +8,60 @@
 )]
 
 extern "C" {
-    pub static mut u8: ::std::os::raw::c_int;
+    #[link_name = "\u{1}u8"]
+    pub static mut u8_: ::std::os::raw::c_int;
 }
 extern "C" {
-    pub static mut u16: ::std::os::raw::c_int;
+    #[link_name = "\u{1}u16"]
+    pub static mut u16_: ::std::os::raw::c_int;
 }
 extern "C" {
-    pub static mut u32: ::std::os::raw::c_int;
+    #[link_name = "\u{1}u32"]
+    pub static mut u32_: ::std::os::raw::c_int;
 }
 extern "C" {
-    pub static mut u64: ::std::os::raw::c_int;
+    #[link_name = "\u{1}u64"]
+    pub static mut u64_: ::std::os::raw::c_int;
 }
 extern "C" {
-    pub static mut i8: ::std::os::raw::c_int;
+    #[link_name = "\u{1}i8"]
+    pub static mut i8_: ::std::os::raw::c_int;
 }
 extern "C" {
-    pub static mut i16: ::std::os::raw::c_int;
+    #[link_name = "\u{1}i16"]
+    pub static mut i16_: ::std::os::raw::c_int;
 }
 extern "C" {
-    pub static mut i32: ::std::os::raw::c_int;
+    #[link_name = "\u{1}i32"]
+    pub static mut i32_: ::std::os::raw::c_int;
 }
 extern "C" {
-    pub static mut i64: ::std::os::raw::c_int;
+    #[link_name = "\u{1}i64"]
+    pub static mut i64_: ::std::os::raw::c_int;
 }
 extern "C" {
-    pub static mut f32: ::std::os::raw::c_int;
+    #[link_name = "\u{1}f32"]
+    pub static mut f32_: ::std::os::raw::c_int;
 }
 extern "C" {
-    pub static mut f64: ::std::os::raw::c_int;
+    #[link_name = "\u{1}f64"]
+    pub static mut f64_: ::std::os::raw::c_int;
 }
 extern "C" {
-    pub static mut usize: ::std::os::raw::c_int;
+    #[link_name = "\u{1}usize"]
+    pub static mut usize_: ::std::os::raw::c_int;
 }
 extern "C" {
-    pub static mut isize: ::std::os::raw::c_int;
+    #[link_name = "\u{1}isize"]
+    pub static mut isize_: ::std::os::raw::c_int;
+}
+extern "C" {
+    #[link_name = "\u{1}bool"]
+    pub static mut bool_: ::std::os::raw::c_int;
+}
+extern "C" {
+    #[link_name = "\u{1}str"]
+    pub static mut str_: ::std::os::raw::c_int;
 }
 extern "C" {
     #[link_name = "\u{1}as"]
