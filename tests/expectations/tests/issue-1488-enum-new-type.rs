@@ -11,6 +11,7 @@ pub const Foo_A: Foo = 0;
 pub const Foo_B: Foo = 1;
 pub type Foo = u32;
 #[repr(transparent)]
+#[derive(Debug, Copy, Clone)]
 pub struct FooAlias(pub Foo);
 pub mod Bar {
     pub type Type = u32;
@@ -18,6 +19,7 @@ pub mod Bar {
     pub const D: Type = 1;
 }
 #[repr(transparent)]
+#[derive(Debug, Copy, Clone)]
 pub struct BarAlias(pub Bar::Type);
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -26,11 +28,13 @@ pub enum Qux {
     F = 1,
 }
 #[repr(transparent)]
+#[derive(Debug, Copy, Clone)]
 pub struct QuxAlias(pub Qux);
 pub const Baz_G: Baz = 0;
 pub const Baz_H: Baz = 1;
 pub type Baz = u32;
 #[repr(transparent)]
+#[derive(Debug, Copy, Clone)]
 pub struct BazAlias(pub Baz);
 impl ::std::ops::Deref for BazAlias {
     type Target = Baz;

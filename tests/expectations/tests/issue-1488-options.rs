@@ -9,8 +9,10 @@
 
 pub type OSStatus = ::std::os::raw::c_int;
 #[repr(transparent)]
+#[derive(Debug, Copy, Clone)]
 pub struct SomePtr(pub *mut ::std::os::raw::c_void);
 #[repr(transparent)]
+#[derive(Debug, Copy, Clone)]
 pub struct AnotherPtr(pub *mut ::std::os::raw::c_void);
 impl ::std::ops::Deref for AnotherPtr {
     type Target = *mut ::std::os::raw::c_void;

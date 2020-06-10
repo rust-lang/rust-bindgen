@@ -793,8 +793,64 @@ impl CodeGenerator for Type {
                             "repr_transparent feature is required to use {:?}",
                             alias_style
                         );
+
+                        let mut attributes = vec![attributes::repr("transparent")];
+                        let mut derives = vec![];
+
+                        if item.can_derive_debug(ctx) {
+                            derives.push("Debug");
+                        }
+
+                        if item.can_derive_default(ctx) {
+                            derives.push("Default");
+                        }
+
+                        let all_template_params = item.all_template_params(ctx);
+
+                        if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() {
+                            derives.push("Copy");
+
+                            if ctx.options().rust_features().builtin_clone_impls ||
+                                !all_template_params.is_empty()
+                            {
+                                // FIXME: This requires extra logic if you have a big array in a
+                                // templated struct. The reason for this is that the magic:
+                                //     fn clone(&self) -> Self { *self }
+                                // doesn't work for templates.
+                                //
+                                // It's not hard to fix though.
+                                derives.push("Clone");
+                            }
+                        }
+
+                        if item.can_derive_hash(ctx) {
+                            derives.push("Hash");
+                        }
+
+                        if item.can_derive_partialord(ctx) {
+                            derives.push("PartialOrd");
+                        }
+
+                        if item.can_derive_ord(ctx) {
+                            derives.push("Ord");
+                        }
+
+                        if item.can_derive_partialeq(ctx) {
+                            derives.push("PartialEq");
+                        }
+
+                        if item.can_derive_eq(ctx) {
+                            derives.push("Eq");
+                        }
+
+                        derives.extend(item.annotations().derives().iter().map(String::as_str));
+
+                        if !derives.is_empty() {
+                            attributes.push(attributes::derives(&derives))
+                        }
+
                         quote! {
-                            #[repr(transparent)]
+                            #( #attributes )*
                             pub struct #rust_name
                         }
                     }
