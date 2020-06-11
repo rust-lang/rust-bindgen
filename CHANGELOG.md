@@ -9,90 +9,97 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
-- [0.53.2](#0532)
-  - [Changed](#changed-1)
-- [0.53.1](#0531)
+- [0.54.0](#0540)
   - [Added](#added-1)
-- [0.53.0](#0530)
-  - [Added](#added-2)
-  - [Changed](#changed-2)
+  - [Changed](#changed-1)
   - [Fixed](#fixed-1)
-- [0.52.0](#0520)
-  - [Added](#added-3)
-  - [Changed](#changed-3)
+- [0.53.3](#0533)
+  - [Added](#added-2)
   - [Fixed](#fixed-2)
-- [0.51.1](#0511)
-  - [Fixed](#fixed-3)
-  - [Changed](#changed-4)
-- [0.51.0](#0510)
-  - [Fixed](#fixed-4)
-  - [Changed](#changed-5)
+- [0.53.2](#0532)
+  - [Changed](#changed-2)
+- [0.53.1](#0531)
+  - [Added](#added-3)
+- [0.53.0](#0530)
   - [Added](#added-4)
-- [0.50.0](#0500)
+  - [Changed](#changed-3)
+  - [Fixed](#fixed-3)
+- [0.52.0](#0520)
   - [Added](#added-5)
-- [0.49.3](#0493)
-  - [Added](#added-6)
-- [0.49.2](#0492)
-  - [Changed](#changed-6)
-- [0.49.1](#0491)
+  - [Changed](#changed-4)
+  - [Fixed](#fixed-4)
+- [0.51.1](#0511)
   - [Fixed](#fixed-5)
-  - [Changed](#changed-7)
-- [0.49.0](#0490)
-  - [Added](#added-7)
+  - [Changed](#changed-5)
+- [0.51.0](#0510)
   - [Fixed](#fixed-6)
-  - [Changed](#changed-8)
-- [0.48.1](#0481)
-  - [Fixed](#fixed-7)
-- [0.48.0](#0480)
-  - [Changed](#changed-9)
-  - [Fixed](#fixed-8)
-- [0.47.3](#0473)
-  - [Changed](#changed-10)
-- [0.47.2](#0472)
-  - [Fixed](#fixed-9)
-- [0.47.1](#0471)
-  - [Changed](#changed-11)
-  - [Fixed](#fixed-10)
-- [0.47.0](#0470)
-  - [Changed](#changed-12)
-  - [Fixed](#fixed-11)
-- [0.33.1 .. 0.46.0](#0331--0460)
+  - [Changed](#changed-6)
+  - [Added](#added-6)
+- [0.50.0](#0500)
+  - [Added](#added-7)
+- [0.49.3](#0493)
   - [Added](#added-8)
-  - [Removed](#removed-1)
-  - [Changed](#changed-13)
-  - [Fixed](#fixed-12)
-- [0.33.1](#0331)
-  - [Fixed](#fixed-13)
-- [0.33.0](#0330)
+- [0.49.2](#0492)
+  - [Changed](#changed-7)
+- [0.49.1](#0491)
+  - [Fixed](#fixed-7)
+  - [Changed](#changed-8)
+- [0.49.0](#0490)
   - [Added](#added-9)
+  - [Fixed](#fixed-8)
+  - [Changed](#changed-9)
+- [0.48.1](#0481)
+  - [Fixed](#fixed-9)
+- [0.48.0](#0480)
+  - [Changed](#changed-10)
+  - [Fixed](#fixed-10)
+- [0.47.3](#0473)
+  - [Changed](#changed-11)
+- [0.47.2](#0472)
+  - [Fixed](#fixed-11)
+- [0.47.1](#0471)
+  - [Changed](#changed-12)
+  - [Fixed](#fixed-12)
+- [0.47.0](#0470)
+  - [Changed](#changed-13)
+  - [Fixed](#fixed-13)
+- [0.33.1 .. 0.46.0](#0331--0460)
+  - [Added](#added-10)
+  - [Removed](#removed-1)
   - [Changed](#changed-14)
+  - [Fixed](#fixed-14)
+- [0.33.1](#0331)
+  - [Fixed](#fixed-15)
+- [0.33.0](#0330)
+  - [Added](#added-11)
+  - [Changed](#changed-15)
   - [Deprecated](#deprecated-1)
   - [Removed](#removed-2)
-  - [Fixed](#fixed-14)
+  - [Fixed](#fixed-16)
   - [Security](#security-1)
 - [0.32.2](#0322)
-  - [Fixed](#fixed-15)
-- [0.32.1](#0321)
-  - [Fixed](#fixed-16)
-- [0.32.0](#0320)
-  - [Added](#added-10)
-  - [Changed](#changed-15)
   - [Fixed](#fixed-17)
-- [0.31.0](#0310)
-  - [Added](#added-11)
+- [0.32.1](#0321)
+  - [Fixed](#fixed-18)
+- [0.32.0](#0320)
+  - [Added](#added-12)
   - [Changed](#changed-16)
+  - [Fixed](#fixed-19)
+- [0.31.0](#0310)
+  - [Added](#added-13)
+  - [Changed](#changed-17)
   - [Deprecated](#deprecated-2)
   - [Removed](#removed-3)
-  - [Fixed](#fixed-18)
-- [0.30.0](#0300)
-  - [Added](#added-12)
-  - [Changed](#changed-17)
-  - [Deprecated](#deprecated-3)
-  - [Fixed](#fixed-19)
-- [0.29.0](#0290)
-  - [Added](#added-13)
-  - [Changed](#changed-18)
   - [Fixed](#fixed-20)
+- [0.30.0](#0300)
+  - [Added](#added-14)
+  - [Changed](#changed-18)
+  - [Deprecated](#deprecated-3)
+  - [Fixed](#fixed-21)
+- [0.29.0](#0290)
+  - [Added](#added-15)
+  - [Changed](#changed-19)
+  - [Fixed](#fixed-22)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -125,6 +132,46 @@ Released YYYY/MM/DD
 ## Security
 
 * TODO (or remove section if none)
+
+--------------------------------------------------------------------------------
+
+# 0.54.0
+
+Released 2020/05/21.
+
+## Added
+
+ * New command line flag to allow disabling untagged unions (#1789).
+
+## Changed
+
+ * Various documentation improvements (#1764, #1751, #1757).
+ * Better Objective-C support (#1722, #1750).
+
+## Fixed
+
+ * Rust method wrappers are not emitted for blacklisted functions (#1775).
+ * Fixed function signatures in some edge cases involving Objective-C or
+   `__stdcall` (#1781).
+
+--------------------------------------------------------------------------------
+
+# 0.53.3
+
+Released 2020/05/21.
+
+*Note: This release contains the same fixes and additions as 0.54.0, but without
+the Objective-C breaking changes*
+
+## Added
+
+ * New command line flag to allow disabling untagged unions (#1789).
+
+## Fixed
+
+ * Rust method wrappers are not emitted for blacklisted functions (#1775).
+ * Fixed function signatures in some edge cases involving Objective-C or
+   `__stdcall` (#1781).
 
 --------------------------------------------------------------------------------
 

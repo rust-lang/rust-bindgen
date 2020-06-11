@@ -1540,15 +1540,6 @@ impl Drop for Index {
     }
 }
 
-/// A token emitted by clang's lexer.
-#[derive(Debug)]
-pub struct Token {
-    /// The kind of token this is.
-    pub kind: CXTokenKind,
-    /// A display name for this token.
-    pub spelling: String,
-}
-
 /// A translation unit (or "compilation unit").
 pub struct TranslationUnit {
     x: CXTranslationUnit,

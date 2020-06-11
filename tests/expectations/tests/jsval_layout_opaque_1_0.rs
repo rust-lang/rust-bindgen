@@ -320,8 +320,8 @@ pub struct jsval_layout__bindgen_ty_2 {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct jsval_layout__bindgen_ty_2__bindgen_ty_1 {
-    pub i32: __BindgenUnionField<i32>,
-    pub u32: __BindgenUnionField<u32>,
+    pub i32_: __BindgenUnionField<i32>,
+    pub u32_: __BindgenUnionField<u32>,
     pub why: __BindgenUnionField<JSWhyMagic>,
     pub bindgen_union_field: u32,
 }
@@ -346,27 +346,27 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
     assert_eq!(
         unsafe {
             &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()))
-                .i32 as *const _ as usize
+                .i32_ as *const _ as usize
         },
         0usize,
         concat!(
             "Offset of field: ",
             stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
             "::",
-            stringify!(i32)
+            stringify!(i32_)
         )
     );
     assert_eq!(
         unsafe {
             &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()))
-                .u32 as *const _ as usize
+                .u32_ as *const _ as usize
         },
         0usize,
         concat!(
             "Offset of field: ",
             stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
             "::",
-            stringify!(u32)
+            stringify!(u32_)
         )
     );
     assert_eq!(

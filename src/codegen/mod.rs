@@ -3717,7 +3717,7 @@ impl CodeGenerator for ObjCInterface {
         }
 
         let instance_method_names: Vec<_> =
-            self.methods().iter().map({ |m| m.rust_name() }).collect();
+            self.methods().iter().map(|m| m.rust_name()).collect();
 
         for class_method in self.class_methods() {
             let ambiquity =

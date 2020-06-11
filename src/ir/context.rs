@@ -864,7 +864,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 "return" | "Self" | "self" | "sizeof" | "static" |
                 "struct" | "super" | "trait" | "true" | "type" | "typeof" |
                 "unsafe" | "unsized" | "use" | "virtual" | "where" |
-                "while" | "yield" | "bool" | "_" => true,
+                "while" | "yield" | "str" | "bool" | "f32" | "f64" |
+                "usize" | "isize" | "u128" | "i128" | "u64" | "i64" |
+                "u32" | "i32" | "u16" | "i16" | "u8" | "i8" | "_" => true,
                 _ => false,
             }
         {
