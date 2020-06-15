@@ -1,7 +1,7 @@
 extern crate bindgen;
 extern crate cc;
 
-use bindgen::callbacks::{MacroParsingBehavior, ParseCallbacks};
+use bindgen::callbacks::{MacroParsingBehavior, ParseCallbacks, IntKind};
 use bindgen::Builder;
 use std::collections::HashSet;
 use std::env;
@@ -58,6 +58,13 @@ impl ParseCallbacks for MacroCallback {
             }
             _ => {}
         }
+    }
+
+    fn int_macro(&self, _name: &str, _value: i64) -> Option<IntKind> {
+        Some(IntKind::Custom {
+            name: "crate::MacroInteger",
+            is_signed: true,
+        })
     }
 }
 
