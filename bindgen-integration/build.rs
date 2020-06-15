@@ -60,11 +60,15 @@ impl ParseCallbacks for MacroCallback {
         }
     }
 
-    fn int_macro(&self, _name: &str, _value: i64) -> Option<IntKind> {
-        Some(IntKind::Custom {
-            name: "crate::MacroInteger",
-            is_signed: true,
-        })
+    fn int_macro(&self, name: &str, _value: i64) -> Option<IntKind> {
+        match name {
+            "TESTMACRO_CUSTOMINTKIND_PATH" => Some(IntKind::Custom {
+                name: "crate::MacroInteger",
+                is_signed: true,
+            }),
+
+            _ => None,
+        }
     }
 }
 

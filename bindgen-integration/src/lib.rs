@@ -244,3 +244,9 @@ fn test_item_rename() {
         member: bindings::bar { foo: 2 },
     };
 }
+
+#[test]
+fn test_macro_customintkind_path() {
+    let v: &std::any::Any = &bindings::TESTMACRO_CUSTOMINTKIND_PATH;
+    assert!(v.is::<MacroInteger>())
+}
