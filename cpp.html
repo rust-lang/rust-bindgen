@@ -151,10 +151,10 @@ it ends in <code>.hpp</code>. If it doesn't, adding <code>-x c++</code> clang ar
 force C++ mode. You probably also want to use <code>-std=c++14</code> or similar clang args
 as well.</p>
 <p>You pretty much <strong>must</strong> use <a href="./whitelisting.html">whitelisting</a> when working
-with C++ to avoid pulling in all of the <code>std::*</code> types, many of which <code>bindgen</code>
+with C++ to avoid pulling in all of the <code>std::.*</code> types, many of which <code>bindgen</code>
 cannot handle. Additionally, you may want to mark other types as
 <a href="./opaque.html">opaque</a> that <code>bindgen</code> stumbles on. It is recommended to mark
-all of <code>std::*</code> opaque, and to whitelist only precisely the functions and types
+all of <code>std::.*</code> opaque, and to whitelist only precisely the functions and types
 you intend to use.</p>
 <p>You should read up on the <a href="./faq.html">FAQs</a> as well.</p>
 <a class="header" href="#supported-features" id="supported-features"><h2>Supported Features</h2></a>
