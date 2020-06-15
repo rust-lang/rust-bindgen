@@ -95,7 +95,6 @@ fn root_import(
     }
 }
 
-
 bitflags! {
     struct DerivableTraits: u16 {
         const DEBUG       = 1 << 0;
@@ -165,18 +164,21 @@ fn derives_of_item(item: &Item, ctx: &BindgenContext) -> DerivableTraits {
 impl From<DerivableTraits> for Vec<&'static str> {
     fn from(derivable_traits: DerivableTraits) -> Vec<&'static str> {
         [
-            ( DerivableTraits::DEBUG       , "Debug"      ),
-            ( DerivableTraits::DEFAULT     , "Default"    ),
-            ( DerivableTraits::COPY        , "Copy"       ),
-            ( DerivableTraits::CLONE       , "Clone"      ),
-            ( DerivableTraits::HASH        , "Hash"       ),
-            ( DerivableTraits::PARTIAL_ORD , "PartialOrd" ),
-            ( DerivableTraits::ORD         , "Ord"        ),
-            ( DerivableTraits::PARTIAL_EQ  , "PartialEq"  ),
-            ( DerivableTraits::EQ          , "Eq"         ),
-        ].iter()
-         .filter_map(|&(flag, derive)| Some(derive).filter(|_| derivable_traits.contains(flag)))
-         .collect()
+            (DerivableTraits::DEBUG, "Debug"),
+            (DerivableTraits::DEFAULT, "Default"),
+            (DerivableTraits::COPY, "Copy"),
+            (DerivableTraits::CLONE, "Clone"),
+            (DerivableTraits::HASH, "Hash"),
+            (DerivableTraits::PARTIAL_ORD, "PartialOrd"),
+            (DerivableTraits::ORD, "Ord"),
+            (DerivableTraits::PARTIAL_EQ, "PartialEq"),
+            (DerivableTraits::EQ, "Eq"),
+        ]
+        .iter()
+        .filter_map(|&(flag, derive)| {
+            Some(derive).filter(|_| derivable_traits.contains(flag))
+        })
+        .collect()
     }
 }
 
@@ -879,7 +881,8 @@ impl CodeGenerator for Type {
                             alias_style
                         );
 
-                        let mut attributes = vec![attributes::repr("transparent")];
+                        let mut attributes =
+                            vec![attributes::repr("transparent")];
                         let derivable_traits = derives_of_item(item, ctx);
                         if !derivable_traits.is_empty() {
                             let derives: Vec<_> = derivable_traits.into();
@@ -1893,8 +1896,8 @@ impl CodeGenerator for CompInfo {
 
         let all_template_params = item.all_template_params(ctx);
 
-        if derivable_traits.contains(DerivableTraits::COPY)
-            && !derivable_traits.contains(DerivableTraits::CLONE)
+        if derivable_traits.contains(DerivableTraits::COPY) &&
+            !derivable_traits.contains(DerivableTraits::CLONE)
         {
             needs_clone_impl = true;
         }
