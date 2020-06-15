@@ -8,4 +8,5 @@
 )]
 
 #[repr(transparent)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Wrapped<T>(pub T);
