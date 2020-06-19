@@ -85,6 +85,3 @@ after_success:
     test "$TRAVIS_BRANCH" == "master" &&
     test "$BINDGEN_JOB" == "misc" &&
     ./ci/deploy-book.sh
-
-notifications:
-  webhooks: http://build.servo.org:54856/travis
