@@ -10,6 +10,13 @@ env:
   global:
     - CARGO_TARGET_DIR=/tmp/bindgen
   matrix:
+    # Miscellaneous tests.
+    # Start "misc" job first since it runs longer than any other job.
+    - LLVM_VERSION="9.0" BINDGEN_JOB="misc"
+    - LLVM_VERSION="9.0" BINDGEN_JOB="quickchecking"
+    - LLVM_VERSION="9.0" BINDGEN_JOB="msrv"
+
+    # General matrix.
     - LLVM_VERSION="3.8" BINDGEN_JOB="test"         BINDGEN_PROFILE=
     - LLVM_VERSION="3.8" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
     - LLVM_VERSION="3.8" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
@@ -61,11 +68,6 @@ env:
     # Test the expectations build and pass tests.
     - LLVM_VERSION="9.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE=
     - LLVM_VERSION="9.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE="--release"
-
-    # Miscellaneous tests.
-    - LLVM_VERSION="9.0" BINDGEN_JOB="misc"
-    - LLVM_VERSION="9.0" BINDGEN_JOB="quickchecking"
-    - LLVM_VERSION="9.0" BINDGEN_JOB="msrv"
 
 matrix:
   fast_finish: true
