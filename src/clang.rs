@@ -239,6 +239,17 @@ impl Cursor {
         }
     }
 
+    /// Is this Cursor pointing to a function-like macro definition?
+    /// Returns None if this cannot be determined with the available libclang
+    /// (it requires 3.9 or greater).
+    pub fn is_macro_function_like(&self) -> Option<bool> {
+        if clang_Cursor_isMacroFunctionLike::is_loaded() {
+            Some(unsafe { clang_Cursor_isMacroFunctionLike(self.x) != 0 })
+        } else {
+            None
+        }
+    }
+
     /// Get the kind of referent this cursor is pointing to.
     pub fn kind(&self) -> CXCursorKind {
         self.x.kind
