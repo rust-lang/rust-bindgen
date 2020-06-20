@@ -2066,9 +2066,6 @@ pub struct TargetInfo {
 impl TargetInfo {
     /// Tries to obtain target information from libclang.
     pub fn new(tu: &TranslationUnit) -> Option<Self> {
-        if !clang_getTranslationUnitTargetInfo::is_loaded() {
-            return None;
-        }
         let triple;
         let pointer_width;
         unsafe {
