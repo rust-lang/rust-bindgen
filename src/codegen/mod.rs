@@ -3328,10 +3328,7 @@ impl TryToRustTy for Type {
                     IntKind::I64 => Ok(quote! { i64 }),
                     IntKind::U64 => Ok(quote! { u64 }),
                     IntKind::Custom { name, .. } => {
-                        let ident = ctx.rust_ident_raw(name);
-                        Ok(quote! {
-                            #ident
-                        })
+                        Ok(proc_macro2::TokenStream::from_str(name).unwrap())
                     }
                     IntKind::U128 => {
                         Ok(if ctx.options().rust_features.i128_and_u128 {
