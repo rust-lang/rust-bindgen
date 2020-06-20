@@ -77,13 +77,10 @@ impl Cursor {
         }
     }
 
-    /// Gets the C++ manglings for this cursor, or an error if the function is
-    /// not loaded or the manglings are not available.
+    /// Gets the C++ manglings for this cursor, or an error if the manglings
+    /// are not available.
     pub fn cxx_manglings(&self) -> Result<Vec<String>, ()> {
         use clang_sys::*;
-        if !clang_Cursor_getCXXManglings::is_loaded() {
-            return Err(());
-        }
         unsafe {
             let manglings = clang_Cursor_getCXXManglings(self.x);
             if manglings.is_null() {
@@ -592,11 +589,7 @@ impl Cursor {
 
     /// Get the visibility of this cursor's referent.
     pub fn visibility(&self) -> CXVisibilityKind {
-        if clang_getCursorVisibility::is_loaded() {
-            unsafe { clang_getCursorVisibility(self.x) }
-        } else {
-            CXVisibility_Default
-        }
+        unsafe { clang_getCursorVisibility(self.x) }
     }
 
     /// Given that this cursor's referent is a function, return cursors to its
@@ -641,8 +634,7 @@ impl Cursor {
     /// Is this cursor's referent a field declaration that is marked as
     /// `mutable`?
     pub fn is_mutable_field(&self) -> bool {
-        clang_CXXField_isMutable::is_loaded() &&
-            unsafe { clang_CXXField_isMutable(self.x) != 0 }
+        unsafe { clang_CXXField_isMutable(self.x) != 0 }
     }
 
     /// Get the offset of the field represented by the Cursor.
