@@ -477,8 +477,7 @@ impl Cursor {
 
     /// Is the referent an inlined function?
     pub fn is_inlined_function(&self) -> bool {
-        clang_Cursor_isFunctionInlined::is_loaded() &&
-            unsafe { clang_Cursor_isFunctionInlined(self.x) != 0 }
+        unsafe { clang_Cursor_isFunctionInlined(self.x) != 0 }
     }
 
     /// Get the width of this cursor's referent bit field, or `None` if the
@@ -1245,11 +1244,7 @@ impl Type {
     pub fn named(&self) -> Type {
         unsafe {
             Type {
-                x: if clang_Type_getNamedType::is_loaded() {
-                    clang_Type_getNamedType(self.x)
-                } else {
-                    self.x
-                },
+                x: clang_Type_getNamedType(self.x),
             }
         }
     }
@@ -1960,10 +1955,6 @@ pub struct EvalResult {
 impl EvalResult {
     /// Evaluate `cursor` and return the result.
     pub fn new(cursor: Cursor) -> Option<Self> {
-        if !clang_Cursor_Evaluate::is_loaded() {
-            return None;
-        }
-
         // Work around https://bugs.llvm.org/show_bug.cgi?id=42532, see:
         //  * https://github.com/rust-lang/rust-bindgen/issues/283
         //  * https://github.com/rust-lang/rust-bindgen/issues/1590
