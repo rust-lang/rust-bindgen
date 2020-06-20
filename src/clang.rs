@@ -2014,12 +2014,6 @@ impl EvalResult {
             return None;
         }
 
-        if !clang_EvalResult_isUnsignedInt::is_loaded() {
-            // FIXME(emilio): There's no way to detect underflow here, and clang
-            // will just happily give us a value.
-            return Some(unsafe { clang_EvalResult_getAsInt(self.x) } as i64);
-        }
-
         if unsafe { clang_EvalResult_isUnsignedInt(self.x) } != 0 {
             let value = unsafe { clang_EvalResult_getAsUnsigned(self.x) };
             if value > i64::max_value() as c_ulonglong {
