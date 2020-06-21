@@ -65,6 +65,18 @@ env:
 matrix:
   fast_finish: true
 
+  # Include a few jobs for spot-checking different configurations without
+  # invoking combinatoric explosion of Travis jobs.
+  include:
+    - os: osx
+      env: LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=
+    - os: osx
+      env: LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
+    - os: osx
+      env: LLVM_VERSION="9.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
+    - os: osx
+      env: LLVM_VERSION="9.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
+
 cache:
   directories:
     - $HOME/.cargo
