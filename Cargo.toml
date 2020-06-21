@@ -58,6 +58,8 @@ regex = { version = "1.0", default-features = false , features = [ "std", "unico
 which = { version = "3.0", optional = true, default-features = false }
 shlex = "0.1"
 rustc-hash = "1.0.1"
+saltwater = { version = "0.10", default-features = false }
+
 # New validation in 0.3.6 breaks bindgen-integration:
 # https://github.com/alexcrichton/proc-macro2/commit/489c642.
 proc-macro2 = { version = "1", default-features = false }
@@ -69,11 +71,6 @@ version = "0.7"
 [dependencies.log]
 optional = true
 version = "0.4"
-
-[dependencies.rcc]
-git = "https://github.com/jyn514/rcc/"
-branch = "bindgen"
-default-features = false
 
 [features]
 default = ["logging", "clap", "runtime", "which-rustfmt"]

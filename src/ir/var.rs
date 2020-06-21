@@ -13,9 +13,9 @@ use crate::clang::ClangToken;
 use crate::parse::{
     ClangItemParser, ClangSubItemParser, ParseError, ParseResult,
 };
-use std::io;
+use saltwater::{InternedStr, Literal};
 use std::collections::HashMap;
-use rcc::{InternedStr, Literal};
+use std::io;
 
 /// The type for a constant variable.
 #[derive(Debug)]
@@ -228,10 +228,10 @@ impl ClangSubItemParser for Var {
                 let parse_int = |value| {
                     let kind = ctx
                         .parse_callbacks()
-                        .and_then(|c| c.int_macro(rcc::get_str!(id), value))
-                        .unwrap_or_else(|| {
-                            default_macro_constant_type(&ctx, value)
-                        });
+                        .and_then(|c| {
+                            c.int_macro(saltwater::get_str!(id), value)
+                        })
+                        .unwrap_or_else(|| default_macro_constant_type(&ctx, value));
 
                     (TypeKind::Int(kind), VarType::Int(value))
                 };
@@ -250,7 +250,7 @@ impl ClangSubItemParser for Var {
                             ctx,
                         );
                         if let Some(callbacks) = ctx.parse_callbacks() {
-                            callbacks.str_macro(rcc::get_str!(id), &val);
+                            callbacks.str_macro(saltwater::get_str!(id), &val);
                         }
                         (TypeKind::Pointer(char_ty), VarType::String(val))
                     }
@@ -360,10 +360,10 @@ fn parse_macro(
     ctx: &BindgenContext,
     tokens: &[ClangToken],
 ) -> Option<(InternedStr, Literal)> {
-    use rcc::Token;
+    use saltwater::Token;
 
-    let mut rcc_tokens = tokens.iter().filter_map(ClangToken::as_rcc_token);
-    let ident_str = match rcc_tokens.next()?.data {
+    let mut swcc_tokens = tokens.iter().filter_map(ClangToken::as_swcc_token);
+    let ident_str = match swcc_tokens.next()?.data {
         Token::Id(id) => id,
         _ => return None,
     };
@@ -372,8 +372,8 @@ fn parse_macro(
     }
     let parsed_macros = ctx.parsed_macros();
 
-    // TODO: remove this clone (will need changes in rcc)
-    if let Some(literal) = rcc_expr(rcc_tokens.clone(), &parsed_macros) {
+    // TODO: remove this clone (will need changes in saltwater)
+    if let Some(literal) = swcc_expr(swcc_tokens.clone(), &parsed_macros) {
         return Some((ident_str, literal));
     }
 
@@ -383,27 +383,37 @@ fn parse_macro(
     // See:
     //   https://bugs.llvm.org//show_bug.cgi?id=9069
     //   https://reviews.llvm.org/D26446
-    let tokens = tokens[1..tokens.len() - 1].iter().filter_map(ClangToken::as_rcc_token);
-    if let Some(literal) = rcc_expr(tokens, &parsed_macros) {
+    let tokens = tokens[1..tokens.len() - 1]
+        .iter()
+        .filter_map(ClangToken::as_swcc_token);
+    if let Some(literal) = swcc_expr(tokens, &parsed_macros) {
         Some((ident_str, literal))
     } else {
         None
     }
 }
 
-fn rcc_expr(rcc_tokens: impl Iterator<Item = rcc::Locatable<rcc::Token>>, definitions: &HashMap<InternedStr, rcc::Definition>) -> Option<Literal> {
-    use rcc::PreProcessor;
+fn swcc_expr(
+    swcc_tokens: impl Iterator<Item = saltwater::Locatable<saltwater::Token>>,
+    definitions: &HashMap<InternedStr, saltwater::Definition>,
+) -> Option<Literal> {
+    use saltwater::PreProcessor;
 
-    let mut rcc_tokens = rcc_tokens.peekable();
-    let location = rcc_tokens.peek()?.location;
-    PreProcessor::cpp_expr(definitions, rcc_tokens, location).ok()?.const_fold().ok()?.into_literal().ok()
+    let mut swcc_tokens = swcc_tokens.peekable();
+    let location = swcc_tokens.peek()?.location;
+    PreProcessor::cpp_expr(definitions, swcc_tokens, location)
+        .ok()?
+        .const_fold()
+        .ok()?
+        .into_literal()
+        .ok()
 }
 
 fn parse_int_literal_tokens(cursor: &clang::Cursor) -> Option<i64> {
-    let rcc_tokens = cursor.rcc_tokens().into_iter();
+    let swcc_tokens = cursor.swcc_tokens().into_iter();
 
     // TODO(emilio): We can try to parse other kinds of literals.
-    match rcc_expr(rcc_tokens, &HashMap::new()) {
+    match swcc_expr(swcc_tokens, &HashMap::new()) {
         Some(Literal::Int(i)) => Some(i),
         Some(Literal::UnsignedInt(u)) => Some(u as i64),
         _ => None,

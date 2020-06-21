@@ -26,7 +26,7 @@ use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 use clang_sys;
 use proc_macro2::{Ident, Span};
-use rcc::InternedStr;
+use saltwater::InternedStr;
 use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::HashMap as StdHashMap;
@@ -351,8 +351,8 @@ pub struct BindgenContext {
     /// hard errors while parsing duplicated macros, as well to allow macro
     /// expression parsing.
     ///
-    /// This needs to be an std::HashMap because the rcc API requires it.
-    parsed_macros: StdHashMap<InternedStr, rcc::Definition>,
+    /// This needs to be an std::HashMap because the saltwater API requires it.
+    parsed_macros: StdHashMap<InternedStr, saltwater::Definition>,
 
     /// The active replacements collected from replaces="xxx" annotations.
     replacements: HashMap<Vec<String>, ItemId>,
@@ -1993,7 +1993,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Get the currently parsed macros.
     pub fn parsed_macros(
         &self,
-    ) -> &StdHashMap<InternedStr, rcc::Definition> {
+    ) -> &StdHashMap<InternedStr, saltwater::Definition> {
         debug_assert!(!self.in_codegen_phase());
         &self.parsed_macros
     }
@@ -2002,9 +2002,14 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     pub fn note_parsed_macro(
         &mut self,
         id: InternedStr,
-        value: rcc::Literal,
+        value: saltwater::Literal,
     ) {
-        self.parsed_macros.insert(id, rcc::Definition::Object(vec![rcc::Token::Literal(value)]));
+        self.parsed_macros.insert(
+            id,
+            saltwater::Definition::Object(vec![saltwater::Token::Literal(
+                value,
+            )]),
+        );
     }
 
     /// Are we in the codegen phase?
