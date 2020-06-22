@@ -70,11 +70,7 @@ impl Cursor {
 
     /// Get the mangled name of this cursor's referent.
     pub fn mangling(&self) -> String {
-        if clang_Cursor_getMangling::is_loaded() {
-            unsafe { cxstring_into_string(clang_Cursor_getMangling(self.x)) }
-        } else {
-            self.spelling()
-        }
+        unsafe { cxstring_into_string(clang_Cursor_getMangling(self.x)) }
     }
 
     /// Gets the C++ manglings for this cursor, or an error if the manglings
@@ -632,10 +628,6 @@ impl Cursor {
 
     /// Get the offset of the field represented by the Cursor.
     pub fn offset_of_field(&self) -> Result<usize, LayoutError> {
-        if !clang_Cursor_getOffsetOfField::is_loaded() {
-            return Err(LayoutError::from(-1));
-        }
-
         let offset = unsafe { clang_Cursor_getOffsetOfField(self.x) };
 
         if offset < 0 {
@@ -1102,13 +1094,6 @@ impl Type {
     /// Get the number of template arguments this type has, or `None` if it is
     /// not some kind of template.
     pub fn num_template_args(&self) -> Option<u32> {
-        // If an old libclang is loaded, we have no hope of answering this
-        // question correctly. However, that's no reason to panic when
-        // generating bindings for simple C headers with an old libclang.
-        if !clang_Type_getNumTemplateArguments::is_loaded() {
-            return None;
-        }
-
         let n = unsafe { clang_Type_getNumTemplateArguments(self.x) };
         if n >= 0 {
             Some(n as u32)
@@ -1848,11 +1833,7 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
             format!(" {}spelling = \"{}\"", prefix, ty.spelling()),
         );
         let num_template_args =
-            if clang_Type_getNumTemplateArguments::is_loaded() {
-                unsafe { clang_Type_getNumTemplateArguments(ty.x) }
-            } else {
-                -1
-            };
+            unsafe { clang_Type_getNumTemplateArguments(ty.x) };
         if num_template_args >= 0 {
             print_indent(
                 depth,
