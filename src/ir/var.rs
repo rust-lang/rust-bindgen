@@ -391,24 +391,12 @@ fn parse_macro(
 ) -> Option<(Vec<u8>, cexpr::expr::EvalResult)> {
     use cexpr::expr;
 
-    let mut cexpr_tokens: Vec<_> = tokens
+    let cexpr_tokens: Vec<_> = tokens
         .iter()
         .filter_map(ClangToken::as_cexpr_token)
         .collect();
 
     let parser = expr::IdentifierParser::new(ctx.parsed_macros());
-
-    if let Ok((_, (id, val))) = parser.macro_definition(&cexpr_tokens) {
-        return Some((id.into(), val));
-    }
-
-    // Try without the last token, to workaround a libclang bug in versions
-    // previous to 4.0.
-    //
-    // See:
-    //   https://bugs.llvm.org//show_bug.cgi?id=9069
-    //   https://reviews.llvm.org/D26446
-    cexpr_tokens.pop()?;
 
     match parser.macro_definition(&cexpr_tokens) {
         Ok((_, (id, val))) => Some((id.into(), val)),
