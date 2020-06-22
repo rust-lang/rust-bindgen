@@ -135,9 +135,21 @@ impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
     }
 }
 impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
+pub const JSVAL_ALIGNMENT: u32 = 0;
 pub const JSVAL_TAG_SHIFT: u32 = 47;
 pub const JSVAL_PAYLOAD_MASK: u64 = 140737488355327;
 pub const JSVAL_TAG_MASK: i64 = -140737488355328;
+pub const JSVAL_TYPE_TO_TAG: u32 = 0;
+pub const JSVAL_LOWER_INCL_TAG_OF_OBJ_OR_NULL_SET: u32 = 0;
+pub const JSVAL_UPPER_EXCL_TAG_OF_PRIMITIVE_SET: u32 = 0;
+pub const JSVAL_UPPER_INCL_TAG_OF_NUMBER_SET: u32 = 0;
+pub const JSVAL_LOWER_INCL_TAG_OF_GCTHING_SET: u32 = 0;
+pub const JSVAL_LOWER_INCL_SHIFTED_TAG_OF_OBJ_OR_NULL_SET: u32 = 0;
+pub const JSVAL_UPPER_EXCL_SHIFTED_TAG_OF_PRIMITIVE_SET: u32 = 0;
+pub const JSVAL_UPPER_EXCL_SHIFTED_TAG_OF_NUMBER_SET: u32 = 0;
+pub const JSVAL_LOWER_INCL_SHIFTED_TAG_OF_GCTHING_SET: u32 = 0;
+pub const JS_VALUE_CONSTEXPR: u32 = 0;
+pub const JS_VALUE_CONSTEXPR_VAR: u32 = 0;
 pub type size_t = ::std::os::raw::c_ulonglong;
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]

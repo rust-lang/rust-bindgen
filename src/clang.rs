@@ -797,7 +797,9 @@ impl ClangToken {
     pub fn as_swcc_token(
         &self,
     ) -> Option<saltwater::Locatable<saltwater::Token>> {
-        use saltwater::{Files, Lexer, Literal, Token};
+        use saltwater::{
+            error::LexError, Files, Lexer, Literal, Locatable, Token,
+        };
 
         match self.kind {
             // `saltwater` does not have a comment token
@@ -806,13 +808,40 @@ impl ClangToken {
             CXToken_Keyword => {
                 let spelling = std::str::from_utf8(self.spelling())
                     .expect("invalid utf8 in token");
-                let mut files = Files::new();
-                let id = files.add("", "".into());
-                let mut lexer = Lexer::new(id, spelling, false);
-                let mut token = lexer
-                    .next()
-                    .unwrap()
-                    .expect("saltwater failed to parse clang token");
+                let parse = |spelling| {
+                    let mut files = Files::new();
+                    let id = files.add("", "".into());
+                    let mut lexer = Lexer::new(id, spelling, false);
+                    lexer.next().unwrap()
+                };
+                let failed_parse = |err: Locatable<_>| {
+                    panic!(
+                        "saltwater failed to parse clang token '{}': {}",
+                        spelling, err.data
+                    );
+                };
+                let mut token = match parse(spelling) {
+                    Ok(token) => token,
+                    Err(Locatable {
+                        data:
+                            LexError::IntegerOverflow {
+                                is_signed: Some(true),
+                            },
+                        ..
+                    }) => {
+                        warn!("integer does not fit into `long long`, trying again with `unsigned long long`");
+                        // saltwater ignores trailing `LL`, but requires any `u` suffix to come before `LL`
+                        let mut spelling = String::from(
+                            spelling
+                                .trim_end_matches('l')
+                                .trim_end_matches('L'),
+                        );
+                        spelling.push('u');
+                        parse(&spelling).unwrap_or_else(failed_parse)
+                    }
+                    Err(err) => failed_parse(err),
+                };
+
                 // saltwater generates null-terminated string immediately,
                 // but bindgen only adds the null-terminator during codegen.
                 if let Token::Literal(Literal::Str(ref mut string)) =
