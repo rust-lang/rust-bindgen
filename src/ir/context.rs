@@ -368,7 +368,7 @@ pub struct BindgenContext {
     translation_unit: clang::TranslationUnit,
 
     /// Target information that can be useful for some stuff.
-    target_info: Option<clang::TargetInfo>,
+    target_info: clang::TargetInfo,
 
     /// The options given by the user via cli or other medium.
     options: BindgenOptions,
@@ -584,10 +584,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Returns `true` if the target architecture is wasm32
     pub fn is_target_wasm32(&self) -> bool {
-        match self.target_info {
-            Some(ref ti) => ti.triple.starts_with("wasm32-"),
-            None => false,
-        }
+        self.target_info.triple.starts_with("wasm32-")
     }
 
     /// Creates a timer for the current bindgen phase. If time_phases is `true`,
@@ -600,10 +597,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Returns the pointer width to use for the target for the current
     /// translation.
     pub fn target_pointer_size(&self) -> usize {
-        if let Some(ref ti) = self.target_info {
-            return ti.pointer_width / 8;
-        }
-        mem::size_of::<*mut ()>()
+        return self.target_info.pointer_width / 8;
     }
 
     /// Get the stack of partially parsed types that we are in the middle of
