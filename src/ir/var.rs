@@ -372,9 +372,30 @@ fn parse_macro(
     }
     let parsed_macros = ctx.parsed_macros();
 
-    // TODO: remove this clone (will need changes in saltwater)
-    if let Some(literal) = swcc_expr(swcc_tokens.clone(), &parsed_macros) {
-        return Some((ident_str, literal));
+    swcc_expr(swcc_tokens.collect(), &parsed_macros)
+        .map(|literal| (ident_str, literal))
+}
+
+fn swcc_expr(
+    mut tokens: Vec<saltwater::Locatable<saltwater::Token>>,
+    definitions: &HashMap<InternedStr, saltwater::Definition>,
+) -> Option<Literal> {
+    use saltwater::{Locatable, PreProcessor};
+
+    let parse = |tokens: Vec<Locatable<_>>| {
+        let mut tokens = tokens.into_iter().peekable();
+        let location = tokens.peek()?.location;
+        PreProcessor::cpp_expr(definitions, tokens, location)
+            .ok()?
+            .const_fold()
+            .ok()?
+            .into_literal()
+            .ok()
+    };
+
+    // TODO: remove this clone (requires changes in saltwater)
+    if let Some(literal) = parse(tokens.clone()) {
+        return Some(literal);
     }
 
     // Try without the last token, to workaround a libclang bug in versions
@@ -383,34 +404,12 @@ fn parse_macro(
     // See:
     //   https://bugs.llvm.org//show_bug.cgi?id=9069
     //   https://reviews.llvm.org/D26446
-    let tokens = tokens[1..tokens.len() - 1]
-        .iter()
-        .filter_map(ClangToken::as_swcc_token);
-    if let Some(literal) = swcc_expr(tokens, &parsed_macros) {
-        Some((ident_str, literal))
-    } else {
-        None
-    }
-}
-
-fn swcc_expr(
-    swcc_tokens: impl Iterator<Item = saltwater::Locatable<saltwater::Token>>,
-    definitions: &HashMap<InternedStr, saltwater::Definition>,
-) -> Option<Literal> {
-    use saltwater::PreProcessor;
-
-    let mut swcc_tokens = swcc_tokens.peekable();
-    let location = swcc_tokens.peek()?.location;
-    PreProcessor::cpp_expr(definitions, swcc_tokens, location)
-        .ok()?
-        .const_fold()
-        .ok()?
-        .into_literal()
-        .ok()
+    tokens.pop();
+    parse(tokens)
 }
 
 fn parse_int_literal_tokens(cursor: &clang::Cursor) -> Option<i64> {
-    let swcc_tokens = cursor.swcc_tokens().into_iter();
+    let swcc_tokens = cursor.swcc_tokens();
 
     // TODO(emilio): We can try to parse other kinds of literals.
     match swcc_expr(swcc_tokens, &HashMap::new()) {
