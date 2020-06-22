@@ -2065,7 +2065,7 @@ pub struct TargetInfo {
 
 impl TargetInfo {
     /// Tries to obtain target information from libclang.
-    pub fn new(tu: &TranslationUnit) -> Option<Self> {
+    pub fn new(tu: &TranslationUnit) -> Self {
         let triple;
         let pointer_width;
         unsafe {
@@ -2076,9 +2076,9 @@ impl TargetInfo {
         }
         assert!(pointer_width > 0);
         assert_eq!(pointer_width % 8, 0);
-        Some(TargetInfo {
+        TargetInfo {
             triple,
             pointer_width: pointer_width as usize,
-        })
+        }
     }
 }
