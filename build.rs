@@ -42,13 +42,6 @@ mod testgen {
 
         println!("cargo:rerun-if-changed=tests/headers");
 
-        // On behalf of clang_sys, rebuild ourselves if important configuration
-        // variables change, to ensure that bindings get rebuilt if the
-        // underlying libclang changes.
-        println!("cargo:rerun-if-env-changed=LLVM_CONFIG_PATH");
-        println!("cargo:rerun-if-env-changed=LIBCLANG_PATH");
-        println!("cargo:rerun-if-env-changed=LIBCLANG_STATIC_PATH");
-
         for entry in entries {
             match entry.path().extension().and_then(OsStr::to_str) {
                 Some("h") | Some("hpp") => {
@@ -78,4 +71,11 @@ mod testgen {
 fn main() {
     target::main();
     testgen::main();
+
+    // On behalf of clang_sys, rebuild ourselves if important configuration
+    // variables change, to ensure that bindings get rebuilt if the
+    // underlying libclang changes.
+    println!("cargo:rerun-if-env-changed=LLVM_CONFIG_PATH");
+    println!("cargo:rerun-if-env-changed=LIBCLANG_PATH");
+    println!("cargo:rerun-if-env-changed=LIBCLANG_STATIC_PATH");
 }
