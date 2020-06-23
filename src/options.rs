@@ -272,6 +272,10 @@ where
                 .help(
                     "Disable support for native Rust unions.",
                 ),
+            Arg::with_name("disable-header-comment")
+                .long("disable-header-comment")
+                .help("Suppress insertion of bindgen's version identifier into generated bindings.")
+                .multiple(true),
             Arg::with_name("ignore-functions")
                 .long("ignore-functions")
                 .help(
@@ -674,6 +678,10 @@ where
 
     if matches.is_present("disable-untagged-union") {
         builder = builder.disable_untagged_union();
+    }
+
+    if matches.is_present("disable-header-comment") {
+        builder = builder.disable_header_comment();
     }
 
     if matches.is_present("ignore-functions") {
