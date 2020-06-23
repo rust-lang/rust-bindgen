@@ -244,7 +244,7 @@ fn builder() -> Builder {
     #[cfg(feature = "logging")]
     let _ = env_logger::try_init();
 
-    bindgen::builder()
+    bindgen::builder().disable_header_comment()
 }
 
 fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
@@ -304,6 +304,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
         // more control.
         "--no-rustfmt-bindings",
         "--with-derive-default",
+        "--disable-header-comment",
         header_str,
         "--raw-line",
         "",

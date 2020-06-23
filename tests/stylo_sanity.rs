@@ -32,6 +32,7 @@ fn sanity_check_can_generate_stylo_bindings() {
 
     bindgen::builder()
         .time_phases(true)
+        .disable_header_comment()
         .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/stylo.hpp"))
         .whitelist_function("Servo_.*")
         .whitelist_function("Gecko_.*")
