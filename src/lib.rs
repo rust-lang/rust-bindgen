@@ -484,6 +484,10 @@ impl Builder {
             output_vector.push("--disable-nested-struct-naming".into());
         }
 
+        if self.options.disable_header_comment {
+            output_vector.push("--disable-header-comment".into());
+        }
+
         if !self.options.codegen_config.functions() {
             output_vector.push("--ignore-functions".into());
         }
@@ -711,6 +715,13 @@ impl Builder {
     /// Disable support for native Rust unions, if supported.
     pub fn disable_untagged_union(mut self) -> Self {
         self.options.rust_features.untagged_union = false;
+        self
+    }
+
+    /// Disable insertion of bindgen's version identifier into generated
+    /// bindings.
+    pub fn disable_header_comment(mut self) -> Self {
+        self.options.disable_header_comment = true;
         self
     }
 
@@ -1664,6 +1675,9 @@ struct BindgenOptions {
     /// True if we should avoid generating nested struct names.
     disable_nested_struct_naming: bool,
 
+    /// True if we should avoid embedding version identifiers into source code.
+    disable_header_comment: bool,
+
     /// True if we should generate layout tests for generated structures.
     layout_tests: bool,
 
@@ -1925,6 +1939,7 @@ impl Default for BindgenOptions {
             enable_function_attribute_detection: false,
             disable_name_namespacing: false,
             disable_nested_struct_naming: false,
+            disable_header_comment: false,
             use_core: false,
             ctypes_prefix: None,
             namespaced_constants: true,
