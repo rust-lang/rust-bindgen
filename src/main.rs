@@ -23,8 +23,6 @@ fn clang_version_check() {
         Some((9, 0))
     } else if cfg!(feature = "testing_only_libclang_5") {
         Some((5, 0))
-    } else if cfg!(feature = "testing_only_libclang_4") {
-        Some((4, 0))
     } else {
         None
     };
