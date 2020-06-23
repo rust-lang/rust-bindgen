@@ -143,8 +143,6 @@ fn compare_generated_header(
             expectation.push("libclang-5");
         } else if cfg!(feature = "testing_only_libclang_4") {
             expectation.push("libclang-4");
-        } else if cfg!(feature = "testing_only_libclang_3_9") {
-            expectation.push("libclang-3.9");
         } else {
             match clang_version().parsed {
                 None => expectation.push("libclang-9"),
