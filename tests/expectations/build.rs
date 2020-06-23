@@ -9,7 +9,6 @@ use std::io::Write;
 use std::path::Path;
 
 const LIBCLANG_VERSION_DIRS: &'static [&'static str] = &[
-    "libclang-4",
     "libclang-5",
     "libclang-9",
 ];

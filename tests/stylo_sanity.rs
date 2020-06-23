@@ -16,7 +16,6 @@ extern crate bindgen;
 #[test]
 #[cfg(not(any(debug_assertions, feature = "testing_only_extra_assertions",)))]
 #[cfg(any(
-    feature = "testing_only_libclang_4",
     feature = "testing_only_libclang_5",
     feature = "testing_only_libclang_9"
 ))]
