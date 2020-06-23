@@ -14,11 +14,7 @@ extern crate bindgen;
 /// how long bindings generation takes for Stylo. Stylo bindings generation
 /// takes too long to be a proper `#[bench]`.
 #[test]
-#[cfg(not(any(
-    debug_assertions,
-    feature = "testing_only_extra_assertions",
-    feature = "testing_only_libclang_3_8"
-)))]
+#[cfg(not(any(debug_assertions, feature = "testing_only_extra_assertions",)))]
 #[cfg(any(
     feature = "testing_only_libclang_3_9",
     feature = "testing_only_libclang_4",

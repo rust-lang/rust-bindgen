@@ -27,8 +27,6 @@ fn clang_version_check() {
         Some((4, 0))
     } else if cfg!(feature = "testing_only_libclang_3_9") {
         Some((3, 9))
-    } else if cfg!(feature = "testing_only_libclang_3_8") {
-        Some((3, 8))
     } else {
         None
     };
