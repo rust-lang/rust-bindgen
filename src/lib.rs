@@ -593,20 +593,6 @@ impl Builder {
             })
             .count();
 
-        output_vector.push("--".into());
-
-        if !self.options.clang_args.is_empty() {
-            output_vector.extend(self.options.clang_args.iter().cloned());
-        }
-
-        if self.input_headers.len() > 1 {
-            output_vector.extend(
-                self.input_headers[..self.input_headers.len() - 1]
-                    .iter()
-                    .cloned(),
-            );
-        }
-
         if !self.options.record_matches {
             output_vector.push("--no-record-matches".into());
         }
@@ -658,6 +644,22 @@ impl Builder {
                 output_vector.push(item.to_owned());
             })
             .count();
+
+        // Add clang arguments
+
+        output_vector.push("--".into());
+
+        if !self.options.clang_args.is_empty() {
+            output_vector.extend(self.options.clang_args.iter().cloned());
+        }
+
+        if self.input_headers.len() > 1 {
+            output_vector.extend(
+                self.input_headers[..self.input_headers.len() - 1]
+                    .iter()
+                    .cloned(),
+            );
+        }
 
         output_vector
     }
