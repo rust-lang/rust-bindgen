@@ -247,7 +247,7 @@ fn builder() -> Builder {
     bindgen::builder().disable_header_comment()
 }
 
-fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
+fn create_bindgen_builder(header: &PathBuf) -> Result<Builder, Error> {
     #[cfg(feature = "logging")]
     let _ = env_logger::try_init();
 
@@ -319,7 +319,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
         .map(ToString::to_string)
         .chain(flags.into_iter());
 
-    builder_from_flags(args).map(|(builder, _, _)| Some(builder))
+    builder_from_flags(args).map(|(builder, _, _)| builder)
 }
 
 macro_rules! test_header {
@@ -328,11 +328,7 @@ macro_rules! test_header {
         fn $function() {
             let header = PathBuf::from($header);
             let result = create_bindgen_builder(&header).and_then(|builder| {
-                if let Some(builder) = builder {
-                    compare_generated_header(&header, builder)
-                } else {
-                    Ok(())
-                }
+                compare_generated_header(&header, builder)
             });
 
             if let Err(err) = result {
