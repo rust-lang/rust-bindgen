@@ -501,7 +501,6 @@ impl Builder {
         if self.input_headers.len() > 1 {
             // To pass more than one header, we need to pass all but the last
             // header via the `-include` clang arg
-            output_vector.reserve(2 * self.input_headers.len() - 2);
             for header in &self.input_headers[..self.input_headers.len() - 1] {
                 output_vector.push("-include".to_string());
                 output_vector.push(header.clone());

@@ -102,25 +102,14 @@ mod test {
         let flags_str = flags_quoted.join(" ");
         println!("{}", flags_str);
 
-        crate::options::builder_from_flags(command_line_flags.into_iter())
-            .unwrap();
+        let (builder, _output, _verbose) =
+            crate::options::builder_from_flags(command_line_flags.into_iter())
+                .unwrap();
+        builder.generate().expect("failed to generate bindings");
     }
 
     #[test]
-    fn commandline_flag_roundtrip() {
-        // test1: various options
-        let bindings = bindgen::Builder::default()
-            .header("tests/headers/char.h")
-            .record_matches(false)
-            .size_t_is_usize(true)
-            .rustfmt_bindings(false)
-            .rustfmt_configuration_file(Some(PathBuf::from("/dev/null")))
-            .no_partialeq(".")
-            .no_copy(".")
-            .no_hash(".");
-        build_flags_output_helper(&bindings);
-
-        // test2: multiple headers
+    fn commandline_multiple_headers() {
         let bindings = bindgen::Builder::default()
             .header("tests/headers/char.h")
             .header("tests/headers/func_ptr.h")
