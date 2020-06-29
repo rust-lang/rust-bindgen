@@ -97,7 +97,7 @@ mod test {
 
         let flags_quoted: Vec<String> = command_line_flags
             .iter()
-            .map(|x| format!("'{}'", x))
+            .map(|x| format!("{}", shlex::quote(x)))
             .collect();
         let flags_str = flags_quoted.join(" ");
         println!("{}", flags_str);
