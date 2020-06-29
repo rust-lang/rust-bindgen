@@ -457,7 +457,7 @@ impl Builder {
 
         for line in &self.options.raw_lines {
             output_vector.push("--raw-line".into());
-            output_vector.push(line.into());
+            output_vector.push(line.clone());
         }
 
         if self.options.use_core {
