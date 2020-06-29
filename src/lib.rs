@@ -255,131 +255,46 @@ impl Builder {
             )
         }
 
-        self.options
-            .bitfield_enums
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--bitfield-enum".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .newtype_enums
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--newtype-enum".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .rustified_enums
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--rustified-enum".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .rustified_non_exhaustive_enums
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--rustified-enum-non-exhaustive".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .constified_enum_modules
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--constified-enum-module".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .constified_enums
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--constified-enum".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
         if self.options.default_alias_style != Default::default() {
             output_vector.push("--default-alias-style=".into());
             output_vector
                 .push(self.options.default_alias_style.as_str().into());
         }
 
-        self.options
-            .type_alias
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--type-alias".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
+        let regex_sets = &[
+            (&self.options.bitfield_enums, "--bitfield-enum"),
+            (&self.options.newtype_enums, "--newtype-enum"),
+            (&self.options.rustified_enums, "--rustified-enum"),
+            (
+                &self.options.rustified_non_exhaustive_enums,
+                "--rustified-enum-non-exhaustive",
+            ),
+            (
+                &self.options.constified_enum_modules,
+                "--constified-enum-module",
+            ),
+            (&self.options.constified_enums, "--constified-enum"),
+            (&self.options.type_alias, "--type-alias"),
+            (&self.options.new_type_alias, "--new-type-alias"),
+            (&self.options.new_type_alias_deref, "--new-type-alias-deref"),
+            (&self.options.blacklisted_types, "--blacklist-type"),
+            (&self.options.blacklisted_functions, "--blacklist-function"),
+            (&self.options.blacklisted_items, "--blacklist-item"),
+            (&self.options.opaque_types, "--opaque-type"),
+            (&self.options.whitelisted_functions, "--whitelist-function"),
+            (&self.options.whitelisted_types, "--whitelist-type"),
+            (&self.options.whitelisted_vars, "--whitelist-var"),
+            (&self.options.no_partialeq_types, "--no-partialeq"),
+            (&self.options.no_copy_types, "--no-copy"),
+            (&self.options.no_hash_types, "--no-hash"),
+        ];
 
-        self.options
-            .new_type_alias
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--new-type-alias".into());
+        for (set, flag) in regex_sets {
+            for item in set.get_items() {
+                output_vector.push((*flag).to_owned());
                 output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .new_type_alias_deref
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--new-type-alias-deref".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .blacklisted_types
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--blacklist-type".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .blacklisted_functions
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--blacklist-function".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .blacklisted_items
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--blacklist-item".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
+            }
+        }
 
         if !self.options.layout_tests {
             output_vector.push("--no-layout-tests".into());
@@ -540,24 +455,10 @@ impl Builder {
             output_vector.push(wasm_import_module_name.clone());
         }
 
-        self.options
-            .opaque_types
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--opaque-type".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .raw_lines
-            .iter()
-            .map(|item| {
-                output_vector.push("--raw-line".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
+        for line in &self.options.raw_lines {
+            output_vector.push("--raw-line".into());
+            output_vector.push(line.into());
+        }
 
         if self.options.use_core {
             output_vector.push("--use-core".into());
@@ -566,36 +467,6 @@ impl Builder {
         if self.options.conservative_inline_namespaces {
             output_vector.push("--conservative-inline-namespaces".into());
         }
-
-        self.options
-            .whitelisted_functions
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--whitelist-function".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .whitelisted_types
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--whitelist-type".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .whitelisted_vars
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--whitelist-var".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
 
         if !self.options.record_matches {
             output_vector.push("--no-record-matches".into());
@@ -618,36 +489,6 @@ impl Builder {
             output_vector.push("--rustfmt-configuration-file".into());
             output_vector.push(path.into());
         }
-
-        self.options
-            .no_partialeq_types
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--no-partialeq".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .no_copy_types
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--no-copy".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .no_hash_types
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--no-hash".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
 
         // Add clang arguments
 
