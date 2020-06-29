@@ -232,8 +232,17 @@ impl Builder {
         output_vector.push("--rust-target".into());
         output_vector.push(self.options.rust_target.into());
 
+        // FIXME(emilio): This is a bit hacky, maybe we should stop re-using the
+        // RustFeatures to store the "disable_untagged_union" call, and make it
+        // a different flag that we check elsewhere / in generate().
+        if !self.options.rust_features.untagged_union &&
+            RustFeatures::from(self.options.rust_target).untagged_union
+        {
+            output_vector.push("--disable-untagged-union".into());
+        }
+
         if self.options.default_enum_style != Default::default() {
-            output_vector.push("--default-enum-style=".into());
+            output_vector.push("--default-enum-style".into());
             output_vector.push(
                 match self.options.default_enum_style {
                     codegen::EnumVariation::Rust {
@@ -256,7 +265,7 @@ impl Builder {
         }
 
         if self.options.default_alias_style != Default::default() {
-            output_vector.push("--default-alias-style=".into());
+            output_vector.push("--default-alias-style".into());
             output_vector
                 .push(self.options.default_alias_style.as_str().into());
         }
@@ -466,6 +475,10 @@ impl Builder {
 
         if self.options.conservative_inline_namespaces {
             output_vector.push("--conservative-inline-namespaces".into());
+        }
+
+        if self.options.generate_inline_functions {
+            output_vector.push("--generate-inline-functions".into());
         }
 
         if !self.options.record_matches {
