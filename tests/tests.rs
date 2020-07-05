@@ -17,9 +17,6 @@ use std::sync::Once;
 mod options;
 use crate::options::builder_from_flags;
 
-/// The environment variable that determines if test expectations are overwritten.
-static OVERWRITE_ENV_VAR: &str = "BINDGEN_OVERWRITE_EXPECTED";
-
 // Run `rustfmt` on the given source string and return a tuple of the formatted
 // bindings, and rustfmt's stderr.
 fn rustfmt(source: String) -> (String, String) {
@@ -119,6 +116,7 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
 fn compare_generated_header(
     header: &PathBuf,
     builder: Builder,
+    check_roundtrip: bool,
 ) -> Result<(), Error> {
     let file_name = header.file_name().ok_or(Error::new(
         ErrorKind::Other,
@@ -194,6 +192,14 @@ fn compare_generated_header(
         ),
     };
 
+    let flags = if check_roundtrip {
+        let mut flags = builder.command_line_flags();
+        flags.insert(0, "bindgen".into());
+        flags
+    } else {
+        vec![]
+    };
+
     // We skip the generate() error here so we get a full diff below
     let (actual, rustfmt_stderr) = match builder.generate() {
         Ok(bindings) => {
@@ -207,47 +213,58 @@ fn compare_generated_header(
     let (expected, rustfmt_stderr) = rustfmt(expected);
     println!("{}", rustfmt_stderr);
 
-    if actual == expected {
-        if !actual.is_empty() {
-            return Ok(());
-        }
+    if actual.is_empty() {
         return Err(Error::new(
             ErrorKind::Other,
             "Something's gone really wrong!",
         ));
     }
 
-    println!("{}", rustfmt_stderr);
+    if actual != expected {
+        println!("{}", rustfmt_stderr);
 
-    println!("diff expected generated");
-    println!("--- expected: {:?}", looked_at.last().unwrap());
-    println!("+++ generated from: {:?}", header);
+        println!("diff expected generated");
+        println!("--- expected: {:?}", looked_at.last().unwrap());
+        println!("+++ generated from: {:?}", header);
 
-    for diff in diff::lines(&expected, &actual) {
-        match diff {
-            diff::Result::Left(l) => println!("-{}", l),
-            diff::Result::Both(l, _) => println!(" {}", l),
-            diff::Result::Right(r) => println!("+{}", r),
+        for diff in diff::lines(&expected, &actual) {
+            match diff {
+                diff::Result::Left(l) => println!("-{}", l),
+                diff::Result::Both(l, _) => println!(" {}", l),
+                diff::Result::Right(r) => println!("+{}", r),
+            }
+        }
+
+        // Overwrite the expectation with actual output.
+        if env::var_os("BINDGEN_OVERWRITE_EXPECTED").is_some() {
+            let mut expectation_file =
+                fs::File::create(looked_at.last().unwrap())?;
+            expectation_file.write_all(actual.as_bytes())?;
+        }
+
+        return Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation."));
+    }
+
+    if check_roundtrip {
+        let roundtrip_builder = builder_from_flags(flags.into_iter())?.0;
+        if let Err(e) =
+            compare_generated_header(&header, roundtrip_builder, false)
+        {
+            return Err(Error::new(ErrorKind::Other, format!("Checking CLI flags roundtrip errored! You probably need to fix Builder::command_line_args. {}", e)));
         }
     }
 
-    // Overwrite the expectation with actual output.
-    if env::var_os(OVERWRITE_ENV_VAR).is_some() {
-        let mut expectation_file = fs::File::create(looked_at.last().unwrap())?;
-        expectation_file.write_all(actual.as_bytes())?;
-    }
-
-    Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation."))
+    Ok(())
 }
 
 fn builder() -> Builder {
     #[cfg(feature = "logging")]
     let _ = env_logger::try_init();
 
-    bindgen::builder()
+    bindgen::builder().disable_header_comment()
 }
 
-fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
+fn create_bindgen_builder(header: &PathBuf) -> Result<Builder, Error> {
     #[cfg(feature = "logging")]
     let _ = env_logger::try_init();
 
@@ -304,6 +321,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
         // more control.
         "--no-rustfmt-bindings",
         "--with-derive-default",
+        "--disable-header-comment",
         header_str,
         "--raw-line",
         "",
@@ -318,7 +336,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
         .map(ToString::to_string)
         .chain(flags.into_iter());
 
-    builder_from_flags(args).map(|(builder, _, _)| Some(builder))
+    builder_from_flags(args).map(|(builder, _, _)| builder)
 }
 
 macro_rules! test_header {
@@ -327,11 +345,9 @@ macro_rules! test_header {
         fn $function() {
             let header = PathBuf::from($header);
             let result = create_bindgen_builder(&header).and_then(|builder| {
-                if let Some(builder) = builder {
-                    compare_generated_header(&header, builder)
-                } else {
-                    Ok(())
-                }
+                let check_roundtrip =
+                    env::var_os("BINDGEN_DISABLE_ROUNDTRIP_TEST").is_none();
+                compare_generated_header(&header, builder, check_roundtrip)
             });
 
             if let Err(err) = result {
@@ -351,6 +367,7 @@ fn test_clang_env_args() {
         "-D_ENV_ONE=1 -D_ENV_TWO=\"2 -DNOT_THREE=1\"",
     );
     let actual = builder()
+        .disable_header_comment()
         .header_contents(
             "test.hpp",
             "#ifdef _ENV_ONE\nextern const int x[] = { 42 };\n#endif\n\
@@ -365,9 +382,7 @@ fn test_clang_env_args() {
     println!("{}", stderr);
 
     let (expected, _) = rustfmt(
-        "/* automatically generated by rust-bindgen */
-
-extern \"C\" {
+        "extern \"C\" {
     pub static x: [::std::os::raw::c_int; 1usize];
 }
 extern \"C\" {
@@ -383,6 +398,7 @@ extern \"C\" {
 #[test]
 fn test_header_contents() {
     let actual = builder()
+        .disable_header_comment()
         .header_contents("test.h", "int foo(const char* a);")
         .clang_arg("--target=x86_64-unknown-linux")
         .generate()
@@ -393,9 +409,7 @@ fn test_header_contents() {
     println!("{}", stderr);
 
     let (expected, _) = rustfmt(
-        "/* automatically generated by rust-bindgen */
-
-extern \"C\" {
+        "extern \"C\" {
     pub fn foo(a: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
 }
 "

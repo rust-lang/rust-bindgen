@@ -377,9 +377,14 @@ impl FunctionSig {
             return Err(ParseError::Continue);
         }
 
-        // Don't parse operatorxx functions in C++
         let spelling = cursor.spelling();
-        if spelling.starts_with("operator") {
+
+        // Don't parse operatorxx functions in C++
+        let is_operator = |spelling: &str| {
+            spelling.starts_with("operator") &&
+                !clang::is_valid_identifier(spelling)
+        };
+        if is_operator(&spelling) {
             return Err(ParseError::Continue);
         }
 

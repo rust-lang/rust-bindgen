@@ -5,6 +5,20 @@
 #define TESTMACRO_INTEGER 42
 #define TESTMACRO_STRING "Hello Preprocessor!"
 #define TESTMACRO_STRING_EXPANDED TESTMACRO_STRING
+#define TESTMACRO_CUSTOMINTKIND_PATH 123
+
+// The following two macros are parsed the same by cexpr, but are semantically
+// different.
+#define TESTMACRO_NONFUNCTIONAL (TESTMACRO_INTEGER)
+#define TESTMACRO_FUNCTIONAL_EMPTY(TESTMACRO_INTEGER)
+#define TESTMACRO_FUNCTIONAL_NONEMPTY(TESTMACRO_INTEGER)-TESTMACRO_INTEGER
+#define TESTMACRO_FUNCTIONAL_TOKENIZED(  a, b   ,c,d,e   ) a/b c    d ## e
+#define TESTMACRO_FUNCTIONAL_SPLIT(  a, \
+        b) b,\
+        a
+//#define TESTMACRO_INVALID("string") // A conforming preprocessor rejects this
+#define TESTMACRO_STRING_EXPR ("string")
+#define TESTMACRO_STRING_FUNC_NON_UTF8(x) (x "ÿÿ") /* invalid UTF-8 on purpose */
 
 #include <cwchar>
 

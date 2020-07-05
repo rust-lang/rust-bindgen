@@ -11,6 +11,8 @@ use std::os::raw::c_int;
 #[allow(unused)]
 use bindings::testing::Bar; // This type is generated from module_raw_line.
 
+type MacroInteger = isize;
+
 #[test]
 fn test_static_array() {
     let mut test = unsafe { bindings::Test_COUNTDOWN.as_ptr() };
@@ -241,4 +243,10 @@ fn test_item_rename() {
     let _foo = bindings::foo {
         member: bindings::bar { foo: 2 },
     };
+}
+
+#[test]
+fn test_macro_customintkind_path() {
+    let v: &std::any::Any = &bindings::TESTMACRO_CUSTOMINTKIND_PATH;
+    assert!(v.is::<MacroInteger>())
 }

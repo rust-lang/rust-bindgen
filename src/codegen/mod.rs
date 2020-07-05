@@ -95,6 +95,93 @@ fn root_import(
     }
 }
 
+bitflags! {
+    struct DerivableTraits: u16 {
+        const DEBUG       = 1 << 0;
+        const DEFAULT     = 1 << 1;
+        const COPY        = 1 << 2;
+        const CLONE       = 1 << 3;
+        const HASH        = 1 << 4;
+        const PARTIAL_ORD = 1 << 5;
+        const ORD         = 1 << 6;
+        const PARTIAL_EQ  = 1 << 7;
+        const EQ          = 1 << 8;
+    }
+}
+
+fn derives_of_item(item: &Item, ctx: &BindgenContext) -> DerivableTraits {
+    let mut derivable_traits = DerivableTraits::empty();
+
+    if item.can_derive_debug(ctx) {
+        derivable_traits |= DerivableTraits::DEBUG;
+    }
+
+    if item.can_derive_default(ctx) {
+        derivable_traits |= DerivableTraits::DEFAULT;
+    }
+
+    let all_template_params = item.all_template_params(ctx);
+
+    if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() {
+        derivable_traits |= DerivableTraits::COPY;
+
+        if ctx.options().rust_features().builtin_clone_impls ||
+            !all_template_params.is_empty()
+        {
+            // FIXME: This requires extra logic if you have a big array in a
+            // templated struct. The reason for this is that the magic:
+            //     fn clone(&self) -> Self { *self }
+            // doesn't work for templates.
+            //
+            // It's not hard to fix though.
+            derivable_traits |= DerivableTraits::CLONE;
+        }
+    }
+
+    if item.can_derive_hash(ctx) {
+        derivable_traits |= DerivableTraits::HASH;
+    }
+
+    if item.can_derive_partialord(ctx) {
+        derivable_traits |= DerivableTraits::PARTIAL_ORD;
+    }
+
+    if item.can_derive_ord(ctx) {
+        derivable_traits |= DerivableTraits::ORD;
+    }
+
+    if item.can_derive_partialeq(ctx) {
+        derivable_traits |= DerivableTraits::PARTIAL_EQ;
+    }
+
+    if item.can_derive_eq(ctx) {
+        derivable_traits |= DerivableTraits::EQ;
+    }
+
+    derivable_traits
+}
+
+impl From<DerivableTraits> for Vec<&'static str> {
+    fn from(derivable_traits: DerivableTraits) -> Vec<&'static str> {
+        [
+            (DerivableTraits::DEBUG, "Debug"),
+            (DerivableTraits::DEFAULT, "Default"),
+            (DerivableTraits::COPY, "Copy"),
+            (DerivableTraits::CLONE, "Clone"),
+            (DerivableTraits::HASH, "Hash"),
+            (DerivableTraits::PARTIAL_ORD, "PartialOrd"),
+            (DerivableTraits::ORD, "Ord"),
+            (DerivableTraits::PARTIAL_EQ, "PartialEq"),
+            (DerivableTraits::EQ, "Eq"),
+        ]
+        .iter()
+        .filter_map(|&(flag, derive)| {
+            Some(derive).filter(|_| derivable_traits.contains(flag))
+        })
+        .collect()
+    }
+}
+
 struct CodegenResult<'a> {
     items: Vec<proc_macro2::TokenStream>,
 
@@ -793,8 +880,17 @@ impl CodeGenerator for Type {
                             "repr_transparent feature is required to use {:?}",
                             alias_style
                         );
+
+                        let mut attributes =
+                            vec![attributes::repr("transparent")];
+                        let derivable_traits = derives_of_item(item, ctx);
+                        if !derivable_traits.is_empty() {
+                            let derives: Vec<_> = derivable_traits.into();
+                            attributes.push(attributes::derives(&derives))
+                        }
+
                         quote! {
-                            #[repr(transparent)]
+                            #( #attributes )*
                             pub struct #rust_name
                         }
                     }
@@ -1787,66 +1883,33 @@ impl CodeGenerator for CompInfo {
             }
         }
 
-        let mut derives = vec![];
-        if item.can_derive_debug(ctx) {
-            derives.push("Debug");
-        } else {
+        let derivable_traits = derives_of_item(item, ctx);
+        if !derivable_traits.contains(DerivableTraits::DEBUG) {
             needs_debug_impl =
                 ctx.options().derive_debug && ctx.options().impl_debug
         }
 
-        if item.can_derive_default(ctx) {
-            derives.push("Default");
-        } else {
+        if !derivable_traits.contains(DerivableTraits::DEFAULT) {
             needs_default_impl =
                 ctx.options().derive_default && !self.is_forward_declaration();
         }
 
         let all_template_params = item.all_template_params(ctx);
 
-        if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() {
-            derives.push("Copy");
-
-            if ctx.options().rust_features().builtin_clone_impls ||
-                !all_template_params.is_empty()
-            {
-                // FIXME: This requires extra logic if you have a big array in a
-                // templated struct. The reason for this is that the magic:
-                //     fn clone(&self) -> Self { *self }
-                // doesn't work for templates.
-                //
-                // It's not hard to fix though.
-                derives.push("Clone");
-            } else {
-                needs_clone_impl = true;
-            }
+        if derivable_traits.contains(DerivableTraits::COPY) &&
+            !derivable_traits.contains(DerivableTraits::CLONE)
+        {
+            needs_clone_impl = true;
         }
 
-        if item.can_derive_hash(ctx) {
-            derives.push("Hash");
-        }
-
-        if item.can_derive_partialord(ctx) {
-            derives.push("PartialOrd");
-        }
-
-        if item.can_derive_ord(ctx) {
-            derives.push("Ord");
-        }
-
-        if item.can_derive_partialeq(ctx) {
-            derives.push("PartialEq");
-        } else {
+        if !derivable_traits.contains(DerivableTraits::PARTIAL_EQ) {
             needs_partialeq_impl = ctx.options().derive_partialeq &&
                 ctx.options().impl_partialeq &&
                 ctx.lookup_can_derive_partialeq_or_partialord(item.id()) ==
                     CanDerive::Manually;
         }
 
-        if item.can_derive_eq(ctx) {
-            derives.push("Eq");
-        }
-
+        let mut derives: Vec<_> = derivable_traits.into();
         derives.extend(item.annotations().derives().iter().map(String::as_str));
 
         if !derives.is_empty() {
@@ -3265,10 +3328,7 @@ impl TryToRustTy for Type {
                     IntKind::I64 => Ok(quote! { i64 }),
                     IntKind::U64 => Ok(quote! { u64 }),
                     IntKind::Custom { name, .. } => {
-                        let ident = ctx.rust_ident_raw(name);
-                        Ok(quote! {
-                            #ident
-                        })
+                        Ok(proc_macro2::TokenStream::from_str(name).unwrap())
                     }
                     IntKind::U128 => {
                         Ok(if ctx.options().rust_features.i128_and_u128 {

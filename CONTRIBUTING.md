@@ -122,8 +122,12 @@ You may set the `BINDGEN_OVERWRITE_EXPECTED` environment variable to overwrite
 the expected bindings with `bindgen`'s current output:
 
 ```
-$BINDGEN_OVERWRITE_EXPECTED=1 cargo test
+$ BINDGEN_OVERWRITE_EXPECTED=1 cargo test
 ```
+
+If you're not changing command line arguments, you may want to set
+`BINDGEN_DISABLE_ROUNDTRIP_TEST` to avoid a lot of tests for round-tripping of
+those.
 
 ### Testing Generated Bindings
 

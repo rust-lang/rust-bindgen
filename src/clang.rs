@@ -239,6 +239,17 @@ impl Cursor {
         }
     }
 
+    /// Is this Cursor pointing to a function-like macro definition?
+    /// Returns None if this cannot be determined with the available libclang
+    /// (it requires 3.9 or greater).
+    pub fn is_macro_function_like(&self) -> Option<bool> {
+        if clang_Cursor_isMacroFunctionLike::is_loaded() {
+            Some(unsafe { clang_Cursor_isMacroFunctionLike(self.x) != 0 })
+        } else {
+            None
+        }
+    }
+
     /// Get the kind of referent this cursor is pointing to.
     pub fn kind(&self) -> CXCursorKind {
         self.x.kind
@@ -698,30 +709,9 @@ impl Cursor {
 
     /// Gets the tokens that correspond to that cursor as  `cexpr` tokens.
     pub fn cexpr_tokens(self) -> Vec<cexpr::token::Token> {
-        use cexpr::token;
-
         self.tokens()
             .iter()
-            .filter_map(|token| {
-                let kind = match token.kind {
-                    CXToken_Punctuation => token::Kind::Punctuation,
-                    CXToken_Literal => token::Kind::Literal,
-                    CXToken_Identifier => token::Kind::Identifier,
-                    CXToken_Keyword => token::Kind::Keyword,
-                    // NB: cexpr is not too happy about comments inside
-                    // expressions, so we strip them down here.
-                    CXToken_Comment => return None,
-                    _ => {
-                        error!("Found unexpected token kind: {:?}", token);
-                        return None;
-                    }
-                };
-
-                Some(token::Token {
-                    kind,
-                    raw: token.spelling().to_vec().into_boxed_slice(),
-                })
-            })
+            .filter_map(|token| token.as_cexpr_token())
             .collect()
     }
 
@@ -793,13 +783,16 @@ impl<'a> Drop for RawTokens<'a> {
     }
 }
 
-/// A raw clang token, that exposes only the kind and spelling. This is a
+/// A raw clang token, that exposes only kind, spelling, and extent. This is a
 /// slightly more convenient version of `CXToken` which owns the spelling
-/// string.
+/// string and extent.
 #[derive(Debug)]
 pub struct ClangToken {
     spelling: CXString,
-    /// The kind of token, this is the same as the relevant member from
+    /// The extent of the token. This is the same as the relevant member from
+    /// `CXToken`.
+    pub extent: CXSourceRange,
+    /// The kind of the token. This is the same as the relevant member from
     /// `CXToken`.
     pub kind: CXTokenKind,
 }
@@ -811,6 +804,30 @@ impl ClangToken {
             CStr::from_ptr(clang_getCString(self.spelling) as *const _)
         };
         c_str.to_bytes()
+    }
+
+    /// Converts a ClangToken to a `cexpr` token if possible.
+    pub fn as_cexpr_token(&self) -> Option<cexpr::token::Token> {
+        use cexpr::token;
+
+        let kind = match self.kind {
+            CXToken_Punctuation => token::Kind::Punctuation,
+            CXToken_Literal => token::Kind::Literal,
+            CXToken_Identifier => token::Kind::Identifier,
+            CXToken_Keyword => token::Kind::Keyword,
+            // NB: cexpr is not too happy about comments inside
+            // expressions, so we strip them down here.
+            CXToken_Comment => return None,
+            _ => {
+                error!("Found unexpected token kind: {:?}", self);
+                return None;
+            }
+        };
+
+        Some(token::Token {
+            kind,
+            raw: self.spelling().to_vec().into_boxed_slice(),
+        })
     }
 }
 
@@ -834,7 +851,12 @@ impl<'a> Iterator for ClangTokenIterator<'a> {
         unsafe {
             let kind = clang_getTokenKind(*raw);
             let spelling = clang_getTokenSpelling(self.tu, *raw);
-            Some(ClangToken { kind, spelling })
+            let extent = clang_getTokenExtent(self.tu, *raw);
+            Some(ClangToken {
+                kind,
+                extent,
+                spelling,
+            })
         }
     }
 }

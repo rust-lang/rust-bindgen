@@ -232,8 +232,17 @@ impl Builder {
         output_vector.push("--rust-target".into());
         output_vector.push(self.options.rust_target.into());
 
+        // FIXME(emilio): This is a bit hacky, maybe we should stop re-using the
+        // RustFeatures to store the "disable_untagged_union" call, and make it
+        // a different flag that we check elsewhere / in generate().
+        if !self.options.rust_features.untagged_union &&
+            RustFeatures::from(self.options.rust_target).untagged_union
+        {
+            output_vector.push("--disable-untagged-union".into());
+        }
+
         if self.options.default_enum_style != Default::default() {
-            output_vector.push("--default-enum-style=".into());
+            output_vector.push("--default-enum-style".into());
             output_vector.push(
                 match self.options.default_enum_style {
                     codegen::EnumVariation::Rust {
@@ -255,131 +264,46 @@ impl Builder {
             )
         }
 
-        self.options
-            .bitfield_enums
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--bitfield-enum".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .newtype_enums
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--newtype-enum".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .rustified_enums
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--rustified-enum".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .rustified_non_exhaustive_enums
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--rustified-enum-non-exhaustive".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .constified_enum_modules
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--constified-enum-module".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .constified_enums
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--constified-enum".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
         if self.options.default_alias_style != Default::default() {
-            output_vector.push("--default-alias-style=".into());
+            output_vector.push("--default-alias-style".into());
             output_vector
                 .push(self.options.default_alias_style.as_str().into());
         }
 
-        self.options
-            .type_alias
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--type-alias".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
+        let regex_sets = &[
+            (&self.options.bitfield_enums, "--bitfield-enum"),
+            (&self.options.newtype_enums, "--newtype-enum"),
+            (&self.options.rustified_enums, "--rustified-enum"),
+            (
+                &self.options.rustified_non_exhaustive_enums,
+                "--rustified-enum-non-exhaustive",
+            ),
+            (
+                &self.options.constified_enum_modules,
+                "--constified-enum-module",
+            ),
+            (&self.options.constified_enums, "--constified-enum"),
+            (&self.options.type_alias, "--type-alias"),
+            (&self.options.new_type_alias, "--new-type-alias"),
+            (&self.options.new_type_alias_deref, "--new-type-alias-deref"),
+            (&self.options.blacklisted_types, "--blacklist-type"),
+            (&self.options.blacklisted_functions, "--blacklist-function"),
+            (&self.options.blacklisted_items, "--blacklist-item"),
+            (&self.options.opaque_types, "--opaque-type"),
+            (&self.options.whitelisted_functions, "--whitelist-function"),
+            (&self.options.whitelisted_types, "--whitelist-type"),
+            (&self.options.whitelisted_vars, "--whitelist-var"),
+            (&self.options.no_partialeq_types, "--no-partialeq"),
+            (&self.options.no_copy_types, "--no-copy"),
+            (&self.options.no_hash_types, "--no-hash"),
+        ];
 
-        self.options
-            .new_type_alias
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--new-type-alias".into());
+        for (set, flag) in regex_sets {
+            for item in set.get_items() {
+                output_vector.push((*flag).to_owned());
                 output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .new_type_alias_deref
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--new-type-alias-deref".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .blacklisted_types
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--blacklist-type".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .blacklisted_functions
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--blacklist-function".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .blacklisted_items
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--blacklist-item".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
+            }
+        }
 
         if !self.options.layout_tests {
             output_vector.push("--no-layout-tests".into());
@@ -484,6 +408,10 @@ impl Builder {
             output_vector.push("--disable-nested-struct-naming".into());
         }
 
+        if self.options.disable_header_comment {
+            output_vector.push("--disable-header-comment".into());
+        }
+
         if !self.options.codegen_config.functions() {
             output_vector.push("--ignore-functions".into());
         }
@@ -536,24 +464,10 @@ impl Builder {
             output_vector.push(wasm_import_module_name.clone());
         }
 
-        self.options
-            .opaque_types
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--opaque-type".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .raw_lines
-            .iter()
-            .map(|item| {
-                output_vector.push("--raw-line".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
+        for line in &self.options.raw_lines {
+            output_vector.push("--raw-line".into());
+            output_vector.push(line.clone());
+        }
 
         if self.options.use_core {
             output_vector.push("--use-core".into());
@@ -563,48 +477,8 @@ impl Builder {
             output_vector.push("--conservative-inline-namespaces".into());
         }
 
-        self.options
-            .whitelisted_functions
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--whitelist-function".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .whitelisted_types
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--whitelist-type".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        self.options
-            .whitelisted_vars
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--whitelist-var".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
-
-        output_vector.push("--".into());
-
-        if !self.options.clang_args.is_empty() {
-            output_vector.extend(self.options.clang_args.iter().cloned());
-        }
-
-        if self.input_headers.len() > 1 {
-            output_vector.extend(
-                self.input_headers[..self.input_headers.len() - 1]
-                    .iter()
-                    .cloned(),
-            );
+        if self.options.generate_inline_functions {
+            output_vector.push("--generate-inline-functions".into());
         }
 
         if !self.options.record_matches {
@@ -629,35 +503,22 @@ impl Builder {
             output_vector.push(path.into());
         }
 
-        self.options
-            .no_partialeq_types
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--no-partialeq".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
+        // Add clang arguments
 
-        self.options
-            .no_copy_types
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--no-copy".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
+        output_vector.push("--".into());
 
-        self.options
-            .no_hash_types
-            .get_items()
-            .iter()
-            .map(|item| {
-                output_vector.push("--no-hash".into());
-                output_vector.push(item.to_owned());
-            })
-            .count();
+        if !self.options.clang_args.is_empty() {
+            output_vector.extend(self.options.clang_args.iter().cloned());
+        }
+
+        if self.input_headers.len() > 1 {
+            // To pass more than one header, we need to pass all but the last
+            // header via the `-include` clang arg
+            for header in &self.input_headers[..self.input_headers.len() - 1] {
+                output_vector.push("-include".to_string());
+                output_vector.push(header.clone());
+            }
+        }
 
         output_vector
     }
@@ -709,6 +570,13 @@ impl Builder {
     /// Disable support for native Rust unions, if supported.
     pub fn disable_untagged_union(mut self) -> Self {
         self.options.rust_features.untagged_union = false;
+        self
+    }
+
+    /// Disable insertion of bindgen's version identifier into generated
+    /// bindings.
+    pub fn disable_header_comment(mut self) -> Self {
+        self.options.disable_header_comment = true;
         self
     }
 
@@ -1662,6 +1530,9 @@ struct BindgenOptions {
     /// True if we should avoid generating nested struct names.
     disable_nested_struct_naming: bool,
 
+    /// True if we should avoid embedding version identifiers into source code.
+    disable_header_comment: bool,
+
     /// True if we should generate layout tests for generated structures.
     layout_tests: bool,
 
@@ -1923,6 +1794,7 @@ impl Default for BindgenOptions {
             enable_function_attribute_detection: false,
             disable_name_namespacing: false,
             disable_nested_struct_naming: false,
+            disable_header_comment: false,
             use_core: false,
             ctypes_prefix: None,
             namespaced_constants: true,
@@ -2160,9 +2032,14 @@ impl Bindings {
 
     /// Write these bindings as source text to the given `Write`able.
     pub fn write<'a>(&self, mut writer: Box<dyn Write + 'a>) -> io::Result<()> {
-        writer.write(
-            "/* automatically generated by rust-bindgen */\n\n".as_bytes(),
-        )?;
+        if !self.options.disable_header_comment {
+            let version = option_env!("CARGO_PKG_VERSION");
+            let header = format!(
+                "/* automatically generated by rust-bindgen {} */\n\n",
+                version.unwrap_or("(unknown version)")
+            );
+            writer.write(header.as_bytes())?;
+        }
 
         for line in self.options.raw_lines.iter() {
             writer.write(line.as_bytes())?;
