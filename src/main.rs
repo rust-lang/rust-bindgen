@@ -89,8 +89,6 @@ fn print_verbose_err() {
 
 #[cfg(test)]
 mod test {
-    use std::path::PathBuf;
-
     fn build_flags_output_helper(builder: &bindgen::Builder) {
         let mut command_line_flags = builder.command_line_flags();
         command_line_flags.insert(0, "bindgen".to_string());
