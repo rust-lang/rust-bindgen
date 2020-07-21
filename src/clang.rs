@@ -796,7 +796,7 @@ impl ClangToken {
             // expressions, so we strip them down here.
             CXToken_Comment => return None,
             _ => {
-                error!("Found unexpected token kind: {:?}", self);
+                warn!("Found unexpected token kind: {:?}", self);
                 return None;
             }
         };

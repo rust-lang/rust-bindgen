@@ -973,7 +973,7 @@ impl Type {
                                 let inner_type = match inner {
                                     Ok(inner) => inner,
                                     Err(..) => {
-                                        error!(
+                                        warn!(
                                             "Failed to parse template alias \
                                              {:?}",
                                             location
@@ -1196,7 +1196,7 @@ impl Type {
                     return Err(ParseError::Continue);
                 }
                 _ => {
-                    error!(
+                    warn!(
                         "unsupported type: kind = {:?}; ty = {:?}; at {:?}",
                         ty.kind(),
                         ty,

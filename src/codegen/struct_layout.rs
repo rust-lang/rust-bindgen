@@ -248,7 +248,7 @@ impl<'a> StructLayoutTracker<'a> {
         );
 
         if layout.size < self.latest_offset {
-            error!(
+            warn!(
                 "Calculated wrong layout for {}, too more {} bytes",
                 self.name,
                 self.latest_offset - layout.size
