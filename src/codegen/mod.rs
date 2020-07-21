@@ -449,7 +449,7 @@ impl CodeGenerator for Item {
             // TODO(emilio, #453): Figure out what to do when this happens
             // legitimately, we could track the opaque stuff and disable the
             // assertion there I guess.
-            error!("Found non-whitelisted item in code generation: {:?}", self);
+            warn!("Found non-whitelisted item in code generation: {:?}", self);
         }
 
         result.set_seen(self.id());
@@ -3938,7 +3938,7 @@ pub(crate) fn codegen(
                     "Your dot file was generated successfully into: {}",
                     path
                 ),
-                Err(e) => error!("{}", e),
+                Err(e) => warn!("{}", e),
             }
         }
 

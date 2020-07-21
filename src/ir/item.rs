@@ -1428,7 +1428,7 @@ impl ClangItemParser for Item {
                     // ignore toplevel operator overloads
                     let spelling = cursor.spelling();
                     if !spelling.starts_with("operator") {
-                        error!(
+                        warn!(
                             "Unhandled cursor kind {:?}: {:?}",
                             cursor.kind(),
                             cursor
