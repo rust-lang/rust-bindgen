@@ -70,20 +70,13 @@ impl Cursor {
 
     /// Get the mangled name of this cursor's referent.
     pub fn mangling(&self) -> String {
-        if clang_Cursor_getMangling::is_loaded() {
-            unsafe { cxstring_into_string(clang_Cursor_getMangling(self.x)) }
-        } else {
-            self.spelling()
-        }
+        unsafe { cxstring_into_string(clang_Cursor_getMangling(self.x)) }
     }
 
-    /// Gets the C++ manglings for this cursor, or an error if the function is
-    /// not loaded or the manglings are not available.
+    /// Gets the C++ manglings for this cursor, or an error if the manglings
+    /// are not available.
     pub fn cxx_manglings(&self) -> Result<Vec<String>, ()> {
         use clang_sys::*;
-        if !clang_Cursor_getCXXManglings::is_loaded() {
-            return Err(());
-        }
         unsafe {
             let manglings = clang_Cursor_getCXXManglings(self.x);
             if manglings.is_null() {
@@ -240,14 +233,8 @@ impl Cursor {
     }
 
     /// Is this Cursor pointing to a function-like macro definition?
-    /// Returns None if this cannot be determined with the available libclang
-    /// (it requires 3.9 or greater).
-    pub fn is_macro_function_like(&self) -> Option<bool> {
-        if clang_Cursor_isMacroFunctionLike::is_loaded() {
-            Some(unsafe { clang_Cursor_isMacroFunctionLike(self.x) != 0 })
-        } else {
-            None
-        }
+    pub fn is_macro_function_like(&self) -> bool {
+        unsafe { clang_Cursor_isMacroFunctionLike(self.x) != 0 }
     }
 
     /// Get the kind of referent this cursor is pointing to.
@@ -480,8 +467,7 @@ impl Cursor {
 
     /// Is the referent an inlined function?
     pub fn is_inlined_function(&self) -> bool {
-        clang_Cursor_isFunctionInlined::is_loaded() &&
-            unsafe { clang_Cursor_isFunctionInlined(self.x) != 0 }
+        unsafe { clang_Cursor_isFunctionInlined(self.x) != 0 }
     }
 
     /// Get the width of this cursor's referent bit field, or `None` if the
@@ -592,11 +578,7 @@ impl Cursor {
 
     /// Get the visibility of this cursor's referent.
     pub fn visibility(&self) -> CXVisibilityKind {
-        if clang_getCursorVisibility::is_loaded() {
-            unsafe { clang_getCursorVisibility(self.x) }
-        } else {
-            CXVisibility_Default
-        }
+        unsafe { clang_getCursorVisibility(self.x) }
     }
 
     /// Given that this cursor's referent is a function, return cursors to its
@@ -641,16 +623,11 @@ impl Cursor {
     /// Is this cursor's referent a field declaration that is marked as
     /// `mutable`?
     pub fn is_mutable_field(&self) -> bool {
-        clang_CXXField_isMutable::is_loaded() &&
-            unsafe { clang_CXXField_isMutable(self.x) != 0 }
+        unsafe { clang_CXXField_isMutable(self.x) != 0 }
     }
 
     /// Get the offset of the field represented by the Cursor.
     pub fn offset_of_field(&self) -> Result<usize, LayoutError> {
-        if !clang_Cursor_getOffsetOfField::is_loaded() {
-            return Err(LayoutError::from(-1));
-        }
-
         let offset = unsafe { clang_Cursor_getOffsetOfField(self.x) };
 
         if offset < 0 {
@@ -819,7 +796,7 @@ impl ClangToken {
             // expressions, so we strip them down here.
             CXToken_Comment => return None,
             _ => {
-                error!("Found unexpected token kind: {:?}", self);
+                warn!("Found unexpected token kind: {:?}", self);
                 return None;
             }
         };
@@ -1117,13 +1094,6 @@ impl Type {
     /// Get the number of template arguments this type has, or `None` if it is
     /// not some kind of template.
     pub fn num_template_args(&self) -> Option<u32> {
-        // If an old libclang is loaded, we have no hope of answering this
-        // question correctly. However, that's no reason to panic when
-        // generating bindings for simple C headers with an old libclang.
-        if !clang_Type_getNumTemplateArguments::is_loaded() {
-            return None;
-        }
-
         let n = unsafe { clang_Type_getNumTemplateArguments(self.x) };
         if n >= 0 {
             Some(n as u32)
@@ -1253,11 +1223,7 @@ impl Type {
     pub fn named(&self) -> Type {
         unsafe {
             Type {
-                x: if clang_Type_getNamedType::is_loaded() {
-                    clang_Type_getNamedType(self.x)
-                } else {
-                    self.x
-                },
+                x: clang_Type_getNamedType(self.x),
             }
         }
     }
@@ -1867,11 +1833,7 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
             format!(" {}spelling = \"{}\"", prefix, ty.spelling()),
         );
         let num_template_args =
-            if clang_Type_getNumTemplateArguments::is_loaded() {
-                unsafe { clang_Type_getNumTemplateArguments(ty.x) }
-            } else {
-                -1
-            };
+            unsafe { clang_Type_getNumTemplateArguments(ty.x) };
         if num_template_args >= 0 {
             print_indent(
                 depth,
@@ -1968,10 +1930,6 @@ pub struct EvalResult {
 impl EvalResult {
     /// Evaluate `cursor` and return the result.
     pub fn new(cursor: Cursor) -> Option<Self> {
-        if !clang_Cursor_Evaluate::is_loaded() {
-            return None;
-        }
-
         // Work around https://bugs.llvm.org/show_bug.cgi?id=42532, see:
         //  * https://github.com/rust-lang/rust-bindgen/issues/283
         //  * https://github.com/rust-lang/rust-bindgen/issues/1590

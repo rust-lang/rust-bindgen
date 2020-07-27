@@ -27,8 +27,6 @@ fn clang_version_check() {
         Some((4, 0))
     } else if cfg!(feature = "testing_only_libclang_3_9") {
         Some((3, 9))
-    } else if cfg!(feature = "testing_only_libclang_3_8") {
-        Some((3, 8))
     } else {
         None
     };
@@ -89,8 +87,6 @@ fn print_verbose_err() {
 
 #[cfg(test)]
 mod test {
-    use std::path::PathBuf;
-
     fn build_flags_output_helper(builder: &bindgen::Builder) {
         let mut command_line_flags = builder.command_line_flags();
         command_line_flags.insert(0, "bindgen".to_string());

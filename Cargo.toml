@@ -14,7 +14,7 @@ readme = "README.md"
 repository = "https://github.com/rust-lang/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
 homepage = "https://rust-lang.github.io/rust-bindgen/"
-version = "0.54.0"
+version = "0.54.1"
 edition = "2018"
 build = "build.rs"
 
@@ -87,4 +87,3 @@ testing_only_libclang_9 = []
 testing_only_libclang_5 = []
 testing_only_libclang_4 = []
 testing_only_libclang_3_9 = []
-testing_only_libclang_3_8 = []

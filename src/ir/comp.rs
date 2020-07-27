@@ -748,16 +748,13 @@ impl CompFields {
 
         match result {
             Ok((fields, has_bitfield_units)) => {
-                mem::replace(
-                    self,
-                    CompFields::AfterComputingBitfieldUnits {
-                        fields,
-                        has_bitfield_units,
-                    },
-                );
+                *self = CompFields::AfterComputingBitfieldUnits {
+                    fields,
+                    has_bitfield_units,
+                };
             }
             Err(()) => {
-                mem::replace(self, CompFields::ErrorComputingBitfieldUnits);
+                *self = CompFields::ErrorComputingBitfieldUnits;
             }
         }
     }

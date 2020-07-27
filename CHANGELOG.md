@@ -135,6 +135,40 @@ Released YYYY/MM/DD
 
 --------------------------------------------------------------------------------
 
+# 0.54.1
+
+Released 2020/07/06.
+
+## Added
+
+ * Added ParseCallbacks::func_macro to be able to process function-like macros.
+   (#1792).
+
+ * Allowed IntKind::Custom to represent paths instead of idents (#1800).
+
+## Changed
+
+ * Generated comment now includes the bindgen version, and can be disabled
+   (#1814).
+
+ * Various documentation improvements.
+
+## Fixed
+
+ * Typedefs for types with the same names as rust primitive types compiles
+   (#1798).
+
+ * Bindgen dependencies will now get rebuilt when various environment variables
+   that affect bindgen change (#1809, #1813).
+
+ * Various fixes to command_line_flags (#1816, #1819, #1821).
+
+ * Functions that start with `operator` now get properly generated (#1817).
+
+
+Thanks to all the awesome contributors that sent patches included in this
+release!
+
 # 0.54.0
 
 Released 2020/05/21.

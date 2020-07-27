@@ -17,13 +17,6 @@ env:
     - LLVM_VERSION="9.0" BINDGEN_JOB="msrv"
 
     # General matrix.
-    - LLVM_VERSION="3.8" BINDGEN_JOB="test"         BINDGEN_PROFILE=
-    - LLVM_VERSION="3.8" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="3.8" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
-    - LLVM_VERSION="3.8" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="3.8" BINDGEN_JOB="test"         BINDGEN_PROFILE=            BINDGEN_NO_DEFAULT_FEATURES="1" BINDGEN_FEATURES="runtime"
-    - LLVM_VERSION="3.8" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release" BINDGEN_NO_DEFAULT_FEATURES="1" BINDGEN_FEATURES="runtime"
-
     - LLVM_VERSION="3.9" BINDGEN_JOB="test"         BINDGEN_PROFILE=
     - LLVM_VERSION="3.9" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
     - LLVM_VERSION="3.9" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
@@ -71,6 +64,18 @@ env:
 
 matrix:
   fast_finish: true
+
+  # Include a few jobs for spot-checking different configurations without
+  # invoking combinatoric explosion of Travis jobs.
+  include:
+    - os: osx
+      env: LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=
+    - os: osx
+      env: LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
+    - os: osx
+      env: LLVM_VERSION="9.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
+    - os: osx
+      env: LLVM_VERSION="9.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
 
 cache:
   directories:
