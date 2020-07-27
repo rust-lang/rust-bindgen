@@ -518,6 +518,12 @@ impl Builder {
             output_vector.push(path.into());
         }
 
+        if self.options.dynamic_library_name.is_some() {
+            let libname = self.options.dynamic_library_name.as_ref().unwrap();
+            output_vector.push("--dynamic-loading".into());
+            output_vector.push(libname.clone());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -1468,6 +1474,15 @@ impl Builder {
         self.options.wasm_import_module_name = Some(import_name.into());
         self
     }
+
+    /// Specify the dynamic library name if we are generating bindings for a shared library.
+    pub fn dynamic_library_name<T: Into<String>>(
+        mut self,
+        dynamic_library_name: T,
+    ) -> Self {
+        self.options.dynamic_library_name = Some(dynamic_library_name.into());
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -1745,6 +1760,10 @@ struct BindgenOptions {
 
     /// Wasm import module name.
     wasm_import_module_name: Option<String>,
+
+    /// The name of the dynamic library (if we are generating bindings for a shared library). If
+    /// this is None, no dynamic bindings are created.
+    dynamic_library_name: Option<String>,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1877,6 +1896,7 @@ impl Default for BindgenOptions {
             no_hash_types: Default::default(),
             array_pointers_in_arguments: false,
             wasm_import_module_name: None,
+            dynamic_library_name: None,
         }
     }
 }

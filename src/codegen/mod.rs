@@ -1,3 +1,4 @@
+mod dyngen;
 mod error;
 mod helpers;
 mod impl_debug;
@@ -10,6 +11,7 @@ pub(crate) mod bitfield_unit;
 #[cfg(all(test, target_endian = "little"))]
 mod bitfield_unit_tests;
 
+use self::dyngen::DynamicItems;
 use self::helpers::attributes;
 use self::struct_layout::StructLayoutTracker;
 
@@ -184,6 +186,7 @@ impl From<DerivableTraits> for Vec<&'static str> {
 
 struct CodegenResult<'a> {
     items: Vec<proc_macro2::TokenStream>,
+    dynamic_items: DynamicItems,
 
     /// A monotonic counter used to add stable unique id's to stuff that doesn't
     /// need to be referenced by anything.
@@ -234,6 +237,7 @@ impl<'a> CodegenResult<'a> {
     fn new(codegen_id: &'a Cell<usize>) -> Self {
         CodegenResult {
             items: vec![],
+            dynamic_items: DynamicItems::new(),
             saw_bindgen_union: false,
             saw_incomplete_array: false,
             saw_objc: false,
@@ -245,6 +249,10 @@ impl<'a> CodegenResult<'a> {
             vars_seen: Default::default(),
             overload_counters: Default::default(),
         }
+    }
+
+    fn dynamic_items(&mut self) -> &mut DynamicItems {
+        &mut self.dynamic_items
     }
 
     fn saw_bindgen_union(&mut self) {
@@ -3785,7 +3793,29 @@ impl CodeGenerator for Function {
                 pub fn #ident ( #( #args ),* ) #ret;
             }
         };
-        result.push(tokens);
+
+        // If we're doing dynamic binding generation, add to the dynamic items.
+        if ctx.options().dynamic_library_name.is_some() &&
+            self.kind() == FunctionKind::Function
+        {
+            let args_identifiers =
+                utils::fnsig_argument_identifiers(ctx, signature);
+            let return_item = ctx.resolve_item(signature.return_type());
+            let ret_ty = match *return_item.kind().expect_type().kind() {
+                TypeKind::Void => quote! {()},
+                _ => return_item.to_rust_ty_or_opaque(ctx, &()),
+            };
+            result.dynamic_items().add_function(
+                ident,
+                abi,
+                args,
+                args_identifiers,
+                ret,
+                ret_ty,
+            );
+        } else {
+            result.push(tokens);
+        }
     }
 }
 
@@ -4075,11 +4105,28 @@ pub(crate) fn codegen(
             &(),
         );
 
+        if context.options().dynamic_library_name.is_some() {
+            let lib_ident = context.rust_ident(
+                context.options().dynamic_library_name.as_ref().unwrap(),
+            );
+            let check_struct_ident = context.rust_ident(
+                [
+                    "Check",
+                    context.options().dynamic_library_name.as_ref().unwrap(),
+                ]
+                .join(""),
+            );
+            let dynamic_items_tokens = result
+                .dynamic_items()
+                .get_tokens(lib_ident, check_struct_ident);
+            result.push(dynamic_items_tokens);
+        }
+
         result.items
     })
 }
 
-mod utils {
+pub mod utils {
     use super::{error, ToRustTyOrOpaque};
     use crate::ir::context::BindgenContext;
     use crate::ir::function::{Abi, FunctionSig};
@@ -4480,6 +4527,35 @@ mod utils {
         if sig.is_variadic() {
             args.push(quote! { ... })
         }
+
+        args
+    }
+
+    pub fn fnsig_argument_identifiers(
+        ctx: &BindgenContext,
+        sig: &FunctionSig,
+    ) -> Vec<proc_macro2::TokenStream> {
+        let mut unnamed_arguments = 0;
+        let args = sig
+            .argument_types()
+            .iter()
+            .map(|&(ref name, _ty)| {
+                let arg_name = match *name {
+                    Some(ref name) => ctx.rust_mangle(name).into_owned(),
+                    None => {
+                        unnamed_arguments += 1;
+                        format!("arg{}", unnamed_arguments)
+                    }
+                };
+
+                assert!(!arg_name.is_empty());
+                let arg_name = ctx.rust_ident(arg_name);
+
+                quote! {
+                    #arg_name
+                }
+            })
+            .collect::<Vec<_>>();
 
         args
     }
