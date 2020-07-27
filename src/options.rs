@@ -450,7 +450,11 @@ where
                 .long("wasm-import-module-name")
                 .value_name("name")
                 .takes_value(true)
-                .help("The name to be used in a #[link(wasm_import_module = ...)] statement")
+                .help("The name to be used in a #[link(wasm_import_module = ...)] statement"),
+            Arg::with_name("dynamic-loading")
+                .long("dynamic-loading")
+                .takes_value(true)
+                .help("Use dynamic loading mode with the given library name."),
         ]) // .args()
         .get_matches_from(args);
 
@@ -835,6 +839,10 @@ where
         for regex in no_hash {
             builder = builder.no_hash(regex);
         }
+    }
+
+    if let Some(dynamic_library_name) = matches.value_of("dynamic-loading") {
+        builder = builder.dynamic_library_name(dynamic_library_name);
     }
 
     let verbose = matches.is_present("verbose");
