@@ -17,6 +17,15 @@ The objective-c classes will be represented as a `struct Foo(id)` and a trait
 objc::runtime::Object` (the pointer to the objective-c instance). The trait
 `IFoo` is needed to allow for the generated inheritance.
 
+Functions that use or return objective-c pointers of instance `Foo` will return
+`Foo`. The reason this works is beacuse `Foo` represented as `transparent`.
+This will be helpful for a lot of objective-c frameworks however there are some
+cases where functions return `instancetype` which is a type alias for `id` so
+an occasional `foo.0` may be required. An example of this would in the UIKit
+framework should you want to add a `UILabel` to a
+[UIStackView](https://developer.apple.com/documentation/uikit/uistackview/1616227-addarrangedsubview?language=objc)
+you will need to convert the `UILabel` to a `UIView` via `UIView(label.0)`.
+
 Each class (struct) has an `alloc` and a `dealloc` to match that of some of the alloc
 methods found in `NSObject`.
 
