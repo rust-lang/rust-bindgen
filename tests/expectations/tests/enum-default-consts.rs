@@ -7,9 +7,9 @@
 
 pub const Foo_Bar: Foo = 0;
 pub const Foo_Qux: Foo = 1;
-pub type Foo = u32;
+pub type Foo = ::std::os::raw::c_uint;
 pub mod Neg {
-    pub type Type = i32;
+    pub type Type = ::std::os::raw::c_int;
     pub const MinusOne: Type = -1;
     pub const One: Type = 1;
 }

@@ -2438,6 +2438,7 @@ enum EnumBuilder<'a> {
         is_bitfield: bool,
     },
     Consts {
+        repr: proc_macro2::TokenStream,
         variants: Vec<proc_macro2::TokenStream>,
         codegen_depth: usize,
     },
@@ -2459,6 +2460,14 @@ impl<'a> EnumBuilder<'a> {
         }
     }
 
+    /// Returns true if the builder is for a rustified enum.
+    fn is_rust_enum(&self) -> bool {
+        match *self {
+            EnumBuilder::Rust { .. } => true,
+            _ => false,
+        }
+    }
+
     /// Create a new enum given an item builder, a canonical name, a name for
     /// the representation, and which variation it should be generated as.
     fn new(
@@ -2467,6 +2476,7 @@ impl<'a> EnumBuilder<'a> {
         repr: proc_macro2::TokenStream,
         enum_variation: EnumVariation,
         enum_codegen_depth: usize,
+        is_ty_named: bool,
     ) -> Self {
         let ident = Ident::new(name, Span::call_site());
 
@@ -2492,13 +2502,22 @@ impl<'a> EnumBuilder<'a> {
                 }
             }
 
-            EnumVariation::Consts => EnumBuilder::Consts {
-                variants: vec![quote! {
-                    #( #attrs )*
-                    pub type #ident = #repr;
-                }],
-                codegen_depth: enum_codegen_depth,
-            },
+            EnumVariation::Consts => {
+                let mut variants = Vec::new();
+
+                if is_ty_named {
+                    variants.push(quote! {
+                        #( #attrs )*
+                        pub type #ident = #repr;
+                    });
+                }
+
+                EnumBuilder::Consts {
+                    repr: repr,
+                    variants: variants,
+                    codegen_depth: enum_codegen_depth,
+                }
+            }
 
             EnumVariation::ModuleConsts => {
                 let ident = Ident::new(
@@ -2530,7 +2549,12 @@ impl<'a> EnumBuilder<'a> {
         is_ty_named: bool,
     ) -> Self {
         let variant_name = ctx.rust_mangle(variant.name());
+        let is_rust_enum = self.is_rust_enum();
         let expr = match variant.val() {
+            EnumVariantValue::Boolean(v) if is_rust_enum => {
+                helpers::ast_ty::uint_expr(v as u64)
+            }
+            EnumVariantValue::Boolean(v) => quote!(#v),
             EnumVariantValue::Signed(v) => helpers::ast_ty::int_expr(v),
             EnumVariantValue::Unsigned(v) => helpers::ast_ty::uint_expr(v),
         };
@@ -2593,7 +2617,7 @@ impl<'a> EnumBuilder<'a> {
                 self
             }
 
-            EnumBuilder::Consts { .. } => {
+            EnumBuilder::Consts { ref repr, .. } => {
                 let constant_name = match mangling_prefix {
                     Some(prefix) => {
                         Cow::Owned(format!("{}_{}", prefix, variant_name))
@@ -2601,10 +2625,12 @@ impl<'a> EnumBuilder<'a> {
                     None => variant_name,
                 };
 
+                let ty = if is_ty_named { &rust_ty } else { repr };
+
                 let ident = ctx.rust_ident(constant_name);
                 result.push(quote! {
                     #doc
-                    pub const #ident : #rust_ty = #expr ;
+                    pub const #ident : #ty = #expr ;
                 });
 
                 self
@@ -2859,9 +2885,12 @@ impl CodeGenerator for Enum {
             });
         }
 
-        let repr = {
-            let repr_name = ctx.rust_ident_raw(repr_name);
-            quote! { #repr_name }
+        let repr = match self.repr() {
+            Some(ty) => ty.to_rust_ty_or_opaque(ctx, &()),
+            None => {
+                let repr_name = ctx.rust_ident_raw(repr_name);
+                quote! { #repr_name }
+            }
         };
 
         let mut builder = EnumBuilder::new(
@@ -2870,6 +2899,7 @@ impl CodeGenerator for Enum {
             repr,
             variation,
             item.codegen_depth(ctx),
+            enum_ty.name().is_some(),
         );
 
         // A map where we keep a value -> variant relation.

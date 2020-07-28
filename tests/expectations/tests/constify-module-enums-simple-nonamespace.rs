@@ -6,7 +6,7 @@
 )]
 
 pub mod one_Foo {
-    pub type Type = i32;
+    pub type Type = ::std::os::raw::c_int;
     pub const Variant1: Type = 0;
     pub const Variant2: Type = 1;
 }

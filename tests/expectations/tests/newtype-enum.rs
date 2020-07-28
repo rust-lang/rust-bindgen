@@ -19,4 +19,4 @@ impl Foo {
 }
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub struct Foo(pub i32);
+pub struct Foo(pub ::std::os::raw::c_int);
