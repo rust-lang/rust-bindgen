@@ -8,7 +8,7 @@
 pub const foo_THIS: foo = 0;
 pub const foo_SHOULD_BE: foo = 1;
 pub const foo_A_CONSTANT: foo = 2;
-pub type foo = u32;
+pub type foo = ::std::os::raw::c_uint;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct bar {

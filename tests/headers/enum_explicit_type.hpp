@@ -30,3 +30,8 @@ enum MuchULongLong: unsigned long long {
 enum BoolEnumsAreFun: bool {
     Value = true,
 };
+
+enum : unsigned char {
+    AnonymousVariantOne,
+    AnonymousVariantTwo,
+};

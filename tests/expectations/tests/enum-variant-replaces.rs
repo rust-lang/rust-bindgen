@@ -14,4 +14,4 @@ pub const OGRErr_PASS: OGRErr = 0;
 /// Should see OGRERR_NONE instead of CUSTOM_OGRERR_NONE below.
 pub const OGRErr_OGRERR_NONE: OGRErr = 1;
 /// <div rustbindgen replaces="OGRErr"></div>
-pub type OGRErr = u32;
+pub type OGRErr = ::std::os::raw::c_uint;

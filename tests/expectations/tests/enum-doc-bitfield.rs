@@ -61,4 +61,4 @@ impl ::std::ops::BitAndAssign for B {
 #[repr(transparent)]
 /// Document enum
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub struct B(pub u32);
+pub struct B(pub ::std::os::raw::c_uint);

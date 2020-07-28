@@ -39,9 +39,9 @@ impl ::std::ops::BitAndAssign for Foo {
 }
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub struct Foo(pub u32);
+pub struct Foo(pub ::std::os::raw::c_uint);
 pub mod Neg {
-    pub type Type = i32;
+    pub type Type = ::std::os::raw::c_int;
     pub const MinusOne: Type = -1;
     pub const One: Type = 1;
 }

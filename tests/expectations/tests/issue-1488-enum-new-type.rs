@@ -7,12 +7,12 @@
 
 pub const Foo_A: Foo = 0;
 pub const Foo_B: Foo = 1;
-pub type Foo = u32;
+pub type Foo = ::std::os::raw::c_uint;
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone)]
 pub struct FooAlias(pub Foo);
 pub mod Bar {
-    pub type Type = u32;
+    pub type Type = ::std::os::raw::c_uint;
     pub const C: Type = 0;
     pub const D: Type = 1;
 }
@@ -30,7 +30,7 @@ pub enum Qux {
 pub struct QuxAlias(pub Qux);
 pub const Baz_G: Baz = 0;
 pub const Baz_H: Baz = 1;
-pub type Baz = u32;
+pub type Baz = ::std::os::raw::c_uint;
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone)]
 pub struct BazAlias(pub Baz);

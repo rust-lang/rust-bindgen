@@ -134,7 +134,7 @@ pub const StyleBar_Tag_Bar1: StyleBar_Tag = 0;
 pub const StyleBar_Tag_Bar2: StyleBar_Tag = 0;
 pub const StyleBar_Tag_Bar3: StyleBar_Tag = 0;
 pub const StyleBar_Tag_Bar4: StyleBar_Tag = 0;
-pub type StyleBar_Tag = i32;
+pub type StyleBar_Tag = ::std::os::raw::c_int;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct StyleBar_StyleBar1_Body<T> {

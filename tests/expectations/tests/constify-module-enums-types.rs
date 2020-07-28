@@ -6,7 +6,7 @@
 )]
 
 pub mod foo {
-    pub type Type = u32;
+    pub type Type = ::std::os::raw::c_uint;
     pub const THIS: Type = 0;
     pub const SHOULD_BE: Type = 1;
     pub const A_CONSTANT: Type = 2;
@@ -14,20 +14,20 @@ pub mod foo {
     pub const AND_ALSO_THIS: Type = 42;
 }
 pub mod anon_enum {
-    pub type Type = u32;
+    pub type Type = ::std::os::raw::c_uint;
     pub const Variant1: Type = 0;
     pub const Variant2: Type = 1;
     pub const Variant3: Type = 2;
 }
 pub mod ns1_foo {
-    pub type Type = u32;
+    pub type Type = ::std::os::raw::c_uint;
     pub const THIS: Type = 0;
     pub const SHOULD_BE: Type = 1;
     pub const A_CONSTANT: Type = 2;
     pub const ALSO_THIS: Type = 42;
 }
 pub mod ns2_Foo {
-    pub type Type = i32;
+    pub type Type = ::std::os::raw::c_int;
     pub const Variant1: Type = 0;
     pub const Variant2: Type = 1;
 }
@@ -205,7 +205,7 @@ impl Default for Baz {
     }
 }
 pub mod one_Foo {
-    pub type Type = i32;
+    pub type Type = ::std::os::raw::c_int;
     pub const Variant1: Type = 0;
     pub const Variant2: Type = 1;
 }
