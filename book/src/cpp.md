@@ -7,9 +7,9 @@ be nowhere near as nice as using them in C++. You will have to manually call
 constructors, destructors, overloaded operators, etc yourself.
 
 When passing in header files, the file will automatically be treated as C++ if
-it ends in `.hpp`. If it doesn't, adding `-x c++` clang args can be used to
-force C++ mode. You probably also want to use `-std=c++14` or similar clang args
-as well.
+it ends in `.hpp`. If it doesn't, adding the `-xc++` clang arg can be used to
+force C++ mode. You probably want to use `-std=c++14` or similar clang args as
+well.
 
 You pretty much **must** use [whitelisting](./whitelisting.md) when working
 with C++ to avoid pulling in all of the `std::.*` types, many of which `bindgen`
