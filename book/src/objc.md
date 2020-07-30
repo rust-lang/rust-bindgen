@@ -3,9 +3,9 @@
 `bindgen` does not (yet) have full objective-c support but it can generate bindings
 for a lot of the apple frameworks without too much blacklisting.
 
-In order to generate bindings, you will need `-x objective-c` as the clang
+In order to generate bindings, you will need to add `-xobjective-c` to the clang
 args. If you'd like to use [block](https://crates.io/crates/block) you will need
-`-fblocks` as a clang arg as well.
+to add `-fblocks` as well.
 
 Depending on your setup, you may need `--generate-block` to generate the block
 function aliases and `--block-extern-crate` to insert a `extern crate block` at
