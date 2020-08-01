@@ -474,6 +474,60 @@ fn test_multiple_header_calls_in_builder() {
 }
 
 #[test]
+fn test_multiple_header_contents() {
+    let actual = builder()
+        .header_contents("test.h", "int foo(const char* a);")
+        .header_contents("test2.h", "float foo2(const char* b);")
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let (actual, stderr) = rustfmt(actual);
+    println!("{}", stderr);
+
+    let (expected, _) = rustfmt(
+        "extern \"C\" {
+    pub fn foo2(b: *const ::std::os::raw::c_char) -> f32;
+}
+extern \"C\" {
+    pub fn foo(a: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+}
+"
+        .to_string(),
+    );
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn test_mixed_header_and_header_contents() {
+    let actual = builder()
+        .header(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/headers/func_ptr.h"
+        ))
+        .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/char.h"))
+        .header_contents("test.h", "int bar(const char* a);")
+        .header_contents("test2.h", "float bar2(const char* b);")
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let (actual, stderr) = rustfmt(actual);
+    println!("{}", stderr);
+
+    let expected = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/expectations/tests/test_mixed_header_and_header_contents.rs"
+    ));
+    let (expected, _) = rustfmt(expected.to_string());
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
 // Doesn't support executing sh file on Windows.
 // We may want to implement it in Rust so that we support all systems.
 #[cfg(not(target_os = "windows"))]
