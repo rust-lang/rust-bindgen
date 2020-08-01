@@ -22,10 +22,6 @@ function llvm_macos_target_triple() {
 
 function llvm_version_triple() {
     case "$1" in
-        3.5) echo "3.5.2" ;;
-        3.6) echo "3.6.2" ;;
-        3.7) echo "3.7.1" ;;
-        3.8) echo "3.8.1" ;;
         5.0) echo "5.0.1" ;;
         # By default, take the .0 patch release
         *)   echo "$1.0"  ;;
