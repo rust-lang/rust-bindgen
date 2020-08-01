@@ -1,5 +1,7 @@
 language: rust
 
+dist: xenial
+
 os:
   - linux
 

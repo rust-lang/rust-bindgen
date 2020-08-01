@@ -9,7 +9,7 @@ set -x
 set -o pipefail
 
 function llvm_linux_target_triple() {
-    echo "x86_64-linux-gnu-ubuntu-14.04"
+    echo "x86_64-linux-gnu-ubuntu-16.04"
 }
 
 function llvm_macos_target_triple() {
