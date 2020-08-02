@@ -112,7 +112,7 @@ bitflags! {
 fn derives_of_item(item: &Item, ctx: &BindgenContext) -> DerivableTraits {
     let mut derivable_traits = DerivableTraits::empty();
 
-    if item.can_derive_debug(ctx) {
+    if item.can_derive_debug(ctx) && !item.annotations().disallow_debug() {
         derivable_traits |= DerivableTraits::DEBUG;
     }
 
@@ -1885,8 +1885,10 @@ impl CodeGenerator for CompInfo {
 
         let derivable_traits = derives_of_item(item, ctx);
         if !derivable_traits.contains(DerivableTraits::DEBUG) {
-            needs_debug_impl =
-                ctx.options().derive_debug && ctx.options().impl_debug
+            needs_debug_impl = ctx.options().derive_debug &&
+                ctx.options().impl_debug &&
+                !ctx.no_debug_by_name(item) &&
+                !item.annotations().disallow_debug();
         }
 
         if !derivable_traits.contains(DerivableTraits::DEFAULT) {
