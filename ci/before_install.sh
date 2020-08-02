@@ -49,8 +49,6 @@ function llvm_download() {
     export LLVM=clang+llvm-${LLVM_VERSION_TRIPLE}-$arch
     export LLVM_DIRECTORY="$HOME/.llvm/${LLVM}"
 
-    local base_url
-
     if [ -d "${LLVM_DIRECTORY}" ]; then
         echo "Using cached LLVM download for ${LLVM}..."
     else
