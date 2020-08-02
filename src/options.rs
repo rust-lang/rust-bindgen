@@ -430,6 +430,13 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("no-debug")
+                .long("no-debug")
+                .help("Avoid deriving Debug for types matching <regex>.")
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
             Arg::with_name("no-hash")
                 .long("no-hash")
                 .help("Avoid deriving Hash for types matching <regex>.")
@@ -828,6 +835,12 @@ where
     if let Some(no_copy) = matches.values_of("no-copy") {
         for regex in no_copy {
             builder = builder.no_copy(regex);
+        }
+    }
+
+    if let Some(no_debug) = matches.values_of("no-debug") {
+        for regex in no_debug {
+            builder = builder.no_debug(regex);
         }
     }
 
