@@ -385,7 +385,7 @@ impl Builder {
             output_vector.push(prefix.clone());
         }
 
-        if let Some(ref prefix) = self.options.anon_fields_prefix {
+        if let prefix = &self.options.anon_fields_prefix {
             output_vector.push("--anon-fields-prefix".into());
             output_vector.push(prefix.clone());
         }
@@ -1217,9 +1217,9 @@ impl Builder {
         self
     }
 
-    /// Use the given prefix for the anon fields instead of `__bindgen_anon_`.
+    /// Use the given prefix for the anon fields.
     pub fn anon_fields_prefix<T: Into<String>>(mut self, prefix: T) -> Builder {
-        self.options.anon_fields_prefix = Some(prefix.into());
+        self.options.anon_fields_prefix = prefix.into();
         self
     }
 
@@ -1601,8 +1601,8 @@ struct BindgenOptions {
     /// An optional prefix for the "raw" types, like `c_int`, `c_void`...
     ctypes_prefix: Option<String>,
 
-    /// An optional prefix for the anon fields instead of `__bindgen_anon_`.
-    anon_fields_prefix: Option<String>,
+    /// The prefix for the anon fields.
+    anon_fields_prefix: String,
 
     /// Whether to time the bindgen phases.
     time_phases: bool,
@@ -1823,7 +1823,7 @@ impl Default for BindgenOptions {
             disable_header_comment: false,
             use_core: false,
             ctypes_prefix: None,
-            anon_fields_prefix: None,
+            anon_fields_prefix: "__bindgen_anon_".into(),
             namespaced_constants: true,
             msvc_mangling: false,
             convert_floats: true,
