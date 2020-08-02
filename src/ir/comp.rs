@@ -825,15 +825,11 @@ impl CompFields {
                     }
 
                     anon_field_counter += 1;
-                    if let Some(ref prefix) = ctx.options().anon_fields_prefix {
-                        *name =
-                            Some(format!("{}{}", prefix, anon_field_counter));
-                    } else {
-                        *name = Some(format!(
-                            "__bindgen_anon_{}",
-                            anon_field_counter
-                        ));
-                    }
+                    *name = Some(format!(
+                        "{}{}",
+                        ctx.options().anon_fields_prefix,
+                        anon_field_counter
+                    ));
                 }
                 Field::Bitfields(ref mut bu) => {
                     for bitfield in &mut bu.bitfields {
