@@ -38,6 +38,8 @@ pub struct Annotations {
     /// Manually disable deriving copy/clone on this type. Only applies to
     /// struct or union types.
     disallow_copy: bool,
+    /// Manually disable deriving debug on this type.
+    disallow_debug: bool,
     /// Whether fields should be marked as private or not. You can set this on
     /// structs (it will apply to all the fields), or individual fields.
     private_fields: Option<bool>,
@@ -78,6 +80,7 @@ impl Default for Annotations {
             hide: false,
             use_instead_of: None,
             disallow_copy: false,
+            disallow_debug: false,
             private_fields: None,
             accessor_kind: None,
             constify_enum_variant: false,
@@ -147,6 +150,11 @@ impl Annotations {
         self.disallow_copy
     }
 
+    /// Should we avoid implementing the `Debug` trait?
+    pub fn disallow_debug(&self) -> bool {
+        self.disallow_debug
+    }
+
     /// Should the fields be private?
     pub fn private_fields(&self) -> Option<bool> {
         self.private_fields
@@ -172,6 +180,7 @@ impl Annotations {
                     "opaque" => self.opaque = true,
                     "hide" => self.hide = true,
                     "nocopy" => self.disallow_copy = true,
+                    "nodebug" => self.disallow_debug = true,
                     "replaces" => {
                         self.use_instead_of = Some(
                             attr.value.split("::").map(Into::into).collect(),
