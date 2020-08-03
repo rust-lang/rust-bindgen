@@ -2513,8 +2513,8 @@ impl<'a> EnumBuilder<'a> {
                 }
 
                 EnumBuilder::Consts {
-                    repr: repr,
-                    variants: variants,
+                    repr,
+                    variants,
                     codegen_depth: enum_codegen_depth,
                 }
             }
