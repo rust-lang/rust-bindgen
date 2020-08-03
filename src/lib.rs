@@ -385,10 +385,8 @@ impl Builder {
             output_vector.push(prefix.clone());
         }
 
-        if let prefix = &self.options.anon_fields_prefix {
-            output_vector.push("--anon-fields-prefix".into());
-            output_vector.push(prefix.clone());
-        }
+        output_vector.push("--anon-fields-prefix".into());
+        output_vector.push(self.options.anon_fields_prefix.clone());
 
         if self.options.emit_ast {
             output_vector.push("--emit-clang-ast".into());
