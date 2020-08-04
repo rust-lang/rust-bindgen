@@ -9,10 +9,7 @@ set -x
 set -o pipefail
 
 function llvm_linux_target_triple() {
-    case "$1" in
-        5.*)                echo "linux-x86_64-ubuntu14.04" ;;
-        *)                  echo "x86_64-linux-gnu-ubuntu-14.04" ;;
-    esac
+    echo "x86_64-linux-gnu-ubuntu-16.04"
 }
 
 function llvm_macos_target_triple() {
@@ -25,10 +22,7 @@ function llvm_macos_target_triple() {
 
 function llvm_version_triple() {
     case "$1" in
-        3.5) echo "3.5.2" ;;
-        3.6) echo "3.6.2" ;;
-        3.7) echo "3.7.1" ;;
-        3.8) echo "3.8.1" ;;
+        5.0) echo "5.0.1" ;;
         # By default, take the .0 patch release
         *)   echo "$1.0"  ;;
     esac
@@ -54,8 +48,6 @@ function llvm_download() {
 
     export LLVM=clang+llvm-${LLVM_VERSION_TRIPLE}-$arch
     export LLVM_DIRECTORY="$HOME/.llvm/${LLVM}"
-
-    local base_url
 
     if [ -d "${LLVM_DIRECTORY}" ]; then
         echo "Using cached LLVM download for ${LLVM}..."

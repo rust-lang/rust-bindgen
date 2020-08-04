@@ -13,4 +13,4 @@ pub enum Foo {
 }
 pub const Neg_MinusOne: Neg = -1;
 pub const Neg_One: Neg = 1;
-pub type Neg = i32;
+pub type Neg = ::std::os::raw::c_int;

@@ -7,4 +7,4 @@
 
 pub const FOO_BAR: foo = 0;
 pub const FOO_BAZ: foo = 1;
-pub type foo = u32;
+pub type foo = ::std::os::raw::c_uint;

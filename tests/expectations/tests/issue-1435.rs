@@ -14,7 +14,7 @@ pub mod root {
         use self::super::super::root;
         pub const AB_A: root::ns::AB = 0;
         pub const AB_B: root::ns::AB = 1;
-        pub type AB = i32;
+        pub type AB = ::std::os::raw::c_int;
     }
     pub use self::super::root::ns::AB;
     extern "C" {

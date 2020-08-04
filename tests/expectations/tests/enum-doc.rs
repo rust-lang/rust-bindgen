@@ -21,4 +21,4 @@ pub const B_VAR_E: B = 4;
 /// Very interesting documentation, definitely.
 pub const B_VAR_F: B = 5;
 /// Document enum
-pub type B = u32;
+pub type B = ::std::os::raw::c_uint;
