@@ -1,6 +1,6 @@
 use bindgen::{
     builder, AliasVariation, Builder, CodegenConfig, EnumVariation, RustTarget,
-    RUST_TARGET_STRINGS,
+    DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
 };
 use clap::{App, Arg};
 use std::fs::File;
@@ -238,7 +238,7 @@ where
                 .long("anon-fields-prefix")
                 .help("Use the given prefix for the anon fields.")
                 .value_name("prefix")
-                .default_value("__bindgen_anon_")
+                .default_value(DEFAULT_ANON_FIELDS_PREFIX)
                 .takes_value(true),
             Arg::with_name("time-phases")
                 .long("time-phases")

@@ -94,6 +94,9 @@ type HashMap<K, V> = ::rustc_hash::FxHashMap<K, V>;
 type HashSet<K> = ::rustc_hash::FxHashSet<K>;
 pub(crate) use std::collections::hash_map::Entry;
 
+/// Default prefix for the anon fields.
+pub const DEFAULT_ANON_FIELDS_PREFIX: &'static str = "__bindgen_anon_";
+
 fn args_are_cpp(clang_args: &[String]) -> bool {
     return clang_args
         .windows(2)
@@ -385,8 +388,10 @@ impl Builder {
             output_vector.push(prefix.clone());
         }
 
-        output_vector.push("--anon-fields-prefix".into());
-        output_vector.push(self.options.anon_fields_prefix.clone());
+        if self.options.anon_fields_prefix != DEFAULT_ANON_FIELDS_PREFIX {
+            output_vector.push("--anon-fields-prefix".into());
+            output_vector.push(self.options.anon_fields_prefix.clone());
+        }
 
         if self.options.emit_ast {
             output_vector.push("--emit-clang-ast".into());
@@ -1821,7 +1826,7 @@ impl Default for BindgenOptions {
             disable_header_comment: false,
             use_core: false,
             ctypes_prefix: None,
-            anon_fields_prefix: "__bindgen_anon_".into(),
+            anon_fields_prefix: DEFAULT_ANON_FIELDS_PREFIX.into(),
             namespaced_constants: true,
             msvc_mangling: false,
             convert_floats: true,
