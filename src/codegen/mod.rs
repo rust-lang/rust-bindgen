@@ -3048,6 +3048,50 @@ impl CodeGenerator for Enum {
     }
 }
 
+/// Enum for the default type of macro constants.
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub enum MacroTypeVariation {
+    /// Use i32 or i64
+    Signed,
+    /// Use u32 or u64
+    Unsigned,
+}
+
+impl MacroTypeVariation {
+    /// Convert a `MacroTypeVariation` to its str representation.
+    pub fn as_str(&self) -> &str {
+        match self {
+            MacroTypeVariation::Signed => "signed",
+            MacroTypeVariation::Unsigned => "unsigned",
+        }
+    }
+}
+
+impl Default for MacroTypeVariation {
+    fn default() -> MacroTypeVariation {
+        MacroTypeVariation::Unsigned
+    }
+}
+
+impl std::str::FromStr for MacroTypeVariation {
+    type Err = std::io::Error;
+
+    /// Create a `MacroTypeVariation` from a string.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "signed" => Ok(MacroTypeVariation::Signed),
+            "unsigned" => Ok(MacroTypeVariation::Unsigned),
+            _ => Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                concat!(
+                    "Got an invalid MacroTypeVariation. Accepted values ",
+                    "are 'signed' and 'unsigned'"
+                ),
+            )),
+        }
+    }
+}
+
 /// Enum for how aliases should be translated.
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum AliasVariation {
