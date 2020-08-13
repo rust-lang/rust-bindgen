@@ -555,7 +555,14 @@ impl BindgenContext {
         let translation_unit = {
             let _t =
                 Timer::new("translation_unit").with_output(options.time_phases);
-            let clang_args = if explicit_target {
+            // NOTE: The effective_target == HOST_TARGET check wouldn't be sound
+            // normally in some cases if we were to call a binary (if you have a
+            // 32-bit clang and are building on a 64-bit system for example).
+            // But since we rely on opening libclang.so, it has to be the same
+            // architecture and thus the check is fine.
+            let clang_args = if explicit_target ||
+                effective_target == HOST_TARGET
+            {
                 Cow::Borrowed(&options.clang_args)
             } else {
                 let mut args = Vec::with_capacity(options.clang_args.len() + 1);
