@@ -1914,6 +1914,35 @@ pub struct Bindings {
     module: proc_macro2::TokenStream,
 }
 
+pub(crate) const HOST_TARGET: &'static str =
+    include_str!(concat!(env!("OUT_DIR"), "/host-target.txt"));
+
+/// Returns the effective target, and whether it was explicitly specified on the
+/// clang flags.
+fn find_effective_target(clang_args: &[String]) -> (String, bool) {
+    let mut args = clang_args.iter();
+    while let Some(opt) = args.next() {
+        if opt.starts_with("--target=") {
+            let mut split = opt.split('=');
+            split.next();
+            return (split.next().unwrap().to_owned(), true);
+        }
+
+        if opt == "-target" {
+            if let Some(target) = args.next() {
+                return (target.clone(), true);
+            }
+        }
+    }
+
+    // If we're running from a build script, try to find the cargo target.
+    if let Ok(t) = env::var("TARGET") {
+        return (t, false);
+    }
+
+    (HOST_TARGET.to_owned(), false)
+}
+
 impl Bindings {
     /// Generate bindings for the given options.
     pub(crate) fn generate(
@@ -1930,6 +1959,20 @@ impl Bindings {
         debug!("Generating bindings, libclang linked");
 
         options.build();
+
+        let (effective_target, explicit_target) =
+            find_effective_target(&options.clang_args);
+
+        // NOTE: The effective_target == HOST_TARGET check wouldn't be sound
+        // normally in some cases if we were to call a binary (if you have a
+        // 32-bit clang and are building on a 64-bit system for example).
+        // But since we rely on opening libclang.so, it has to be the same
+        // architecture and thus the check is fine.
+        if !(explicit_target || effective_target == HOST_TARGET) {
+            options
+                .clang_args
+                .insert(0, format!("--target={}", effective_target));
+        };
 
         fn detect_include_paths(options: &mut BindgenOptions) {
             if !options.detect_include_paths {
@@ -2044,6 +2087,19 @@ impl Bindings {
 
         let time_phases = options.time_phases;
         let mut context = BindgenContext::new(options);
+
+        #[cfg(debug_assertions)]
+        {
+            if effective_target == HOST_TARGET {
+                assert_eq!(
+                    context.target_pointer_size(),
+                    std::mem::size_of::<*mut ()>(),
+                    "{:?} {:?}",
+                    effective_target,
+                    HOST_TARGET
+                );
+            }
+        }
 
         {
             let _t = time::Timer::new("parse").with_output(time_phases);
