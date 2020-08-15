@@ -3512,13 +3512,10 @@ impl TryToRustTy for Type {
                     inner.into_resolver().through_type_refs().resolve(ctx);
                 let inner_ty = inner.expect_type();
 
-                let is_objc_pointer =
-                    inner.kind().as_type().map_or(false, |ty| {
-                        match ty.kind() {
-                            TypeKind::ObjCInterface(..) => true,
-                            _ => false,
-                        }
-                    });
+                let is_objc_pointer = match inner_ty.kind() {
+                    TypeKind::ObjCInterface(..) => true,
+                    _ => false,
+                };
 
                 // Regardless if we can properly represent the inner type, we
                 // should always generate a proper pointer here, so use
