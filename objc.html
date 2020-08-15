@@ -153,6 +153,14 @@ the beginning of the generated bindings. The same logic applies to the
 <p>The objective-c classes will be represented as a <code>struct Foo(id)</code> and a trait
 <code>IFoo</code> where <code>Foo</code> is the objective-c class and <code>id</code> is an alias for <code>*mut objc::runtime::Object</code> (the pointer to the objective-c instance). The trait
 <code>IFoo</code> is needed to allow for the generated inheritance.</p>
+<p>Functions that use or return objective-c pointers of instance <code>Foo</code> will return
+<code>Foo</code>. The reason this works is beacuse <code>Foo</code> represented as <code>transparent</code>.
+This will be helpful for a lot of objective-c frameworks however there are some
+cases where functions return <code>instancetype</code> which is a type alias for <code>id</code> so
+an occasional <code>foo.0</code> may be required. An example of this would in the UIKit
+framework should you want to add a <code>UILabel</code> to a
+<a href="https://developer.apple.com/documentation/uikit/uistackview/1616227-addarrangedsubview?language=objc">UIStackView</a>
+you will need to convert the <code>UILabel</code> to a <code>UIView</code> via <code>UIView(label.0)</code>.</p>
 <p>Each class (struct) has an <code>alloc</code> and a <code>dealloc</code> to match that of some of the alloc
 methods found in <code>NSObject</code>.</p>
 <p>In order to initialize a class <code>Foo</code>, you will have to do something like <code>let foo = Foo(Foo::alloc().initWithStuff())</code>.</p>
