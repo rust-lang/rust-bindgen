@@ -30,7 +30,7 @@ pub trait IFoo: Sized + std::ops::Deref {}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct FooStruct {
-    pub foo: *mut objc::runtime::Object,
+    pub foo: Foo,
 }
 #[test]
 fn bindgen_test_layout_FooStruct() {
@@ -63,8 +63,8 @@ impl Default for FooStruct {
     }
 }
 extern "C" {
-    pub fn fooFunc(foo: id);
+    pub fn fooFunc(foo: Foo);
 }
 extern "C" {
-    pub static mut kFoo: *const objc::runtime::Object;
+    pub static mut kFoo: Foo;
 }

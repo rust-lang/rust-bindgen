@@ -39,7 +39,7 @@ pub trait IFoo: Sized + std::ops::Deref {
     {
         msg_send!(self, methodWithInt: foo)
     }
-    unsafe fn methodWithFoo_(self, foo: id)
+    unsafe fn methodWithFoo_(self, foo: Foo)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
@@ -51,7 +51,7 @@ pub trait IFoo: Sized + std::ops::Deref {
     {
         msg_send!(self, methodReturningInt)
     }
-    unsafe fn methodReturningFoo(self) -> *mut objc::runtime::Object
+    unsafe fn methodReturningFoo(self) -> Foo
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {

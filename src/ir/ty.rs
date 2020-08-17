@@ -1209,7 +1209,10 @@ impl Type {
 
         let name = if name.is_empty() { None } else { Some(name) };
 
-        let is_const = ty.is_const();
+        let is_const = ty.is_const() ||
+            (ty.kind() == CXType_ConstantArray &&
+                ty.elem_type()
+                    .map_or(false, |element| element.is_const()));
 
         let ty = Type::new(name, layout, kind, is_const);
         // TODO: maybe declaration.canonical()?

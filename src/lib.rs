@@ -72,7 +72,7 @@ doc_mod!(ir, ir_docs);
 doc_mod!(parse, parse_docs);
 doc_mod!(regex_set, regex_set_docs);
 
-pub use crate::codegen::{AliasVariation, EnumVariation};
+pub use crate::codegen::{AliasVariation, EnumVariation, MacroTypeVariation};
 use crate::features::RustFeatures;
 pub use crate::features::{
     RustTarget, LATEST_STABLE_RUST, RUST_TARGET_STRINGS,
@@ -93,6 +93,9 @@ use std::{env, iter};
 type HashMap<K, V> = ::rustc_hash::FxHashMap<K, V>;
 type HashSet<K> = ::rustc_hash::FxHashSet<K>;
 pub(crate) use std::collections::hash_map::Entry;
+
+/// Default prefix for the anon fields.
+pub const DEFAULT_ANON_FIELDS_PREFIX: &'static str = "__bindgen_anon_";
 
 fn args_are_cpp(clang_args: &[String]) -> bool {
     return clang_args
@@ -264,6 +267,12 @@ impl Builder {
             )
         }
 
+        if self.options.default_macro_constant_type != Default::default() {
+            output_vector.push("--default-macro-constant-type".into());
+            output_vector
+                .push(self.options.default_macro_constant_type.as_str().into());
+        }
+
         if self.options.default_alias_style != Default::default() {
             output_vector.push("--default-alias-style".into());
             output_vector
@@ -383,6 +392,11 @@ impl Builder {
         if let Some(ref prefix) = self.options.ctypes_prefix {
             output_vector.push("--ctypes-prefix".into());
             output_vector.push(prefix.clone());
+        }
+
+        if self.options.anon_fields_prefix != DEFAULT_ANON_FIELDS_PREFIX {
+            output_vector.push("--anon-fields-prefix".into());
+            output_vector.push(self.options.anon_fields_prefix.clone());
         }
 
         if self.options.emit_ast {
@@ -864,6 +878,15 @@ impl Builder {
         self
     }
 
+    /// Set the default type for macro constants
+    pub fn default_macro_constant_type(
+        mut self,
+        arg: codegen::MacroTypeVariation,
+    ) -> Builder {
+        self.options.default_macro_constant_type = arg;
+        self
+    }
+
     /// Set the default style of code to generate for typedefs
     pub fn default_alias_style(
         mut self,
@@ -1212,6 +1235,12 @@ impl Builder {
         self
     }
 
+    /// Use the given prefix for the anon fields.
+    pub fn anon_fields_prefix<T: Into<String>>(mut self, prefix: T) -> Builder {
+        self.options.anon_fields_prefix = prefix.into();
+        self
+    }
+
     /// Allows configuring types in different situations, see the
     /// [`ParseCallbacks`](./callbacks/trait.ParseCallbacks.html) documentation.
     pub fn parse_callbacks(
@@ -1362,7 +1391,7 @@ impl Builder {
 
         {
             let mut wrapper_file = File::create(&wrapper_path)?;
-            wrapper_file.write(wrapper_contents.as_bytes())?;
+            wrapper_file.write_all(wrapper_contents.as_bytes())?;
         }
 
         let mut cmd = Command::new(&clang.path);
@@ -1499,6 +1528,9 @@ struct BindgenOptions {
     /// The enum patterns to mark an enum as a set of constants.
     constified_enums: RegexSet,
 
+    /// The default type for C macro constants.
+    default_macro_constant_type: codegen::MacroTypeVariation,
+
     /// The default style of code to generate for typedefs.
     default_alias_style: codegen::AliasVariation,
 
@@ -1589,6 +1621,9 @@ struct BindgenOptions {
 
     /// An optional prefix for the "raw" types, like `c_int`, `c_void`...
     ctypes_prefix: Option<String>,
+
+    /// The prefix for the anon fields.
+    anon_fields_prefix: String,
 
     /// Whether to time the bindgen phases.
     time_phases: bool,
@@ -1783,6 +1818,7 @@ impl Default for BindgenOptions {
             rustified_non_exhaustive_enums: Default::default(),
             constified_enums: Default::default(),
             constified_enum_modules: Default::default(),
+            default_macro_constant_type: Default::default(),
             default_alias_style: Default::default(),
             type_alias: Default::default(),
             new_type_alias: Default::default(),
@@ -1809,6 +1845,7 @@ impl Default for BindgenOptions {
             disable_header_comment: false,
             use_core: false,
             ctypes_prefix: None,
+            anon_fields_prefix: DEFAULT_ANON_FIELDS_PREFIX.into(),
             namespaced_constants: true,
             msvc_mangling: false,
             convert_floats: true,
@@ -1877,6 +1914,35 @@ pub struct Bindings {
     module: proc_macro2::TokenStream,
 }
 
+pub(crate) const HOST_TARGET: &'static str =
+    include_str!(concat!(env!("OUT_DIR"), "/host-target.txt"));
+
+/// Returns the effective target, and whether it was explicitly specified on the
+/// clang flags.
+fn find_effective_target(clang_args: &[String]) -> (String, bool) {
+    let mut args = clang_args.iter();
+    while let Some(opt) = args.next() {
+        if opt.starts_with("--target=") {
+            let mut split = opt.split('=');
+            split.next();
+            return (split.next().unwrap().to_owned(), true);
+        }
+
+        if opt == "-target" {
+            if let Some(target) = args.next() {
+                return (target.clone(), true);
+            }
+        }
+    }
+
+    // If we're running from a build script, try to find the cargo target.
+    if let Ok(t) = env::var("TARGET") {
+        return (t, false);
+    }
+
+    (HOST_TARGET.to_owned(), false)
+}
+
 impl Bindings {
     /// Generate bindings for the given options.
     pub(crate) fn generate(
@@ -1893,6 +1959,20 @@ impl Bindings {
         debug!("Generating bindings, libclang linked");
 
         options.build();
+
+        let (effective_target, explicit_target) =
+            find_effective_target(&options.clang_args);
+
+        // NOTE: The effective_target == HOST_TARGET check wouldn't be sound
+        // normally in some cases if we were to call a binary (if you have a
+        // 32-bit clang and are building on a 64-bit system for example).
+        // But since we rely on opening libclang.so, it has to be the same
+        // architecture and thus the check is fine.
+        if !(explicit_target || effective_target == HOST_TARGET) {
+            options
+                .clang_args
+                .insert(0, format!("--target={}", effective_target));
+        };
 
         fn detect_include_paths(options: &mut BindgenOptions) {
             if !options.detect_include_paths {
@@ -2008,6 +2088,19 @@ impl Bindings {
         let time_phases = options.time_phases;
         let mut context = BindgenContext::new(options);
 
+        #[cfg(debug_assertions)]
+        {
+            if effective_target == HOST_TARGET {
+                assert_eq!(
+                    context.target_pointer_size(),
+                    std::mem::size_of::<*mut ()>(),
+                    "{:?} {:?}",
+                    effective_target,
+                    HOST_TARGET
+                );
+            }
+        }
+
         {
             let _t = time::Timer::new("parse").with_output(time_phases);
             parse(&mut context)?;
@@ -2051,30 +2144,30 @@ impl Bindings {
                 "/* automatically generated by rust-bindgen {} */\n\n",
                 version.unwrap_or("(unknown version)")
             );
-            writer.write(header.as_bytes())?;
+            writer.write_all(header.as_bytes())?;
         }
 
         for line in self.options.raw_lines.iter() {
-            writer.write(line.as_bytes())?;
-            writer.write("\n".as_bytes())?;
+            writer.write_all(line.as_bytes())?;
+            writer.write_all("\n".as_bytes())?;
         }
 
         if !self.options.raw_lines.is_empty() {
-            writer.write("\n".as_bytes())?;
+            writer.write_all("\n".as_bytes())?;
         }
 
         let bindings = self.module.to_string();
 
         match self.rustfmt_generated_string(&bindings) {
             Ok(rustfmt_bindings) => {
-                writer.write(rustfmt_bindings.as_bytes())?;
+                writer.write_all(rustfmt_bindings.as_bytes())?;
             }
             Err(err) => {
                 eprintln!(
                     "Failed to run rustfmt: {} (non-fatal, continuing)",
                     err
                 );
-                writer.write(bindings.as_bytes())?;
+                writer.write_all(bindings.as_bytes())?;
             }
         }
         Ok(())

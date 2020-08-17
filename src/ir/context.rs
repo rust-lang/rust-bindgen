@@ -507,46 +507,12 @@ impl<'ctx> WhitelistedItemsTraversal<'ctx> {
     }
 }
 
-const HOST_TARGET: &'static str =
-    include_str!(concat!(env!("OUT_DIR"), "/host-target.txt"));
-
-/// Returns the effective target, and whether it was explicitly specified on the
-/// clang flags.
-fn find_effective_target(clang_args: &[String]) -> (String, bool) {
-    use std::env;
-
-    let mut args = clang_args.iter();
-    while let Some(opt) = args.next() {
-        if opt.starts_with("--target=") {
-            let mut split = opt.split('=');
-            split.next();
-            return (split.next().unwrap().to_owned(), true);
-        }
-
-        if opt == "-target" {
-            if let Some(target) = args.next() {
-                return (target.clone(), true);
-            }
-        }
-    }
-
-    // If we're running from a build script, try to find the cargo target.
-    if let Ok(t) = env::var("TARGET") {
-        return (t, false);
-    }
-
-    (HOST_TARGET.to_owned(), false)
-}
-
 impl BindgenContext {
     /// Construct the context for the given `options`.
     pub(crate) fn new(options: BindgenOptions) -> Self {
         // TODO(emilio): Use the CXTargetInfo here when available.
         //
         // see: https://reviews.llvm.org/D32389
-        let (effective_target, explicit_target) =
-            find_effective_target(&options.clang_args);
-
         let index = clang::Index::new(false, true);
 
         let parse_options =
@@ -555,19 +521,11 @@ impl BindgenContext {
         let translation_unit = {
             let _t =
                 Timer::new("translation_unit").with_output(options.time_phases);
-            let clang_args = if explicit_target {
-                Cow::Borrowed(&options.clang_args)
-            } else {
-                let mut args = Vec::with_capacity(options.clang_args.len() + 1);
-                args.push(format!("--target={}", effective_target));
-                args.extend_from_slice(&options.clang_args);
-                Cow::Owned(args)
-            };
 
             clang::TranslationUnit::parse(
                 &index,
                 "",
-                &clang_args,
+                &options.clang_args,
                 &options.input_unsaved_files,
                 parse_options,
             ).expect("libclang error; possible causes include:
@@ -580,22 +538,6 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         };
 
         let target_info = clang::TargetInfo::new(&translation_unit);
-
-        #[cfg(debug_assertions)]
-        {
-            if let Some(ref ti) = target_info {
-                if effective_target == HOST_TARGET {
-                    assert_eq!(
-                        ti.pointer_width / 8,
-                        mem::size_of::<*mut ()>(),
-                        "{:?} {:?}",
-                        effective_target,
-                        HOST_TARGET
-                    );
-                }
-            }
-        }
-
         let root_module = Self::build_root_module(ItemId(0));
         let root_module_id = root_module.id().as_module_id_unchecked();
 

@@ -1,5 +1,6 @@
 //! Intermediate representation of variables.
 
+use super::super::codegen::MacroTypeVariation;
 use super::context::{BindgenContext, TypeId};
 use super::dot::DotAttributes;
 use super::function::cursor_mangling;
@@ -117,9 +118,12 @@ impl DotAttributes for Var {
 }
 
 // TODO(emilio): we could make this more (or less) granular, I guess.
-fn default_macro_constant_type(value: i64) -> IntKind {
-    if value < 0 {
-        if value < i32::min_value() as i64 {
+fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
+    if value < 0 ||
+        ctx.options().default_macro_constant_type ==
+            MacroTypeVariation::Signed
+    {
+        if value < i32::min_value() as i64 || value > i32::max_value() as i64 {
             IntKind::I64
         } else {
             IntKind::I32
@@ -264,7 +268,7 @@ impl ClangSubItemParser for Var {
                             .parse_callbacks()
                             .and_then(|c| c.int_macro(&name, value))
                             .unwrap_or_else(|| {
-                                default_macro_constant_type(value)
+                                default_macro_constant_type(&ctx, value)
                             });
 
                         (TypeKind::Int(kind), VarType::Int(value))

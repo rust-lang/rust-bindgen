@@ -3048,6 +3048,50 @@ impl CodeGenerator for Enum {
     }
 }
 
+/// Enum for the default type of macro constants.
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub enum MacroTypeVariation {
+    /// Use i32 or i64
+    Signed,
+    /// Use u32 or u64
+    Unsigned,
+}
+
+impl MacroTypeVariation {
+    /// Convert a `MacroTypeVariation` to its str representation.
+    pub fn as_str(&self) -> &str {
+        match self {
+            MacroTypeVariation::Signed => "signed",
+            MacroTypeVariation::Unsigned => "unsigned",
+        }
+    }
+}
+
+impl Default for MacroTypeVariation {
+    fn default() -> MacroTypeVariation {
+        MacroTypeVariation::Unsigned
+    }
+}
+
+impl std::str::FromStr for MacroTypeVariation {
+    type Err = std::io::Error;
+
+    /// Create a `MacroTypeVariation` from a string.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "signed" => Ok(MacroTypeVariation::Signed),
+            "unsigned" => Ok(MacroTypeVariation::Unsigned),
+            _ => Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                concat!(
+                    "Got an invalid MacroTypeVariation. Accepted values ",
+                    "are 'signed' and 'unsigned'"
+                ),
+            )),
+        }
+    }
+}
+
 /// Enum for how aliases should be translated.
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum AliasVariation {
@@ -3468,6 +3512,11 @@ impl TryToRustTy for Type {
                     inner.into_resolver().through_type_refs().resolve(ctx);
                 let inner_ty = inner.expect_type();
 
+                let is_objc_pointer = match inner_ty.kind() {
+                    TypeKind::ObjCInterface(..) => true,
+                    _ => false,
+                };
+
                 // Regardless if we can properly represent the inner type, we
                 // should always generate a proper pointer here, so use
                 // infallible conversion of the inner type.
@@ -3476,7 +3525,8 @@ impl TryToRustTy for Type {
 
                 // Avoid the first function pointer level, since it's already
                 // represented in Rust.
-                if inner_ty.canonical_type(ctx).is_function() {
+                if inner_ty.canonical_type(ctx).is_function() || is_objc_pointer
+                {
                     Ok(ty)
                 } else {
                     Ok(ty.to_ptr(is_const))
@@ -3495,9 +3545,12 @@ impl TryToRustTy for Type {
             TypeKind::ObjCId => Ok(quote! {
                 id
             }),
-            TypeKind::ObjCInterface(..) => Ok(quote! {
-                objc::runtime::Object
-            }),
+            TypeKind::ObjCInterface(ref interface) => {
+                let name = ctx.rust_ident(interface.name());
+                Ok(quote! {
+                    #name
+                })
+            }
             ref u @ TypeKind::UnresolvedTypeRef(..) => {
                 unreachable!("Should have been resolved after parsing {:?}!", u)
             }
@@ -4373,11 +4426,12 @@ mod utils {
                     TypeKind::Pointer(inner) => {
                         let inner = ctx.resolve_item(inner);
                         let inner_ty = inner.expect_type();
-                        if let TypeKind::ObjCInterface(_) =
+                        if let TypeKind::ObjCInterface(ref interface) =
                             *inner_ty.canonical_type(ctx).kind()
                         {
+                            let name = ctx.rust_ident(interface.name());
                             quote! {
-                                id
+                                #name
                             }
                         } else {
                             arg_item.to_rust_ty_or_opaque(ctx, &())
