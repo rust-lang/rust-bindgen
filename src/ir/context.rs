@@ -577,6 +577,14 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         }
     }
 
+    /// Returns `true` if the target architecture is wasm32
+    pub fn is_target_wasm32(&self) -> bool {
+        match self.target_info {
+            Some(ref ti) => ti.triple.starts_with("wasm32-"),
+            None => false,
+        }
+    }
+
     /// Creates a timer for the current bindgen phase. If time_phases is `true`,
     /// the timer will print to stderr when it is dropped, otherwise it will do
     /// nothing.
