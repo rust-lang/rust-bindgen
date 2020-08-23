@@ -1917,6 +1917,17 @@ pub struct Bindings {
 pub(crate) const HOST_TARGET: &'static str =
     include_str!(concat!(env!("OUT_DIR"), "/host-target.txt"));
 
+// Some architecture triplets are different between rust and libclang, see #1211
+// and duplicates.
+fn rust_to_clang_target(rust_target: &str) -> String {
+    if rust_target.starts_with("aarch64-apple-") {
+        let mut clang_target = "arm64-apple-".to_owned();
+        clang_target.push_str(&rust_target["aarch64-apple-".len()..]);
+        return clang_target;
+    }
+    rust_target.to_owned()
+}
+
 /// Returns the effective target, and whether it was explicitly specified on the
 /// clang flags.
 fn find_effective_target(clang_args: &[String]) -> (String, bool) {
@@ -1937,10 +1948,10 @@ fn find_effective_target(clang_args: &[String]) -> (String, bool) {
 
     // If we're running from a build script, try to find the cargo target.
     if let Ok(t) = env::var("TARGET") {
-        return (t, false);
+        return (rust_to_clang_target(&t), false);
     }
 
-    (HOST_TARGET.to_owned(), false)
+    (rust_to_clang_target(HOST_TARGET), false)
 }
 
 impl Bindings {
@@ -1963,12 +1974,15 @@ impl Bindings {
         let (effective_target, explicit_target) =
             find_effective_target(&options.clang_args);
 
-        // NOTE: The effective_target == HOST_TARGET check wouldn't be sound
-        // normally in some cases if we were to call a binary (if you have a
-        // 32-bit clang and are building on a 64-bit system for example).
-        // But since we rely on opening libclang.so, it has to be the same
-        // architecture and thus the check is fine.
-        if !(explicit_target || effective_target == HOST_TARGET) {
+        let is_host_build =
+            rust_to_clang_target(HOST_TARGET) == effective_target;
+
+        // NOTE: The is_host_build check wouldn't be sound normally in some
+        // cases if we were to call a binary (if you have a 32-bit clang and are
+        // building on a 64-bit system for example).  But since we rely on
+        // opening libclang.so, it has to be the same architecture and thus the
+        // check is fine.
+        if !explicit_target && !is_host_build {
             options
                 .clang_args
                 .insert(0, format!("--target={}", effective_target));
@@ -2088,17 +2102,14 @@ impl Bindings {
         let time_phases = options.time_phases;
         let mut context = BindgenContext::new(options);
 
-        #[cfg(debug_assertions)]
-        {
-            if effective_target == HOST_TARGET {
-                assert_eq!(
-                    context.target_pointer_size(),
-                    std::mem::size_of::<*mut ()>(),
-                    "{:?} {:?}",
-                    effective_target,
-                    HOST_TARGET
-                );
-            }
+        if is_host_build {
+            debug_assert_eq!(
+                context.target_pointer_size(),
+                std::mem::size_of::<*mut ()>(),
+                "{:?} {:?}",
+                effective_target,
+                HOST_TARGET
+            );
         }
 
         {
@@ -2109,7 +2120,7 @@ impl Bindings {
         let (items, options) = codegen::codegen(context);
 
         Ok(Bindings {
-            options: options,
+            options,
             module: quote! {
                 #( #items )*
             },
@@ -2443,4 +2454,9 @@ fn commandline_flag_unit_test_function() {
     assert!(test_cases
         .iter()
         .all(|ref x| command_line_flags.contains(x),));
+}
+
+#[test]
+fn test_rust_to_clang_target() {
+    assert_eq!(rust_to_clang_target("aarch64-apple-ios"), "arm64-apple-ios");
 }
