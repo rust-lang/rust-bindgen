@@ -139,6 +139,8 @@ Released YYYY/MM/DD
 
 Released 2020/07/06.
 
+**Yanked**: The change in #1798 is technically breaking, see PR for details.
+
 ## Added
 
  * Added ParseCallbacks::func_macro to be able to process function-like macros.
