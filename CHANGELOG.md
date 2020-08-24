@@ -144,6 +144,17 @@ Released YYYY/MM/DD
 
 --------------------------------------------------------------------------------
 
+# 0.55.1
+
+Released 2020/08/24.
+
+## Fixed
+
+ * Fixed a regression where anonymous enums referenced by members or such won't
+   generate valid Rust code. (#1882).
+
+--------------------------------------------------------------------------------
+
 # 0.55.0
 
 Released 2020/08/23.
