@@ -496,7 +496,7 @@ impl FunctionSig {
             ty.ret_type().ok_or(ParseError::Continue)?
         };
 
-        let ret = if ctx.is_target_wasm32() && is_constructor {
+        let ret = if is_constructor && ctx.is_target_wasm32() {
             // Constructors in Clang wasm32 target return a pointer to the object
             // being constructed.
             let void = Item::builtin_type(TypeKind::Void, false, ctx);
