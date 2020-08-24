@@ -11,7 +11,7 @@ extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 #[repr(transparent)]
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Bar(pub id);
 impl std::ops::Deref for Bar {
     type Target = objc::runtime::Object;
@@ -28,7 +28,7 @@ impl Bar {
 impl IBar for Bar {}
 pub trait IBar: Sized + std::ops::Deref {}
 #[repr(transparent)]
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Foo(pub id);
 impl std::ops::Deref for Foo {
     type Target = objc::runtime::Object;
@@ -44,11 +44,11 @@ impl Foo {
 }
 impl IFoo for Foo {}
 pub trait IFoo: Sized + std::ops::Deref {
-    unsafe fn methodUsingBar_(self, my_bar: Bar)
+    unsafe fn methodUsingBar_(&self, my_bar: Bar)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(self, methodUsingBar: my_bar)
+        msg_send!(*self, methodUsingBar: my_bar)
     }
     unsafe fn methodReturningBar() -> Bar
     where

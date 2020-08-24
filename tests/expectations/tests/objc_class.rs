@@ -14,7 +14,7 @@ extern "C" {
     pub static mut fooVar: Foo;
 }
 #[repr(transparent)]
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Foo(pub id);
 impl std::ops::Deref for Foo {
     type Target = objc::runtime::Object;
@@ -30,10 +30,10 @@ impl Foo {
 }
 impl IFoo for Foo {}
 pub trait IFoo: Sized + std::ops::Deref {
-    unsafe fn method(self)
+    unsafe fn method(&self)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(self, method)
+        msg_send!(*self, method)
     }
 }
