@@ -5,6 +5,44 @@
     non_upper_case_globals
 )]
 
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct foo {
+    pub member: foo__bindgen_ty_1::Type,
+}
+pub mod foo__bindgen_ty_1 {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const FOO_A: Type = 0;
+    pub const FOO_B: Type = 1;
+}
+#[test]
+fn bindgen_test_layout_foo() {
+    assert_eq!(
+        ::std::mem::size_of::<foo>(),
+        4usize,
+        concat!("Size of: ", stringify!(foo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<foo>(),
+        4usize,
+        concat!("Alignment of ", stringify!(foo))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<foo>())).member as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(foo),
+            "::",
+            stringify!(member)
+        )
+    );
+}
+impl Default for foo {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
+}
 pub mod Foo {
     pub type Type = ::std::os::raw::c_uint;
     pub const Bar: Type = 0;
