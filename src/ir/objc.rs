@@ -220,11 +220,13 @@ impl ObjCInterface {
             if let Some(ref mut ty) =
                 Self::get_parent_ty(ctx, real_interface_id_for_category)
             {
-                if let TypeKind::ObjCInterface(ref mut real_interface) = ty.kind_mut() {
+                if let TypeKind::ObjCInterface(ref mut real_interface) =
+                    ty.kind_mut()
+                {
                     if !real_interface.is_category() {
                         real_interface.categories.push((
-                                interface.rust_name(),
-                                interface.template_names.clone(),
+                            interface.rust_name(),
+                            interface.template_names.clone(),
                         ));
                     }
                 }
