@@ -3810,7 +3810,7 @@ fn objc_method_codegen(
         }
     } else {
         let fn_args = fn_args.clone();
-        let args = iter::once(quote! { self }).chain(fn_args.into_iter());
+        let args = iter::once(quote! { &self }).chain(fn_args.into_iter());
         quote! {
             ( #( #args ),* ) #fn_ret
         }
@@ -3829,7 +3829,7 @@ fn objc_method_codegen(
         }
     } else {
         quote! {
-            msg_send!(self, #methods_and_args)
+            msg_send!(*self, #methods_and_args)
         }
     };
 
@@ -3905,7 +3905,7 @@ impl CodeGenerator for ObjCInterface {
         if !self.is_category() && !self.is_protocol() {
             let struct_block = quote! {
                 #[repr(transparent)]
-                #[derive(Clone, Copy)]
+                #[derive(Clone)]
                 pub struct #class_name(pub id);
                 impl std::ops::Deref for #class_name {
                     type Target = objc::runtime::Object;
@@ -3966,6 +3966,17 @@ impl CodeGenerator for ObjCInterface {
                         }
                     };
                     result.push(impl_trait);
+                    if !parent.is_template() {
+                        let parent_struct_name = ctx.rust_ident(parent.name());
+                        let from_block = quote! {
+                            impl From<#class_name> for #parent_struct_name {
+                                fn from(child: #class_name) -> #parent_struct_name {
+                                    #parent_struct_name(child.0)
+                                }
+                            }
+                        };
+                        result.push(from_block);
+                    }
                     parent.parent_class
                 } else {
                     None

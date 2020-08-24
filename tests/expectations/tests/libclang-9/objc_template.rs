@@ -11,7 +11,7 @@ extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 #[repr(transparent)]
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Foo(pub id);
 impl std::ops::Deref for Foo {
     type Target = objc::runtime::Object;
@@ -27,15 +27,15 @@ impl Foo {
 }
 impl<ObjectType: 'static> IFoo<ObjectType> for Foo {}
 pub trait IFoo<ObjectType>: Sized + std::ops::Deref {
-    unsafe fn get(self) -> u64
+    unsafe fn get(&self) -> u64
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(self, get)
+        msg_send!(*self, get)
     }
 }
 #[repr(transparent)]
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct FooMultiGeneric(pub id);
 impl std::ops::Deref for FooMultiGeneric {
     type Target = objc::runtime::Object;
@@ -56,10 +56,10 @@ impl<KeyType: 'static, ObjectType: 'static>
 pub trait IFooMultiGeneric<KeyType, ObjectType>:
     Sized + std::ops::Deref
 {
-    unsafe fn objectForKey_(self, key: u64) -> u64
+    unsafe fn objectForKey_(&self, key: u64) -> u64
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(self, objectForKey: key)
+        msg_send!(*self, objectForKey: key)
     }
 }

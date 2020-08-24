@@ -11,7 +11,7 @@ extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 #[repr(transparent)]
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Foo(pub id);
 impl std::ops::Deref for Foo {
     type Target = objc::runtime::Object;
@@ -27,48 +27,48 @@ impl Foo {
 }
 impl IFoo for Foo {}
 pub trait IFoo: Sized + std::ops::Deref {
-    unsafe fn method(self)
+    unsafe fn method(&self)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(self, method)
+        msg_send!(*self, method)
     }
-    unsafe fn methodWithInt_(self, foo: ::std::os::raw::c_int)
+    unsafe fn methodWithInt_(&self, foo: ::std::os::raw::c_int)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(self, methodWithInt: foo)
+        msg_send!(*self, methodWithInt: foo)
     }
-    unsafe fn methodWithFoo_(self, foo: Foo)
+    unsafe fn methodWithFoo_(&self, foo: Foo)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(self, methodWithFoo: foo)
+        msg_send!(*self, methodWithFoo: foo)
     }
-    unsafe fn methodReturningInt(self) -> ::std::os::raw::c_int
+    unsafe fn methodReturningInt(&self) -> ::std::os::raw::c_int
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(self, methodReturningInt)
+        msg_send!(*self, methodReturningInt)
     }
-    unsafe fn methodReturningFoo(self) -> Foo
+    unsafe fn methodReturningFoo(&self) -> Foo
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(self, methodReturningFoo)
+        msg_send!(*self, methodReturningFoo)
     }
     unsafe fn methodWithArg1_andArg2_andArg3_(
-        self,
+        &self,
         intvalue: ::std::os::raw::c_int,
         ptr: *mut ::std::os::raw::c_char,
         floatvalue: f32,
     ) where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send ! ( self , methodWithArg1 : intvalue andArg2 : ptr andArg3 : floatvalue )
+        msg_send ! ( * self , methodWithArg1 : intvalue andArg2 : ptr andArg3 : floatvalue )
     }
     unsafe fn methodWithAndWithoutKeywords_arg2Name__arg4Name_(
-        self,
+        &self,
         arg1: ::std::os::raw::c_int,
         arg2: f32,
         arg3: f32,
@@ -77,7 +77,7 @@ pub trait IFoo: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send ! ( self , methodWithAndWithoutKeywords : arg1 arg2Name : arg2 arg3 : arg3 arg4Name : arg4 )
+        msg_send ! ( * self , methodWithAndWithoutKeywords : arg1 arg2Name : arg2 arg3 : arg3 arg4Name : arg4 )
     }
 }
 pub type instancetype = id;
