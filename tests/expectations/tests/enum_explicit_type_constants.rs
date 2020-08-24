@@ -27,3 +27,4 @@ pub const BoolEnumsAreFun2_Value2: BoolEnumsAreFun2 = true;
 pub type BoolEnumsAreFun2 = MyType;
 pub const AnonymousVariantOne: ::std::os::raw::c_uchar = 0;
 pub const AnonymousVariantTwo: ::std::os::raw::c_uchar = 1;
+pub type _bindgen_ty_1 = ::std::os::raw::c_uchar;
