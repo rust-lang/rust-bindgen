@@ -7,7 +7,7 @@
 
 pub mod B {
     /// Document enum
-    pub type Type = u32;
+    pub type Type = ::std::os::raw::c_uint;
     /// Document field with three slashes
     pub const VAR_A: Type = 0;
     /// Document field with preceeding star

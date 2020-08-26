@@ -112,7 +112,7 @@ bitflags! {
 fn derives_of_item(item: &Item, ctx: &BindgenContext) -> DerivableTraits {
     let mut derivable_traits = DerivableTraits::empty();
 
-    if item.can_derive_debug(ctx) {
+    if item.can_derive_debug(ctx) && !item.annotations().disallow_debug() {
         derivable_traits |= DerivableTraits::DEBUG;
     }
 
@@ -449,7 +449,7 @@ impl CodeGenerator for Item {
             // TODO(emilio, #453): Figure out what to do when this happens
             // legitimately, we could track the opaque stuff and disable the
             // assertion there I guess.
-            error!("Found non-whitelisted item in code generation: {:?}", self);
+            warn!("Found non-whitelisted item in code generation: {:?}", self);
         }
 
         result.set_seen(self.id());
@@ -1885,8 +1885,10 @@ impl CodeGenerator for CompInfo {
 
         let derivable_traits = derives_of_item(item, ctx);
         if !derivable_traits.contains(DerivableTraits::DEBUG) {
-            needs_debug_impl =
-                ctx.options().derive_debug && ctx.options().impl_debug
+            needs_debug_impl = ctx.options().derive_debug &&
+                ctx.options().impl_debug &&
+                !ctx.no_debug_by_name(item) &&
+                !item.annotations().disallow_debug();
         }
 
         if !derivable_traits.contains(DerivableTraits::DEFAULT) {
@@ -2438,6 +2440,7 @@ enum EnumBuilder<'a> {
         is_bitfield: bool,
     },
     Consts {
+        repr: proc_macro2::TokenStream,
         variants: Vec<proc_macro2::TokenStream>,
         codegen_depth: usize,
     },
@@ -2456,6 +2459,14 @@ impl<'a> EnumBuilder<'a> {
             EnumBuilder::NewType { codegen_depth, .. } |
             EnumBuilder::ModuleConsts { codegen_depth, .. } |
             EnumBuilder::Consts { codegen_depth, .. } => codegen_depth,
+        }
+    }
+
+    /// Returns true if the builder is for a rustified enum.
+    fn is_rust_enum(&self) -> bool {
+        match *self {
+            EnumBuilder::Rust { .. } => true,
+            _ => false,
         }
     }
 
@@ -2492,13 +2503,20 @@ impl<'a> EnumBuilder<'a> {
                 }
             }
 
-            EnumVariation::Consts => EnumBuilder::Consts {
-                variants: vec![quote! {
+            EnumVariation::Consts => {
+                let mut variants = Vec::new();
+
+                variants.push(quote! {
                     #( #attrs )*
                     pub type #ident = #repr;
-                }],
-                codegen_depth: enum_codegen_depth,
-            },
+                });
+
+                EnumBuilder::Consts {
+                    repr,
+                    variants,
+                    codegen_depth: enum_codegen_depth,
+                }
+            }
 
             EnumVariation::ModuleConsts => {
                 let ident = Ident::new(
@@ -2530,7 +2548,12 @@ impl<'a> EnumBuilder<'a> {
         is_ty_named: bool,
     ) -> Self {
         let variant_name = ctx.rust_mangle(variant.name());
+        let is_rust_enum = self.is_rust_enum();
         let expr = match variant.val() {
+            EnumVariantValue::Boolean(v) if is_rust_enum => {
+                helpers::ast_ty::uint_expr(v as u64)
+            }
+            EnumVariantValue::Boolean(v) => quote!(#v),
             EnumVariantValue::Signed(v) => helpers::ast_ty::int_expr(v),
             EnumVariantValue::Unsigned(v) => helpers::ast_ty::uint_expr(v),
         };
@@ -2593,7 +2616,7 @@ impl<'a> EnumBuilder<'a> {
                 self
             }
 
-            EnumBuilder::Consts { .. } => {
+            EnumBuilder::Consts { ref repr, .. } => {
                 let constant_name = match mangling_prefix {
                     Some(prefix) => {
                         Cow::Owned(format!("{}_{}", prefix, variant_name))
@@ -2601,10 +2624,12 @@ impl<'a> EnumBuilder<'a> {
                     None => variant_name,
                 };
 
+                let ty = if is_ty_named { &rust_ty } else { repr };
+
                 let ident = ctx.rust_ident(constant_name);
                 result.push(quote! {
                     #doc
-                    pub const #ident : #rust_ty = #expr ;
+                    pub const #ident : #ty = #expr ;
                 });
 
                 self
@@ -2859,9 +2884,12 @@ impl CodeGenerator for Enum {
             });
         }
 
-        let repr = {
-            let repr_name = ctx.rust_ident_raw(repr_name);
-            quote! { #repr_name }
+        let repr = match self.repr() {
+            Some(ty) => ty.to_rust_ty_or_opaque(ctx, &()),
+            None => {
+                let repr_name = ctx.rust_ident_raw(repr_name);
+                quote! { #repr_name }
+            }
         };
 
         let mut builder = EnumBuilder::new(
@@ -3013,6 +3041,50 @@ impl CodeGenerator for Enum {
 
         let item = builder.build(ctx, enum_rust_ty, result);
         result.push(item);
+    }
+}
+
+/// Enum for the default type of macro constants.
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub enum MacroTypeVariation {
+    /// Use i32 or i64
+    Signed,
+    /// Use u32 or u64
+    Unsigned,
+}
+
+impl MacroTypeVariation {
+    /// Convert a `MacroTypeVariation` to its str representation.
+    pub fn as_str(&self) -> &str {
+        match self {
+            MacroTypeVariation::Signed => "signed",
+            MacroTypeVariation::Unsigned => "unsigned",
+        }
+    }
+}
+
+impl Default for MacroTypeVariation {
+    fn default() -> MacroTypeVariation {
+        MacroTypeVariation::Unsigned
+    }
+}
+
+impl std::str::FromStr for MacroTypeVariation {
+    type Err = std::io::Error;
+
+    /// Create a `MacroTypeVariation` from a string.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "signed" => Ok(MacroTypeVariation::Signed),
+            "unsigned" => Ok(MacroTypeVariation::Unsigned),
+            _ => Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                concat!(
+                    "Got an invalid MacroTypeVariation. Accepted values ",
+                    "are 'signed' and 'unsigned'"
+                ),
+            )),
+        }
     }
 }
 
@@ -3436,6 +3508,11 @@ impl TryToRustTy for Type {
                     inner.into_resolver().through_type_refs().resolve(ctx);
                 let inner_ty = inner.expect_type();
 
+                let is_objc_pointer = match inner_ty.kind() {
+                    TypeKind::ObjCInterface(..) => true,
+                    _ => false,
+                };
+
                 // Regardless if we can properly represent the inner type, we
                 // should always generate a proper pointer here, so use
                 // infallible conversion of the inner type.
@@ -3444,7 +3521,8 @@ impl TryToRustTy for Type {
 
                 // Avoid the first function pointer level, since it's already
                 // represented in Rust.
-                if inner_ty.canonical_type(ctx).is_function() {
+                if inner_ty.canonical_type(ctx).is_function() || is_objc_pointer
+                {
                     Ok(ty)
                 } else {
                     Ok(ty.to_ptr(is_const))
@@ -3463,9 +3541,12 @@ impl TryToRustTy for Type {
             TypeKind::ObjCId => Ok(quote! {
                 id
             }),
-            TypeKind::ObjCInterface(..) => Ok(quote! {
-                objc::runtime::Object
-            }),
+            TypeKind::ObjCInterface(ref interface) => {
+                let name = ctx.rust_ident(interface.name());
+                Ok(quote! {
+                    #name
+                })
+            }
             ref u @ TypeKind::UnresolvedTypeRef(..) => {
                 unreachable!("Should have been resolved after parsing {:?}!", u)
             }
@@ -3960,7 +4041,7 @@ pub(crate) fn codegen(
                     "Your dot file was generated successfully into: {}",
                     path
                 ),
-                Err(e) => error!("{}", e),
+                Err(e) => warn!("{}", e),
             }
         }
 
@@ -4341,11 +4422,12 @@ mod utils {
                     TypeKind::Pointer(inner) => {
                         let inner = ctx.resolve_item(inner);
                         let inner_ty = inner.expect_type();
-                        if let TypeKind::ObjCInterface(_) =
+                        if let TypeKind::ObjCInterface(ref interface) =
                             *inner_ty.canonical_type(ctx).kind()
                         {
+                            let name = ctx.rust_ident(interface.name());
                             quote! {
-                                id
+                                #name
                             }
                         } else {
                             arg_item.to_rust_ty_or_opaque(ctx, &())

@@ -17,6 +17,7 @@
     - [Treating a Type as an Opaque Blob of Bytes](./opaque.md)
     - [Replacing One Type with Another](./replacing-types.md)
     - [Preventing the Derivation of `Copy` and `Clone`](./nocopy.md)
+    - [Preventing the Derivation of `Debug`](./nodebug.md)
 - [Generating Bindings to C++](./cpp.md)
 - [Generating Bindings to Objective-c](./objc.md)
 - [Using Unions](./using-unions.md)

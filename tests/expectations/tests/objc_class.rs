@@ -11,7 +11,7 @@ extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 extern "C" {
-    pub static mut fooVar: *mut objc::runtime::Object;
+    pub static mut fooVar: Foo;
 }
 #[repr(transparent)]
 #[derive(Clone, Copy)]

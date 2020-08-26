@@ -7,5 +7,5 @@
 
 pub const a_b: a = 0;
 pub const a_c: a = 1;
-pub type a = u32;
+pub type a = ::std::os::raw::c_uint;
 pub type d = u32;

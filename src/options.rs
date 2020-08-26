@@ -1,5 +1,6 @@
 use bindgen::{
-    builder, AliasVariation, Builder, CodegenConfig, EnumVariation, RustTarget,
+    builder, AliasVariation, Builder, CodegenConfig, EnumVariation,
+    MacroTypeVariation, RustTarget, DEFAULT_ANON_FIELDS_PREFIX,
     RUST_TARGET_STRINGS,
 };
 use clap::{App, Arg};
@@ -87,6 +88,13 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("default-macro-constant-type")
+                .long("default-macro-constant-type")
+                .help("The default signed/unsigned type for C macro constants.")
+                .value_name("variant")
+                .default_value("unsigned")
+                .possible_values(&["signed", "unsigned"])
+                .multiple(false),
             Arg::with_name("default-alias-style")
                 .long("default-alias-style")
                 .help("The default style of code used to generate typedefs.")
@@ -233,6 +241,12 @@ where
                      ::std::os::raw.",
                 )
                 .value_name("prefix")
+                .takes_value(true),
+            Arg::with_name("anon-fields-prefix")
+                .long("anon-fields-prefix")
+                .help("Use the given prefix for the anon fields.")
+                .value_name("prefix")
+                .default_value(DEFAULT_ANON_FIELDS_PREFIX)
                 .takes_value(true),
             Arg::with_name("time-phases")
                 .long("time-phases")
@@ -430,6 +444,13 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("no-debug")
+                .long("no-debug")
+                .help("Avoid deriving Debug for types matching <regex>.")
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
             Arg::with_name("no-hash")
                 .long("no-hash")
                 .help("Avoid deriving Hash for types matching <regex>.")
@@ -507,6 +528,11 @@ where
         for regex in constified_mods {
             builder = builder.constified_enum_module(regex);
         }
+    }
+
+    if let Some(variant) = matches.value_of("default-macro-constant-type") {
+        builder = builder
+            .default_macro_constant_type(MacroTypeVariation::from_str(variant)?)
     }
 
     if let Some(variant) = matches.value_of("default-alias-style") {
@@ -625,6 +651,10 @@ where
 
     if let Some(prefix) = matches.value_of("ctypes-prefix") {
         builder = builder.ctypes_prefix(prefix);
+    }
+
+    if let Some(prefix) = matches.value_of("anon-fields-prefix") {
+        builder = builder.anon_fields_prefix(prefix);
     }
 
     if let Some(what_to_generate) = matches.value_of("generate") {
@@ -828,6 +858,12 @@ where
     if let Some(no_copy) = matches.values_of("no-copy") {
         for regex in no_copy {
             builder = builder.no_copy(regex);
+        }
+    }
+
+    if let Some(no_debug) = matches.values_of("no-debug") {
+        for regex in no_debug {
+            builder = builder.no_debug(regex);
         }
     }
 

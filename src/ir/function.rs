@@ -495,7 +495,15 @@ impl FunctionSig {
         } else {
             ty.ret_type().ok_or(ParseError::Continue)?
         };
-        let ret = Item::from_ty_or_ref(ty_ret_type, cursor, None, ctx);
+
+        let ret = if is_constructor && ctx.is_target_wasm32() {
+            // Constructors in Clang wasm32 target return a pointer to the object
+            // being constructed.
+            let void = Item::builtin_type(TypeKind::Void, false, ctx);
+            Item::builtin_type(TypeKind::Pointer(void), false, ctx)
+        } else {
+            Item::from_ty_or_ref(ty_ret_type, cursor, None, ctx)
+        };
 
         // Clang plays with us at "find the calling convention", see #549 and
         // co. This seems to be a better fix than that commit.

@@ -9,97 +9,106 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
-- [0.54.0](#0540)
+- [0.55.0](#0550)
+  - [Removed](#removed-1)
   - [Added](#added-1)
   - [Changed](#changed-1)
   - [Fixed](#fixed-1)
-- [0.53.3](#0533)
+- [0.54.1](#0541)
   - [Added](#added-2)
-  - [Fixed](#fixed-2)
-- [0.53.2](#0532)
   - [Changed](#changed-2)
-- [0.53.1](#0531)
+  - [Fixed](#fixed-2)
+- [0.54.0](#0540)
   - [Added](#added-3)
-- [0.53.0](#0530)
-  - [Added](#added-4)
   - [Changed](#changed-3)
   - [Fixed](#fixed-3)
-- [0.52.0](#0520)
-  - [Added](#added-5)
-  - [Changed](#changed-4)
+- [0.53.3](#0533)
+  - [Added](#added-4)
   - [Fixed](#fixed-4)
-- [0.51.1](#0511)
-  - [Fixed](#fixed-5)
-  - [Changed](#changed-5)
-- [0.51.0](#0510)
-  - [Fixed](#fixed-6)
-  - [Changed](#changed-6)
+- [0.53.2](#0532)
+  - [Changed](#changed-4)
+- [0.53.1](#0531)
+  - [Added](#added-5)
+- [0.53.0](#0530)
   - [Added](#added-6)
-- [0.50.0](#0500)
+  - [Changed](#changed-5)
+  - [Fixed](#fixed-5)
+- [0.52.0](#0520)
   - [Added](#added-7)
-- [0.49.3](#0493)
-  - [Added](#added-8)
-- [0.49.2](#0492)
-  - [Changed](#changed-7)
-- [0.49.1](#0491)
+  - [Changed](#changed-6)
+  - [Fixed](#fixed-6)
+- [0.51.1](#0511)
   - [Fixed](#fixed-7)
-  - [Changed](#changed-8)
-- [0.49.0](#0490)
-  - [Added](#added-9)
+  - [Changed](#changed-7)
+- [0.51.0](#0510)
   - [Fixed](#fixed-8)
+  - [Changed](#changed-8)
+  - [Added](#added-8)
+- [0.50.0](#0500)
+  - [Added](#added-9)
+- [0.49.3](#0493)
+  - [Added](#added-10)
+- [0.49.2](#0492)
   - [Changed](#changed-9)
-- [0.48.1](#0481)
+- [0.49.1](#0491)
   - [Fixed](#fixed-9)
-- [0.48.0](#0480)
   - [Changed](#changed-10)
+- [0.49.0](#0490)
+  - [Added](#added-11)
   - [Fixed](#fixed-10)
-- [0.47.3](#0473)
   - [Changed](#changed-11)
-- [0.47.2](#0472)
+- [0.48.1](#0481)
   - [Fixed](#fixed-11)
-- [0.47.1](#0471)
+- [0.48.0](#0480)
   - [Changed](#changed-12)
   - [Fixed](#fixed-12)
-- [0.47.0](#0470)
+- [0.47.3](#0473)
   - [Changed](#changed-13)
+- [0.47.2](#0472)
   - [Fixed](#fixed-13)
-- [0.33.1 .. 0.46.0](#0331--0460)
-  - [Added](#added-10)
-  - [Removed](#removed-1)
+- [0.47.1](#0471)
   - [Changed](#changed-14)
   - [Fixed](#fixed-14)
-- [0.33.1](#0331)
-  - [Fixed](#fixed-15)
-- [0.33.0](#0330)
-  - [Added](#added-11)
+- [0.47.0](#0470)
   - [Changed](#changed-15)
-  - [Deprecated](#deprecated-1)
-  - [Removed](#removed-2)
-  - [Fixed](#fixed-16)
-  - [Security](#security-1)
-- [0.32.2](#0322)
-  - [Fixed](#fixed-17)
-- [0.32.1](#0321)
-  - [Fixed](#fixed-18)
-- [0.32.0](#0320)
+  - [Fixed](#fixed-15)
+- [0.33.1 .. 0.46.0](#0331--0460)
   - [Added](#added-12)
+  - [Removed](#removed-2)
   - [Changed](#changed-16)
-  - [Fixed](#fixed-19)
-- [0.31.0](#0310)
+  - [Fixed](#fixed-16)
+- [0.33.1](#0331)
+  - [Fixed](#fixed-17)
+- [0.33.0](#0330)
   - [Added](#added-13)
   - [Changed](#changed-17)
-  - [Deprecated](#deprecated-2)
+  - [Deprecated](#deprecated-1)
   - [Removed](#removed-3)
+  - [Fixed](#fixed-18)
+  - [Security](#security-1)
+- [0.32.2](#0322)
+  - [Fixed](#fixed-19)
+- [0.32.1](#0321)
   - [Fixed](#fixed-20)
-- [0.30.0](#0300)
+- [0.32.0](#0320)
   - [Added](#added-14)
   - [Changed](#changed-18)
-  - [Deprecated](#deprecated-3)
   - [Fixed](#fixed-21)
-- [0.29.0](#0290)
+- [0.31.0](#0310)
   - [Added](#added-15)
   - [Changed](#changed-19)
+  - [Deprecated](#deprecated-2)
+  - [Removed](#removed-4)
   - [Fixed](#fixed-22)
+- [0.30.0](#0300)
+  - [Added](#added-16)
+  - [Changed](#changed-20)
+  - [Deprecated](#deprecated-3)
+  - [Fixed](#fixed-23)
+- [0.29.0](#0290)
+  - [Added](#added-17)
+  - [Changed](#changed-21)
+  - [Fixed](#fixed-24)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -132,6 +141,96 @@ Released YYYY/MM/DD
 ## Security
 
 * TODO (or remove section if none)
+
+--------------------------------------------------------------------------------
+
+# 0.55.1
+
+Released 2020/08/24.
+
+## Fixed
+
+ * Fixed a regression where anonymous enums referenced by members or such won't
+   generate valid Rust code. (#1882).
+
+--------------------------------------------------------------------------------
+
+# 0.55.0
+
+Released 2020/08/23.
+
+## Removed
+
+ * Support for libclang 3.8 has been removed (#1830).
+
+## Added
+
+ * Added options to avoid deriving the Debug trait (#1858).
+
+ * Added options to allow to override the default anonymous field prefix (#1859).
+
+ * Added options to allow to override the default macro integer type from the
+   command line (#1863).
+
+## Changed
+
+ * Typed anonymous enums now generate better code (#1850).
+
+ * Objective-C bindings are more idiomatic now (#1847).
+
+ * Updated to clang-sys 1.0. Minimum supported rust version is 1.40 as
+   a consequence of that change.
+
+## Fixed
+
+ * Fixed constness of multi-dimensional arrays in some cases (#1861).
+
+ * Fixed wrong target given to clang when compiling with a target which doesn't
+   match the target clang expects (#1870, #1878).
+
+ * Fixed wrong flags being computed for cross-compilation cases where the target
+   wasn't explicitly provided via clang flags (#1872).
+
+Thanks again to all the awesome contributors that sent patches included in this
+release!
+
+--------------------------------------------------------------------------------
+
+# 0.54.1
+
+Released 2020/07/06.
+
+**Yanked**: The change in #1798 is technically breaking, see PR for details.
+
+## Added
+
+ * Added ParseCallbacks::func_macro to be able to process function-like macros.
+   (#1792).
+
+ * Allowed IntKind::Custom to represent paths instead of idents (#1800).
+
+## Changed
+
+ * Generated comment now includes the bindgen version, and can be disabled
+   (#1814).
+
+ * Various documentation improvements.
+
+## Fixed
+
+ * Typedefs for types with the same names as rust primitive types compiles
+   (#1798).
+
+ * Bindgen dependencies will now get rebuilt when various environment variables
+   that affect bindgen change (#1809, #1813).
+
+ * Various fixes to command_line_flags (#1816, #1819, #1821).
+
+ * Functions that start with `operator` now get properly generated (#1817).
+
+
+Thanks to all the awesome contributors that sent patches included in this
+release!
 
 --------------------------------------------------------------------------------
 

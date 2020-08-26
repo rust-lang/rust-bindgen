@@ -1,5 +1,6 @@
 //! Intermediate representation of variables.
 
+use super::super::codegen::MacroTypeVariation;
 use super::context::{BindgenContext, TypeId};
 use super::dot::DotAttributes;
 use super::function::cursor_mangling;
@@ -117,9 +118,12 @@ impl DotAttributes for Var {
 }
 
 // TODO(emilio): we could make this more (or less) granular, I guess.
-fn default_macro_constant_type(value: i64) -> IntKind {
-    if value < 0 {
-        if value < i32::min_value() as i64 {
+fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
+    if value < 0 ||
+        ctx.options().default_macro_constant_type ==
+            MacroTypeVariation::Signed
+    {
+        if value < i32::min_value() as i64 || value > i32::max_value() as i64 {
             IntKind::I64
         } else {
             IntKind::I32
@@ -141,31 +145,10 @@ fn handle_function_macro(
     tokens: &[ClangToken],
     callbacks: &dyn crate::callbacks::ParseCallbacks,
 ) -> Result<(), ParseError> {
-    fn is_abutting(a: &ClangToken, b: &ClangToken) -> bool {
-        unsafe {
-            clang_sys::clang_equalLocations(
-                clang_sys::clang_getRangeEnd(a.extent),
-                clang_sys::clang_getRangeStart(b.extent),
-            ) != 0
-        }
-    }
-
-    let is_functional_macro =
-        // If we have libclang >= 3.9, we can use `is_macro_function_like()` and
-        // avoid checking for abutting tokens ourselves.
-        cursor.is_macro_function_like().unwrap_or_else(|| {
-            // If we cannot get a definitive answer from clang, we instead check
-            // for a parenthesis token immediately adjacent to (that is,
-            // abutting) the first token in the macro definition.
-            // TODO: Once we don't need the fallback check here, we can hoist
-            // the `is_macro_function_like` check into this function's caller,
-            // and thus avoid allocating the `tokens` vector for non-functional
-            // macros.
-            match tokens.get(0..2) {
-                Some([a, b]) => is_abutting(&a, &b) && b.spelling() == b"(",
-                _ => false,
-            }
-        });
+    // TODO: Hoist the `is_macro_function_like` check into this function's
+    // caller, and thus avoid allocating the `tokens` vector for non-functional
+    // macros.
+    let is_functional_macro = cursor.is_macro_function_like();
 
     if !is_functional_macro {
         return Ok(());
@@ -285,7 +268,7 @@ impl ClangSubItemParser for Var {
                             .parse_callbacks()
                             .and_then(|c| c.int_macro(&name, value))
                             .unwrap_or_else(|| {
-                                default_macro_constant_type(value)
+                                default_macro_constant_type(&ctx, value)
                             });
 
                         (TypeKind::Int(kind), VarType::Int(value))

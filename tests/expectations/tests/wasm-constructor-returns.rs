@@ -10,10 +10,6 @@
 pub struct Foo {
     pub _address: u8,
 }
-extern "C" {
-    #[link_name = "\u{1}_ZN3Foo4kFooE"]
-    pub static Foo_kFoo: bool;
-}
 #[test]
 fn bindgen_test_layout_Foo() {
     assert_eq!(
@@ -27,12 +23,18 @@ fn bindgen_test_layout_Foo() {
         concat!("Alignment of ", stringify!(Foo))
     );
 }
-#[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
-pub struct Bar {
-    pub _address: u8,
-}
 extern "C" {
-    #[link_name = "\u{1}_Z5Test2v"]
-    pub fn Test2() -> ::std::os::raw::c_uint;
+    #[link_name = "\u{1}_ZN3FooC1Ei"]
+    pub fn Foo_Foo(
+        this: *mut Foo,
+        var: ::std::os::raw::c_int,
+    ) -> *mut ::std::os::raw::c_void;
+}
+impl Foo {
+    #[inline]
+    pub unsafe fn new(var: ::std::os::raw::c_int) -> Self {
+        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+        Foo_Foo(__bindgen_tmp.as_mut_ptr(), var);
+        __bindgen_tmp.assume_init()
+    }
 }

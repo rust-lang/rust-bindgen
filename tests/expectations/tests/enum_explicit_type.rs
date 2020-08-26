@@ -43,3 +43,19 @@ pub enum MuchULongLong {
 pub enum BoolEnumsAreFun {
     Value = 1,
 }
+pub type MyType = bool;
+#[repr(u8)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum BoolEnumsAreFun2 {
+    Value2 = 1,
+}
+pub const AnonymousVariantOne: _bindgen_ty_1 =
+    _bindgen_ty_1::AnonymousVariantOne;
+pub const AnonymousVariantTwo: _bindgen_ty_1 =
+    _bindgen_ty_1::AnonymousVariantTwo;
+#[repr(u8)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum _bindgen_ty_1 {
+    AnonymousVariantOne = 0,
+    AnonymousVariantTwo = 1,
+}

@@ -748,16 +748,13 @@ impl CompFields {
 
         match result {
             Ok((fields, has_bitfield_units)) => {
-                mem::replace(
-                    self,
-                    CompFields::AfterComputingBitfieldUnits {
-                        fields,
-                        has_bitfield_units,
-                    },
-                );
+                *self = CompFields::AfterComputingBitfieldUnits {
+                    fields,
+                    has_bitfield_units,
+                };
             }
             Err(()) => {
-                mem::replace(self, CompFields::ErrorComputingBitfieldUnits);
+                *self = CompFields::ErrorComputingBitfieldUnits;
             }
         }
     }
@@ -828,9 +825,11 @@ impl CompFields {
                     }
 
                     anon_field_counter += 1;
-                    let generated_name =
-                        format!("__bindgen_anon_{}", anon_field_counter);
-                    *name = Some(generated_name);
+                    *name = Some(format!(
+                        "{}{}",
+                        ctx.options().anon_fields_prefix,
+                        anon_field_counter
+                    ));
                 }
                 Field::Bitfields(ref mut bu) => {
                     for bitfield in &mut bu.bitfields {

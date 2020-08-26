@@ -12,6 +12,23 @@ extern crate objc;
 pub type id = *mut objc::runtime::Object;
 #[repr(transparent)]
 #[derive(Clone, Copy)]
+pub struct Bar(pub id);
+impl std::ops::Deref for Bar {
+    type Target = objc::runtime::Object;
+    fn deref(&self) -> &Self::Target {
+        unsafe { &*self.0 }
+    }
+}
+unsafe impl objc::Message for Bar {}
+impl Bar {
+    pub fn alloc() -> Self {
+        Self(unsafe { msg_send!(objc::class!(Bar), alloc) })
+    }
+}
+impl IBar for Bar {}
+pub trait IBar: Sized + std::ops::Deref {}
+#[repr(transparent)]
+#[derive(Clone, Copy)]
 pub struct Foo(pub id);
 impl std::ops::Deref for Foo {
     type Target = objc::runtime::Object;
@@ -26,41 +43,17 @@ impl Foo {
     }
 }
 impl IFoo for Foo {}
-pub trait IFoo: Sized + std::ops::Deref {}
-#[repr(transparent)]
-#[derive(Clone, Copy)]
-pub struct Bar(pub id);
-impl std::ops::Deref for Bar {
-    type Target = objc::runtime::Object;
-    fn deref(&self) -> &Self::Target {
-        unsafe { &*self.0 }
+pub trait IFoo: Sized + std::ops::Deref {
+    unsafe fn methodUsingBar_(self, my_bar: Bar)
+    where
+        <Self as std::ops::Deref>::Target: objc::Message + Sized,
+    {
+        msg_send!(self, methodUsingBar: my_bar)
+    }
+    unsafe fn methodReturningBar() -> Bar
+    where
+        <Self as std::ops::Deref>::Target: objc::Message + Sized,
+    {
+        msg_send!(class!(Foo), methodReturningBar)
     }
 }
-unsafe impl objc::Message for Bar {}
-impl Bar {
-    pub fn alloc() -> Self {
-        Self(unsafe { msg_send!(objc::class!(Bar), alloc) })
-    }
-}
-impl IFoo for Bar {}
-impl IBar for Bar {}
-pub trait IBar: Sized + std::ops::Deref {}
-#[repr(transparent)]
-#[derive(Clone, Copy)]
-pub struct Baz(pub id);
-impl std::ops::Deref for Baz {
-    type Target = objc::runtime::Object;
-    fn deref(&self) -> &Self::Target {
-        unsafe { &*self.0 }
-    }
-}
-unsafe impl objc::Message for Baz {}
-impl Baz {
-    pub fn alloc() -> Self {
-        Self(unsafe { msg_send!(objc::class!(Baz), alloc) })
-    }
-}
-impl IBar for Baz {}
-impl IFoo for Baz {}
-impl IBaz for Baz {}
-pub trait IBaz: Sized + std::ops::Deref {}

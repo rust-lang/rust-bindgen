@@ -31,8 +31,8 @@ case "$BINDGEN_JOB" in
         # This test should not use Cargo.lock as it's ignored for library builds
         rm Cargo.lock
         # The MSRV below is also documented in README.md, please keep in sync
-        rustup install 1.34.0
-        cargo +1.34.0 build --lib $NO_DEFAULT_FEATURES --features "$BINDGEN_FEATURES"
+        rustup install 1.40.0
+        cargo +1.40.0 build --lib $NO_DEFAULT_FEATURES --features "$BINDGEN_FEATURES"
         ;;
 
     "integration")

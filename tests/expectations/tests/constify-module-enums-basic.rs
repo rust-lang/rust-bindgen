@@ -6,7 +6,7 @@
 )]
 
 pub mod foo {
-    pub type Type = u32;
+    pub type Type = ::std::os::raw::c_uint;
     pub const THIS: Type = 0;
     pub const SHOULD_BE: Type = 1;
     pub const A_CONSTANT: Type = 2;
