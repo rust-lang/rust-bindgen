@@ -211,7 +211,7 @@ impl ObjCInterface {
         if interface.is_category() {
             // If this interface is a category, we need to find the interface that this category
             // extends.
-            let needle = format!("{}", interface.name());
+            let needle = interface.name();
             debug!(
                 "Category {} belongs to {}, find the item",
                 interface.rust_name(),
@@ -220,16 +220,15 @@ impl ObjCInterface {
             if let Some(ref mut ty) =
                 Self::get_parent_ty(ctx, real_interface_id_for_category)
             {
-                match ty.kind_mut() {
-                    TypeKind::ObjCInterface(ref mut real_interface) => {
-                        if !real_interface.is_category() {
-                            real_interface.categories.push((
-                                interface.rust_name(),
-                                interface.template_names.clone(),
-                            ));
-                        }
+                if let TypeKind::ObjCInterface(ref mut real_interface) =
+                    ty.kind_mut()
+                {
+                    if !real_interface.is_category() {
+                        real_interface.categories.push((
+                            interface.rust_name(),
+                            interface.template_names.clone(),
+                        ));
                     }
-                    _ => {}
                 }
             }
         }
@@ -243,17 +242,17 @@ impl ObjCInterface {
         // This is pretty gross but using the ItemResolver doesn't yield a mutable reference.
         let real_interface_item = ctx.get_item_mut(parent_id?)?;
         let ty = real_interface_item.kind().as_type()?;
+        let item_id = match ty.kind() {
+            TypeKind::ResolvedTypeRef(item_id) => item_id,
+            _ => return None,
+        };
 
-        if let TypeKind::ResolvedTypeRef(item_id) = ty.kind() {
-            let real_interface_id: ItemId = item_id.into();
-            let ty = ctx
-                .get_item_mut(real_interface_id)?
-                .kind_mut()
-                .as_type_mut()?;
-            return Some(ty);
-        } else {
-            return None;
-        }
+        let real_interface_id: ItemId = item_id.into();
+        let ty = ctx
+            .get_item_mut(real_interface_id)?
+            .kind_mut()
+            .as_type_mut()?;
+        return Some(ty);
     }
 
     fn add_method(&mut self, method: ObjCMethod) {
