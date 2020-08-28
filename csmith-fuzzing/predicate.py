@@ -80,6 +80,7 @@ reducing.add_argument(
 reducing.add_argument(
     "--bindings-grep",
     type=str,
+    nargs='*',
     help="Exit non-zero if the given regexp pattern is not found in the emitted bindings.")
 
 reducing.add_argument(
@@ -218,11 +219,11 @@ def run_bindgen(args, bindings):
     if not args.expect_bindgen_fail and child.returncode != 0:
         exit_1("Error: running `bindgen` failed", child)
 
-    if args.bindings_grep:
-        pattern = regexp(args.bindings_grep)
+    for arg in args.bindings_grep:
+        pattern = regexp(arg)
         with open(bindings, mode="r") as f:
             if not contains(pattern, f):
-                print("Error: expected the emitted bindings to contain '{}', but they didn't".format(args.bindings_grep))
+                print("Error: expected the emitted bindings to contain '{}', but they didn't".format(arg))
                 print("---------- {} ----------------------------------------------".format(bindings))
                 f.seek(0)
                 print(f.read())
