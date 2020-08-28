@@ -49,6 +49,7 @@ use crate::{Entry, HashMap, HashSet};
 use std;
 use std::borrow::Cow;
 use std::cell::Cell;
+use std::collections::HashSet as CollectionHashSet;
 use std::collections::VecDeque;
 use std::fmt::Write;
 use std::iter;
@@ -3925,11 +3926,13 @@ impl CodeGenerator for ObjCInterface {
                 }
             };
             result.push(struct_block);
+            let mut protocol_set : CollectionHashSet<ItemId> = CollectionHashSet::new();
             for protocol_id in self.conforms_to.iter() {
+                protocol_set.insert(*protocol_id);
                 let protocol_name = ctx.rust_ident(
                     ctx.resolve_type(protocol_id.expect_type_id(ctx))
-                        .name()
-                        .unwrap(),
+                    .name()
+                    .unwrap(),
                 );
                 let impl_trait = quote! {
                     impl #protocol_name for #class_name { }
@@ -3966,16 +3969,48 @@ impl CodeGenerator for ObjCInterface {
                         }
                     };
                     result.push(impl_trait);
+                    for protocol_id in parent.conforms_to.iter() {
+                        if !protocol_set.contains(protocol_id) {
+
+                            protocol_set.insert(*protocol_id);
+                            let protocol_name = ctx.rust_ident(
+                                ctx.resolve_type(protocol_id.expect_type_id(ctx))
+                                .name()
+                                .unwrap(),
+                            );
+                            let impl_trait = quote! {
+                                impl #protocol_name for #class_name { }
+                            };
+                            result.push(impl_trait);
+                        }
+                    }
                     if !parent.is_template() {
-                        let parent_struct_name = ctx.rust_ident(parent.name());
+                        let parent_struct_name = parent.name();
+                        let child_struct_name = self.name();
+                        let parent_struct = ctx.rust_ident(parent_struct_name);
                         let from_block = quote! {
-                            impl From<#class_name> for #parent_struct_name {
-                                fn from(child: #class_name) -> #parent_struct_name {
-                                    #parent_struct_name(child.0)
+                            impl From<#class_name> for #parent_struct {
+                                fn from(child: #class_name) -> #parent_struct {
+                                    #parent_struct(child.0)
                                 }
                             }
                         };
                         result.push(from_block);
+
+                        let try_into_block = quote! {
+                            impl std::convert::TryFrom<#parent_struct> for #class_name {
+                                type Error = String;
+                                fn try_from(parent: #parent_struct) -> Result<#class_name, Self::Error> {
+                                    let is_kind_of : bool = unsafe { msg_send!(parent, isKindOfClass:class!(#class_name))};
+                                    if is_kind_of {
+                                        Ok(#class_name(parent.0))
+                                    } else {
+                                        Err(format!("This {} is not an cannot be downcasted to {}", #parent_struct_name, #child_struct_name))
+                                    }
+                                }
+                            }
+                        };
+                        result.push(try_into_block);
                     }
                     parent.parent_class
                 } else {

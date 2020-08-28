@@ -10,6 +10,7 @@
 extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
+pub trait PFoo: Sized + std::ops::Deref {}
 #[repr(transparent)]
 #[derive(Clone)]
 pub struct Foo(pub id);
@@ -25,6 +26,7 @@ impl Foo {
         Self(unsafe { msg_send!(objc::class!(Foo), alloc) })
     }
 }
+impl PFoo for Foo {}
 impl IFoo for Foo {}
 pub trait IFoo: Sized + std::ops::Deref {}
 #[repr(transparent)]
@@ -43,6 +45,7 @@ impl Bar {
     }
 }
 impl IFoo for Bar {}
+impl PFoo for Bar {}
 impl From<Bar> for Foo {
     fn from(child: Bar) -> Foo {
         Foo(child.0)
@@ -65,62 +68,3 @@ impl std::convert::TryFrom<Foo> for Bar {
 }
 impl IBar for Bar {}
 pub trait IBar: Sized + std::ops::Deref {}
-#[repr(transparent)]
-#[derive(Clone)]
-pub struct Baz(pub id);
-impl std::ops::Deref for Baz {
-    type Target = objc::runtime::Object;
-    fn deref(&self) -> &Self::Target {
-        unsafe { &*self.0 }
-    }
-}
-unsafe impl objc::Message for Baz {}
-impl Baz {
-    pub fn alloc() -> Self {
-        Self(unsafe { msg_send!(objc::class!(Baz), alloc) })
-    }
-}
-impl IBar for Baz {}
-impl From<Baz> for Bar {
-    fn from(child: Baz) -> Bar {
-        Bar(child.0)
-    }
-}
-impl std::convert::TryFrom<Bar> for Baz {
-    type Error = String;
-    fn try_from(parent: Bar) -> Result<Baz, Self::Error> {
-        let is_kind_of: bool =
-            unsafe { msg_send!(parent, isKindOfClass: class!(Baz)) };
-        if is_kind_of {
-            Ok(Baz(parent.0))
-        } else {
-            Err(format!(
-                "This {} is not an cannot be downcasted to {}",
-                "Bar", "Baz"
-            ))
-        }
-    }
-}
-impl IFoo for Baz {}
-impl From<Baz> for Foo {
-    fn from(child: Baz) -> Foo {
-        Foo(child.0)
-    }
-}
-impl std::convert::TryFrom<Foo> for Baz {
-    type Error = String;
-    fn try_from(parent: Foo) -> Result<Baz, Self::Error> {
-        let is_kind_of: bool =
-            unsafe { msg_send!(parent, isKindOfClass: class!(Baz)) };
-        if is_kind_of {
-            Ok(Baz(parent.0))
-        } else {
-            Err(format!(
-                "This {} is not an cannot be downcasted to {}",
-                "Foo", "Baz"
-            ))
-        }
-    }
-}
-impl IBaz for Baz {}
-pub trait IBaz: Sized + std::ops::Deref {}
