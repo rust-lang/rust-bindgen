@@ -3922,13 +3922,14 @@ impl CodeGenerator for ObjCInterface {
                 }
             };
             result.push(struct_block);
-            let mut protocol_set : CollectionHashSet<ItemId> = CollectionHashSet::new();
+            let mut protocol_set: CollectionHashSet<ItemId> =
+                CollectionHashSet::new();
             for protocol_id in self.conforms_to.iter() {
                 protocol_set.insert(*protocol_id);
                 let protocol_name = ctx.rust_ident(
                     ctx.resolve_type(protocol_id.expect_type_id(ctx))
-                    .name()
-                    .unwrap(),
+                        .name()
+                        .unwrap(),
                 );
                 let impl_trait = quote! {
                     impl #protocol_name for #class_name { }
@@ -3967,10 +3968,11 @@ impl CodeGenerator for ObjCInterface {
                     result.push(impl_trait);
                     for protocol_id in parent.conforms_to.iter() {
                         if !protocol_set.contains(protocol_id) {
-
                             protocol_set.insert(*protocol_id);
                             let protocol_name = ctx.rust_ident(
-                                ctx.resolve_type(protocol_id.expect_type_id(ctx))
+                                ctx.resolve_type(
+                                    protocol_id.expect_type_id(ctx),
+                                )
                                 .name()
                                 .unwrap(),
                             );
