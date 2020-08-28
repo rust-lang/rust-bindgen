@@ -1,4 +1,12 @@
-// bindgen-flags: --rustified-enum ".*"
+// A few tests for enum-related issues that should be tested with all the enum
+// representations.
+
+struct foo {
+  enum {
+    FOO_A,
+    FOO_B,
+  } member;
+};
 
 enum Foo {
     Bar = 0,
