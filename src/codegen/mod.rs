@@ -987,9 +987,9 @@ impl<'a> Vtable<'a> {
         base_classes: &'a [Base],
     ) -> Self {
         Vtable {
-            item_id: item_id,
-            methods: methods,
-            base_classes: base_classes,
+            item_id,
+            methods,
+            base_classes,
         }
     }
 }
