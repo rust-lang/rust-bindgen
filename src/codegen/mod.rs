@@ -49,7 +49,6 @@ use crate::{Entry, HashMap, HashSet};
 use std;
 use std::borrow::Cow;
 use std::cell::Cell;
-use std::collections::HashSet as CollectionHashSet;
 use std::collections::VecDeque;
 use std::fmt::Write;
 use std::iter;
@@ -3922,8 +3921,7 @@ impl CodeGenerator for ObjCInterface {
                 }
             };
             result.push(struct_block);
-            let mut protocol_set: CollectionHashSet<ItemId> =
-                CollectionHashSet::new();
+            let mut protocol_set: HashSet<ItemId> = Default::default();
             for protocol_id in self.conforms_to.iter() {
                 protocol_set.insert(*protocol_id);
                 let protocol_name = ctx.rust_ident(
@@ -3967,8 +3965,7 @@ impl CodeGenerator for ObjCInterface {
                     };
                     result.push(impl_trait);
                     for protocol_id in parent.conforms_to.iter() {
-                        if !protocol_set.contains(protocol_id) {
-                            protocol_set.insert(*protocol_id);
+                        if protocol_set.insert(*protocol_id) {
                             let protocol_name = ctx.rust_ident(
                                 ctx.resolve_type(
                                     protocol_id.expect_type_id(ctx),
@@ -3995,15 +3992,16 @@ impl CodeGenerator for ObjCInterface {
                         };
                         result.push(from_block);
 
+                        let error_msg = format!("This {} cannot be downcasted to {}", parent_struct_name, child_struct_name);
                         let try_into_block = quote! {
                             impl std::convert::TryFrom<#parent_struct> for #class_name {
-                                type Error = String;
+                                type Error = &'static str;
                                 fn try_from(parent: #parent_struct) -> Result<#class_name, Self::Error> {
                                     let is_kind_of : bool = unsafe { msg_send!(parent, isKindOfClass:class!(#class_name))};
                                     if is_kind_of {
                                         Ok(#class_name(parent.0))
                                     } else {
-                                        Err(format!("This {} is not an cannot be downcasted to {}", #parent_struct_name, #child_struct_name))
+                                        Err(#error_msg)
                                     }
                                 }
                             }

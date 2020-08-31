@@ -52,17 +52,14 @@ impl From<Bar> for Foo {
     }
 }
 impl std::convert::TryFrom<Foo> for Bar {
-    type Error = String;
+    type Error = &'static str;
     fn try_from(parent: Foo) -> Result<Bar, Self::Error> {
         let is_kind_of: bool =
             unsafe { msg_send!(parent, isKindOfClass: class!(Bar)) };
         if is_kind_of {
             Ok(Bar(parent.0))
         } else {
-            Err(format!(
-                "This {} is not an cannot be downcasted to {}",
-                "Foo", "Bar"
-            ))
+            Err("This Foo cannot be downcasted to Bar")
         }
     }
 }
