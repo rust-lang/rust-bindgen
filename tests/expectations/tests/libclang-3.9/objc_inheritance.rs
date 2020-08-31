@@ -44,16 +44,11 @@ impl Bar {
 }
 impl IFoo for Bar {}
 
-mpl From<Bar> for Foo {
-
-+    fn from(child: Bar) -> Foo {
-
-+        Foo(child.0)
-
-+    }
-
-+}
-
+impl From<Bar> for Foo {
+    fn from(child: Bar) -> Foo {
+        Foo(child.0)
+    }
+}
 impl std::convert::TryFrom<Foo> for Bar {
     type Error = String;
     fn try_from(parent: Foo) -> Result<Bar, Self::Error> {
