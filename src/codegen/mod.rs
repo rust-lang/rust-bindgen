@@ -3992,7 +3992,10 @@ impl CodeGenerator for ObjCInterface {
                         };
                         result.push(from_block);
 
-                        let error_msg = format!("This {} cannot be downcasted to {}", parent_struct_name, child_struct_name);
+                        let error_msg = format!(
+                            "This {} cannot be downcasted to {}",
+                            parent_struct_name, child_struct_name
+                        );
                         let try_into_block = quote! {
                             impl std::convert::TryFrom<#parent_struct> for #class_name {
                                 type Error = &'static str;

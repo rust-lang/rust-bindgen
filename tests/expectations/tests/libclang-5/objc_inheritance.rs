@@ -49,7 +49,7 @@ impl From<Bar> for Foo {
     }
 }
 impl std::convert::TryFrom<Foo> for Bar {
-    type Error = String;
+    type Error = &'static str;
     fn try_from(parent: Foo) -> Result<Bar, Self::Error> {
         let is_kind_of: bool =
             unsafe { msg_send!(parent, isKindOfClass: class!(Bar)) };
