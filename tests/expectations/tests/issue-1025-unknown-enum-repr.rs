@@ -10,3 +10,4 @@
 pub struct a {
     pub _address: u8,
 }
+pub type a__bindgen_ty_1 = i32;
