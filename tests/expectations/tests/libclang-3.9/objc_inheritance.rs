@@ -77,6 +77,7 @@ impl Baz {
         Self(unsafe { msg_send!(objc::class!(Baz), alloc) })
     }
 }
+impl IBar for Baz {}
 impl From<Baz> for Bar {
     fn from(child: Baz) -> Bar {
         Bar(child.0)
