@@ -1,6 +1,6 @@
 //! Objective C types
 
-use super::context::{BindgenContext, ItemId};
+use super::context::{BindgenContext, ItemId, TypeId};
 use super::function::FunctionSig;
 use super::item::Item;
 use super::traversal::{Trace, Tracer};
@@ -211,12 +211,6 @@ impl ObjCInterface {
         if interface.is_category() {
             // If this interface is a category, we need to find the interface that this category
             // extends.
-            let needle = interface.name();
-            debug!(
-                "Category {} belongs to {}, find the item",
-                interface.rust_name(),
-                needle
-            );
             if let Some(ref mut ty) =
                 Self::get_parent_ty(ctx, real_interface_id_for_category)
             {
@@ -240,14 +234,27 @@ impl ObjCInterface {
         parent_id: Option<ItemId>,
     ) -> Option<&mut Type> {
         // This is pretty gross but using the ItemResolver doesn't yield a mutable reference.
-        let real_interface_item = ctx.get_item_mut(parent_id?)?;
-        let ty = real_interface_item.kind().as_type()?;
-        let item_id = match ty.kind() {
-            TypeKind::ResolvedTypeRef(item_id) => item_id,
-            _ => return None,
-        };
+        let mut ty = ctx.resolve_item_fallible(parent_id?)?.kind().as_type()?;
+        let mut item_id: Option<&TypeId> = None;
+        loop {
+            match ty.kind() {
+                TypeKind::ResolvedTypeRef(ref_id) => {
+                    let ref_item: ItemId = ref_id.into();
+                    ty = ctx
+                        .resolve_item_fallible(ref_item)?
+                        .kind()
+                        .as_type()?;
+                    //ty = ref_item.kind().as_type()()?;;
+                    item_id = Some(ref_id);
+                }
+                TypeKind::ObjCInterface(..) => {
+                    break;
+                }
+                _ => return None,
+            };
+        }
 
-        let real_interface_id: ItemId = item_id.into();
+        let real_interface_id: ItemId = item_id?.into();
         let ty = ctx
             .get_item_mut(real_interface_id)?
             .kind_mut()
