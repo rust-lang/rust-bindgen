@@ -43,7 +43,6 @@ impl Bar {
     }
 }
 impl IFoo for Bar {}
-
 impl From<Bar> for Foo {
     fn from(child: Bar) -> Foo {
         Foo(child.0)
@@ -62,6 +61,22 @@ impl std::convert::TryFrom<Foo> for Bar {
     }
 }
 impl IBar for Bar {}
+pub trait IBar: Sized + std::ops::Deref {}
+#[repr(transparent)]
+#[derive(Clone)]
+pub struct Baz(pub id);
+impl std::ops::Deref for Baz {
+    type Target = objc::runtime::Object;
+    fn deref(&self) -> &Self::Target {
+        unsafe { &*self.0 }
+    }
+}
+unsafe impl objc::Message for Baz {}
+impl Baz {
+    pub fn alloc() -> Self {
+        Self(unsafe { msg_send!(objc::class!(Baz), alloc) })
+    }
+}
 impl From<Baz> for Bar {
     fn from(child: Baz) -> Bar {
         Bar(child.0)
@@ -95,22 +110,6 @@ impl std::convert::TryFrom<Foo> for Baz {
         } else {
             Err("This Foo cannot be downcasted to Baz")
         }
-    }
-}
-pub trait IBar: Sized + std::ops::Deref {}
-#[repr(transparent)]
-#[derive(Clone)]
-pub struct Baz(pub id);
-impl std::ops::Deref for Baz {
-    type Target = objc::runtime::Object;
-    fn deref(&self) -> &Self::Target {
-        unsafe { &*self.0 }
-    }
-}
-unsafe impl objc::Message for Baz {}
-impl Baz {
-    pub fn alloc() -> Self {
-        Self(unsafe { msg_send!(objc::class!(Baz), alloc) })
     }
 }
 impl IBaz for Baz {}
