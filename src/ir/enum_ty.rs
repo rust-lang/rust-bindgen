@@ -6,7 +6,6 @@ use super::item::Item;
 use super::ty::{Type, TypeKind};
 use crate::clang;
 use crate::ir::annotations::Annotations;
-use crate::ir::item::ItemCanonicalPath;
 use crate::parse::{ClangItemParser, ParseError};
 use crate::regex_set::RegexSet;
 
@@ -153,7 +152,7 @@ impl Enum {
         enums: &RegexSet,
         item: &Item,
     ) -> bool {
-        let path = item.canonical_path(ctx);
+        let path = item.path_for_whitelisting(ctx);
         let enum_ty = item.expect_type();
 
         if enums.matches(&path[1..].join("::")) {
