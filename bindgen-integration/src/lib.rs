@@ -246,6 +246,12 @@ fn test_item_rename() {
 }
 
 #[test]
+fn test_matching_with_rename() {
+    assert_eq!(bindings::enum_to_be_constified_THREE, 3);
+    assert_eq!(unsafe { bindings::TEMPLATED_CONST_VALUE.len() }, 30);
+}
+
+#[test]
 fn test_macro_customintkind_path() {
     let v: &std::any::Any = &bindings::TESTMACRO_CUSTOMINTKIND_PATH;
     assert!(v.is::<MacroInteger>())
