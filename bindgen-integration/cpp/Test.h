@@ -210,4 +210,21 @@ struct my_prefixed_foo {
    my_prefixed_bar member;
 };
 
+enum my_prefixed_enum_to_be_constified {
+  ONE = 1,
+  TWO,
+  THREE,
+};
+
+struct my_prefixed_baz {
+  char foo[30];
+};
+
+template<typename T>
+struct my_prefixed_templated_foo {
+  T member;
+};
+
+my_prefixed_templated_foo<my_prefixed_baz> TEMPLATED_CONST_VALUE;
+
 void my_prefixed_function_to_remove();

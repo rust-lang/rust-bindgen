@@ -1,8 +1,8 @@
 extern crate bindgen;
 extern crate cc;
 
-use bindgen::callbacks::{MacroParsingBehavior, ParseCallbacks, IntKind};
-use bindgen::Builder;
+use bindgen::callbacks::{IntKind, MacroParsingBehavior, ParseCallbacks};
+use bindgen::{Builder, EnumVariation};
 use std::collections::HashSet;
 use std::env;
 use std::path::PathBuf;
@@ -50,9 +50,9 @@ impl ParseCallbacks for MacroCallback {
                 assert_eq!(value, b"string");
                 *self.seen_hellos.lock().unwrap() += 1;
             }
-            "TESTMACRO_STRING_EXPANDED" |
-            "TESTMACRO_STRING" |
-            "TESTMACRO_INTEGER" => {
+            "TESTMACRO_STRING_EXPANDED"
+            | "TESTMACRO_STRING"
+            | "TESTMACRO_INTEGER" => {
                 // The integer test macro is, actually, not expected to show up here at all -- but
                 // should produce an error if it does.
                 assert_eq!(
@@ -147,7 +147,9 @@ fn main() {
     let bindings = Builder::default()
         .rustfmt_bindings(false)
         .enable_cxx_namespaces()
-        .rustified_enum(".*")
+        .default_enum_style(EnumVariation::Rust {
+            non_exhaustive: false,
+        })
         .raw_line("pub use self::root::*;")
         .raw_line("extern { fn my_prefixed_function_to_remove(i: i32); }")
         .module_raw_line("root::testing", "pub type Bar = i32;")
@@ -159,6 +161,8 @@ fn main() {
             seen_funcs: Mutex::new(0),
         }))
         .blacklist_function("my_prefixed_function_to_remove")
+        .constified_enum("my_prefixed_enum_to_be_constified")
+        .opaque_type("my_prefixed_templated_foo<my_prefixed_baz>")
         .generate()
         .expect("Unable to generate bindings");
 
