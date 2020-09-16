@@ -3944,77 +3944,74 @@ impl CodeGenerator for ObjCInterface {
                     .expect_type()
                     .kind();
 
-                parent_class = if let TypeKind::ObjCInterface(ref parent) =
-                    parent
-                {
-                    let parent_name = ctx.rust_ident(parent.rust_name());
-                    let impl_trait = if parent.is_template() {
-                        let template_names: Vec<Ident> = parent
-                            .template_names
-                            .iter()
-                            .map(|g| ctx.rust_ident(g))
-                            .collect();
-                        quote! {
-                            impl <#(#template_names :'static),*> #parent_name <#(#template_names),*> for #class_name {
-                            }
+                let parent = match parent {
+                    TypeKind::ObjCInterface(ref parent) => parent,
+                    _ => break,
+                };
+                parent_class = parent.parent_class;
+
+                let parent_name = ctx.rust_ident(parent.rust_name());
+                let impl_trait = if parent.is_template() {
+                    let template_names: Vec<Ident> = parent
+                        .template_names
+                        .iter()
+                        .map(|g| ctx.rust_ident(g))
+                        .collect();
+                    quote! {
+                        impl <#(#template_names :'static),*> #parent_name <#(#template_names),*> for #class_name {
                         }
-                    } else {
-                        quote! {
-                            impl #parent_name for #class_name { }
-                        }
-                    };
-                    result.push(impl_trait);
-                    for protocol_id in parent.conforms_to.iter() {
-                        if protocol_set.insert(*protocol_id) {
-                            let protocol_name = ctx.rust_ident(
-                                ctx.resolve_type(
-                                    protocol_id.expect_type_id(ctx),
-                                )
+                    }
+                } else {
+                    quote! {
+                        impl #parent_name for #class_name { }
+                    }
+                };
+                result.push(impl_trait);
+                for protocol_id in parent.conforms_to.iter() {
+                    if protocol_set.insert(*protocol_id) {
+                        let protocol_name = ctx.rust_ident(
+                            ctx.resolve_type(protocol_id.expect_type_id(ctx))
                                 .name()
                                 .unwrap(),
-                            );
-                            let impl_trait = quote! {
-                                impl #protocol_name for #class_name { }
-                            };
-                            result.push(impl_trait);
-                        }
-                    }
-                    if !parent.is_template() {
-                        let parent_struct_name = parent.name();
-                        let child_struct_name = self.name();
-                        let parent_struct = ctx.rust_ident(parent_struct_name);
-                        let from_block = quote! {
-                            impl From<#class_name> for #parent_struct {
-                                fn from(child: #class_name) -> #parent_struct {
-                                    #parent_struct(child.0)
-                                }
-                            }
-                        };
-                        result.push(from_block);
-
-                        let error_msg = format!(
-                            "This {} cannot be downcasted to {}",
-                            parent_struct_name, child_struct_name
                         );
-                        let try_into_block = quote! {
-                            impl std::convert::TryFrom<#parent_struct> for #class_name {
-                                type Error = &'static str;
-                                fn try_from(parent: #parent_struct) -> Result<#class_name, Self::Error> {
-                                    let is_kind_of : bool = unsafe { msg_send!(parent, isKindOfClass:class!(#class_name))};
-                                    if is_kind_of {
-                                        Ok(#class_name(parent.0))
-                                    } else {
-                                        Err(#error_msg)
-                                    }
+                        let impl_trait = quote! {
+                            impl #protocol_name for #class_name { }
+                        };
+                        result.push(impl_trait);
+                    }
+                }
+                if !parent.is_template() {
+                    let parent_struct_name = parent.name();
+                    let child_struct_name = self.name();
+                    let parent_struct = ctx.rust_ident(parent_struct_name);
+                    let from_block = quote! {
+                        impl From<#class_name> for #parent_struct {
+                            fn from(child: #class_name) -> #parent_struct {
+                                #parent_struct(child.0)
+                            }
+                        }
+                    };
+                    result.push(from_block);
+
+                    let error_msg = format!(
+                        "This {} cannot be downcasted to {}",
+                        parent_struct_name, child_struct_name
+                    );
+                    let try_into_block = quote! {
+                        impl std::convert::TryFrom<#parent_struct> for #class_name {
+                            type Error = &'static str;
+                            fn try_from(parent: #parent_struct) -> Result<#class_name, Self::Error> {
+                                let is_kind_of : bool = unsafe { msg_send!(parent, isKindOfClass:class!(#class_name))};
+                                if is_kind_of {
+                                    Ok(#class_name(parent.0))
+                                } else {
+                                    Err(#error_msg)
                                 }
                             }
-                        };
-                        result.push(try_into_block);
-                    }
-                    parent.parent_class
-                } else {
-                    None
-                };
+                        }
+                    };
+                    result.push(try_into_block);
+                }
             }
         }
 
