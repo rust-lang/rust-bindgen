@@ -239,7 +239,7 @@ impl<'a> CodegenResult<'a> {
             saw_objc: false,
             saw_block: false,
             saw_bitfield_unit: false,
-            codegen_id: codegen_id,
+            codegen_id,
             items_seen: Default::default(),
             functions_seen: Default::default(),
             vars_seen: Default::default(),
