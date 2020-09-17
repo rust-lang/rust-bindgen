@@ -120,11 +120,11 @@ Released YYYY/MM/DD
 
 ## Added
 
-* TODO (or remove section if none)
+* Objective-c bindings generate `From<ChildClass> for ParentClass` as well as `TryFrom<ParentClass> for ChildClass` ([#1883][]).
 
 ## Changed
 
-* TODO (or remove section if none)
+* Objective-c bindings borrow self rather than take ownership ([#1883][]).
 
 ## Deprecated
 
@@ -136,11 +136,14 @@ Released YYYY/MM/DD
 
 ## Fixed
 
-* TODO (or remove section if none)
+* Fixed objective-c protocol impl blocks for parent classes's protocols ([#1883][]).
 
 ## Security
 
 * TODO (or remove section if none)
+
+
+[#1883]: https://github.com/rust-lang/rust-bindgen/issues/1883
 
 --------------------------------------------------------------------------------
 
