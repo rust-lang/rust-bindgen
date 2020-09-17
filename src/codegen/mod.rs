@@ -3982,26 +3982,25 @@ impl CodeGenerator for ObjCInterface {
                 }
                 for (category_name, category_template_names) in
                     &parent.categories
-                    {
-                        let category_name = ctx.rust_ident(category_name);
-                        let impl_trait = if !category_template_names.is_empty()
-                        {
-                            let template_names: Vec<Ident> =
-                                category_template_names
+                {
+                    let category_name = ctx.rust_ident(category_name);
+                    let impl_trait = if !category_template_names.is_empty() {
+                        let template_names: Vec<Ident> =
+                            category_template_names
                                 .iter()
                                 .map(|g| ctx.rust_ident(g))
                                 .collect();
-                            quote! {
-                                impl <#(#template_names :'static),*> #category_name <#(#template_names),*> for #class_name {
-                                }
+                        quote! {
+                            impl <#(#template_names :'static),*> #category_name <#(#template_names),*> for #class_name {
                             }
-                        } else {
-                            quote! {
-                                impl #category_name for #class_name { }
-                            }
-                        };
-                        result.push(impl_trait);
-                    }
+                        }
+                    } else {
+                        quote! {
+                            impl #category_name for #class_name { }
+                        }
+                    };
+                    result.push(impl_trait);
+                }
                 if !parent.is_template() {
                     let parent_struct_name = parent.name();
                     let child_struct_name = self.name();

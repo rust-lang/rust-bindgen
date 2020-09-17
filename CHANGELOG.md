@@ -121,6 +121,7 @@ Released YYYY/MM/DD
 ## Added
 
 * Objective-c bindings generate `From<ChildClass> for ParentClass` as well as `TryFrom<ParentClass> for ChildClass` ([#1883][]).
+* Objective-c bindings generate impl blocks for categories inherited through parent classes ([#1784][]).
 
 ## Changed
 
@@ -144,6 +145,7 @@ Released YYYY/MM/DD
 
 
 [#1883]: https://github.com/rust-lang/rust-bindgen/issues/1883
+[#1784]: https://github.com/rust-lang/rust-bindgen/issues/1784
 
 --------------------------------------------------------------------------------
 
