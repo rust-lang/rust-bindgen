@@ -11,7 +11,7 @@ extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 #[repr(transparent)]
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Foo(pub id);
 impl std::ops::Deref for Foo {
     type Target = objc::runtime::Object;
@@ -30,7 +30,7 @@ pub trait IFoo<ObjectType>: Sized + std::ops::Deref {}
 impl<ObjectType: 'static> Foo_Baz<ObjectType> for Foo {}
 pub trait Foo_Baz<ObjectType>: Sized + std::ops::Deref {}
 #[repr(transparent)]
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Bar(pub id);
 impl std::ops::Deref for Bar {
     type Target = objc::runtime::Object;
