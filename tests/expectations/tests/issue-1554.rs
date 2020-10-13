@@ -9,7 +9,7 @@
 
 #[repr(u32)]
 #[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Planet {
     earth = 0,
     mars = 1,

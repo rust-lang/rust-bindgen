@@ -6,7 +6,7 @@
 )]
 
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Foo {
     Bar = 0,
     Qux = 1,

@@ -25,7 +25,7 @@ pub const DataType_fmt: DataType__bindgen_ty_1 =
 pub const DataType_type_: DataType__bindgen_ty_1 =
     DataType__bindgen_ty_1::generic_type;
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum DataType__bindgen_ty_1 {
     generic_type = 0,
 }
@@ -37,7 +37,7 @@ pub struct Foo {
 pub const Foo_Bar: Foo__bindgen_ty_1 = Foo__bindgen_ty_1::Bar;
 pub const Foo_Baz: Foo__bindgen_ty_1 = Foo__bindgen_ty_1::Bar;
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Foo__bindgen_ty_1 {
     Bar = 0,
 }

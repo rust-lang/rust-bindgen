@@ -71,7 +71,7 @@ impl Default for basic_string___long {
 pub const basic_string___min_cap: basic_string__bindgen_ty_1 =
     basic_string__bindgen_ty_1::__min_cap;
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum basic_string__bindgen_ty_1 {
     __min_cap = 0,
 }
@@ -110,7 +110,7 @@ impl Default for basic_string___ulx {
 pub const basic_string___n_words: basic_string__bindgen_ty_2 =
     basic_string__bindgen_ty_2::__n_words;
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum basic_string__bindgen_ty_2 {
     __n_words = 0,
 }

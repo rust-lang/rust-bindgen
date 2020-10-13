@@ -8,7 +8,7 @@
 pub const ENUM_VARIANT_1: _bindgen_ty_1 = _bindgen_ty_1::ENUM_VARIANT_1;
 pub const ENUM_VARIANT_2: _bindgen_ty_1 = _bindgen_ty_1::ENUM_VARIANT_2;
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum _bindgen_ty_1 {
     ENUM_VARIANT_1 = 0,
     ENUM_VARIANT_2 = 1,

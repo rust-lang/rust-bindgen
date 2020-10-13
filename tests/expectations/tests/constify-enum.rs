@@ -13,7 +13,7 @@ impl nsCSSPropertyID {
         nsCSSPropertyID::eCSSPropertyAlias_aa;
 }
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum nsCSSPropertyID {
     eCSSProperty_a = 0,
     eCSSProperty_b = 1,

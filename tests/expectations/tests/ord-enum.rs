@@ -6,7 +6,7 @@
 )]
 
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub enum A {
     A0 = 0,
     A1 = 1,
@@ -14,7 +14,7 @@ pub enum A {
     A3 = -1,
 }
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub enum B {
     B0 = 1,
     B1 = 4,

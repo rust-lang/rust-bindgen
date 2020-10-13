@@ -6,7 +6,7 @@
 )]
 
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum CSSPseudoClassType {
     empty = 0,
     link = 1,

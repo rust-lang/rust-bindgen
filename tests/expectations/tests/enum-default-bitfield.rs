@@ -39,7 +39,7 @@ impl ::std::ops::BitAndAssign for foo__bindgen_ty_1 {
     }
 }
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct foo__bindgen_ty_1(pub ::std::os::raw::c_uint);
 #[test]
 fn bindgen_test_layout_foo() {
@@ -102,10 +102,46 @@ impl ::std::ops::BitAndAssign for Foo {
     }
 }
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Foo(pub ::std::os::raw::c_uint);
 pub mod Neg {
     pub type Type = ::std::os::raw::c_int;
     pub const MinusOne: Type = -1;
     pub const One: Type = 1;
 }
+impl NoDebug {
+    pub const NoDebug1: NoDebug = NoDebug(0);
+}
+impl NoDebug {
+    pub const NoDebug2: NoDebug = NoDebug(1);
+}
+impl ::std::ops::BitOr<NoDebug> for NoDebug {
+    type Output = Self;
+    #[inline]
+    fn bitor(self, other: Self) -> Self {
+        NoDebug(self.0 | other.0)
+    }
+}
+impl ::std::ops::BitOrAssign for NoDebug {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: NoDebug) {
+        self.0 |= rhs.0;
+    }
+}
+impl ::std::ops::BitAnd<NoDebug> for NoDebug {
+    type Output = Self;
+    #[inline]
+    fn bitand(self, other: Self) -> Self {
+        NoDebug(self.0 & other.0)
+    }
+}
+impl ::std::ops::BitAndAssign for NoDebug {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: NoDebug) {
+        self.0 &= rhs.0;
+    }
+}
+#[repr(transparent)]
+/// <div rustbindgen nodebug></div>
+#[derive(Copy, Clone, Hash, PartialEq, Eq)]
+pub struct NoDebug(pub ::std::os::raw::c_uint);

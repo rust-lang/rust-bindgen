@@ -78,7 +78,7 @@ pub mod root {
         }
     }
     #[repr(u32)]
-    #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+    #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
     pub enum n {
         o = 0,
         p = 1,
