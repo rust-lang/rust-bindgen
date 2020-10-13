@@ -140,7 +140,7 @@ pub const JSVAL_PAYLOAD_MASK: u64 = 140737488355327;
 pub const JSVAL_TAG_MASK: i64 = -140737488355328;
 pub type size_t = ::std::os::raw::c_ulonglong;
 #[repr(u8)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSValueType {
     JSVAL_TYPE_DOUBLE = 0,
     JSVAL_TYPE_INT32 = 1,
@@ -155,7 +155,7 @@ pub enum JSValueType {
     JSVAL_TYPE_MISSING = 33,
 }
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSValueTag {
     JSVAL_TAG_MAX_DOUBLE = 131056,
     JSVAL_TAG_INT32 = 131057,
@@ -168,7 +168,7 @@ pub enum JSValueTag {
     JSVAL_TAG_OBJECT = 131064,
 }
 #[repr(u64)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSValueShiftedTag {
     JSVAL_SHIFTED_TAG_MAX_DOUBLE = 18444492278190833663,
     JSVAL_SHIFTED_TAG_INT32 = 18444633011384221696,
@@ -181,7 +181,7 @@ pub enum JSValueShiftedTag {
     JSVAL_SHIFTED_TAG_OBJECT = 18445618173802708992,
 }
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSWhyMagic {
     /// a hole in a native object's elements
     JS_ELEMENTS_HOLE = 0,

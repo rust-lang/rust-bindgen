@@ -75,13 +75,13 @@ impl Default for _bindgen_ty_1 {
 pub type struct_ptr_t = *mut _bindgen_ty_1;
 pub type struct_ptr_ptr_t = *mut *mut _bindgen_ty_1;
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum typedef_named_enum {
     ENUM_HAS_NAME = 1,
 }
 pub const ENUM_IS_ANON: _bindgen_ty_2 = _bindgen_ty_2::ENUM_IS_ANON;
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum _bindgen_ty_2 {
     ENUM_IS_ANON = 0,
 }

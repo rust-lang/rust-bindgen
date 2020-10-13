@@ -177,7 +177,7 @@ fn bindgen_test_layout_cmdline_token_ops() {
     );
 }
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum cmdline_numtype {
     UINT8 = 0,
     UINT16 = 1,

@@ -19,7 +19,7 @@ pub mod root {
             pub const Foo3: root::foo::Bar = Bar::Foo2;
         }
         #[repr(u32)]
-        #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+        #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub enum Bar {
             Foo = 0,
             Foo2 = 1,
