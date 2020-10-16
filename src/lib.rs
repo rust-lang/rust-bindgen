@@ -1869,7 +1869,7 @@ impl Default for BindgenOptions {
             time_phases: false,
             record_matches: true,
             rustfmt_bindings: true,
-            size_t_is_usize: false,
+            size_t_is_usize: true,
             rustfmt_configuration_file: None,
             no_partialeq_types: Default::default(),
             no_copy_types: Default::default(),

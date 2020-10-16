@@ -408,7 +408,10 @@ where
                 ),
             Arg::with_name("size_t-is-usize")
                 .long("size_t-is-usize")
-                .help("Translate size_t to usize."),
+                .help("Translate size_t to usize. (this is the default)"),
+            Arg::with_name("size_t-is-not-usize")
+                .long("size_t-is-not-usize")
+                .help("Translate size_t to platform-specific lengths."),
             Arg::with_name("no-rustfmt-bindings")
                 .long("no-rustfmt-bindings")
                 .help("Do not format the generated bindings with rustfmt."),
@@ -815,6 +818,16 @@ where
 
     if matches.is_present("size_t-is-usize") {
         builder = builder.size_t_is_usize(true);
+        if matches.is_present("size_t-is-not-usize") {
+            return Err(Error::new(
+                ErrorKind::Other,
+                "Cannot supply both --size_t-is-usize and --size_t-is-not-usize",
+            ));
+        }
+    }
+
+    if matches.is_present("size_t-is-not-usize") {
+        builder = builder.size_t_is_usize(false);
     }
 
     let no_rustfmt_bindings = matches.is_present("no-rustfmt-bindings");
