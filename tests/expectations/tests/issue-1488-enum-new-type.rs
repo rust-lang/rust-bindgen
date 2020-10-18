@@ -20,7 +20,7 @@ pub mod Bar {
 #[derive(Debug, Copy, Clone)]
 pub struct BarAlias(pub Bar::Type);
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Qux {
     E = 0,
     F = 1,

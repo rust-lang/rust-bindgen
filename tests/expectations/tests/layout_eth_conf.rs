@@ -127,7 +127,7 @@ pub const RTE_ETH_FLOW_MAX: u32 = 22;
 #[repr(u32)]
 ///  A set of values to identify what method is to be used to route
 ///  packets to multiple queues.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_rx_mq_mode {
     /// None of DCB,RSS or VMDQ mode
     ETH_MQ_RX_NONE = 0,
@@ -399,7 +399,7 @@ impl rte_eth_rxmode {
 #[repr(u32)]
 /// A set of values to identify what method is to be used to transmit
 /// packets using multi-TCs.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_tx_mq_mode {
     ///< It is in neither DCB nor VT mode.
     ETH_MQ_TX_NONE = 0,
@@ -616,7 +616,7 @@ impl Default for rte_eth_rss_conf {
 #[repr(u32)]
 /// This enum indicates the possible number of traffic classes
 /// in DCB configratioins
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_nb_tcs {
     ///< 4 TCs with DCB.
     ETH_4_TCS = 4,
@@ -626,7 +626,7 @@ pub enum rte_eth_nb_tcs {
 #[repr(u32)]
 /// This enum indicates the possible number of queue pools
 /// in VMDQ configurations.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_nb_pools {
     ///< 8 VMDq pools.
     ETH_8_POOLS = 8,
@@ -1179,7 +1179,7 @@ impl Default for rte_eth_vmdq_rx_conf {
 }
 #[repr(u32)]
 ///  Flow Director setting modes: none, signature or perfect.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_fdir_mode {
     ///< Disable FDIR support.
     RTE_FDIR_MODE_NONE = 0,
@@ -1195,7 +1195,7 @@ pub enum rte_fdir_mode {
 #[repr(u32)]
 ///  Memory space that can be configured to store Flow Director filters
 ///  in the board memory.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_fdir_pballoc_type {
     ///< 64k.
     RTE_FDIR_PBALLOC_64K = 0,
@@ -1206,7 +1206,7 @@ pub enum rte_fdir_pballoc_type {
 }
 #[repr(u32)]
 ///  Select report mode of FDIR hash information in RX descriptors.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_fdir_status_mode {
     ///< Never report FDIR hash.
     RTE_FDIR_NO_REPORT_STATUS = 0,
@@ -1544,7 +1544,7 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
 }
 #[repr(u32)]
 /// Payload type
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_payload_type {
     RTE_ETH_PAYLOAD_UNKNOWN = 0,
     RTE_ETH_RAW_PAYLOAD = 1,

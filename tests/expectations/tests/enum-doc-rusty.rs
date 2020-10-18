@@ -7,7 +7,7 @@
 
 #[repr(u32)]
 /// Document enum
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum B {
     /// Document field with three slashes
     VAR_A = 0,

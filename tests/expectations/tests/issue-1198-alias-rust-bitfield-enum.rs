@@ -41,7 +41,7 @@ impl ::std::ops::BitAndAssign for MyDupeEnum {
     }
 }
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct MyDupeEnum(pub ::std::os::raw::c_uint);
 impl MyOtherDupeEnum {
     pub const C: MyOtherDupeEnum = MyOtherDupeEnum(0);
@@ -79,5 +79,5 @@ impl ::std::ops::BitAndAssign for MyOtherDupeEnum {
     }
 }
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct MyOtherDupeEnum(pub ::std::os::raw::c_uint);

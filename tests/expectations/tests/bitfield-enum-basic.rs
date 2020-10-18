@@ -44,7 +44,7 @@ impl ::std::ops::BitAndAssign for Foo {
     }
 }
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Foo(pub ::std::os::raw::c_int);
 impl Buz {
     pub const Bar: Buz = Buz(2);
@@ -85,7 +85,7 @@ impl ::std::ops::BitAndAssign for Buz {
     }
 }
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Buz(pub ::std::os::raw::c_schar);
 pub const NS_FOO: _bindgen_ty_1 = _bindgen_ty_1(1);
 pub const NS_BAR: _bindgen_ty_1 = _bindgen_ty_1(2);
@@ -116,7 +116,7 @@ impl ::std::ops::BitAndAssign for _bindgen_ty_1 {
     }
 }
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct _bindgen_ty_1(pub ::std::os::raw::c_uint);
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -152,7 +152,7 @@ impl ::std::ops::BitAndAssign for Dummy__bindgen_ty_1 {
     }
 }
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Dummy__bindgen_ty_1(pub ::std::os::raw::c_uint);
 #[test]
 fn bindgen_test_layout_Dummy() {

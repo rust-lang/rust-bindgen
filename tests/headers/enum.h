@@ -17,3 +17,9 @@ enum Neg {
     MinusOne = -1,
     One = 1,
 };
+
+/** <div rustbindgen nodebug></div> */
+enum NoDebug {
+    NoDebug1,
+    NoDebug2,
+};

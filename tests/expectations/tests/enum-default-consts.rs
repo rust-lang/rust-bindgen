@@ -49,3 +49,7 @@ pub mod Neg {
     pub const MinusOne: Type = -1;
     pub const One: Type = 1;
 }
+pub const NoDebug_NoDebug1: NoDebug = 0;
+pub const NoDebug_NoDebug2: NoDebug = 1;
+/// <div rustbindgen nodebug></div>
+pub type NoDebug = ::std::os::raw::c_uint;

@@ -15,7 +15,7 @@ impl std_fbstring_core_Category {
     pub const Bar: std_fbstring_core_Category = std_fbstring_core_Category::Foo;
 }
 #[repr(u8)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum std_fbstring_core_Category {
     Foo = 0,
 }

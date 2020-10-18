@@ -44,7 +44,7 @@ pub mod root {
             );
         }
         #[repr(u32)]
-        #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+        #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub enum typedef_enum {
             BAR = 1,
         }
@@ -87,7 +87,7 @@ pub mod root {
         pub const _bindgen_mod_id_12_BAR:
             root::_bindgen_mod_id_12::_bindgen_ty_2 = _bindgen_ty_2::BAR;
         #[repr(u32)]
-        #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+        #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub enum _bindgen_ty_2 {
             BAR = 1,
         }

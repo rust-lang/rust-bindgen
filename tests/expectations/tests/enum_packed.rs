@@ -6,19 +6,19 @@
 )]
 
 #[repr(u8)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Foo {
     Bar = 0,
     Qux = 1,
 }
 #[repr(i8)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Neg {
     MinusOne = -1,
     One = 1,
 }
 #[repr(u16)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Bigger {
     Much = 255,
     Larger = 256,

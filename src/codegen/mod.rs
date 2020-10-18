@@ -3045,17 +3045,17 @@ impl CodeGenerator for Enum {
         }
 
         if !variation.is_const() {
-            let mut derives =
-                vec!["Debug", "Copy", "Clone", "PartialEq", "Eq", "Hash"];
-
-            if item.can_derive_partialord(ctx) {
-                derives.push("PartialOrd");
-            }
-
-            if item.can_derive_ord(ctx) {
-                derives.push("Ord");
-            }
-
+            let mut derives = derives_of_item(item, ctx);
+            // For backwards compat, enums always derive Clone/Eq/PartialEq/Hash, even
+            // if we don't generate those by default.
+            derives.insert(
+                DerivableTraits::CLONE |
+                    DerivableTraits::COPY |
+                    DerivableTraits::HASH |
+                    DerivableTraits::PARTIAL_EQ |
+                    DerivableTraits::EQ,
+            );
+            let derives: Vec<_> = derives.into();
             attrs.push(attributes::derives(&derives));
         }
 
