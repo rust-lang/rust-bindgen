@@ -4666,7 +4666,6 @@ mod utils {
         ctx: &BindgenContext,
         sig: &FunctionSig,
     ) -> Vec<proc_macro2::TokenStream> {
-        use super::ToPtr;
 
         let mut unnamed_arguments = 0;
         let mut args = sig
