@@ -256,3 +256,14 @@ fn test_macro_customintkind_path() {
     let v: &std::any::Any = &bindings::TESTMACRO_CUSTOMINTKIND_PATH;
     assert!(v.is::<MacroInteger>())
 }
+
+#[test]
+fn test_operator_overloading() {
+    let mut a = bindings::OverloadedOperator{val: 27, other:0};
+	let b = bindings::OverloadedOperator{val: 13, other:0};
+	a += &b; // should call the overloaded C++ operator+=
+	let a = &a + &b; // should call the overloaded C++ operator+
+	let a = -&a; // should call the overloaded C++ operator- (unary)
+	let a = &a - &b; // should call the overloaded C++ operator- (binary)
+	assert!(a == bindings::OverloadedOperator{val: -66, other:0}); // should call the overloaded C++ operator=
+}

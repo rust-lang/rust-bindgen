@@ -2176,11 +2176,11 @@ impl CodeGenerator for CompInfo {
 /// This function takes a TokenStream, removes all "const" and replaces all "*"
 /// with "&".
 ///
-/// This is a bit hacky, but we need it because type_id_to_rust_type returns
-/// something like "const *MyClass" instead of "&MyClass" and the latter is what
-/// we need to write into bindgen.rs. The less hacky way would be to make
-/// type_id_to_rust_type use "&" instead of "*" when assembling the TokenStream,
-/// but doing this is tricky.
+/// This is a bit hacky, but we need it because argument_type_id_to_rust_type
+/// returns something like "const *MyClass" instead of "&MyClass" and the latter
+/// is what we need to write into bindgen.rs. The less hacky way would be to
+/// make argument_type_id_to_rust_type use "&" instead of "*" when assembling
+/// the TokenStream, but doing this is tricky.
 fn raw_pointer_to_reference(
     rust_source: proc_macro2::TokenStream,
 ) -> proc_macro2::TokenStream {
@@ -2261,8 +2261,7 @@ impl Method {
         let second_arg_type = if args.len() < 2 {
             None
         } else {
-            dbg!("test");
-            let temp = utils::type_id_to_rust_type(
+            let temp = utils::argument_type_id_to_rust_type(
                 ctx,
                 signature.argument_types()[1].1,
             );
@@ -2308,6 +2307,7 @@ impl Method {
             ));
             return;
         }
+        let prefix = ctx.trait_prefix();
         for el in assignment_operators.iter() {
             // The args.len() == 2 check shouldn't be neccessary but we still have it.
             if args.len() == 2 && name == el.0 {
@@ -2317,7 +2317,7 @@ impl Method {
                 let func_name =
                     proc_macro2::TokenStream::from_str(el.2).unwrap();
                 result.push(quote!(
-                    impl std::ops::#trait_name<#rhs_type> for #ty_for_impl {
+                    impl ::#prefix::ops::#trait_name<#rhs_type> for #ty_for_impl {
                         fn #func_name(&mut self, rhs: #rhs_type) {
                             let retptr = unsafe {
                                 #function_name(self, rhs)
@@ -2340,7 +2340,7 @@ impl Method {
                 let func_name =
                     proc_macro2::TokenStream::from_str(el.2).unwrap();
                 result.push(quote!(
-                    impl std::ops::#trait_name<#rhs_type> for &#ty_for_impl {
+                    impl ::#prefix::ops::#trait_name<#rhs_type> for &#ty_for_impl {
                         type Output = #ret_type;
                         fn #func_name(self, rhs: #rhs_type) -> #ret_type {
                             unsafe {
@@ -2360,7 +2360,7 @@ impl Method {
                 let func_name =
                     proc_macro2::TokenStream::from_str(el.2).unwrap();
                 result.push(quote!(
-                    impl std::ops::#trait_name for &#ty_for_impl {
+                    impl ::#prefix::ops::#trait_name for &#ty_for_impl {
                         type Output = #ret_type;
                         fn #func_name(self) -> #ret_type {
                             unsafe {
@@ -4614,7 +4614,7 @@ mod utils {
         }
     }
 
-    pub fn type_id_to_rust_type(
+    pub fn argument_type_id_to_rust_type(
         ctx: &BindgenContext,
         ty: crate::ir::context::TypeId,
     ) -> proc_macro2::TokenStream {
@@ -4679,7 +4679,7 @@ mod utils {
                 assert!(!arg_name.is_empty());
                 let arg_name = ctx.rust_ident(arg_name);
 
-                let arg_ty = type_id_to_rust_type(ctx, ty);
+                let arg_ty = argument_type_id_to_rust_type(ctx, ty);
 
                 quote! {
                     #arg_name : #arg_ty

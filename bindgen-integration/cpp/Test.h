@@ -18,7 +18,8 @@
         a
 //#define TESTMACRO_INVALID("string") // A conforming preprocessor rejects this
 #define TESTMACRO_STRING_EXPR ("string")
-#define TESTMACRO_STRING_FUNC_NON_UTF8(x) (x "ÿÿ") /* invalid UTF-8 on purpose */
+#include "Invalid_Unicode.h"
+
 
 #include <cwchar>
 
@@ -228,3 +229,15 @@ struct my_prefixed_templated_foo {
 my_prefixed_templated_foo<my_prefixed_baz> TEMPLATED_CONST_VALUE;
 
 void my_prefixed_function_to_remove();
+
+class OverloadedOperator {
+public:
+    int val;
+    int other;
+    OverloadedOperator operator+(const OverloadedOperator& rhs) const;
+    OverloadedOperator operator-(const OverloadedOperator& rhs) const;
+    OverloadedOperator& operator+=(const OverloadedOperator& rhs);
+    bool operator==(const OverloadedOperator& rhs) const ;
+    int operator[](int index) const;
+    OverloadedOperator operator-() const;
+};

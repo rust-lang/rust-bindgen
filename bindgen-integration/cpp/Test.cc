@@ -135,3 +135,33 @@ Seventh::assert(bool first,
 int my_prefixed_function_name() {
   return 4;
 }
+
+OverloadedOperator OverloadedOperator::operator+(const OverloadedOperator& rhs) const{
+    OverloadedOperator ret;
+    ret.val = val + rhs.val;
+    return ret;
+}
+OverloadedOperator OverloadedOperator::operator-(const OverloadedOperator& rhs) const{
+    OverloadedOperator ret;
+    ret.val = val - rhs.val;
+    return ret;
+}
+OverloadedOperator& OverloadedOperator::operator+=(const OverloadedOperator& rhs) {
+    val += rhs.val;
+    return *this;
+}
+bool OverloadedOperator::operator==(const OverloadedOperator& rhs) const {
+    return val == rhs.val;
+}
+int OverloadedOperator::operator[](int index) const {
+    if (index == 0) {
+        return val;
+    } else {
+        return other;
+    }
+}
+OverloadedOperator OverloadedOperator::operator-() const {
+    OverloadedOperator ret;
+    ret.val = -val;
+    return ret;
+}

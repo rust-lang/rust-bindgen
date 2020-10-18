@@ -820,12 +820,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             ("[]", "_index"),
             ("!", "_not"),
         ];
-        let mut invalid_name = false;
-        for sub in subs.iter() {
-            if name.contains(sub.0) {
-                invalid_name = true;
-            }
-        }
+        let invalid_name = subs.iter().any(|sub| name.contains(sub.0));
         if invalid_name ||
             match name {
                 "abstract" | "alignof" | "as" | "async" | "become" |

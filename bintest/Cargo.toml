@@ -1,9 +1,0 @@
-[package]
-name = "bintest"
-version = "0.1.0"
-authors = ["Volker Weißmann <volker.weissmann@gmx.de>"]
-description = "Test bindgen: We generate bindings for example.cpp, then we compile example.cpp and link it to this crate. This should allow us to call functions in example.cpp from main.rs."
-edition = "2018"
-
-[build-dependencies]
-bindgen = { path = ".." }
