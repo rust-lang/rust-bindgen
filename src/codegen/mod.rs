@@ -2061,11 +2061,7 @@ impl CodeGenerator for CompInfo {
             if ctx.options().codegen_config.methods() {
                 for method in self.methods() {
                     assert!(method.kind() != MethodKind::Constructor);
-                    method.try_codegen_operator(
-                        ctx,
-                        &ty_for_impl,
-                        result,
-                    );
+                    method.try_codegen_operator(ctx, &ty_for_impl, result);
                     method.codegen_method(
                         ctx,
                         &mut methods,
@@ -2186,39 +2182,34 @@ impl CodeGenerator for CompInfo {
 /// type_id_to_rust_type use "&" instead of "*" when assembling the TokenStream,
 /// but doing this is tricky.
 fn raw_pointer_to_reference(
-    rust_source: proc_macro2::TokenStream
+    rust_source: proc_macro2::TokenStream,
 ) -> proc_macro2::TokenStream {
     // Todo: Check if the performance of this function is terrible if rust_source is long.
     use proc_macro2::*;
     rust_source
-    .into_iter()
-    .filter(|elem| {
-            match &elem {
-                TokenTree::Ident(ident) => {
-                    let comp = Ident::new("const", ident.span());
-                    if comp == ident.clone() {
-                        false
-                    } else {
-                        true
-                    }
-                },
-                _ => (true),
+        .into_iter()
+        .filter(|elem| match &elem {
+            TokenTree::Ident(ident) => {
+                let comp = Ident::new("const", ident.span());
+                if comp == ident.clone() {
+                    false
+                } else {
+                    true
+                }
             }
-        }
-    )
-    .map(|elem| {
-            match &elem {
-                TokenTree::Punct(punct) => {
-                    if punct.as_char() == '*' {
-                        TokenTree::Punct(Punct::new('&', Spacing::Alone))
-                    } else {
-                        elem
-                    }
-                },
-                _ => (elem),
+            _ => (true),
+        })
+        .map(|elem| match &elem {
+            TokenTree::Punct(punct) => {
+                if punct.as_char() == '*' {
+                    TokenTree::Punct(Punct::new('&', Spacing::Alone))
+                } else {
+                    elem
+                }
             }
-        }
-    ).collect()
+            _ => (elem),
+        })
+        .collect()
 }
 
 impl Method {
@@ -2242,7 +2233,7 @@ impl Method {
     ///   cannot do that in Rust, because Rustc translates a != b to !(a == b).
     ///   We ignore the != Operator that the C++ code defined and just use the
     ///   == Operator that the C++ code defined.
-    fn try_codegen_operator (
+    fn try_codegen_operator(
         &self,
         ctx: &BindgenContext,
         ty_for_impl: &proc_macro2::TokenStream,
@@ -2271,7 +2262,10 @@ impl Method {
             None
         } else {
             dbg!("test");
-            let temp = utils::type_id_to_rust_type(ctx, signature.argument_types()[1].1);
+            let temp = utils::type_id_to_rust_type(
+                ctx,
+                signature.argument_types()[1].1,
+            );
             Some(raw_pointer_to_reference(temp))
         };
 
@@ -2300,10 +2294,8 @@ impl Method {
             ("operator>>", "Shr", "shr"),
             ("operator-", "Sub", "sub"),
         ];
-        let unary_operators = [
-            ("operator-", "Neg", "neg"),
-            ("operator!", "Not", "not"),
-        ];
+        let unary_operators =
+            [("operator-", "Neg", "neg"), ("operator!", "Not", "not")];
         if name == "operator==" {
             result.push(quote!(
                 impl PartialEq for #ty_for_impl {
@@ -2320,8 +2312,10 @@ impl Method {
             // The args.len() == 2 check shouldn't be neccessary but we still have it.
             if args.len() == 2 && name == el.0 {
                 let rhs_type = second_arg_type.unwrap();
-                let trait_name = proc_macro2::TokenStream::from_str(el.1).unwrap();
-                let func_name = proc_macro2::TokenStream::from_str(el.2).unwrap();
+                let trait_name =
+                    proc_macro2::TokenStream::from_str(el.1).unwrap();
+                let func_name =
+                    proc_macro2::TokenStream::from_str(el.2).unwrap();
                 result.push(quote!(
                     impl std::ops::#trait_name<#rhs_type> for #ty_for_impl {
                         fn #func_name(&mut self, rhs: #rhs_type) {
@@ -2341,8 +2335,10 @@ impl Method {
             // the negation operator).
             if args.len() == 2 && name == el.0 {
                 let rhs_type = second_arg_type.unwrap();
-                let trait_name = proc_macro2::TokenStream::from_str(el.1).unwrap();
-                let func_name = proc_macro2::TokenStream::from_str(el.2).unwrap();
+                let trait_name =
+                    proc_macro2::TokenStream::from_str(el.1).unwrap();
+                let func_name =
+                    proc_macro2::TokenStream::from_str(el.2).unwrap();
                 result.push(quote!(
                     impl std::ops::#trait_name<#rhs_type> for &#ty_for_impl {
                         type Output = #ret_type;
@@ -2359,8 +2355,10 @@ impl Method {
         for el in unary_operators.iter() {
             // The args.len() == 1 check shouldn't be neccessary but we still have it.
             if args.len() == 1 && name == el.0 {
-                let trait_name = proc_macro2::TokenStream::from_str(el.1).unwrap();
-                let func_name = proc_macro2::TokenStream::from_str(el.2).unwrap();
+                let trait_name =
+                    proc_macro2::TokenStream::from_str(el.1).unwrap();
+                let func_name =
+                    proc_macro2::TokenStream::from_str(el.2).unwrap();
                 result.push(quote!(
                     impl std::ops::#trait_name for &#ty_for_impl {
                         type Output = #ret_type;
@@ -4635,12 +4633,11 @@ mod utils {
         // [1]: http://c0x.coding-guidelines.com/6.7.5.3.html
         match *arg_ty.canonical_type(ctx).kind() {
             TypeKind::Array(t, _) => {
-                let stream =
-                    if ctx.options().array_pointers_in_arguments {
-                        arg_ty.to_rust_ty_or_opaque(ctx, &arg_item)
-                    } else {
-                        t.to_rust_ty_or_opaque(ctx, &())
-                    };
+                let stream = if ctx.options().array_pointers_in_arguments {
+                    arg_ty.to_rust_ty_or_opaque(ctx, &arg_item)
+                } else {
+                    t.to_rust_ty_or_opaque(ctx, &())
+                };
                 stream.to_ptr(ctx.resolve_type(t).is_const())
             }
             TypeKind::Pointer(inner) => {
@@ -4666,7 +4663,6 @@ mod utils {
         ctx: &BindgenContext,
         sig: &FunctionSig,
     ) -> Vec<proc_macro2::TokenStream> {
-
         let mut unnamed_arguments = 0;
         let mut args = sig
             .argument_types()
