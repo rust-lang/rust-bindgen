@@ -379,15 +379,6 @@ impl FunctionSig {
 
         let spelling = cursor.spelling();
 
-        // Don't parse operatorxx functions in C++
-        let is_operator = |spelling: &str| {
-            spelling.starts_with("operator") &&
-                !clang::is_valid_identifier(spelling)
-        };
-        if is_operator(&spelling) {
-            return Err(ParseError::Continue);
-        }
-
         // Constructors of non-type template parameter classes for some reason
         // include the template parameter in their name. Just skip them, since
         // we don't handle well non-type template parameters anyway.

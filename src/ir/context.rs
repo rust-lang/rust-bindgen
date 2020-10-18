@@ -801,9 +801,32 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Mangles a name so it doesn't conflict with any keyword.
     pub fn rust_mangle<'a>(&self, name: &'a str) -> Cow<'a, str> {
-        if name.contains("@") ||
-            name.contains("?") ||
-            name.contains("$") ||
+        let subs = [
+            ("@", "_"),
+            ("?", "_"),
+            ("$", "_"),
+            ("+", "_plus"),
+            ("&", "_bitand"),
+            ("|", "_bitor"),
+            ("^", "_bitxor"),
+            ("/", "_div"),
+            ("%", "_rem"),
+            ("<<", "shl"),
+            (">>", "shr"),
+            // Don't forget that "operator-" is both the name of the binary
+            // minus and the unary minus operator (a.k.a the negation operator).
+            ("-", "_minus"),
+            ("=", "_equal"),
+            ("[]", "_index"),
+            ("!", "_not"),
+        ];
+        let mut invalid_name = false;
+        for sub in subs.iter() {
+            if name.contains(sub.0) {
+                invalid_name = true;
+            }
+        }
+        if invalid_name ||
             match name {
                 "abstract" | "alignof" | "as" | "async" | "become" |
                 "box" | "break" | "const" | "continue" | "crate" | "do" |
@@ -821,9 +844,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             }
         {
             let mut s = name.to_owned();
-            s = s.replace("@", "_");
-            s = s.replace("?", "_");
-            s = s.replace("$", "_");
+            for sub in subs.iter() {
+                s = s.replace(sub.0, sub.1);
+            }
             s.push_str("_");
             return Cow::Owned(s);
         }
