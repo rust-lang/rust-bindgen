@@ -13,7 +13,7 @@ use super::derive::{
 };
 use super::function::Function;
 use super::int::IntKind;
-use super::item::{IsOpaque, Item, ItemAncestors, ItemSet};
+use super::item::{IsOpaque, Item, ItemAncestors, ItemSet, ItemCanonicalName};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
 use super::template::{TemplateInstantiation, TemplateParameters};
@@ -184,6 +184,13 @@ item_id_newtype! {
         /// Convert this `ItemId` into a `FunctionId` without actually checking whether
         /// this id actually points to a `Function`.
         unchecked = as_function_id_unchecked;
+}
+
+impl FunctionId {
+    pub fn get_function_name(&self, ctx: &BindgenContext) -> proc_macro2::Ident {
+        let function_item = ctx.resolve_item(self);
+        ctx.rust_ident(function_item.canonical_name(ctx))
+    }
 }
 
 impl From<ItemId> for usize {
