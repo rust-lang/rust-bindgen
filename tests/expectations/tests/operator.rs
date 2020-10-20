@@ -14,3 +14,10 @@ extern "C" {
 pub struct Foo {
     _unused: [u8; 0],
 }
+extern "C" {
+    #[link_name = "\u{1}_ZlsRK3Fooi"]
+    pub fn operatorshl_(
+        arg1: *const Foo,
+        arg2: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
