@@ -273,9 +273,9 @@ pub mod root {
         #[test]
         fn bindgen_test_layout_OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry(
         ) {
-            assert_eq ! (:: std :: mem :: size_of :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > () , 4usize , concat ! ("Size of: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry)));
-            assert_eq ! (:: std :: mem :: align_of :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > () , 4usize , concat ! ("Alignment of " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry)));
-            assert_eq ! (unsafe { & (* (:: std :: ptr :: null :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > ())) . i_am_double_wrapper_inline_sentry as * const _ as usize } , 0usize , concat ! ("Offset of field: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry) , "::" , stringify ! (i_am_double_wrapper_inline_sentry)));
+            assert_eq ! ( :: std :: mem :: size_of :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > ( ) , 4usize , concat ! ( "Size of: " , stringify ! ( OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry ) ) );
+            assert_eq ! ( :: std :: mem :: align_of :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > ( ) , 4usize , concat ! ( "Alignment of " , stringify ! ( OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry ) ) );
+            assert_eq ! ( unsafe { & ( * ( :: std :: ptr :: null :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > ( ) ) ) . i_am_double_wrapper_inline_sentry as * const _ as usize } , 0usize , concat ! ( "Offset of field: " , stringify ! ( OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry ) , "::" , stringify ! ( i_am_double_wrapper_inline_sentry ) ) );
         }
         #[test]
         fn bindgen_test_layout_OuterDoubleInlineWrapper_InnerDoubleInlineWrapper(
