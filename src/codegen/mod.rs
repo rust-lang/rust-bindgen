@@ -2173,45 +2173,6 @@ impl CodeGenerator for CompInfo {
     }
 }
 
-/// This function takes a TokenStream, removes all "const" and replaces all "*"
-/// with "&".
-///
-/// This is a bit hacky, but we need it because argument_type_id_to_rust_type
-/// returns something like "const *MyClass" instead of "&MyClass" and the latter
-/// is what we need to write into bindgen.rs. The less hacky way would be to
-/// make argument_type_id_to_rust_type use "&" instead of "*" when assembling
-/// the TokenStream, but doing this is tricky.
-fn raw_pointer_to_reference(
-    rust_source: proc_macro2::TokenStream,
-) -> proc_macro2::TokenStream {
-    // Todo: Check if the performance of this function is terrible if rust_source is long.
-    use proc_macro2::*;
-    rust_source
-        .into_iter()
-        .filter(|elem| match &elem {
-            TokenTree::Ident(ident) => {
-                let comp = Ident::new("const", ident.span());
-                if comp == ident.clone() {
-                    false
-                } else {
-                    true
-                }
-            }
-            _ => (true),
-        })
-        .map(|elem| match &elem {
-            TokenTree::Punct(punct) => {
-                if punct.as_char() == '*' {
-                    TokenTree::Punct(Punct::new('&', Spacing::Alone))
-                } else {
-                    elem
-                }
-            }
-            _ => (elem),
-        })
-        .collect()
-}
-
 impl Method {
     /// If self is an overloaded operator that this function recognizes, this
     /// function will put the correct wrapper into result and return true. Note
@@ -2261,11 +2222,11 @@ impl Method {
         let second_arg_type = if args.len() < 2 {
             None
         } else {
-            let temp = utils::argument_type_id_to_rust_type(
+            Some(utils::argument_type_id_to_rust_type(
                 ctx,
                 signature.argument_types()[1].1,
-            );
-            Some(raw_pointer_to_reference(temp))
+                /* pointer_to_ref = */ true
+            ))
         };
 
         // We then check if the function name is in one of the following three
@@ -4617,6 +4578,7 @@ mod utils {
     pub fn argument_type_id_to_rust_type(
         ctx: &BindgenContext,
         ty: crate::ir::context::TypeId,
+        pointer_to_ref: bool,
     ) -> proc_macro2::TokenStream {
         use super::ToPtr;
 
@@ -4641,6 +4603,11 @@ mod utils {
                 stream.to_ptr(ctx.resolve_type(t).is_const())
             }
             TypeKind::Pointer(inner) => {
+                if pointer_to_ref {
+                    let inner = inner.to_rust_ty_or_opaque(ctx, &());
+                    return quote! { &#inner }
+                }
+
                 let inner = ctx.resolve_item(inner);
                 let inner_ty = inner.expect_type();
                 if let TypeKind::ObjCInterface(ref interface) =
@@ -4679,7 +4646,7 @@ mod utils {
                 assert!(!arg_name.is_empty());
                 let arg_name = ctx.rust_ident(arg_name);
 
-                let arg_ty = argument_type_id_to_rust_type(ctx, ty);
+                let arg_ty = argument_type_id_to_rust_type(ctx, ty, /* pointer_to_ref = */ false);
 
                 quote! {
                     #arg_name : #arg_ty
