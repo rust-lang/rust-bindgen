@@ -2280,10 +2280,7 @@ impl Method {
                 result.push(quote!(
                     impl ::#prefix::ops::#trait_name<#rhs_type> for #ty_for_impl {
                         fn #func_name(&mut self, rhs: #rhs_type) {
-                            let retptr = unsafe {
-                                #function_name(self, rhs)
-                            };
-                            assert_eq!(retptr, self as *mut #ty_for_impl, "The bindgen authors have no idea how to handle this case.");
+                            #function_name(self, rhs);
                         }
                     }
                 ));
