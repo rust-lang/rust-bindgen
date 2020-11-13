@@ -118,7 +118,7 @@
 
 --------------------------------------------------------------------------------
 
-# Unreleased
+# 0.56.0
 
 Released YYYY/MM/DD
 
@@ -129,6 +129,8 @@ Released YYYY/MM/DD
 ## Changed
 
 * Objective-c bindings borrow self rather than take ownership ([#1883][]).
+* Templates and enums now correctly use the same naming scheme as other types
+ (#1891).
 
 ## Deprecated
 
@@ -140,6 +142,7 @@ Released YYYY/MM/DD
 
 ## Fixed
 
+* Constructors in wasm32 now return a value. (#1877).
 * Fixed objective-c protocol impl blocks for parent classes's protocols ([#1883][]).
 
 ## Security
