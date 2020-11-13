@@ -25,7 +25,7 @@ fn __bindgen_test_layout_Foo_open0_bool__int_close0_instantiation() {
         8usize,
         concat!(
             "Size of template specialization: ",
-            stringify ! ( Foo < bool , :: std :: os :: raw :: c_int > )
+            stringify ! (Foo < bool , :: std :: os :: raw :: c_int >)
         )
     );
     assert_eq!(
@@ -33,7 +33,7 @@ fn __bindgen_test_layout_Foo_open0_bool__int_close0_instantiation() {
         4usize,
         concat!(
             "Alignment of template specialization: ",
-            stringify ! ( Foo < bool , :: std :: os :: raw :: c_int > )
+            stringify ! (Foo < bool , :: std :: os :: raw :: c_int >)
         )
     );
 }
