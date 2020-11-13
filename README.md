@@ -65,6 +65,11 @@ Additionally, `bindgen` uses `libclang` to parse C and C++ header files.
 To modify how `bindgen` searches for `libclang`, see the [`clang-sys` documentation][clang-sys-env].
 For more details on how `bindgen` uses `libclang`, see the [`bindgen` users guide][bindgen-book-clang].
 
+## Releases
+
+We don't follow a specific release calendar, but if you need a release please
+file an issue requesting that (ping `@emilio` for increased effectiveness).
+
 ## Contributing
 
 [See `CONTRIBUTING.md` for hacking on `bindgen`!](./CONTRIBUTING.md)
