@@ -366,7 +366,7 @@ impl MethodCodegen for Method {
                 self
             };
         };
-        if safe_class_interface {
+        if safe_class_interface && !self.is_static() {
             exprs[0] = if self.is_constructor() {
                 quote! (
                     ret.ptr as * mut #ty_for_impl
