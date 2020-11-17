@@ -64,6 +64,6 @@ pub trait IFoo: Sized + std::ops::Deref {
     ) where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send ! ( class ! ( Foo ) , methodWithArg1 : intvalue andArg2 : ptr andArg3 : floatvalue )
+        msg_send ! (class ! (Foo) , methodWithArg1 : intvalue andArg2 : ptr andArg3 : floatvalue)
     }
 }
