@@ -1632,10 +1632,12 @@ impl CompInfo {
         ty_for_impl: TokenStream,
         layout: Layout
     ) {
+        let prefix = ctx.trait_prefix();
+
         let boxname = Ident::new(&format!("Box_{}", ty_for_impl), Span::call_site());
         result.push(quote!(
             struct #boxname {
-                ptr: *mut u8
+                ptr: *mut ::#prefix::ffi::c_void
             }
         ));
         let mut methods: Vec<proc_macro2::TokenStream> = vec![];
@@ -1646,7 +1648,6 @@ impl CompInfo {
             }
         ));
 
-        let prefix = ctx.trait_prefix();
         let size = layout.size;
         let align = layout.align;
         assert!(size != 0, "alloc is undefined if size == 0");
@@ -1657,7 +1658,7 @@ impl CompInfo {
                     fn drop(&mut self) {
                         unsafe {
                             #destructorname(self.ptr as *mut #ty_for_impl);
-                            ::#prefix::alloc::dealloc(self.ptr,::#prefix::alloc::Layout::from_size_align(#size, #align).unwrap());
+                            ::#prefix::alloc::dealloc(self.ptr as *mut u8,::#prefix::alloc::Layout::from_size_align(#size, #align).unwrap());
                         }
                     }
                 }
@@ -1667,7 +1668,7 @@ impl CompInfo {
                 impl Drop for #boxname {
                     fn drop(&mut self) {
                         unsafe {
-                            ::#prefix::alloc::dealloc(self.ptr,::#prefix::alloc::Layout::from_size_align(#size, #align).unwrap());
+                            ::#prefix::alloc::dealloc(self.ptr as *mut u8,::#prefix::alloc::Layout::from_size_align(#size, #align).unwrap());
                         }
                     }
                 }

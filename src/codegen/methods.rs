@@ -358,7 +358,7 @@ impl MethodCodegen for Method {
             let align = layout.unwrap().align;
             assert!(size != 0, "alloc is undefined if size == 0");
             stmts.push(quote!(
-                let ret = Self{ptr: ::#prefix::alloc::alloc(::#prefix::alloc::Layout::from_size_align(#size, #align).unwrap())}
+                let ret = Self{ptr: ::#prefix::alloc::alloc(::#prefix::alloc::Layout::from_size_align(#size, #align).unwrap()) as *mut ::#prefix::ffi::c_void}
             ));
         } else if !self.is_static() {
             assert!(!exprs.is_empty());
