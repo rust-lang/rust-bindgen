@@ -125,6 +125,12 @@ the expected bindings with `bindgen`'s current output:
 $ BINDGEN_OVERWRITE_EXPECTED=1 cargo test
 ```
 
+If you set the BINDGEN_TESTS_DIFFTOOL environment variable, `cargo test` will
+execute $BINDGEN_TESTS_DIFFTOOL /path/of/expected/output /path/of/actual/output
+when the expected output differs from the actual output. You can use this to
+hand check differences by setting it to e.g. "meld" (assuming you have meld
+installed).
+
 If you're not changing command line arguments, you may want to set
 `BINDGEN_DISABLE_ROUNDTRIP_TEST` to avoid a lot of tests for round-tripping of
 those.

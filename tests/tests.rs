@@ -174,7 +174,7 @@ fn compare_generated_header(
         expectation.push(file_name);
         expectation.set_extension("rs");
         expectation_file = fs::File::open(&expectation).ok();
-        looked_at.push(expectation);
+        looked_at.push(expectation.clone());
     }
 
     let mut expected = String::new();
@@ -233,14 +233,33 @@ fn compare_generated_header(
             }
         }
 
-        // Overwrite the expectation with actual output.
-        if env::var_os("BINDGEN_OVERWRITE_EXPECTED").is_some() {
-            let mut expectation_file =
-                fs::File::create(looked_at.last().unwrap())?;
-            expectation_file.write_all(actual.as_bytes())?;
+        if let Some(var) = env::var_os("BINDGEN_OVERWRITE_EXPECTED") {
+            if var == "1" {
+                // Overwrite the expectation with actual output.
+                let mut expectation_file =
+                    fs::File::create(looked_at.last().unwrap())?;
+                expectation_file.write_all(actual.as_bytes())?;
+            } else if var != "0" && var != "" {
+                panic!("Invalid value of BINDGEN_OVERWRITE_EXPECTED");
+            }
         }
 
-        return Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation."));
+        if let Some(var) = env::var_os("BINDGEN_TESTS_DIFFTOOL") {
+            //usecase: var = "meld" -> You can hand check differences
+            let filename = match header.components().last() {
+                Some(std::path::Component::Normal(name)) => name,
+                _ => panic!("Why is the header variable so weird?"),
+            };
+            let actual_result_path =
+                PathBuf::from(env::var("OUT_DIR").unwrap()).join(filename);
+            let mut actual_result_file = fs::File::create(&actual_result_path)?;
+            actual_result_file.write_all(actual.as_bytes())?;
+            std::process::Command::new(var)
+                .args(&[looked_at.last().unwrap(), &actual_result_path])
+                .output()?;
+        }
+
+        return Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation or with BINDGEN_TESTS_DIFFTOOL=meld to do this manually."));
     }
 
     if check_roundtrip {
