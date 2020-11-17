@@ -244,7 +244,6 @@ fn compare_generated_header(
                 let mut actual_result_file =
                     fs::File::create(&actual_result_path)?;
                 actual_result_file.write_all(actual.as_bytes())?;
-                let val  = looked_at.last().unwrap();
                 std::process::Command::new(var)
                 .args(&[looked_at.last().unwrap(), &actual_result_path])
                 .output()?;
