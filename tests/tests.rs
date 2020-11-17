@@ -174,7 +174,7 @@ fn compare_generated_header(
         expectation.push(file_name);
         expectation.set_extension("rs");
         expectation_file = fs::File::open(&expectation).ok();
-        looked_at.push(expectation);
+        looked_at.push(expectation.clone());
     }
 
     let mut expected = String::new();
@@ -233,14 +233,25 @@ fn compare_generated_header(
             }
         }
 
-        // Overwrite the expectation with actual output.
-        if env::var_os("BINDGEN_OVERWRITE_EXPECTED").is_some() {
-            let mut expectation_file =
-                fs::File::create(looked_at.last().unwrap())?;
-            expectation_file.write_all(actual.as_bytes())?;
+        if let Some(var) = env::var_os("BINDGEN_OVERWRITE_EXPECTED") {
+            if var == "1" {
+                // Overwrite the expectation with actual output.
+                let mut expectation_file =
+                    fs::File::create(looked_at.last().unwrap())?;
+                expectation_file.write_all(actual.as_bytes())?;
+            } else { //usecase: var = "meld" -> You can hand check differences
+                let actual_result_path = PathBuf::from(env::var("OUT_DIR").unwrap()).join("meld_bindings.rs");
+                let mut actual_result_file =
+                    fs::File::create(&actual_result_path)?;
+                actual_result_file.write_all(actual.as_bytes())?;
+                let val  = looked_at.last().unwrap();
+                std::process::Command::new(var)
+                .args(&[looked_at.last().unwrap(), &actual_result_path])
+                .output()?;
+            }
         }
 
-        return Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation."));
+        return Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation or with BINDGEN_OVERWRITE_EXPECTED=meld to do this manually."));
     }
 
     if check_roundtrip {
