@@ -40,3 +40,31 @@ impl Bar {
         __bindgen_tmp.assume_init()
     }
 }
+struct Box_Bar {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Bar {
+    #[inline]
+    pub fn new() -> Self {
+        unsafe {
+            let ret = Self {
+                ptr: ::std::alloc::alloc(
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                ) as *mut ::std::ffi::c_void,
+            };
+            Bar_Bar(ret.ptr as *mut Bar);
+            ret
+        }
+    }
+}
+impl Drop for Box_Bar {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}

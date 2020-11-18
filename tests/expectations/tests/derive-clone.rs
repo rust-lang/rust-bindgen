@@ -42,3 +42,18 @@ impl Default for ShouldDeriveClone {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_ShouldDeriveClone {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ShouldDeriveClone {}
+impl Drop for Box_ShouldDeriveClone {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(132usize, 4usize)
+                    .unwrap(),
+            );
+        }
+    }
+}

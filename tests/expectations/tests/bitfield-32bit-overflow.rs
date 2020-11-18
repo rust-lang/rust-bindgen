@@ -715,3 +715,17 @@ impl MuchBitfield {
         __bindgen_bitfield_unit
     }
 }
+struct Box_MuchBitfield {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_MuchBitfield {}
+impl Drop for Box_MuchBitfield {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(5usize, 1usize).unwrap(),
+            );
+        }
+    }
+}

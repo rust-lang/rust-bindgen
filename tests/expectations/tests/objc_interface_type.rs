@@ -62,6 +62,20 @@ impl Default for FooStruct {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_FooStruct {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_FooStruct {}
+impl Drop for Box_FooStruct {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     pub fn fooFunc(foo: Foo);
 }

@@ -68,6 +68,20 @@ impl ::std::fmt::Debug for perf_event_attr__bindgen_ty_1 {
         write!(f, "perf_event_attr__bindgen_ty_1 {{ union }}")
     }
 }
+struct Box_perf_event_attr__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_perf_event_attr__bindgen_ty_1 {}
+impl Drop for Box_perf_event_attr__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn bindgen_test_layout_perf_event_attr() {
     assert_eq!(
@@ -118,5 +132,19 @@ impl ::std::fmt::Debug for perf_event_attr {
             "perf_event_attr {{ type: {:?}, a: {:?}, __bindgen_anon_1: {:?} }}",
             self.type_, self.a, self.__bindgen_anon_1
         )
+    }
+}
+struct Box_perf_event_attr {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_perf_event_attr {}
+impl Drop for Box_perf_event_attr {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(12usize, 4usize).unwrap(),
+            );
+        }
     }
 }

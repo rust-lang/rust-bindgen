@@ -78,3 +78,17 @@ impl Default for contains_block_pointers {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_contains_block_pointers {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_contains_block_pointers {}
+impl Drop for Box_contains_block_pointers {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
+    }
+}

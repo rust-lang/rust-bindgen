@@ -23,6 +23,20 @@ fn bindgen_test_layout_whatever() {
         concat!("Alignment of ", stringify!(whatever))
     );
 }
+struct Box_whatever {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_whatever {}
+impl Drop for Box_whatever {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct whatever_child {
@@ -40,6 +54,20 @@ fn bindgen_test_layout_whatever_child() {
         1usize,
         concat!("Alignment of ", stringify!(whatever_child))
     );
+}
+struct Box_whatever_child {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_whatever_child {}
+impl Drop for Box_whatever_child {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -71,4 +99,18 @@ fn bindgen_test_layout_whatever_child_with_member() {
             stringify!(m_member)
         )
     );
+}
+struct Box_whatever_child_with_member {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_whatever_child_with_member {}
+impl Drop for Box_whatever_child_with_member {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }

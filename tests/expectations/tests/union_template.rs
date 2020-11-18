@@ -22,6 +22,20 @@ impl Default for NastyStruct__bindgen_ty_1 {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_NastyStruct__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_NastyStruct__bindgen_ty_1 {}
+impl Drop for Box_NastyStruct__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 pub union NastyStruct__bindgen_ty_2 {
     pub wat: ::std::os::raw::c_short,
@@ -31,6 +45,20 @@ pub union NastyStruct__bindgen_ty_2 {
 impl Default for NastyStruct__bindgen_ty_2 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_NastyStruct__bindgen_ty_2 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_NastyStruct__bindgen_ty_2 {}
+impl Drop for Box_NastyStruct__bindgen_ty_2 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 impl Default for NastyStruct {
@@ -47,5 +75,19 @@ pub union Whatever {
 impl Default for Whatever {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_Whatever {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Whatever {}
+impl Drop for Box_Whatever {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }

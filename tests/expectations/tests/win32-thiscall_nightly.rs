@@ -49,3 +49,29 @@ impl Foo {
         Foo_test2(self, var)
     }
 }
+struct Box_Foo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Foo {
+    #[inline]
+    pub fn test(&mut self) {
+        unsafe { Foo_test(self.ptr as *mut Foo) }
+    }
+    #[inline]
+    pub fn test2(
+        &mut self,
+        var: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int {
+        unsafe { Foo_test2(self.ptr as *mut Foo, var) }
+    }
+}
+impl Drop for Box_Foo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}

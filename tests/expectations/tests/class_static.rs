@@ -32,6 +32,20 @@ fn bindgen_test_layout_MyClass() {
         concat!("Alignment of ", stringify!(MyClass))
     );
 }
+struct Box_MyClass {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_MyClass {}
+impl Drop for Box_MyClass {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     #[link_name = "\u{1}_ZL26example_check_no_collision"]
     pub static mut example_check_no_collision: *const ::std::os::raw::c_int;

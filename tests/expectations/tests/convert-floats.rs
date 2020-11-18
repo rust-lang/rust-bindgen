@@ -88,3 +88,17 @@ impl Default for foo {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_foo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_foo {}
+impl Drop for Box_foo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(48usize, 8usize).unwrap(),
+            );
+        }
+    }
+}

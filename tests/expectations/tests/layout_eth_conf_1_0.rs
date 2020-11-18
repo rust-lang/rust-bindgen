@@ -444,6 +444,20 @@ impl rte_eth_rxmode {
         __bindgen_bitfield_unit
     }
 }
+struct Box_rte_eth_rxmode {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_rxmode {}
+impl Drop for Box_rte_eth_rxmode {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(12usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(u32)]
 /// A set of values to identify what method is to be used to transmit
 /// packets using multi-TCs.
@@ -584,6 +598,20 @@ impl rte_eth_txmode {
         __bindgen_bitfield_unit
     }
 }
+struct Box_rte_eth_txmode {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_txmode {}
+impl Drop for Box_rte_eth_txmode {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 /// A structure used to configure the Receive Side Scaling (RSS) feature
 /// of an Ethernet port.
 /// If not NULL, the *rss_key* pointer of the *rss_conf* structure points
@@ -669,6 +697,20 @@ impl Clone for rte_eth_rss_conf {
 impl Default for rte_eth_rss_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_rte_eth_rss_conf {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_rss_conf {}
+impl Drop for Box_rte_eth_rss_conf {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(24usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 #[repr(u32)]
@@ -774,6 +816,20 @@ impl Clone for rte_eth_vmdq_dcb_conf__bindgen_ty_1 {
         *self
     }
 }
+struct Box_rte_eth_vmdq_dcb_conf__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_vmdq_dcb_conf__bindgen_ty_1 {}
+impl Drop for Box_rte_eth_vmdq_dcb_conf__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     assert_eq!(
@@ -875,6 +931,21 @@ impl Default for rte_eth_vmdq_dcb_conf {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_rte_eth_vmdq_dcb_conf {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_vmdq_dcb_conf {}
+impl Drop for Box_rte_eth_vmdq_dcb_conf {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1040usize, 8usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_dcb_rx_conf {
@@ -930,6 +1001,20 @@ impl Clone for rte_eth_dcb_rx_conf {
 impl Default for rte_eth_dcb_rx_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_rte_eth_dcb_rx_conf {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_dcb_rx_conf {}
+impl Drop for Box_rte_eth_dcb_rx_conf {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(12usize, 4usize).unwrap(),
+            );
+        }
     }
 }
 #[repr(C)]
@@ -989,6 +1074,20 @@ impl Default for rte_eth_vmdq_dcb_tx_conf {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_rte_eth_vmdq_dcb_tx_conf {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_vmdq_dcb_tx_conf {}
+impl Drop for Box_rte_eth_vmdq_dcb_tx_conf {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(12usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_dcb_tx_conf {
@@ -1046,6 +1145,20 @@ impl Default for rte_eth_dcb_tx_conf {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_rte_eth_dcb_tx_conf {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_dcb_tx_conf {}
+impl Drop for Box_rte_eth_dcb_tx_conf {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(12usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_vmdq_tx_conf {
@@ -1086,6 +1199,20 @@ impl Clone for rte_eth_vmdq_tx_conf {
 impl Default for rte_eth_vmdq_tx_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_rte_eth_vmdq_tx_conf {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_vmdq_tx_conf {}
+impl Drop for Box_rte_eth_vmdq_tx_conf {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
     }
 }
 #[repr(C)]
@@ -1159,6 +1286,20 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
 impl Clone for rte_eth_vmdq_rx_conf__bindgen_ty_1 {
     fn clone(&self) -> Self {
         *self
+    }
+}
+struct Box_rte_eth_vmdq_rx_conf__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_vmdq_rx_conf__bindgen_ty_1 {}
+impl Drop for Box_rte_eth_vmdq_rx_conf__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 #[test]
@@ -1273,6 +1414,21 @@ impl Clone for rte_eth_vmdq_rx_conf {
 impl Default for rte_eth_vmdq_rx_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_rte_eth_vmdq_rx_conf {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_vmdq_rx_conf {}
+impl Drop for Box_rte_eth_vmdq_rx_conf {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1040usize, 8usize)
+                    .unwrap(),
+            );
+        }
     }
 }
 #[repr(u32)]
@@ -1411,6 +1567,20 @@ impl Clone for rte_eth_ipv4_flow {
         *self
     }
 }
+struct Box_rte_eth_ipv4_flow {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_ipv4_flow {}
+impl Drop for Box_rte_eth_ipv4_flow {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(12usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 /// A structure used to define the input for IPV6 flow
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -1507,6 +1677,20 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
 impl Clone for rte_eth_ipv6_flow {
     fn clone(&self) -> Self {
         *self
+    }
+}
+struct Box_rte_eth_ipv6_flow {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_ipv6_flow {}
+impl Drop for Box_rte_eth_ipv6_flow {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(36usize, 4usize).unwrap(),
+            );
+        }
     }
 }
 ///  A structure used to configure FDIR masks that are used by the device
@@ -1655,6 +1839,20 @@ impl Clone for rte_eth_fdir_masks {
         *self
     }
 }
+struct Box_rte_eth_fdir_masks {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_fdir_masks {}
+impl Drop for Box_rte_eth_fdir_masks {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(68usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(u32)]
 /// Payload type
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -1724,6 +1922,20 @@ impl Default for rte_eth_flex_payload_cfg {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_rte_eth_flex_payload_cfg {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_flex_payload_cfg {}
+impl Drop for Box_rte_eth_flex_payload_cfg {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(36usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 /// A structure used to define FDIR masks for flexible payload
 /// for each flow type
 #[repr(C)]
@@ -1774,6 +1986,20 @@ fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
 impl Clone for rte_eth_fdir_flex_mask {
     fn clone(&self) -> Self {
         *self
+    }
+}
+struct Box_rte_eth_fdir_flex_mask {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_fdir_flex_mask {}
+impl Drop for Box_rte_eth_fdir_flex_mask {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(18usize, 2usize).unwrap(),
+            );
+        }
     }
 }
 /// A structure used to define all flexible payload related setting
@@ -1861,6 +2087,21 @@ impl Clone for rte_eth_fdir_flex_conf {
 impl Default for rte_eth_fdir_flex_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_rte_eth_fdir_flex_conf {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_fdir_flex_conf {}
+impl Drop for Box_rte_eth_fdir_flex_conf {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(688usize, 4usize)
+                    .unwrap(),
+            );
+        }
     }
 }
 /// A structure used to configure the Flow Director (FDIR) feature
@@ -1980,6 +2221,21 @@ impl Default for rte_fdir_conf {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_rte_fdir_conf {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_fdir_conf {}
+impl Drop for Box_rte_fdir_conf {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(772usize, 4usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 /// A structure used to enable/disable specific device interrupts.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -2029,6 +2285,20 @@ fn bindgen_test_layout_rte_intr_conf() {
 impl Clone for rte_intr_conf {
     fn clone(&self) -> Self {
         *self
+    }
+}
+struct Box_rte_intr_conf {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_intr_conf {}
+impl Drop for Box_rte_intr_conf {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 2usize).unwrap(),
+            );
+        }
     }
 }
 /// A structure used to configure an Ethernet port.
@@ -2151,6 +2421,21 @@ impl Default for rte_eth_conf__bindgen_ty_1 {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_rte_eth_conf__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_conf__bindgen_ty_1 {}
+impl Drop for Box_rte_eth_conf__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(2120usize, 8usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_conf__bindgen_ty_2 {
@@ -2214,6 +2499,20 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
 impl Clone for rte_eth_conf__bindgen_ty_2 {
     fn clone(&self) -> Self {
         *self
+    }
+}
+struct Box_rte_eth_conf__bindgen_ty_2 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_conf__bindgen_ty_2 {}
+impl Drop for Box_rte_eth_conf__bindgen_ty_2 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(12usize, 4usize).unwrap(),
+            );
+        }
     }
 }
 #[test]
@@ -2352,5 +2651,20 @@ impl Clone for rte_eth_conf {
 impl Default for rte_eth_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_rte_eth_conf {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_conf {}
+impl Drop for Box_rte_eth_conf {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(2944usize, 8usize)
+                    .unwrap(),
+            );
+        }
     }
 }

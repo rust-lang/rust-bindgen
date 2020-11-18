@@ -81,6 +81,20 @@ pub struct TErrorResult__bindgen_ty_1 {
         __BindgenUnionField<*mut TErrorResult_DOMExceptionInfo>,
     pub bindgen_union_field: u64,
 }
+struct Box_TErrorResult__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_TErrorResult__bindgen_ty_1 {}
+impl Drop for Box_TErrorResult__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 impl Default for TErrorResult {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -112,6 +126,20 @@ impl Clone for ErrorResult {
 impl Default for ErrorResult {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_ErrorResult {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ErrorResult {}
+impl Drop for Box_ErrorResult {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(24usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 #[test]

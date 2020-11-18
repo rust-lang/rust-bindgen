@@ -55,6 +55,20 @@ fn bindgen_test_layout_Foo() {
         )
     );
 }
+struct Box_Foo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Foo {}
+impl Drop for Box_Foo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 pub type my_fun2_t = ::std::option::Option<
     unsafe extern "C" fn(
         arg1: ::std::os::raw::c_int,
@@ -100,4 +114,18 @@ fn bindgen_test_layout_Bar() {
             stringify!(callback)
         )
     );
+}
+struct Box_Bar {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Bar {}
+impl Drop for Box_Bar {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
 }

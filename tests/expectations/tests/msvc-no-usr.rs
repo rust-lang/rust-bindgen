@@ -29,3 +29,17 @@ fn bindgen_test_layout_A() {
         concat!("Offset of field: ", stringify!(A), "::", stringify!(foo))
     );
 }
+struct Box_A {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_A {}
+impl Drop for Box_A {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}

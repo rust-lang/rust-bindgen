@@ -35,6 +35,20 @@ fn bindgen_test_layout_dl_phdr_info() {
         )
     );
 }
+struct Box_dl_phdr_info {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_dl_phdr_info {}
+impl Drop for Box_dl_phdr_info {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     pub fn dl_iterate_phdr(arg1: *mut dl_phdr_info) -> ::std::os::raw::c_int;
 }

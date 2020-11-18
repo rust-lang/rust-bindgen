@@ -24,3 +24,17 @@ fn bindgen_test_layout_NoPartialEq() {
         concat!("Alignment of ", stringify!(NoPartialEq))
     );
 }
+struct Box_NoPartialEq {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_NoPartialEq {}
+impl Drop for Box_NoPartialEq {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}

@@ -36,6 +36,20 @@ fn bindgen_test_layout_a() {
         concat!("Offset of field: ", stringify!(a), "::", stringify!(c))
     );
 }
+struct Box_a {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_a {}
+impl Drop for Box_a {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[repr(align(8))]
 #[derive(Debug, Default, Copy, Clone)]
@@ -65,4 +79,18 @@ fn bindgen_test_layout_b() {
         4usize,
         concat!("Offset of field: ", stringify!(b), "::", stringify!(c))
     );
+}
+struct Box_b {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_b {}
+impl Drop for Box_b {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
 }

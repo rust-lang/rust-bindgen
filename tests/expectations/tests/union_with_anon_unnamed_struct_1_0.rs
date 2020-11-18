@@ -133,6 +133,20 @@ impl Clone for pixel__bindgen_ty_1 {
         *self
     }
 }
+struct Box_pixel__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_pixel__bindgen_ty_1 {}
+impl Drop for Box_pixel__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn bindgen_test_layout_pixel() {
     assert_eq!(
@@ -159,5 +173,19 @@ fn bindgen_test_layout_pixel() {
 impl Clone for pixel {
     fn clone(&self) -> Self {
         *self
+    }
+}
+struct Box_pixel {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_pixel {}
+impl Drop for Box_pixel {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
     }
 }

@@ -28,6 +28,20 @@ fn bindgen_test_layout_Calc() {
         concat!("Offset of field: ", stringify!(Calc), "::", stringify!(w))
     );
 }
+struct Box_Calc {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Calc {}
+impl Drop for Box_Calc {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Test {
@@ -56,6 +70,20 @@ fn bindgen_test_layout_Test_Size_Dimension() {
         4usize,
         concat!("Alignment of ", stringify!(Test_Size_Dimension))
     );
+}
+struct Box_Test_Size_Dimension {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Test_Size_Dimension {}
+impl Drop for Box_Test_Size_Dimension {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }
 #[test]
 fn bindgen_test_layout_Test_Size() {
@@ -94,6 +122,20 @@ fn bindgen_test_layout_Test_Size() {
         )
     );
 }
+struct Box_Test_Size {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Test_Size {}
+impl Drop for Box_Test_Size {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn bindgen_test_layout_Test() {
     assert_eq!(
@@ -106,4 +148,18 @@ fn bindgen_test_layout_Test() {
         1usize,
         concat!("Alignment of ", stringify!(Test))
     );
+}
+struct Box_Test {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Test {}
+impl Drop for Box_Test {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
 }

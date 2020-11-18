@@ -310,6 +310,20 @@ impl jsval_layout__bindgen_ty_1 {
         __bindgen_bitfield_unit
     }
 }
+struct Box_jsval_layout__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_jsval_layout__bindgen_ty_1 {}
+impl Drop for Box_jsval_layout__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct jsval_layout__bindgen_ty_2 {
@@ -386,6 +400,20 @@ impl Clone for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
         *self
     }
 }
+struct Box_jsval_layout__bindgen_ty_2__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_jsval_layout__bindgen_ty_2__bindgen_ty_1 {}
+impl Drop for Box_jsval_layout__bindgen_ty_2__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
     assert_eq!(
@@ -415,6 +443,20 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
 impl Clone for jsval_layout__bindgen_ty_2 {
     fn clone(&self) -> Self {
         *self
+    }
+}
+struct Box_jsval_layout__bindgen_ty_2 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_jsval_layout__bindgen_ty_2 {}
+impl Drop for Box_jsval_layout__bindgen_ty_2 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
     }
 }
 #[test]
@@ -522,6 +564,20 @@ impl Clone for jsval_layout {
         *self
     }
 }
+struct Box_jsval_layout {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_jsval_layout {}
+impl Drop for Box_jsval_layout {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct Value {
@@ -553,5 +609,19 @@ fn bindgen_test_layout_Value() {
 impl Clone for Value {
     fn clone(&self) -> Self {
         *self
+    }
+}
+struct Box_Value {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Value {}
+impl Drop for Box_Value {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }

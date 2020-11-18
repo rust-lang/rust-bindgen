@@ -23,6 +23,20 @@ fn bindgen_test_layout_NoCopy() {
         concat!("Alignment of ", stringify!(NoCopy))
     );
 }
+struct Box_NoCopy {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_NoCopy {}
+impl Drop for Box_NoCopy {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct WhitelistMe {
@@ -52,4 +66,18 @@ fn bindgen_test_layout_WhitelistMe() {
             stringify!(a)
         )
     );
+}
+struct Box_WhitelistMe {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_WhitelistMe {}
+impl Drop for Box_WhitelistMe {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
 }

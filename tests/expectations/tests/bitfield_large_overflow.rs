@@ -24,6 +24,20 @@ fn bindgen_test_layout__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(_bindgen_ty_1))
     );
 }
+struct Box__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box__bindgen_ty_1 {}
+impl Drop for Box__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(80usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     pub static mut a: _bindgen_ty_1;
 }

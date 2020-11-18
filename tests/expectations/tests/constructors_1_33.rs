@@ -50,6 +50,47 @@ impl TestOverload {
         __bindgen_tmp
     }
 }
+struct Box_TestOverload {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_TestOverload {
+    #[inline]
+    pub fn new(arg1: ::std::os::raw::c_int) -> Self {
+        unsafe {
+            let ret = Self {
+                ptr: ::std::alloc::alloc(
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                ) as *mut ::std::ffi::c_void,
+            };
+            TestOverload_TestOverload(ret.ptr as *mut TestOverload, arg1);
+            ret
+        }
+    }
+    #[inline]
+    pub fn new1(arg1: f64) -> Self {
+        unsafe {
+            let ret = Self {
+                ptr: ::std::alloc::alloc(
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                ) as *mut ::std::ffi::c_void,
+            };
+            TestOverload_TestOverload1(ret.ptr as *mut TestOverload, arg1);
+            ret
+        }
+    }
+}
+impl Drop for Box_TestOverload {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct TestPublicNoArgs {
@@ -78,5 +119,33 @@ impl TestPublicNoArgs {
         let mut __bindgen_tmp = ::std::mem::uninitialized();
         TestPublicNoArgs_TestPublicNoArgs(&mut __bindgen_tmp);
         __bindgen_tmp
+    }
+}
+struct Box_TestPublicNoArgs {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_TestPublicNoArgs {
+    #[inline]
+    pub fn new() -> Self {
+        unsafe {
+            let ret = Self {
+                ptr: ::std::alloc::alloc(
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                ) as *mut ::std::ffi::c_void,
+            };
+            TestPublicNoArgs_TestPublicNoArgs(ret.ptr as *mut TestPublicNoArgs);
+            ret
+        }
+    }
+}
+impl Drop for Box_TestPublicNoArgs {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
     }
 }

@@ -49,3 +49,18 @@ fn bindgen_test_layout_foo() {
         )
     );
 }
+struct Box_foo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_foo {}
+impl Drop for Box_foo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(32usize, 16usize)
+                    .unwrap(),
+            );
+        }
+    }
+}

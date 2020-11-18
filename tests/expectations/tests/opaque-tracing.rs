@@ -28,3 +28,17 @@ fn bindgen_test_layout_Container() {
         concat!("Alignment of ", stringify!(Container))
     );
 }
+struct Box_Container {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Container {}
+impl Drop for Box_Container {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
+            );
+        }
+    }
+}

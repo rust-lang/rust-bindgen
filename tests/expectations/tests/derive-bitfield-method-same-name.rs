@@ -208,3 +208,31 @@ impl Foo {
         Foo_set_type(self, c)
     }
 }
+struct Box_Foo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Foo {
+    #[inline]
+    pub fn type_(&mut self) -> ::std::os::raw::c_char {
+        unsafe { Foo_type(self.ptr as *mut Foo) }
+    }
+    #[inline]
+    pub fn set_type_(&mut self, c: ::std::os::raw::c_char) {
+        unsafe { Foo_set_type_(self.ptr as *mut Foo, c) }
+    }
+    #[inline]
+    pub fn set_type(&mut self, c: ::std::os::raw::c_char) {
+        unsafe { Foo_set_type(self.ptr as *mut Foo, c) }
+    }
+}
+impl Drop for Box_Foo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(136usize, 4usize)
+                    .unwrap(),
+            );
+        }
+    }
+}

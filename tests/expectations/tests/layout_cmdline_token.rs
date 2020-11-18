@@ -57,6 +57,20 @@ impl Default for cmdline_token_hdr {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_cmdline_token_hdr {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_cmdline_token_hdr {}
+impl Drop for Box_cmdline_token_hdr {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 pub type cmdline_parse_token_hdr_t = cmdline_token_hdr;
 /// A token is defined by this structure.
 ///
@@ -176,6 +190,20 @@ fn bindgen_test_layout_cmdline_token_ops() {
         )
     );
 }
+struct Box_cmdline_token_ops {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_cmdline_token_ops {}
+impl Drop for Box_cmdline_token_ops {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(32usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum cmdline_numtype {
@@ -222,6 +250,20 @@ fn bindgen_test_layout_cmdline_token_num_data() {
 impl Default for cmdline_token_num_data {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_cmdline_token_num_data {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_cmdline_token_num_data {}
+impl Drop for Box_cmdline_token_num_data {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
     }
 }
 #[repr(C)]
@@ -272,6 +314,20 @@ fn bindgen_test_layout_cmdline_token_num() {
 impl Default for cmdline_token_num {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_cmdline_token_num {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_cmdline_token_num {}
+impl Drop for Box_cmdline_token_num {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(24usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 pub type cmdline_parse_token_num_t = cmdline_token_num;

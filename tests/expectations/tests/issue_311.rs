@@ -32,6 +32,21 @@ pub mod root {
             concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_1))
         );
     }
+    struct Box_jsval_layout__bindgen_ty_1 {
+        ptr: *mut ::std::ffi::c_void,
+    }
+    impl Box_jsval_layout__bindgen_ty_1 {}
+    impl Drop for Box_jsval_layout__bindgen_ty_1 {
+        fn drop(&mut self) {
+            unsafe {
+                ::std::alloc::dealloc(
+                    self.ptr as *mut u8,
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                );
+            }
+        }
+    }
     #[test]
     fn bindgen_test_layout_jsval_layout() {
         assert_eq!(
@@ -44,5 +59,20 @@ pub mod root {
             1usize,
             concat!("Alignment of ", stringify!(jsval_layout))
         );
+    }
+    struct Box_jsval_layout {
+        ptr: *mut ::std::ffi::c_void,
+    }
+    impl Box_jsval_layout {}
+    impl Drop for Box_jsval_layout {
+        fn drop(&mut self) {
+            unsafe {
+                ::std::alloc::dealloc(
+                    self.ptr as *mut u8,
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                );
+            }
+        }
     }
 }

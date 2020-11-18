@@ -71,3 +71,17 @@ impl Default for mbedtls_mpi {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_mbedtls_mpi {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_mbedtls_mpi {}
+impl Drop for Box_mbedtls_mpi {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(24usize, 8usize).unwrap(),
+            );
+        }
+    }
+}

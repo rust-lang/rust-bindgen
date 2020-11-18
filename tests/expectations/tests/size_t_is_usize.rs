@@ -45,3 +45,17 @@ impl Default for A {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_A {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_A {}
+impl Drop for Box_A {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(24usize, 8usize).unwrap(),
+            );
+        }
+    }
+}

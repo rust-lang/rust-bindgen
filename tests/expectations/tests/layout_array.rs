@@ -173,6 +173,21 @@ impl ::std::cmp::PartialEq for rte_mempool_ops {
             self.get_count == other.get_count
     }
 }
+struct Box_rte_mempool_ops {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_mempool_ops {}
+impl Drop for Box_rte_mempool_ops {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(128usize, 64usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 /// The rte_spinlock_t type.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -205,6 +220,20 @@ fn bindgen_test_layout_rte_spinlock_t() {
             stringify!(locked)
         )
     );
+}
+struct Box_rte_spinlock_t {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_spinlock_t {}
+impl Drop for Box_rte_spinlock_t {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }
 /// Structure storing the table of registered ops structs, each of which contain
 /// the function pointers for the mempool ops functions.
@@ -282,6 +311,21 @@ impl Default for rte_mempool_ops_table {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_rte_mempool_ops_table {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_mempool_ops_table {}
+impl Drop for Box_rte_mempool_ops_table {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(2112usize, 64usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 /// Structure to hold malloc heap
 #[repr(C)]
 #[repr(align(64))]
@@ -326,6 +370,20 @@ fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
 impl Default for malloc_heap__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_malloc_heap__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_malloc_heap__bindgen_ty_1 {}
+impl Drop for Box_malloc_heap__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 #[test]
@@ -403,6 +461,21 @@ impl ::std::cmp::PartialEq for malloc_heap {
             self.free_head == other.free_head &&
             self.alloc_count == other.alloc_count &&
             self.total_size == other.total_size
+    }
+}
+struct Box_malloc_heap {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_malloc_heap {}
+impl Drop for Box_malloc_heap {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(128usize, 64usize)
+                    .unwrap(),
+            );
+        }
     }
 }
 #[repr(C)]

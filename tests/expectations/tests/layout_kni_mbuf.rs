@@ -225,3 +225,18 @@ impl Default for rte_kni_mbuf {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_rte_kni_mbuf {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_kni_mbuf {}
+impl Drop for Box_rte_kni_mbuf {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(128usize, 64usize)
+                    .unwrap(),
+            );
+        }
+    }
+}

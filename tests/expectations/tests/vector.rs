@@ -33,6 +33,20 @@ fn bindgen_test_layout_foo() {
         )
     );
 }
+struct Box_foo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_foo {}
+impl Drop for Box_foo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 pub type __m128 = [f32; 4usize];
 pub type __m128d = [f64; 2usize];
 pub type __m128i = [::std::os::raw::c_longlong; 2usize];

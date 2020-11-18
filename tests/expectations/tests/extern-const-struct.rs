@@ -40,6 +40,21 @@ impl Default for nsFoo {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_nsFoo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_nsFoo {}
+impl Drop for Box_nsFoo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1600usize, 4usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     pub static gDetails: nsFoo;
 }

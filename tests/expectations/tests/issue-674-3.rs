@@ -38,6 +38,21 @@ pub mod root {
             concat!("Offset of field: ", stringify!(a), "::", stringify!(b))
         );
     }
+    struct Box_a {
+        ptr: *mut ::std::ffi::c_void,
+    }
+    impl Box_a {}
+    impl Drop for Box_a {
+        fn drop(&mut self) {
+            unsafe {
+                ::std::alloc::dealloc(
+                    self.ptr as *mut u8,
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                );
+            }
+        }
+    }
     #[repr(C)]
     #[derive(Debug, Default, Copy, Clone)]
     pub struct nsCSSValue {
@@ -67,5 +82,20 @@ pub mod root {
                 stringify!(c)
             )
         );
+    }
+    struct Box_nsCSSValue {
+        ptr: *mut ::std::ffi::c_void,
+    }
+    impl Box_nsCSSValue {}
+    impl Drop for Box_nsCSSValue {
+        fn drop(&mut self) {
+            unsafe {
+                ::std::alloc::dealloc(
+                    self.ptr as *mut u8,
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                );
+            }
+        }
     }
 }

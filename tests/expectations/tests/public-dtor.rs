@@ -33,3 +33,18 @@ impl cv_String {
         cv_String_String_destructor(self)
     }
 }
+struct Box_cv_String {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_cv_String {}
+impl Drop for Box_cv_String {
+    fn drop(&mut self) {
+        unsafe {
+            cv_String_String_destructor(self.ptr as *mut cv_String);
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}

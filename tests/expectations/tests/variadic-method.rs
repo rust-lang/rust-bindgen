@@ -31,3 +31,17 @@ extern "C" {
     #[link_name = "\u{1}_ZN3Bar3fooEPKcz"]
     pub fn Bar_foo(this: *mut Bar, fmt: *const ::std::os::raw::c_char, ...);
 }
+struct Box_Bar {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Bar {}
+impl Drop for Box_Bar {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}

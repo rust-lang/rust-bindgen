@@ -76,6 +76,20 @@ impl Default for rte_memseg__bindgen_ty_1 {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_rte_memseg__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_memseg__bindgen_ty_1 {}
+impl Drop for Box_rte_memseg__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn bindgen_test_layout_rte_memseg() {
     assert_eq!(
@@ -167,5 +181,19 @@ fn bindgen_test_layout_rte_memseg() {
 impl Default for rte_memseg {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_rte_memseg {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_memseg {}
+impl Drop for Box_rte_memseg {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(44usize, 1usize).unwrap(),
+            );
+        }
     }
 }

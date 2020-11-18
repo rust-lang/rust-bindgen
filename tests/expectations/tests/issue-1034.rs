@@ -121,3 +121,17 @@ impl S2 {
         __bindgen_bitfield_unit
     }
 }
+struct Box_S2 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_S2 {}
+impl Drop for Box_S2 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(2usize, 1usize).unwrap(),
+            );
+        }
+    }
+}

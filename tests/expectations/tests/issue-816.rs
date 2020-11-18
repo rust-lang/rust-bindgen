@@ -860,3 +860,17 @@ impl capabilities {
         __bindgen_bitfield_unit
     }
 }
+struct Box_capabilities {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_capabilities {}
+impl Drop for Box_capabilities {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 4usize).unwrap(),
+            );
+        }
+    }
+}

@@ -24,6 +24,20 @@ fn bindgen_test_layout_Empty() {
         concat!("Alignment of ", stringify!(Empty))
     );
 }
+struct Box_Empty {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Empty {}
+impl Drop for Box_Empty {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 /// This should not get an `_address` byte, since each `Empty` gets one, meaning
 /// that this object is addressable.
 #[repr(C)]
@@ -56,4 +70,18 @@ fn bindgen_test_layout_HasArrayOfEmpty() {
             stringify!(empties)
         )
     );
+}
+struct Box_HasArrayOfEmpty {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_HasArrayOfEmpty {}
+impl Drop for Box_HasArrayOfEmpty {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(10usize, 1usize).unwrap(),
+            );
+        }
+    }
 }

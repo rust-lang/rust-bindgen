@@ -105,6 +105,20 @@ impl SomeAccessors {
         &self.mImmutableAccessor
     }
 }
+struct Box_SomeAccessors {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_SomeAccessors {}
+impl Drop for Box_SomeAccessors {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 /// <div rustbindgen accessor></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -167,6 +181,20 @@ impl AllAccessors {
     #[inline]
     pub fn get_mAlsoBothAccessors_mut(&mut self) -> &mut ::std::os::raw::c_int {
         &mut self.mAlsoBothAccessors
+    }
+}
+struct Box_AllAccessors {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_AllAccessors {}
+impl Drop for Box_AllAccessors {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
+            );
+        }
     }
 }
 /// <div rustbindgen accessor="unsafe"></div>
@@ -235,6 +263,20 @@ impl AllUnsafeAccessors {
         &mut self,
     ) -> &mut ::std::os::raw::c_int {
         &mut self.mAlsoBothAccessors
+    }
+}
+struct Box_AllUnsafeAccessors {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_AllUnsafeAccessors {}
+impl Drop for Box_AllUnsafeAccessors {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
+            );
+        }
     }
 }
 /// <div rustbindgen accessor></div>
@@ -338,6 +380,20 @@ impl ContradictAccessors {
         &self.mImmutableAccessor
     }
 }
+struct Box_ContradictAccessors {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ContradictAccessors {}
+impl Drop for Box_ContradictAccessors {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 /// <div rustbindgen accessor replaces="Replaced"></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -379,6 +435,20 @@ impl Replaced {
         &mut self.mAccessor
     }
 }
+struct Box_Replaced {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Replaced {}
+impl Drop for Box_Replaced {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 /// <div rustbindgen accessor></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -418,5 +488,19 @@ impl Wrapper {
     #[inline]
     pub fn get_mReplaced_mut(&mut self) -> &mut Replaced {
         &mut self.mReplaced
+    }
+}
+struct Box_Wrapper {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Wrapper {}
+impl Drop for Box_Wrapper {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
     }
 }

@@ -43,6 +43,21 @@ pub mod root {
                 )
             );
         }
+        struct Box_typedef_struct {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box_typedef_struct {}
+        impl Drop for Box_typedef_struct {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(4usize, 4usize)
+                            .unwrap(),
+                    );
+                }
+            }
+        }
         #[repr(u32)]
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub enum typedef_enum {
@@ -82,6 +97,21 @@ pub mod root {
                     stringify!(foo)
                 )
             );
+        }
+        struct Box__bindgen_ty_1 {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box__bindgen_ty_1 {}
+        impl Drop for Box__bindgen_ty_1 {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(4usize, 4usize)
+                            .unwrap(),
+                    );
+                }
+            }
         }
         pub type typedef_struct = root::_bindgen_mod_id_12::_bindgen_ty_1;
         pub const _bindgen_mod_id_12_BAR:

@@ -99,6 +99,37 @@ impl C {
         C_anotherMethod(self, c)
     }
 }
+struct Box_C {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_C {
+    #[inline]
+    pub fn method(&mut self, c: C_MyInt) {
+        unsafe { C_method(self.ptr as *mut C, c) }
+    }
+    #[inline]
+    pub fn methodRef(&mut self, c: *mut C_MyInt) {
+        unsafe { C_methodRef(self.ptr as *mut C, c) }
+    }
+    #[inline]
+    pub fn complexMethodRef(&mut self, c: *mut C_Lookup) {
+        unsafe { C_complexMethodRef(self.ptr as *mut C, c) }
+    }
+    #[inline]
+    pub fn anotherMethod(&mut self, c: AnotherInt) {
+        unsafe { C_anotherMethod(self.ptr as *mut C, c) }
+    }
+}
+impl Drop for Box_C {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(72usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct D {
@@ -126,5 +157,19 @@ fn bindgen_test_layout_D() {
 impl Default for D {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_D {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_D {}
+impl Drop for Box_D {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(80usize, 8usize).unwrap(),
+            );
+        }
     }
 }

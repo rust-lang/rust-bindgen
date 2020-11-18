@@ -47,3 +47,18 @@ impl ::core::cmp::PartialEq for C {
         &self.large_array[..] == &other.large_array[..]
     }
 }
+struct Box_C {
+    ptr: *mut ::core::ffi::c_void,
+}
+impl Box_C {}
+impl Drop for Box_C {
+    fn drop(&mut self) {
+        unsafe {
+            ::core::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::core::alloc::Layout::from_size_align(1680usize, 4usize)
+                    .unwrap(),
+            );
+        }
+    }
+}

@@ -74,6 +74,20 @@ fn bindgen_test_layout_rte_ring_prod() {
         )
     );
 }
+struct Box_rte_ring_prod {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_ring_prod {}
+impl Drop for Box_rte_ring_prod {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct rte_ring_cons {
@@ -104,6 +118,20 @@ fn bindgen_test_layout_rte_ring_cons() {
             stringify!(sc_dequeue)
         )
     );
+}
+struct Box_rte_ring_cons {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_ring_cons {}
+impl Drop for Box_rte_ring_cons {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }
 #[test]
 fn bindgen_test_layout_rte_ring() {
@@ -169,6 +197,20 @@ fn bindgen_test_layout_rte_ring() {
 impl Default for rte_ring {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_rte_ring {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_ring {}
+impl Drop for Box_rte_ring {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 #[repr(C)]

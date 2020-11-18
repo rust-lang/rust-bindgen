@@ -54,6 +54,20 @@ fn bindgen_test_layout_ether_addr() {
         )
     );
 }
+struct Box_ether_addr {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ether_addr {}
+impl Drop for Box_ether_addr {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(6usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 /// ARP header IPv4 payload.
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -127,6 +141,20 @@ fn bindgen_test_layout_arp_ipv4() {
             stringify!(arp_tip)
         )
     );
+}
+struct Box_arp_ipv4 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_arp_ipv4 {}
+impl Drop for Box_arp_ipv4 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(20usize, 1usize).unwrap(),
+            );
+        }
+    }
 }
 /// ARP header.
 #[repr(C, packed)]
@@ -223,4 +251,18 @@ fn bindgen_test_layout_arp_hdr() {
             stringify!(arp_data)
         )
     );
+}
+struct Box_arp_hdr {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_arp_hdr {}
+impl Drop for Box_arp_hdr {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(28usize, 1usize).unwrap(),
+            );
+        }
+    }
 }

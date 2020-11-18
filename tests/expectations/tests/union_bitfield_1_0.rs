@@ -191,6 +191,20 @@ impl U4 {
         __bindgen_bitfield_unit
     }
 }
+struct Box_U4 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_U4 {}
+impl Drop for Box_U4 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct B {
@@ -267,6 +281,20 @@ impl B {
         __bindgen_bitfield_unit
     }
 }
+struct Box_B {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_B {}
+impl Drop for Box_B {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Copy)]
 pub struct HasBigBitfield {
@@ -295,5 +323,20 @@ impl Default for HasBigBitfield {
 impl ::std::cmp::PartialEq for HasBigBitfield {
     fn eq(&self, other: &HasBigBitfield) -> bool {
         &self.bindgen_union_field[..] == &other.bindgen_union_field[..]
+    }
+}
+struct Box_HasBigBitfield {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_HasBigBitfield {}
+impl Drop for Box_HasBigBitfield {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 16usize)
+                    .unwrap(),
+            );
+        }
     }
 }

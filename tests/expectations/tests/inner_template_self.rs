@@ -52,6 +52,20 @@ impl Default for InstantiateIt {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_InstantiateIt {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_InstantiateIt {}
+impl Drop for Box_InstantiateIt {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn __bindgen_test_layout_LinkedList_open0_int_close0_instantiation() {
     assert_eq!(

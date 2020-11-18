@@ -36,6 +36,20 @@ fn bindgen_test_layout_typedef_named_struct() {
         )
     );
 }
+struct Box_typedef_named_struct {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_typedef_named_struct {}
+impl Drop for Box_typedef_named_struct {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct _bindgen_ty_1 {
@@ -70,6 +84,20 @@ fn bindgen_test_layout__bindgen_ty_1() {
 impl Default for _bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box__bindgen_ty_1 {}
+impl Drop for Box__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 pub type struct_ptr_t = *mut _bindgen_ty_1;

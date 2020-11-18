@@ -23,6 +23,20 @@ fn bindgen_test_layout_Bar() {
         concat!("Alignment of ", stringify!(Bar))
     );
 }
+struct Box_Bar {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Bar {}
+impl Drop for Box_Bar {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     #[link_name = "\u{1}_Z3bazPN3foo3BarE"]
     pub fn baz(arg1: *mut Bar);

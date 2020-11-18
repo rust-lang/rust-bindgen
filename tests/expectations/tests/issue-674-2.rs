@@ -42,6 +42,21 @@ pub mod root {
             concat!("Offset of field: ", stringify!(c), "::", stringify!(b))
         );
     }
+    struct Box_c {
+        ptr: *mut ::std::ffi::c_void,
+    }
+    impl Box_c {}
+    impl Drop for Box_c {
+        fn drop(&mut self) {
+            unsafe {
+                ::std::alloc::dealloc(
+                    self.ptr as *mut u8,
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                );
+            }
+        }
+    }
     #[repr(C)]
     #[derive(Debug, Default, Copy, Clone)]
     pub struct B {
@@ -64,6 +79,21 @@ pub mod root {
             0usize,
             concat!("Offset of field: ", stringify!(B), "::", stringify!(a))
         );
+    }
+    struct Box_B {
+        ptr: *mut ::std::ffi::c_void,
+    }
+    impl Box_B {}
+    impl Drop for Box_B {
+        fn drop(&mut self) {
+            unsafe {
+                ::std::alloc::dealloc(
+                    self.ptr as *mut u8,
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                );
+            }
+        }
     }
     #[repr(C)]
     #[derive(Debug, Default, Copy, Clone)]

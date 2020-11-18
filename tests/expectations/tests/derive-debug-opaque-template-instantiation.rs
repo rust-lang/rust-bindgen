@@ -44,3 +44,18 @@ impl ::std::fmt::Debug for Instance {
         write!(f, "Instance {{ val: opaque }}")
     }
 }
+struct Box_Instance {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Instance {}
+impl Drop for Box_Instance {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(200usize, 4usize)
+                    .unwrap(),
+            );
+        }
+    }
+}

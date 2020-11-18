@@ -51,6 +51,20 @@ fn bindgen_test_layout_HasPrivate() {
         )
     );
 }
+struct Box_HasPrivate {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_HasPrivate {}
+impl Drop for Box_HasPrivate {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 /// <div rustbindgen private></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -96,6 +110,20 @@ fn bindgen_test_layout_VeryPrivate() {
             stringify!(mIsAlsoPrivate)
         )
     );
+}
+struct Box_VeryPrivate {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_VeryPrivate {}
+impl Drop for Box_VeryPrivate {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
+            );
+        }
+    }
 }
 /// <div rustbindgen private></div>
 #[repr(C)]
@@ -143,4 +171,18 @@ fn bindgen_test_layout_ContradictPrivate() {
             stringify!(mIsPrivate)
         )
     );
+}
+struct Box_ContradictPrivate {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ContradictPrivate {}
+impl Drop for Box_ContradictPrivate {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
+            );
+        }
+    }
 }

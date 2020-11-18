@@ -40,6 +40,26 @@ pub mod root {
                 Value_a(self, arg1)
             }
         }
+        struct Box_Value {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box_Value {
+            #[inline]
+            pub fn a(&mut self, arg1: root::JSWhyMagic) {
+                unsafe { Value_a(self.ptr as *mut Value, arg1) }
+            }
+        }
+        impl Drop for Box_Value {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                            .unwrap(),
+                    );
+                }
+            }
+        }
     }
     #[repr(u32)]
     #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]

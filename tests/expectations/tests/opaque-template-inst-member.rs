@@ -66,6 +66,21 @@ impl ::std::cmp::PartialEq for ContainsOpaqueTemplate {
         &self.mBlah[..] == &other.mBlah[..] && self.mBaz == other.mBaz
     }
 }
+struct Box_ContainsOpaqueTemplate {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ContainsOpaqueTemplate {}
+impl Drop for Box_ContainsOpaqueTemplate {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(408usize, 4usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 /// This should not end up deriving Debug/Hash either, for similar reasons, although
 /// we're exercising base member edges now.
 #[repr(C)]
@@ -107,5 +122,20 @@ impl Default for InheritsOpaqueTemplate {
 impl ::std::cmp::PartialEq for InheritsOpaqueTemplate {
     fn eq(&self, other: &InheritsOpaqueTemplate) -> bool {
         &self._base[..] == &other._base[..] && self.wow == other.wow
+    }
+}
+struct Box_InheritsOpaqueTemplate {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_InheritsOpaqueTemplate {}
+impl Drop for Box_InheritsOpaqueTemplate {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(416usize, 8usize)
+                    .unwrap(),
+            );
+        }
     }
 }

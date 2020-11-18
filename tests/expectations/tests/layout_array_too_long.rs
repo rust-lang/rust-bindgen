@@ -81,6 +81,20 @@ impl Default for ip_frag {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_ip_frag {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ip_frag {}
+impl Drop for Box_ip_frag {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 /// @internal <src addr, dst_addr, id> to uniquely indetify fragmented datagram.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -140,6 +154,20 @@ fn bindgen_test_layout_ip_frag_key() {
             stringify!(key_len)
         )
     );
+}
+struct Box_ip_frag_key {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ip_frag_key {}
+impl Drop for Box_ip_frag_key {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(40usize, 8usize).unwrap(),
+            );
+        }
+    }
 }
 /// @internal Fragmented packet to reassemble.
 /// First two entries in the frags[] array are for the last and first fragments.
@@ -210,6 +238,20 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
 impl Default for ip_frag_pkt__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_ip_frag_pkt__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ip_frag_pkt__bindgen_ty_1 {}
+impl Drop for Box_ip_frag_pkt__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 #[test]
@@ -326,6 +368,21 @@ impl ::std::cmp::PartialEq for ip_frag_pkt {
             self.frag_size == other.frag_size &&
             self.last_idx == other.last_idx &&
             self.frags == other.frags
+    }
+}
+struct Box_ip_frag_pkt {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ip_frag_pkt {}
+impl Drop for Box_ip_frag_pkt {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(192usize, 64usize)
+                    .unwrap(),
+            );
+        }
     }
 }
 ///< fragment mbuf

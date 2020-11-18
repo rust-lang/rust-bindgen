@@ -33,6 +33,23 @@ pub mod root {
                     concat!("Alignment of ", stringify!(Helper))
                 );
             }
+            struct Box_Helper {
+                ptr: *mut ::std::ffi::c_void,
+            }
+            impl Box_Helper {}
+            impl Drop for Box_Helper {
+                fn drop(&mut self) {
+                    unsafe {
+                        ::std::alloc::dealloc(
+                            self.ptr as *mut u8,
+                            ::std::alloc::Layout::from_size_align(
+                                1usize, 1usize,
+                            )
+                            .unwrap(),
+                        );
+                    }
+                }
+            }
         }
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
@@ -63,6 +80,21 @@ pub mod root {
                     stringify!(helper)
                 )
             );
+        }
+        struct Box_Test {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box_Test {}
+        impl Drop for Box_Test {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                            .unwrap(),
+                    );
+                }
+            }
         }
     }
 }

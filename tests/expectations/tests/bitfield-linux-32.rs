@@ -163,3 +163,17 @@ impl Test {
         __bindgen_bitfield_unit
     }
 }
+struct Box_Test {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Test {}
+impl Drop for Box_Test {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 4usize).unwrap(),
+            );
+        }
+    }
+}

@@ -30,6 +30,20 @@ impl Default for nsISupports {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_nsISupports {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_nsISupports {}
+impl Drop for Box_nsISupports {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     #[link_name = "\u{1}_ZN11nsISupports14QueryInterfaceEv"]
     pub fn nsISupports_QueryInterface(
@@ -59,6 +73,20 @@ impl Default for nsIRunnable {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_nsIRunnable {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_nsIRunnable {}
+impl Drop for Box_nsIRunnable {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Runnable {
@@ -80,5 +108,19 @@ fn bindgen_test_layout_Runnable() {
 impl Default for Runnable {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_Runnable {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Runnable {}
+impl Drop for Box_Runnable {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }

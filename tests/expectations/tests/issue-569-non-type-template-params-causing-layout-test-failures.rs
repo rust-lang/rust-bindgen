@@ -47,6 +47,20 @@ impl Default for JS_AutoIdVector {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_JS_AutoIdVector {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_JS_AutoIdVector {}
+impl Drop for Box_JS_AutoIdVector {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn __bindgen_test_layout_JS_Base_open0_int_close0_instantiation() {
     assert_eq!(

@@ -25,6 +25,20 @@ fn bindgen_test_layout_D() {
         concat!("Alignment of ", stringify!(D))
     );
 }
+struct Box_D {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_D {}
+impl Drop for Box_D {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct NotAnnotated {
@@ -54,4 +68,18 @@ fn bindgen_test_layout_NotAnnotated() {
             stringify!(f)
         )
     );
+}
+struct Box_NotAnnotated {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_NotAnnotated {}
+impl Drop for Box_NotAnnotated {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }

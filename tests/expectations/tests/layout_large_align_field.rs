@@ -111,6 +111,20 @@ impl Default for ip_frag {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_ip_frag {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ip_frag {}
+impl Drop for Box_ip_frag {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 /// @internal <src addr, dst_addr, id> to uniquely indetify fragmented datagram.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -170,6 +184,20 @@ fn bindgen_test_layout_ip_frag_key() {
             stringify!(key_len)
         )
     );
+}
+struct Box_ip_frag_key {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ip_frag_key {}
+impl Drop for Box_ip_frag_key {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(40usize, 8usize).unwrap(),
+            );
+        }
+    }
 }
 /// @internal Fragmented packet to reassemble.
 /// First two entries in the frags[] array are for the last and first fragments.
@@ -240,6 +268,20 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
 impl Default for ip_frag_pkt__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_ip_frag_pkt__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ip_frag_pkt__bindgen_ty_1 {}
+impl Drop for Box_ip_frag_pkt__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 #[test]
@@ -347,6 +389,21 @@ impl Default for ip_frag_pkt {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_ip_frag_pkt {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ip_frag_pkt {}
+impl Drop for Box_ip_frag_pkt {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(192usize, 64usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ip_pkt_list {
@@ -395,6 +452,20 @@ fn bindgen_test_layout_ip_pkt_list() {
 impl Default for ip_pkt_list {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_ip_pkt_list {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ip_pkt_list {}
+impl Drop for Box_ip_pkt_list {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 /// fragmentation table statistics
@@ -509,6 +580,21 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
 impl Default for ip_frag_tbl_stat {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_ip_frag_tbl_stat {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ip_frag_tbl_stat {}
+impl Drop for Box_ip_frag_tbl_stat {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(64usize, 64usize)
+                    .unwrap(),
+            );
+        }
     }
 }
 /// fragmentation table
@@ -696,6 +782,21 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
 impl Default for rte_ip_frag_tbl {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_rte_ip_frag_tbl {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_ip_frag_tbl {}
+impl Drop for Box_rte_ip_frag_tbl {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(128usize, 64usize)
+                    .unwrap(),
+            );
+        }
     }
 }
 ///< fragment mbuf

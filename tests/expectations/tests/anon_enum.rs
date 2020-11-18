@@ -40,6 +40,20 @@ fn bindgen_test_layout_Test() {
         concat!("Offset of field: ", stringify!(Test), "::", stringify!(bar))
     );
 }
+struct Box_Test {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Test {}
+impl Drop for Box_Test {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Baz {

@@ -40,6 +40,20 @@ fn bindgen_test_layout_A_B() {
         )
     );
 }
+struct Box_A_B {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_A_B {}
+impl Drop for Box_A_B {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct A_D<T> {
@@ -74,6 +88,20 @@ fn bindgen_test_layout_A() {
         )
     );
 }
+struct Box_A {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_A {}
+impl Drop for Box_A {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct A_C {
@@ -96,6 +124,20 @@ fn bindgen_test_layout_A_C() {
         0usize,
         concat!("Offset of field: ", stringify!(A_C), "::", stringify!(baz))
     );
+}
+struct Box_A_C {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_A_C {}
+impl Drop for Box_A_C {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }
 extern "C" {
     pub static mut var: A_B;
@@ -144,6 +186,20 @@ fn bindgen_test_layout_D() {
         0usize,
         concat!("Offset of field: ", stringify!(D), "::", stringify!(member))
     );
+}
+struct Box_D {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_D {}
+impl Drop for Box_D {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]

@@ -23,6 +23,20 @@ fn bindgen_test_layout_Pupper() {
         concat!("Alignment of ", stringify!(Pupper))
     );
 }
+struct Box_Pupper {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Pupper {}
+impl Drop for Box_Pupper {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Doggo {
@@ -41,6 +55,20 @@ fn bindgen_test_layout_Doggo() {
         concat!("Alignment of ", stringify!(Doggo))
     );
 }
+struct Box_Doggo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Doggo {}
+impl Drop for Box_Doggo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct SuchWow {
@@ -58,6 +86,20 @@ fn bindgen_test_layout_SuchWow() {
         1usize,
         concat!("Alignment of ", stringify!(SuchWow))
     );
+}
+struct Box_SuchWow {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_SuchWow {}
+impl Drop for Box_SuchWow {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
 }
 #[repr(C)]
 #[repr(align(1))]
@@ -98,6 +140,38 @@ impl Opaque {
         __bindgen_tmp.assume_init()
     }
 }
+struct Box_Opaque {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Opaque {
+    #[inline]
+    pub fn eleven_out_of_ten(&mut self) -> SuchWow {
+        unsafe { Opaque_eleven_out_of_ten(self.ptr as *mut Opaque) }
+    }
+    #[inline]
+    pub fn new(pup: Pupper) -> Self {
+        unsafe {
+            let ret = Self {
+                ptr: ::std::alloc::alloc(
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                ) as *mut ::std::ffi::c_void,
+            };
+            Opaque_Opaque(ret.ptr as *mut Opaque, pup);
+            ret
+        }
+    }
+}
+impl Drop for Box_Opaque {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     #[link_name = "\u{1}_ZN6Opaque11MAJESTIC_AFE"]
     pub static mut Opaque_MAJESTIC_AF: Doggo;
@@ -132,4 +206,18 @@ fn bindgen_test_layout_Whitelisted() {
             stringify!(some_member)
         )
     );
+}
+struct Box_Whitelisted {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Whitelisted {}
+impl Drop for Box_Whitelisted {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
 }

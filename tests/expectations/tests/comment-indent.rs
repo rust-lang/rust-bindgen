@@ -38,6 +38,21 @@ pub mod root {
             concat!("Alignment of ", stringify!(Foo_Bar))
         );
     }
+    struct Box_Foo_Bar {
+        ptr: *mut ::std::ffi::c_void,
+    }
+    impl Box_Foo_Bar {}
+    impl Drop for Box_Foo_Bar {
+        fn drop(&mut self) {
+            unsafe {
+                ::std::alloc::dealloc(
+                    self.ptr as *mut u8,
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                );
+            }
+        }
+    }
     #[test]
     fn bindgen_test_layout_Foo() {
         assert_eq!(
@@ -50,6 +65,21 @@ pub mod root {
             1usize,
             concat!("Alignment of ", stringify!(Foo))
         );
+    }
+    struct Box_Foo {
+        ptr: *mut ::std::ffi::c_void,
+    }
+    impl Box_Foo {}
+    impl Drop for Box_Foo {
+        fn drop(&mut self) {
+            unsafe {
+                ::std::alloc::dealloc(
+                    self.ptr as *mut u8,
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                );
+            }
+        }
     }
     pub mod test {
         #[allow(unused_imports)]
@@ -93,6 +123,21 @@ pub mod root {
                 )
             );
         }
+        struct Box_Baz {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box_Baz {}
+        impl Drop for Box_Baz {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(4usize, 4usize)
+                            .unwrap(),
+                    );
+                }
+            }
+        }
         /// I'm in an inline namespace, and as such I shouldn't get generated inside
         /// a rust module, except when the relevant option is specified. Also, this
         /// comment shouldn't be misaligned.
@@ -114,6 +159,21 @@ pub mod root {
                 concat!("Alignment of ", stringify!(InInlineNS))
             );
         }
+        struct Box_InInlineNS {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box_InInlineNS {}
+        impl Drop for Box_InInlineNS {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                            .unwrap(),
+                    );
+                }
+            }
+        }
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct Bazz {
@@ -131,6 +191,21 @@ pub mod root {
                 1usize,
                 concat!("Alignment of ", stringify!(Bazz))
             );
+        }
+        struct Box_Bazz {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box_Bazz {}
+        impl Drop for Box_Bazz {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                            .unwrap(),
+                    );
+                }
+            }
         }
     }
 }

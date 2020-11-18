@@ -34,6 +34,20 @@ fn bindgen_test_layout_Test() {
         concat!("Offset of field: ", stringify!(Test), "::", stringify!(a))
     );
 }
+struct Box_Test {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Test {}
+impl Drop for Box_Test {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn __bindgen_test_layout_nsTArray_open0_long_close0_instantiation() {
     assert_eq!(

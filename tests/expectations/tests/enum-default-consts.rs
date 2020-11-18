@@ -41,6 +41,20 @@ impl Default for foo {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_foo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_foo {}
+impl Drop for Box_foo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 pub const Foo_Bar: Foo = 0;
 pub const Foo_Qux: Foo = 1;
 pub type Foo = ::std::os::raw::c_uint;

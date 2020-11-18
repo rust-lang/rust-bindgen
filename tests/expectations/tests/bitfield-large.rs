@@ -140,6 +140,21 @@ impl HasBigBitfield {
         __bindgen_bitfield_unit
     }
 }
+struct Box_HasBigBitfield {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_HasBigBitfield {}
+impl Drop for Box_HasBigBitfield {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 16usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[repr(align(16))]
 #[derive(Debug, Default, Copy, Clone)]
@@ -204,5 +219,20 @@ impl HasTwoBigBitfields {
             y as u64
         });
         __bindgen_bitfield_unit
+    }
+}
+struct Box_HasTwoBigBitfields {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_HasTwoBigBitfields {}
+impl Drop for Box_HasTwoBigBitfields {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 16usize)
+                    .unwrap(),
+            );
+        }
     }
 }

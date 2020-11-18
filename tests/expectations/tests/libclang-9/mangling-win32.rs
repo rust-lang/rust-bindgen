@@ -30,6 +30,20 @@ fn bindgen_test_layout_Foo() {
         concat!("Alignment of ", stringify!(Foo))
     );
 }
+struct Box_Foo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Foo {}
+impl Drop for Box_Foo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 extern "fastcall" {
     pub fn fast_call_func_no_args() -> ::std::os::raw::c_int;
 }

@@ -37,3 +37,17 @@ fn bindgen_test_layout_Usage() {
         concat!("Alignment of ", stringify!(Usage))
     );
 }
+struct Box_Usage {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Usage {}
+impl Drop for Box_Usage {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}

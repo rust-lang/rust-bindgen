@@ -46,6 +46,20 @@ impl Default for IntStr {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_IntStr {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_IntStr {}
+impl Drop for Box_IntStr {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 /// Cannot derive Hash/Eq/Ord when instantiated with float but can derive PartialEq/PartialOrd
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
@@ -78,6 +92,20 @@ fn bindgen_test_layout_FloatStr() {
 impl Default for FloatStr {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_FloatStr {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_FloatStr {}
+impl Drop for Box_FloatStr {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
     }
 }
 #[test]

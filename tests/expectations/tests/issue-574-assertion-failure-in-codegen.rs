@@ -40,6 +40,20 @@ fn bindgen_test_layout__bindgen_ty_1() {
         )
     );
 }
+struct Box__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box__bindgen_ty_1 {}
+impl Drop for Box__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     pub static mut AutoIdVector: _bindgen_ty_1;
 }

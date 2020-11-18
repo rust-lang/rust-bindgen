@@ -54,6 +54,21 @@ pub mod root {
                 )
             );
         }
+        struct Box_Foo {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box_Foo {}
+        impl Drop for Box_Foo {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                            .unwrap(),
+                    );
+                }
+            }
+        }
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
         pub struct Bar {
@@ -83,6 +98,21 @@ pub mod root {
                     stringify!(i)
                 )
             );
+        }
+        struct Box_Bar {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box_Bar {}
+        impl Drop for Box_Bar {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(4usize, 4usize)
+                            .unwrap(),
+                    );
+                }
+            }
         }
         #[repr(C)]
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -120,6 +150,21 @@ pub mod root {
                 unsafe { ::std::mem::zeroed() }
             }
         }
+        struct Box_ContainsInstantiation {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box_ContainsInstantiation {}
+        impl Drop for Box_ContainsInstantiation {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                            .unwrap(),
+                    );
+                }
+            }
+        }
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
         pub struct ContainsOpaqueInstantiation {
@@ -153,6 +198,21 @@ pub mod root {
                     stringify!(opaque)
                 )
             );
+        }
+        struct Box_ContainsOpaqueInstantiation {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box_ContainsOpaqueInstantiation {}
+        impl Drop for Box_ContainsOpaqueInstantiation {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(4usize, 4usize)
+                            .unwrap(),
+                    );
+                }
+            }
         }
     }
     #[test]

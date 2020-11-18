@@ -44,6 +44,20 @@ impl Default for DerivedWithNoVirtualMethods {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_DerivedWithNoVirtualMethods {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_DerivedWithNoVirtualMethods {}
+impl Drop for Box_DerivedWithNoVirtualMethods {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 /// This should not have an explicit vtable.
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -66,6 +80,20 @@ fn bindgen_test_layout_DerivedWithVirtualMethods() {
 impl Default for DerivedWithVirtualMethods {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_DerivedWithVirtualMethods {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_DerivedWithVirtualMethods {}
+impl Drop for Box_DerivedWithVirtualMethods {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 /// This should not have any vtable.
@@ -107,6 +135,20 @@ impl Default for DerivedWithVtable {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_DerivedWithVtable {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_DerivedWithVtable {}
+impl Drop for Box_DerivedWithVtable {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 /// This should not have any vtable.
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -129,6 +171,20 @@ fn bindgen_test_layout_DerivedWithoutVtable() {
 impl Default for DerivedWithoutVtable {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_DerivedWithoutVtable {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_DerivedWithoutVtable {}
+impl Drop for Box_DerivedWithoutVtable {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 #[test]

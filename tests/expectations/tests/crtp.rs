@@ -28,6 +28,20 @@ fn bindgen_test_layout_Derived() {
         concat!("Alignment of ", stringify!(Derived))
     );
 }
+struct Box_Derived {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Derived {}
+impl Drop for Box_Derived {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct BaseWithDestructor {
@@ -50,6 +64,20 @@ fn bindgen_test_layout_DerivedFromBaseWithDestructor() {
         1usize,
         concat!("Alignment of ", stringify!(DerivedFromBaseWithDestructor))
     );
+}
+struct Box_DerivedFromBaseWithDestructor {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_DerivedFromBaseWithDestructor {}
+impl Drop for Box_DerivedFromBaseWithDestructor {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
 }
 #[test]
 fn __bindgen_test_layout_Base_open0_Derived_close0_instantiation() {

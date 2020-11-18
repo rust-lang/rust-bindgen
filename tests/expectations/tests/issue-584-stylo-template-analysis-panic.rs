@@ -26,6 +26,20 @@ fn bindgen_test_layout_A() {
         concat!("Alignment of ", stringify!(A))
     );
 }
+struct Box_A {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_A {}
+impl Drop for Box_A {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 pub struct e<c> {
     pub d: RefPtr<c>,
@@ -68,6 +82,20 @@ impl Default for g {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_g {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_g {}
+impl Drop for Box_g {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 pub struct b {
     pub _base: g,
@@ -88,6 +116,20 @@ fn bindgen_test_layout_b() {
 impl Default for b {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_b {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_b {}
+impl Drop for Box_b {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
     }
 }
 extern "C" {

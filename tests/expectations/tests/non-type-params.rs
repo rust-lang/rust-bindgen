@@ -66,3 +66,17 @@ fn bindgen_test_layout_UsesArray() {
         )
     );
 }
+struct Box_UsesArray {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_UsesArray {}
+impl Drop for Box_UsesArray {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(40usize, 4usize).unwrap(),
+            );
+        }
+    }
+}

@@ -36,6 +36,20 @@ fn bindgen_test_layout_mozilla_FragmentOrURL() {
         )
     );
 }
+struct Box_mozilla_FragmentOrURL {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_mozilla_FragmentOrURL {}
+impl Drop for Box_mozilla_FragmentOrURL {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct mozilla_Position {
@@ -54,6 +68,20 @@ fn bindgen_test_layout_mozilla_Position() {
         concat!("Alignment of ", stringify!(mozilla_Position))
     );
 }
+struct Box_mozilla_Position {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_mozilla_Position {}
+impl Drop for Box_mozilla_Position {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 pub struct mozilla_StyleShapeSource {
     pub __bindgen_anon_1: mozilla_StyleShapeSource__bindgen_ty_1,
@@ -67,6 +95,20 @@ pub union mozilla_StyleShapeSource__bindgen_ty_1 {
 impl Default for mozilla_StyleShapeSource__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_mozilla_StyleShapeSource__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_mozilla_StyleShapeSource__bindgen_ty_1 {}
+impl Drop for Box_mozilla_StyleShapeSource__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 impl Default for mozilla_StyleShapeSource {
@@ -102,6 +144,20 @@ impl Default for Bar {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_Bar {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Bar {}
+impl Drop for Box_Bar {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 pub struct nsFoo {
     pub mBar: mozilla_StyleShapeSource,
@@ -132,6 +188,20 @@ fn bindgen_test_layout_nsFoo() {
 impl Default for nsFoo {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_nsFoo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_nsFoo {}
+impl Drop for Box_nsFoo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 #[test]

@@ -59,6 +59,20 @@ impl Default for foo__bindgen_ty_1 {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_foo__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_foo__bindgen_ty_1 {}
+impl Drop for Box_foo__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn bindgen_test_layout_foo() {
     assert_eq!(
@@ -80,5 +94,19 @@ fn bindgen_test_layout_foo() {
 impl Default for foo {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_foo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_foo {}
+impl Drop for Box_foo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
     }
 }

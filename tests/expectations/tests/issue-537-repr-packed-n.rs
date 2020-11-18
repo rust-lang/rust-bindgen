@@ -38,6 +38,20 @@ fn bindgen_test_layout_AlignedToOne() {
         )
     );
 }
+struct Box_AlignedToOne {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_AlignedToOne {}
+impl Drop for Box_AlignedToOne {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 /// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
 #[repr(C, packed(2))]
 #[derive(Debug, Default, Copy, Clone)]
@@ -68,6 +82,20 @@ fn bindgen_test_layout_AlignedToTwo() {
             stringify!(i)
         )
     );
+}
+struct Box_AlignedToTwo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_AlignedToTwo {}
+impl Drop for Box_AlignedToTwo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 2usize).unwrap(),
+            );
+        }
+    }
 }
 /// This should not be opaque because although `libclang` doesn't give us the
 /// `#pragma pack(1)`, we can detect that alignment is 1 and add
@@ -115,6 +143,20 @@ fn bindgen_test_layout_PackedToOne() {
         )
     );
 }
+struct Box_PackedToOne {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_PackedToOne {}
+impl Drop for Box_PackedToOne {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 /// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
 #[repr(C, packed(2))]
 #[derive(Debug, Default, Copy, Clone)]
@@ -158,4 +200,18 @@ fn bindgen_test_layout_PackedToTwo() {
             stringify!(y)
         )
     );
+}
+struct Box_PackedToTwo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_PackedToTwo {}
+impl Drop for Box_PackedToTwo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 2usize).unwrap(),
+            );
+        }
+    }
 }

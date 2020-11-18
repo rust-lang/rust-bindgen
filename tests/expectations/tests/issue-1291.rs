@@ -192,3 +192,18 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
 }
+struct Box_RTCRay {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_RTCRay {}
+impl Drop for Box_RTCRay {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(96usize, 16usize)
+                    .unwrap(),
+            );
+        }
+    }
+}

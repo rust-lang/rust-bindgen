@@ -40,6 +40,20 @@ impl Default for S {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_S {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_S {}
+impl Drop for Box_S {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(33usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 pub struct ST<T> {
     pub large_array: [T; 33usize],

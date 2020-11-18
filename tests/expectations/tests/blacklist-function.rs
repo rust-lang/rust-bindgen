@@ -39,4 +39,19 @@ pub mod root {
             concat!("Alignment of ", stringify!(C))
         );
     }
+    struct Box_C {
+        ptr: *mut ::std::ffi::c_void,
+    }
+    impl Box_C {}
+    impl Drop for Box_C {
+        fn drop(&mut self) {
+            unsafe {
+                ::std::alloc::dealloc(
+                    self.ptr as *mut u8,
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                );
+            }
+        }
+    }
 }

@@ -34,6 +34,20 @@ fn bindgen_test_layout_my_type() {
         )
     );
 }
+struct Box_my_type {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_my_type {}
+impl Drop for Box_my_type {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 /// <div rustbindgen derive="Debug"></div>
 /// <div rustbindgen derive="Clone"></div>
 #[repr(C)]
@@ -64,6 +78,20 @@ fn bindgen_test_layout_my_type2() {
         )
     );
 }
+struct Box_my_type2 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_my_type2 {}
+impl Drop for Box_my_type2 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 /// <div rustbindgen derive="Debug" derive="Clone"></div>
 #[repr(C)]
 #[derive(Default, Debug, Clone)]
@@ -92,4 +120,18 @@ fn bindgen_test_layout_my_type3() {
             stringify!(a)
         )
     );
+}
+struct Box_my_type3 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_my_type3 {}
+impl Drop for Box_my_type3 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
 }

@@ -25,6 +25,20 @@ fn bindgen_test_layout_OtherOpaque() {
         concat!("Alignment of ", stringify!(OtherOpaque))
     );
 }
+struct Box_OtherOpaque {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_OtherOpaque {}
+impl Drop for Box_OtherOpaque {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 /// <div rustbindgen opaque></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -91,5 +105,19 @@ fn bindgen_test_layout_WithOpaquePtr() {
 impl Default for WithOpaquePtr {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_WithOpaquePtr {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_WithOpaquePtr {}
+impl Drop for Box_WithOpaquePtr {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
     }
 }

@@ -49,6 +49,20 @@ impl Default for bar {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_bar {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_bar {}
+impl Drop for Box_bar {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     pub fn func1(
         arg1: foo::Type,

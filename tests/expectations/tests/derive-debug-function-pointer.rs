@@ -73,3 +73,18 @@ impl ::std::fmt::Debug for Nice {
         )
     }
 }
+struct Box_Nice {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Nice {}
+impl Drop for Box_Nice {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(144usize, 8usize)
+                    .unwrap(),
+            );
+        }
+    }
+}

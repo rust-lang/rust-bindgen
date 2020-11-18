@@ -50,4 +50,19 @@ pub mod root {
             )
         );
     }
+    struct Box_CapturingContentInfo {
+        ptr: *mut ::std::ffi::c_void,
+    }
+    impl Box_CapturingContentInfo {}
+    impl Drop for Box_CapturingContentInfo {
+        fn drop(&mut self) {
+            unsafe {
+                ::std::alloc::dealloc(
+                    self.ptr as *mut u8,
+                    ::std::alloc::Layout::from_size_align(1usize, 1usize)
+                        .unwrap(),
+                );
+            }
+        }
+    }
 }

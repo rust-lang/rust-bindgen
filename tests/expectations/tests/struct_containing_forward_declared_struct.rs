@@ -33,6 +33,20 @@ impl Default for a {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_a {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_a {}
+impl Drop for Box_a {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct b {
@@ -55,4 +69,18 @@ fn bindgen_test_layout_b() {
         0usize,
         concat!("Offset of field: ", stringify!(b), "::", stringify!(val_b))
     );
+}
+struct Box_b {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_b {}
+impl Drop for Box_b {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }

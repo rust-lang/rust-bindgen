@@ -47,6 +47,21 @@ impl Default for foo {
         unsafe { ::core::mem::zeroed() }
     }
 }
+struct Box_foo {
+    ptr: *mut ::core::ffi::c_void,
+}
+impl Box_foo {}
+impl Drop for Box_foo {
+    fn drop(&mut self) {
+        unsafe {
+            ::core::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::core::alloc::Layout::from_size_align(16usize, 8usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union _bindgen_ty_1 {
@@ -94,6 +109,20 @@ fn bindgen_test_layout__bindgen_ty_1() {
 impl Default for _bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::core::mem::zeroed() }
+    }
+}
+struct Box__bindgen_ty_1 {
+    ptr: *mut ::core::ffi::c_void,
+}
+impl Box__bindgen_ty_1 {}
+impl Drop for Box__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::core::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::core::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 extern "C" {

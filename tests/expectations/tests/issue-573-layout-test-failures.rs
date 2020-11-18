@@ -40,6 +40,20 @@ fn bindgen_test_layout_AutoIdVector() {
         )
     );
 }
+struct Box_AutoIdVector {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_AutoIdVector {}
+impl Drop for Box_AutoIdVector {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn __bindgen_test_layout_Outer_open0_int_close0_instantiation() {
     assert_eq!(

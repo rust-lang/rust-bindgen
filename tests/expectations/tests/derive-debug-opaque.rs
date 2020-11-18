@@ -33,6 +33,21 @@ impl ::std::fmt::Debug for Opaque {
         write!(f, "Opaque {{ opaque }}")
     }
 }
+struct Box_Opaque {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Opaque {}
+impl Drop for Box_Opaque {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(164usize, 4usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 pub struct OpaqueUser {
     pub opaque: Opaque,
@@ -70,5 +85,20 @@ impl Default for OpaqueUser {
 impl ::std::fmt::Debug for OpaqueUser {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         write!(f, "OpaqueUser {{ opaque: {:?} }}", self.opaque)
+    }
+}
+struct Box_OpaqueUser {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_OpaqueUser {}
+impl Drop for Box_OpaqueUser {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(164usize, 4usize)
+                    .unwrap(),
+            );
+        }
     }
 }

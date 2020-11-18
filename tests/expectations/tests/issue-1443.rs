@@ -44,6 +44,20 @@ impl Default for Bar {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_Bar {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Bar {}
+impl Drop for Box_Bar {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Baz {
@@ -76,6 +90,20 @@ fn bindgen_test_layout_Baz() {
 impl Default for Baz {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_Baz {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Baz {}
+impl Drop for Box_Baz {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 #[repr(C)]
@@ -112,6 +140,20 @@ impl Default for Tar {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_Tar {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Tar {}
+impl Drop for Box_Tar {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Taz {
@@ -144,5 +186,19 @@ fn bindgen_test_layout_Taz() {
 impl Default for Taz {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_Taz {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Taz {}
+impl Drop for Box_Taz {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
     }
 }

@@ -84,6 +84,20 @@ impl Clone for mozilla_FragmentOrURL {
         *self
     }
 }
+struct Box_mozilla_FragmentOrURL {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_mozilla_FragmentOrURL {}
+impl Drop for Box_mozilla_FragmentOrURL {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct mozilla_Position {
@@ -107,6 +121,20 @@ impl Clone for mozilla_Position {
         *self
     }
 }
+struct Box_mozilla_Position {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_mozilla_Position {}
+impl Drop for Box_mozilla_Position {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct mozilla_StyleShapeSource {
@@ -118,6 +146,20 @@ pub struct mozilla_StyleShapeSource__bindgen_ty_1 {
     pub mPosition: __BindgenUnionField<*mut mozilla_Position>,
     pub mFragmentOrURL: __BindgenUnionField<*mut mozilla_FragmentOrURL>,
     pub bindgen_union_field: u64,
+}
+struct Box_mozilla_StyleShapeSource__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_mozilla_StyleShapeSource__bindgen_ty_1 {}
+impl Drop for Box_mozilla_StyleShapeSource__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
@@ -152,6 +194,20 @@ impl Default for Bar {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_Bar {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Bar {}
+impl Drop for Box_Bar {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct nsFoo {
@@ -183,6 +239,20 @@ fn bindgen_test_layout_nsFoo() {
 impl Clone for nsFoo {
     fn clone(&self) -> Self {
         *self
+    }
+}
+struct Box_nsFoo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_nsFoo {}
+impl Drop for Box_nsFoo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 #[test]

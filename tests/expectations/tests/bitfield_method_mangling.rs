@@ -158,3 +158,17 @@ impl mach_msg_type_descriptor_t {
         __bindgen_bitfield_unit
     }
 }
+struct Box_mach_msg_type_descriptor_t {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_mach_msg_type_descriptor_t {}
+impl Drop for Box_mach_msg_type_descriptor_t {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}

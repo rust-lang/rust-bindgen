@@ -41,6 +41,20 @@ impl Default for nsTArray_base {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_nsTArray_base {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_nsTArray_base {}
+impl Drop for Box_nsTArray_base {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct nsTArray {
@@ -84,6 +98,20 @@ fn bindgen_test_layout_nsIContent() {
 impl Default for nsIContent {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_nsIContent {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_nsIContent {}
+impl Drop for Box_nsIContent {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 extern "C" {

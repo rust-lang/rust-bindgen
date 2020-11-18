@@ -35,6 +35,21 @@ fn bindgen_test_layout_LittleArray() {
         )
     );
 }
+struct Box_LittleArray {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_LittleArray {}
+impl Drop for Box_LittleArray {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(128usize, 4usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct BigArray {
@@ -68,6 +83,21 @@ impl Default for BigArray {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_BigArray {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_BigArray {}
+impl Drop for Box_BigArray {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(132usize, 4usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct WithLittleArray {
@@ -97,6 +127,21 @@ fn bindgen_test_layout_WithLittleArray() {
             stringify!(a)
         )
     );
+}
+struct Box_WithLittleArray {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_WithLittleArray {}
+impl Drop for Box_WithLittleArray {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(128usize, 4usize)
+                    .unwrap(),
+            );
+        }
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -131,5 +176,20 @@ fn bindgen_test_layout_WithBigArray() {
 impl Default for WithBigArray {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_WithBigArray {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_WithBigArray {}
+impl Drop for Box_WithBigArray {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(132usize, 4usize)
+                    .unwrap(),
+            );
+        }
     }
 }

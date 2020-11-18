@@ -102,3 +102,20 @@ impl UnionWithDtor {
         UnionWithDtor_UnionWithDtor_destructor(self)
     }
 }
+struct Box_UnionWithDtor {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_UnionWithDtor {}
+impl Drop for Box_UnionWithDtor {
+    fn drop(&mut self) {
+        unsafe {
+            UnionWithDtor_UnionWithDtor_destructor(
+                self.ptr as *mut UnionWithDtor,
+            );
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}

@@ -439,3 +439,17 @@ impl Weird {
         __bindgen_bitfield_unit
     }
 }
+struct Box_Weird {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Weird {}
+impl Drop for Box_Weird {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(24usize, 4usize).unwrap(),
+            );
+        }
+    }
+}

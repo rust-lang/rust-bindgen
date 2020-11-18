@@ -74,6 +74,20 @@ impl Default for C {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_C {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_C {}
+impl Drop for Box_C {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(40usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 pub struct C_with_zero_length_array {
     pub a: ::std::os::raw::c_int,
@@ -137,6 +151,20 @@ impl Default for C_with_zero_length_array {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_C_with_zero_length_array {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_C_with_zero_length_array {}
+impl Drop for Box_C_with_zero_length_array {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(40usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct C_with_zero_length_array_2 {
@@ -181,6 +209,20 @@ fn bindgen_test_layout_C_with_zero_length_array_2() {
             stringify!(zero_length_array)
         )
     );
+}
+struct Box_C_with_zero_length_array_2 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_C_with_zero_length_array_2 {}
+impl Drop for Box_C_with_zero_length_array_2 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }
 #[repr(C)]
 pub struct C_with_incomplete_array {
@@ -245,6 +287,20 @@ impl Default for C_with_incomplete_array {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_C_with_incomplete_array {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_C_with_incomplete_array {}
+impl Drop for Box_C_with_incomplete_array {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(40usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct C_with_incomplete_array_2 {
@@ -289,6 +345,20 @@ fn bindgen_test_layout_C_with_incomplete_array_2() {
             stringify!(incomplete_array)
         )
     );
+}
+struct Box_C_with_incomplete_array_2 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_C_with_incomplete_array_2 {}
+impl Drop for Box_C_with_incomplete_array_2 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }
 #[repr(C)]
 pub struct C_with_zero_length_array_and_incomplete_array {
@@ -381,6 +451,20 @@ impl Default for C_with_zero_length_array_and_incomplete_array {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_C_with_zero_length_array_and_incomplete_array {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_C_with_zero_length_array_and_incomplete_array {}
+impl Drop for Box_C_with_zero_length_array_and_incomplete_array {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(40usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct C_with_zero_length_array_and_incomplete_array_2 {
@@ -454,6 +538,20 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
         )
     );
 }
+struct Box_C_with_zero_length_array_and_incomplete_array_2 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_C_with_zero_length_array_and_incomplete_array_2 {}
+impl Drop for Box_C_with_zero_length_array_and_incomplete_array_2 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct WithDtor {
@@ -481,6 +579,20 @@ fn bindgen_test_layout_WithDtor() {
             stringify!(b)
         )
     );
+}
+struct Box_WithDtor {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_WithDtor {}
+impl Drop for Box_WithDtor {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }
 #[repr(C)]
 pub struct IncompleteArrayNonCopiable {
@@ -531,6 +643,20 @@ impl Default for IncompleteArrayNonCopiable {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_IncompleteArrayNonCopiable {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_IncompleteArrayNonCopiable {}
+impl Drop for Box_IncompleteArrayNonCopiable {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union Union {
@@ -566,6 +692,20 @@ impl Default for Union {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_Union {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Union {}
+impl Drop for Box_Union {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct WithUnion {
@@ -599,6 +739,20 @@ fn bindgen_test_layout_WithUnion() {
 impl Default for WithUnion {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_WithUnion {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_WithUnion {}
+impl Drop for Box_WithUnion {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
     }
 }
 #[repr(C)]
@@ -661,5 +815,49 @@ impl RealAbstractionWithTonsOfMethods {
     #[inline]
     pub unsafe fn sta() {
         RealAbstractionWithTonsOfMethods_sta()
+    }
+}
+struct Box_RealAbstractionWithTonsOfMethods {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_RealAbstractionWithTonsOfMethods {
+    #[inline]
+    pub fn bar(&self) {
+        unsafe {
+            RealAbstractionWithTonsOfMethods_bar(
+                self.ptr as *const RealAbstractionWithTonsOfMethods,
+            )
+        }
+    }
+    #[inline]
+    pub fn bar1(&mut self) {
+        unsafe {
+            RealAbstractionWithTonsOfMethods_bar1(
+                self.ptr as *mut RealAbstractionWithTonsOfMethods,
+            )
+        }
+    }
+    #[inline]
+    pub fn bar2(&mut self, foo: ::std::os::raw::c_int) {
+        unsafe {
+            RealAbstractionWithTonsOfMethods_bar2(
+                self.ptr as *mut RealAbstractionWithTonsOfMethods,
+                foo,
+            )
+        }
+    }
+    #[inline]
+    pub fn sta() {
+        unsafe { RealAbstractionWithTonsOfMethods_sta() }
+    }
+}
+impl Drop for Box_RealAbstractionWithTonsOfMethods {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
     }
 }

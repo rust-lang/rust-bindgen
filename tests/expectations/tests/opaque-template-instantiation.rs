@@ -52,6 +52,20 @@ impl Default for ContainsInstantiation {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_ContainsInstantiation {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ContainsInstantiation {}
+impl Drop for Box_ContainsInstantiation {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct ContainsOpaqueInstantiation {
@@ -82,6 +96,20 @@ fn bindgen_test_layout_ContainsOpaqueInstantiation() {
             stringify!(opaque)
         )
     );
+}
+struct Box_ContainsOpaqueInstantiation {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ContainsOpaqueInstantiation {}
+impl Drop for Box_ContainsOpaqueInstantiation {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }
 #[test]
 fn __bindgen_test_layout_Template_open0_char_close0_instantiation() {

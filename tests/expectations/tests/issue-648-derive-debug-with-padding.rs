@@ -48,6 +48,21 @@ impl ::std::cmp::PartialEq for NoDebug {
         self.c == other.c
     }
 }
+struct Box_NoDebug {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_NoDebug {}
+impl Drop for Box_NoDebug {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(64usize, 64usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 /// This should derive Debug/Hash/PartialEq/Eq because the padding size is less than the max derive
 /// Debug/Hash/PartialEq/Eq impl for arrays. However, we conservatively don't derive Debug/Hash because
 /// we determine Debug derive-ability before we compute padding, which happens at
@@ -106,5 +121,20 @@ impl Default for ShouldDeriveDebugButDoesNot {
 impl ::std::cmp::PartialEq for ShouldDeriveDebugButDoesNot {
     fn eq(&self, other: &ShouldDeriveDebugButDoesNot) -> bool {
         self.c == other.c && self.d == other.d
+    }
+}
+struct Box_ShouldDeriveDebugButDoesNot {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ShouldDeriveDebugButDoesNot {}
+impl Drop for Box_ShouldDeriveDebugButDoesNot {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(64usize, 64usize)
+                    .unwrap(),
+            );
+        }
     }
 }

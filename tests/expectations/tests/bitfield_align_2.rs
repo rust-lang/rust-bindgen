@@ -171,3 +171,17 @@ impl TaggedPtr {
         __bindgen_bitfield_unit
     }
 }
+struct Box_TaggedPtr {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_TaggedPtr {}
+impl Drop for Box_TaggedPtr {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}

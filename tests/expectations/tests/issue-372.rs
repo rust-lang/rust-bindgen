@@ -49,6 +49,21 @@ pub mod root {
             unsafe { ::std::mem::zeroed() }
         }
     }
+    struct Box_i {
+        ptr: *mut ::std::ffi::c_void,
+    }
+    impl Box_i {}
+    impl Drop for Box_i {
+        fn drop(&mut self) {
+            unsafe {
+                ::std::alloc::dealloc(
+                    self.ptr as *mut u8,
+                    ::std::alloc::Layout::from_size_align(24usize, 8usize)
+                        .unwrap(),
+                );
+            }
+        }
+    }
     #[repr(C)]
     #[derive(Debug, Copy, Clone)]
     pub struct d {
@@ -75,6 +90,21 @@ pub mod root {
     impl Default for d {
         fn default() -> Self {
             unsafe { ::std::mem::zeroed() }
+        }
+    }
+    struct Box_d {
+        ptr: *mut ::std::ffi::c_void,
+    }
+    impl Box_d {}
+    impl Drop for Box_d {
+        fn drop(&mut self) {
+            unsafe {
+                ::std::alloc::dealloc(
+                    self.ptr as *mut u8,
+                    ::std::alloc::Layout::from_size_align(24usize, 8usize)
+                        .unwrap(),
+                );
+            }
         }
     }
     #[repr(u32)]
@@ -118,6 +148,21 @@ pub mod root {
     impl Default for F {
         fn default() -> Self {
             unsafe { ::std::mem::zeroed() }
+        }
+    }
+    struct Box_F {
+        ptr: *mut ::std::ffi::c_void,
+    }
+    impl Box_F {}
+    impl Drop for Box_F {
+        fn drop(&mut self) {
+            unsafe {
+                ::std::alloc::dealloc(
+                    self.ptr as *mut u8,
+                    ::std::alloc::Layout::from_size_align(264usize, 8usize)
+                        .unwrap(),
+                );
+            }
         }
     }
 }

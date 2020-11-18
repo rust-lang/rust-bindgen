@@ -234,6 +234,20 @@ impl Default for C {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_C {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_C {}
+impl Drop for Box_C {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(96usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct D {
@@ -306,6 +320,20 @@ impl Default for RootedContainer {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_RootedContainer {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_RootedContainer {}
+impl Drop for Box_RootedContainer {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(24usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 pub type WithDtorIntFwd = WithDtor<::std::os::raw::c_int>;
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
@@ -354,6 +382,20 @@ impl Default for PODButContainsDtor {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_PODButContainsDtor {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_PODButContainsDtor {}
+impl Drop for Box_PODButContainsDtor {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 /// <div rustbindgen opaque>
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -389,6 +431,20 @@ fn bindgen_test_layout_POD() {
             stringify!(opaque_member)
         )
     );
+}
+struct Box_POD {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_POD {}
+impl Drop for Box_POD {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }
 /// <div rustbindgen replaces="NestedReplaced"></div>
 #[repr(C)]
@@ -454,6 +510,20 @@ fn bindgen_test_layout_Untemplated() {
         1usize,
         concat!("Alignment of ", stringify!(Untemplated))
     );
+}
+struct Box_Untemplated {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Untemplated {}
+impl Drop for Box_Untemplated {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]

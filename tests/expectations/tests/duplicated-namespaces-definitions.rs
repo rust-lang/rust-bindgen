@@ -55,6 +55,21 @@ pub mod root {
                 )
             );
         }
+        struct Box_Bar {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box_Bar {}
+        impl Drop for Box_Bar {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(8usize, 4usize)
+                            .unwrap(),
+                    );
+                }
+            }
+        }
     }
     pub mod bar {
         #[allow(unused_imports)]
@@ -92,6 +107,21 @@ pub mod root {
         impl Default for Foo {
             fn default() -> Self {
                 unsafe { ::std::mem::zeroed() }
+            }
+        }
+        struct Box_Foo {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box_Foo {}
+        impl Drop for Box_Foo {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(8usize, 8usize)
+                            .unwrap(),
+                    );
+                }
             }
         }
     }

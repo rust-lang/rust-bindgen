@@ -62,6 +62,20 @@ pub struct NastyStruct__bindgen_ty_1 {
     pub mDummy: __BindgenUnionField<::std::os::raw::c_ulong>,
     pub bindgen_union_field: u64,
 }
+struct Box_NastyStruct__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_NastyStruct__bindgen_ty_1 {}
+impl Drop for Box_NastyStruct__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct NastyStruct__bindgen_ty_2 {
@@ -69,10 +83,38 @@ pub struct NastyStruct__bindgen_ty_2 {
     pub wut: __BindgenUnionField<*mut ::std::os::raw::c_int>,
     pub bindgen_union_field: u64,
 }
+struct Box_NastyStruct__bindgen_ty_2 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_NastyStruct__bindgen_ty_2 {}
+impl Drop for Box_NastyStruct__bindgen_ty_2 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Whatever {
     pub mTPtr: __BindgenUnionField<*mut ::std::os::raw::c_void>,
     pub mInt: __BindgenUnionField<::std::os::raw::c_int>,
     pub bindgen_union_field: u64,
+}
+struct Box_Whatever {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Whatever {}
+impl Drop for Box_Whatever {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
 }

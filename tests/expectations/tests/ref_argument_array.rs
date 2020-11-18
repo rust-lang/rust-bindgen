@@ -31,6 +31,20 @@ impl Default for nsID {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_nsID {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_nsID {}
+impl Drop for Box_nsID {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     #[link_name = "\u{1}_ZN4nsID16ToProvidedStringERA10_c"]
     pub fn nsID_ToProvidedString(

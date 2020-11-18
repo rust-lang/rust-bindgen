@@ -50,3 +50,18 @@ impl Default for foo {
         unsafe { ::core::mem::zeroed() }
     }
 }
+struct Box_foo {
+    ptr: *mut ::core::ffi::c_void,
+}
+impl Box_foo {}
+impl Drop for Box_foo {
+    fn drop(&mut self) {
+        unsafe {
+            ::core::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::core::alloc::Layout::from_size_align(16usize, 8usize)
+                    .unwrap(),
+            );
+        }
+    }
+}

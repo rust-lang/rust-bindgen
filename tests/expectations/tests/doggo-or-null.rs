@@ -28,6 +28,20 @@ fn bindgen_test_layout_Doggo() {
         concat!("Offset of field: ", stringify!(Doggo), "::", stringify!(x))
     );
 }
+struct Box_Doggo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Doggo {}
+impl Drop for Box_Doggo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
 pub struct Null {
@@ -45,6 +59,20 @@ fn bindgen_test_layout_Null() {
         1usize,
         concat!("Alignment of ", stringify!(Null))
     );
+}
+struct Box_Null {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Null {}
+impl Drop for Box_Null {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
 }
 /// This type is an opaque union. Unions can't derive anything interesting like
 /// Debug or Default, even if their layout can, because it would require knowing
@@ -74,5 +102,19 @@ fn bindgen_test_layout_DoggoOrNull() {
 impl Default for DoggoOrNull {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_DoggoOrNull {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_DoggoOrNull {}
+impl Drop for Box_DoggoOrNull {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
     }
 }

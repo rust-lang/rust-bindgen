@@ -38,6 +38,20 @@ impl Default for Rooted {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_Rooted {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Rooted {}
+impl Drop for Box_Rooted {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 /// <div rustbindgen replaces="MaybeWrapped"></div>
 pub type MaybeWrapped<a> = a;
 #[test]

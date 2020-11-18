@@ -48,3 +48,17 @@ impl ::std::fmt::Debug for ShouldManuallyImplDebug {
         write!(f, "ShouldManuallyImplDebug {{  }}")
     }
 }
+struct Box_ShouldManuallyImplDebug {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ShouldManuallyImplDebug {}
+impl Drop for Box_ShouldManuallyImplDebug {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}

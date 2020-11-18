@@ -29,6 +29,20 @@ fn bindgen_test_layout_B() {
         concat!("Alignment of ", stringify!(B))
     );
 }
+struct Box_B {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_B {}
+impl Drop for Box_B {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     #[link_name = "\u{1}_ZN1B1aE"]
     pub static mut B_a: A;
@@ -55,4 +69,18 @@ fn bindgen_test_layout_C() {
         0usize,
         concat!("Offset of field: ", stringify!(C), "::", stringify!(b))
     );
+}
+struct Box_C {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_C {}
+impl Drop for Box_C {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
 }

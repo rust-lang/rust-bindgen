@@ -44,6 +44,20 @@ impl Default for C {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_C {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_C {}
+impl Drop for Box_C {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     #[link_name = "\u{1}_ZN1C5matchEv"]
     pub fn C_match(this: *mut ::std::os::raw::c_void);

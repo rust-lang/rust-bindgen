@@ -30,6 +30,20 @@ impl Default for Base {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_Base {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Base {}
+impl Drop for Box_Base {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     #[link_name = "\u{1}_ZN4Base9AsDerivedEv"]
     pub fn Base_AsDerived(this: *mut ::std::os::raw::c_void) -> *mut Derived;
@@ -55,5 +69,19 @@ fn bindgen_test_layout_Derived() {
 impl Default for Derived {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_Derived {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Derived {}
+impl Drop for Box_Derived {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }

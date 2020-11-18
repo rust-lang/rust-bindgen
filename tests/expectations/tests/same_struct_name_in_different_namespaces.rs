@@ -53,3 +53,17 @@ fn bindgen_test_layout_JS_shadow_Zone() {
         )
     );
 }
+struct Box_JS_shadow_Zone {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_JS_shadow_Zone {}
+impl Drop for Box_JS_shadow_Zone {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
+            );
+        }
+    }
+}

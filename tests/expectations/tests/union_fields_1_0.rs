@@ -111,3 +111,17 @@ impl Clone for nsStyleUnion {
         *self
     }
 }
+struct Box_nsStyleUnion {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_nsStyleUnion {}
+impl Drop for Box_nsStyleUnion {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}

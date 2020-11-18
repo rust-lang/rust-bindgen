@@ -175,3 +175,17 @@ impl Date {
         __bindgen_bitfield_unit
     }
 }
+struct Box_Date {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Date {}
+impl Drop for Box_Date {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(3usize, 1usize).unwrap(),
+            );
+        }
+    }
+}

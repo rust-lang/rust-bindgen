@@ -24,6 +24,20 @@ fn bindgen_test_layout_Empty() {
         concat!("Alignment of ", stringify!(Empty))
     );
 }
+struct Box_Empty {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Empty {}
+impl Drop for Box_Empty {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 /// This should not get an `_address` byte, so `sizeof(Inherits)` should be
 /// `1`.
 #[repr(C)]
@@ -53,6 +67,20 @@ fn bindgen_test_layout_Inherits() {
             stringify!(b)
         )
     );
+}
+struct Box_Inherits {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Inherits {}
+impl Drop for Box_Inherits {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
 }
 /// This should not get an `_address` byte, but contains `Empty` which *does* get
 /// one, so `sizeof(Contains)` should be `1 + 1`.
@@ -96,4 +124,18 @@ fn bindgen_test_layout_Contains() {
             stringify!(b)
         )
     );
+}
+struct Box_Contains {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Contains {}
+impl Drop for Box_Contains {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(2usize, 1usize).unwrap(),
+            );
+        }
+    }
 }

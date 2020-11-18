@@ -215,6 +215,20 @@ impl Default for rte_kni_fifo {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_rte_kni_fifo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_kni_fifo {}
+impl Drop for Box_rte_kni_fifo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[repr(align(8))]
 #[derive(Debug, Default, Copy, Clone)]
@@ -316,5 +330,19 @@ impl rte_eth_link {
             link_status as u64
         });
         __bindgen_bitfield_unit
+    }
+}
+struct Box_rte_eth_link {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_eth_link {}
+impl Drop for Box_rte_eth_link {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }

@@ -30,6 +30,21 @@ impl Default for nsSlots {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_nsSlots {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_nsSlots {}
+impl Drop for Box_nsSlots {
+    fn drop(&mut self) {
+        unsafe {
+            nsSlots_nsSlots_destructor(self.ptr as *mut nsSlots);
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     #[link_name = "\u{1}_ZN7nsSlotsD1Ev"]
     pub fn nsSlots_nsSlots_destructor(this: *mut nsSlots);

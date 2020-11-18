@@ -38,6 +38,20 @@ fn bindgen_test_layout_Foo_Bar() {
         )
     );
 }
+struct Box_Foo_Bar {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Foo_Bar {}
+impl Drop for Box_Foo_Bar {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn bindgen_test_layout_Foo() {
     assert_eq!(
@@ -55,6 +69,20 @@ fn bindgen_test_layout_Foo() {
         0usize,
         concat!("Offset of field: ", stringify!(Foo), "::", stringify!(bar))
     );
+}
+struct Box_Foo {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Foo {}
+impl Drop for Box_Foo {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -89,6 +117,20 @@ fn bindgen_test_layout_Baz_Bar() {
         )
     );
 }
+struct Box_Baz_Bar {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Baz_Bar {}
+impl Drop for Box_Baz_Bar {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn bindgen_test_layout_Baz() {
     assert_eq!(
@@ -101,4 +143,18 @@ fn bindgen_test_layout_Baz() {
         1usize,
         concat!("Alignment of ", stringify!(Baz))
     );
+}
+struct Box_Baz {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Baz {}
+impl Drop for Box_Baz {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
 }

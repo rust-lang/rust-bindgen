@@ -52,3 +52,18 @@ fn bindgen_test_layout_max_align_t() {
         )
     );
 }
+struct Box_max_align_t {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_max_align_t {}
+impl Drop for Box_max_align_t {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(32usize, 16usize)
+                    .unwrap(),
+            );
+        }
+    }
+}

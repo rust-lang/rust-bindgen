@@ -41,6 +41,20 @@ fn bindgen_test_layout_TestDouble() {
         )
     );
 }
+struct Box_TestDouble {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_TestDouble {}
+impl Drop for Box_TestDouble {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TestDoublePtr {
@@ -77,6 +91,20 @@ impl Default for TestDoublePtr {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_TestDoublePtr {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_TestDoublePtr {}
+impl Drop for Box_TestDoublePtr {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct TestFloat {
@@ -106,6 +134,20 @@ fn bindgen_test_layout_TestFloat() {
             stringify!(mMember)
         )
     );
+}
+struct Box_TestFloat {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_TestFloat {}
+impl Drop for Box_TestFloat {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
+            );
+        }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -141,5 +183,19 @@ fn bindgen_test_layout_TestFloatPtr() {
 impl Default for TestFloatPtr {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_TestFloatPtr {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_TestFloatPtr {}
+impl Drop for Box_TestFloatPtr {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }

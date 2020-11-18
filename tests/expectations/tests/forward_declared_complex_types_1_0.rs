@@ -28,6 +28,20 @@ impl Clone for Foo_empty {
         *self
     }
 }
+struct Box_Foo_empty {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Foo_empty {}
+impl Drop for Box_Foo_empty {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct Foo {
@@ -69,6 +83,20 @@ impl Clone for Bar {
 impl Default for Bar {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_Bar {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Bar {}
+impl Drop for Box_Bar {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
     }
 }
 extern "C" {

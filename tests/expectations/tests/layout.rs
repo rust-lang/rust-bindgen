@@ -22,3 +22,18 @@ impl Default for header {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_header {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_header {}
+impl Drop for Box_header {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(16usize, 16usize)
+                    .unwrap(),
+            );
+        }
+    }
+}

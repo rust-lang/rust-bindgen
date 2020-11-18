@@ -30,6 +30,20 @@ impl Default for VirtualMethods {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_VirtualMethods {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_VirtualMethods {}
+impl Drop for Box_VirtualMethods {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Set {
@@ -56,6 +70,20 @@ fn bindgen_test_layout_ServoElementSnapshotTable() {
 impl Default for ServoElementSnapshotTable {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_ServoElementSnapshotTable {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ServoElementSnapshotTable {}
+impl Drop for Box_ServoElementSnapshotTable {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
     }
 }
 #[test]

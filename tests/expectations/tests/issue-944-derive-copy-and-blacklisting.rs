@@ -42,3 +42,17 @@ impl Default for ShouldNotBeCopy {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_ShouldNotBeCopy {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ShouldNotBeCopy {}
+impl Drop for Box_ShouldNotBeCopy {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}

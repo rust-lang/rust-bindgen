@@ -43,6 +43,21 @@ impl ::std::cmp::PartialEq for Base {
         &self.large[..] == &other.large[..]
     }
 }
+struct Box_Base {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Base {}
+impl Drop for Box_Base {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(132usize, 4usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ShouldDerivePartialEq {
@@ -69,5 +84,20 @@ impl Default for ShouldDerivePartialEq {
 impl ::std::cmp::PartialEq for ShouldDerivePartialEq {
     fn eq(&self, other: &ShouldDerivePartialEq) -> bool {
         self._base == other._base
+    }
+}
+struct Box_ShouldDerivePartialEq {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ShouldDerivePartialEq {}
+impl Drop for Box_ShouldDerivePartialEq {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(132usize, 4usize)
+                    .unwrap(),
+            );
+        }
     }
 }
