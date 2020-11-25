@@ -35,7 +35,6 @@ version = "0.55.1"
 dependencies = [
  "bitflags",
  "cexpr",
- "cfg-if 1.0.0",
  "clang-sys",
  "clap",
  "diff",
