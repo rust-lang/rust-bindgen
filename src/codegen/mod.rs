@@ -3808,6 +3808,7 @@ impl CodeGenerator for Function {
             result.dynamic_items().push(
                 ident,
                 abi,
+                signature.is_variadic(),
                 args,
                 args_identifiers,
                 ret,
@@ -4107,11 +4108,8 @@ pub(crate) fn codegen(
 
         if let Some(ref lib_name) = context.options().dynamic_library_name {
             let lib_ident = context.rust_ident(lib_name);
-            let check_struct_ident =
-                context.rust_ident(format!("Check{}", lib_name));
-            let dynamic_items_tokens = result
-                .dynamic_items()
-                .get_tokens(lib_ident, check_struct_ident);
+            let dynamic_items_tokens =
+                result.dynamic_items().get_tokens(lib_ident);
             result.push(dynamic_items_tokens);
         }
 

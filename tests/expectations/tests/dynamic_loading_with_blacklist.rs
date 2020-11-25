@@ -59,13 +59,13 @@ impl X {
 extern crate libloading;
 pub struct TestLib {
     __library: ::libloading::Library,
-    foo: Result<
+    pub foo: Result<
         unsafe extern "C" fn(
             x: *mut ::std::os::raw::c_void,
         ) -> ::std::os::raw::c_int,
         ::libloading::Error,
     >,
-    bar: Result<
+    pub bar: Result<
         unsafe extern "C" fn(
             x: *mut ::std::os::raw::c_void,
         ) -> ::std::os::raw::c_int,
@@ -81,13 +81,10 @@ impl TestLib {
         let foo = __library.get("foo".as_bytes()).map(|sym| *sym);
         let bar = __library.get("bar".as_bytes()).map(|sym| *sym);
         Ok(TestLib {
-            __library: __library,
+            __library,
             foo,
             bar,
         })
-    }
-    pub fn can_call(&self) -> CheckTestLib {
-        CheckTestLib { __library: self }
     }
     pub unsafe fn foo(
         &self,
@@ -102,16 +99,5 @@ impl TestLib {
     ) -> ::std::os::raw::c_int {
         let sym = self.bar.as_ref().expect("Expected function, got error.");
         (sym)(x)
-    }
-}
-pub struct CheckTestLib<'a> {
-    __library: &'a TestLib,
-}
-impl<'a> CheckTestLib<'a> {
-    pub fn foo(&self) -> Result<(), &'a ::libloading::Error> {
-        self.__library.foo.as_ref().map(|_| ())
-    }
-    pub fn bar(&self) -> Result<(), &'a ::libloading::Error> {
-        self.__library.bar.as_ref().map(|_| ())
     }
 }
