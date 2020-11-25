@@ -451,6 +451,13 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("no-default")
+                .long("no-default")
+                .help("Avoid deriving/implement Default for types matching <regex>.")
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
             Arg::with_name("no-hash")
                 .long("no-hash")
                 .help("Avoid deriving Hash for types matching <regex>.")
@@ -868,6 +875,12 @@ where
     if let Some(no_debug) = matches.values_of("no-debug") {
         for regex in no_debug {
             builder = builder.no_debug(regex);
+        }
+    }
+
+    if let Some(no_default) = matches.values_of("no-default") {
+        for regex in no_default {
+            builder = builder.no_default(regex);
         }
     }
 
