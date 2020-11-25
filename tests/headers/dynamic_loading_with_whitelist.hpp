@@ -1,4 +1,4 @@
-// bindgen-flags: --dynamic-loading TestLib --whitelist-function baz --whitelist-function foo
+// bindgen-flags: --dynamic-loading TestLib --whitelist-function baz --whitelist-function foo --whitelist-function bazz
 
 class X {
   int _x;
@@ -13,3 +13,4 @@ class X {
 int foo(void *x);
 int bar(void *x);
 int baz(void *x);
+int bazz(int, ...);

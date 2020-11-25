@@ -8,7 +8,7 @@ pub struct DynamicItems {
     /// ```ignore
     /// struct Lib {
     ///    __library: ::libloading::Library,
-    ///    x: Result<unsafe extern ..., ::libloading::Error>, // <- tracks these
+    ///    pub x: Result<unsafe extern ..., ::libloading::Error>, // <- tracks these
     ///    ...
     /// }
     /// ```
@@ -25,15 +25,6 @@ pub struct DynamicItems {
     /// }
     /// ```
     struct_implementation: Vec<proc_macro2::TokenStream>,
-
-    /// Tracks the tokens that will appear inside the struct used for checking if a symbol is
-    /// usable, e.g.:
-    /// ```ignore
-    /// pub fn f(&self) -> Result<(), &'a ::libloading::Error> { // <- tracks these
-    ///     self.__library.f.as_ref().map(|_| ())
-    /// }
-    /// ```
-    runtime_checks: Vec<proc_macro2::TokenStream>,
 
     /// Tracks the initialization of the fields inside the `::new` constructor of the library
     /// struct, e.g.:
@@ -80,16 +71,11 @@ impl DynamicItems {
         Self::default()
     }
 
-    pub fn get_tokens(
-        &self,
-        lib_ident: Ident,
-        check_struct_ident: Ident,
-    ) -> proc_macro2::TokenStream {
+    pub fn get_tokens(&self, lib_ident: Ident) -> proc_macro2::TokenStream {
         let struct_members = &self.struct_members;
         let constructor_inits = &self.constructor_inits;
         let init_fields = &self.init_fields;
         let struct_implementation = &self.struct_implementation;
-        let runtime_checks = &self.runtime_checks;
         quote! {
             extern crate libloading;
 
@@ -107,25 +93,13 @@ impl DynamicItems {
                     #( #constructor_inits )*
                     Ok(
                         #lib_ident {
-                            __library: __library,
+                            __library,
                             #( #init_fields ),*
                         }
                     )
                 }
 
-                pub fn can_call(&self) -> #check_struct_ident {
-                    #check_struct_ident { __library: self }
-                }
-
                 #( #struct_implementation )*
-            }
-
-            pub struct #check_struct_ident<'a> {
-                __library: &'a #lib_ident,
-            }
-
-            impl<'a> #check_struct_ident<'a> {
-                #( #runtime_checks )*
             }
         }
     }
@@ -134,29 +108,30 @@ impl DynamicItems {
         &mut self,
         ident: Ident,
         abi: Abi,
+        is_variadic: bool,
         args: Vec<proc_macro2::TokenStream>,
         args_identifiers: Vec<proc_macro2::TokenStream>,
         ret: proc_macro2::TokenStream,
         ret_ty: proc_macro2::TokenStream,
     ) {
-        assert_eq!(args.len(), args_identifiers.len());
+        if !is_variadic {
+            assert_eq!(args.len(), args_identifiers.len());
+        }
 
-        self.struct_members.push(quote!{
-            #ident: Result<unsafe extern #abi fn ( #( #args ),* ) #ret, ::libloading::Error>,
+        self.struct_members.push(quote! {
+            pub #ident: Result<unsafe extern #abi fn ( #( #args ),* ) #ret, ::libloading::Error>,
         });
 
-        self.struct_implementation.push(quote! {
-            pub unsafe fn #ident ( &self, #( #args ),* ) -> #ret_ty {
-                let sym = self.#ident.as_ref().expect("Expected function, got error.");
-                (sym)(#( #args_identifiers ),*)
-            }
-        });
-
-        self.runtime_checks.push(quote! {
-            pub fn #ident (&self) -> Result<(), &'a::libloading::Error> {
-                self.__library.#ident.as_ref().map(|_| ())
-            }
-        });
+        // We can't implement variadic functions from C easily, so we allow to
+        // access the function pointer so that the user can call it just fine.
+        if !is_variadic {
+            self.struct_implementation.push(quote! {
+                pub unsafe fn #ident ( &self, #( #args ),* ) -> #ret_ty {
+                    let sym = self.#ident.as_ref().expect("Expected function, got error.");
+                    (sym)(#( #args_identifiers ),*)
+                }
+            });
+        }
 
         let ident_str = ident.to_string();
         self.constructor_inits.push(quote! {
