@@ -118,7 +118,7 @@ fn derives_of_item(item: &Item, ctx: &BindgenContext) -> DerivableTraits {
         derivable_traits |= DerivableTraits::DEBUG;
     }
 
-    if item.can_derive_default(ctx) {
+    if item.can_derive_default(ctx) && !item.annotations().disallow_default() {
         derivable_traits |= DerivableTraits::DEFAULT;
     }
 
@@ -1900,8 +1900,10 @@ impl CodeGenerator for CompInfo {
         }
 
         if !derivable_traits.contains(DerivableTraits::DEFAULT) {
-            needs_default_impl =
-                ctx.options().derive_default && !self.is_forward_declaration();
+            needs_default_impl = ctx.options().derive_default &&
+                !self.is_forward_declaration() &&
+                !ctx.no_default_by_name(item) &&
+                !item.annotations().disallow_default();
         }
 
         let all_template_params = item.all_template_params(ctx);

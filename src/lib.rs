@@ -298,6 +298,7 @@ impl Builder {
             (&self.options.no_partialeq_types, "--no-partialeq"),
             (&self.options.no_copy_types, "--no-copy"),
             (&self.options.no_debug_types, "--no-debug"),
+            (&self.options.no_default_types, "--no-default"),
             (&self.options.no_hash_types, "--no-hash"),
         ];
 
@@ -1446,6 +1447,13 @@ impl Builder {
         self
     }
 
+    /// Don't derive/impl `Default` for a given type. Regular
+    /// expressions are supported.
+    pub fn no_default<T: Into<String>>(mut self, arg: T) -> Self {
+        self.options.no_default_types.insert(arg.into());
+        self
+    }
+
     /// Don't derive `Hash` for a given type. Regular
     /// expressions are supported.
     pub fn no_hash<T: Into<String>>(mut self, arg: T) -> Builder {
@@ -1745,6 +1753,9 @@ struct BindgenOptions {
     /// The set of types that we should not derive `Debug` for.
     no_debug_types: RegexSet,
 
+    /// The set of types that we should not derive/impl `Default` for.
+    no_default_types: RegexSet,
+
     /// The set of types that we should not derive `Hash` for.
     no_hash_types: RegexSet,
 
@@ -1786,6 +1797,7 @@ impl BindgenOptions {
             &mut self.no_partialeq_types,
             &mut self.no_copy_types,
             &mut self.no_debug_types,
+            &mut self.no_default_types,
             &mut self.no_hash_types,
         ];
         let record_matches = self.record_matches;
@@ -1886,6 +1898,7 @@ impl Default for BindgenOptions {
             no_partialeq_types: Default::default(),
             no_copy_types: Default::default(),
             no_debug_types: Default::default(),
+            no_default_types: Default::default(),
             no_hash_types: Default::default(),
             array_pointers_in_arguments: false,
             wasm_import_module_name: None,
