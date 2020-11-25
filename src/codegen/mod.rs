@@ -3805,7 +3805,7 @@ impl CodeGenerator for Function {
                 TypeKind::Void => quote! {()},
                 _ => return_item.to_rust_ty_or_opaque(ctx, &()),
             };
-            result.dynamic_items().add_function(
+            result.dynamic_items().push(
                 ident,
                 abi,
                 args,
@@ -4105,17 +4105,10 @@ pub(crate) fn codegen(
             &(),
         );
 
-        if context.options().dynamic_library_name.is_some() {
-            let lib_ident = context.rust_ident(
-                context.options().dynamic_library_name.as_ref().unwrap(),
-            );
-            let check_struct_ident = context.rust_ident(
-                [
-                    "Check",
-                    context.options().dynamic_library_name.as_ref().unwrap(),
-                ]
-                .join(""),
-            );
+        if let Some(ref lib_name) = context.options().dynamic_library_name {
+            let lib_ident = context.rust_ident(lib_name);
+            let check_struct_ident =
+                context.rust_ident(format!("Check{}", lib_name));
             let dynamic_items_tokens = result
                 .dynamic_items()
                 .get_tokens(lib_ident, check_struct_ident);

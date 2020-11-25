@@ -2,6 +2,7 @@ use crate::ir::function::Abi;
 use proc_macro2::Ident;
 
 /// Used to build the output tokens for dynamic bindings.
+#[derive(Default)]
 pub struct DynamicItems {
     /// Tracks the tokens that will appears inside the library struct -- e.g.:
     /// ```ignore
@@ -74,18 +75,6 @@ pub struct DynamicItems {
     init_fields: Vec<proc_macro2::TokenStream>,
 }
 
-impl Default for DynamicItems {
-    fn default() -> Self {
-        DynamicItems {
-            struct_members: vec![],
-            struct_implementation: vec![],
-            runtime_checks: vec![],
-            constructor_inits: vec![],
-            init_fields: vec![],
-        }
-    }
-}
-
 impl DynamicItems {
     pub fn new() -> Self {
         Self::default()
@@ -141,7 +130,7 @@ impl DynamicItems {
         }
     }
 
-    pub fn add_function(
+    pub fn push(
         &mut self,
         ident: Ident,
         abi: Abi,
