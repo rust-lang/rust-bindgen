@@ -528,10 +528,9 @@ impl Builder {
             output_vector.push(path.into());
         }
 
-        if self.options.dynamic_library_name.is_some() {
-            let libname = self.options.dynamic_library_name.as_ref().unwrap();
+        if let Some(ref name) = self.options.dynamic_library_name {
             output_vector.push("--dynamic-loading".into());
-            output_vector.push(libname.clone());
+            output_vector.push(name.clone());
         }
 
         // Add clang arguments
