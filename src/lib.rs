@@ -90,10 +90,26 @@ pub(crate) use std::collections::hash_map::Entry;
 /// Default prefix for the anon fields.
 pub const DEFAULT_ANON_FIELDS_PREFIX: &'static str = "__bindgen_anon_";
 
+fn file_is_cpp(name_file: &str) -> bool {
+    name_file.ends_with(".hpp") ||
+        name_file.ends_with(".hxx") ||
+        name_file.ends_with(".hh") ||
+        name_file.ends_with(".h++")
+}
+
 fn args_are_cpp(clang_args: &[String]) -> bool {
-    return clang_args
-        .windows(2)
-        .any(|w| w[0] == "-xc++" || w[1] == "-xc++" || w == &["-x", "c++"]);
+    for w in clang_args.windows(2) {
+        if w[0] == "-xc++" || w[1] == "-xc++" {
+            return true;
+        }
+        if w[0] == "-x" && w[1] == "c++" {
+            return true;
+        }
+        if w[0] == "-include" && file_is_cpp(&w[1]) {
+            return true;
+        }
+    }
+    false
 }
 
 bitflags! {
@@ -1341,13 +1357,6 @@ impl Builder {
     /// issues. The resulting file will be named something like `__bindgen.i` or
     /// `__bindgen.ii`
     pub fn dump_preprocessed_input(&self) -> io::Result<()> {
-        fn check_is_cpp(name_file: &str) -> bool {
-            name_file.ends_with(".hpp") ||
-                name_file.ends_with(".hxx") ||
-                name_file.ends_with(".hh") ||
-                name_file.ends_with(".h++")
-        }
-
         let clang =
             clang_sys::support::Clang::find(None, &[]).ok_or_else(|| {
                 io::Error::new(
@@ -1365,7 +1374,7 @@ impl Builder {
 
         // For each input header, add `#include "$header"`.
         for header in &self.input_headers {
-            is_cpp |= check_is_cpp(header);
+            is_cpp |= file_is_cpp(header);
 
             wrapper_contents.push_str("#include \"");
             wrapper_contents.push_str(header);
@@ -1375,7 +1384,7 @@ impl Builder {
         // For each input header content, add a prefix line of `#line 0 "$name"`
         // followed by the contents.
         for &(ref name, ref contents) in &self.input_header_contents {
-            is_cpp |= check_is_cpp(name);
+            is_cpp |= file_is_cpp(name);
 
             wrapper_contents.push_str("#line 0 \"");
             wrapper_contents.push_str(name);
@@ -2069,7 +2078,12 @@ impl Bindings {
             debug!("Found clang: {:?}", clang);
 
             // Whether we are working with C or C++ inputs.
-            let is_cpp = args_are_cpp(&options.clang_args);
+            let is_cpp = args_are_cpp(&options.clang_args) ||
+                options
+                    .input_header
+                    .as_ref()
+                    .map_or(false, |i| file_is_cpp(&i));
+
             let search_paths = if is_cpp {
                 clang.cpp_search_paths
             } else {
