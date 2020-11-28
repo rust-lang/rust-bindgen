@@ -1650,7 +1650,7 @@ impl CodeGenerator for CompInfo {
 
         let ty = item.expect_type();
         let layout = ty.layout(ctx);
-        let mut packed = self.is_packed(ctx, &layout);
+        let mut packed = self.is_packed(ctx, layout.as_ref());
 
         let canonical_name = item.canonical_name(ctx);
         let canonical_ident = ctx.rust_ident(&canonical_name);

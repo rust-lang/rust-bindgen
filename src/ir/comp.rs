@@ -1576,7 +1576,7 @@ impl CompInfo {
     pub fn is_packed(
         &self,
         ctx: &BindgenContext,
-        layout: &Option<Layout>,
+        layout: Option<&Layout>,
     ) -> bool {
         if self.packed_attr {
             return true;
@@ -1584,7 +1584,7 @@ impl CompInfo {
 
         // Even though `libclang` doesn't expose `#pragma packed(...)`, we can
         // detect it through its effects.
-        if let Some(ref parent_layout) = *layout {
+        if let Some(parent_layout) = layout {
             if self.fields().iter().any(|f| match *f {
                 Field::Bitfields(ref unit) => {
                     unit.layout().align > parent_layout.align
@@ -1739,7 +1739,7 @@ impl IsOpaque for CompInfo {
             //
             // See https://github.com/rust-lang/rust-bindgen/issues/537 and
             // https://github.com/rust-lang/rust/issues/33158
-            if self.is_packed(ctx, layout) &&
+            if self.is_packed(ctx, layout.as_ref()) &&
                 layout.map_or(false, |l| l.align > 1)
             {
                 warn!("Found a type that is both packed and aligned to greater than \

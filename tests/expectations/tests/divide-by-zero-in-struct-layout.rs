@@ -130,7 +130,6 @@ impl WithBitfieldAndAttrPacked {
 pub struct WithBitfieldAndPacked {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 0usize], u8>,
     pub a: ::std::os::raw::c_uint,
-    pub __bindgen_padding_0: u8,
 }
 impl WithBitfieldAndPacked {
     #[inline]
