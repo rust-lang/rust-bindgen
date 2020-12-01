@@ -338,6 +338,13 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("module-raw-line")
+                .long("module-raw-line")
+                .help("Add a raw line of Rust code to a given module.")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(2)
+                .value_names(&["module-name", "raw-line"]),
             Arg::with_name("rust-target")
                 .long("rust-target")
                 .help(&rust_target_help)
@@ -766,6 +773,13 @@ where
     if let Some(lines) = matches.values_of("raw-line") {
         for line in lines {
             builder = builder.raw_line(line);
+        }
+    }
+
+    if let Some(mut values) = matches.values_of("module-raw-line") {
+        while let Some(module) = values.next() {
+            let line = values.next().unwrap();
+            builder = builder.module_raw_line(module, line);
         }
     }
 
