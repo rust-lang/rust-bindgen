@@ -494,6 +494,14 @@ impl Builder {
             output_vector.push(line.clone());
         }
 
+        for (module, lines) in &self.options.module_lines {
+            for line in lines.iter() {
+                output_vector.push("--module-raw-line".into());
+                output_vector.push(module.clone());
+                output_vector.push(line.clone());
+            }
+        }
+
         if self.options.use_core {
             output_vector.push("--use-core".into());
         }
