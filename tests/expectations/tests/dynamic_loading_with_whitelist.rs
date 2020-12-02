@@ -34,9 +34,9 @@ impl TestLib {
         P: AsRef<::std::ffi::OsStr>,
     {
         let __library = ::libloading::Library::new(path)?;
-        let foo = __library.get("foo".as_bytes()).map(|sym| *sym);
-        let baz = __library.get("baz".as_bytes()).map(|sym| *sym);
-        let bazz = __library.get("bazz".as_bytes()).map(|sym| *sym);
+        let foo = __library.get(b"foo\0").map(|sym| *sym);
+        let baz = __library.get(b"baz\0").map(|sym| *sym);
+        let bazz = __library.get(b"bazz\0").map(|sym| *sym);
         Ok(TestLib {
             __library,
             foo,
