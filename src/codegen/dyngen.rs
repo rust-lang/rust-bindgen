@@ -1,3 +1,4 @@
+use crate::codegen;
 use crate::ir::function::Abi;
 use proc_macro2::Ident;
 
@@ -133,9 +134,9 @@ impl DynamicItems {
             });
         }
 
-        let ident_str = ident.to_string();
+        let ident_str = codegen::helpers::ast_ty::cstr_expr(ident.to_string());
         self.constructor_inits.push(quote! {
-            let #ident = __library.get(#ident_str.as_bytes()).map(|sym| *sym);
+            let #ident = __library.get(#ident_str).map(|sym| *sym);
         });
 
         self.init_fields.push(quote! {

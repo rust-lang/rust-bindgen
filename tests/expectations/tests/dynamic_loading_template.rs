@@ -20,8 +20,8 @@ impl TestLib {
         P: AsRef<::std::ffi::OsStr>,
     {
         let __library = ::libloading::Library::new(path)?;
-        let foo = __library.get("foo".as_bytes()).map(|sym| *sym);
-        let foo1 = __library.get("foo1".as_bytes()).map(|sym| *sym);
+        let foo = __library.get(b"foo\0").map(|sym| *sym);
+        let foo1 = __library.get(b"foo1\0").map(|sym| *sym);
         Ok(TestLib {
             __library,
             foo,
