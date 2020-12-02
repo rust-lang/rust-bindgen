@@ -117,20 +117,6 @@ impl Default for rte_ipv4_tuple__bindgen_ty_1 {
         unsafe { ::std::mem::zeroed() }
     }
 }
-struct Box_rte_ipv4_tuple__bindgen_ty_1 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_rte_ipv4_tuple__bindgen_ty_1 {}
-impl Drop for Box_rte_ipv4_tuple__bindgen_ty_1 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[test]
 fn bindgen_test_layout_rte_ipv4_tuple() {
     assert_eq!(
@@ -301,20 +287,6 @@ impl Default for rte_ipv6_tuple__bindgen_ty_1 {
         unsafe { ::std::mem::zeroed() }
     }
 }
-struct Box_rte_ipv6_tuple__bindgen_ty_1 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_rte_ipv6_tuple__bindgen_ty_1 {}
-impl Drop for Box_rte_ipv6_tuple__bindgen_ty_1 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[test]
 fn bindgen_test_layout_rte_ipv6_tuple() {
     assert_eq!(
@@ -421,20 +393,5 @@ fn bindgen_test_layout_rte_thash_tuple() {
 impl Default for rte_thash_tuple {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
-    }
-}
-struct Box_rte_thash_tuple {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_rte_thash_tuple {}
-impl Drop for Box_rte_thash_tuple {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(48usize, 16usize)
-                    .unwrap(),
-            );
-        }
     }
 }

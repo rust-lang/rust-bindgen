@@ -692,20 +692,6 @@ impl Default for Union {
         unsafe { ::std::mem::zeroed() }
     }
 }
-struct Box_Union {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_Union {}
-impl Drop for Box_Union {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct WithUnion {

@@ -97,20 +97,6 @@ impl Default for mozilla_StyleShapeSource__bindgen_ty_1 {
         unsafe { ::std::mem::zeroed() }
     }
 }
-struct Box_mozilla_StyleShapeSource__bindgen_ty_1 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_mozilla_StyleShapeSource__bindgen_ty_1 {}
-impl Drop for Box_mozilla_StyleShapeSource__bindgen_ty_1 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
-            );
-        }
-    }
-}
 impl Default for mozilla_StyleShapeSource {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }

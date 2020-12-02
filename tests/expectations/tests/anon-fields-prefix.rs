@@ -182,17 +182,3 @@ impl Default for color {
         unsafe { ::std::mem::zeroed() }
     }
 }
-struct Box_color {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_color {}
-impl Drop for Box_color {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(3usize, 1usize).unwrap(),
-            );
-        }
-    }
-}

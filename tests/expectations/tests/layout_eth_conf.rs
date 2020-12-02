@@ -2358,20 +2358,6 @@ impl Default for rte_eth_conf__bindgen_ty_2 {
         unsafe { ::std::mem::zeroed() }
     }
 }
-struct Box_rte_eth_conf__bindgen_ty_2 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_rte_eth_conf__bindgen_ty_2 {}
-impl Drop for Box_rte_eth_conf__bindgen_ty_2 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(12usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[test]
 fn bindgen_test_layout_rte_eth_conf() {
     assert_eq!(

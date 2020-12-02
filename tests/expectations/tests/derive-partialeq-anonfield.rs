@@ -52,3 +52,17 @@ impl Default for rte_mbuf {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_rte_mbuf {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_rte_mbuf {}
+impl Drop for Box_rte_mbuf {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 64usize).unwrap(),
+            );
+        }
+    }
+}

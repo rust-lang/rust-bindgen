@@ -66,6 +66,20 @@ fn bindgen_test_layout_ZeroSizedArray() {
         )
     );
 }
+struct Box_ZeroSizedArray {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ZeroSizedArray {}
+impl Drop for Box_ZeroSizedArray {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 /// And nor should this get an `_address` field.
 #[repr(C)]
 #[derive(Debug, Default)]
@@ -98,6 +112,20 @@ fn bindgen_test_layout_ContainsZeroSizedArray() {
         )
     );
 }
+struct Box_ContainsZeroSizedArray {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ContainsZeroSizedArray {}
+impl Drop for Box_ContainsZeroSizedArray {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 /// Inheriting from ZeroSizedArray shouldn't cause an `_address` to be inserted
 /// either.
 #[repr(C)]
@@ -117,6 +145,20 @@ fn bindgen_test_layout_InheritsZeroSizedArray() {
         1usize,
         concat!("Alignment of ", stringify!(InheritsZeroSizedArray))
     );
+}
+struct Box_InheritsZeroSizedArray {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_InheritsZeroSizedArray {}
+impl Drop for Box_InheritsZeroSizedArray {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
 }
 /// And this should not get an `_address` field either.
 #[repr(C)]
@@ -150,6 +192,20 @@ fn bindgen_test_layout_DynamicallySizedArray() {
         )
     );
 }
+struct Box_DynamicallySizedArray {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_DynamicallySizedArray {}
+impl Drop for Box_DynamicallySizedArray {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 /// No `_address` field here either.
 #[repr(C)]
 #[derive(Debug, Default)]
@@ -181,4 +237,18 @@ fn bindgen_test_layout_ContainsDynamicallySizedArray() {
             stringify!(dsa)
         )
     );
+}
+struct Box_ContainsDynamicallySizedArray {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_ContainsDynamicallySizedArray {}
+impl Drop for Box_ContainsDynamicallySizedArray {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
 }
