@@ -1648,7 +1648,13 @@ impl CompInfo {
             }
         ));
 
-        let size = layout.size;
+        let size = {
+            if layout.size == 0 {
+                1 // In C/C++ zero-sized-types either are 1 byte sized or undefined behaviour.
+            } else {
+                layout.size
+            }
+        };
         let align = layout.align;
         assert!(size != 0, "alloc is undefined if size == 0");
         if let Some(destructor) = self.destructor() {
@@ -2182,7 +2188,9 @@ impl CodeGenerator for CompInfo {
             });
         }
         if let Some(layout) = layout {
-            self.create_safe_class_interface(ctx, result, ty_for_impl, layout);
+            if self.kind() == CompKind::Struct {
+                self.create_safe_class_interface(ctx, result, ty_for_impl, layout);
+            }
         }
     }
 }
