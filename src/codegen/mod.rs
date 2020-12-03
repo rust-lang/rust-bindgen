@@ -52,6 +52,7 @@ use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::VecDeque;
 use std::fmt::Write;
+use std::io::Write as IO_write;
 use std::iter;
 use std::ops;
 use std::str::FromStr;
@@ -1632,6 +1633,15 @@ impl CompInfo {
         ty_for_impl: TokenStream,
         layout: Layout
     ) {
+        if ty_for_impl.to_string().chars().nth(0) == Some('_') {
+            //Give up if the typename starts with "_", those types are weird.
+            return;
+        }
+        dbg!(&ty_for_impl);
+        let cpp_out = format!(
+            "void bindgen_destruct_{typename}({typename} *ptr){{
+                ptr->~{typename}();
+            }}\n", typename=ty_for_impl);
         let prefix = ctx.trait_prefix();
 
         let boxname = Ident::new(&format!("Box_{}", ty_for_impl), Span::call_site());
@@ -1657,29 +1667,33 @@ impl CompInfo {
         };
         let align = layout.align;
         assert!(size != 0, "alloc is undefined if size == 0");
-        if let Some(destructor) = self.destructor() {
-            let destructorname = destructor.1.get_function_name(ctx);
-            result.push(quote! {
-                impl Drop for #boxname {
-                    fn drop(&mut self) {
-                        unsafe {
-                            #destructorname(self.ptr as *mut #ty_for_impl);
-                            ::#prefix::alloc::dealloc(self.ptr as *mut u8,::#prefix::alloc::Layout::from_size_align(#size, #align).unwrap());
-                        }
+        let funcname = Ident::new(&format!("bindgen_destruct_{}", ty_for_impl), Span::call_site());
+        result.push(quote! {
+            impl Drop for #boxname {
+                fn drop(&mut self) {
+                    unsafe {
+                        #funcname(self.ptr as *mut #ty_for_impl);
+                        ::#prefix::alloc::dealloc(self.ptr as *mut u8,::#prefix::alloc::Layout::from_size_align(#size, #align).unwrap());
                     }
                 }
-            });
-        } else {
-            result.push(quote! {
-                impl Drop for #boxname {
-                    fn drop(&mut self) {
-                        unsafe {
-                            ::#prefix::alloc::dealloc(self.ptr as *mut u8,::#prefix::alloc::Layout::from_size_align(#size, #align).unwrap());
-                        }
-                    }
-                }
-            });
-        }
+            }
+        });
+
+        let out = std::process::Command::new("env")
+            //.arg("-c")
+            //.arg("echo hello")
+            .output()
+            .expect("failed to execute process");
+        //dbg!(out.stdout);
+        std::io::stdout().write_all(&out.stdout).unwrap();
+
+        let mut file: std::fs::File = std::fs::OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(format!("{}{}", std::env::var("PWD").unwrap(), "/generated.cpp"))
+        .unwrap();
+
+        file.write(cpp_out.as_bytes()).expect("unable to write");
     }
 }
 
