@@ -10,6 +10,7 @@ include!(concat!(env!("OUT_DIR"), "/bindings_2.rs"));
 
 fn main() {
 	let obj = Box_Base::new();
+	let obj = Box_Child::new();
 	// unsafe{
 	// 	deleter(obj.ptr as *mut Base);
 	// }

@@ -27,3 +27,23 @@ Base::Base() {
 // Base::~Base() {
 //     printf("Destructing Base\n");
 // }
+
+class Parent {
+public:
+	virtual ~Parent();
+};
+Parent::~Parent() {
+    printf("Destructing Parent\n");
+}
+class Child: Parent {
+public:
+	Child();
+	~Child();
+};
+Child::Child() {
+    printf("Constructing Child\n");
+}
+Child::~Child() {
+    printf("Destructing Child\n");
+}
+//int main(){}
