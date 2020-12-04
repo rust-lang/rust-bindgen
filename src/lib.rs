@@ -2104,8 +2104,10 @@ impl Bindings {
             args.push(format!(
                 "{}{}",
                 env::var("OUT_DIR").unwrap(),
-                "/../../../deps/libbindexample.so"
+                "/../../../deps/libbindgen_generated.so"
             ));
+            println!("cargo:rustc-link-lib=bindgen_generated");
+            println!("cargo:rustc-link-lib=stdc++");
 
             let mut command = std::process::Command::new("clang");
             command.args(&args);

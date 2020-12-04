@@ -4,10 +4,7 @@ use std::env;
 use std::io::Write;
 
 fn main() {
-    println!("cargo:rerun-if-changed=example.cpp");
-    println!("cargo:rustc-link-lib=bindexample");
-    println!("cargo:rustc-link-lib=stdc++");
-
+    println!("cargo:rerun-if-changed=example.cpp"); //TODO: bindgen itself should print this line
     {
         let mut file = std::fs::OpenOptions::new()
             .write(true)
