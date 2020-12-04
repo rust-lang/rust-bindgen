@@ -5,13 +5,12 @@
 #![allow(unused_variables)]
 #![allow(unused_imports)]
 
-include!(concat!(env!("OUT_DIR"), "/bindings_2.rs"));
-//include!(concat!(env!("OUT_DIR"), "/bindings_1.rs"));
+include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
 fn main() {
-	let obj = Box_Base::new();
-	let obj = Box_Child::new();
-	// unsafe{
-	// 	deleter(obj.ptr as *mut Base);
-	// }
+    let obj = Box_Base::new();
+    let obj = Box_Child::new();
+    // unsafe{
+    // 	deleter(obj.ptr as *mut Base);
+    // }
 }

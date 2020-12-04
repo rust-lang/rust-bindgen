@@ -39,7 +39,16 @@ class Child: Parent {
 public:
 	Child();
 	~Child();
+    void meth_void();
+    int meth_int();
 };
+void Child::meth_void() {
+    printf("meth_void\n");
+}
+int Child::meth_int() {
+    printf("meth_int\n");
+    return 123;
+}
 Child::Child() {
     printf("Constructing Child\n");
 }
@@ -47,3 +56,18 @@ Child::~Child() {
     printf("Destructing Child\n");
 }
 //int main(){}
+Base factory(int i) {
+    Base ret;
+    return ret;
+}
+
+// TODO: namespaces currently break the cpp wrappers
+// namespace MySpace {
+//     class SC {
+//         public:
+//         ~SC();
+//         int member();
+//     };
+//     SC::~SC(){}
+//     int SC::member(){}
+// }
