@@ -72,20 +72,6 @@ fn bindgen_test_layout_color__bindgen_ty_1() {
         )
     );
 }
-struct Box_color__bindgen_ty_1 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_color__bindgen_ty_1 {}
-impl Drop for Box_color__bindgen_ty_1 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(3usize, 1usize).unwrap(),
-            );
-        }
-    }
-}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct color__bindgen_ty_2 {
@@ -145,20 +131,6 @@ fn bindgen_test_layout_color__bindgen_ty_2() {
         )
     );
 }
-struct Box_color__bindgen_ty_2 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_color__bindgen_ty_2 {}
-impl Drop for Box_color__bindgen_ty_2 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(3usize, 1usize).unwrap(),
-            );
-        }
-    }
-}
 #[test]
 fn bindgen_test_layout_color() {
     assert_eq!(
@@ -180,19 +152,5 @@ fn bindgen_test_layout_color() {
 impl Default for color {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
-    }
-}
-struct Box_color {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_color {}
-impl Drop for Box_color {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(3usize, 1usize).unwrap(),
-            );
-        }
     }
 }

@@ -47,20 +47,6 @@ fn bindgen_test_layout_s__bindgen_ty_1_inner() {
         )
     );
 }
-struct Box_s__bindgen_ty_1_inner {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_s__bindgen_ty_1_inner {}
-impl Drop for Box_s__bindgen_ty_1_inner {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[test]
 fn bindgen_test_layout_s__bindgen_ty_1() {
     assert_eq!(
@@ -92,20 +78,6 @@ impl Default for s__bindgen_ty_1 {
         unsafe { ::std::mem::zeroed() }
     }
 }
-struct Box_s__bindgen_ty_1 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_s__bindgen_ty_1 {}
-impl Drop for Box_s__bindgen_ty_1 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[test]
 fn bindgen_test_layout_s() {
     assert_eq!(
@@ -127,19 +99,5 @@ fn bindgen_test_layout_s() {
 impl Default for s {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
-    }
-}
-struct Box_s {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_s {}
-impl Drop for Box_s {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
     }
 }

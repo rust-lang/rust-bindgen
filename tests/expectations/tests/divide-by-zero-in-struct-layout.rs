@@ -109,20 +109,6 @@ impl WithBitfield {
         __bindgen_bitfield_unit
     }
 }
-struct Box_WithBitfield {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_WithBitfield {}
-impl Drop for Box_WithBitfield {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct WithBitfieldAndAttrPacked {
@@ -137,20 +123,6 @@ impl WithBitfieldAndAttrPacked {
             u8,
         > = Default::default();
         __bindgen_bitfield_unit
-    }
-}
-struct Box_WithBitfieldAndAttrPacked {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_WithBitfieldAndAttrPacked {}
-impl Drop for Box_WithBitfieldAndAttrPacked {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(5usize, 1usize).unwrap(),
-            );
-        }
     }
 }
 #[repr(C, packed)]
@@ -168,19 +140,5 @@ impl WithBitfieldAndPacked {
             u8,
         > = Default::default();
         __bindgen_bitfield_unit
-    }
-}
-struct Box_WithBitfieldAndPacked {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_WithBitfieldAndPacked {}
-impl Drop for Box_WithBitfieldAndPacked {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(5usize, 1usize).unwrap(),
-            );
-        }
     }
 }

@@ -47,21 +47,6 @@ pub mod root {
                 )
             );
         }
-        struct Box_Bar_Baz {
-            ptr: *mut ::std::ffi::c_void,
-        }
-        impl Box_Bar_Baz {}
-        impl Drop for Box_Bar_Baz {
-            fn drop(&mut self) {
-                unsafe {
-                    ::std::alloc::dealloc(
-                        self.ptr as *mut u8,
-                        ::std::alloc::Layout::from_size_align(4usize, 4usize)
-                            .unwrap(),
-                    );
-                }
-            }
-        }
         #[test]
         fn bindgen_test_layout_Bar() {
             assert_eq!(
@@ -86,21 +71,6 @@ pub mod root {
                     stringify!(foo)
                 )
             );
-        }
-        struct Box_Bar {
-            ptr: *mut ::std::ffi::c_void,
-        }
-        impl Box_Bar {}
-        impl Drop for Box_Bar {
-            fn drop(&mut self) {
-                unsafe {
-                    ::std::alloc::dealloc(
-                        self.ptr as *mut u8,
-                        ::std::alloc::Layout::from_size_align(4usize, 4usize)
-                            .unwrap(),
-                    );
-                }
-            }
         }
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
@@ -131,21 +101,6 @@ pub mod root {
                     stringify!(baz)
                 )
             );
-        }
-        struct Box_Baz {
-            ptr: *mut ::std::ffi::c_void,
-        }
-        impl Box_Baz {}
-        impl Drop for Box_Baz {
-            fn drop(&mut self) {
-                unsafe {
-                    ::std::alloc::dealloc(
-                        self.ptr as *mut u8,
-                        ::std::alloc::Layout::from_size_align(4usize, 4usize)
-                            .unwrap(),
-                    );
-                }
-            }
         }
     }
 }

@@ -72,20 +72,6 @@ fn bindgen_test_layout_test() {
         )
     );
 }
-struct Box_test {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_test {}
-impl Drop for Box_test {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct test2 {
@@ -122,20 +108,6 @@ fn bindgen_test_layout_test2() {
             stringify!(incomplete_array)
         )
     );
-}
-struct Box_test2 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_test2 {}
-impl Drop for Box_test2 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
 }
 #[repr(C)]
 #[derive(Debug, Default)]
@@ -187,18 +159,4 @@ fn bindgen_test_layout_test3() {
             stringify!(incomplete_array)
         )
     );
-}
-struct Box_test3 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_test3 {}
-impl Drop for Box_test3 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
 }

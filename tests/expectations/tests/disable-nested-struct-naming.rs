@@ -51,20 +51,6 @@ fn bindgen_test_layout_bar4() {
         concat!("Offset of field: ", stringify!(bar4), "::", stringify!(x4))
     );
 }
-struct Box_bar4 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_bar4 {}
-impl Drop for Box_bar4 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[test]
 fn bindgen_test_layout_bar1__bindgen_ty_1__bindgen_ty_1() {
     assert_eq!(
@@ -107,20 +93,6 @@ fn bindgen_test_layout_bar1__bindgen_ty_1__bindgen_ty_1() {
         )
     );
 }
-struct Box_bar1__bindgen_ty_1__bindgen_ty_1 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_bar1__bindgen_ty_1__bindgen_ty_1 {}
-impl Drop for Box_bar1__bindgen_ty_1__bindgen_ty_1 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[test]
 fn bindgen_test_layout_bar1__bindgen_ty_1() {
     assert_eq!(
@@ -160,20 +132,6 @@ fn bindgen_test_layout_bar1__bindgen_ty_1() {
         )
     );
 }
-struct Box_bar1__bindgen_ty_1 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_bar1__bindgen_ty_1 {}
-impl Drop for Box_bar1__bindgen_ty_1 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(12usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[test]
 fn bindgen_test_layout_bar1() {
     assert_eq!(
@@ -197,20 +155,6 @@ fn bindgen_test_layout_bar1() {
         concat!("Offset of field: ", stringify!(bar1), "::", stringify!(b2))
     );
 }
-struct Box_bar1 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_bar1 {}
-impl Drop for Box_bar1 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(16usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[test]
 fn bindgen_test_layout_foo() {
     assert_eq!(
@@ -228,20 +172,6 @@ fn bindgen_test_layout_foo() {
         0usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(b1))
     );
-}
-struct Box_foo {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_foo {}
-impl Drop for Box_foo {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(16usize, 4usize).unwrap(),
-            );
-        }
-    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -276,20 +206,6 @@ fn bindgen_test_layout_baz() {
         concat!("Offset of field: ", stringify!(baz), "::", stringify!(x))
     );
 }
-struct Box_baz {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_baz {}
-impl Drop for Box_baz {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[test]
 fn bindgen_test_layout__bindgen_ty_1__bindgen_ty_1() {
     assert_eq!(
@@ -316,20 +232,6 @@ fn bindgen_test_layout__bindgen_ty_1__bindgen_ty_1() {
         )
     );
 }
-struct Box__bindgen_ty_1__bindgen_ty_1 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box__bindgen_ty_1__bindgen_ty_1 {}
-impl Drop for Box__bindgen_ty_1__bindgen_ty_1 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[test]
 fn bindgen_test_layout__bindgen_ty_1() {
     assert_eq!(
@@ -354,20 +256,6 @@ fn bindgen_test_layout__bindgen_ty_1() {
             stringify!(anon2)
         )
     );
-}
-struct Box__bindgen_ty_1 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box__bindgen_ty_1 {}
-impl Drop for Box__bindgen_ty_1 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
 }
 extern "C" {
     pub static mut anon1: _bindgen_ty_1;

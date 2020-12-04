@@ -41,20 +41,6 @@ impl Default for ConstPtrMutObj {
         unsafe { ::std::mem::zeroed() }
     }
 }
-struct Box_ConstPtrMutObj {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_ConstPtrMutObj {}
-impl Drop for Box_ConstPtrMutObj {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
-            );
-        }
-    }
-}
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct MutPtrMutObj {
@@ -88,20 +74,6 @@ fn bindgen_test_layout_MutPtrMutObj() {
 impl Default for MutPtrMutObj {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
-    }
-}
-struct Box_MutPtrMutObj {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_MutPtrMutObj {}
-impl Drop for Box_MutPtrMutObj {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
-            );
-        }
     }
 }
 #[repr(C)]
@@ -139,20 +111,6 @@ impl Default for MutPtrConstObj {
         unsafe { ::std::mem::zeroed() }
     }
 }
-struct Box_MutPtrConstObj {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_MutPtrConstObj {}
-impl Drop for Box_MutPtrConstObj {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
-            );
-        }
-    }
-}
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct ConstPtrConstObj {
@@ -187,19 +145,5 @@ fn bindgen_test_layout_ConstPtrConstObj() {
 impl Default for ConstPtrConstObj {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
-    }
-}
-struct Box_ConstPtrConstObj {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_ConstPtrConstObj {}
-impl Drop for Box_ConstPtrConstObj {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
-            );
-        }
     }
 }

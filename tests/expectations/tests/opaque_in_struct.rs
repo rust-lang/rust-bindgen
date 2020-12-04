@@ -25,20 +25,6 @@ fn bindgen_test_layout_opaque() {
         concat!("Alignment of ", stringify!(opaque))
     );
 }
-struct Box_opaque {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_opaque {}
-impl Drop for Box_opaque {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct container {
@@ -68,18 +54,4 @@ fn bindgen_test_layout_container() {
             stringify!(contained)
         )
     );
-}
-struct Box_container {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_container {}
-impl Drop for Box_container {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
 }

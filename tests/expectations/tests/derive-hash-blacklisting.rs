@@ -48,20 +48,6 @@ impl Default for WhitelistedOne {
         unsafe { ::std::mem::zeroed() }
     }
 }
-struct Box_WhitelistedOne {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_WhitelistedOne {}
-impl Drop for Box_WhitelistedOne {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 /// This can't derive(Hash/Eq) even if it didn't contain a blacklisted type.
 #[repr(C)]
 pub struct WhitelistedTwo {
@@ -95,19 +81,5 @@ fn bindgen_test_layout_WhitelistedTwo() {
 impl Default for WhitelistedTwo {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
-    }
-}
-struct Box_WhitelistedTwo {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_WhitelistedTwo {}
-impl Drop for Box_WhitelistedTwo {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
     }
 }

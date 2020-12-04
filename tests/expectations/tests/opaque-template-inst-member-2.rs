@@ -58,20 +58,6 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
         )
     );
 }
-struct Box_ContainsOpaqueTemplate {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_ContainsOpaqueTemplate {}
-impl Drop for Box_ContainsOpaqueTemplate {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 /// Should also derive Debug/Hash/PartialEq.
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -108,19 +94,5 @@ fn bindgen_test_layout_InheritsOpaqueTemplate() {
 impl Default for InheritsOpaqueTemplate {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
-    }
-}
-struct Box_InheritsOpaqueTemplate {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_InheritsOpaqueTemplate {}
-impl Drop for Box_InheritsOpaqueTemplate {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(16usize, 8usize).unwrap(),
-            );
-        }
     }
 }

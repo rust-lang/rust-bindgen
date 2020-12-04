@@ -314,20 +314,6 @@ impl A {
         __bindgen_bitfield_unit
     }
 }
-struct Box_A {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_A {}
-impl Drop for Box_A {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
-    }
-}
 #[repr(C)]
 #[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
@@ -392,20 +378,6 @@ impl B {
             bar as u64
         });
         __bindgen_bitfield_unit
-    }
-}
-struct Box_B {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_B {}
-impl Drop for Box_B {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
-            );
-        }
     }
 }
 #[repr(C)]
@@ -483,20 +455,6 @@ impl C {
             b2 as u64
         });
         __bindgen_bitfield_unit
-    }
-}
-struct Box_C {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_C {}
-impl Drop for Box_C {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(8usize, 4usize).unwrap(),
-            );
-        }
     }
 }
 #[repr(C)]
@@ -600,20 +558,6 @@ impl Date1 {
             nYear as u64
         });
         __bindgen_bitfield_unit
-    }
-}
-struct Box_Date1 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_Date1 {}
-impl Drop for Box_Date1 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 2usize).unwrap(),
-            );
-        }
     }
 }
 #[repr(C)]
@@ -736,20 +680,6 @@ impl Date2 {
         __bindgen_bitfield_unit
     }
 }
-struct Box_Date2 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_Date2 {}
-impl Drop for Box_Date2 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 2usize).unwrap(),
-            );
-        }
-    }
-}
 #[repr(C)]
 #[repr(align(2))]
 #[derive(Debug, Default, Copy, Clone)]
@@ -861,19 +791,5 @@ impl Date3 {
             nYear as u64
         });
         __bindgen_bitfield_unit
-    }
-}
-struct Box_Date3 {
-    ptr: *mut ::std::ffi::c_void,
-}
-impl Box_Date3 {}
-impl Drop for Box_Date3 {
-    fn drop(&mut self) {
-        unsafe {
-            ::std::alloc::dealloc(
-                self.ptr as *mut u8,
-                ::std::alloc::Layout::from_size_align(4usize, 2usize).unwrap(),
-            );
-        }
     }
 }
