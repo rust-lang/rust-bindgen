@@ -187,7 +187,10 @@ item_id_newtype! {
 }
 
 impl FunctionId {
-    pub fn get_function_name(&self, ctx: &BindgenContext) -> proc_macro2::Ident {
+    pub fn get_function_name(
+        &self,
+        ctx: &BindgenContext,
+    ) -> proc_macro2::Ident {
         let function_item = ctx.resolve_item(self);
         ctx.rust_ident(function_item.canonical_name(ctx))
     }
@@ -310,6 +313,13 @@ enum TypeKey {
     Declaration(Cursor),
 }
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+pub enum GeneratingStage {
+    NoWrappers,
+    GeneratingCpp,
+    ReadingGeneratedCpp,
+}
+
 /// A context used during parsing and generation of structs.
 #[derive(Debug)]
 pub struct BindgenContext {
@@ -379,6 +389,8 @@ pub struct BindgenContext {
 
     /// The options given by the user via cli or other medium.
     options: BindgenOptions,
+
+    generating_stage: GeneratingStage,
 
     /// Whether a bindgen complex was generated
     generated_bindgen_complex: Cell<bool>,
@@ -516,7 +528,10 @@ impl<'ctx> WhitelistedItemsTraversal<'ctx> {
 
 impl BindgenContext {
     /// Construct the context for the given `options`.
-    pub(crate) fn new(options: BindgenOptions) -> Self {
+    pub(crate) fn new(
+        options: BindgenOptions,
+        generating_stage: GeneratingStage,
+    ) -> Self {
         // TODO(emilio): Use the CXTargetInfo here when available.
         //
         // see: https://reviews.llvm.org/D32389
@@ -565,6 +580,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             translation_unit,
             target_info,
             options,
+            generating_stage,
             generated_bindgen_complex: Cell::new(false),
             whitelisted: None,
             codegen_items: None,
@@ -2089,6 +2105,11 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Get the options used to configure this bindgen context.
     pub(crate) fn options(&self) -> &BindgenOptions {
         &self.options
+    }
+
+    /// Get the current generating stage
+    pub(crate) fn generating_stage(&self) -> GeneratingStage {
+        self.generating_stage
     }
 
     /// Tokenizes a namespace cursor in order to get the name and kind of the

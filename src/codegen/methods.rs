@@ -1,16 +1,16 @@
-use std::str::FromStr;
-use proc_macro2::TokenStream;
-use crate::HashMap;
 use crate::codegen::helpers;
 use crate::codegen::helpers::attributes;
-use crate::codegen::{CodegenResult, CodeGenerator, ToRustTyOrOpaque};
 use crate::codegen::utils;
+use crate::codegen::{CodegenResult, ToRustTyOrOpaque};
 use crate::ir::comp::*;
-use crate::ir::ty::TypeKind;
-use crate::ir::layout::Layout;
 use crate::ir::context::BindgenContext;
-use crate::ir::item::ItemCanonicalName;
 use crate::ir::function::{Abi, Function};
+use crate::ir::item::ItemCanonicalName;
+use crate::ir::layout::Layout;
+use crate::ir::ty::TypeKind;
+use crate::HashMap;
+use proc_macro2::TokenStream;
+use std::str::FromStr;
 
 /// This function takes a TokenStream, removes all "const" and replaces all "*"
 /// with "&".
@@ -212,7 +212,11 @@ impl Method {
             }
         }
     }
-    pub fn name_this_method(&self, function: &Function, method_names: &mut HashMap<String, usize>) -> String {
+    pub fn name_this_method(
+        &self,
+        function: &Function,
+        method_names: &mut HashMap<String, usize>,
+    ) -> String {
         let mut name = match self.kind() {
             MethodKind::Constructor => "new".into(),
             MethodKind::Destructor => "destruct".into(),
@@ -279,7 +283,7 @@ impl MethodCodegen for Method {
             // We shouldn't emit a method declaration if the function is blacklisted
             return;
         }
-        function_item.codegen(ctx, result, &());
+        function_item.codegen(ctx, result);
 
         let function = function_item.expect_function();
         let signature_item = ctx.resolve_item(function.signature());
@@ -399,9 +403,7 @@ impl MethodCodegen for Method {
                 }
             })
         } else if self.is_constructor() && safe_class_interface {
-            stmts.push(quote!(
-                ret
-            ));
+            stmts.push(quote!(ret));
         }
 
         let block = quote! {
@@ -446,7 +448,7 @@ impl CompInfo {
         ty_for_impl: &TokenStream,
         layout: Option<Layout>,
         methods: &mut Vec<proc_macro2::TokenStream>,
-        safe_class_interface: bool
+        safe_class_interface: bool,
     ) {
         let mut method_names = Default::default();
         if ctx.options().codegen_config.methods() {

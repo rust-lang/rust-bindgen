@@ -77,7 +77,7 @@ use crate::features::RustFeatures;
 pub use crate::features::{
     RustTarget, LATEST_STABLE_RUST, RUST_TARGET_STRINGS,
 };
-use crate::ir::context::{BindgenContext, ItemId};
+use crate::ir::context::{BindgenContext, GeneratingStage, ItemId};
 use crate::ir::item::Item;
 use crate::parse::{ClangItemParser, ParseError};
 use crate::regex_set::RegexSet;
@@ -599,6 +599,12 @@ impl Builder {
     pub fn emit_ir_graphviz<T: Into<String>>(mut self, path: T) -> Builder {
         let path = path.into();
         self.options.emit_ir_graphviz = Some(path);
+        self
+    }
+
+    /// Generate wrappers to safely use C++ code. See https://todo
+    pub fn gen_safe_wrappers(mut self, gen_safe_wrappers: bool) -> Builder {
+        self.options.gen_safe_wrappers = gen_safe_wrappers;
         self
     }
 
@@ -1556,6 +1562,9 @@ struct BindgenOptions {
     /// Output graphviz dot file.
     emit_ir_graphviz: Option<String>,
 
+    /// Generate safe C++ wrappers
+    gen_safe_wrappers: bool,
+
     /// True if we should emulate C++ namespaces with Rust modules in the
     /// generated bindings.
     enable_cxx_namespaces: bool,
@@ -1782,6 +1791,101 @@ impl BindgenOptions {
         }
     }
 
+    /// Returns a clone of &self, but sets input_unsaved_files = std::vec::Vec::new() and parse_callbacks = None because those not cloneable
+    fn partial_clone(&self) -> Self {
+        Self {
+            rust_target: self.rust_target.clone(),
+            rust_features: self.rust_features.clone(),
+            blacklisted_types: self.blacklisted_types.clone(),
+            blacklisted_functions: self.blacklisted_functions.clone(),
+            blacklisted_items: self.blacklisted_items.clone(),
+            opaque_types: self.opaque_types.clone(),
+            rustfmt_path: self.rustfmt_path.clone(),
+            whitelisted_types: self.whitelisted_types.clone(),
+            whitelisted_functions: self.whitelisted_functions.clone(),
+            whitelisted_vars: self.whitelisted_vars.clone(),
+            default_enum_style: self.default_enum_style.clone(),
+            bitfield_enums: self.bitfield_enums.clone(),
+            newtype_enums: self.newtype_enums.clone(),
+            rustified_enums: self.rustified_enums.clone(),
+            rustified_non_exhaustive_enums: self
+                .rustified_non_exhaustive_enums
+                .clone(),
+            constified_enums: self.constified_enums.clone(),
+            constified_enum_modules: self.constified_enum_modules.clone(),
+            default_macro_constant_type: self
+                .default_macro_constant_type
+                .clone(),
+            default_alias_style: self.default_alias_style.clone(),
+            type_alias: self.type_alias.clone(),
+            new_type_alias: self.new_type_alias.clone(),
+            new_type_alias_deref: self.new_type_alias_deref.clone(),
+            builtins: self.builtins.clone(),
+            emit_ast: self.emit_ast.clone(),
+            emit_ir: self.emit_ir.clone(),
+            emit_ir_graphviz: self.emit_ir_graphviz.clone(),
+            gen_safe_wrappers: self.gen_safe_wrappers.clone(),
+            layout_tests: self.layout_tests.clone(),
+            impl_debug: self.impl_debug.clone(),
+            impl_partialeq: self.impl_partialeq.clone(),
+            derive_copy: self.derive_copy.clone(),
+            derive_debug: self.derive_debug.clone(),
+            derive_default: self.derive_default.clone(),
+            derive_hash: self.derive_hash.clone(),
+            derive_partialord: self.derive_partialord.clone(),
+            derive_ord: self.derive_ord.clone(),
+            derive_partialeq: self.derive_partialeq.clone(),
+            derive_eq: self.derive_eq.clone(),
+            enable_cxx_namespaces: self.enable_cxx_namespaces.clone(),
+            enable_function_attribute_detection: self
+                .enable_function_attribute_detection
+                .clone(),
+            disable_name_namespacing: self.disable_name_namespacing.clone(),
+            disable_nested_struct_naming: self
+                .disable_nested_struct_naming
+                .clone(),
+            disable_header_comment: self.disable_header_comment.clone(),
+            use_core: self.use_core.clone(),
+            ctypes_prefix: self.ctypes_prefix.clone(),
+            anon_fields_prefix: self.anon_fields_prefix.clone(),
+            namespaced_constants: self.namespaced_constants.clone(),
+            msvc_mangling: self.msvc_mangling.clone(),
+            convert_floats: self.convert_floats.clone(),
+            raw_lines: self.raw_lines.clone(),
+            module_lines: self.module_lines.clone(),
+            clang_args: self.clang_args.clone(),
+            input_header: self.input_header.clone(),
+            input_unsaved_files: std::vec::Vec::new(), // self.input_unsaved_files.clone() would not work
+            parse_callbacks: None, // self.parse_callbacks.clone() would not work
+            codegen_config: self.codegen_config.clone(),
+            conservative_inline_namespaces: self
+                .conservative_inline_namespaces
+                .clone(),
+            generate_comments: self.generate_comments.clone(),
+            generate_inline_functions: self.generate_inline_functions.clone(),
+            whitelist_recursively: self.whitelist_recursively.clone(),
+            generate_block: self.generate_block.clone(),
+            objc_extern_crate: self.objc_extern_crate.clone(),
+            block_extern_crate: self.block_extern_crate.clone(),
+            enable_mangling: self.enable_mangling.clone(),
+            detect_include_paths: self.detect_include_paths.clone(),
+            prepend_enum_name: self.prepend_enum_name.clone(),
+            time_phases: self.time_phases.clone(),
+            record_matches: self.record_matches.clone(),
+            rustfmt_bindings: self.rustfmt_bindings.clone(),
+            size_t_is_usize: self.size_t_is_usize.clone(),
+            rustfmt_configuration_file: self.rustfmt_configuration_file.clone(),
+            no_partialeq_types: self.no_partialeq_types.clone(),
+            no_copy_types: self.no_copy_types.clone(),
+            no_debug_types: self.no_debug_types.clone(),
+            no_hash_types: self.no_hash_types.clone(),
+            array_pointers_in_arguments: self
+                .array_pointers_in_arguments
+                .clone(),
+            wasm_import_module_name: self.wasm_import_module_name.clone(),
+        }
+    }
+
     /// Update rust target version
     pub fn set_rust_target(&mut self, rust_target: RustTarget) {
         self.rust_target = rust_target;
@@ -1827,6 +1931,7 @@ impl Default for BindgenOptions {
             emit_ast: false,
             emit_ir: false,
             emit_ir_graphviz: None,
+            gen_safe_wrappers: false,
             layout_tests: true,
             impl_debug: false,
             impl_partialeq: false,
@@ -1912,6 +2017,7 @@ fn ensure_libclang_is_loaded() {}
 pub struct Bindings {
     options: BindgenOptions,
     module: proc_macro2::TokenStream,
+    cpp_out: Option<String>,
 }
 
 pub(crate) const HOST_TARGET: &'static str =
@@ -1959,16 +2065,76 @@ impl Bindings {
     pub(crate) fn generate(
         mut options: BindgenOptions,
     ) -> Result<Bindings, ()> {
+        let (effective_target, is_host_build) =
+            Bindings::parse_config(&mut options)?;
+        if options.gen_safe_wrappers {
+            // Possible Performance improvements: We are running generate_bindings twice in a slightly different manner. Some parts of what generate_bindings does is identical in the first and second run. Not doing these parts twice would greatly improve bindgens performance.
+
+            let gen_cpp_path =
+                format!("{}/generated.cpp", std::env::var("OUT_DIR").unwrap(),);
+            let mut options_copy = options.partial_clone();
+            let bindings = Bindings::generate_bindings(
+                options,
+                effective_target.clone(),
+                is_host_build,
+                GeneratingStage::GeneratingCpp,
+            )?;
+            let mut file: std::fs::File = std::fs::OpenOptions::new()
+                .write(true)
+                .create(true)
+                .truncate(true)
+                .open(&gen_cpp_path)
+                .unwrap();
+            let absolute_path = Path::new(&std::env::var("PWD").unwrap())
+                .join(options_copy.input_header.unwrap());
+            file.write(
+                format!("#include \"{}\"\n", absolute_path.to_str().unwrap())
+                    .as_bytes(),
+            )
+            .expect("unable to write");
+            file.write(bindings.cpp_out.unwrap().as_bytes())
+                .expect("unable to write");
+            drop(file);
+
+            let mut args = options_copy.clang_args.clone();
+            args.push(gen_cpp_path.clone());
+            args.push("-shared".to_string());
+            args.push("-fPIC".to_string());
+            args.push("-o".to_string());
+            args.push(format!(
+                "{}{}",
+                env::var("OUT_DIR").unwrap(),
+                "/../../../deps/libbindexample.so"
+            ));
+
+            let mut command = std::process::Command::new("clang");
+            command.args(&args);
+            let status = command.status().expect(&format!(
+                "We are unable start the compiler using the command {:?}",
+                command
+            ));
+            assert!(status.success(), format!("We are unable to compile our generated code using the command {:?}", command));
+
+            options_copy.input_header = Some(gen_cpp_path);
+            Bindings::generate_bindings(
+                options_copy,
+                effective_target,
+                is_host_build,
+                GeneratingStage::ReadingGeneratedCpp,
+            )
+        } else {
+            Bindings::generate_bindings(
+                options,
+                effective_target,
+                is_host_build,
+                GeneratingStage::NoWrappers,
+            )
+        }
+    }
+    fn parse_config(
+        options: &mut BindgenOptions,
+    ) -> Result<(String, bool), ()> {
         ensure_libclang_is_loaded();
-
-        #[cfg(feature = "runtime")]
-        debug!(
-            "Generating bindings, libclang at {}",
-            clang_sys::get_library().unwrap().path().display()
-        );
-        #[cfg(not(feature = "runtime"))]
-        debug!("Generating bindings, libclang linked");
-
         options.build();
 
         let (effective_target, explicit_target) =
@@ -2060,7 +2226,23 @@ impl Bindings {
             }
         }
 
-        detect_include_paths(&mut options);
+        detect_include_paths(options);
+
+        Ok((effective_target, is_host_build))
+    }
+    fn generate_bindings(
+        mut options: BindgenOptions,
+        effective_target: String,
+        is_host_build: bool,
+        generating_stage: GeneratingStage,
+    ) -> Result<Bindings, ()> {
+        #[cfg(feature = "runtime")]
+        debug!(
+            "Generating bindings, libclang at {}",
+            clang_sys::get_library().unwrap().path().display()
+        );
+        #[cfg(not(feature = "runtime"))]
+        debug!("Generating bindings, libclang linked");
 
         #[cfg(unix)]
         fn can_read(perms: &std::fs::Permissions) -> bool {
@@ -2100,7 +2282,7 @@ impl Bindings {
         debug!("Fixed-up options: {:?}", options);
 
         let time_phases = options.time_phases;
-        let mut context = BindgenContext::new(options);
+        let mut context = BindgenContext::new(options, generating_stage);
 
         if is_host_build {
             debug_assert_eq!(
@@ -2117,13 +2299,14 @@ impl Bindings {
             parse(&mut context)?;
         }
 
-        let (items, options) = codegen::codegen(context);
+        let ((items, cpp_out), options) = codegen::codegen(context);
 
         Ok(Bindings {
             options,
             module: quote! {
                 #( #items )*
             },
+            cpp_out,
         })
     }
 

@@ -1332,9 +1332,7 @@ impl ClangItemParser for Item {
                     Ok(ParseResult::AlreadyResolved(id)) => {
                         return Ok(id);
                     }
-                    Err(ParseError::Recurse) => {
-                        return Err(ParseError::Recurse)
-                    }
+                    Err(ParseError::Recurse) => return Err(ParseError::Recurse),
                     Err(ParseError::Continue) => {}
                 }
             };

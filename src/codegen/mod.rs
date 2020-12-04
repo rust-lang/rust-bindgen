@@ -1,3 +1,4 @@
+mod cpp_wrapper;
 mod error;
 mod helpers;
 mod impl_debug;
@@ -21,9 +22,9 @@ use crate::ir::annotations::FieldAccessorKind;
 use crate::ir::comment;
 use crate::ir::comp::{
     Base, Bitfield, BitfieldUnit, CompInfo, CompKind, Field, FieldData,
-    FieldMethods, Method,
+    FieldMethods, Method, MethodKind,
 };
-use crate::ir::context::{BindgenContext, ItemId};
+use crate::ir::context::{BindgenContext, ItemId, GeneratingStage};
 use crate::ir::derive::{
     CanDerive, CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveEq,
     CanDeriveHash, CanDeriveOrd, CanDerivePartialEq, CanDerivePartialOrd,
@@ -42,6 +43,7 @@ use crate::ir::template::{
 };
 use crate::ir::ty::{Type, TypeKind};
 use crate::ir::var::Var;
+use crate::codegen::cpp_wrapper::cpp_function_wrapper;
 
 use proc_macro2::{self, Ident, Span, TokenStream};
 use quote::TokenStreamExt;
@@ -52,7 +54,6 @@ use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::VecDeque;
 use std::fmt::Write;
-use std::io::Write as IO_write;
 use std::iter;
 use std::ops;
 use std::str::FromStr;
@@ -230,10 +231,13 @@ pub struct CodegenResult<'a> {
     /// function name to the number of overloads we have already codegen'd for
     /// that name. This lets us give each overload a unique suffix.
     overload_counters: HashMap<String, u32>,
+
+    /// Generated C++ source code of wrappers
+    cpp_out: Option<String>
 }
 
 impl<'a> CodegenResult<'a> {
-    fn new(codegen_id: &'a Cell<usize>) -> Self {
+    fn new(codegen_id: &'a Cell<usize>, cpp_out: bool) -> Self {
         CodegenResult {
             items: vec![],
             saw_bindgen_union: false,
@@ -246,6 +250,13 @@ impl<'a> CodegenResult<'a> {
             functions_seen: Default::default(),
             vars_seen: Default::default(),
             overload_counters: Default::default(),
+            cpp_out: {
+                if cpp_out {
+                    Some(String::new())
+                } else {
+                    None
+                }
+            },
         }
     }
 
@@ -307,7 +318,7 @@ impl<'a> CodegenResult<'a> {
     where
         F: FnOnce(&mut Self),
     {
-        let mut new = Self::new(self.codegen_id);
+        let mut new = Self::new(self.codegen_id, !(self.cpp_out == None));
 
         cb(&mut new);
 
@@ -424,14 +435,11 @@ trait CodeGenerator {
     );
 }
 
-impl CodeGenerator for Item {
-    type Extra = ();
-
+impl Item {
     fn codegen<'a>(
         &self,
         ctx: &BindgenContext,
         result: &mut CodegenResult<'a>,
-        _extra: &(),
     ) {
         if !self.is_enabled_for_codegen(ctx) {
             return;
@@ -473,9 +481,7 @@ impl CodeGenerator for Item {
     }
 }
 
-impl CodeGenerator for Module {
-    type Extra = Item;
-
+impl Module {
     fn codegen<'a>(
         &self,
         ctx: &BindgenContext,
@@ -489,7 +495,7 @@ impl CodeGenerator for Module {
             for child in self.children() {
                 if ctx.codegen_items().contains(child) {
                     *found_any = true;
-                    ctx.resolve_item(*child).codegen(ctx, result, &());
+                    ctx.resolve_item(*child).codegen(ctx, result);
                 }
             }
 
@@ -690,9 +696,7 @@ impl CodeGenerator for Var {
     }
 }
 
-impl CodeGenerator for Type {
-    type Extra = Item;
-
+impl Type {
     fn codegen<'a>(
         &self,
         ctx: &BindgenContext,
@@ -1631,27 +1635,30 @@ impl CompInfo {
         ctx: &BindgenContext,
         result: &mut CodegenResult<'a>,
         ty_for_impl: TokenStream,
-        layout: Layout
+        layout: Layout,
     ) {
         if ty_for_impl.to_string().chars().nth(0) == Some('_') {
             //Give up if the typename starts with "_", those types are weird.
             return;
         }
-        dbg!(&ty_for_impl);
-        let cpp_out = format!(
-            "void bindgen_destruct_{typename}({typename} *ptr){{
-                ptr->~{typename}();
-            }}\n", typename=ty_for_impl);
         let prefix = ctx.trait_prefix();
 
-        let boxname = Ident::new(&format!("Box_{}", ty_for_impl), Span::call_site());
+        let boxname =
+            Ident::new(&format!("Box_{}", ty_for_impl), Span::call_site());
         result.push(quote!(
             struct #boxname {
                 ptr: *mut ::#prefix::ffi::c_void
             }
         ));
         let mut methods: Vec<proc_macro2::TokenStream> = vec![];
-        self.codegen_methods(ctx, result, &ty_for_impl, Some(layout), &mut methods, true);
+        self.codegen_methods(
+            ctx,
+            result,
+            &ty_for_impl,
+            Some(layout),
+            &mut methods,
+            true,
+        );
         result.push(quote! (
             impl #boxname {
                 #( #methods )*
@@ -1667,7 +1674,10 @@ impl CompInfo {
         };
         let align = layout.align;
         assert!(size != 0, "alloc is undefined if size == 0");
-        let funcname = Ident::new(&format!("bindgen_destruct_{}", ty_for_impl), Span::call_site());
+        let funcname = Ident::new(
+            &format!("bindgen_destruct_{}", ty_for_impl),
+            Span::call_site(),
+        );
         result.push(quote! {
             impl Drop for #boxname {
                 fn drop(&mut self) {
@@ -1678,28 +1688,10 @@ impl CompInfo {
                 }
             }
         });
-
-        let out = std::process::Command::new("env")
-            //.arg("-c")
-            //.arg("echo hello")
-            .output()
-            .expect("failed to execute process");
-        //dbg!(out.stdout);
-        std::io::stdout().write_all(&out.stdout).unwrap();
-
-        let mut file: std::fs::File = std::fs::OpenOptions::new()
-        .write(true)
-        .append(true)
-        .open(format!("{}{}", std::env::var("PWD").unwrap(), "/generated.cpp"))
-        .unwrap();
-
-        file.write(cpp_out.as_bytes()).expect("unable to write");
     }
 }
 
-impl CodeGenerator for CompInfo {
-    type Extra = Item;
-
+impl CompInfo {
     fn codegen<'a>(
         &self,
         ctx: &BindgenContext,
@@ -2019,7 +2011,7 @@ impl CodeGenerator for CompInfo {
         for ty in self.inner_types() {
             let child_item = ctx.resolve_item(*ty);
             // assert_eq!(child_item.parent_id(), item.id());
-            child_item.codegen(ctx, result, &());
+            child_item.codegen(ctx, result);
         }
 
         // NOTE: Some unexposed attributes (like alignment attributes) may
@@ -2041,7 +2033,7 @@ impl CodeGenerator for CompInfo {
         if all_template_params.is_empty() {
             if !is_opaque {
                 for var in self.inner_vars() {
-                    ctx.resolve_item(*var).codegen(ctx, result, &());
+                    ctx.resolve_item(*var).codegen(ctx, result);
                 }
             }
 
@@ -2132,7 +2124,14 @@ impl CodeGenerator for CompInfo {
                 }
             }
 
-            self.codegen_methods(ctx, result, &ty_for_impl, layout, &mut methods, false);
+            self.codegen_methods(
+                ctx,
+                result,
+                &ty_for_impl,
+                layout,
+                &mut methods,
+                false,
+            );
         }
 
         if needs_clone_impl {
@@ -2203,7 +2202,39 @@ impl CodeGenerator for CompInfo {
         }
         if let Some(layout) = layout {
             if self.kind() == CompKind::Struct {
-                self.create_safe_class_interface(ctx, result, ty_for_impl, layout);
+                if ctx.generating_stage() == GeneratingStage::GeneratingCpp && ctx.options().codegen_config.methods() && !ty_for_impl.to_string().starts_with("__") {
+                    result.cpp_out.as_mut().unwrap().push_str(&format!(
+                        "void bindgen_destruct_{typename}({typename} *ptr){{
+                            ptr->~{typename}();
+                        }}\n", typename=ty_for_impl));
+                    for method in self.methods() {
+                        assert!(method.kind() != MethodKind::Constructor);
+                        let function_item = ctx.resolve_item(method.signature());
+                        let function = function_item.expect_function();
+                        let signature_item = ctx.resolve_item(function.signature());
+                        let signature = match *signature_item.expect_type().kind() {
+                            TypeKind::Function(ref sig) => sig,
+                            _ => panic!("How in the world?"),
+                        };
+                        if let Some(ref mut cpp_out) = result.cpp_out {
+                            cpp_function_wrapper(
+                                function.name(),
+                                ctx,
+                                Some(item),
+                                signature,
+                                &function_item.canonical_name(ctx),
+                                cpp_out,
+                            );
+                        }
+                    }
+                } else if ctx.generating_stage() == GeneratingStage::ReadingGeneratedCpp {
+                    self.create_safe_class_interface(
+                        ctx,
+                        result,
+                        ty_for_impl,
+                        layout,
+                    );
+                }
             }
         }
     }
@@ -3518,9 +3549,7 @@ impl TryToRustTy for FunctionSig {
     }
 }
 
-impl CodeGenerator for Function {
-    type Extra = Item;
-
+impl Function {
     fn codegen<'a>(
         &self,
         ctx: &BindgenContext,
@@ -3577,6 +3606,17 @@ impl CodeGenerator for Function {
             TypeKind::Function(ref sig) => sig,
             _ => panic!("Signature kind is not a Function: {:?}", signature),
         };
+
+        if ctx.generating_stage() == GeneratingStage::GeneratingCpp {
+            cpp_wrapper::cpp_function_wrapper(
+                self.name(),
+                ctx,
+                None,
+                signature,
+                &canonical_name,
+                result.cpp_out.as_mut().unwrap(),
+            );
+        }
 
         let args = utils::fnsig_arguments(ctx, signature);
         let ret = utils::fnsig_return_ty(ctx, signature);
@@ -3900,13 +3940,10 @@ impl CodeGenerator for ObjCInterface {
 
 pub(crate) fn codegen(
     context: BindgenContext,
-) -> (Vec<proc_macro2::TokenStream>, BindgenOptions) {
+) -> ((Vec<proc_macro2::TokenStream>, Option<String>), BindgenOptions) {
     context.gen(|context| {
-        let _t = context.timer("codegen");
-        let counter = Cell::new(0);
-        let mut result = CodegenResult::new(&counter);
-
         debug!("codegen: {:?}", context.options());
+        let _t = context.timer("codegen");
 
         if context.options().emit_ir {
             let codegen_items = context.codegen_items();
@@ -3927,13 +3964,20 @@ pub(crate) fn codegen(
             }
         }
 
+
+        let counter = Cell::new(0);
+        // let mut cpp_out = String::new();
+        // let cpp_out = if context.options().safe_wrappers {
+        //     Some(&mut cpp_out)
+        // } else {
+        //     None
+        // };
+        let mut result = CodegenResult::new(&counter, context.generating_stage() == GeneratingStage::GeneratingCpp);
         context.resolve_item(context.root_module()).codegen(
             context,
             &mut result,
-            &(),
         );
-
-        result.items
+        (result.items, result.cpp_out)
     })
 }
 
