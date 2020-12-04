@@ -159,6 +159,20 @@ impl Clone for _bindgen_ty_1 {
         *self
     }
 }
+struct Box__bindgen_ty_1 {
+    ptr: *mut ::core::ffi::c_void,
+}
+impl Box__bindgen_ty_1 {}
+impl Drop for Box__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::core::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::core::alloc::Layout::from_size_align(8usize, 8usize).unwrap(),
+            );
+        }
+    }
+}
 extern "C" {
     pub static mut bazz: _bindgen_ty_1;
 }

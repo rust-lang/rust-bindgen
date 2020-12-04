@@ -107,5 +107,20 @@ pub mod root {
                 *self
             }
         }
+        struct Box_Bar {
+            ptr: *mut ::std::ffi::c_void,
+        }
+        impl Box_Bar {}
+        impl Drop for Box_Bar {
+            fn drop(&mut self) {
+                unsafe {
+                    ::std::alloc::dealloc(
+                        self.ptr as *mut u8,
+                        ::std::alloc::Layout::from_size_align(4usize, 4usize)
+                            .unwrap(),
+                    );
+                }
+            }
+        }
     }
 }

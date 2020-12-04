@@ -745,6 +745,20 @@ impl Clone for Union {
         *self
     }
 }
+struct Box_Union {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_Union {}
+impl Drop for Box_Union {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(4usize, 4usize).unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct WithUnion {

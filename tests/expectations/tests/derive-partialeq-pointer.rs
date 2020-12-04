@@ -76,6 +76,20 @@ impl Default for c__bindgen_ty_1 {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_c__bindgen_ty_1 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_c__bindgen_ty_1 {}
+impl Drop for Box_c__bindgen_ty_1 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(1usize, 1usize).unwrap(),
+            );
+        }
+    }
+}
 #[test]
 fn bindgen_test_layout_c() {
     assert_eq!(

@@ -102,6 +102,21 @@ impl Default for WithBigArray {
         unsafe { ::std::mem::zeroed() }
     }
 }
+struct Box_WithBigArray {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_WithBigArray {}
+impl Drop for Box_WithBigArray {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(132usize, 4usize)
+                    .unwrap(),
+            );
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct WithBigArray2 {
@@ -149,6 +164,20 @@ fn bindgen_test_layout_WithBigArray2() {
 impl Clone for WithBigArray2 {
     fn clone(&self) -> Self {
         *self
+    }
+}
+struct Box_WithBigArray2 {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_WithBigArray2 {}
+impl Drop for Box_WithBigArray2 {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(36usize, 4usize).unwrap(),
+            );
+        }
     }
 }
 #[repr(C)]
@@ -203,5 +232,20 @@ impl Clone for WithBigMember {
 impl Default for WithBigMember {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+struct Box_WithBigMember {
+    ptr: *mut ::std::ffi::c_void,
+}
+impl Box_WithBigMember {}
+impl Drop for Box_WithBigMember {
+    fn drop(&mut self) {
+        unsafe {
+            ::std::alloc::dealloc(
+                self.ptr as *mut u8,
+                ::std::alloc::Layout::from_size_align(132usize, 4usize)
+                    .unwrap(),
+            );
+        }
     }
 }
