@@ -2222,9 +2222,7 @@ impl CompInfo {
                     !ty_for_impl.to_string().starts_with("__")
                 {
                     result.cpp_out.as_mut().unwrap().push_str(&format!(
-                        "void bindgen_destruct_{typename}({typename} *ptr){{
-                            ptr->~{typename}();
-                        }}\n",
+                        "void bindgen_destruct_{typename}({typename} *ptr){{\n    ptr->~{typename}();\n}}\n",
                         typename = ty_for_impl
                     ));
                     for method in self.methods() {

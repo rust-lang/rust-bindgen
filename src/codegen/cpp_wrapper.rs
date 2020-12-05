@@ -83,11 +83,7 @@ pub fn cpp_function_wrapper(
                 }
             });
         cpp_out.push_str(&format!(
-            "void bindgen_wrap_{}({} {} *writeback) {{
-auto val = {}({});
-*writeback = val;
-}}
-",
+            "void bindgen_wrap_{}({} {} *writeback) {{\n    auto val = {}({});\n    *writeback = val;\n}}\n",
             &canonical_name,
             &args_string.join(""),
             rettype,
