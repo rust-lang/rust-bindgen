@@ -1,22 +1,37 @@
-use crate::codegen::utils;
-use crate::codegen::ToRustTyOrOpaque;
-use crate::codegen::TryToRustTy;
-use crate::ir::context::{GeneratingStage, TypeId};
+use crate::ir::context::GeneratingStage;
 use crate::ir::function::FunctionSig;
 use crate::ir::item::ItemCanonicalName;
-use crate::ir::ty::TypeKind;
+use crate::ir::ty::{TypeKind};
 use crate::BindgenContext;
 use crate::Item;
 
-fn get_cpp_typename(ctx: &BindgenContext, id: TypeId) -> &str {
+pub fn get_cpp_typename(ctx: &BindgenContext, item: &Item, namespaces: bool) -> String {
+    let prefix = if namespaces {
+        let mut prefix = String::new();
+        let mut head = item;
+        loop {
+            head = ctx.resolve_item(head.parent_id());
+            let name = head.kind().expect_module().name().unwrap();
+            if name == "root" {
+                //todo: what if the C++ sourcecode is namespace root {...} ?
+                break;
+            }
+            prefix = format!("{}::{}", name, prefix);
+        }
+        prefix
+    } else {
+        String::new()
+    };
+
     // TODO: Codereview: Are there types, where the unwrap() or panic!() below crash bindgen?
-    let temp = ctx.resolve_item(id).kind().expect_type();
-    if let Some(name) = temp.name() {
-        return name;
+    let typ = item.kind().expect_type();
+    if let Some(name) = typ.name() {
+        return format!("{}{}", prefix, name);
     }
-    match temp.kind() {
+    match typ.kind() {
         TypeKind::ResolvedTypeRef(v) => {
-            ctx.resolve_item(v).kind().expect_type().name().unwrap()
+            let name = ctx.resolve_item(v).kind().expect_type().name().unwrap();
+            format!("{}{}", prefix, name)
         }
         _ => panic!(),
     }
@@ -38,7 +53,7 @@ pub fn cpp_function_wrapper(
     {
         return;
     }
-    let rettype = get_cpp_typename(ctx, signature.return_type());
+    let rettype = get_cpp_typename(ctx, ctx.resolve_item(signature.return_type()), true);
     if !canonical_name.starts_with("__") {
         let mut badflag = false;
         let args_string: Vec<String> = signature

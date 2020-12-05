@@ -17,7 +17,7 @@ use self::struct_layout::StructLayoutTracker;
 
 use super::BindgenOptions;
 
-use crate::codegen::cpp_wrapper::cpp_function_wrapper;
+use crate::codegen::cpp_wrapper::{cpp_function_wrapper, get_cpp_typename};
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::FieldAccessorKind;
 use crate::ir::comment;
@@ -1728,7 +1728,6 @@ impl CompInfo {
 
         let canonical_name = item.canonical_name(ctx);
         let canonical_ident = ctx.rust_ident(&canonical_name);
-
         // Generate the vtable from the method list if appropriate.
         //
         // TODO: I don't know how this could play with virtual methods that are
@@ -2222,8 +2221,10 @@ impl CompInfo {
                     !ty_for_impl.to_string().starts_with("__")
                 {
                     result.cpp_out.as_mut().unwrap().push_str(&format!(
-                        "void bindgen_destruct_{typename}({typename} *ptr){{\n    ptr->~{typename}();\n}}\n",
-                        typename = ty_for_impl
+                        "void bindgen_destruct_{}({} *ptr){{\n    ptr->~{}();\n}}\n",
+                        ty_for_impl,
+                        get_cpp_typename(ctx, item, true),
+                        get_cpp_typename(ctx, item, false),
                     ));
                     for method in self.methods() {
                         assert!(method.kind() != MethodKind::Constructor);
