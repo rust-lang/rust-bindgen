@@ -3,7 +3,7 @@ use crate::codegen::helpers::attributes;
 use crate::codegen::utils;
 use crate::codegen::{CodegenResult, ToRustTyOrOpaque};
 use crate::ir::comp::*;
-use crate::ir::context::BindgenContext;
+use crate::ir::context::{BindgenContext, GeneratingStage};
 use crate::ir::function::{Abi, Function};
 use crate::ir::item::ItemCanonicalName;
 use crate::ir::layout::Layout;
@@ -310,6 +310,21 @@ impl MethodCodegen for Method {
         let mut args = utils::fnsig_arguments(ctx, signature);
         let mut ret = utils::fnsig_return_ty(ctx, signature);
 
+        let using_wrapper = safe_class_interface &&
+            ctx.generating_stage() == GeneratingStage::ReadingGeneratedCpp &&
+            !ctx.resolve_item(signature.return_type())
+                .kind()
+                .expect_type()
+                .surely_trivially_relocatable();
+        if using_wrapper {
+            if let Some(ret_inner) = ret {
+                ret = Some(
+                    TokenStream::from_str(&format!("Box_{}", ret_inner))
+                        .expect("Parsing error"),
+                );
+            }
+        }
+
         if !self.is_static() && !self.is_constructor() {
             args[0] = if self.is_const() {
                 quote! { &self }
@@ -325,7 +340,7 @@ impl MethodCodegen for Method {
         // return-type = void.
         if self.is_constructor() {
             args.remove(0);
-            ret = quote! { -> Self };
+            ret = Some(quote! { Self });
         }
 
         let mut exprs =
@@ -386,11 +401,21 @@ impl MethodCodegen for Method {
             };
         }
 
-        let call = quote! {
-            #function_name (#( #exprs ),* )
-        };
-
-        stmts.push(call);
+        if using_wrapper {
+            let function_name =
+                ctx.rust_ident(format!("bindgen_wrap_{}", function_name));
+            let call = quote! {
+                let ret = #ret::allocate_uninitialised();
+                #function_name (#( #exprs ),* , ret.ptr as * mut #ty_for_impl);
+                ret
+            };
+            stmts.push(call);
+        } else {
+            let call = quote! {
+                #function_name (#( #exprs ),* )
+            };
+            stmts.push(call);
+        }
 
         if self.is_constructor() && !safe_class_interface {
             stmts.push(if ctx.options().rust_features().maybe_uninit {
@@ -420,6 +445,10 @@ impl MethodCodegen for Method {
         }
 
         let name = ctx.rust_ident(&name);
+        let ret = match ret {
+            Some(v) => quote! { -> #v },
+            None => quote! {},
+        };
         if safe_class_interface {
             methods.push(quote! {
                 #(#attrs)*

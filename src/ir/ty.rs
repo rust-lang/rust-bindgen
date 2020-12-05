@@ -387,6 +387,33 @@ impl Type {
             _ => false,
         }
     }
+
+    /// Is guaranteed to return false if the type is not trivially relocatable
+    /// (Definition:
+    /// http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1144r3.html)
+    /// i.e. can be memmove'd. This is important for bindgen, because Rust
+    /// thinks that every type is trivially relocatable and therfore Rust might
+    /// choose to memove a type. This means that having a mutable reference for
+    /// a non-trivially relocatable type is unsafe, because you could call
+    /// std::mem::swap on it. We therefore must thide those types and make sure
+    /// that the user never gets a mutable reference to it. Instead, we have to
+    /// rely on our Box_typename wrappers. If this function returns false and
+    /// there is no Box_typename wrapper availale, bindgen might panic or
+    /// produce bindings that are impossible to compile. Examples of
+    /// non-trivially relocatable types are self-referencing structures. Note
+    /// that this function is not guaranteed to return no false negatives.
+    pub fn surely_trivially_relocatable(&self) -> bool {
+        matches!(self.kind(),
+              TypeKind::Void
+            | TypeKind::NullPtr
+            | TypeKind::Int(_)
+            | TypeKind::Float(_)
+            | TypeKind::Complex(_)
+            | TypeKind::Enum(_)
+            | TypeKind::Pointer(_)
+            | TypeKind::BlockPointer(_)
+            | TypeKind::Reference(_))
+    }
 }
 
 impl IsOpaque for Type {

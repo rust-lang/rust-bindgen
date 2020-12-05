@@ -13,7 +13,7 @@ use super::derive::{
 };
 use super::function::Function;
 use super::int::IntKind;
-use super::item::{IsOpaque, Item, ItemAncestors, ItemSet, ItemCanonicalName};
+use super::item::{IsOpaque, Item, ItemAncestors, ItemCanonicalName, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
 use super::template::{TemplateInstantiation, TemplateParameters};
