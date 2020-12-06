@@ -312,7 +312,7 @@ impl MethodCodegen for Method {
             !ctx.resolve_item(signature.return_type())
                 .kind()
                 .expect_type()
-                .surely_trivially_relocatable();
+                .surely_trivially_relocatable(ctx);
         if using_wrapper {
             if let Some(ret_inner) = ret {
                 ret = Some(

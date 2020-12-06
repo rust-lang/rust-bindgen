@@ -17,7 +17,9 @@ use self::struct_layout::StructLayoutTracker;
 
 use super::BindgenOptions;
 
-use crate::codegen::cpp_wrapper::{cpp_function_wrapper, get_cpp_typename};
+use crate::codegen::cpp_wrapper::{
+    cpp_function_wrapper, get_cpp_typename_with_namespace,
+};
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::FieldAccessorKind;
 use crate::ir::comment;
@@ -2216,7 +2218,7 @@ impl CompInfo {
                     result.cpp_out.as_mut().unwrap().push_str(&format!(
                         "void bindgen_destruct_{}({} *ptr){{\n    bindgen_destruct_or_throw(ptr);\n}}\n",
                         ty_for_impl,
-                        get_cpp_typename(ctx, item, true)
+                        get_cpp_typename_with_namespace(ctx, item)
                     ));
                     for method in self.methods() {
                         assert!(method.kind() != MethodKind::Constructor);

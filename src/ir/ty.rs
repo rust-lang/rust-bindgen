@@ -402,7 +402,14 @@ impl Type {
     /// produce bindings that are impossible to compile. Examples of
     /// non-trivially relocatable types are self-referencing structures. Note
     /// that this function is not guaranteed to return no false negatives.
-    pub fn surely_trivially_relocatable(&self) -> bool {
+    pub fn surely_trivially_relocatable(&self, ctx: &BindgenContext) -> bool {
+        if let TypeKind::ResolvedTypeRef(v) = self.kind() {
+            return ctx
+                .resolve_item(v)
+                .kind()
+                .expect_type()
+                .surely_trivially_relocatable(ctx);
+        }
         matches!(self.kind(),
               TypeKind::Void
             | TypeKind::NullPtr

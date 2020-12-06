@@ -5,12 +5,27 @@ use crate::ir::ty::TypeKind;
 use crate::BindgenContext;
 use crate::Item;
 
-pub fn get_cpp_typename(
+pub fn get_cpp_typename_without_namespace<'a>(
+    ctx: &'a BindgenContext,
+    item: &'a Item,
+) -> &'a str {
+    let typ = item.kind().expect_type();
+    if let Some(name) = typ.name() {
+        return name;
+    }
+    match typ.kind() {
+        TypeKind::ResolvedTypeRef(v) => {
+            let name = ctx.resolve_item(v).kind().expect_type().name().unwrap();
+            name
+        }
+        _ => panic!(),
+    }
+}
+pub fn get_cpp_typename_with_namespace(
     ctx: &BindgenContext,
     item: &Item,
-    namespaces: bool,
 ) -> String {
-    let prefix = if namespaces {
+    let prefix = {
         let mut prefix = String::new();
         let mut head = item;
         loop {
@@ -23,22 +38,12 @@ pub fn get_cpp_typename(
             prefix = format!("{}::{}", name, prefix);
         }
         prefix
-    } else {
-        String::new()
     };
-
-    // TODO: Codereview: Are there types, where the unwrap() or panic!() below crash bindgen?
-    let typ = item.kind().expect_type();
-    if let Some(name) = typ.name() {
-        return format!("{}{}", prefix, name);
-    }
-    match typ.kind() {
-        TypeKind::ResolvedTypeRef(v) => {
-            let name = ctx.resolve_item(v).kind().expect_type().name().unwrap();
-            format!("{}{}", prefix, name)
-        }
-        _ => panic!(),
-    }
+    format!(
+        "{}{}",
+        prefix,
+        get_cpp_typename_without_namespace(ctx, item)
+    )
 }
 pub fn cpp_function_wrapper(
     name: &str,
@@ -53,12 +58,14 @@ pub fn cpp_function_wrapper(
         .resolve_item(signature.return_type())
         .kind()
         .expect_type()
-        .surely_trivially_relocatable()
+        .surely_trivially_relocatable(ctx)
     {
         return;
     }
-    let rettype =
-        get_cpp_typename(ctx, ctx.resolve_item(signature.return_type()), true);
+    let rettype = get_cpp_typename_with_namespace(
+        ctx,
+        ctx.resolve_item(signature.return_type()),
+    );
     if !canonical_name.starts_with("__") {
         let mut badflag = false;
         let args_string: Vec<String> = signature
