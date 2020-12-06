@@ -2221,10 +2221,9 @@ impl CompInfo {
                     !ty_for_impl.to_string().starts_with("__")
                 {
                     result.cpp_out.as_mut().unwrap().push_str(&format!(
-                        "void bindgen_destruct_{}({} *ptr){{\n    ptr->~{}();\n}}\n",
+                        "void bindgen_destruct_{}({} *ptr){{\n    bindgen_destruct_or_throw(ptr);\n}}\n",
                         ty_for_impl,
-                        get_cpp_typename(ctx, item, true),
-                        get_cpp_typename(ctx, item, false),
+                        get_cpp_typename(ctx, item, true)
                     ));
                     for method in self.methods() {
                         assert!(method.kind() != MethodKind::Constructor);

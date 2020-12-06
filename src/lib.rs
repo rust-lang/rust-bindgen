@@ -2070,8 +2070,17 @@ impl Bindings {
         if options.gen_safe_wrappers {
             // Possible Performance improvements: We are running generate_bindings twice in a slightly different manner. Some parts of what generate_bindings does is identical in the first and second run. Not doing these parts twice would greatly improve bindgens performance.
 
-            let gen_cpp_path =
-                format!("{}/generated.cpp", std::env::var("OUT_DIR").unwrap(),);
+            let gen_cpp_path = format!(
+                "{}/{}.cpp",
+                std::env::var("OUT_DIR").unwrap(),
+                options
+                    .input_header
+                    .clone()
+                    .unwrap()
+                    .split("/")
+                    .last()
+                    .unwrap()
+            );
             let mut options_copy = options.partial_clone();
             let bindings = Bindings::generate_bindings(
                 options,
@@ -2088,7 +2097,7 @@ impl Bindings {
             let absolute_path = Path::new(&std::env::var("PWD").unwrap())
                 .join(options_copy.input_header.unwrap());
             file.write(
-                format!("#include \"{}\"\n", absolute_path.to_str().unwrap())
+                format!("#include \"{}\"\ntemplate <typename T>\nauto bindgen_destruct_or_throw(T* t) -> decltype(t->~T()) {{\n    t->~T();\n}}\nauto bindgen_destruct_or_throw(void*) {{\n    /*Todo: throw an exception or abort here*/\n}}\n", absolute_path.to_str().unwrap())
                     .as_bytes(),
             )
             .expect("unable to write");

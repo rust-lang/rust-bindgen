@@ -1,11 +1,15 @@
 use crate::ir::context::GeneratingStage;
 use crate::ir::function::FunctionSig;
 use crate::ir::item::ItemCanonicalName;
-use crate::ir::ty::{TypeKind};
+use crate::ir::ty::TypeKind;
 use crate::BindgenContext;
 use crate::Item;
 
-pub fn get_cpp_typename(ctx: &BindgenContext, item: &Item, namespaces: bool) -> String {
+pub fn get_cpp_typename(
+    ctx: &BindgenContext,
+    item: &Item,
+    namespaces: bool,
+) -> String {
     let prefix = if namespaces {
         let mut prefix = String::new();
         let mut head = item;
@@ -53,7 +57,8 @@ pub fn cpp_function_wrapper(
     {
         return;
     }
-    let rettype = get_cpp_typename(ctx, ctx.resolve_item(signature.return_type()), true);
+    let rettype =
+        get_cpp_typename(ctx, ctx.resolve_item(signature.return_type()), true);
     if !canonical_name.starts_with("__") {
         let mut badflag = false;
         let args_string: Vec<String> = signature
