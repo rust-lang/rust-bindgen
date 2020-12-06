@@ -2216,7 +2216,7 @@ impl CompInfo {
                     !ty_for_impl.to_string().starts_with("__")
                 {
                     result.cpp_out.as_mut().unwrap().push_str(&format!(
-                        "void bindgen_destruct_{}({} *ptr){{\n    bindgen_destruct_or_throw(ptr);\n}}\n",
+                        "void bindgen_destruct_{}(struct {} *ptr) {{\n    bindgen_destruct_or_throw(ptr);\n}}\n",
                         ty_for_impl,
                         get_cpp_typename_with_namespace(ctx, item)
                     ));

@@ -71,10 +71,11 @@ pub fn cpp_function_wrapper(
         let args_string: Vec<String> = signature
             .argument_types()
             .iter()
-            .map(|&(ref argname, ty)| {
-                let argname = argname.as_ref().unwrap();
+            .enumerate()
+            .map(|(i, &(ref argname, ty))| {
+                let argname = argname.as_ref();
                 let typ = ctx.resolve_item(ty).expect_type().name();
-                if argname == "this" {
+                if matches!(argname, Some(v) if v == "this") {
                     if let None = item {
                         badflag = true;
                         String::new()
@@ -88,7 +89,7 @@ pub fn cpp_function_wrapper(
                     badflag = true;
                     String::new()
                 } else {
-                    format!("{} {},", typ.unwrap(), argname)
+                    format!("{} arg_{},", typ.unwrap(), i)
                 }
             })
             .collect();
@@ -103,10 +104,11 @@ pub fn cpp_function_wrapper(
         signature
             .argument_types()
             .iter()
-            .for_each(|&(ref argname, _)| {
-                let argname = argname.as_ref().unwrap();
-                if argname != "this" {
-                    args_call.push(format!("{}", argname));
+            .enumerate()
+            .for_each(|(i, &(ref argname, _))| {
+                let argname = argname.as_ref();
+                if !matches!(argname, Some(v) if v == "this") {
+                    args_call.push(format!("arg_{}", i));
                 }
             });
         cpp_out.push_str(&format!(
