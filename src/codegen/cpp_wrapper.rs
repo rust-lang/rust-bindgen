@@ -2,21 +2,46 @@ use crate::ir::context::GeneratingStage;
 use crate::ir::function::FunctionSig;
 use crate::ir::item::ItemCanonicalName;
 use crate::ir::ty::TypeKind;
+use crate::ir::item_kind::ItemKind;
 use crate::BindgenContext;
 use crate::Item;
 
+/// This Enum list possible reasons why bindgen did not create a c++ wrapper function:
+#[derive(Debug)]
+pub enum WhyNoWrapper {
+    /// It might be possible to generate the wrapper, but doing so is
+    /// unnecessary, because calling the function/method directly should also
+    /// work fine.
+    Unnecessary,
+
+    /// The type of one function argument is None, i.e. we don't know the type.
+    /// Without knowingt the type, we can not calculate the function signature
+    /// as a String.
+    ArgumentTypeIsNone,
+
+    /// This is valid C++: `struct MyStruct { union { struct {};};};`. Since the
+    /// inner struct has no name, we cannot take this structure as a function
+    /// argument.
+    TypeInsideUnnamedType,
+
+    /// One argument is an anonymous type
+    UnnamedType,
+}
 pub fn get_cpp_typename_without_namespace<'a>(
     ctx: &'a BindgenContext,
     item: &'a Item,
-) -> &'a str {
+) -> Result<&'a str, WhyNoWrapper> {
     let typ = item.kind().expect_type();
     if let Some(name) = typ.name() {
-        return name;
+        return Ok(name);
     }
     match typ.kind() {
         TypeKind::ResolvedTypeRef(v) => {
             let name = ctx.resolve_item(v).kind().expect_type().name().unwrap();
-            name
+            Ok(name)
+        }
+        TypeKind::Comp(_) => {
+            Err(WhyNoWrapper::UnnamedType)
         }
         _ => panic!(),
     }
@@ -24,26 +49,38 @@ pub fn get_cpp_typename_without_namespace<'a>(
 pub fn get_cpp_typename_with_namespace(
     ctx: &BindgenContext,
     item: &Item,
-) -> String {
+) -> Result<String, WhyNoWrapper> {
     let prefix = {
         let mut prefix = String::new();
         let mut head = item;
         loop {
             head = ctx.resolve_item(head.parent_id());
-            let name = head.kind().expect_module().name().unwrap();
-            if name == "root" {
-                //todo: what if the C++ sourcecode is namespace root {...} ?
-                break;
-            }
+            let name = match head.kind() {
+                ItemKind::Module(v) => {
+                    if v.name().unwrap() == "root" {
+                        //todo: what if the C++ sourcecode is namespace root {...} ?
+                        break;
+                    }
+                    v.name().unwrap()
+                },
+                ItemKind::Type(v) => {
+                    match v.name() {
+                        None => {return Err(WhyNoWrapper::TypeInsideUnnamedType);},
+                        Some(v) => v,
+                    }
+                },
+                ItemKind::Function(_) => panic!("Bindgen does not support types declared inside of functions."),
+                ItemKind::Var(_) => panic!("Bindgen does not support types declared inside of variables."),
+            };
             prefix = format!("{}::{}", name, prefix);
         }
         prefix
     };
-    format!(
+    Ok(format!(
         "{}{}",
         prefix,
-        get_cpp_typename_without_namespace(ctx, item)
-    )
+        get_cpp_typename_without_namespace(ctx, item)?
+    ))
 }
 pub fn cpp_function_wrapper(
     name: &str,
@@ -52,7 +89,7 @@ pub fn cpp_function_wrapper(
     signature: &FunctionSig,
     canonical_name: &String,
     cpp_out: &mut String,
-) {
+) -> Result<(), WhyNoWrapper> {
     debug_assert!(ctx.generating_stage() == GeneratingStage::GeneratingCpp);
     if ctx
         .resolve_item(signature.return_type())
@@ -60,12 +97,12 @@ pub fn cpp_function_wrapper(
         .expect_type()
         .surely_trivially_relocatable(ctx)
     {
-        return;
+        return Err(WhyNoWrapper::Unnecessary);
     }
     let rettype = get_cpp_typename_with_namespace(
         ctx,
         ctx.resolve_item(signature.return_type()),
-    );
+    )?;
     if !canonical_name.starts_with("__") {
         let mut badflag = false;
         let args_string: Vec<String> = signature
@@ -94,7 +131,7 @@ pub fn cpp_function_wrapper(
             })
             .collect();
         if badflag {
-            return;
+            return Err(WhyNoWrapper::ArgumentTypeIsNone);
         }
         let callname = match item {
             Some(_) => format!("this_ptr->{}", name),
@@ -120,4 +157,5 @@ pub fn cpp_function_wrapper(
             &args_call.join(", ")
         ));
     }
+    Ok(())
 }

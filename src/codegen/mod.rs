@@ -18,7 +18,7 @@ use self::struct_layout::StructLayoutTracker;
 use super::BindgenOptions;
 
 use crate::codegen::cpp_wrapper::{
-    cpp_function_wrapper, get_cpp_typename_with_namespace,
+    cpp_function_wrapper, get_cpp_typename_with_namespace, WhyNoWrapper
 };
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::FieldAccessorKind;
@@ -1636,6 +1636,7 @@ impl CompInfo {
         &self,
         ctx: &BindgenContext,
         result: &mut CodegenResult<'a>,
+        item: &Item,
         ty_for_impl: TokenStream,
         layout: Layout,
     ) {
@@ -1689,13 +1690,33 @@ impl CompInfo {
             Span::call_site(),
         );
         assert!(size != 0, "alloc is undefined if size == 0");
+
+        let cpptypename = get_cpp_typename_with_namespace(ctx, item);
+        let destructible = match cpptypename {
+            Ok(_) => true,
+            Err(_) => false,
+        };
+        // If destructible is false, the C++ source code of funcname (probably)
+        // was never generated. If you grep for "bindgen_destruct_" you will
+        // find that the condition that sets destructible to true is the same as
+        // the condition that makes bindgen add "void bindgen_destruct_..." to
+        // cppout.
+        let destruct_this_type = if destructible {
+            quote!(
+                unsafe {
+                    #funcname(self.ptr as *mut #ty_for_impl);
+                    ::#prefix::alloc::dealloc(self.ptr as *mut u8,::#prefix::alloc::Layout::from_size_align(#size, #align).unwrap());
+                }
+            )
+        } else {
+            quote!(
+                panic!("We cannot destruct this type, so either never construct it, never drop it, or figure out how to destruct it.");
+            )
+        };
         result.push(quote! {
             impl Drop for #boxname {
                 fn drop(&mut self) {
-                    unsafe {
-                        #funcname(self.ptr as *mut #ty_for_impl);
-                        ::#prefix::alloc::dealloc(self.ptr as *mut u8,::#prefix::alloc::Layout::from_size_align(#size, #align).unwrap());
-                    }
+                    #destruct_this_type
                 }
             }
         });
@@ -2215,11 +2236,16 @@ impl CompInfo {
                     ctx.options().codegen_config.methods() &&
                     !ty_for_impl.to_string().starts_with("__")
                 {
-                    result.cpp_out.as_mut().unwrap().push_str(&format!(
-                        "void bindgen_destruct_{}(struct {} *ptr) {{\n    bindgen_destruct_or_throw(ptr);\n}}\n",
-                        ty_for_impl,
-                        get_cpp_typename_with_namespace(ctx, item)
-                    ));
+                    let cpptypename = get_cpp_typename_with_namespace(ctx, item);
+                    match cpptypename {
+                        Ok(v) => result.cpp_out.as_mut().unwrap().push_str(&format!(
+                            "void bindgen_destruct_{}({} *ptr) {{\n    bindgen_destruct_or_throw(ptr);\n}}\n",
+                            ty_for_impl,
+                            v
+                        )),
+                        Err(WhyNoWrapper::TypeInsideUnnamedType) | Err(WhyNoWrapper::UnnamedType) => {},
+                        _ => panic!(),
+                    };
                     for method in self.methods() {
                         assert!(method.kind() != MethodKind::Constructor);
                         let function_item =
@@ -2240,7 +2266,7 @@ impl CompInfo {
                                 signature,
                                 &function_item.canonical_name(ctx),
                                 cpp_out,
-                            );
+                            ).unwrap_or_else(|e| debug!("Unable to create C++ wrapper for: item = {:?} Reason: {:?}", item, e));
                         }
                     }
                 } else if ctx.generating_stage() ==
@@ -2249,6 +2275,7 @@ impl CompInfo {
                     self.create_safe_class_interface(
                         ctx,
                         result,
+                        item,
                         ty_for_impl,
                         layout,
                     );
@@ -3633,7 +3660,7 @@ impl Function {
                 signature,
                 &canonical_name,
                 result.cpp_out.as_mut().unwrap(),
-            );
+            ).unwrap_or_else(|e| debug!("Unable to create C++ wrapper for: item = {:?} Reason: {:?}", item, e));
         }
 
         let args = utils::fnsig_arguments(ctx, signature);
