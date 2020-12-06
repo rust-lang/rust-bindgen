@@ -6,7 +6,6 @@ use crate::ir::comp::*;
 use crate::ir::context::{BindgenContext, GeneratingStage};
 use crate::ir::function::{Abi, Function};
 use crate::ir::item::ItemCanonicalName;
-use crate::ir::layout::Layout;
 use crate::ir::ty::TypeKind;
 use crate::HashMap;
 use proc_macro2::TokenStream;
@@ -243,7 +242,6 @@ trait MethodCodegen {
         result: &mut CodegenResult<'a>,
         parent: &CompInfo,
         safe_class_interface: bool,
-        layout: Option<Layout>,
         ty_for_impl: &proc_macro2::TokenStream,
     );
 }
@@ -257,7 +255,6 @@ impl MethodCodegen for Method {
         result: &mut CodegenResult<'a>,
         _parent: &CompInfo,
         safe_class_interface: bool,
-        layout: Option<Layout>,
         ty_for_impl: &proc_macro2::TokenStream,
     ) {
         assert!({
@@ -373,11 +370,8 @@ impl MethodCodegen for Method {
             };
             stmts.push(tmp_variable_decl);
         } else if self.is_constructor() && safe_class_interface {
-            let size = layout.unwrap().size;
-            let align = layout.unwrap().align;
-            assert!(size != 0, "alloc is undefined if size == 0");
             stmts.push(quote!(
-                let ret = Self{ptr: ::#prefix::alloc::alloc(::#prefix::alloc::Layout::from_size_align(#size, #align).unwrap()) as *mut ::#prefix::ffi::c_void}
+                let ret = Self::allocate_uninitialised();
             ));
         } else if !self.is_static() {
             assert!(!exprs.is_empty());
@@ -475,7 +469,6 @@ impl CompInfo {
         ctx: &BindgenContext,
         result: &mut CodegenResult,
         ty_for_impl: &TokenStream,
-        layout: Option<Layout>,
         methods: &mut Vec<proc_macro2::TokenStream>,
         safe_class_interface: bool,
     ) {
@@ -491,7 +484,6 @@ impl CompInfo {
                     result,
                     self,
                     safe_class_interface,
-                    layout,
                     ty_for_impl,
                 );
             }
@@ -512,7 +504,6 @@ impl CompInfo {
                     result,
                     self,
                     safe_class_interface,
-                    layout,
                     ty_for_impl,
                 );
             }
@@ -528,7 +519,6 @@ impl CompInfo {
                     result,
                     self,
                     safe_class_interface,
-                    layout,
                     ty_for_impl,
                 );
             }

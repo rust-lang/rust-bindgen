@@ -1651,16 +1651,19 @@ impl CompInfo {
             }
         ));
         let mut methods: Vec<proc_macro2::TokenStream> = vec![];
-        self.codegen_methods(
-            ctx,
-            result,
-            &ty_for_impl,
-            Some(layout),
-            &mut methods,
-            true,
-        );
+        self.codegen_methods(ctx, result, &ty_for_impl, &mut methods, true);
 
-        let size = layout.size;
+        let size = {
+            if layout.size == 0 {
+                // SAFETY: If I'm not mistaken, we will always get away with
+                // allocating too much memory, as long as we are also
+                // deallocating it correctly. So afaik, we can INCREASE
+                // layout.size however we want.
+                1
+            } else {
+                layout.size
+            }
+        };
         let align = layout.align;
         assert!(size != 0, "alloc is undefined if size == 0");
         result.push(quote! (
@@ -1679,20 +1682,11 @@ impl CompInfo {
                 }
             }
         ));
-
-        let size = {
-            if layout.size == 0 {
-                1 // In C/C++ zero-sized-types either are 1 byte sized or undefined behaviour.
-            } else {
-                layout.size
-            }
-        };
-        let align = layout.align;
-        assert!(size != 0, "alloc is undefined if size == 0");
         let funcname = Ident::new(
             &format!("bindgen_destruct_{}", ty_for_impl),
             Span::call_site(),
         );
+        assert!(size != 0, "alloc is undefined if size == 0");
         result.push(quote! {
             impl Drop for #boxname {
                 fn drop(&mut self) {
@@ -2142,7 +2136,6 @@ impl CompInfo {
                 ctx,
                 result,
                 &ty_for_impl,
-                layout,
                 &mut methods,
                 false,
             );
