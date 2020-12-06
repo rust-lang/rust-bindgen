@@ -222,6 +222,26 @@ pub fn builder() -> Builder {
     Default::default()
 }
 
+/// This enum lists reasons why Builder.generate() might fail
+#[derive(Debug)]
+pub enum BindgenError {
+    /// We can't read the file given by the Builder.header() argument, because
+    /// it does not exist.
+    HeaderFileDoesNotExist,
+
+    /// We can't read the file given by the Builder.header() argument, because
+    /// we don't have sufficient permissions.
+    HeaderFileIsUnreadable,
+
+    /// We can't read the file given by the Builder.header() argument, because
+    /// it is a folder.
+    HeaderFileIsAFolder,
+
+    /// Libclang failed to parse the file with the path (first string) with the
+    /// error (second string).
+    LibclangFailedToParse(String, String),
+}
+
 impl Builder {
     /// Generates the command line flags use for creating `Builder`.
     pub fn command_line_flags(&self) -> Vec<String> {
@@ -1309,7 +1329,7 @@ impl Builder {
     }
 
     /// Generate the Rust bindings using the options built up thus far.
-    pub fn generate(mut self) -> Result<Bindings, ()> {
+    pub fn generate(mut self) -> Result<Bindings, BindgenError> {
         // Add any extra arguments from the environment to the clang command line.
         if let Some(extra_clang_args) =
             env::var("BINDGEN_EXTRA_CLANG_ARGS").ok()
@@ -2064,7 +2084,7 @@ impl Bindings {
     /// Generate bindings for the given options.
     pub(crate) fn generate(
         mut options: BindgenOptions,
-    ) -> Result<Bindings, ()> {
+    ) -> Result<Bindings, BindgenError> {
         let (effective_target, is_host_build) =
             Bindings::parse_config(&mut options)?;
         if options.gen_safe_wrappers {
@@ -2144,7 +2164,7 @@ impl Bindings {
     }
     fn parse_config(
         options: &mut BindgenOptions,
-    ) -> Result<(String, bool), ()> {
+    ) -> Result<(String, bool), BindgenError> {
         ensure_libclang_is_loaded();
         options.build();
 
@@ -2246,7 +2266,7 @@ impl Bindings {
         effective_target: String,
         is_host_build: bool,
         generating_stage: GeneratingStage,
-    ) -> Result<Bindings, ()> {
+    ) -> Result<Bindings, BindgenError> {
         #[cfg(feature = "runtime")]
         debug!(
             "Generating bindings, libclang at {}",
@@ -2270,19 +2290,19 @@ impl Bindings {
             if let Ok(md) = std::fs::metadata(h) {
                 if md.is_dir() {
                     eprintln!("error: '{}' is a folder", h);
-                    return Err(());
+                    return Err(BindgenError::HeaderFileIsAFolder);
                 }
                 if !can_read(&md.permissions()) {
                     eprintln!(
                         "error: insufficient permissions to read '{}'",
                         h
                     );
-                    return Err(());
+                    return Err(BindgenError::HeaderFileIsUnreadable);
                 }
                 options.clang_args.push(h.clone())
             } else {
                 eprintln!("error: header '{}' does not exist.", h);
-                return Err(());
+                return Err(BindgenError::HeaderFileDoesNotExist);
             }
         }
 
@@ -2498,19 +2518,21 @@ fn parse_one(
 }
 
 /// Parse the Clang AST into our `Item` internal representation.
-fn parse(context: &mut BindgenContext) -> Result<(), ()> {
+fn parse(context: &mut BindgenContext) -> Result<(), BindgenError> {
     use clang_sys::*;
 
     let mut any_error = false;
+    let mut error = String::new();
     for d in context.translation_unit().diags().iter() {
         let msg = d.format();
         let is_err = d.severity() >= CXDiagnostic_Error;
         eprintln!("{}, err: {}", msg, is_err);
+        error.push_str(&format!("{}, err: {}\n", msg, is_err));
         any_error |= is_err;
     }
 
     if any_error {
-        return Err(());
+        return Err(BindgenError::LibclangFailedToParse(context.options().input_header.as_ref().unwrap().clone(), error));
     }
 
     let cursor = context.translation_unit().cursor();
