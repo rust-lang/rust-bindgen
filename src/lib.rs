@@ -2532,7 +2532,10 @@ fn parse(context: &mut BindgenContext) -> Result<(), BindgenError> {
     }
 
     if any_error {
-        return Err(BindgenError::LibclangFailedToParse(context.options().input_header.as_ref().unwrap().clone(), error));
+        return Err(BindgenError::LibclangFailedToParse(
+            context.options().input_header.as_ref().unwrap().clone(),
+            error,
+        ));
     }
 
     let cursor = context.translation_unit().cursor();

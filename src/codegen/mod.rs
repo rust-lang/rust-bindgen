@@ -18,7 +18,7 @@ use self::struct_layout::StructLayoutTracker;
 use super::BindgenOptions;
 
 use crate::codegen::cpp_wrapper::{
-    cpp_function_wrapper, get_cpp_typename_with_namespace, WhyNoWrapper
+    cpp_function_wrapper, get_cpp_typename_with_namespace, WhyNoWrapper,
 };
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::FieldAccessorKind;
@@ -1739,6 +1739,10 @@ impl CompInfo {
             return;
         }
 
+        if self.is_private() {
+            return;
+        }
+
         let ty = item.expect_type();
         let layout = ty.layout(ctx);
         let mut packed = self.is_packed(ctx, &layout);
@@ -2236,7 +2240,8 @@ impl CompInfo {
                     ctx.options().codegen_config.methods() &&
                     !ty_for_impl.to_string().starts_with("__")
                 {
-                    let cpptypename = get_cpp_typename_with_namespace(ctx, item);
+                    let cpptypename =
+                        get_cpp_typename_with_namespace(ctx, item);
                     match cpptypename {
                         Ok(v) => result.cpp_out.as_mut().unwrap().push_str(&format!(
                             "void bindgen_destruct_{}({} *ptr) {{\n    bindgen_destruct_or_throw(ptr);\n}}\n",

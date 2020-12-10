@@ -54,9 +54,9 @@ mod testgen {
                         .to_lowercase();
                     writeln!(
                         dst,
-                        "test_header!(header_{}, {:?});",
-                        func,
-                        entry.path(),
+                        "test_header!(header_{func}, {path:?});\ntest_wrapper_generation!(wrapper_{func}, {path:?});",
+                        func=func,
+                        path=entry.path(),
                     )
                     .unwrap();
                 }

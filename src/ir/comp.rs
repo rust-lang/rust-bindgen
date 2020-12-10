@@ -1060,11 +1060,16 @@ pub struct CompInfo {
     /// Used to indicate when a struct has been forward declared. Usually used
     /// in headers so that APIs can't modify them directly.
     is_forward_declaration: bool,
+
+    /// If this type is declared as a private class member, this flag will be
+    /// true and we should not generate the cpp wrappers, because those won't
+    /// compile because they are trying to access this private type.
+    is_private: bool,
 }
 
 impl CompInfo {
     /// Construct a new compound type.
-    pub fn new(kind: CompKind) -> Self {
+    pub fn new(kind: CompKind, is_private: bool) -> Self {
         CompInfo {
             kind,
             fields: CompFields::default(),
@@ -1082,6 +1087,7 @@ impl CompInfo {
             packed_attr: false,
             found_unknown_attr: false,
             is_forward_declaration: false,
+            is_private: is_private,
         }
     }
 
@@ -1221,6 +1227,10 @@ impl CompInfo {
         ctx: &mut BindgenContext,
     ) -> Result<Self, ParseError> {
         use clang_sys::*;
+        let is_private = match location {
+            Some(v) => v.access_specifier() == CX_CXXPrivate,
+            None => false,
+        };
         assert!(
             ty.template_args().is_none(),
             "We handle template instantiations elsewhere"
@@ -1239,7 +1249,7 @@ impl CompInfo {
 
         debug!("CompInfo::from_ty({:?}, {:?})", kind, cursor);
 
-        let mut ci = CompInfo::new(kind);
+        let mut ci = CompInfo::new(kind, is_private);
         ci.is_forward_declaration =
             location.map_or(true, |cur| match cur.kind() {
                 CXCursor_StructDecl | CXCursor_UnionDecl |
@@ -1363,24 +1373,22 @@ impl CompInfo {
 
                     // Even if this is a definition, we may not be the semantic
                     // parent, see #1281.
-                    if cur.access_specifier() != CX_CXXPrivate {
-                        let inner = Item::parse(cur, Some(potential_id), ctx)
-                            .expect("Inner ClassDecl");
+                    let inner = Item::parse(cur, Some(potential_id), ctx)
+                        .expect("Inner ClassDecl");
 
-                        let inner = inner.expect_type_id(ctx);
+                    let inner = inner.expect_type_id(ctx);
 
-                        ci.inner_types.push(inner);
+                    ci.inner_types.push(inner);
 
-                        // A declaration of an union or a struct without name could
-                        // also be an unnamed field, unfortunately.
-                        if cur.spelling().is_empty() &&
-                            cur.kind() != CXCursor_EnumDecl
-                        {
-                            let ty = cur.cur_type();
-                            let offset = cur.offset_of_field().ok();
-                            maybe_anonymous_struct_field =
-                                Some((inner, ty, offset));
-                        }
+                    // A declaration of an union or a struct without name could
+                    // also be an unnamed field, unfortunately.
+                    if cur.spelling().is_empty() &&
+                        cur.kind() != CXCursor_EnumDecl
+                    {
+                        let ty = cur.cur_type();
+                        let offset = cur.offset_of_field().ok();
+                        maybe_anonymous_struct_field =
+                            Some((inner, ty, offset));
                     }
                 }
                 CXCursor_PackedAttr => {
@@ -1613,6 +1621,12 @@ impl CompInfo {
     /// Returns true if compound type has been forward declared
     pub fn is_forward_declaration(&self) -> bool {
         self.is_forward_declaration
+    }
+
+    /// Returns true if this type is a private class member and codegen should
+    /// therefore be emitted.
+    pub fn is_private(&self) -> bool {
+        self.is_private
     }
 
     /// Compute this compound structure's bitfield allocation units.

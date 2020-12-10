@@ -1,8 +1,8 @@
 use crate::ir::context::GeneratingStage;
 use crate::ir::function::FunctionSig;
 use crate::ir::item::ItemCanonicalName;
-use crate::ir::ty::TypeKind;
 use crate::ir::item_kind::ItemKind;
+use crate::ir::ty::TypeKind;
 use crate::BindgenContext;
 use crate::Item;
 
@@ -40,9 +40,7 @@ pub fn get_cpp_typename_without_namespace<'a>(
             let name = ctx.resolve_item(v).kind().expect_type().name().unwrap();
             Ok(name)
         }
-        TypeKind::Comp(_) => {
-            Err(WhyNoWrapper::UnnamedType)
-        }
+        TypeKind::Comp(_) => Err(WhyNoWrapper::UnnamedType),
         _ => panic!(),
     }
 }
@@ -138,16 +136,14 @@ pub fn cpp_function_wrapper(
             None => name.to_string(),
         };
         let mut args_call: Vec<String> = Vec::new();
-        signature
-            .argument_types()
-            .iter()
-            .enumerate()
-            .for_each(|(i, &(ref argname, _))| {
+        signature.argument_types().iter().enumerate().for_each(
+            |(i, &(ref argname, _))| {
                 let argname = argname.as_ref();
                 if !matches!(argname, Some(v) if v == "this") {
                     args_call.push(format!("arg_{}", i));
                 }
-            });
+            },
+        );
         cpp_out.push_str(&format!(
             "void bindgen_wrap_{}({} {} *writeback) {{\n    auto val = {}({});\n    *writeback = val;\n}}\n",
             &canonical_name,

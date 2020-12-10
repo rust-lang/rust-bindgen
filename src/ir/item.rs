@@ -975,6 +975,7 @@ impl Item {
             TypeKind::Alias(inner_id) => {
                 // TODO(emilio): Make this "hop through type aliases that aren't
                 // really generated" an option in `ItemResolver`?
+                assert!(inner_id != self.id, "Infinite recursion");
                 let inner_item = ctx.resolve_item(inner_id);
                 let name = item.canonical_name(ctx);
 
