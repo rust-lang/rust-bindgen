@@ -1363,22 +1363,24 @@ impl CompInfo {
 
                     // Even if this is a definition, we may not be the semantic
                     // parent, see #1281.
-                    let inner = Item::parse(cur, Some(potential_id), ctx)
-                        .expect("Inner ClassDecl");
+                    if cur.access_specifier() != CX_CXXPrivate {
+                        let inner = Item::parse(cur, Some(potential_id), ctx)
+                            .expect("Inner ClassDecl");
 
-                    let inner = inner.expect_type_id(ctx);
+                        let inner = inner.expect_type_id(ctx);
 
-                    ci.inner_types.push(inner);
+                        ci.inner_types.push(inner);
 
-                    // A declaration of an union or a struct without name could
-                    // also be an unnamed field, unfortunately.
-                    if cur.spelling().is_empty() &&
-                        cur.kind() != CXCursor_EnumDecl
-                    {
-                        let ty = cur.cur_type();
-                        let offset = cur.offset_of_field().ok();
-                        maybe_anonymous_struct_field =
-                            Some((inner, ty, offset));
+                        // A declaration of an union or a struct without name could
+                        // also be an unnamed field, unfortunately.
+                        if cur.spelling().is_empty() &&
+                            cur.kind() != CXCursor_EnumDecl
+                        {
+                            let ty = cur.cur_type();
+                            let offset = cur.offset_of_field().ok();
+                            maybe_anonymous_struct_field =
+                                Some((inner, ty, offset));
+                        }
                     }
                 }
                 CXCursor_PackedAttr => {
