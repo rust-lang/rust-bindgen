@@ -23,8 +23,12 @@ pub enum WhyNoWrapper {
     /// argument.
     TypeInsideUnnamedType,
 
-    /// One argument is an anonymous type
+    /// One argument or return value is an anonymous type
     UnnamedType,
+
+    /// One argument or return value is a templated type. We cannot handle
+    /// templates (yet).
+    TemplatedType,
 
     /// Functions with a double underscore prefix are sometimes weird
     DoubleUnderscore,
@@ -40,8 +44,11 @@ pub fn get_cpp_typename_without_namespace<'a>(
     }
     match typ.kind() {
         TypeKind::ResolvedTypeRef(v) => {
-            let name = ctx.resolve_item(v).kind().expect_type().name().unwrap();
-            Ok(name)
+            let typ = ctx.resolve_item(v).kind().expect_type();
+            match typ.kind() {
+                TypeKind::TemplateInstantiation(_) => Err(WhyNoWrapper::TemplatedType),
+                _ => Ok(typ.name().unwrap())
+            }
         }
         TypeKind::Comp(_) => Err(WhyNoWrapper::UnnamedType),
         _ => panic!(),
@@ -52,6 +59,15 @@ pub fn get_cpp_namespace_prefix(
     ctx: &BindgenContext,
     item: &Item,
 ) -> Result<String, WhyNoWrapper> {
+    let item = {
+        match item.kind() {
+            ItemKind::Type(v) => match v.kind() {
+                TypeKind::ResolvedTypeRef(v) => ctx.resolve_item(v),
+                _ => item,
+            }
+            _ => item,
+        }
+    };
     let prefix = {
         let mut prefix = String::new();
         let mut head = item;
