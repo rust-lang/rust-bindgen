@@ -372,6 +372,7 @@ macro_rules! test_wrapper_generation {
     ($function:ident, $header:expr) => {
         #[test]
         fn $function() {
+            //todo: this function writes spam to stdout/stderr and creates a lot of files in the rust-bindgen directory
             let header = PathBuf::from($header);
             let builder = bindgen::Builder::default()
                 .header($header)
