@@ -26,7 +26,11 @@ pub enum WhyNoWrapper {
 
     /// One argument is an anonymous type
     UnnamedType,
+
+    /// Functions with a double underscore prefix are sometimes weird
+    DoubleUnderscore,
 }
+
 pub fn get_cpp_typename_without_namespace<'a>(
     ctx: &'a BindgenContext,
     item: &'a Item,
@@ -44,7 +48,8 @@ pub fn get_cpp_typename_without_namespace<'a>(
         _ => panic!(),
     }
 }
-pub fn get_cpp_typename_with_namespace(
+
+pub fn get_cpp_namespace_prefix(
     ctx: &BindgenContext,
     item: &Item,
 ) -> Result<String, WhyNoWrapper> {
@@ -78,21 +83,34 @@ pub fn get_cpp_typename_with_namespace(
         }
         prefix
     };
+    Ok(prefix)
+}
+
+pub fn get_cpp_typename_with_namespace(
+    ctx: &BindgenContext,
+    item: &Item,
+) -> Result<String, WhyNoWrapper> {
+    let prefix = get_cpp_namespace_prefix(ctx, item)?;
     Ok(format!(
         "{}{}",
         prefix,
         get_cpp_typename_without_namespace(ctx, item)?
     ))
 }
+
 pub fn cpp_function_wrapper(
-    name: &str,
+    funcitem: &Item,
     ctx: &BindgenContext,
     item: Option<&Item>,
-    signature: &FunctionSig,
-    canonical_name: &String,
     cpp_out: &mut String,
 ) -> Result<(), WhyNoWrapper> {
     debug_assert!(ctx.generating_stage() == GeneratingStage::GeneratingCpp);
+    let signature_item =
+        ctx.resolve_item(funcitem.expect_function().signature());
+    let signature = match signature_item.expect_type().kind() {
+        TypeKind::Function(sig) => sig,
+        _ => panic!(),
+    };
     if ctx
         .resolve_item(signature.return_type())
         .kind()
@@ -105,57 +123,62 @@ pub fn cpp_function_wrapper(
         ctx,
         ctx.resolve_item(signature.return_type()),
     )?;
-    if !canonical_name.starts_with("__") {
-        let mut badflag = false;
-        let args_string: Vec<String> = signature
-            .argument_types()
-            .iter()
-            .enumerate()
-            .map(|(i, &(ref argname, ty))| {
-                let argname = argname.as_ref();
-                let typ = ctx.resolve_item(ty).expect_type().name();
-                if matches!(argname, Some(v) if v == "this") {
-                    if let None = item {
-                        badflag = true;
-                        String::new()
-                    } else {
-                        format!(
-                            "{} *this_ptr, ",
-                            item.unwrap().canonical_name(ctx)
-                        )
-                    }
-                } else if typ == None {
+    let canonical_name = funcitem.canonical_name(ctx);
+    if canonical_name.starts_with("__") {
+        return Err(WhyNoWrapper::DoubleUnderscore);
+    }
+    let mut badflag = false;
+    let args_string: Vec<String> = signature
+        .argument_types()
+        .iter()
+        .enumerate()
+        .map(|(i, &(ref argname, ty))| {
+            let argname = argname.as_ref();
+            let typ = ctx.resolve_item(ty).expect_type().name();
+            if matches!(argname, Some(v) if v == "this") {
+                if let None = item {
                     badflag = true;
                     String::new()
                 } else {
-                    format!("{} arg_{},", typ.unwrap(), i)
+                    format!("{} *this_ptr, ", item.unwrap().canonical_name(ctx))
                 }
-            })
-            .collect();
-        if badflag {
-            return Err(WhyNoWrapper::ArgumentTypeIsNone);
-        }
-        let callname = match item {
-            Some(_) => format!("this_ptr->{}", name),
-            None => name.to_string(),
-        };
-        let mut args_call: Vec<String> = Vec::new();
-        signature.argument_types().iter().enumerate().for_each(
-            |(i, &(ref argname, _))| {
-                let argname = argname.as_ref();
-                if !matches!(argname, Some(v) if v == "this") {
-                    args_call.push(format!("arg_{}", i));
-                }
-            },
-        );
-        cpp_out.push_str(&format!(
-            "void bindgen_wrap_{}({} {} *writeback) {{\n    auto val = {}({});\n    *writeback = val;\n}}\n",
-            &canonical_name,
-            &args_string.join(""),
-            rettype,
-            callname,
-            &args_call.join(", ")
-        ));
+            } else if typ == None {
+                badflag = true;
+                String::new()
+            } else {
+                format!("{} arg_{},", typ.unwrap(), i)
+            }
+        })
+        .collect();
+    if badflag {
+        return Err(WhyNoWrapper::ArgumentTypeIsNone);
     }
+    let callname = match item {
+        Some(_) => {
+            format!("this_ptr->{}", funcitem.kind().expect_function().name())
+        }
+        None => format!(
+            "{}{}",
+            get_cpp_namespace_prefix(ctx, funcitem)?,
+            funcitem.kind().expect_function().name()
+        ),
+    };
+    let mut args_call: Vec<String> = Vec::new();
+    signature.argument_types().iter().enumerate().for_each(
+        |(i, &(ref argname, _))| {
+            let argname = argname.as_ref();
+            if !matches!(argname, Some(v) if v == "this") {
+                args_call.push(format!("arg_{}", i));
+            }
+        },
+    );
+    cpp_out.push_str(&format!(
+        "void bindgen_wrap_{}({} {} *writeback) {{\n    auto val = {}({});\n    *writeback = val;\n}}\n",
+        canonical_name,
+        &args_string.join(""),
+        rettype,
+        callname,
+        &args_call.join(", ")
+    ));
     Ok(())
 }

@@ -2255,21 +2255,11 @@ impl CompInfo {
                         assert!(method.kind() != MethodKind::Constructor);
                         let function_item =
                             ctx.resolve_item(method.signature());
-                        let function = function_item.expect_function();
-                        let signature_item =
-                            ctx.resolve_item(function.signature());
-                        let signature =
-                            match *signature_item.expect_type().kind() {
-                                TypeKind::Function(ref sig) => sig,
-                                _ => panic!("How in the world?"),
-                            };
                         if let Some(ref mut cpp_out) = result.cpp_out {
                             cpp_function_wrapper(
-                                function.name(),
+                                function_item,
                                 ctx,
                                 Some(item),
-                                signature,
-                                &function_item.canonical_name(ctx),
                                 cpp_out,
                             ).unwrap_or_else(|e| debug!("Unable to create C++ wrapper for: item = {:?} Reason: {:?}", item, e));
                         }
@@ -3656,14 +3646,11 @@ impl Function {
             TypeKind::Function(ref sig) => sig,
             _ => panic!("Signature kind is not a Function: {:?}", signature),
         };
-
         if ctx.generating_stage() == GeneratingStage::GeneratingCpp {
             cpp_wrapper::cpp_function_wrapper(
-                self.name(),
+                item,
                 ctx,
                 None,
-                signature,
-                &canonical_name,
                 result.cpp_out.as_mut().unwrap(),
             ).unwrap_or_else(|e| debug!("Unable to create C++ wrapper for: item = {:?} Reason: {:?}", item, e));
         }
