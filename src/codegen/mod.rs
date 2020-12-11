@@ -1739,7 +1739,7 @@ impl CompInfo {
             return;
         }
 
-        if self.is_private() {
+        if !self.is_public() {
             return;
         }
 

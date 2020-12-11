@@ -46,8 +46,10 @@ pub fn get_cpp_typename_without_namespace<'a>(
         TypeKind::ResolvedTypeRef(v) => {
             let typ = ctx.resolve_item(v).kind().expect_type();
             match typ.kind() {
-                TypeKind::TemplateInstantiation(_) => Err(WhyNoWrapper::TemplatedType),
-                _ => Ok(typ.name().unwrap())
+                TypeKind::TemplateInstantiation(_) => {
+                    Err(WhyNoWrapper::TemplatedType)
+                }
+                _ => Ok(typ.name().unwrap()),
             }
         }
         TypeKind::Comp(_) => Err(WhyNoWrapper::UnnamedType),
@@ -64,7 +66,7 @@ pub fn get_cpp_namespace_prefix(
             ItemKind::Type(v) => match v.kind() {
                 TypeKind::ResolvedTypeRef(v) => ctx.resolve_item(v),
                 _ => item,
-            }
+            },
             _ => item,
         }
     };

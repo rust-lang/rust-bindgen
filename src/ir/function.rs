@@ -601,7 +601,9 @@ impl ClangSubItemParser for Function {
             return Err(ParseError::Continue);
         }
 
-        if cursor.access_specifier() == CX_CXXPrivate {
+        if cursor.access_specifier() != CX_CXXPublic &&
+            cursor.access_specifier() != CX_CXXInvalidAccessSpecifier
+        {
             return Err(ParseError::Continue);
         }
 

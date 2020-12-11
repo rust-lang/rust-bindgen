@@ -1061,15 +1061,15 @@ pub struct CompInfo {
     /// in headers so that APIs can't modify them directly.
     is_forward_declaration: bool,
 
-    /// If this type is declared as a private class member, this flag will be
-    /// true and we should not generate the cpp wrappers, because those won't
-    /// compile because they are trying to access this private type.
-    is_private: bool,
+    /// If this type is declared as a private or protected class member, this
+    /// flag will be false and we should not generate the cpp wrappers, because
+    /// those won't compile because they are trying to access this private type.
+    is_public: bool,
 }
 
 impl CompInfo {
     /// Construct a new compound type.
-    pub fn new(kind: CompKind, is_private: bool) -> Self {
+    pub fn new(kind: CompKind, is_public: bool) -> Self {
         CompInfo {
             kind,
             fields: CompFields::default(),
@@ -1087,7 +1087,7 @@ impl CompInfo {
             packed_attr: false,
             found_unknown_attr: false,
             is_forward_declaration: false,
-            is_private: is_private,
+            is_public: is_public,
         }
     }
 
@@ -1227,9 +1227,12 @@ impl CompInfo {
         ctx: &mut BindgenContext,
     ) -> Result<Self, ParseError> {
         use clang_sys::*;
-        let is_private = match location {
-            Some(v) => v.access_specifier() == CX_CXXPrivate,
-            None => false,
+        let is_public = match location {
+            Some(v) => {
+                v.access_specifier() == CX_CXXPublic ||
+                    v.access_specifier() == CX_CXXInvalidAccessSpecifier
+            }
+            None => true,
         };
         assert!(
             ty.template_args().is_none(),
@@ -1249,7 +1252,7 @@ impl CompInfo {
 
         debug!("CompInfo::from_ty({:?}, {:?})", kind, cursor);
 
-        let mut ci = CompInfo::new(kind, is_private);
+        let mut ci = CompInfo::new(kind, is_public);
         ci.is_forward_declaration =
             location.map_or(true, |cur| match cur.kind() {
                 CXCursor_StructDecl | CXCursor_UnionDecl |
@@ -1625,8 +1628,8 @@ impl CompInfo {
 
     /// Returns true if this type is a private class member and codegen should
     /// therefore be emitted.
-    pub fn is_private(&self) -> bool {
-        self.is_private
+    pub fn is_public(&self) -> bool {
+        self.is_public
     }
 
     /// Compute this compound structure's bitfield allocation units.
