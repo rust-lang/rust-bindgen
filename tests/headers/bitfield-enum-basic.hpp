@@ -20,6 +20,7 @@ enum {
 };
 
 class Dummy {
+public:
   enum {
     DUMMY_FOO = 1 << 0,
     DUMMY_BAR = 1 << 1,

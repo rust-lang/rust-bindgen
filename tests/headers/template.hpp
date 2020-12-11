@@ -39,6 +39,7 @@ struct C {
 
 template<typename T>
 class D {
+public:
     typedef Foo<int, int> MyFoo;
 
     MyFoo m_foo;

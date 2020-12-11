@@ -3,6 +3,7 @@
 
 class A {
     unsigned c;
+public:
     struct Segment { int begin, end; };
     union {
         int f;
@@ -14,6 +15,7 @@ class A {
 
 class B {
     unsigned d;
+public:
     struct Segment { int begin, end; };
 };
 
@@ -27,6 +29,7 @@ enum class StepSyntax {
 
 class C {
     unsigned d;
+public:
     union {
         struct {
             float mX1;

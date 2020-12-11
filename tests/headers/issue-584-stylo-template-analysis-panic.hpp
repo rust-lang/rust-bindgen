@@ -2,6 +2,7 @@
 template <class> class RefPtr;
 class b;
 class A {
+public:
   typedef b a;
 };
 template <class c> class e { RefPtr<c> d; };

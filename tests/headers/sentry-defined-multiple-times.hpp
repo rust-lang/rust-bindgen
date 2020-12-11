@@ -12,6 +12,7 @@
 namespace whatever {
     template <typename, typename>
     class Wrapper {
+    public:
         // Declaration of Wrapper::sentry
         class sentry;
     };
@@ -31,6 +32,7 @@ namespace whatever {
     // right.
 
     class NotTemplateWrapper {
+    public:
         class sentry;
     };
 
@@ -39,6 +41,7 @@ namespace whatever {
     };
 
     class InlineNotTemplateWrapper {
+    public:
         class sentry {
             bool i_am_inline_not_template_wrapper_sentry;
         };
@@ -46,13 +49,16 @@ namespace whatever {
 
     template <typename, typename>
     class InlineTemplateWrapper {
+    public:
         class sentry {
             int i_am_inline_template_wrapper_sentry;
         };
     };
 
     class OuterDoubleWrapper {
+    public:
         class InnerDoubleWrapper {
+        public:
             class sentry;
         };
     };
@@ -62,7 +68,9 @@ namespace whatever {
     };
 
     class OuterDoubleInlineWrapper {
+    public:
         class InnerDoubleInlineWrapper {
+        public:
             class sentry {
                 int i_am_double_wrapper_inline_sentry;
             };
@@ -72,6 +80,7 @@ namespace whatever {
 
 template <typename, typename>
 class OutsideNamespaceWrapper {
+public:
     class sentry;
 };
 

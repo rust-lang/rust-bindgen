@@ -6,5 +6,6 @@ enum {
 };
 
 class Foo {
+public:
   enum { FOO_BAR = 10 };
 };

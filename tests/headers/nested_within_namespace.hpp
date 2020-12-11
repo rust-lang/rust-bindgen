@@ -3,6 +3,7 @@
 namespace foo {
   class Bar {
     int foo;
+  public:
 
     class Baz {
       int foo;

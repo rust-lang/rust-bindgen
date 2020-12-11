@@ -6,6 +6,7 @@ class Rooted {
 };
 
 class AutoValueVector : Rooted<int> {
+public:
     using Alias = int;
     using RootedAlias = Rooted<Alias>;
 };

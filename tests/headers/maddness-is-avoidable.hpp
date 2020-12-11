@@ -2,6 +2,7 @@
 
 template<typename T>
 class RefPtr {
+public:
   template<typename R, typename... Args>
   class Proxy {
     typedef R (T::*member_function)(Args...);

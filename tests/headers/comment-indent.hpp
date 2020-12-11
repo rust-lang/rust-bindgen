@@ -6,6 +6,7 @@
  * This class is really really interesting, look!
  */
 class Foo {
+public:
   /**
    * This nested class is also a multi-line doc comment.
    *

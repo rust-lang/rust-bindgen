@@ -6,6 +6,7 @@ class Entry : public K
 
 template<typename K, typename V>
 class nsBaseHashtable {
+public:
   typedef Entry<K, V> EntryType;
 
   struct EntryPtr {

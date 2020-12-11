@@ -5,6 +5,7 @@ inline namespace __cxx11 {
 
 template<typename CharT>
 class basic_string {
+public:
   struct Alloc_hider {
     void* storage;
   } hider;

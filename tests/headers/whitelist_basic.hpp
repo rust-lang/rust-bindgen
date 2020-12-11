@@ -2,6 +2,7 @@
 
 template<typename T>
 class WhitelistMe {
+public:
   class Inner {
     T bar;
   };

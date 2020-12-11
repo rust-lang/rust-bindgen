@@ -2,6 +2,7 @@
 
 template <typename T, typename U>
 class DoesNotUse {
+public:
     using Aliased = T;
     typedef U Typedefed;
 

@@ -27,6 +27,7 @@ class D {
 
 template<typename T>
 class Templated {
+public:
     T member;
 
     class Templated_inner {

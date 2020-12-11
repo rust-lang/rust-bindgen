@@ -2,6 +2,7 @@
 
 template <typename T, typename U, typename NeverUsed>
 class DoublyIndirectUsage {
+public:
     using Aliased = T;
     typedef U Typedefed;
 

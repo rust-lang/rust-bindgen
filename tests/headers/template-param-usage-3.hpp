@@ -3,6 +3,7 @@
 template <typename T>
 class UsesTemplateParameter {
     T t;
+public:
 
     template <typename U>
     class AlsoUsesTemplateParameterAndMore {

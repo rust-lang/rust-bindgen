@@ -3,7 +3,7 @@
 template <typename T>
 class UsesTemplateParameter {
     T t;
-
+public:
     class AlsoUsesTemplateParameter {
         T also;
     };
