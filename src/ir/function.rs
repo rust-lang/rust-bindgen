@@ -136,7 +136,12 @@ impl Function {
     ) -> &'a FunctionSig {
         let signature_item = ctx.resolve_item(self.signature);
 
-        let sig = match *signature_item.expect_type().kind() {
+        let sig = match *signature_item
+            .kind()
+            .expect_type()
+            .canonical_type(ctx)
+            .kind()
+        {
             TypeKind::Function(ref sig) => sig,
             _ => panic!("Ill formed Item. This is a bug in rust-bindgen."),
         };
