@@ -3640,12 +3640,7 @@ impl Function {
             result.saw_function(seen_symbol_name);
         }
 
-        let signature_item = ctx.resolve_item(self.signature());
-        let signature = signature_item.kind().expect_type().canonical_type(ctx);
-        let signature = match *signature.kind() {
-            TypeKind::Function(ref sig) => sig,
-            _ => panic!("Signature kind is not a Function: {:?}", signature),
-        };
+        let signature = self.get_signature(ctx);
         if ctx.generating_stage() == GeneratingStage::GeneratingCpp {
             cpp_wrapper::cpp_function_wrapper(
                 item,

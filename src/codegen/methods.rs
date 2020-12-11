@@ -6,7 +6,6 @@ use crate::ir::comp::*;
 use crate::ir::context::{BindgenContext, GeneratingStage};
 use crate::ir::function::{Abi, Function};
 use crate::ir::item::ItemCanonicalName;
-use crate::ir::ty::TypeKind;
 use crate::HashMap;
 use proc_macro2::TokenStream;
 use std::str::FromStr;
@@ -88,11 +87,7 @@ impl Method {
         // We then get the type of the return value (ret_type) and the type of
         // the second argument (second_arg_type) (if a second argument exists).
         let function_name = ctx.rust_ident(function_item.canonical_name(ctx));
-        let signature_item = ctx.resolve_item(function.signature());
-        let signature = match *signature_item.expect_type().kind() {
-            TypeKind::Function(ref sig) => sig,
-            _ => panic!("How in the world?"),
-        };
+        let signature = function.get_signature(ctx);
         let return_item = ctx.resolve_item(signature.return_type());
         let ret_type = return_item.to_rust_ty_or_opaque(ctx, &());
         let args = signature.argument_types();
@@ -283,12 +278,7 @@ impl MethodCodegen for Method {
         function_item.codegen(ctx, result);
 
         let function = function_item.expect_function();
-        let signature_item = ctx.resolve_item(function.signature());
-
-        let signature = match *signature_item.expect_type().kind() {
-            TypeKind::Function(ref sig) => sig,
-            _ => panic!("How in the world?"),
-        };
+        let signature = function.get_signature(ctx);
 
         if let (Abi::ThisCall, false) =
             (signature.abi(), ctx.options().rust_features().thiscall_abi)

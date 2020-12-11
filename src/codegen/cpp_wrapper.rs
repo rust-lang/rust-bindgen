@@ -1,5 +1,4 @@
 use crate::ir::context::GeneratingStage;
-use crate::ir::function::FunctionSig;
 use crate::ir::item::ItemCanonicalName;
 use crate::ir::item_kind::ItemKind;
 use crate::ir::ty::TypeKind;
@@ -105,12 +104,7 @@ pub fn cpp_function_wrapper(
     cpp_out: &mut String,
 ) -> Result<(), WhyNoWrapper> {
     debug_assert!(ctx.generating_stage() == GeneratingStage::GeneratingCpp);
-    let signature_item =
-        ctx.resolve_item(funcitem.expect_function().signature());
-    let signature = match signature_item.expect_type().kind() {
-        TypeKind::Function(sig) => sig,
-        _ => panic!(),
-    };
+    let signature = funcitem.expect_function().get_signature(ctx);
     if ctx
         .resolve_item(signature.return_type())
         .kind()

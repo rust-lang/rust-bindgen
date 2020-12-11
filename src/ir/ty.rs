@@ -410,16 +410,18 @@ impl Type {
                 .expect_type()
                 .surely_trivially_relocatable(ctx);
         }
-        matches!(self.kind(),
-              TypeKind::Void
-            | TypeKind::NullPtr
-            | TypeKind::Int(_)
-            | TypeKind::Float(_)
-            | TypeKind::Complex(_)
-            | TypeKind::Enum(_)
-            | TypeKind::Pointer(_)
-            | TypeKind::BlockPointer(_)
-            | TypeKind::Reference(_))
+        matches!(
+            self.kind(),
+            TypeKind::Void |
+                TypeKind::NullPtr |
+                TypeKind::Int(_) |
+                TypeKind::Float(_) |
+                TypeKind::Complex(_) |
+                TypeKind::Enum(_) |
+                TypeKind::Pointer(_) |
+                TypeKind::BlockPointer(_) |
+                TypeKind::Reference(_)
+        )
     }
 }
 

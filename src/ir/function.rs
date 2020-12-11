@@ -124,9 +124,23 @@ impl Function {
         self.mangled_name.as_ref().map(|n| &**n)
     }
 
-    /// Get this function's signature type.
+    /// Get this function's signature type id.
     pub fn signature(&self) -> TypeId {
         self.signature
+    }
+
+    /// Get this function's signature
+    pub fn get_signature<'a>(
+        &self,
+        ctx: &'a BindgenContext,
+    ) -> &'a FunctionSig {
+        let signature_item = ctx.resolve_item(self.signature);
+
+        let sig = match *signature_item.expect_type().kind() {
+            TypeKind::Function(ref sig) => sig,
+            _ => panic!("Ill formed Item. This is a bug in rust-bindgen."),
+        };
+        sig
     }
 
     /// Get this function's kind.
