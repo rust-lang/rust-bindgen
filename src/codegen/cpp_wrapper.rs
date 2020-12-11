@@ -53,24 +53,28 @@ pub fn get_cpp_typename_with_namespace(
         let mut head = item;
         loop {
             head = ctx.resolve_item(head.parent_id());
-            let name = match head.kind() {
+            prefix = match head.kind() {
                 ItemKind::Module(v) => {
-                    if v.name().unwrap() == "root" {
-                        //todo: what if the C++ sourcecode is namespace root {...} ?
-                        break;
+                    match v.name() {
+                        None => prefix, // v.name() is None if it is an unnamed namespace
+                        Some(name) => {
+                            if name == "root" {
+                                //todo: what if the C++ sourcecode is namespace root {...} ?
+                                break;
+                            }
+                            format!("{}::{}", name, prefix)
+                        }
                     }
-                    v.name().unwrap()
                 },
                 ItemKind::Type(v) => {
                     match v.name() {
                         None => {return Err(WhyNoWrapper::TypeInsideUnnamedType);},
-                        Some(v) => v,
+                        Some(v) => format!("{}::{}", v, prefix),
                     }
                 },
                 ItemKind::Function(_) => panic!("Bindgen does not support types declared inside of functions."),
                 ItemKind::Var(_) => panic!("Bindgen does not support types declared inside of variables."),
             };
-            prefix = format!("{}::{}", name, prefix);
         }
         prefix
     };
