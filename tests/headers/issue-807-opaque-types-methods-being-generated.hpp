@@ -17,7 +17,7 @@ class Opaque
   // Base member edge.
   : public NoBindingsShouldBeGeneratedForMe1 {
 
-protected:
+public:
     // Field edge.
     NoBindingsShouldBeGeneratedForMe2 field;
 
