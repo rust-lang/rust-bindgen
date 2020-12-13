@@ -1089,6 +1089,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 let item = self.items[item_id.0].as_mut().unwrap();
                 *item.kind_mut().as_type_mut().unwrap().kind_mut() =
                     TypeKind::ResolvedTypeRef(replacement_id);
+                dbg!(TypeKind::ResolvedTypeRef(replacement_id));
                 item.parent_id()
             };
 
@@ -1466,7 +1467,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             .map(|t| t.kind().expect_type())
     }
 
-    /// Resolve the given `ItemId` into an `Item`, or `None` if no such item
+    /// Resolve the given `ItemId` into an `&Item`, or `None` if no such item
     /// exists.
     pub fn resolve_item_fallible<Id: Into<ItemId>>(
         &self,
@@ -1475,12 +1476,32 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.items.get(id.into().0)?.as_ref()
     }
 
-    /// Resolve the given `ItemId` into an `Item`.
+    /// Resolve the given `ItemId` into an `&mut Item`, or `None` if no such
+    /// item exists.
+    pub fn resolve_item_fallible_mut<Id: Into<ItemId>>(
+        &mut self,
+        id: Id,
+    ) -> Option<&mut Item> {
+        self.items.get_mut(id.into().0)?.as_mut()
+    }
+
+    /// Resolve the given `ItemId` into an `&Item`.
     ///
     /// Panics if the given id does not resolve to any item.
     pub fn resolve_item<Id: Into<ItemId>>(&self, item_id: Id) -> &Item {
         let item_id = item_id.into();
         match self.resolve_item_fallible(item_id) {
+            Some(item) => item,
+            None => panic!("Not an item: {:?}", item_id),
+        }
+    }
+
+    /// Resolve the given `ItemId` into an `&mut Item`.
+    ///
+    /// Panics if the given id does not resolve to any item.
+    pub fn resolve_item_mut<Id: Into<ItemId>>(&mut self, item_id: Id) -> &mut Item {
+        let item_id = item_id.into();
+        match self.resolve_item_fallible_mut(item_id) {
             Some(item) => item,
             None => panic!("Not an item: {:?}", item_id),
         }

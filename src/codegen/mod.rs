@@ -2243,11 +2243,16 @@ impl CompInfo {
                     let cpptypename =
                         get_cpp_typename_with_namespace(ctx, item);
                     match cpptypename {
-                        Ok(v) => result.cpp_out.as_mut().unwrap().push_str(&format!(
-                            "void bindgen_destruct_{}({} *ptr) {{\n    bindgen_destruct_or_throw(ptr);\n}}\n",
-                            ty_for_impl,
-                            v
-                        )),
+                        Ok(mut v) => {
+                            if self.use_struct_prefix() {
+                                v = format!("struct {}", v);
+                            }
+                            result.cpp_out.as_mut().unwrap().push_str(&format!(
+                                "void bindgen_destruct_{}({} *ptr) {{\n    bindgen_destruct_or_throw(ptr);\n}}\n",
+                                ty_for_impl,
+                                v
+                            ))
+                        },
                         Err(WhyNoWrapper::TypeInsideUnnamedType) | Err(WhyNoWrapper::UnnamedType) => {},
                         _ => panic!(),
                     };

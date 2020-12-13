@@ -1065,6 +1065,19 @@ pub struct CompInfo {
     /// flag will be false and we should not generate the cpp wrappers, because
     /// those won't compile because they are trying to access this private type.
     is_public: bool,
+
+    /// If use_struct_prefix is true, this comp was defined like this:
+    /// struct S { ... };
+    /// If use_struct_prefix is false, this comp was defined like this:
+    /// typedef struct { ... } S;
+    /// If you do this:
+    /// struct S { ... }; typedef S S;
+    /// Then use_struct_prefix will also be false, but I'm not sure if bindgen
+    /// will correctly handly this in every edge case. This is not that bad,
+    /// because (nearly?) noone does this.
+    /// If this is true, we will refer to this comp in C++ code using "struct
+    /// name". Otherwise, we will refer to it using "name".
+    use_struct_prefix: bool,
 }
 
 impl CompInfo {
@@ -1088,6 +1101,7 @@ impl CompInfo {
             found_unknown_attr: false,
             is_forward_declaration: false,
             is_public: is_public,
+            use_struct_prefix: true,
         }
     }
 
@@ -1630,6 +1644,16 @@ impl CompInfo {
     /// therefore be emitted.
     pub fn is_public(&self) -> bool {
         self.is_public
+    }
+
+    /// Returns true if you should add a "struct" prefix in C++ code
+    pub fn use_struct_prefix(&self) -> bool {
+        self.use_struct_prefix
+    }
+
+    /// Returns true if you should add a "struct" prefix in C++ code
+    pub fn set_use_struct_prefix(&mut self, newval: bool) {
+        self.use_struct_prefix = newval;
     }
 
     /// Compute this compound structure's bitfield allocation units.
