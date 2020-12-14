@@ -2252,8 +2252,9 @@ impl CompInfo {
                                 ty_for_impl,
                                 v
                             ))
-                        },
-                        Err(WhyNoWrapper::TypeInsideUnnamedType) | Err(WhyNoWrapper::UnnamedType) => {},
+                        }
+                        Err(WhyNoWrapper::TypeInsideUnnamedType) |
+                        Err(WhyNoWrapper::UnnamedType) => {}
                         _ => panic!(),
                     };
                     for method in self.methods() {

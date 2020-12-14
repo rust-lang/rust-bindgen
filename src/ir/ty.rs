@@ -1157,12 +1157,21 @@ impl Type {
                     let inner = cursor.typedef_type().expect("Not valid Type?");
                     let inner =
                         Item::from_ty_or_ref(inner, location, None, ctx);
-                    let inner_inner = match ctx.resolve_item(&inner).kind().expect_type().kind() {
+                    let inner_inner = match ctx
+                        .resolve_item(&inner)
+                        .kind()
+                        .expect_type()
+                        .kind()
+                    {
                         TypeKind::ResolvedTypeRef(v) => Some(*v),
                         _ => None,
                     };
                     if let Some(inner_inner) = inner_inner {
-                        let typ = ctx.resolve_item_mut(inner_inner).kind_mut().as_type_mut().unwrap();
+                        let typ = ctx
+                            .resolve_item_mut(inner_inner)
+                            .kind_mut()
+                            .as_type_mut()
+                            .unwrap();
                         if Some(name.as_str()) == typ.name() {
                             if let TypeKind::Comp(v) = typ.kind_mut() {
                                 v.set_use_struct_prefix(false);

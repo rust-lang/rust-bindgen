@@ -1499,7 +1499,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Resolve the given `ItemId` into an `&mut Item`.
     ///
     /// Panics if the given id does not resolve to any item.
-    pub fn resolve_item_mut<Id: Into<ItemId>>(&mut self, item_id: Id) -> &mut Item {
+    pub fn resolve_item_mut<Id: Into<ItemId>>(
+        &mut self,
+        item_id: Id,
+    ) -> &mut Item {
         let item_id = item_id.into();
         match self.resolve_item_fallible_mut(item_id) {
             Some(item) => item,

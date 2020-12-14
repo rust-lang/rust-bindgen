@@ -295,7 +295,8 @@ impl MethodCodegen for Method {
 
         let function_name = ctx.rust_ident(function_item.canonical_name(ctx));
         let mut args = utils::fnsig_arguments(ctx, signature);
-        let mut ret = utils::fnsig_return_ty(ctx, signature);
+        let mut real_ret = utils::fnsig_return_ty(ctx, signature);
+        let mut inner_ret = None;
 
         let using_wrapper = safe_class_interface &&
             ctx.generating_stage() == GeneratingStage::ReadingGeneratedCpp &&
@@ -304,11 +305,12 @@ impl MethodCodegen for Method {
                 .expect_type()
                 .surely_trivially_relocatable(ctx);
         if using_wrapper {
-            if let Some(ret_inner) = ret {
-                ret = Some(
+            if let Some(ret_inner) = real_ret {
+                real_ret = Some(
                     TokenStream::from_str(&format!("Box_{}", ret_inner))
                         .expect("Parsing error"),
                 );
+                inner_ret = Some(ret_inner);
             }
         }
 
@@ -327,7 +329,7 @@ impl MethodCodegen for Method {
         // return-type = void.
         if self.is_constructor() {
             args.remove(0);
-            ret = Some(quote! { Self });
+            real_ret = Some(quote! { Self });
         }
 
         let mut exprs =
@@ -389,8 +391,8 @@ impl MethodCodegen for Method {
             let function_name =
                 ctx.rust_ident(format!("bindgen_wrap_{}", function_name));
             let call = quote! {
-                let ret = #ret::allocate_uninitialised();
-                #function_name (#( #exprs ),* , ret.ptr as * mut #ty_for_impl);
+                let ret = #real_ret::allocate_uninitialised();
+                #function_name (#( #exprs ),* , ret.ptr as * mut #inner_ret);
                 ret
             };
             stmts.push(call);
@@ -429,14 +431,14 @@ impl MethodCodegen for Method {
         }
 
         let name = ctx.rust_ident(&name);
-        let ret = match ret {
+        let real_ret = match real_ret {
             Some(v) => quote! { -> #v },
             None => quote! {},
         };
         if safe_class_interface {
             methods.push(quote! {
                 #(#attrs)*
-                pub fn #name ( #( #args ),* ) #ret {
+                pub fn #name ( #( #args ),* ) #real_ret {
                     unsafe {
                         #block
                     }
@@ -445,7 +447,7 @@ impl MethodCodegen for Method {
         } else {
             methods.push(quote! {
                 #(#attrs)*
-                pub unsafe fn #name ( #( #args ),* ) #ret {
+                pub unsafe fn #name ( #( #args ),* ) #real_ret {
                     #block
                 }
             });
