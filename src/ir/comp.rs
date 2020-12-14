@@ -148,9 +148,6 @@ pub trait FieldMethods {
     /// If this is a bitfield, how many bits does it need?
     fn bitfield_width(&self) -> Option<u32>;
 
-    /// Is this field marked as `mutable`?
-    fn is_mutable(&self) -> bool;
-
     /// Get the annotations for this field.
     fn annotations(&self) -> &Annotations;
 
@@ -415,10 +412,6 @@ impl FieldMethods for Bitfield {
         self.data.bitfield_width()
     }
 
-    fn is_mutable(&self) -> bool {
-        self.data.is_mutable()
-    }
-
     fn annotations(&self) -> &Annotations {
         self.data.annotations()
     }
@@ -443,7 +436,6 @@ impl RawField {
         comment: Option<String>,
         annotations: Option<Annotations>,
         bitfield_width: Option<u32>,
-        mutable: bool,
         offset: Option<usize>,
     ) -> RawField {
         RawField(FieldData {
@@ -452,7 +444,6 @@ impl RawField {
             comment,
             annotations: annotations.unwrap_or_default(),
             bitfield_width,
-            mutable,
             offset,
         })
     }
@@ -473,10 +464,6 @@ impl FieldMethods for RawField {
 
     fn bitfield_width(&self) -> Option<u32> {
         self.0.bitfield_width()
-    }
-
-    fn is_mutable(&self) -> bool {
-        self.0.is_mutable()
     }
 
     fn annotations(&self) -> &Annotations {
@@ -891,9 +878,6 @@ pub struct FieldData {
     /// If this field is a bitfield, and how many bits does it contain if it is.
     bitfield_width: Option<u32>,
 
-    /// If the C++ field is marked as `mutable`
-    mutable: bool,
-
     /// The offset of the field (in bits)
     offset: Option<usize>,
 }
@@ -913,10 +897,6 @@ impl FieldMethods for FieldData {
 
     fn bitfield_width(&self) -> Option<u32> {
         self.bitfield_width
-    }
-
-    fn is_mutable(&self) -> bool {
-        self.mutable
     }
 
     fn annotations(&self) -> &Annotations {
@@ -1262,9 +1242,8 @@ impl CompInfo {
                         // anonymous field. Detect that case here, and do
                         // nothing.
                     } else {
-                        let field = RawField::new(
-                            None, ty, None, None, None, false, offset,
-                        );
+                        let field =
+                            RawField::new(None, ty, None, None, None, offset);
                         ci.fields.append_raw_field(field);
                     }
                 }
@@ -1284,7 +1263,7 @@ impl CompInfo {
                         });
                         if !used {
                             let field = RawField::new(
-                                None, ty, None, None, None, false, offset,
+                                None, ty, None, None, None, offset,
                             );
                             ci.fields.append_raw_field(field);
                         }
@@ -1301,7 +1280,6 @@ impl CompInfo {
                     let comment = cur.raw_comment();
                     let annotations = Annotations::new(&cur);
                     let name = cur.spelling();
-                    let is_mutable = cursor.is_mutable_field();
                     let offset = cur.offset_of_field().ok();
 
                     // Name can be empty if there are bitfields, for example,
@@ -1319,7 +1297,6 @@ impl CompInfo {
                         comment,
                         annotations,
                         bit_width,
-                        is_mutable,
                         offset,
                     );
                     ci.fields.append_raw_field(field);
@@ -1527,8 +1504,7 @@ impl CompInfo {
         });
 
         if let Some((ty, _, offset)) = maybe_anonymous_struct_field {
-            let field =
-                RawField::new(None, ty, None, None, None, false, offset);
+            let field = RawField::new(None, ty, None, None, None, offset);
             ci.fields.append_raw_field(field);
         }
 
