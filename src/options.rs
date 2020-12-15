@@ -316,6 +316,9 @@ where
             Arg::with_name("no-include-path-detection")
                 .long("no-include-path-detection")
                 .help("Do not try to detect default include paths"),
+            Arg::with_name("fit-macro-constant-types")
+                .long("fit-macro-constant-types")
+                .help("Try to fit macro constants into types smaller than u32/i32"),
             Arg::with_name("unstable-rust")
                 .long("unstable-rust")
                 .help("Generate unstable Rust code (deprecated; use --rust-target instead).")
@@ -652,6 +655,10 @@ where
 
     if matches.is_present("no-include-path-detection") {
         builder = builder.detect_include_paths(false);
+    }
+
+    if matches.is_present("fit-macro-constant-types") {
+        builder = builder.fit_macro_constants(true);
     }
 
     if matches.is_present("time-phases") {
