@@ -1287,6 +1287,12 @@ impl Builder {
         self
     }
 
+    /// Whether to try to fit macro constants to types smaller than u32/i32
+    pub fn fit_macro_constants(mut self, doit: bool) -> Self {
+        self.options.fit_macro_constants = doit;
+        self
+    }
+
     /// Prepend the enum name to constant or newtype variants.
     pub fn prepend_enum_name(mut self, doit: bool) -> Self {
         self.options.prepend_enum_name = doit;
@@ -1735,6 +1741,9 @@ struct BindgenOptions {
     /// Whether to detect include paths using clang_sys.
     detect_include_paths: bool,
 
+    /// Whether to try to fit macro constants into types smaller than u32/i32
+    fit_macro_constants: bool,
+
     /// Whether to prepend the enum name to constant or newtype variants.
     prepend_enum_name: bool,
 
@@ -1905,6 +1914,7 @@ impl Default for BindgenOptions {
             block_extern_crate: false,
             enable_mangling: true,
             detect_include_paths: true,
+            fit_macro_constants: false,
             prepend_enum_name: true,
             time_phases: false,
             record_matches: true,
