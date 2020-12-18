@@ -478,6 +478,10 @@ impl Builder {
             output_vector.push("--no-prepend-enum-name".into());
         }
 
+        if self.options.fit_macro_constants {
+            output_vector.push("--fit-macro-constant-types".into());
+        }
+
         if self.options.array_pointers_in_arguments {
             output_vector.push("--use-array-pointers-in-arguments".into());
         }
