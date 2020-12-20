@@ -575,7 +575,7 @@ where
         } else {
             bytes_from_bits_pow2(unit_align_in_bits)
         };
-        let size = align_to(unit_size_in_bits, align * 8) / 8;
+        let size = align_to(unit_size_in_bits, 8) / 8;
         let layout = Layout::new(size, align);
         fields.extend(Some(Field::Bitfields(BitfieldUnit {
             nth: *bitfield_unit_count,

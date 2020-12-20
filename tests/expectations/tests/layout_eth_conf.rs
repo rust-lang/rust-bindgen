@@ -7,17 +7,16 @@
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage, Align> {
+pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
-    align: [Align; 0],
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align> {
+impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
-        Self { storage, align: [] }
+        Self { storage }
     }
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
 {
@@ -156,7 +155,8 @@ pub struct rte_eth_rxmode {
     pub max_rx_pkt_len: u32,
     ///< hdr buf size (header_split enabled).
     pub split_hdr_size: u16,
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
 }
 #[test]
 fn bindgen_test_layout_rte_eth_rxmode() {
@@ -344,11 +344,9 @@ impl rte_eth_rxmode {
         hw_strip_crc: u16,
         enable_scatter: u16,
         enable_lro: u16,
-    ) -> __BindgenBitfieldUnit<[u8; 2usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 2usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let header_split: u16 =
                 unsafe { ::std::mem::transmute(header_split) };
@@ -417,7 +415,8 @@ pub struct rte_eth_txmode {
     ///< TX multi-queues mode.
     pub mq_mode: rte_eth_tx_mq_mode,
     pub pvid: u16,
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: u8,
 }
 #[test]
@@ -508,11 +507,9 @@ impl rte_eth_txmode {
         hw_vlan_reject_tagged: u8,
         hw_vlan_reject_untagged: u8,
         hw_vlan_insert_pvid: u8,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 1usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let hw_vlan_reject_tagged: u8 =
                 unsafe { ::std::mem::transmute(hw_vlan_reject_tagged) };

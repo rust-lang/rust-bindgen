@@ -7,17 +7,16 @@
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage, Align> {
+pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
-    align: [Align; 0],
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align> {
+impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
-        Self { storage, align: [] }
+        Self { storage }
     }
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
 {
@@ -195,7 +194,8 @@ pub union jsval_layout {
 #[repr(align(8))]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct jsval_layout__bindgen_ty_1 {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize], u64>,
+    pub _bitfield_align_1: [u64; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
 }
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_1() {
@@ -246,11 +246,9 @@ impl jsval_layout__bindgen_ty_1 {
     pub fn new_bitfield_1(
         payload47: u64,
         tag: JSValueTag,
-    ) -> __BindgenBitfieldUnit<[u8; 8usize], u64> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 8usize],
-            u64,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 8usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 47u8, {
             let payload47: u64 = unsafe { ::std::mem::transmute(payload47) };
             payload47 as u64
