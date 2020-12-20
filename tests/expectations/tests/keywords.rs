@@ -62,6 +62,10 @@ extern "C" {
     pub static mut str_: ::std::os::raw::c_int;
 }
 extern "C" {
+    #[link_name = "\u{1}dyn"]
+    pub static mut dyn_: ::std::os::raw::c_int;
+}
+extern "C" {
     #[link_name = "\u{1}as"]
     pub static mut as_: ::std::os::raw::c_int;
 }
