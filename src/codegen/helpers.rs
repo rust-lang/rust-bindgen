@@ -120,16 +120,9 @@ pub fn bitfield_unit(ctx: &BindgenContext, layout: Layout) -> TokenStream {
         tokens.append_all(quote! { root:: });
     }
 
-    let align = match layout.align {
-        n if n >= 8 => quote! { u64 },
-        4 => quote! { u32 },
-        2 => quote! { u16 },
-        _ => quote! { u8  },
-    };
-
     let size = layout.size;
     tokens.append_all(quote! {
-        __BindgenBitfieldUnit<[u8; #size], #align>
+        __BindgenBitfieldUnit<[u8; #size]>
     });
 
     tokens

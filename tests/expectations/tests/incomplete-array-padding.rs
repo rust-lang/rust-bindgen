@@ -7,17 +7,16 @@
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage, Align> {
+pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
-    align: [Align; 0],
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align> {
+impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
-        Self { storage, align: [] }
+        Self { storage }
     }
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
 {
@@ -125,7 +124,8 @@ impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
 #[repr(C)]
 #[derive(Debug)]
 pub struct foo {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub b: __IncompleteArrayField<*mut ::std::os::raw::c_void>,
 }
 #[test]
@@ -163,11 +163,9 @@ impl foo {
     #[inline]
     pub fn new_bitfield_1(
         a: ::std::os::raw::c_char,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 1usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let a: u8 = unsafe { ::std::mem::transmute(a) };
             a as u64

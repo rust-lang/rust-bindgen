@@ -1437,6 +1437,21 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
             }
         };
 
+        {
+            let align_field_name = format!("_bitfield_align_{}", self.nth());
+            let align_field_ident = ctx.rust_ident(&align_field_name);
+            let align_ty = match self.layout().align {
+                n if n >= 8 => quote! { u64 },
+                4 => quote! { u32 },
+                2 => quote! { u16 },
+                _ => quote! { u8  },
+            };
+            let align_field = quote! {
+                pub #align_field_ident: [#align_ty; 0],
+            };
+            fields.extend(Some(align_field));
+        }
+
         let unit_field_name = format!("_bitfield_{}", self.nth());
         let unit_field_ident = ctx.rust_ident(&unit_field_name);
 

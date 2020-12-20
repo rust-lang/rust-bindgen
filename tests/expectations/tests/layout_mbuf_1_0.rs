@@ -7,17 +7,16 @@
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage, Align> {
+pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
-    align: [Align; 0],
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align> {
+impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub fn new(storage: Storage) -> Self {
-        Self { storage, align: [] }
+        Self { storage }
     }
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
 {
@@ -296,7 +295,8 @@ pub struct rte_mbuf__bindgen_ty_2 {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
     pub __bindgen_align: [u32; 0usize],
 }
 #[test]
@@ -424,11 +424,9 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         inner_l2_type: u32,
         inner_l3_type: u32,
         inner_l4_type: u32,
-    ) -> __BindgenBitfieldUnit<[u8; 4usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 4usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 4u8, {
             let l2_type: u32 = unsafe { ::std::mem::transmute(l2_type) };
             l2_type as u64
@@ -813,7 +811,8 @@ pub struct rte_mbuf__bindgen_ty_5 {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize], u16>,
+    pub _bitfield_align_1: [u16; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 7usize]>,
     pub __bindgen_align: [u64; 0usize],
 }
 #[test]
@@ -927,11 +926,9 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         tso_segsz: u64,
         outer_l3_len: u64,
         outer_l2_len: u64,
-    ) -> __BindgenBitfieldUnit<[u8; 8usize], u16> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 8usize],
-            u16,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 7usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 7usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 7u8, {
             let l2_len: u64 = unsafe { ::std::mem::transmute(l2_len) };
             l2_len as u64
