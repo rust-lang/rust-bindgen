@@ -585,6 +585,16 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         }
     }
 
+    pub(crate) fn is_target_wasm32_not_emscripten(&self) -> bool {
+        match self.target_info {
+            Some(ref ti) => {
+                ti.triple.starts_with("wasm32-") &&
+                    !ti.triple.ends_with("emscripten")
+            }
+            None => false,
+        }
+    }
+
     /// Creates a timer for the current bindgen phase. If time_phases is `true`,
     /// the timer will print to stderr when it is dropped, otherwise it will do
     /// nothing.

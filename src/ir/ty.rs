@@ -387,6 +387,18 @@ impl Type {
             _ => false,
         }
     }
+
+    pub(crate) fn needs_wasm32_abi_hack(&self, ctx: &BindgenContext) -> bool {
+        ctx.is_target_wasm32_not_emscripten() &&
+            match self.kind {
+                TypeKind::ResolvedTypeRef(id) |
+                TypeKind::Alias(id) => {
+                    ctx.resolve_type(id).needs_wasm32_abi_hack(ctx)
+                }
+                TypeKind::Comp(_) => true,
+                _ => false,
+            }
+    }
 }
 
 impl IsOpaque for Type {

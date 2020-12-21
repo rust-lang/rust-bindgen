@@ -2279,7 +2279,7 @@ impl MethodCodegen for Method {
 
         let function_name = ctx.rust_ident(function_item.canonical_name(ctx));
         let mut args = utils::fnsig_arguments(ctx, signature);
-        let mut ret = utils::fnsig_return_ty(ctx, signature);
+        let (mut ret, ..) = utils::fnsig_return_ty(ctx, signature);
 
         if !self.is_static() && !self.is_constructor() {
             args[0] = if self.is_const() {
@@ -3669,7 +3669,7 @@ impl TryToRustTy for FunctionSig {
         _: &(),
     ) -> error::Result<proc_macro2::TokenStream> {
         // TODO: we might want to consider ignoring the reference return value.
-        let ret = utils::fnsig_return_ty(ctx, &self);
+        let (ret, ret_is_out_param) = utils::fnsig_return_ty(ctx, &self);
         let arguments = utils::fnsig_arguments(ctx, &self);
         let abi = self.abi();
 
@@ -3678,8 +3678,14 @@ impl TryToRustTy for FunctionSig {
                 warn!("Skipping function with thiscall ABI that isn't supported by the configured Rust target");
                 Ok(proc_macro2::TokenStream::new())
             }
-            _ => Ok(quote! {
-                unsafe extern #abi fn ( #( #arguments ),* ) #ret
+            _ => Ok(if ret_is_out_param {
+                quote! {
+                    unsafe extern #abi fn ( #( #arguments , )* _: *mut #ret )
+                }
+            } else {
+                quote! {
+                    unsafe extern #abi fn ( #( #arguments ),* ) #ret
+                }
             }),
         }
     }
@@ -3746,7 +3752,7 @@ impl CodeGenerator for Function {
         };
 
         let args = utils::fnsig_arguments(ctx, signature);
-        let ret = utils::fnsig_return_ty(ctx, signature);
+        let (ret, ret_is_out_param) = utils::fnsig_return_ty(ctx, signature);
 
         let mut attributes = vec![];
 
@@ -3803,11 +3809,21 @@ impl CodeGenerator for Function {
             });
 
         let ident = ctx.rust_ident(canonical_name);
-        let tokens = quote! {
-            #wasm_link_attribute
-            extern #abi {
-                #(#attributes)*
-                pub fn #ident ( #( #args ),* ) #ret;
+        let tokens = if ret_is_out_param {
+            quote! {
+                #wasm_link_attribute
+                extern #abi {
+                    #(#attributes)*
+                    pub fn #ident ( #( #args , )* _: *mut #ret );
+                }
+            }
+        } else {
+            quote! {
+                #wasm_link_attribute
+                extern #abi {
+                    #(#attributes)*
+                    pub fn #ident ( #( #args ),* ) #ret;
+                }
             }
         };
 
@@ -3845,7 +3861,7 @@ fn objc_method_codegen(
 ) -> proc_macro2::TokenStream {
     let signature = method.signature();
     let fn_args = utils::fnsig_arguments(ctx, signature);
-    let fn_ret = utils::fnsig_return_ty(ctx, signature);
+    let (fn_ret, ..) = utils::fnsig_return_ty(ctx, signature);
 
     let sig = if method.is_class_method() {
         let fn_args = fn_args.clone();
@@ -4454,15 +4470,17 @@ pub mod utils {
     pub fn fnsig_return_ty(
         ctx: &BindgenContext,
         sig: &FunctionSig,
-    ) -> proc_macro2::TokenStream {
+    ) -> (proc_macro2::TokenStream, bool) {
         let return_item = ctx.resolve_item(sig.return_type());
-        if let TypeKind::Void = *return_item.kind().expect_type().kind() {
-            quote! {}
+        let return_ty = return_item.kind().expect_type();
+        if return_ty.needs_wasm32_abi_hack(ctx) {
+            let ret_ty = return_item.to_rust_ty_or_opaque(ctx, &());
+            (ret_ty, true)
+        } else if let TypeKind::Void = *return_ty.kind() {
+            (quote! {}, false)
         } else {
             let ret_ty = return_item.to_rust_ty_or_opaque(ctx, &());
-            quote! {
-                -> #ret_ty
-            }
+            (quote! { -> #ret_ty }, false)
         }
     }
 
@@ -4488,7 +4506,8 @@ pub mod utils {
                 //     the array type derivation.
                 //
                 // [1]: http://c0x.coding-guidelines.com/6.7.5.3.html
-                let arg_ty = match *arg_ty.canonical_type(ctx).kind() {
+                let mut arg_ty_tokens = match *arg_ty.canonical_type(ctx).kind()
+                {
                     TypeKind::Array(t, _) => {
                         let stream =
                             if ctx.options().array_pointers_in_arguments {
@@ -4515,6 +4534,10 @@ pub mod utils {
                     _ => arg_item.to_rust_ty_or_opaque(ctx, &()),
                 };
 
+                if arg_ty.needs_wasm32_abi_hack(ctx) {
+                    arg_ty_tokens = quote! { *mut #arg_ty_tokens };
+                }
+
                 let arg_name = match *name {
                     Some(ref name) => ctx.rust_mangle(name).into_owned(),
                     None => {
@@ -4527,7 +4550,7 @@ pub mod utils {
                 let arg_name = ctx.rust_ident(arg_name);
 
                 quote! {
-                    #arg_name : #arg_ty
+                    #arg_name : #arg_ty_tokens
                 }
             })
             .collect::<Vec<_>>();
