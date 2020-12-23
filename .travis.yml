@@ -1,96 +1,15 @@
 language: rust
-
 dist: xenial
-
 os:
   - linux
-
 rust:
   - stable
-
 env:
   global:
     - CARGO_TARGET_DIR=/tmp/bindgen
-  matrix:
-    # Miscellaneous tests.
-    # Start "misc" job first since it runs longer than any other job.
-    - LLVM_VERSION="9.0" BINDGEN_JOB="misc"
-    - LLVM_VERSION="9.0" BINDGEN_JOB="quickchecking"
-    - LLVM_VERSION="9.0" BINDGEN_JOB="msrv"
-
-    # General matrix.
-    - LLVM_VERSION="3.9" BINDGEN_JOB="test"         BINDGEN_PROFILE=
-    - LLVM_VERSION="3.9" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="3.9" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
-    - LLVM_VERSION="3.9" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="3.9" BINDGEN_JOB="test"         BINDGEN_PROFILE=            BINDGEN_NO_DEFAULT_FEATURES="1" BINDGEN_FEATURES="runtime"
-    - LLVM_VERSION="3.9" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release" BINDGEN_NO_DEFAULT_FEATURES="1" BINDGEN_FEATURES="runtime"
-
-    - LLVM_VERSION="4.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=
-    - LLVM_VERSION="4.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="4.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
-    - LLVM_VERSION="4.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="4.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=            BINDGEN_NO_DEFAULT_FEATURES="1" BINDGEN_FEATURES="runtime"
-    - LLVM_VERSION="4.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release" BINDGEN_NO_DEFAULT_FEATURES="1" BINDGEN_FEATURES="runtime"
-
-    - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=
-    - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="5.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
-    - LLVM_VERSION="5.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=            BINDGEN_NO_DEFAULT_FEATURES="1"
-    - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release" BINDGEN_NO_DEFAULT_FEATURES="1"
-
-    # FIXME: There are no pre-built static libclang libraries, so this is not testable at the moment.
-    # - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=            BINDGEN_FEATURES="static" BINDGEN_NO_DEFAULT_FEATURES="1"
-    # - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release" BINDGEN_FEATURES="static" BINDGEN_NO_DEFAULT_FEATURES="1"
-
-    - LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=
-    - LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="9.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
-    - LLVM_VERSION="9.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=            BINDGEN_NO_DEFAULT_FEATURES="1"
-    - LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release" BINDGEN_NO_DEFAULT_FEATURES="1"
-
-    # FIXME: There are no pre-built static libclang libraries, so this is not testable at the moment.
-    # - LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=            BINDGEN_FEATURES="static" BINDGEN_NO_DEFAULT_FEATURES="1"
-    # - LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release" BINDGEN_FEATURES="static" BINDGEN_NO_DEFAULT_FEATURES="1"
-
-    # Testing with extra asserts enabled
-    - LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=            BINDGEN_FEATURES="testing_only_extra_assertions"
-    - LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release" BINDGEN_FEATURES="testing_only_extra_assertions"
-
-
-    # Test the expectations build and pass tests.
-    - LLVM_VERSION="9.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE=
-    - LLVM_VERSION="9.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE="--release"
-
-matrix:
-  fast_finish: true
-
-  # Include a few jobs for spot-checking different configurations without
-  # invoking combinatoric explosion of Travis jobs.
-  include:
-    - os: osx
-      env: LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=
-    - os: osx
-      env: LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
-    - os: osx
-      env: LLVM_VERSION="9.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
-    - os: osx
-      env: LLVM_VERSION="9.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
-
-cache:
-  directories:
-    - $HOME/.cargo
-    - $HOME/.llvm-builds
-
-before_install: . ./ci/before_install.sh
-
 script:
-  - BINDGEN_JOB="$BINDGEN_JOB" BINDGEN_PROFILE="$BINDGEN_PROFILE" BINDGEN_FEATURES="$BINDGEN_FEATURES" BINDGEN_NO_DEFAULT_FEATURES="$BINDGEN_NO_DEFAULT_FEATURES" ./ci/script.sh
-
+  - ./ci/test-book.sh
 after_success:
   - test "$TRAVIS_PULL_REQUEST" == "false" &&
     test "$TRAVIS_BRANCH" == "master" &&
-    test "$BINDGEN_JOB" == "misc" &&
     ./ci/deploy-book.sh
