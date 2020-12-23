@@ -38,6 +38,38 @@ fn make_indent(indent: usize) -> String {
     iter::repeat(' ').take(indent * RUST_INDENTATION).collect()
 }
 
+/// Preprocesses comments containing brackets to prevent `unresolved link to ...`
+///
+/// Avoid processing expensive computations if no brackets are found
+fn preprocess_plain_brackets(line: &str) -> String {
+    if line.contains("[") && line.contains("]") {
+        line.chars()
+            .fold(
+                (Vec::<char>::with_capacity(line.len()), true),
+                |acc, val| {
+                    let not_in_backtick = acc.1;
+                    let mut string = acc.0;
+                    if not_in_backtick && (val == '[' || val == ']') {
+                        string.push('\\');
+                    }
+                    string.push(val);
+                    let not_in_backtick = if val == '`' {
+                        !not_in_backtick
+                    } else {
+                        not_in_backtick
+                    };
+                    (string, not_in_backtick)
+                },
+            )
+            .0
+            .into_iter()
+            .collect::<String>()
+            .replace("\\[\\]", "[]")
+    } else {
+        line.to_string()
+    }
+}
+
 /// Preprocesses multiple single line comments.
 ///
 /// Handles lines starting with both `//` and `///`.
@@ -52,7 +84,7 @@ fn preprocess_single_lines(comment: &str, indent: usize) -> String {
         .map(|l| {
             let indent = if is_first { "" } else { &*indent };
             is_first = false;
-            format!("{}///{}", indent, l)
+            format!("{}///{}", indent, preprocess_plain_brackets(l))
         })
         .collect();
     lines.join("\n")
@@ -74,7 +106,7 @@ fn preprocess_multi_line(comment: &str, indent: usize) -> String {
         .map(|line| {
             let indent = if is_first { "" } else { &*indent };
             is_first = false;
-            format!("{}///{}", indent, line)
+            format!("{}///{}", indent, preprocess_plain_brackets(line))
         })
         .collect();
 
@@ -104,6 +136,7 @@ mod test {
         assert_eq!(preprocess("/// hello", 0), "/// hello");
         assert_eq!(preprocess("// hello", 0), "/// hello");
         assert_eq!(preprocess("//    hello", 0), "///    hello");
+        assert_eq!(preprocess("//    hello[i]", 0), "///    hello\\[i\\]");
     }
 
     #[test]
@@ -116,6 +149,11 @@ mod test {
         assert_eq!(
             preprocess("/**\nhello\n*world\n*foo\n*/", 0),
             "///hello\n///world\n///foo"
+        );
+
+        assert_eq!(
+            preprocess("/**\nhello\n*world[i]\n*foo\n*/", 0),
+            "///hello\n///world\\[i\\]\n///foo"
         );
     }
 }
