@@ -137,7 +137,6 @@ pub fn bitfield_unit(ctx: &BindgenContext, layout: Layout) -> TokenStream {
 
 pub mod ast_ty {
     use crate::ir::context::BindgenContext;
-    use crate::ir::function::FunctionSig;
     use crate::ir::layout::Layout;
     use crate::ir::ty::FloatKind;
     use proc_macro2::{self, TokenStream};
@@ -279,28 +278,5 @@ pub mod ast_ty {
 
         warn!("Unknown non-finite float number: {:?}", f);
         return Err(());
-    }
-
-    pub fn arguments_from_signature(
-        signature: &FunctionSig,
-        ctx: &BindgenContext,
-    ) -> Vec<TokenStream> {
-        let mut unnamed_arguments = 0;
-        signature
-            .argument_types()
-            .iter()
-            .map(|&(ref name, _ty)| match *name {
-                Some(ref name) => {
-                    let name = ctx.rust_ident(name);
-                    quote! { #name }
-                }
-                None => {
-                    unnamed_arguments += 1;
-                    let name =
-                        ctx.rust_ident(format!("arg{}", unnamed_arguments));
-                    quote! { #name }
-                }
-            })
-            .collect()
     }
 }

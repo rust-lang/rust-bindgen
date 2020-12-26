@@ -1,13 +1,11 @@
-use crate::codegen::helpers;
 use crate::codegen::helpers::attributes;
 use crate::codegen::utils;
-use crate::codegen::{cpp_function_wrapper, CodegenResult, ToRustTyOrOpaque};
+use crate::codegen::{CodegenResult, ToRustTyOrOpaque};
 use crate::ir::comp::*;
 use crate::ir::context::{BindgenContext, GeneratingStage};
 use crate::ir::function::{Abi, Function};
 use crate::ir::item::ItemCanonicalName;
 use crate::HashMap;
-use crate::Item;
 use proc_macro2::TokenStream;
 use std::str::FromStr;
 
@@ -239,7 +237,6 @@ trait MethodCodegen {
     fn codegen_method<'a>(
         &self,
         ctx: &BindgenContext,
-        item: &Item,
         methods: &mut Vec<proc_macro2::TokenStream>,
         method_names: &mut HashMap<String, usize>,
         result: &mut CodegenResult<'a>,
@@ -253,7 +250,6 @@ impl MethodCodegen for Method {
     fn codegen_method<'a>(
         &self,
         ctx: &BindgenContext,
-        item: &Item,
         methods: &mut Vec<proc_macro2::TokenStream>,
         method_names: &mut HashMap<String, usize>,
         result: &mut CodegenResult<'a>,
@@ -315,14 +311,9 @@ impl MethodCodegen for Method {
         let mut real_ret = utils::fnsig_return_ty(ctx, signature);
         let mut inner_ret = None;
 
-        //dbg!(&function_name, some_argument_was_boxed, using_wrapped_return, ctx.generating_stage());
         if !some_argument_was_boxed && !using_wrapped_return {
             using_wrapper = false;
         }
-        if ctx.generating_stage() == GeneratingStage::GeneratingCpp {
-            //cpp_function_wrapper(function_item, ctx, Some(item), result.cpp_out.as_mut().unwrap());
-        }
-
         if using_wrapped_return {
             if let Some(ret_inner) = real_ret {
                 real_ret = Some(
@@ -483,7 +474,6 @@ impl CompInfo {
         &self,
         ctx: &BindgenContext,
         result: &mut CodegenResult,
-        item: &Item,
         ty_for_impl: &TokenStream,
         methods: &mut Vec<proc_macro2::TokenStream>,
         safe_class_interface: bool,
@@ -495,7 +485,6 @@ impl CompInfo {
                 method.try_codegen_operator(ctx, &ty_for_impl, result);
                 method.codegen_method(
                     ctx,
-                    item,
                     methods,
                     &mut method_names,
                     result,
@@ -516,7 +505,6 @@ impl CompInfo {
                 )
                 .codegen_method(
                     ctx,
-                    item,
                     methods,
                     &mut method_names,
                     result,
@@ -532,7 +520,6 @@ impl CompInfo {
                 debug_assert!(kind.is_destructor());
                 Method::new(kind, destructor, false).codegen_method(
                     ctx,
-                    item,
                     methods,
                     &mut method_names,
                     result,

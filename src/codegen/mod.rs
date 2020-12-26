@@ -1654,14 +1654,7 @@ impl CompInfo {
             }
         ));
         let mut methods: Vec<proc_macro2::TokenStream> = vec![];
-        self.codegen_methods(
-            ctx,
-            result,
-            item,
-            &ty_for_impl,
-            &mut methods,
-            true,
-        );
+        self.codegen_methods(ctx, result, &ty_for_impl, &mut methods, true);
 
         let size = {
             if layout.size == 0 {
@@ -2169,7 +2162,6 @@ impl CompInfo {
             self.codegen_methods(
                 ctx,
                 result,
-                item,
                 &ty_for_impl,
                 &mut methods,
                 false,
@@ -4445,7 +4437,10 @@ mod utils {
     ) {
         let mut unnamed_arguments = 0;
         let mut flag = false;
-        let mut args: (Vec<proc_macro2::TokenStream>, Vec<proc_macro2::TokenStream>) = sig
+        let mut args: (
+            Vec<proc_macro2::TokenStream>,
+            Vec<proc_macro2::TokenStream>,
+        ) = sig
             .argument_types()
             .iter()
             .map(|&(ref name, ty)| {

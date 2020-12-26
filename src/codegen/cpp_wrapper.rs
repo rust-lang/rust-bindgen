@@ -1,7 +1,6 @@
 use crate::codegen::utils;
 use crate::codegen::utils::argument_type_id_to_rust_type;
 use crate::ir::context::GeneratingStage;
-use crate::ir::function::FunctionSig;
 use crate::ir::item::ItemCanonicalName;
 use crate::ir::item_kind::ItemKind;
 use crate::ir::ty::TypeKind;
@@ -169,12 +168,13 @@ pub fn cpp_function_wrapper(
             } else {
                 match arg_ty {
                     utils::TypeName::Void => panic!(),
-                    utils::TypeName::NotBoxable(v) => {
-                        ((format!("{} arg_{}", typ.unwrap(), i), false))
+                    utils::TypeName::NotBoxable(_) => {
+                        (format!("{} arg_{}", typ.unwrap(), i), false)
                     }
-                    utils::TypeName::Boxable { unboxed, boxed } => {
-                        (format!("{} *arg_{}", typ.unwrap(), i), true)
-                    }
+                    utils::TypeName::Boxable {
+                        unboxed: _,
+                        boxed: _,
+                    } => (format!("{} *arg_{}", typ.unwrap(), i), true),
                 }
             }
         })
