@@ -3,8 +3,10 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Using Bitfields - The `bindgen` User Guide</title>
+        <title></title>
         
+        
+        <base href="/">
         
 
 
@@ -95,7 +97,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="requirements.html"><strong aria-hidden="true">2.</strong> Requirements</a></li><li class="chapter-item expanded "><a href="library-usage.html"><strong aria-hidden="true">3.</strong> Library Usage with build.rs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial-0.html"><strong aria-hidden="true">3.1.</strong> Tutorial</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial-1.html"><strong aria-hidden="true">3.1.1.</strong> Add bindgen as a Build Dependency</a></li><li class="chapter-item expanded "><a href="tutorial-2.html"><strong aria-hidden="true">3.1.2.</strong> Create a wrapper.h Header</a></li><li class="chapter-item expanded "><a href="tutorial-3.html"><strong aria-hidden="true">3.1.3.</strong> Create a build.rs File</a></li><li class="chapter-item expanded "><a href="tutorial-4.html"><strong aria-hidden="true">3.1.4.</strong> Include the Generated Bindings in src/lib.rs</a></li><li class="chapter-item expanded "><a href="tutorial-5.html"><strong aria-hidden="true">3.1.5.</strong> Write a Sanity Test</a></li><li class="chapter-item expanded "><a href="tutorial-6.html"><strong aria-hidden="true">3.1.6.</strong> Publish Your Crate!</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="command-line-usage.html"><strong aria-hidden="true">4.</strong> Command Line Usage</a></li><li class="chapter-item expanded "><a href="customizing-generated-bindings.html"><strong aria-hidden="true">5.</strong> Customizing the Generated Bindings</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="whitelisting.html"><strong aria-hidden="true">5.1.</strong> Whitelisting</a></li><li class="chapter-item expanded "><a href="blacklisting.html"><strong aria-hidden="true">5.2.</strong> Blacklisting</a></li><li class="chapter-item expanded "><a href="opaque.html"><strong aria-hidden="true">5.3.</strong> Treating a Type as an Opaque Blob of Bytes</a></li><li class="chapter-item expanded "><a href="replacing-types.html"><strong aria-hidden="true">5.4.</strong> Replacing One Type with Another</a></li><li class="chapter-item expanded "><a href="nocopy.html"><strong aria-hidden="true">5.5.</strong> Preventing the Derivation of Copy and Clone</a></li><li class="chapter-item expanded "><a href="nodebug.html"><strong aria-hidden="true">5.6.</strong> Preventing the Derivation of Debug</a></li><li class="chapter-item expanded "><a href="nodefault.html"><strong aria-hidden="true">5.7.</strong> Preventing the Derivation of Default</a></li></ol></li><li class="chapter-item expanded "><a href="cpp.html"><strong aria-hidden="true">6.</strong> Generating Bindings to C++</a></li><li class="chapter-item expanded "><a href="objc.html"><strong aria-hidden="true">7.</strong> Generating Bindings to Objective-c</a></li><li class="chapter-item expanded "><a href="using-unions.html"><strong aria-hidden="true">8.</strong> Using Unions</a></li><li class="chapter-item expanded "><a href="using-bitfields.html" class="active"><strong aria-hidden="true">9.</strong> Using Bitfields</a></li><li class="chapter-item expanded "><a href="faq.html"><strong aria-hidden="true">10.</strong> FAQ</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="requirements.html"><strong aria-hidden="true">2.</strong> Requirements</a></li><li class="chapter-item expanded "><a href="library-usage.html"><strong aria-hidden="true">3.</strong> Library Usage with build.rs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial-0.html"><strong aria-hidden="true">3.1.</strong> Tutorial</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial-1.html"><strong aria-hidden="true">3.1.1.</strong> Add bindgen as a Build Dependency</a></li><li class="chapter-item expanded "><a href="tutorial-2.html"><strong aria-hidden="true">3.1.2.</strong> Create a wrapper.h Header</a></li><li class="chapter-item expanded "><a href="tutorial-3.html"><strong aria-hidden="true">3.1.3.</strong> Create a build.rs File</a></li><li class="chapter-item expanded "><a href="tutorial-4.html"><strong aria-hidden="true">3.1.4.</strong> Include the Generated Bindings in src/lib.rs</a></li><li class="chapter-item expanded "><a href="tutorial-5.html"><strong aria-hidden="true">3.1.5.</strong> Write a Sanity Test</a></li><li class="chapter-item expanded "><a href="tutorial-6.html"><strong aria-hidden="true">3.1.6.</strong> Publish Your Crate!</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="command-line-usage.html"><strong aria-hidden="true">4.</strong> Command Line Usage</a></li><li class="chapter-item expanded "><a href="customizing-generated-bindings.html"><strong aria-hidden="true">5.</strong> Customizing the Generated Bindings</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="whitelisting.html"><strong aria-hidden="true">5.1.</strong> Whitelisting</a></li><li class="chapter-item expanded "><a href="blacklisting.html"><strong aria-hidden="true">5.2.</strong> Blacklisting</a></li><li class="chapter-item expanded "><a href="opaque.html"><strong aria-hidden="true">5.3.</strong> Treating a Type as an Opaque Blob of Bytes</a></li><li class="chapter-item expanded "><a href="replacing-types.html"><strong aria-hidden="true">5.4.</strong> Replacing One Type with Another</a></li><li class="chapter-item expanded "><a href="nocopy.html"><strong aria-hidden="true">5.5.</strong> Preventing the Derivation of Copy and Clone</a></li><li class="chapter-item expanded "><a href="nodebug.html"><strong aria-hidden="true">5.6.</strong> Preventing the Derivation of Debug</a></li><li class="chapter-item expanded "><a href="nodefault.html"><strong aria-hidden="true">5.7.</strong> Preventing the Derivation of Default</a></li></ol></li><li class="chapter-item expanded "><a href="cpp.html"><strong aria-hidden="true">6.</strong> Generating Bindings to C++</a></li><li class="chapter-item expanded "><a href="objc.html"><strong aria-hidden="true">7.</strong> Generating Bindings to Objective-c</a></li><li class="chapter-item expanded "><a href="using-unions.html"><strong aria-hidden="true">8.</strong> Using Unions</a></li><li class="chapter-item expanded "><a href="using-bitfields.html"><strong aria-hidden="true">9.</strong> Using Bitfields</a></li><li class="chapter-item expanded "><a href="faq.html"><strong aria-hidden="true">10.</strong> FAQ</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -163,88 +165,15 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#using-the-bitfield-types-generated-by-bindgen" id="using-the-bitfield-types-generated-by-bindgen">Using the Bitfield Types Generated by Bindgen</a></h1>
-<h2><a class="header" href="#bitfield-strategy-overview" id="bitfield-strategy-overview">Bitfield Strategy Overview</a></h2>
-<p>As Rust does not support bitfields, Bindgen generates a struct for each with the following characteristics</p>
-<ul>
-<li>Immutable getter functions for each bitfield named <code>&lt;bitfield&gt;</code></li>
-<li>Setter functions for each contiguous block of bitfields named <code>set_&lt;bitfield&gt;</code></li>
-<li>Far each contiguous block of bitfields, Bindgen emits an opaque physical field that contains one or more logical bitfields</li>
-<li>A static constructor  <code>new_bitfield_{1, 2, ...}</code> with a parameter for each bitfield contained within the opaque physical field.</li>
-</ul>
-<h2><a class="header" href="#bitfield-examples" id="bitfield-examples">Bitfield examples</a></h2>
-<p>For this discussion, we will use the following C type definitions and functions.</p>
-<pre><code class="language-c">typedef struct {
-    unsigned int a: 1;
-    unsigned int b: 1;
-    unsigned int c: 2;
-    
-} StructWithBitfields;
-
-// Create a default bitfield
-StructWithBitfields create_bitfield();
-
-// Print a bitfield
-void print_bitfield(StructWithBitfields bfield);
-</code></pre>
-<p>Bindgen creates a set of field getters and setters for interacting with the bitset. For example, </p>
-<pre><code class="language-rust ignore">    let mut bfield = unsafe { create_bitfield() };
-    
-    bfield.set_a(1);
-    println!(&quot;a set to {}&quot;, bfield.a());
-    bfield.set_b(1);
-    println!(&quot;b set to {}&quot;, bfield.b());
-    bfield.set_c(3);
-    println!(&quot;c set to {}&quot;, bfield.c());
-    
-    unsafe { print_bitfield(bfield) };
-</code></pre>
-<p>will print out</p>
-<pre><code class="language-text">a set to 1
-b set to 1
-c set to 3
-StructWithBitfields: a:1, b:1, c:3
-</code></pre>
-<p>Overflowing a bitfield will result in the same behavior as in C/C++: the bitfield will be set to 0.</p>
-<pre><code class="language-rust ignore">    let mut bfield = unsafe { create_bitfield() };
-    bfield.set_a(1);
-    bfield.set_b(1);
-    bfield.set_c(12);
-    println!(&quot;c set to {} due to overflow&quot;, bfield.c());
-    
-    unsafe { print_bitfield(bfield) };
-</code></pre>
-<p>will print out</p>
-<pre><code class="language-text">c set to 0 due to overflow
-StructWithBitfields: a:1, b:1, c:0
-</code></pre>
-<p>To create a new bitfield in Rust, use the bitfield allocation unit constructor.</p>
-<p>Note: This requires the Builder's derive_default to be set to true, otherwise the necessary Default functions won't be generated.</p>
-<pre><code class="language-rust ignore">    let bfield = StructWithBitfields{
-        _bitfield_1: StructWithBitfields::new_bitfield_1(0,0,0),
-        ..Default::default()
-    };
-    
-    unsafe { print_bitfield(bfield) };
-</code></pre>
-<p>This will print out</p>
-<pre><code class="language-text">StructWithBitfields: a:1, b:0, c:2
-</code></pre>
+                        <h1><a class="header" href="#document-not-found-404" id="document-not-found-404">Document not found (404)</a></h1>
+<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="using-unions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <i class="fa fa-angle-left"></i>
-                            </a>
-                        
 
-                        
-                            <a rel="next" href="faq.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
                         
 
                         <div style="clear: both"></div>
@@ -254,15 +183,7 @@ StructWithBitfields: a:1, b:1, c:0
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="using-unions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <i class="fa fa-angle-left"></i>
-                    </a>
-                
 
-                
-                    <a rel="next" href="faq.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
                 
             </nav>
 

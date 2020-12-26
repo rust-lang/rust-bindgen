@@ -1,24 +1,42 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js">
+<html lang="en" class="sidebar-visible no-js light">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>The `bindgen` User Guide</title>
+        
+        <meta name="robots" content="noindex" />
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="`bindgen` automatically generates Rust FFI bindings to C and C++ libraries.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
         <link rel="shortcut icon" href="favicon.png">
+        
         <link rel="stylesheet" href="css/variables.css">
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
+        
         <link rel="stylesheet" href="css/print.css" media="print">
+        
 
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
 
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
@@ -30,11 +48,11 @@
 
         
     </head>
-    <body class="light">
+    <body>
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
             var path_to_root = "";
-            var default_theme = "light";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -56,10 +74,13 @@
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script type="text/javascript">
             var theme;
-            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            document.body.className = theme;
-            document.querySelector('html').className = theme + ' js';
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
@@ -75,44 +96,48 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <ol class="chapter"><li><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><a href="requirements.html"><strong aria-hidden="true">2.</strong> Requirements</a></li><li><a href="library-usage.html"><strong aria-hidden="true">3.</strong> Library Usage with build.rs</a></li><li><ol class="section"><li><a href="tutorial-0.html"><strong aria-hidden="true">3.1.</strong> Tutorial</a></li><li><ol class="section"><li><a href="tutorial-1.html"><strong aria-hidden="true">3.1.1.</strong> Add bindgen as a Build Dependency</a></li><li><a href="tutorial-2.html"><strong aria-hidden="true">3.1.2.</strong> Create a wrapper.h Header</a></li><li><a href="tutorial-3.html"><strong aria-hidden="true">3.1.3.</strong> Create a build.rs File</a></li><li><a href="tutorial-4.html"><strong aria-hidden="true">3.1.4.</strong> Include the Generated Bindings in src/lib.rs</a></li><li><a href="tutorial-5.html"><strong aria-hidden="true">3.1.5.</strong> Write a Sanity Test</a></li><li><a href="tutorial-6.html"><strong aria-hidden="true">3.1.6.</strong> Publish Your Crate!</a></li></ol></li></ol></li><li><a href="command-line-usage.html"><strong aria-hidden="true">4.</strong> Command Line Usage</a></li><li><a href="customizing-generated-bindings.html"><strong aria-hidden="true">5.</strong> Customizing the Generated Bindings</a></li><li><ol class="section"><li><a href="whitelisting.html"><strong aria-hidden="true">5.1.</strong> Whitelisting</a></li><li><a href="blacklisting.html"><strong aria-hidden="true">5.2.</strong> Blacklisting</a></li><li><a href="opaque.html"><strong aria-hidden="true">5.3.</strong> Treating a Type as an Opaque Blob of Bytes</a></li><li><a href="replacing-types.html"><strong aria-hidden="true">5.4.</strong> Replacing One Type with Another</a></li><li><a href="nocopy.html"><strong aria-hidden="true">5.5.</strong> Preventing the Derivation of Copy and Clone</a></li><li><a href="nodebug.html"><strong aria-hidden="true">5.6.</strong> Preventing the Derivation of Debug</a></li><li><a href="nodefault.html"><strong aria-hidden="true">5.7.</strong> Preventing the Derivation of Default</a></li></ol></li><li><a href="cpp.html"><strong aria-hidden="true">6.</strong> Generating Bindings to C++</a></li><li><a href="objc.html"><strong aria-hidden="true">7.</strong> Generating Bindings to Objective-c</a></li><li><a href="using-unions.html"><strong aria-hidden="true">8.</strong> Using Unions</a></li><li><a href="using-bitfields.html"><strong aria-hidden="true">9.</strong> Using Bitfields</a></li><li><a href="faq.html"><strong aria-hidden="true">10.</strong> FAQ</a></li></ol>
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="requirements.html"><strong aria-hidden="true">2.</strong> Requirements</a></li><li class="chapter-item expanded "><a href="library-usage.html"><strong aria-hidden="true">3.</strong> Library Usage with build.rs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial-0.html"><strong aria-hidden="true">3.1.</strong> Tutorial</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial-1.html"><strong aria-hidden="true">3.1.1.</strong> Add bindgen as a Build Dependency</a></li><li class="chapter-item expanded "><a href="tutorial-2.html"><strong aria-hidden="true">3.1.2.</strong> Create a wrapper.h Header</a></li><li class="chapter-item expanded "><a href="tutorial-3.html"><strong aria-hidden="true">3.1.3.</strong> Create a build.rs File</a></li><li class="chapter-item expanded "><a href="tutorial-4.html"><strong aria-hidden="true">3.1.4.</strong> Include the Generated Bindings in src/lib.rs</a></li><li class="chapter-item expanded "><a href="tutorial-5.html"><strong aria-hidden="true">3.1.5.</strong> Write a Sanity Test</a></li><li class="chapter-item expanded "><a href="tutorial-6.html"><strong aria-hidden="true">3.1.6.</strong> Publish Your Crate!</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="command-line-usage.html"><strong aria-hidden="true">4.</strong> Command Line Usage</a></li><li class="chapter-item expanded "><a href="customizing-generated-bindings.html"><strong aria-hidden="true">5.</strong> Customizing the Generated Bindings</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="whitelisting.html"><strong aria-hidden="true">5.1.</strong> Whitelisting</a></li><li class="chapter-item expanded "><a href="blacklisting.html"><strong aria-hidden="true">5.2.</strong> Blacklisting</a></li><li class="chapter-item expanded "><a href="opaque.html"><strong aria-hidden="true">5.3.</strong> Treating a Type as an Opaque Blob of Bytes</a></li><li class="chapter-item expanded "><a href="replacing-types.html"><strong aria-hidden="true">5.4.</strong> Replacing One Type with Another</a></li><li class="chapter-item expanded "><a href="nocopy.html"><strong aria-hidden="true">5.5.</strong> Preventing the Derivation of Copy and Clone</a></li><li class="chapter-item expanded "><a href="nodebug.html"><strong aria-hidden="true">5.6.</strong> Preventing the Derivation of Debug</a></li><li class="chapter-item expanded "><a href="nodefault.html"><strong aria-hidden="true">5.7.</strong> Preventing the Derivation of Default</a></li></ol></li><li class="chapter-item expanded "><a href="cpp.html"><strong aria-hidden="true">6.</strong> Generating Bindings to C++</a></li><li class="chapter-item expanded "><a href="objc.html"><strong aria-hidden="true">7.</strong> Generating Bindings to Objective-c</a></li><li class="chapter-item expanded "><a href="using-unions.html"><strong aria-hidden="true">8.</strong> Using Unions</a></li><li class="chapter-item expanded "><a href="using-bitfields.html"><strong aria-hidden="true">9.</strong> Using Bitfields</a></li><li class="chapter-item expanded "><a href="faq.html"><strong aria-hidden="true">10.</strong> FAQ</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
                 
-                <div id="menu-bar" class="menu-bar">
-                    <div id="menu-bar-sticky-container">
-                        <div class="left-buttons">
-                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                                <i class="fa fa-bars"></i>
-                            </button>
-                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                                <i class="fa fa-paint-brush"></i>
-                            </button>
-                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
-                            </ul>
-                            
-                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
-                                <i class="fa fa-search"></i>
-                            </button>
-                            
-                        </div>
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
 
-                        <h1 class="menu-title">The `bindgen` User Guide</h1> 
+                    <h1 class="menu-title">The `bindgen` User Guide</h1>
 
-                        <div class="right-buttons">
-                            <a href="print.html" title="Print this book" aria-label="Print this book">
-                                <i id="print-button" class="fa fa-print"></i>
-                            </a>
-                            
-                        </div>
+                    <div class="right-buttons">
+                        
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
                     </div>
                 </div>
 
@@ -140,7 +165,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="#introduction" id="introduction"><h1>Introduction</h1></a>
+                        <h1><a class="header" href="#introduction" id="introduction">Introduction</a></h1>
 <p><strong><a href="https://github.com/rust-lang/rust-bindgen"><code>bindgen</code></a> automatically generates Rust
 FFI bindings to C and C++ libraries.</strong></p>
 <p>For example, given the C header <code>cool.h</code>:</p>
@@ -153,10 +178,10 @@ void cool_function(int i, char c, CoolStruct* cs);
 </code></pre>
 <p><code>bindgen</code> produces Rust FFI code allowing you to call into the <code>cool</code> library's
 functions and use its types:</p>
-<pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-/* automatically generated by rust-bindgen 0.99.9 */
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>/* automatically generated by rust-bindgen 0.99.9 */
 
 #[repr(C)]
 pub struct CoolStruct {
@@ -169,10 +194,11 @@ extern &quot;C&quot; {
                          c: ::std::os::raw::c_char,
                          cs: *mut CoolStruct);
 }
-#}</code></pre></pre>
-<a class="header" href="#requirements" id="requirements"><h1>Requirements</h1></a>
+<span class="boring">}
+</span></code></pre></pre>
+<h1><a class="header" href="#requirements" id="requirements">Requirements</a></h1>
 <p>This page lists the requirements for running <code>bindgen</code> and how to get them.</p>
-<a class="header" href="#clang" id="clang"><h2>Clang</h2></a>
+<h2><a class="header" href="#clang" id="clang">Clang</a></h2>
 <p><code>bindgen</code> leverages <code>libclang</code> to preprocess, parse, and type check C and C++
 header files.</p>
 <p>It is recommended to use Clang 3.9 or greater, however <code>bindgen</code> can run with
@@ -187,8 +213,8 @@ you.</p>
 greater.</p>
 </li>
 </ul>
-<a class="header" href="#installing-clang-39" id="installing-clang-39"><h3>Installing Clang 3.9</h3></a>
-<a class="header" href="#windows" id="windows"><h4>Windows</h4></a>
+<h3><a class="header" href="#installing-clang-39" id="installing-clang-39">Installing Clang 3.9</a></h3>
+<h4><a class="header" href="#windows" id="windows">Windows</a></h4>
 <p>Download and install the official pre-built binary from
 <a href="http://releases.llvm.org/download.html">LLVM download page</a>.</p>
 <p>You will also need to set <code>LIBCLANG_PATH</code> as an <a href="https://www.techjunkie.com/environment-variables-windows-10/">environment
@@ -198,23 +224,23 @@ to <code>D:\programs\LLVM</code>, then you'd set the value to be <code>D:\progra
 <p>Alternatively, for Mingw64, you can install clang via</p>
 <pre><code class="language-bash">pacman -S  mingw64/mingw-w64-x86_64-clang
 </code></pre>
-<a class="header" href="#macos" id="macos"><h4>macOS</h4></a>
+<h4><a class="header" href="#macos" id="macos">macOS</a></h4>
 <p>If you use Homebrew:</p>
 <pre><code class="language-bash">$ brew install llvm
 </code></pre>
 <p>If you use MacPorts:</p>
 <pre><code class="language-bash">$ port install clang
 </code></pre>
-<a class="header" href="#debian-based-linuxes" id="debian-based-linuxes"><h4>Debian-based Linuxes</h4></a>
+<h4><a class="header" href="#debian-based-linuxes" id="debian-based-linuxes">Debian-based Linuxes</a></h4>
 <pre><code class="language-bash"># apt install llvm-dev libclang-dev clang
 </code></pre>
 <p>Ubuntu 16.10 provides the necessary packages directly. If you are using older
 version of Ubuntu or other Debian-based distros, you may need to add the LLVM
 repos to get version 3.9. See http://apt.llvm.org/.</p>
-<a class="header" href="#arch" id="arch"><h4>Arch</h4></a>
+<h4><a class="header" href="#arch" id="arch">Arch</a></h4>
 <pre><code class="language-bash"># pacman -S clang
 </code></pre>
-<a class="header" href="#from-source" id="from-source"><h4>From source</h4></a>
+<h4><a class="header" href="#from-source" id="from-source">From source</a></h4>
 <p>If your package manager doesn't yet offer Clang 3.9, you'll need to build from
 source. For that, follow the
 instructions <a href="http://clang.llvm.org/get_started.html">here</a>.</p>
@@ -225,7 +251,7 @@ instructions <a href="http://clang.llvm.org/get_started.html">here</a>.</p>
 <li>You do not need to checkout or build compiler-rt</li>
 <li>You do not need to checkout or build libcxx</li>
 </ul>
-<a class="header" href="#library-usage-with-buildrs" id="library-usage-with-buildrs"><h1>Library Usage with <code>build.rs</code></h1></a>
+<h1><a class="header" href="#library-usage-with-buildrs" id="library-usage-with-buildrs">Library Usage with <code>build.rs</code></a></h1>
 <p>💡 This is the recommended way to use <code>bindgen</code>. 💡</p>
 <p>Often times C and C++ headers will have platform- and architecture-specific
 <code>#ifdef</code>s that affect the shape of the Rust FFI bindings we need to create to
@@ -236,18 +262,18 @@ on-the-fly. Otherwise, you would need to generate and maintain
 etc... separate bindings files for each of your supported targets, which can be
 a huge pain. The downside is that everyone building your crate also needs
 <code>libclang</code> available to run <code>bindgen</code>.</p>
-<a class="header" href="#library-api-documentation" id="library-api-documentation"><h2>Library API Documentation</h2></a>
+<h2><a class="header" href="#library-api-documentation" id="library-api-documentation">Library API Documentation</a></h2>
 <p><a href="https://docs.rs/bindgen">📚 There is complete API reference documentation on docs.rs 📚</a></p>
-<a class="header" href="#tutorial" id="tutorial"><h2>Tutorial</h2></a>
+<h2><a class="header" href="#tutorial" id="tutorial">Tutorial</a></h2>
 <p>The next section contains a detailed, step-by-step tutorial for using <code>bindgen</code>
 as a library inside <code>build.rs</code>.</p>
-<a class="header" href="#tutorial-1" id="tutorial-1"><h1>Tutorial</h1></a>
+<h1><a class="header" href="#tutorial-1" id="tutorial-1">Tutorial</a></h1>
 <p>The following tutorial is adapted from <a href="http://fitzgeraldnick.com/2016/12/14/using-libbindgen-in-build-rs.html">this blog post</a>.</p>
 <p>What follows is a whirlwind introductory tutorial to using <code>bindgen</code> from inside
 <code>build.rs</code>. We'll generate bindings to <code>bzip2</code> (which is available on most
 systems) on-the-fly.</p>
 <p><a href="https://github.com/fitzgen/bindgen-tutorial-bzip2-sys"><strong>TL;DR?</strong> The full tutorial code is available here.</a></p>
-<a class="header" href="#add-bindgen-as-a-build-dependency" id="add-bindgen-as-a-build-dependency"><h1>Add <code>bindgen</code> as a Build Dependency</h1></a>
+<h1><a class="header" href="#add-bindgen-as-a-build-dependency" id="add-bindgen-as-a-build-dependency">Add <code>bindgen</code> as a Build Dependency</a></h1>
 <p>First we need to declare a build-time dependency on <code>bindgen</code> by adding it to
 the <code>[build-dependencies]</code> section of our crate's <code>Cargo.toml</code> file.</p>
 <p>Please always use the latest version of <code>bindgen</code>, it has the most fixes and
@@ -258,7 +284,7 @@ you're unsure.</p>
 <pre><code class="language-toml">[build-dependencies]
 bindgen = &quot;0.53.1&quot;
 </code></pre>
-<a class="header" href="#create-a-wrapperh-header" id="create-a-wrapperh-header"><h1>Create a <code>wrapper.h</code> Header</h1></a>
+<h1><a class="header" href="#create-a-wrapperh-header" id="create-a-wrapperh-header">Create a <code>wrapper.h</code> Header</a></h1>
 <p>The <code>wrapper.h</code> file will include all the various headers containing
 declarations of structs and functions we would like bindings for. In the
 particular case of <code>bzip2</code>, this is pretty easy since the entire public API is
@@ -271,7 +297,7 @@ single <code>wrapper.h</code> entry point for <code>bindgen</code>.</p>
 </code></pre>
 <p>This is also where we would add any <a href="./replacing-types.html">replacement types</a>,
 if we were using some.</p>
-<a class="header" href="#create-a-buildrs-file" id="create-a-buildrs-file"><h1>Create a <code>build.rs</code> File</h1></a>
+<h1><a class="header" href="#create-a-buildrs-file" id="create-a-buildrs-file">Create a <code>build.rs</code> File</a></h1>
 <p>We create a <code>build.rs</code> file in our crate's root. Cargo will pick up on the existence of this file, then compile and execute it before the rest of the crate is built.
 This can be used to generate code at compile time.
 And of course in our case, we will be generating Rust FFI
@@ -316,7 +342,7 @@ fn main() {
 <p>Now, when we run <code>cargo build</code>, our bindings to <code>bzip2</code> are generated on the
 fly!</p>
 <p><a href="http://doc.crates.io/build-script.html">There's more info about <code>build.rs</code> files in the crates.io documentation.</a></p>
-<a class="header" href="#include-the-generated-bindings-in-srclibrs" id="include-the-generated-bindings-in-srclibrs"><h1>Include the Generated Bindings in <code>src/lib.rs</code></h1></a>
+<h1><a class="header" href="#include-the-generated-bindings-in-srclibrs" id="include-the-generated-bindings-in-srclibrs">Include the Generated Bindings in <code>src/lib.rs</code></a></h1>
 <p>We can use the <code>include!</code> macro to dump our generated bindings right into our
 crate's main entry point, <code>src/lib.rs</code>:</p>
 <pre><code class="language-rust ignore">#![allow(non_upper_case_globals)]
@@ -363,7 +389,7 @@ running 0 tests
 
 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured
 </code></pre>
-<a class="header" href="#write-a-sanity-test" id="write-a-sanity-test"><h1>Write a Sanity Test</h1></a>
+<h1><a class="header" href="#write-a-sanity-test" id="write-a-sanity-test">Write a Sanity Test</a></h1>
 <p>Finally, to tie everything together, let's write a sanity test that round trips
 some text through compression and decompression, and then asserts that it came
 back out the same as it went in. This is a little wordy using the raw FFI
@@ -377,10 +403,10 @@ at compile time via the <code>include_str!(&quot;../futurama-quotes.txt&quot;)</
 invocation.</p>
 <p>Without further ado, here is the test, which should be appended to the bottom of
 our <code>src/lib.rs</code> file:</p>
-<pre><pre class="playpen"><code class="language-rust">
-# #![allow(unused_variables)]
-#fn main() {
-#[cfg(test)]
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
 mod tests {
     use super::*;
     use std::mem;
@@ -470,7 +496,8 @@ mod tests {
         }
     }
 }
-#}</code></pre></pre>
+<span class="boring">}
+</span></code></pre></pre>
 <p>Now let's run <code>cargo test</code> again and verify that everything is linking and binding
 properly!</p>
 <pre><code class="language-bash">$ cargo test
@@ -527,14 +554,14 @@ running 0 tests
 
 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured
 </code></pre>
-<a class="header" href="#publish-your-crate" id="publish-your-crate"><h1>Publish Your Crate!</h1></a>
+<h1><a class="header" href="#publish-your-crate" id="publish-your-crate">Publish Your Crate!</a></h1>
 <p>That's it! Now we can publish our crate on crates.io and we can write a nice,
 Rust-y API wrapping the raw FFI bindings in a safe interface. However, there is
 already a <a href="https://crates.io/crates/bzip2-sys"><code>bzip2-sys</code></a> crate providing raw FFI bindings, and there is
 already a <a href="https://crates.io/crates/bzip2"><code>bzip2</code></a> crate providing a nice, safe, Rust-y API on top of the
 bindings, so we have nothing left to do here!</p>
 <p>Check out the <a href="https://github.com/fitzgen/bindgen-tutorial-bzip2-sys">full code on Github!</a></p>
-<a class="header" href="#command-line-usage" id="command-line-usage"><h1>Command Line Usage</h1></a>
+<h1><a class="header" href="#command-line-usage" id="command-line-usage">Command Line Usage</a></h1>
 <p>Install the <code>bindgen</code> executable with <code>cargo</code>:</p>
 <pre><code class="language-bash">$ cargo install bindgen
 </code></pre>
@@ -550,7 +577,7 @@ put them in the <code>bindings.rs</code> file, we would invoke <code>bindgen</co
 <p>For more details, pass the <code>--help</code> flag:</p>
 <pre><code class="language-bash">$ bindgen --help
 </code></pre>
-<a class="header" href="#customizing-the-generated-bindings" id="customizing-the-generated-bindings"><h1>Customizing the Generated Bindings</h1></a>
+<h1><a class="header" href="#customizing-the-generated-bindings" id="customizing-the-generated-bindings">Customizing the Generated Bindings</a></h1>
 <p>The translation of classes, structs, enums, and typedefs can be adjusted in a
 few ways:</p>
 <ol>
@@ -583,7 +610,7 @@ specially formatted HTML tags inside doxygen style comments:</p>
 <p>We'll leave the nitty-gritty details to
 the <a href="https://docs.rs/bindgen">docs.rs API reference</a> and <code>bindgen --help</code>, but
 provide higher level concept documentation here.</p>
-<a class="header" href="#whitelisting" id="whitelisting"><h1>Whitelisting</h1></a>
+<h1><a class="header" href="#whitelisting" id="whitelisting">Whitelisting</a></h1>
 <p>Whitelisting allows us to be precise about which type, function, and global
 variable definitions <code>bindgen</code> generates bindings for. By default, if we don't
 specify any whitelisting rules, everything is considered whitelisted. This may
@@ -597,21 +624,21 @@ like to avoid these definitions</li>
 <p>If we specify whitelisting rules, then <code>bindgen</code> will only generate bindings to
 types, functions, and global variables that match the whitelisting rules, or are
 transitively used by a definition that matches them.</p>
-<a class="header" href="#library" id="library"><h3>Library</h3></a>
+<h3><a class="header" href="#library" id="library">Library</a></h3>
 <ul>
 <li><a href="https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.whitelist_type"><code>bindgen::Builder::whitelist_type</code></a></li>
 <li><a href="https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.whitelist_function"><code>bindgen::Builder::whitelist_function</code></a></li>
 <li><a href="https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.whitelist_var"><code>bindgen::Builder::whitelist_var</code></a></li>
 </ul>
-<a class="header" href="#command-line" id="command-line"><h3>Command Line</h3></a>
+<h3><a class="header" href="#command-line" id="command-line">Command Line</a></h3>
 <ul>
 <li><code>--whitelist-type &lt;type&gt;</code></li>
 <li><code>--whitelist-function &lt;function&gt;</code></li>
 <li><code>--whitelist-var &lt;var&gt;</code></li>
 </ul>
-<a class="header" href="#annotations" id="annotations"><h3>Annotations</h3></a>
+<h3><a class="header" href="#annotations" id="annotations">Annotations</a></h3>
 <p>None.</p>
-<a class="header" href="#blacklisting" id="blacklisting"><h1>Blacklisting</h1></a>
+<h1><a class="header" href="#blacklisting" id="blacklisting">Blacklisting</a></h1>
 <p>If you need to provide your own custom translation of some type (for example,
 because you need to wrap one of its fields in an <code>UnsafeCell</code>), you can
 explicitly blacklist generation of its definition. Uses of the blacklisted type
@@ -622,21 +649,21 @@ blacklisting it.)</p>
 <p>Blacklisted types are pessimistically assumed not to be able to <code>derive</code> any
 traits, which can transitively affect other types' ability to <code>derive</code> traits or
 not.</p>
-<a class="header" href="#library-1" id="library-1"><h3>Library</h3></a>
+<h3><a class="header" href="#library-1" id="library-1">Library</a></h3>
 <ul>
 <li><a href="https://docs.rs/bindgen/0.31.3/bindgen/struct.Builder.html#method.blacklist_type"><code>bindgen::Builder::blacklist_type</code></a></li>
 </ul>
-<a class="header" href="#command-line-1" id="command-line-1"><h3>Command Line</h3></a>
+<h3><a class="header" href="#command-line-1" id="command-line-1">Command Line</a></h3>
 <ul>
 <li><code>--blacklist-type &lt;type&gt;</code></li>
 </ul>
-<a class="header" href="#annotations-1" id="annotations-1"><h3>Annotations</h3></a>
+<h3><a class="header" href="#annotations-1" id="annotations-1">Annotations</a></h3>
 <pre><code class="language-cpp">/// &lt;div rustbindgen hide&gt;&lt;/div&gt;
 class Foo {
     // ...
 };
 </code></pre>
-<a class="header" href="#treating-a-type-as-an-opaque-blob-of-bytes" id="treating-a-type-as-an-opaque-blob-of-bytes"><h1>Treating a Type as an Opaque Blob of Bytes</h1></a>
+<h1><a class="header" href="#treating-a-type-as-an-opaque-blob-of-bytes" id="treating-a-type-as-an-opaque-blob-of-bytes">Treating a Type as an Opaque Blob of Bytes</a></h1>
 <p>Sometimes a type definition is simply not translatable to Rust, for example it
 uses
 <a href="https://en.wikipedia.org/wiki/Substitution_failure_is_not_an_error">C++'s SFINAE</a> for
@@ -644,21 +671,21 @@ which Rust has no equivalent. In these cases, it is best to treat all
 occurrences of the type as an opaque blob of bytes with a size and
 alignment. <code>bindgen</code> will attempt to detect such cases and do this
 automatically, but other times it needs some explicit help from you.</p>
-<a class="header" href="#library-2" id="library-2"><h3>Library</h3></a>
+<h3><a class="header" href="#library-2" id="library-2">Library</a></h3>
 <ul>
 <li><a href="https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.opaque_type"><code>bindgen::Builder::opaque_type</code></a></li>
 </ul>
-<a class="header" href="#command-line-2" id="command-line-2"><h3>Command Line</h3></a>
+<h3><a class="header" href="#command-line-2" id="command-line-2">Command Line</a></h3>
 <ul>
 <li><code>--opaque-type &lt;type&gt;</code></li>
 </ul>
-<a class="header" href="#annotation" id="annotation"><h3>Annotation</h3></a>
+<h3><a class="header" href="#annotation" id="annotation">Annotation</a></h3>
 <pre><code class="language-cpp">/// &lt;div rustbindgen opaque&gt;&lt;/div&gt;
 class Foo {
     // ...
 };
 </code></pre>
-<a class="header" href="#replacing-one-type-with-another" id="replacing-one-type-with-another"><h1>Replacing One Type with Another</h1></a>
+<h1><a class="header" href="#replacing-one-type-with-another" id="replacing-one-type-with-another">Replacing One Type with Another</a></h1>
 <p>The <code>replaces</code> annotation can be used to use a type as a replacement for other
 (presumably more complex) type. This is used in Stylo to generate bindings for
 structures that for multiple reasons are too complex for bindgen to understand.</p>
@@ -679,20 +706,20 @@ public:
 the ones that would be generated for <code>nsTArray_Simple</code>.</p>
 <p>Replacing is only available as an annotation. To replace a C or C++ definition
 with a Rust definition, use <a href="./blacklisting.html">blacklisting</a>.</p>
-<a class="header" href="#preventing-the-derivation-of-copy-and-clone" id="preventing-the-derivation-of-copy-and-clone"><h1>Preventing the Derivation of <code>Copy</code> and <code>Clone</code></h1></a>
+<h1><a class="header" href="#preventing-the-derivation-of-copy-and-clone" id="preventing-the-derivation-of-copy-and-clone">Preventing the Derivation of <code>Copy</code> and <code>Clone</code></a></h1>
 <p><code>bindgen</code> will attempt to derive the <code>Copy</code> and <code>Clone</code> traits on a best-effort
 basis. Sometimes, it might not understand that although adding <code>#[derive(Copy, Clone)]</code> to a translated type definition will compile, it still shouldn't do
 that for reasons it can't know. In these cases, the <code>nocopy</code> annotation can be
 used to prevent bindgen to autoderive the <code>Copy</code> and <code>Clone</code> traits for a type.</p>
-<a class="header" href="#library-3" id="library-3"><h3>Library</h3></a>
+<h3><a class="header" href="#library-3" id="library-3">Library</a></h3>
 <ul>
 <li><a href="https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.no_copy"><code>bindgen::Builder::no_copy</code></a></li>
 </ul>
-<a class="header" href="#command-line-3" id="command-line-3"><h3>Command Line</h3></a>
+<h3><a class="header" href="#command-line-3" id="command-line-3">Command Line</a></h3>
 <ul>
 <li><code>--no-copy &lt;regex&gt;</code></li>
 </ul>
-<a class="header" href="#annotations-2" id="annotations-2"><h3>Annotations</h3></a>
+<h3><a class="header" href="#annotations-2" id="annotations-2">Annotations</a></h3>
 <pre><code class="language-c">/**
  * Although bindgen can't know, this struct is not safe to move because pthread
  * mutexes can't move in memory!
@@ -704,20 +731,20 @@ struct MyMutexWrapper {
     // ...
 };
 </code></pre>
-<a class="header" href="#preventing-the-derivation-of-debug" id="preventing-the-derivation-of-debug"><h1>Preventing the Derivation of <code>Debug</code></h1></a>
+<h1><a class="header" href="#preventing-the-derivation-of-debug" id="preventing-the-derivation-of-debug">Preventing the Derivation of <code>Debug</code></a></h1>
 <p><code>bindgen</code> will attempt to derive the <code>Debug</code> traits on a best-effort
 basis. Sometimes, it might not understand that although adding <code>#[derive(Debug)]</code> to a translated type definition will compile, it still shouldn't do
 that for reasons it can't know. In these cases, the <code>nodebug</code> annotation can be
 used to prevent bindgen to autoderive the <code>Debug</code> traits for a type.</p>
-<a class="header" href="#library-4" id="library-4"><h3>Library</h3></a>
+<h3><a class="header" href="#library-4" id="library-4">Library</a></h3>
 <ul>
 <li><a href="https://docs.rs/bindgen/0.54.2/bindgen/struct.Builder.html#method.no_debug"><code>bindgen::Builder::no_debug</code></a></li>
 </ul>
-<a class="header" href="#command-line-4" id="command-line-4"><h3>Command Line</h3></a>
+<h3><a class="header" href="#command-line-4" id="command-line-4">Command Line</a></h3>
 <ul>
 <li><code>--no-debug &lt;regex&gt;</code></li>
 </ul>
-<a class="header" href="#annotations-3" id="annotations-3"><h3>Annotations</h3></a>
+<h3><a class="header" href="#annotations-3" id="annotations-3">Annotations</a></h3>
 <pre><code class="language-c">/**
  * Although bindgen can't know, this enum is not safe to format the output.
  * the value may be combined with multiple bits in many C/C++ cases,
@@ -740,20 +767,20 @@ int64_t av_rescale_rnd(int64_t a, int64_t b, int64_t c, enum AVRounding) av_cons
 // Call
 int64_t pts = av_rescale_rnd(40000, 3600, 90000, AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX);
 </code></pre>
-<a class="header" href="#preventing-the-derivation-of-default" id="preventing-the-derivation-of-default"><h1>Preventing the Derivation of <code>Default</code></h1></a>
+<h1><a class="header" href="#preventing-the-derivation-of-default" id="preventing-the-derivation-of-default">Preventing the Derivation of <code>Default</code></a></h1>
 <p><code>bindgen</code> will attempt to derive/impl the <code>Default</code> traits on a best-effort basis.
 Sometimes, we need customize the implement of <code>Default</code> for certain types,
-In these cases, the <code>nodefault</code> annotation can be used to prevent bindgen
+In these cases, the <code>nodefault</code> annotation can be used to prevent bindgen 
 to autoderive the <code>Default</code> traits for a type.</p>
-<a class="header" href="#library-5" id="library-5"><h3>Library</h3></a>
+<h3><a class="header" href="#library-5" id="library-5">Library</a></h3>
 <ul>
 <li><a href="https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.no_default"><code>bindgen::Builder::no_default</code></a></li>
 </ul>
-<a class="header" href="#command-line-5" id="command-line-5"><h3>Command Line</h3></a>
+<h3><a class="header" href="#command-line-5" id="command-line-5">Command Line</a></h3>
 <ul>
 <li><code>--no-default &lt;regex&gt;</code></li>
 </ul>
-<a class="header" href="#annotations-4" id="annotations-4"><h3>Annotations</h3></a>
+<h3><a class="header" href="#annotations-4" id="annotations-4">Annotations</a></h3>
 <pre><code class="language-c">/**
  * We need to specify some preset values as the Default of Header.
  *
@@ -768,7 +795,7 @@ struct Header {
 
 ...
 </code></pre>
-<a class="header" href="#customize-implements" id="customize-implements"><h3>Customize Implements</h3></a>
+<h3><a class="header" href="#customize-implements" id="customize-implements">Customize Implements</a></h3>
 <pre><code class="language-rust ignore">// Include the generated bindings.
 include!(concat!(env!(&quot;OUT_DIR&quot;), &quot;/bindings.rs&quot;));
 
@@ -781,7 +808,7 @@ impl Default for Header {
     }
 }
 </code></pre>
-<a class="header" href="#generating-bindings-to-c" id="generating-bindings-to-c"><h1>Generating Bindings to C++</h1></a>
+<h1><a class="header" href="#generating-bindings-to-c" id="generating-bindings-to-c">Generating Bindings to C++</a></h1>
 <p><code>bindgen</code> can handle some C++ features, but not all of them. To set
 expectations: <code>bindgen</code> will give you the type definitions and FFI declarations
 you need to build an API to the C++ library, but using those types in Rust will
@@ -798,7 +825,7 @@ cannot handle. Additionally, you may want to mark other types as
 all of <code>std::.*</code> opaque, and to whitelist only precisely the functions and types
 you intend to use.</p>
 <p>You should read up on the <a href="./faq.html">FAQs</a> as well.</p>
-<a class="header" href="#supported-features" id="supported-features"><h2>Supported Features</h2></a>
+<h2><a class="header" href="#supported-features" id="supported-features">Supported Features</a></h2>
 <ul>
 <li>
 <p>Inheritance (for the most part; there are
@@ -819,7 +846,7 @@ automatically invoked)</p>
 fields of the class or struct.</p>
 </li>
 </ul>
-<a class="header" href="#unsupported-features" id="unsupported-features"><h2>Unsupported Features</h2></a>
+<h2><a class="header" href="#unsupported-features" id="unsupported-features">Unsupported Features</a></h2>
 <p>When <code>bindgen</code> finds a type that is too difficult or impossible to translate
 into Rust, it will automatically treat it as an opaque blob of bytes. The
 philosophy is that</p>
@@ -867,7 +894,7 @@ generate undefined behaviour. See
 for more details.</p>
 </li>
 </ul>
-<a class="header" href="#generating-bindings-to-objective-c" id="generating-bindings-to-objective-c"><h1>Generating Bindings to Objective-C</h1></a>
+<h1><a class="header" href="#generating-bindings-to-objective-c" id="generating-bindings-to-objective-c">Generating Bindings to Objective-C</a></h1>
 <p><code>bindgen</code> does not (yet) have full objective-c support but it can generate bindings
 for a lot of the apple frameworks without too much blacklisting.</p>
 <p>In order to generate bindings, you will need <code>-x objective-c</code> as the clang
@@ -891,7 +918,7 @@ you will need to convert the <code>UILabel</code> to a <code>UIView</code> via <
 <p>Each class (struct) has an <code>alloc</code> and a <code>dealloc</code> to match that of some of the alloc
 methods found in <code>NSObject</code>.</p>
 <p>In order to initialize a class <code>Foo</code>, you will have to do something like <code>let foo = Foo(Foo::alloc().initWithStuff())</code>.</p>
-<a class="header" href="#supported-features-1" id="supported-features-1"><h2>Supported Features</h2></a>
+<h2><a class="header" href="#supported-features-1" id="supported-features-1">Supported Features</a></h2>
 <ul>
 <li>Inheritance matched to rust traits with prefixes of <code>I</code> which
 stands for interface.</li>
@@ -901,7 +928,7 @@ stands for Protocol.</li>
 name and <code>id</code> is a pointer to the objective-c Object.</li>
 <li>Blocks</li>
 </ul>
-<a class="header" href="#useful-notes" id="useful-notes"><h2>Useful Notes</h2></a>
+<h2><a class="header" href="#useful-notes" id="useful-notes">Useful Notes</a></h2>
 <ul>
 <li>If you're targeting <code>aarch64-apple-ios</code>, you'll need to have the clang arg
 <code>--target=arm64-apple-ios</code> as mentioned
@@ -922,16 +949,16 @@ objective-c's inheritance doesn't perfectly match that of rusts.</li>
 all of Core Foundation and any other frameworks. This will result in a very
 long compile time.</li>
 </ul>
-<a class="header" href="#not-yet-supported" id="not-yet-supported"><h2>Not (yet) Supported</h2></a>
+<h2><a class="header" href="#not-yet-supported" id="not-yet-supported">Not (yet) Supported</a></h2>
 <ul>
 <li>Nullablibility attributes which return <code>Option</code>s.</li>
 <li>Probably many other things. Feel free to <a href="https://github.com/rust-lang/rust-bindgen/issues">open an issue</a>.</li>
 </ul>
-<a class="header" href="#example-crates" id="example-crates"><h1>Example crate(s)</h1></a>
+<h1><a class="header" href="#example-crates" id="example-crates">Example crate(s)</a></h1>
 <ul>
 <li><a href="https://github.com/simlay/uikit-sys">uikit-sys</a></li>
 </ul>
-<a class="header" href="#using-the-union-types-generated-by-bindgen" id="using-the-union-types-generated-by-bindgen"><h1>Using the Union Types Generated by Bindgen</h1></a>
+<h1><a class="header" href="#using-the-union-types-generated-by-bindgen" id="using-the-union-types-generated-by-bindgen">Using the Union Types Generated by Bindgen</a></h1>
 <p><strong>NOTE</strong>: Rust 1.19 stabilized the <code>union</code> type (see Rust issue <a href="https://github.com/rust-lang/rust/issues/32836">#32836</a>).</p>
 <p>You can pass the <code>--rust-target</code> option to tell <code>bindgen</code> to target a specific version of Rust.
 By default, <code>bindgen</code> will target the latest stable Rust.
@@ -956,18 +983,18 @@ typedef union {
     beta_t  bravo;
 } greek_t;
 </code></pre>
-<a class="header" href="#relevant-bindgen-options" id="relevant-bindgen-options"><h2>Relevant Bindgen Options</h2></a>
-<a class="header" href="#library-6" id="library-6"><h3>Library</h3></a>
+<h2><a class="header" href="#relevant-bindgen-options" id="relevant-bindgen-options">Relevant Bindgen Options</a></h2>
+<h3><a class="header" href="#library-6" id="library-6">Library</a></h3>
 <ul>
 <li><a href="https://docs.rs/bindgen/0.29.0/bindgen/struct.Builder.html#method.rust_target"><code>bindgen::Builder::rust_target()</code></a> <!-- Update when live --></li>
 <li><a href="https://docs.rs/bindgen/0.29.0/bindgen/struct.Builder.html#method.derive_default"><code>bindgen::Builder::derive_default()</code></a></li>
 </ul>
-<a class="header" href="#command-line-6" id="command-line-6"><h3>Command Line</h3></a>
+<h3><a class="header" href="#command-line-6" id="command-line-6">Command Line</a></h3>
 <ul>
 <li><code>--rust-target</code></li>
 <li><code>--with-derive-default</code></li>
 </ul>
-<a class="header" href="#which-union-type-will-bindgen-generate" id="which-union-type-will-bindgen-generate"><h2>Which union type will Bindgen generate?</h2></a>
+<h2><a class="header" href="#which-union-type-will-bindgen-generate" id="which-union-type-will-bindgen-generate">Which union type will Bindgen generate?</a></h2>
 <p>Bindgen can emit one of two Rust types that correspond to C unions:</p>
 <ul>
 <li>Rust's <code>union</code> builtin (only available in Rust &gt;= 1.19, including nightly)</li>
@@ -978,7 +1005,7 @@ typedef union {
 <li>If the Rust target is &gt;= 1.19 (including nightly) AND each field of the union can derive <code>Copy</code>, then generate a <code>union</code> builtin.</li>
 <li>Otherwise, generate a <code>BindgenUnion</code>.</li>
 </ul>
-<a class="header" href="#using-the-union-builtin" id="using-the-union-builtin"><h2>Using the <code>union</code> builtin</h2></a>
+<h2><a class="header" href="#using-the-union-builtin" id="using-the-union-builtin">Using the <code>union</code> builtin</a></h2>
 <p>When using the <code>union</code> builtin type, there are two choices for initialization:</p>
 <ol>
 <li>Zero</li>
@@ -1008,7 +1035,7 @@ fn union_builtin() {
     }
 }
 </code></pre>
-<a class="header" href="#using-the-bindgenunion-type" id="using-the-bindgenunion-type"><h2>Using the <code>BindgenUnion</code> type</h2></a>
+<h2><a class="header" href="#using-the-bindgenunion-type" id="using-the-bindgenunion-type">Using the <code>BindgenUnion</code> type</a></h2>
 <p>If the target Rust version does not support the new <code>union</code> type or there is a field that cannot derive <code>Copy</code>, then bindgen will provide union-like access to a <code>struct</code>.</p>
 <p>Interacting with these unions is slightly different than the new <code>union</code> types.
 You must access union variants through a reference.</p>
@@ -1051,8 +1078,8 @@ fn bindgenunion() {
    = note: expected type `bindings::__BindgenUnionField&lt;bindings::alpha_t&gt;`
               found type `bindings::alpha_t`
 </code></pre>
-<a class="header" href="#using-the-bitfield-types-generated-by-bindgen" id="using-the-bitfield-types-generated-by-bindgen"><h1>Using the Bitfield Types Generated by Bindgen</h1></a>
-<a class="header" href="#bitfield-strategy-overview" id="bitfield-strategy-overview"><h2>Bitfield Strategy Overview</h2></a>
+<h1><a class="header" href="#using-the-bitfield-types-generated-by-bindgen" id="using-the-bitfield-types-generated-by-bindgen">Using the Bitfield Types Generated by Bindgen</a></h1>
+<h2><a class="header" href="#bitfield-strategy-overview" id="bitfield-strategy-overview">Bitfield Strategy Overview</a></h2>
 <p>As Rust does not support bitfields, Bindgen generates a struct for each with the following characteristics</p>
 <ul>
 <li>Immutable getter functions for each bitfield named <code>&lt;bitfield&gt;</code></li>
@@ -1060,7 +1087,7 @@ fn bindgenunion() {
 <li>Far each contiguous block of bitfields, Bindgen emits an opaque physical field that contains one or more logical bitfields</li>
 <li>A static constructor  <code>new_bitfield_{1, 2, ...}</code> with a parameter for each bitfield contained within the opaque physical field.</li>
 </ul>
-<a class="header" href="#bitfield-examples" id="bitfield-examples"><h2>Bitfield examples</h2></a>
+<h2><a class="header" href="#bitfield-examples" id="bitfield-examples">Bitfield examples</a></h2>
 <p>For this discussion, we will use the following C type definitions and functions.</p>
 <pre><code class="language-c">typedef struct {
     unsigned int a: 1;
@@ -1075,7 +1102,7 @@ StructWithBitfields create_bitfield();
 // Print a bitfield
 void print_bitfield(StructWithBitfields bfield);
 </code></pre>
-<p>Bindgen creates a set of field getters and setters for interacting with the bitset. For example,</p>
+<p>Bindgen creates a set of field getters and setters for interacting with the bitset. For example, </p>
 <pre><code class="language-rust ignore">    let mut bfield = unsafe { create_bitfield() };
     
     bfield.set_a(1);
@@ -1118,16 +1145,16 @@ StructWithBitfields: a:1, b:1, c:0
 <p>This will print out</p>
 <pre><code class="language-text">StructWithBitfields: a:1, b:0, c:2
 </code></pre>
-<a class="header" href="#frequently-asked-questions" id="frequently-asked-questions"><h1>Frequently Asked Questions</h1></a>
+<h1><a class="header" href="#frequently-asked-questions" id="frequently-asked-questions">Frequently Asked Questions</a></h1>
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 <ul>
-<li><a href="#why-isnt-bindgen-generating-methods-for-this-whitelisted-class">Why isn't <code>bindgen</code> generating methods for this whitelisted class?</a></li>
-<li><a href="#why-isnt-bindgen-generating-bindings-to-inline-functions">Why isn't <code>bindgen</code> generating bindings to inline functions?</a></li>
-<li><a href="#does-bindgen-support-the-c-standard-template-library-stl">Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</a></li>
+<li><a href="faq.html#why-isnt-bindgen-generating-methods-for-this-whitelisted-class">Why isn't <code>bindgen</code> generating methods for this whitelisted class?</a></li>
+<li><a href="faq.html#why-isnt-bindgen-generating-bindings-to-inline-functions">Why isn't <code>bindgen</code> generating bindings to inline functions?</a></li>
+<li><a href="faq.html#does-bindgen-support-the-c-standard-template-library-stl">Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</a></li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<a class="header" href="#why-isnt-bindgen-generating-methods-for-this-whitelisted-class" id="why-isnt-bindgen-generating-methods-for-this-whitelisted-class"><h3>Why isn't <code>bindgen</code> generating methods for this whitelisted class?</h3></a>
+<h3><a class="header" href="#why-isnt-bindgen-generating-methods-for-this-whitelisted-class" id="why-isnt-bindgen-generating-methods-for-this-whitelisted-class">Why isn't <code>bindgen</code> generating methods for this whitelisted class?</a></h3>
 <p>Are the methods <code>inline</code> methods, or defined inline in the class? For example:</p>
 <pre><code class="language-c++">class Dooder {
   public:
@@ -1144,9 +1171,9 @@ inline bool Dooder::example_two() {
 }
 </code></pre>
 <p>If so, see
-<a href="#why-isnt-bindgen-generating-bindings-to-inline-functions">&quot;Why isn't <code>bindgen</code> generating bindings to inline functions?&quot;</a></p>
+<a href="faq.html#why-isnt-bindgen-generating-bindings-to-inline-functions">&quot;Why isn't <code>bindgen</code> generating bindings to inline functions?&quot;</a></p>
 <p>If not, consider filing an issue!</p>
-<a class="header" href="#why-isnt-bindgen-generating-bindings-to-inline-functions" id="why-isnt-bindgen-generating-bindings-to-inline-functions"><h3>Why isn't <code>bindgen</code> generating bindings to inline functions?</h3></a>
+<h3><a class="header" href="#why-isnt-bindgen-generating-bindings-to-inline-functions" id="why-isnt-bindgen-generating-bindings-to-inline-functions">Why isn't <code>bindgen</code> generating bindings to inline functions?</a></h3>
 <p>These functions don't typically end up in object files or shared libraries with
 symbols that we can reliably link to, since they are instead inlined into each
 of their call sites. Therefore, we don't generate bindings to them, since that
@@ -1159,18 +1186,18 @@ the <code>bindgen::Builder::generate_inline_functions</code> method or the
 <p>Note that these functions and methods are usually marked inline for a reason:
 they tend to be hot. The above workaround makes them an out-of-line call, which
 might not provide acceptable performance.</p>
-<a class="header" href="#does-bindgen-support-the-c-standard-template-library-stl" id="does-bindgen-support-the-c-standard-template-library-stl"><h3>Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</h3></a>
+<h3><a class="header" href="#does-bindgen-support-the-c-standard-template-library-stl" id="does-bindgen-support-the-c-standard-template-library-stl">Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</a></h3>
 <p>Sort of. A little. Depends what you mean by &quot;support&quot;.</p>
 <p>Most functions, methods, constructors, and destructors are inline in the
-STL. That ties our hands when it comes to linking: <a href="#why-isnt-bindgen-generating-bindings-to-inline-functions">&quot;Why isn't <code>bindgen</code> generating bindings to inline functions?&quot;</a></p>
+STL. That ties our hands when it comes to linking: <a href="faq.html#why-isnt-bindgen-generating-bindings-to-inline-functions">&quot;Why isn't <code>bindgen</code> generating bindings to inline functions?&quot;</a></p>
 <p>As far as generating opaque blobs of bytes with the correct size and alignment,
 <code>bindgen</code> can do pretty well. This is typically enough to let you use types that
 transitively contain STL things. We generally recommend marking <code>std::.*</code> as
 opaque, and then whitelisting only the specific things you need from the library
 you're binding to that is pulling in STL headers.</p>
-<a class="header" href="#how-to-deal-with-bindgen-generated-padding-fields" id="how-to-deal-with-bindgen-generated-padding-fields"><h3>How to deal with bindgen generated padding fields?</h3></a>
+<h3><a class="header" href="#how-to-deal-with-bindgen-generated-padding-fields" id="how-to-deal-with-bindgen-generated-padding-fields">How to deal with bindgen generated padding fields?</a></h3>
 <p>Depending the architecture, toolchain versions and source struct, it is
-possible that bindgen will generate padding fields named <code>__bindgen_padding_N</code>.
+possible that bindgen will generate padding fields named <code>__bindgen_padding_N</code>. 
 As these fields might be present when compiling for one architecture but not
 for an other, you should not initialize these fields manually when initializing
 the struct. Instead, use the <code>Default</code> trait. You can either enable this when
@@ -1215,6 +1242,14 @@ be automatically initialized by <code>..Default::default()</code>.</p>
 
         
 
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
         
 
         
