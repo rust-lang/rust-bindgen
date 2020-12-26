@@ -164,6 +164,6 @@ jobs:
       # NOTE(emilio): Change deploy-book as well if you change this.
       - name: Test book
         run: |
-          cargo install mdbook --root mdbook-install --vers "^0.2.1" --force
-          ./mdbook-install/bin/mdbook build book
-          ./mdbook-install/bin/mdbook test book
+          curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.4/mdbook-v0.4.4-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./mdbook build book
+          ./mdbook test book

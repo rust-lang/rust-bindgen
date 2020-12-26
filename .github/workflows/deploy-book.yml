@@ -22,9 +22,9 @@ jobs:
 
       - name: Test book
         run: |
-          cargo install mdbook --root mdbook-install --vers "^0.2.1" --force
-          ./mdbook-install/bin/mdbook build book
-          ./mdbook-install/bin/mdbook test book
+          curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.4/mdbook-v0.4.4-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./mdbook build book
+          ./mdbook test book
 
       - name: Deploy book
         uses: JamesIves/github-pages-deploy-action@3.7.1
