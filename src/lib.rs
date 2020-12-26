@@ -622,7 +622,7 @@ impl Builder {
         self
     }
 
-    /// Generate wrappers to safely use C++ code. See https://todo
+    /// Generate wrappers to safely use C++ code. See https://TODO(volker)
     pub fn gen_safe_wrappers(mut self, gen_safe_wrappers: bool) -> Builder {
         self.options.gen_safe_wrappers = gen_safe_wrappers;
         self

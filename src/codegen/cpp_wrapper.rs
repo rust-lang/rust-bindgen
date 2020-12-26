@@ -1,4 +1,7 @@
+use crate::codegen::utils;
+use crate::codegen::utils::argument_type_id_to_rust_type;
 use crate::ir::context::GeneratingStage;
+use crate::ir::function::FunctionSig;
 use crate::ir::item::ItemCanonicalName;
 use crate::ir::item_kind::ItemKind;
 use crate::ir::ty::TypeKind;
@@ -81,7 +84,7 @@ pub fn get_cpp_namespace_prefix(
                         None => prefix, // v.name() is None if it is an unnamed namespace
                         Some(name) => {
                             if name == "root" {
-                                //todo: what if the C++ sourcecode is namespace root {...} ?
+                                //TODO: what if the C++ sourcecode is: namespace root {...} ?
                                 break;
                             }
                             format!("{}::{}", name, prefix)
@@ -123,14 +126,12 @@ pub fn cpp_function_wrapper(
 ) -> Result<(), WhyNoWrapper> {
     debug_assert!(ctx.generating_stage() == GeneratingStage::GeneratingCpp);
     let signature = funcitem.expect_function().get_signature(ctx);
-    if ctx
+
+    let using_wrapped_return = !ctx
         .resolve_item(signature.return_type())
         .kind()
         .expect_type()
-        .surely_trivially_relocatable(ctx)
-    {
-        return Err(WhyNoWrapper::Unnecessary);
-    }
+        .surely_trivially_relocatable(ctx);
     let rettype = get_cpp_typename_with_namespace(
         ctx,
         ctx.resolve_item(signature.return_type()),
@@ -140,28 +141,47 @@ pub fn cpp_function_wrapper(
         return Err(WhyNoWrapper::DoubleUnderscore);
     }
     let mut badflag = false;
-    let args_string: Vec<String> = signature
+    let (args_string, boxed): (Vec<String>, Vec<bool>) = signature
         .argument_types()
         .iter()
         .enumerate()
         .map(|(i, &(ref argname, ty))| {
+            let arg_ty = argument_type_id_to_rust_type(ctx, ty, true);
+
             let argname = argname.as_ref();
             let typ = ctx.resolve_item(ty).expect_type().name();
             if matches!(argname, Some(v) if v == "this") {
                 if let None = item {
                     badflag = true;
-                    String::new()
+                    (String::new(), false)
                 } else {
-                    format!("{} *this_ptr, ", item.unwrap().canonical_name(ctx))
+                    (
+                        format!(
+                            "{} *this_ptr",
+                            item.unwrap().canonical_name(ctx)
+                        ),
+                        false,
+                    )
                 }
             } else if typ == None {
                 badflag = true;
-                String::new()
+                (String::new(), false)
             } else {
-                format!("{} arg_{},", typ.unwrap(), i)
+                match arg_ty {
+                    utils::TypeName::Void => panic!(),
+                    utils::TypeName::NotBoxable(v) => {
+                        ((format!("{} arg_{}", typ.unwrap(), i), false))
+                    }
+                    utils::TypeName::Boxable { unboxed, boxed } => {
+                        (format!("{} *arg_{}", typ.unwrap(), i), true)
+                    }
+                }
             }
         })
-        .collect();
+        .unzip();
+    if !using_wrapped_return && !boxed.iter().any(|el| *el) {
+        return Err(WhyNoWrapper::Unnecessary);
+    }
     if badflag {
         return Err(WhyNoWrapper::ArgumentTypeIsNone);
     }
@@ -176,21 +196,40 @@ pub fn cpp_function_wrapper(
         ),
     };
     let mut args_call: Vec<String> = Vec::new();
-    signature.argument_types().iter().enumerate().for_each(
-        |(i, &(ref argname, _))| {
+    signature
+        .argument_types()
+        .iter()
+        .zip(boxed.iter())
+        .enumerate()
+        .for_each(|(i, (&(ref argname, _), boxed))| {
             let argname = argname.as_ref();
             if !matches!(argname, Some(v) if v == "this") {
-                args_call.push(format!("arg_{}", i));
+                if *boxed {
+                    args_call.push(format!("*arg_{}", i));
+                } else {
+                    args_call.push(format!("arg_{}", i));
+                }
             }
-        },
-    );
-    cpp_out.push_str(&format!(
-        "void bindgen_wrap_{}({} {} *writeback) {{\n    auto val = {}({});\n    *writeback = val;\n}}\n",
-        canonical_name,
-        &args_string.join(""),
-        rettype,
-        callname,
-        &args_call.join(", ")
-    ));
+        });
+    if using_wrapped_return {
+        cpp_out.push_str(&format!(
+            "void bindgen_wrap_{}({}, {} *writeback) {{\n    auto val = {}({});\n    *writeback = val;\n}}\n",
+            canonical_name,
+            &args_string.join(", "),
+            rettype,
+            callname,
+            &args_call.join(", ")
+        ));
+    } else {
+        cpp_out.push_str(&format!(
+            "{} bindgen_wrap_{}({}) {{\n    return {}({});\n}}\n",
+            rettype,
+            canonical_name,
+            &args_string.join(", "),
+            callname,
+            &args_call.join(", ")
+        ));
+    }
+
     Ok(())
 }

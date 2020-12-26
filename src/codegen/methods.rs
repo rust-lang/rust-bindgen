@@ -1,12 +1,13 @@
 use crate::codegen::helpers;
 use crate::codegen::helpers::attributes;
 use crate::codegen::utils;
-use crate::codegen::{CodegenResult, ToRustTyOrOpaque};
+use crate::codegen::{cpp_function_wrapper, CodegenResult, ToRustTyOrOpaque};
 use crate::ir::comp::*;
 use crate::ir::context::{BindgenContext, GeneratingStage};
 use crate::ir::function::{Abi, Function};
 use crate::ir::item::ItemCanonicalName;
 use crate::HashMap;
+use crate::Item;
 use proc_macro2::TokenStream;
 use std::str::FromStr;
 
@@ -97,8 +98,14 @@ impl Method {
             let temp = utils::argument_type_id_to_rust_type(
                 ctx,
                 signature.argument_types()[1].1,
+                false,
             );
-            Some(raw_pointer_to_reference(temp))
+            match temp {
+                utils::TypeName::NotBoxable(v) => {
+                    Some(raw_pointer_to_reference(v))
+                }
+                _ => panic!(),
+            }
         };
 
         // We then check if the function name is in one of the following three
@@ -232,6 +239,7 @@ trait MethodCodegen {
     fn codegen_method<'a>(
         &self,
         ctx: &BindgenContext,
+        item: &Item,
         methods: &mut Vec<proc_macro2::TokenStream>,
         method_names: &mut HashMap<String, usize>,
         result: &mut CodegenResult<'a>,
@@ -245,6 +253,7 @@ impl MethodCodegen for Method {
     fn codegen_method<'a>(
         &self,
         ctx: &BindgenContext,
+        item: &Item,
         methods: &mut Vec<proc_macro2::TokenStream>,
         method_names: &mut HashMap<String, usize>,
         result: &mut CodegenResult<'a>,
@@ -291,20 +300,30 @@ impl MethodCodegen for Method {
             return;
         }
 
-        let name = self.name_this_method(function, method_names);
-
-        let function_name = ctx.rust_ident(function_item.canonical_name(ctx));
-        let mut args = utils::fnsig_arguments(ctx, signature);
-        let mut real_ret = utils::fnsig_return_ty(ctx, signature);
-        let mut inner_ret = None;
-
-        let using_wrapper = safe_class_interface &&
-            ctx.generating_stage() == GeneratingStage::ReadingGeneratedCpp &&
+        let mut using_wrapper = safe_class_interface &&
+            ctx.generating_stage() == GeneratingStage::ReadingGeneratedCpp;
+        let using_wrapped_return = using_wrapper &&
             !ctx.resolve_item(signature.return_type())
                 .kind()
                 .expect_type()
                 .surely_trivially_relocatable(ctx);
-        if using_wrapper {
+
+        let name = self.name_this_method(function, method_names);
+        let function_name = ctx.rust_ident(function_item.canonical_name(ctx));
+        let (mut args, mut exprs, some_argument_was_boxed) =
+            utils::fnsig_arguments(ctx, signature, using_wrapper);
+        let mut real_ret = utils::fnsig_return_ty(ctx, signature);
+        let mut inner_ret = None;
+
+        //dbg!(&function_name, some_argument_was_boxed, using_wrapped_return, ctx.generating_stage());
+        if !some_argument_was_boxed && !using_wrapped_return {
+            using_wrapper = false;
+        }
+        if ctx.generating_stage() == GeneratingStage::GeneratingCpp {
+            //cpp_function_wrapper(function_item, ctx, Some(item), result.cpp_out.as_mut().unwrap());
+        }
+
+        if using_wrapped_return {
             if let Some(ret_inner) = real_ret {
                 real_ret = Some(
                     TokenStream::from_str(&format!("Box_{}", ret_inner))
@@ -331,9 +350,6 @@ impl MethodCodegen for Method {
             args.remove(0);
             real_ret = Some(quote! { Self });
         }
-
-        let mut exprs =
-            helpers::ast_ty::arguments_from_signature(&signature, ctx);
 
         let mut stmts = vec![];
         let prefix = ctx.trait_prefix();
@@ -387,13 +403,20 @@ impl MethodCodegen for Method {
             };
         }
 
-        if using_wrapper {
+        if using_wrapped_return {
             let function_name =
                 ctx.rust_ident(format!("bindgen_wrap_{}", function_name));
             let call = quote! {
                 let ret = #real_ret::allocate_uninitialised();
                 #function_name (#( #exprs ),* , ret.ptr as * mut #inner_ret);
                 ret
+            };
+            stmts.push(call);
+        } else if using_wrapper {
+            let function_name =
+                ctx.rust_ident(format!("bindgen_wrap_{}", function_name));
+            let call = quote! {
+                #function_name (#( #exprs ),* )
             };
             stmts.push(call);
         } else {
@@ -460,6 +483,7 @@ impl CompInfo {
         &self,
         ctx: &BindgenContext,
         result: &mut CodegenResult,
+        item: &Item,
         ty_for_impl: &TokenStream,
         methods: &mut Vec<proc_macro2::TokenStream>,
         safe_class_interface: bool,
@@ -471,6 +495,7 @@ impl CompInfo {
                 method.try_codegen_operator(ctx, &ty_for_impl, result);
                 method.codegen_method(
                     ctx,
+                    item,
                     methods,
                     &mut method_names,
                     result,
@@ -491,6 +516,7 @@ impl CompInfo {
                 )
                 .codegen_method(
                     ctx,
+                    item,
                     methods,
                     &mut method_names,
                     result,
@@ -506,6 +532,7 @@ impl CompInfo {
                 debug_assert!(kind.is_destructor());
                 Method::new(kind, destructor, false).codegen_method(
                     ctx,
+                    item,
                     methods,
                     &mut method_names,
                     result,

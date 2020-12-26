@@ -1649,12 +1649,19 @@ impl CompInfo {
         let boxname =
             Ident::new(&format!("Box_{}", ty_for_impl), Span::call_site());
         result.push(quote!(
-            struct #boxname {
+            pub struct #boxname {
                 ptr: *mut ::#prefix::ffi::c_void
             }
         ));
         let mut methods: Vec<proc_macro2::TokenStream> = vec![];
-        self.codegen_methods(ctx, result, &ty_for_impl, &mut methods, true);
+        self.codegen_methods(
+            ctx,
+            result,
+            item,
+            &ty_for_impl,
+            &mut methods,
+            true,
+        );
 
         let size = {
             if layout.size == 0 {
@@ -2162,6 +2169,7 @@ impl CompInfo {
             self.codegen_methods(
                 ctx,
                 result,
+                item,
                 &ty_for_impl,
                 &mut methods,
                 false,
@@ -3580,7 +3588,7 @@ impl TryToRustTy for FunctionSig {
     ) -> error::Result<proc_macro2::TokenStream> {
         // TODO: we might want to consider ignoring the reference return value.
         let ret = utils::fnsig_return_tokens(ctx, &self);
-        let arguments = utils::fnsig_arguments(ctx, &self);
+        let (arguments, _, _) = utils::fnsig_arguments(ctx, &self, false);
         let abi = self.abi();
 
         match abi {
@@ -3656,7 +3664,7 @@ impl Function {
             ).unwrap_or_else(|e| debug!("Unable to create C++ wrapper for: item = {:?} Reason: {:?}", item, e));
         }
 
-        let args = utils::fnsig_arguments(ctx, signature);
+        let (args, _, _) = utils::fnsig_arguments(ctx, signature, false);
         let ret = utils::fnsig_return_tokens(ctx, signature);
 
         let mut attributes = vec![];
@@ -3732,7 +3740,7 @@ fn objc_method_codegen(
     prefix: &str,
 ) -> proc_macro2::TokenStream {
     let signature = method.signature();
-    let fn_args = utils::fnsig_arguments(ctx, signature);
+    let (fn_args, _, _) = utils::fnsig_arguments(ctx, signature, false);
     let fn_ret = utils::fnsig_return_tokens(ctx, signature);
 
     let sig = if method.is_class_method() {
@@ -4366,7 +4374,8 @@ mod utils {
     pub fn argument_type_id_to_rust_type(
         ctx: &BindgenContext,
         ty: crate::ir::context::TypeId,
-    ) -> proc_macro2::TokenStream {
+        try_boxing: bool,
+    ) -> TypeName {
         use super::ToPtr;
 
         let arg_item = ctx.resolve_item(ty);
@@ -4387,7 +4396,9 @@ mod utils {
                 } else {
                     t.to_rust_ty_or_opaque(ctx, &())
                 };
-                stream.to_ptr(ctx.resolve_type(t).is_const())
+                TypeName::NotBoxable(
+                    stream.to_ptr(ctx.resolve_type(t).is_const()),
+                )
             }
             TypeKind::Pointer(inner) => {
                 let inner = ctx.resolve_item(inner);
@@ -4396,24 +4407,45 @@ mod utils {
                     *inner_ty.canonical_type(ctx).kind()
                 {
                     let name = ctx.rust_ident(interface.name());
-                    quote! {
+                    TypeName::NotBoxable(quote! {
                         #name
-                    }
+                    })
                 } else {
-                    arg_item.to_rust_ty_or_opaque(ctx, &())
+                    TypeName::NotBoxable(
+                        arg_item.to_rust_ty_or_opaque(ctx, &()),
+                    )
                 }
             }
-            _ => arg_item.to_rust_ty_or_opaque(ctx, &()),
+            _ => {
+                if try_boxing {
+                    try_boxing_type(ctx, arg_item)
+                } else {
+                    TypeName::NotBoxable(
+                        arg_item.to_rust_ty_or_opaque(ctx, &()),
+                    )
+                }
+            }
         }
     }
 
-    /// Returns a Vec of the Rust arguments of the function sig
+    /// Returns the argument of a function in the form:
+    /// 1. element of returned tuple: arg_name : arg_type
+    /// 2. element of returned tuple: arg_name
+    /// If try_boxing is true, this will also do some modifications
+    /// of the returned values to make our safe wrappers work.
+    /// The 3. element of the returned tuple signals whether any such modification was made.
     pub fn fnsig_arguments(
         ctx: &BindgenContext,
         sig: &FunctionSig,
-    ) -> Vec<proc_macro2::TokenStream> {
+        try_boxing: bool,
+    ) -> (
+        Vec<proc_macro2::TokenStream>,
+        Vec<proc_macro2::TokenStream>,
+        bool,
+    ) {
         let mut unnamed_arguments = 0;
-        let mut args = sig
+        let mut flag = false;
+        let mut args: (Vec<proc_macro2::TokenStream>, Vec<proc_macro2::TokenStream>) = sig
             .argument_types()
             .iter()
             .map(|&(ref name, ty)| {
@@ -4428,19 +4460,33 @@ mod utils {
                 assert!(!arg_name.is_empty());
                 let arg_name = ctx.rust_ident(arg_name);
 
-                let arg_ty = argument_type_id_to_rust_type(ctx, ty);
-
-                quote! {
-                    #arg_name : #arg_ty
+                let arg_ty = argument_type_id_to_rust_type(ctx, ty, try_boxing);
+                match arg_ty {
+                    TypeName::Void => panic!(),
+                    TypeName::NotBoxable(v) => (
+                        quote! {
+                            #arg_name : #v
+                        },
+                        quote! { #arg_name },
+                    ),
+                    TypeName::Boxable { unboxed, boxed } => {
+                        flag = true;
+                        (
+                            quote! {
+                                #arg_name : &mut #boxed
+                            },
+                            quote! { #arg_name.ptr as * mut #unboxed },
+                        )
+                    }
                 }
             })
-            .collect::<Vec<_>>();
+            .unzip();
 
         if sig.is_variadic() {
-            args.push(quote! { ... })
+            args.0.push(quote!( ... ));
         }
-
-        args
+        assert!(try_boxing || !flag);
+        (args.0, args.1, flag)
     }
 
     pub fn fnsig_block(
@@ -4539,5 +4585,42 @@ mod utils {
         }
 
         true
+    }
+
+    pub enum TypeName {
+        Void,
+        NotBoxable(proc_macro2::TokenStream),
+        Boxable {
+            unboxed: proc_macro2::TokenStream,
+            boxed: proc_macro2::TokenStream,
+        },
+    }
+
+    pub fn try_boxing_type(ctx: &BindgenContext, typ: &Item) -> TypeName {
+        let typ = if let TypeKind::ResolvedTypeRef(v) =
+            typ.kind().expect_type().kind()
+        {
+            ctx.resolve_item(v)
+        } else {
+            typ
+        };
+        if typ.kind().expect_type().surely_trivially_relocatable(ctx) {
+            if let TypeKind::Void = *typ.kind().expect_type().kind() {
+                TypeName::Void
+            } else {
+                let ret_ty = typ.to_rust_ty_or_opaque(ctx, &());
+                TypeName::NotBoxable(ret_ty)
+            }
+        } else {
+            let inner = typ.to_rust_ty_or_opaque(ctx, &());
+            let boxed = proc_macro2::TokenStream::from_str(
+                format!("Box_{}", inner).as_str(),
+            )
+            .unwrap();
+            TypeName::Boxable {
+                unboxed: inner,
+                boxed: boxed,
+            }
+        }
     }
 }
