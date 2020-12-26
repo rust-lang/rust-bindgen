@@ -148,3 +148,22 @@ jobs:
           BINDGEN_FEATURE_TESTING_ONLY_DOCS: ${{matrix.feature_testing_only_docs}}
           BINDGEN_NO_DEFAULT_FEATURES: ${{matrix.no_default_features}}
         run: ./ci/test.sh
+
+  test-book:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install stable
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      # NOTE(emilio): Change deploy-book as well if you change this.
+      - name: Test book
+        run: |
+          cargo install mdbook --root mdbook-install --vers "^0.2.1" --force
+          ./mdbook-install/bin/mdbook build book
+          ./mdbook-install/bin/mdbook test book
