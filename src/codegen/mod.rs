@@ -3653,6 +3653,14 @@ impl Function {
 
         let name = self.name();
         let mut canonical_name = item.canonical_name(ctx);
+        // TODO(volker) once this
+        // PR(https://github.com/alexcrichton/proc-macro2/pull/270) gets
+        // approved, we use is_valid_ident(&canonical_name) instead of
+        // canonical_name.contains(" ")
+        if canonical_name.contains(" ") {
+            debug!("Unable to codegen for: item = {:?} Reason: Not a valid identifier: {}", item, canonical_name);
+            return;
+        }
         let mangled_name = self.mangled_name();
 
         {
