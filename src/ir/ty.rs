@@ -410,6 +410,13 @@ impl Type {
                 .expect_type()
                 .surely_trivially_relocatable(ctx);
         }
+        if let TypeKind::Alias(v) = self.kind() {
+            return ctx
+                .resolve_item(v)
+                .kind()
+                .expect_type()
+                .surely_trivially_relocatable(ctx);
+        }
         matches!(
             self.kind(),
             TypeKind::Void |

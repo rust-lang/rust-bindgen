@@ -32,6 +32,10 @@ pub enum WhyNoWrapper {
     /// templates (yet).
     TemplatedType,
 
+    /// One argument or return value is a function pointer. We cannot handle
+    /// that (yet).
+    FunctionPointer,
+
     /// Functions with a double underscore prefix are sometimes weird
     DoubleUnderscore,
 }
@@ -39,10 +43,10 @@ pub enum WhyNoWrapper {
 pub fn get_cpp_typename_without_namespace<'a>(
     ctx: &'a BindgenContext,
     item: &'a Item,
-) -> Result<&'a str, WhyNoWrapper> {
+) -> Result<String, WhyNoWrapper> {
     let typ = item.kind().expect_type();
     if let Some(name) = typ.name() {
-        return Ok(name);
+        return Ok(name.to_owned());
     }
     match typ.kind() {
         TypeKind::ResolvedTypeRef(v) => {
@@ -51,10 +55,25 @@ pub fn get_cpp_typename_without_namespace<'a>(
                 TypeKind::TemplateInstantiation(_) => {
                     Err(WhyNoWrapper::TemplatedType)
                 }
-                _ => Ok(typ.name().unwrap()),
+                TypeKind::Pointer(inner) => Ok(format!(
+                    " *{}",
+                    get_cpp_typename_without_namespace(
+                        ctx,
+                        ctx.resolve_item(inner)
+                    )?
+                )),
+                TypeKind::Reference(inner) => Ok(format!(
+                    " &{}",
+                    get_cpp_typename_without_namespace(
+                        ctx,
+                        ctx.resolve_item(inner)
+                    )?
+                )),
+                _ => Ok(typ.name().unwrap().to_owned()),
             }
         }
         TypeKind::Comp(_) => Err(WhyNoWrapper::UnnamedType),
+        TypeKind::Function(_) => Err(WhyNoWrapper::FunctionPointer),
         _ => panic!(),
     }
 }
@@ -122,6 +141,7 @@ pub fn cpp_function_wrapper(
     ctx: &BindgenContext,
     item: Option<&Item>,
     cpp_out: &mut String,
+    num_constructor: Option<usize>,
 ) -> Result<(), WhyNoWrapper> {
     debug_assert!(ctx.generating_stage() == GeneratingStage::GeneratingCpp);
     let signature = funcitem.expect_function().get_signature(ctx);
@@ -157,14 +177,11 @@ pub fn cpp_function_wrapper(
                     (
                         format!(
                             "{} *this_ptr",
-                            item.unwrap().canonical_name(ctx)
+                            item.unwrap().canonical_name(ctx) // performance: should we cache item.unwrap().canonical_name(ctx) ?
                         ),
                         false,
                     )
                 }
-            } else if typ == None {
-                badflag = true;
-                (String::new(), false)
             } else {
                 match arg_ty {
                     utils::TypeName::Void => panic!(),
@@ -211,7 +228,24 @@ pub fn cpp_function_wrapper(
                 }
             }
         });
-    if using_wrapped_return {
+    if let Some(num_constructor) = num_constructor {
+        cpp_out.push_str(&format!(
+            "void bindgen_wrap_{}({}) {{\n    *this_ptr = {}({});\n}}\n",
+            canonical_name,
+            &args_string.join(", "),
+            item.unwrap().canonical_name(ctx),
+            &args_call.join(", ")
+        ));
+        // TODO(volker): use emplacement new:
+        // cpp_out.push_str(&format!(
+        //     "void bindgen_wrap_{}({}) {{\n    {} *val = new(this_ptr) {}({});\n}}\n",
+        //     canonical_name,
+        //     &args_string.join(", "),
+        //     item.unwrap().canonical_name(ctx),
+        //     item.unwrap().canonical_name(ctx),
+        //     &args_call.join(", ")
+        // ));
+    } else if using_wrapped_return {
         cpp_out.push_str(&format!(
             "void bindgen_wrap_{}({}, {} *writeback) {{\n    auto val = {}({});\n    *writeback = val;\n}}\n",
             canonical_name,

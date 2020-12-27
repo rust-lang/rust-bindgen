@@ -2267,6 +2267,26 @@ impl CompInfo {
                                 ctx,
                                 Some(item),
                                 cpp_out,
+                                None,
+                            ).unwrap_or_else(|e| debug!("Unable to create C++ wrapper for: item = {:?} Reason: {:?}", item, e));
+                        }
+                    }
+                    for (count, sig) in self.constructors().iter().enumerate() {
+                        let method = Method::new(
+                            MethodKind::Constructor,
+                            *sig,
+                            /* const */
+                            false,
+                        );
+                        let function_item =
+                            ctx.resolve_item(method.signature());
+                        if let Some(ref mut cpp_out) = result.cpp_out {
+                            cpp_function_wrapper(
+                                function_item,
+                                ctx,
+                                Some(item),
+                                cpp_out,
+                                Some(count),
                             ).unwrap_or_else(|e| debug!("Unable to create C++ wrapper for: item = {:?} Reason: {:?}", item, e));
                         }
                     }
@@ -3653,6 +3673,7 @@ impl Function {
                 ctx,
                 None,
                 result.cpp_out.as_mut().unwrap(),
+                None,
             ).unwrap_or_else(|e| debug!("Unable to create C++ wrapper for: item = {:?} Reason: {:?}", item, e));
         }
 
@@ -4582,6 +4603,7 @@ mod utils {
         true
     }
 
+    #[derive(Debug)]
     pub enum TypeName {
         Void,
         NotBoxable(proc_macro2::TokenStream),
