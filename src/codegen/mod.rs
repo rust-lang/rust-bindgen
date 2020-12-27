@@ -12,6 +12,8 @@ pub(crate) mod bitfield_unit;
 #[cfg(all(test, target_endian = "little"))]
 mod bitfield_unit_tests;
 
+use unicode_xid;
+
 use self::helpers::attributes;
 use self::struct_layout::StructLayoutTracker;
 
@@ -2267,11 +2269,10 @@ impl CompInfo {
                                 ctx,
                                 Some(item),
                                 cpp_out,
-                                None,
                             ).unwrap_or_else(|e| debug!("Unable to create C++ wrapper for: item = {:?} Reason: {:?}", item, e));
                         }
                     }
-                    for (count, sig) in self.constructors().iter().enumerate() {
+                    for sig in self.constructors().iter() {
                         let method = Method::new(
                             MethodKind::Constructor,
                             *sig,
@@ -2286,7 +2287,6 @@ impl CompInfo {
                                 ctx,
                                 Some(item),
                                 cpp_out,
-                                Some(count),
                             ).unwrap_or_else(|e| debug!("Unable to create C++ wrapper for: item = {:?} Reason: {:?}", item, e));
                         }
                     }
@@ -3653,11 +3653,12 @@ impl Function {
 
         let name = self.name();
         let mut canonical_name = item.canonical_name(ctx);
-        // TODO(volker) once this
-        // PR(https://github.com/alexcrichton/proc-macro2/pull/270) gets
-        // approved, we use is_valid_ident(&canonical_name) instead of
-        // canonical_name.contains(" ")
-        if canonical_name.contains(" ") {
+        // See https://github.com/alexcrichton/proc-macro2/pull/270
+        let is_valid_ident = canonical_name.chars().next().map_or(false, |first| {
+            (unicode_xid::UnicodeXID::is_xid_start(first) || first == '_')
+                && canonical_name.chars().all(unicode_xid::UnicodeXID::is_xid_continue)
+        });
+        if !is_valid_ident {
             debug!("Unable to codegen for: item = {:?} Reason: Not a valid identifier: {}", item, canonical_name);
             return;
         }
@@ -3681,7 +3682,6 @@ impl Function {
                 ctx,
                 None,
                 result.cpp_out.as_mut().unwrap(),
-                None,
             ).unwrap_or_else(|e| debug!("Unable to create C++ wrapper for: item = {:?} Reason: {:?}", item, e));
         }
 

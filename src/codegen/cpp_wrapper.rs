@@ -1,6 +1,8 @@
 use crate::codegen::utils;
 use crate::codegen::utils::argument_type_id_to_rust_type;
+use crate::ir::comp::MethodKind;
 use crate::ir::context::GeneratingStage;
+use crate::ir::function::FunctionKind;
 use crate::ir::item::ItemCanonicalName;
 use crate::ir::item_kind::ItemKind;
 use crate::ir::ty::TypeKind;
@@ -137,7 +139,6 @@ pub fn cpp_function_wrapper(
     ctx: &BindgenContext,
     item: Option<&Item>,
     cpp_out: &mut String,
-    num_constructor: Option<usize>,
 ) -> Result<(), WhyNoWrapper> {
     debug_assert!(ctx.generating_stage() == GeneratingStage::GeneratingCpp);
     let signature = funcitem.expect_function().get_signature(ctx);
@@ -233,7 +234,9 @@ pub fn cpp_function_wrapper(
                 }
             }
         });
-    if let Some(num_constructor) = num_constructor {
+    let is_constructor = funcitem.expect_function().kind() ==
+        FunctionKind::Method(MethodKind::Constructor);
+    if is_constructor {
         cpp_out.push_str(&format!(
             "void bindgen_wrap_{}({}) {{\n    *this_ptr = {}({});\n}}\n",
             canonical_name,
