@@ -16,7 +16,7 @@ pub enum WhyNoWrapper {
     Unnecessary,
 
     /// The type of one function argument is None, i.e. we don't know the type.
-    /// Without knowingt the type, we can not calculate the function signature
+    /// Without knowing the type, we can not calculate the function signature
     /// as a String.
     ArgumentTypeIsNone,
 
@@ -29,12 +29,16 @@ pub enum WhyNoWrapper {
     UnnamedType,
 
     /// One argument or return value is a templated type. We cannot handle
-    /// templates (yet).
+    /// that (yet).
     TemplatedType,
 
     /// One argument or return value is a function pointer. We cannot handle
     /// that (yet).
     FunctionPointer,
+
+    /// One argument or return value is an array. We cannot handle
+    /// that (yet).
+    Array,
 
     /// Functions with a double underscore prefix are sometimes weird
     DoubleUnderscore,
@@ -44,37 +48,29 @@ pub fn get_cpp_typename_without_namespace<'a>(
     ctx: &'a BindgenContext,
     item: &'a Item,
 ) -> Result<String, WhyNoWrapper> {
-    let typ = item.kind().expect_type();
+    let mut typ = item.kind().expect_type();
     if let Some(name) = typ.name() {
         return Ok(name.to_owned());
     }
+    if let TypeKind::ResolvedTypeRef(v) = typ.kind() {
+        typ = ctx.resolve_item(v).kind().expect_type();
+    }
     match typ.kind() {
-        TypeKind::ResolvedTypeRef(v) => {
-            let typ = ctx.resolve_item(v).kind().expect_type();
-            match typ.kind() {
-                TypeKind::TemplateInstantiation(_) => {
-                    Err(WhyNoWrapper::TemplatedType)
-                }
-                TypeKind::Pointer(inner) => Ok(format!(
-                    " *{}",
-                    get_cpp_typename_without_namespace(
-                        ctx,
-                        ctx.resolve_item(inner)
-                    )?
-                )),
-                TypeKind::Reference(inner) => Ok(format!(
-                    " &{}",
-                    get_cpp_typename_without_namespace(
-                        ctx,
-                        ctx.resolve_item(inner)
-                    )?
-                )),
-                _ => Ok(typ.name().unwrap().to_owned()),
-            }
-        }
+        TypeKind::TemplateInstantiation(_) => Err(WhyNoWrapper::TemplatedType),
         TypeKind::Comp(_) => Err(WhyNoWrapper::UnnamedType),
         TypeKind::Function(_) => Err(WhyNoWrapper::FunctionPointer),
-        _ => panic!(),
+        TypeKind::Array(_, _) => Err(WhyNoWrapper::Array),
+
+        TypeKind::Pointer(inner) => Ok(format!(
+            " *{}",
+            get_cpp_typename_without_namespace(ctx, ctx.resolve_item(inner))?
+        )),
+        TypeKind::Reference(inner) => Ok(format!(
+            " &{}",
+            get_cpp_typename_without_namespace(ctx, ctx.resolve_item(inner))?
+        )),
+        TypeKind::Void => Ok("void".to_owned()),
+        _ => Ok(typ.name().unwrap().to_owned()),
     }
 }
 
@@ -159,7 +155,7 @@ pub fn cpp_function_wrapper(
     if canonical_name.starts_with("__") {
         return Err(WhyNoWrapper::DoubleUnderscore);
     }
-    let mut badflag = false;
+    let mut badflag = None;
     let (args_string, boxed): (Vec<String>, Vec<bool>) = signature
         .argument_types()
         .iter()
@@ -168,10 +164,19 @@ pub fn cpp_function_wrapper(
             let arg_ty = argument_type_id_to_rust_type(ctx, ty, true);
 
             let argname = argname.as_ref();
-            let typ = ctx.resolve_item(ty).expect_type().name();
+            let typ = match get_cpp_typename_with_namespace(
+                ctx,
+                ctx.resolve_item(ty),
+            ) {
+                Ok(v) => v,
+                Err(e) => {
+                    badflag = Some(e);
+                    return (String::new(), false);
+                }
+            };
             if matches!(argname, Some(v) if v == "this") {
                 if let None = item {
-                    badflag = true;
+                    badflag = Some(WhyNoWrapper::ArgumentTypeIsNone);
                     (String::new(), false)
                 } else {
                     (
@@ -186,12 +191,12 @@ pub fn cpp_function_wrapper(
                 match arg_ty {
                     utils::TypeName::Void => panic!(),
                     utils::TypeName::NotBoxable(_) => {
-                        (format!("{} arg_{}", typ.unwrap(), i), false)
+                        (format!("{} arg_{}", typ, i), false)
                     }
                     utils::TypeName::Boxable {
                         unboxed: _,
                         boxed: _,
-                    } => (format!("{} *arg_{}", typ.unwrap(), i), true),
+                    } => (format!("{} *arg_{}", typ, i), true),
                 }
             }
         })
@@ -199,8 +204,8 @@ pub fn cpp_function_wrapper(
     if !using_wrapped_return && !boxed.iter().any(|el| *el) {
         return Err(WhyNoWrapper::Unnecessary);
     }
-    if badflag {
-        return Err(WhyNoWrapper::ArgumentTypeIsNone);
+    if let Some(e) = badflag {
+        return Err(e);
     }
     let callname = match item {
         Some(_) => {
@@ -247,9 +252,14 @@ pub fn cpp_function_wrapper(
         // ));
     } else if using_wrapped_return {
         cpp_out.push_str(&format!(
-            "void bindgen_wrap_{}({}, {} *writeback) {{\n    auto val = {}({});\n    *writeback = val;\n}}\n",
+            "void bindgen_wrap_{}({}{} {} *writeback) {{\n    auto val = {}({});\n    *writeback = val;\n}}\n",
             canonical_name,
             &args_string.join(", "),
+            if args_string.len() == 0 {
+                ""
+            } else {
+                ", "
+            },
             rettype,
             callname,
             &args_call.join(", ")
@@ -264,6 +274,5 @@ pub fn cpp_function_wrapper(
             &args_call.join(", ")
         ));
     }
-
     Ok(())
 }
