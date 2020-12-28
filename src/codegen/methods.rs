@@ -399,7 +399,7 @@ impl MethodCodegen for Method {
                 ctx.rust_ident(format!("bindgen_wrap_{}", function_name));
             let call = quote! {
                 let ret = #real_ret::allocate_uninitialised();
-                #function_name (#( #exprs ),* , ret.ptr as * mut #inner_ret);
+                #function_name (#( #exprs ),* ret.ptr as * mut #inner_ret);
                 ret
             };
             stmts.push(call);
