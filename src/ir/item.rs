@@ -1056,6 +1056,22 @@ impl Item {
         path.reverse();
         path
     }
+
+    pub fn follow_resolved_type_references<'a, 'b: 'a>(
+        &'a self,
+        ctx: &'b BindgenContext,
+    ) -> &'a Item {
+        match self.kind() {
+            ItemKind::Type(typ) => {
+                if let TypeKind::ResolvedTypeRef(v) = typ.kind() {
+                    ctx.resolve_item(v).follow_resolved_type_references(ctx)
+                } else {
+                    self
+                }
+            }
+            _ => self,
+        }
+    }
 }
 
 impl<T> IsOpaque for T

@@ -50,13 +50,11 @@ pub fn get_cpp_typename_without_namespace<'a>(
     ctx: &'a BindgenContext,
     item: &'a Item,
 ) -> Result<String, WhyNoWrapper> {
-    let mut typ = item.kind().expect_type();
-    if let Some(name) = typ.name() {
+    if let Some(name) = item.kind().expect_type().name() {
         return Ok(name.to_owned());
     }
-    if let TypeKind::ResolvedTypeRef(v) = typ.kind() {
-        typ = ctx.resolve_item(v).kind().expect_type();
-    }
+    let item = item.follow_resolved_type_references(ctx);
+    let typ = item.kind().expect_type();
     match typ.kind() {
         TypeKind::TemplateInstantiation(_) => Err(WhyNoWrapper::TemplatedType),
         TypeKind::Comp(_) => Err(WhyNoWrapper::UnnamedType),
@@ -80,15 +78,7 @@ pub fn get_cpp_namespace_prefix(
     ctx: &BindgenContext,
     item: &Item,
 ) -> Result<String, WhyNoWrapper> {
-    let item = {
-        match item.kind() {
-            ItemKind::Type(v) => match v.kind() {
-                TypeKind::ResolvedTypeRef(v) => ctx.resolve_item(v),
-                _ => item,
-            },
-            _ => item,
-        }
-    };
+    let item = item.follow_resolved_type_references(ctx);
     let prefix = {
         let mut prefix = String::new();
         let mut head = item;
@@ -153,7 +143,7 @@ pub fn cpp_function_wrapper(
         ctx.resolve_item(signature.return_type()),
     )?;
     let canonical_name = funcitem.canonical_name(ctx);
-    if canonical_name.starts_with("__") {
+    if funcitem.expect_function().name().starts_with("__") {
         return Err(WhyNoWrapper::DoubleUnderscore);
     }
     let mut badflag = None;
