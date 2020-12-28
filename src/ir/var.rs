@@ -289,6 +289,11 @@ impl ClangSubItemParser for Var {
                     return Err(ParseError::Continue);
                 }
 
+                if cursor.lexical_parent() != cursor.semantic_parent() {
+                    // See https://github.com/rust-lang/rust-bindgen/issues/1960
+                    return Err(ParseError::Continue);
+                }
+
                 let ty = cursor.cur_type();
 
                 // TODO(emilio): do we have to special-case constant arrays in
