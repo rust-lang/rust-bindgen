@@ -189,6 +189,7 @@ impl From<DerivableTraits> for Vec<&'static str> {
     }
 }
 
+#[derive(Debug)]
 pub struct CodegenResult<'a> {
     items: Vec<proc_macro2::TokenStream>,
 
@@ -772,6 +773,10 @@ impl Type {
                 let inner_item =
                     inner.into_resolver().through_type_refs().resolve(ctx);
                 let name = item.canonical_name(ctx);
+                if !utils::is_valid_ident(&name) {
+                    debug!("Unable to codegen for: item = {:?} Reason: Not a valid identifier: {}", item, name);
+                    return;
+                }
                 let path = item.canonical_path(ctx);
 
                 {
@@ -1634,13 +1639,19 @@ impl<'a> FieldCodegen<'a> for Bitfield {
 
 impl CompInfo {
     /// This function writes the Box_Typename stuff into result
+    /// Note that because currently the caller of create_safe_class_interface
+    /// assures that the layout is not None (because we do not support generic
+    /// boxing (yet)), the generics argument is always an empty TokenStream. So
+    /// currently using the generics arg in this function is kind of useless,
+    /// but we still have it in case to reduce the amount of work we will have
+    /// to do if we change that.
     pub fn create_safe_class_interface<'a>(
         &self,
         ctx: &BindgenContext,
         result: &mut CodegenResult<'a>,
         item: &Item,
         ty_for_impl: TokenStream,
-        layout: Layout,
+        generics: TokenStream,
     ) {
         if ty_for_impl.to_string().chars().nth(0) == Some('_') {
             //Give up if the typename starts with "_", those types are weird.
@@ -1648,50 +1659,45 @@ impl CompInfo {
         }
         let prefix = ctx.trait_prefix();
 
+        let canonical_name = item.canonical_name(ctx);
+        let canonical_ident = ctx.rust_ident(&canonical_name);
+
         let boxname =
-            Ident::new(&format!("Box_{}", ty_for_impl), Span::call_site());
+            Ident::new(&format!("Box_{}", canonical_ident), Span::call_site());
         result.push(quote!(
-            pub struct #boxname {
+            pub struct #boxname #generics {
                 ptr: *mut ::#prefix::ffi::c_void
             }
         ));
         let mut methods: Vec<proc_macro2::TokenStream> = vec![];
         self.codegen_methods(ctx, result, &ty_for_impl, &mut methods, true);
 
-        let size = {
-            if layout.size == 0 {
-                // SAFETY: If I'm not mistaken, we will always get away with
-                // allocating too much memory, as long as we are also
-                // deallocating it correctly. So afaik, we can INCREASE
-                // layout.size however we want.
-                1
-            } else {
-                layout.size
-            }
-        };
-        let align = layout.align;
-        assert!(size != 0, "alloc is undefined if size == 0");
         result.push(quote! (
-            impl #boxname {
+            impl #generics #boxname #generics {
                 #( #methods )*
 
                 #[inline]
                 pub unsafe fn allocate_uninitialised() -> Self {
+                    let size = ::#prefix::cmp::max(1, ::#prefix::mem::size_of::<#ty_for_impl>());
+                        // SAFETY: alloc is UB if size == 0, but if I'm not
+                        // mistaken, we will always get away with allocating too
+                        // much memory, as long as we are also deallocating it
+                        // correctly. So afaik, we can INCREASE size however we
+                        // want, in this case from 0 to 1.
                     let ret = Self {
-                        ptr: ::std::alloc::alloc(
-                            ::std::alloc::Layout::from_size_align(#size, #align)
+                        ptr: ::#prefix::alloc::alloc(
+                            ::#prefix::alloc::Layout::from_size_align(size, ::#prefix::mem::align_of::<#ty_for_impl>())
                                 .unwrap(),
-                        ) as *mut ::std::ffi::c_void,
+                        ) as *mut ::#prefix::ffi::c_void,
                     };
                     ret
                 }
             }
         ));
         let funcname = Ident::new(
-            &format!("bindgen_destruct_{}", ty_for_impl),
+            &format!("bindgen_destruct_{}", canonical_ident),
             Span::call_site(),
         );
-        assert!(size != 0, "alloc is undefined if size == 0");
 
         let cpptypename = get_cpp_typename_with_namespace(ctx, item);
         let destructible = match cpptypename {
@@ -1707,7 +1713,10 @@ impl CompInfo {
             quote!(
                 unsafe {
                     #funcname(self.ptr as *mut #ty_for_impl);
-                    ::#prefix::alloc::dealloc(self.ptr as *mut u8,::#prefix::alloc::Layout::from_size_align(#size, #align).unwrap());
+                    let size = ::#prefix::cmp::max(1, ::#prefix::mem::size_of::<#ty_for_impl>());
+                    ::#prefix::alloc::dealloc(self.ptr as *mut u8,
+                        ::#prefix::alloc::Layout::from_size_align(size,
+                            ::#prefix::mem::align_of::<#ty_for_impl>()).unwrap());
                 }
             )
         } else {
@@ -2236,7 +2245,8 @@ impl CompInfo {
                 }
             });
         }
-        if let Some(layout) = layout {
+        // We don't support generic boxing (yet), because we cannot destruct such an object (yet). Thats why we still need this if clause.
+        if layout.is_some() {
             if self.kind() == CompKind::Struct {
                 if ctx.generating_stage() == GeneratingStage::GeneratingCpp &&
                     ctx.options().codegen_config.methods() &&
@@ -2249,11 +2259,29 @@ impl CompInfo {
                             if self.use_struct_prefix() {
                                 v = format!("struct {}", v);
                             }
+                            let template: Vec<String> = generic_param_names
+                                .iter()
+                                .map(|el| format!("{}", el))
+                                .collect();
+                            let (template_prefix, template_args) =
+                                if generic_param_names.len() == 0 {
+                                    (String::new(), String::new())
+                                } else {
+                                    (
+                                        format!(
+                                            "template <typename {}>\n",
+                                            template.join(", typename ")
+                                        ),
+                                        format!("<{}> ", template.join(", ")),
+                                    )
+                                };
                             result.cpp_out.as_mut().unwrap().push_str(&format!(
-                                "void bindgen_destruct_{}({} *ptr) {{\n    bindgen_destruct_or_throw(ptr);\n}}\n",
-                                ty_for_impl,
-                                v
-                            ))
+                                "{}void bindgen_destruct_{}({}{} *ptr) {{\n    bindgen_destruct_or_throw(ptr);\n}}\n",
+                                template_prefix,
+                                canonical_ident,
+                                v,
+                                template_args
+                            ));
                         }
                         Err(WhyNoWrapper::TypeInsideUnnamedType) |
                         Err(WhyNoWrapper::UnnamedType) => {}
@@ -2298,7 +2326,7 @@ impl CompInfo {
                         result,
                         item,
                         ty_for_impl,
-                        layout,
+                        generics,
                     );
                 }
             }
@@ -3653,12 +3681,7 @@ impl Function {
 
         let name = self.name();
         let mut canonical_name = item.canonical_name(ctx);
-        // See https://github.com/alexcrichton/proc-macro2/pull/270
-        let is_valid_ident = canonical_name.chars().next().map_or(false, |first| {
-            (unicode_xid::UnicodeXID::is_xid_start(first) || first == '_')
-                && canonical_name.chars().all(unicode_xid::UnicodeXID::is_xid_continue)
-        });
-        if !is_valid_ident {
+        if !utils::is_valid_ident(&canonical_name) {
             debug!("Unable to codegen for: item = {:?} Reason: Not a valid identifier: {}", item, canonical_name);
             return;
         }
@@ -4647,5 +4670,13 @@ mod utils {
                 boxed: boxed,
             }
         }
+    }
+
+    pub fn is_valid_ident(name: &String) -> bool {
+        // See https://github.com/alexcrichton/proc-macro2/pull/270
+        name.chars().next().map_or(false, |first| {
+            (unicode_xid::UnicodeXID::is_xid_start(first) || first == '_') &&
+                name.chars().all(unicode_xid::UnicodeXID::is_xid_continue)
+        })
     }
 }
