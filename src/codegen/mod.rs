@@ -12,8 +12,6 @@ pub(crate) mod bitfield_unit;
 #[cfg(all(test, target_endian = "little"))]
 mod bitfield_unit_tests;
 
-use unicode_xid;
-
 use self::helpers::attributes;
 use self::struct_layout::StructLayoutTracker;
 
@@ -1670,7 +1668,14 @@ impl CompInfo {
             }
         ));
         let mut methods: Vec<proc_macro2::TokenStream> = vec![];
-        self.codegen_methods(ctx, result, &ty_for_impl, &mut methods, true);
+        self.codegen_methods(
+            ctx,
+            result,
+            item,
+            &ty_for_impl,
+            &mut methods,
+            true,
+        );
 
         result.push(quote! (
             impl #generics #boxname #generics {
@@ -2173,6 +2178,7 @@ impl CompInfo {
             self.codegen_methods(
                 ctx,
                 result,
+                item,
                 &ty_for_impl,
                 &mut methods,
                 false,

@@ -2117,7 +2117,7 @@ impl Bindings {
             let absolute_path = Path::new(&std::env::var("PWD").unwrap())
                 .join(options_copy.input_header.unwrap());
             file.write(
-                format!("#include \"{}\"\ntemplate <typename T>\nauto bindgen_destruct_or_throw(T* t) -> decltype(t->~T()) {{\n    t->~T();\n}}\nauto bindgen_destruct_or_throw(void*) -> void {{\n    /*Todo: throw an exception or abort here*/\n}}\n", absolute_path.to_str().unwrap())
+                format!("#include \"{}\"\n#include <cstdlib>\ntemplate <typename T>\nauto bindgen_destruct_or_throw(T* t) -> decltype(t->~T()) {{\n    t->~T();\n}}\nauto bindgen_destruct_or_throw(void*) -> void {{\n    std::abort();\n}}\n", absolute_path.to_str().unwrap())
                     .as_bytes(),
             )
             .expect("unable to write");
@@ -2329,7 +2329,6 @@ impl Bindings {
             let _t = time::Timer::new("parse").with_output(time_phases);
             parse(&mut context)?;
         }
-
         let ((items, cpp_out), options) = codegen::codegen(context);
 
         Ok(Bindings {

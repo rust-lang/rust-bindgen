@@ -1,7 +1,6 @@
 use crate::codegen::utils;
 use crate::codegen::utils::argument_type_id_to_rust_type;
 use crate::ir::comp::MethodKind;
-use crate::ir::context::GeneratingStage;
 use crate::ir::function::FunctionKind;
 use crate::ir::item::ItemCanonicalName;
 use crate::ir::item_kind::ItemKind;
@@ -27,7 +26,7 @@ pub enum WhyNoWrapper {
     /// argument.
     TypeInsideUnnamedType,
 
-    /// One argument or return value is an anonymous type
+    /// One argument or return value is an anonymous type.
     UnnamedType,
 
     /// One argument or return value is a templated type. We cannot handle
@@ -42,7 +41,10 @@ pub enum WhyNoWrapper {
     /// that (yet).
     Array,
 
-    /// Functions with a double underscore prefix are sometimes weird
+    /// One argument or return value is an incomplete type.
+    IncompleteType,
+
+    /// Functions with a double underscore prefix are sometimes weird.
     DoubleUnderscore,
 }
 
@@ -50,14 +52,20 @@ pub fn get_cpp_typename_without_namespace<'a>(
     ctx: &'a BindgenContext,
     item: &'a Item,
 ) -> Result<String, WhyNoWrapper> {
-    if let Some(name) = item.kind().expect_type().name() {
-        return Ok(name.to_owned());
-    }
     let item = item.follow_resolved_type_references(ctx);
     let typ = item.kind().expect_type();
     match typ.kind() {
         TypeKind::TemplateInstantiation(_) => Err(WhyNoWrapper::TemplatedType),
-        TypeKind::Comp(_) => Err(WhyNoWrapper::UnnamedType),
+        TypeKind::Comp(compinfo) => {
+            if compinfo.is_forward_declaration() {
+                Err(WhyNoWrapper::IncompleteType)
+            } else {
+                match typ.name() {
+                    Some(v) => Ok(v.to_owned()),
+                    None => Err(WhyNoWrapper::UnnamedType),
+                }
+            }
+        }
         TypeKind::Function(_) => Err(WhyNoWrapper::FunctionPointer),
         TypeKind::Array(_, _) => Err(WhyNoWrapper::Array),
 
@@ -130,7 +138,6 @@ pub fn cpp_function_wrapper(
     item: Option<&Item>,
     cpp_out: &mut String,
 ) -> Result<(), WhyNoWrapper> {
-    debug_assert!(ctx.generating_stage() == GeneratingStage::GeneratingCpp);
     let signature = funcitem.expect_function().get_signature(ctx);
 
     let using_wrapped_return = !ctx

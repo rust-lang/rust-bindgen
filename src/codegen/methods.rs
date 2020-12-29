@@ -1,11 +1,12 @@
 use crate::codegen::helpers::attributes;
 use crate::codegen::utils;
-use crate::codegen::{CodegenResult, ToRustTyOrOpaque};
+use crate::codegen::{cpp_function_wrapper, CodegenResult, ToRustTyOrOpaque};
 use crate::ir::comp::*;
 use crate::ir::context::{BindgenContext, GeneratingStage};
 use crate::ir::function::{Abi, Function};
 use crate::ir::item::ItemCanonicalName;
 use crate::HashMap;
+use crate::Item;
 use proc_macro2::TokenStream;
 use std::str::FromStr;
 
@@ -240,6 +241,7 @@ trait MethodCodegen {
         methods: &mut Vec<proc_macro2::TokenStream>,
         method_names: &mut HashMap<String, usize>,
         result: &mut CodegenResult<'a>,
+        item: &Item,
         parent: &CompInfo,
         safe_class_interface: bool,
         ty_for_impl: &proc_macro2::TokenStream,
@@ -253,6 +255,7 @@ impl MethodCodegen for Method {
         methods: &mut Vec<proc_macro2::TokenStream>,
         method_names: &mut HashMap<String, usize>,
         result: &mut CodegenResult<'a>,
+        item: &Item,
         _parent: &CompInfo,
         safe_class_interface: bool,
         ty_for_impl: &proc_macro2::TokenStream,
@@ -298,7 +301,7 @@ impl MethodCodegen for Method {
 
         let mut using_wrapper = safe_class_interface &&
             ctx.generating_stage() == GeneratingStage::ReadingGeneratedCpp;
-        let using_wrapped_return = using_wrapper &&
+        let mut using_wrapped_return = using_wrapper &&
             !ctx.resolve_item(signature.return_type())
                 .kind()
                 .expect_type()
@@ -314,6 +317,24 @@ impl MethodCodegen for Method {
         if !some_argument_was_boxed && !using_wrapped_return {
             using_wrapper = false;
         }
+        // Performance: checking if if cpp_function_wrapper fails or not is a
+        // reliable, but very slow solution to check wether or not there are
+        // problems with forward declaration. Note how cpp_function_wrapper
+        // gets executed twice, once during GeneratingStage::GeneratingCpp and
+        // once during GeneratingStage::ReadingGeneratedCpp .
+        if using_wrapper &&
+            cpp_function_wrapper(
+                function_item,
+                ctx,
+                Some(item),
+                &mut String::new(),
+            )
+            .is_err()
+        {
+            using_wrapper = false;
+            using_wrapped_return = false;
+        }
+
         if using_wrapped_return {
             if let Some(ret_inner) = real_ret {
                 real_ret = Some(
@@ -399,7 +420,7 @@ impl MethodCodegen for Method {
                 ctx.rust_ident(format!("bindgen_wrap_{}", function_name));
             let call = quote! {
                 let ret = #real_ret::allocate_uninitialised();
-                #function_name (#( #exprs ),* ret.ptr as * mut #inner_ret);
+                #function_name (#( #exprs ),* , ret.ptr as * mut #inner_ret);
                 ret
             };
             stmts.push(call);
@@ -474,6 +495,7 @@ impl CompInfo {
         &self,
         ctx: &BindgenContext,
         result: &mut CodegenResult,
+        item: &Item,
         ty_for_impl: &TokenStream,
         methods: &mut Vec<proc_macro2::TokenStream>,
         safe_class_interface: bool,
@@ -488,6 +510,7 @@ impl CompInfo {
                     methods,
                     &mut method_names,
                     result,
+                    item,
                     self,
                     safe_class_interface,
                     ty_for_impl,
@@ -508,6 +531,7 @@ impl CompInfo {
                     methods,
                     &mut method_names,
                     result,
+                    item,
                     self,
                     safe_class_interface,
                     ty_for_impl,
@@ -523,6 +547,7 @@ impl CompInfo {
                     methods,
                     &mut method_names,
                     result,
+                    item,
                     self,
                     safe_class_interface,
                     ty_for_impl,

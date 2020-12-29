@@ -1089,7 +1089,6 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 let item = self.items[item_id.0].as_mut().unwrap();
                 *item.kind_mut().as_type_mut().unwrap().kind_mut() =
                     TypeKind::ResolvedTypeRef(replacement_id);
-                dbg!(TypeKind::ResolvedTypeRef(replacement_id));
                 item.parent_id()
             };
 
