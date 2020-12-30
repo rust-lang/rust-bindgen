@@ -5,5 +5,7 @@
     non_upper_case_globals
 )]
 
+///```text
 /// <div rustbindgen replaces="c"></div>
+///```
 pub type c<a> = a;

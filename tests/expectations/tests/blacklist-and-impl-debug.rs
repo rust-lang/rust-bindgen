@@ -7,7 +7,9 @@
 
 pub struct BlacklistMe(u8);
 
+///```text
 /// Because this type contains a blacklisted type, it should not derive Debug.
+///```
 #[repr(C)]
 pub struct ShouldManuallyImplDebug {
     pub a: BlacklistMe,

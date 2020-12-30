@@ -13,6 +13,7 @@ pub const ARP_OP_REVREQUEST: u32 = 3;
 pub const ARP_OP_REVREPLY: u32 = 4;
 pub const ARP_OP_INVREQUEST: u32 = 8;
 pub const ARP_OP_INVREPLY: u32 = 9;
+///```text
 /// Ethernet address:
 /// A universally administered address is uniquely assigned to a device by its
 /// manufacturer. The first three octets (in transmission order) contain the
@@ -22,10 +23,13 @@ pub const ARP_OP_INVREPLY: u32 = 9;
 /// A locally administered address is assigned to a device by a network
 /// administrator and does not contain OUIs.
 /// See http://standards.ieee.org/regauth/groupmac/tutorial.html
+///```
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct ether_addr {
+    ///```text
     ///< Addr bytes in tx order
+    ///```
     pub addr_bytes: [u8; 6usize],
 }
 #[test]
@@ -54,17 +58,27 @@ fn bindgen_test_layout_ether_addr() {
         )
     );
 }
+///```text
 /// ARP header IPv4 payload.
+///```
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct arp_ipv4 {
+    ///```text
     ///< sender hardware address
+    ///```
     pub arp_sha: ether_addr,
+    ///```text
     ///< sender IP address
+    ///```
     pub arp_sip: u32,
+    ///```text
     ///< target hardware address
+    ///```
     pub arp_tha: ether_addr,
+    ///```text
     ///< target IP address
+    ///```
     pub arp_tip: u32,
 }
 #[test]
@@ -128,7 +142,9 @@ fn bindgen_test_layout_arp_ipv4() {
         )
     );
 }
+///```text
 /// ARP header.
+///```
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct arp_hdr {

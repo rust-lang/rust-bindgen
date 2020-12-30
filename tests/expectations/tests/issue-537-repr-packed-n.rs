@@ -6,8 +6,10 @@
 )]
 #![cfg(feature = "nightly")]
 
+///```text
 /// This should not be opaque; we can see the attributes and can pack the
 /// struct.
+///```
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct AlignedToOne {
@@ -38,7 +40,9 @@ fn bindgen_test_layout_AlignedToOne() {
         )
     );
 }
-/// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
+///```text
+/// This should be be packed because Rust 1.33 has \`#[repr(packed(N))]\`.
+///```
 #[repr(C, packed(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct AlignedToTwo {
@@ -69,9 +73,11 @@ fn bindgen_test_layout_AlignedToTwo() {
         )
     );
 }
-/// This should not be opaque because although `libclang` doesn't give us the
-/// `#pragma pack(1)`, we can detect that alignment is 1 and add
-/// `#[repr(packed)]` to the struct ourselves.
+///```text
+/// This should not be opaque because although \`libclang\` doesn't give us the
+/// \`#pragma pack(1)\`, we can detect that alignment is 1 and add
+/// \`#[repr(packed)]\` to the struct ourselves.
+///```
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct PackedToOne {
@@ -115,7 +121,9 @@ fn bindgen_test_layout_PackedToOne() {
         )
     );
 }
-/// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
+///```text
+/// This should be be packed because Rust 1.33 has \`#[repr(packed(N))]\`.
+///```
 #[repr(C, packed(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct PackedToTwo {

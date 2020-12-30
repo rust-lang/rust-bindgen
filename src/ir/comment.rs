@@ -38,38 +38,6 @@ fn make_indent(indent: usize) -> String {
     iter::repeat(' ').take(indent * RUST_INDENTATION).collect()
 }
 
-/// Preprocesses comments containing brackets to prevent `unresolved link to ...`
-///
-/// Avoid processing expensive computations if no brackets are found
-fn preprocess_plain_brackets(line: &str) -> String {
-    if line.contains("[") && line.contains("]") {
-        line.chars()
-            .fold(
-                (Vec::<char>::with_capacity(line.len()), true),
-                |acc, val| {
-                    let not_in_backtick = acc.1;
-                    let mut string = acc.0;
-                    if not_in_backtick && (val == '[' || val == ']') {
-                        string.push('\\');
-                    }
-                    string.push(val);
-                    let not_in_backtick = if val == '`' {
-                        !not_in_backtick
-                    } else {
-                        not_in_backtick
-                    };
-                    (string, not_in_backtick)
-                },
-            )
-            .0
-            .into_iter()
-            .collect::<String>()
-            .replace("\\[\\]", "[]")
-    } else {
-        line.to_string()
-    }
-}
-
 /// Preprocesses multiple single line comments.
 ///
 /// Handles lines starting with both `//` and `///`.
@@ -78,15 +46,19 @@ fn preprocess_single_lines(comment: &str, indent: usize) -> String {
 
     let indent = make_indent(indent);
     let mut is_first = true;
-    let lines: Vec<_> = comment
+    let mut lines = vec![format!("{}///```text", indent)];
+    let comments: Vec<_> = comment
+        .replace("`", "\\`")
         .lines()
-        .map(|l| l.trim().trim_start_matches('/'))
-        .map(|l| {
+        .map(|line| line.trim().trim_start_matches('/'))
+        .map(|line| {
             let indent = if is_first { "" } else { &*indent };
             is_first = false;
-            format!("{}///{}", indent, preprocess_plain_brackets(l))
+            format!("{}///{}", indent, line)
         })
         .collect();
+    lines.extend(comments);
+    lines.push(format!("{}///```", indent));
     lines.join("\n")
 }
 
@@ -94,30 +66,34 @@ fn preprocess_multi_line(comment: &str, indent: usize) -> String {
     let comment = comment
         .trim_start_matches('/')
         .trim_end_matches('/')
-        .trim_end_matches('*');
+        .trim_end_matches('*')
+        .replace("`", "\\`");
 
     let indent = make_indent(indent);
     // Strip any potential `*` characters preceding each line.
+    let mut lines = vec![format!("{}///```text", indent)];
     let mut is_first = true;
-    let mut lines: Vec<_> = comment
+    let mut comments: Vec<_> = comment
         .lines()
         .map(|line| line.trim().trim_start_matches('*').trim_start_matches('!'))
         .skip_while(|line| line.trim().is_empty()) // Skip the first empty lines.
         .map(|line| {
             let indent = if is_first { "" } else { &*indent };
             is_first = false;
-            format!("{}///{}", indent, preprocess_plain_brackets(line))
+            format!("{}///{}", indent, line)
         })
         .collect();
 
     // Remove the trailing line corresponding to the `*/`.
-    if lines
+    if comments
         .last()
         .map_or(false, |l| l.trim().is_empty() || l.trim() == "///")
     {
-        lines.pop();
+        comments.pop();
     }
 
+    lines.extend(comments);
+    lines.push(format!("{}///```", indent));
     lines.join("\n")
 }
 
@@ -133,27 +109,33 @@ mod test {
 
     #[test]
     fn processes_single_lines_correctly() {
-        assert_eq!(preprocess("/// hello", 0), "/// hello");
-        assert_eq!(preprocess("// hello", 0), "/// hello");
-        assert_eq!(preprocess("//    hello", 0), "///    hello");
-        assert_eq!(preprocess("//    hello[i]", 0), "///    hello\\[i\\]");
+        assert_eq!(preprocess("/// hello", 0), "///```text\n/// hello\n///```");
+        assert_eq!(preprocess("// hello", 0), "///```text\n/// hello\n///```");
+        assert_eq!(
+            preprocess("//    hello", 0),
+            "///```text\n///    hello\n///```"
+        );
+        assert_eq!(
+            preprocess("//    hello[i]", 0),
+            "///```text\n///    hello[i]\n///```"
+        );
     }
 
     #[test]
     fn processes_multi_lines_correctly() {
         assert_eq!(
             preprocess("/** hello \n * world \n * foo \n */", 0),
-            "/// hello\n/// world\n/// foo"
+            "///```text\n/// hello\n/// world\n/// foo\n///```"
         );
 
         assert_eq!(
             preprocess("/**\nhello\n*world\n*foo\n*/", 0),
-            "///hello\n///world\n///foo"
+            "///```text\n///hello\n///world\n///foo\n///```"
         );
 
         assert_eq!(
             preprocess("/**\nhello\n*world[i]\n*foo\n*/", 0),
-            "///hello\n///world\\[i\\]\n///foo"
+            "///```text\n///hello\n///world[i]\n///foo\n///```"
         );
     }
 }

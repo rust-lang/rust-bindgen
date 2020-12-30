@@ -35,7 +35,9 @@ impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
         fmt.write_str("__IncompleteArrayField")
     }
 }
-/// Bizarrely enough, this should *not* get an `_address` field.
+///```text
+/// Bizarrely enough, this should *not* get an \`_address\` field.
+///```
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct ZeroSizedArray {
@@ -66,7 +68,9 @@ fn bindgen_test_layout_ZeroSizedArray() {
         )
     );
 }
-/// And nor should this get an `_address` field.
+///```text
+/// And nor should this get an \`_address\` field.
+///```
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct ContainsZeroSizedArray {
@@ -98,8 +102,10 @@ fn bindgen_test_layout_ContainsZeroSizedArray() {
         )
     );
 }
-/// Inheriting from ZeroSizedArray shouldn't cause an `_address` to be inserted
+///```text
+/// Inheriting from ZeroSizedArray shouldn't cause an \`_address\` to be inserted
 /// either.
+///```
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct InheritsZeroSizedArray {
@@ -118,7 +124,9 @@ fn bindgen_test_layout_InheritsZeroSizedArray() {
         concat!("Alignment of ", stringify!(InheritsZeroSizedArray))
     );
 }
-/// And this should not get an `_address` field either.
+///```text
+/// And this should not get an \`_address\` field either.
+///```
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct DynamicallySizedArray {
@@ -150,7 +158,9 @@ fn bindgen_test_layout_DynamicallySizedArray() {
         )
     );
 }
-/// No `_address` field here either.
+///```text
+/// No \`_address\` field here either.
+///```
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct ContainsDynamicallySizedArray {

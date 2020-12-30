@@ -58,7 +58,9 @@ pub mod Neg {
     pub const One: Type = 1;
 }
 #[repr(u32)]
+///```text
 /// <div rustbindgen nodebug></div>
+///```
 #[derive(Copy, Clone, Hash, PartialEq, Eq)]
 pub enum NoDebug {
     NoDebug1 = 0,

@@ -23,7 +23,9 @@ pub struct Rooted<T> {
     pub ptr: Rooted_MaybeWrapped<T>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
+///```text
 /// <div rustbindgen replaces="Rooted_MaybeWrapped"></div>
+///```
 pub type Rooted_MaybeWrapped<T> = T;
 impl<T> Default for Rooted<T> {
     fn default() -> Self {

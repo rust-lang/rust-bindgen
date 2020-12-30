@@ -5,7 +5,9 @@
     non_upper_case_globals
 )]
 
-/// This struct should derive `Clone`.
+///```text
+/// This struct should derive \`Clone\`.
+///```
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ShouldDeriveClone {

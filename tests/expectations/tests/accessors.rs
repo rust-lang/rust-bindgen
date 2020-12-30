@@ -9,11 +9,17 @@
 #[derive(Debug, Default, Copy, Clone)]
 pub struct SomeAccessors {
     pub mNoAccessor: ::std::os::raw::c_int,
+    ///```text
     /// <div rustbindgen accessor></div>
+    ///```
     pub mBothAccessors: ::std::os::raw::c_int,
+    ///```text
     /// <div rustbindgen accessor="unsafe"></div>
+    ///```
     pub mUnsafeAccessors: ::std::os::raw::c_int,
+    ///```text
     /// <div rustbindgen accessor="immutable"></div>
+    ///```
     pub mImmutableAccessor: ::std::os::raw::c_int,
 }
 #[test]
@@ -105,7 +111,9 @@ impl SomeAccessors {
         &self.mImmutableAccessor
     }
 }
+///```text
 /// <div rustbindgen accessor></div>
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct AllAccessors {
@@ -169,7 +177,9 @@ impl AllAccessors {
         &mut self.mAlsoBothAccessors
     }
 }
+///```text
 /// <div rustbindgen accessor="unsafe"></div>
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct AllUnsafeAccessors {
@@ -237,16 +247,24 @@ impl AllUnsafeAccessors {
         &mut self.mAlsoBothAccessors
     }
 }
+///```text
 /// <div rustbindgen accessor></div>
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct ContradictAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
+    ///```text
     /// <div rustbindgen accessor="false"></div>
+    ///```
     pub mNoAccessors: ::std::os::raw::c_int,
+    ///```text
     /// <div rustbindgen accessor="unsafe"></div>
+    ///```
     pub mUnsafeAccessors: ::std::os::raw::c_int,
+    ///```text
     /// <div rustbindgen accessor="immutable"></div>
+    ///```
     pub mImmutableAccessor: ::std::os::raw::c_int,
 }
 #[test]
@@ -338,7 +356,9 @@ impl ContradictAccessors {
         &self.mImmutableAccessor
     }
 }
+///```text
 /// <div rustbindgen accessor replaces="Replaced"></div>
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Replaced {
@@ -379,7 +399,9 @@ impl Replaced {
         &mut self.mAccessor
     }
 }
+///```text
 /// <div rustbindgen accessor></div>
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Wrapper {

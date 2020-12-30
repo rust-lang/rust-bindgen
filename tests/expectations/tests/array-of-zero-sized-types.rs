@@ -5,7 +5,9 @@
     non_upper_case_globals
 )]
 
-/// This should get an `_address` byte.
+///```text
+/// This should get an \`_address\` byte.
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Empty {
@@ -24,8 +26,10 @@ fn bindgen_test_layout_Empty() {
         concat!("Alignment of ", stringify!(Empty))
     );
 }
-/// This should not get an `_address` byte, since each `Empty` gets one, meaning
+///```text
+/// This should not get an \`_address\` byte, since each \`Empty\` gets one, meaning
 /// that this object is addressable.
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct HasArrayOfEmpty {

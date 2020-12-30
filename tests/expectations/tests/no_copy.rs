@@ -5,7 +5,9 @@
     non_upper_case_globals
 )]
 
+///```text
 /// <div rustbindgen nocopy></div>
+///```
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct CopiableButWait {

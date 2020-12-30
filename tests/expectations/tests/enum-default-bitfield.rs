@@ -142,6 +142,8 @@ impl ::std::ops::BitAndAssign for NoDebug {
     }
 }
 #[repr(transparent)]
+///```text
 /// <div rustbindgen nodebug></div>
+///```
 #[derive(Copy, Clone, Hash, PartialEq, Eq)]
 pub struct NoDebug(pub ::std::os::raw::c_uint);

@@ -124,15 +124,25 @@ impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
 #[repr(C)]
 #[derive(Debug)]
 pub struct rte_kni_fifo {
+    ///```text
     ///< Next position to be written
+    ///```
     pub write: ::std::os::raw::c_uint,
+    ///```text
     ///< Next position to be read
+    ///```
     pub read: ::std::os::raw::c_uint,
+    ///```text
     ///< Circular buffer length
+    ///```
     pub len: ::std::os::raw::c_uint,
+    ///```text
     ///< Pointer size - for 32/64 bit OS
+    ///```
     pub elem_size: ::std::os::raw::c_uint,
+    ///```text
     ///< The buffer contains mbuf pointers
+    ///```
     pub buffer: __IncompleteArrayField<*mut ::std::os::raw::c_void>,
 }
 #[test]
@@ -218,7 +228,9 @@ impl Default for rte_kni_fifo {
 #[repr(align(8))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct rte_eth_link {
+    ///```text
     ///< ETH_SPEED_NUM_
+    ///```
     pub link_speed: u32,
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,

@@ -5,8 +5,10 @@
     non_upper_case_globals
 )]
 
+///```text
 /// This should not be opaque; we can see the attributes and can pack the
 /// struct.
+///```
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct AlignedToOne {
@@ -37,8 +39,10 @@ fn bindgen_test_layout_AlignedToOne() {
         )
     );
 }
+///```text
 /// This should be opaque because although we can see the attributes, Rust before
-/// 1.33 doesn't have `#[repr(packed(N))]`.
+/// 1.33 doesn't have \`#[repr(packed(N))]\`.
+///```
 #[repr(C, packed(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct AlignedToTwo {
@@ -69,9 +73,11 @@ fn bindgen_test_layout_AlignedToTwo() {
         )
     );
 }
-/// This should not be opaque because although `libclang` doesn't give us the
-/// `#pragma pack(1)`, we can detect that alignment is 1 and add
-/// `#[repr(packed)]` to the struct ourselves.
+///```text
+/// This should not be opaque because although \`libclang\` doesn't give us the
+/// \`#pragma pack(1)\`, we can detect that alignment is 1 and add
+/// \`#[repr(packed)]\` to the struct ourselves.
+///```
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct PackedToOne {
@@ -115,9 +121,11 @@ fn bindgen_test_layout_PackedToOne() {
         )
     );
 }
+///```text
 /// In this case, even if we can detect the weird alignment triggered by
-/// `#pragma pack(2)`, we can't do anything about it because Rust before 1.33
-/// doesn't have `#[repr(packed(N))]`. Therefore, we must make it opaque.
+/// \`#pragma pack(2)\`, we can't do anything about it because Rust before 1.33
+/// doesn't have \`#[repr(packed(N))]\`. Therefore, we must make it opaque.
+///```
 #[repr(C, packed(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct PackedToTwo {

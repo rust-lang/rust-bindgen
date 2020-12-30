@@ -5,7 +5,9 @@
     non_upper_case_globals
 )]
 
-/// This should get an `_address` byte.
+///```text
+/// This should get an \`_address\` byte.
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Empty {
@@ -24,8 +26,10 @@ fn bindgen_test_layout_Empty() {
         concat!("Alignment of ", stringify!(Empty))
     );
 }
-/// This should not get an `_address` byte, so `sizeof(Inherits)` should be
-/// `1`.
+///```text
+/// This should not get an \`_address\` byte, so \`sizeof(Inherits)\` should be
+/// \`1\`.
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Inherits {
@@ -54,8 +58,10 @@ fn bindgen_test_layout_Inherits() {
         )
     );
 }
-/// This should not get an `_address` byte, but contains `Empty` which *does* get
-/// one, so `sizeof(Contains)` should be `1 + 1`.
+///```text
+/// This should not get an \`_address\` byte, but contains \`Empty\` which *does* get
+/// one, so \`sizeof(Contains)\` should be \`1 + 1\`.
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Contains {

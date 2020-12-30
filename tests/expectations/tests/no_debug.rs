@@ -5,7 +5,9 @@
     non_upper_case_globals
 )]
 
+///```text
 /// <div rustbindgen nodebug></div>
+///```
 #[repr(C)]
 #[derive(Default, Copy, Clone)]
 pub struct DebugButWait {

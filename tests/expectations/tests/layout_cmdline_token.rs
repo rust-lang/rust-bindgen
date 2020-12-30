@@ -5,8 +5,10 @@
     non_upper_case_globals
 )]
 
+///```text
 /// Stores a pointer to the ops struct, and the offset: the place to
 /// write the parsed result in the destination structure.
+///```
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cmdline_token_hdr {
@@ -58,6 +60,7 @@ impl Default for cmdline_token_hdr {
     }
 }
 pub type cmdline_parse_token_hdr_t = cmdline_token_hdr;
+///```text
 /// A token is defined by this structure.
 ///
 /// parse() takes the token as first argument, then the source buffer
@@ -75,10 +78,13 @@ pub type cmdline_parse_token_hdr_t = cmdline_token_hdr;
 ///
 /// get_help() fills the dstbuf with the help for the token. It returns
 /// -1 on error and 0 on success.
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct cmdline_token_ops {
+    ///```text
     /// parse(token ptr, buf, res pts, buf len)
+    ///```
     pub parse: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut cmdline_parse_token_hdr_t,
@@ -87,13 +93,17 @@ pub struct cmdline_token_ops {
             arg4: ::std::os::raw::c_uint,
         ) -> ::std::os::raw::c_int,
     >,
+    ///```text
     /// return the num of possible choices for this token
+    ///```
     pub complete_get_nb: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut cmdline_parse_token_hdr_t,
         ) -> ::std::os::raw::c_int,
     >,
+    ///```text
     /// return the elt x for this token (token, idx, dstbuf, size)
+    ///```
     pub complete_get_elt: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut cmdline_parse_token_hdr_t,
@@ -102,7 +112,9 @@ pub struct cmdline_token_ops {
             arg4: ::std::os::raw::c_uint,
         ) -> ::std::os::raw::c_int,
     >,
+    ///```text
     /// get help for this token (token, dstbuf, size)
+    ///```
     pub get_help: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut cmdline_parse_token_hdr_t,

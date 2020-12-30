@@ -5,9 +5,11 @@
     non_upper_case_globals
 )]
 
+///```text
 /// But the replacement type does use T!
 ///
 /// <div rustbindgen replaces="JS::detail::MaybeWrapped" />
+///```
 pub type JS_detail_MaybeWrapped<T> = T;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

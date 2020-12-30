@@ -97,11 +97,15 @@ pub type phys_addr_t = u64;
 pub type MARKER = [*mut ::std::os::raw::c_void; 0usize];
 pub type MARKER8 = [u8; 0usize];
 pub type MARKER64 = [u64; 0usize];
+///```text
 /// The atomic counter structure.
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_atomic16_t {
+    ///```text
     ///< An internal counter value.
+    ///```
     pub cnt: i16,
 }
 #[test]
@@ -129,65 +133,105 @@ fn bindgen_test_layout_rte_atomic16_t() {
         )
     );
 }
+///```text
 /// The generic rte_mbuf, containing a packet mbuf.
+///```
 #[repr(C)]
 #[repr(align(64))]
 pub struct rte_mbuf {
     pub cacheline0: MARKER,
+    ///```text
     ///< Virtual address of segment buffer.
+    ///```
     pub buf_addr: *mut ::std::os::raw::c_void,
+    ///```text
     ///< Physical address of segment buffer.
+    ///```
     pub buf_physaddr: phys_addr_t,
+    ///```text
     ///< Length of segment buffer.
+    ///```
     pub buf_len: u16,
     pub rearm_data: MARKER8,
     pub data_off: u16,
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_1,
+    ///```text
     ///< Number of segments.
+    ///```
     pub nb_segs: u8,
+    ///```text
     ///< Input port.
+    ///```
     pub port: u8,
+    ///```text
     ///< Offload features.
+    ///```
     pub ol_flags: u64,
     pub rx_descriptor_fields1: MARKER,
     pub __bindgen_anon_2: rte_mbuf__bindgen_ty_2,
+    ///```text
     ///< Total pkt len: sum of all segments.
+    ///```
     pub pkt_len: u32,
+    ///```text
     ///< Amount of data in segment buffer.
+    ///```
     pub data_len: u16,
+    ///```text
     /// VLAN TCI (CPU order), valid if PKT_RX_VLAN_STRIPPED is set.
+    ///```
     pub vlan_tci: u16,
+    ///```text
     ///< hash information
+    ///```
     pub hash: rte_mbuf__bindgen_ty_3,
+    ///```text
     ///< Sequence number. See also rte_reorder_insert()
+    ///```
     pub seqn: u32,
+    ///```text
     /// Outer VLAN TCI (CPU order), valid if PKT_RX_QINQ_STRIPPED is set.
+    ///```
     pub vlan_tci_outer: u16,
     pub cacheline1: MARKER,
     pub __bindgen_anon_3: rte_mbuf__bindgen_ty_4,
+    ///```text
     ///< Pool from which mbuf was allocated.
+    ///```
     pub pool: *mut rte_mempool,
+    ///```text
     ///< Next segment of scattered packet.
+    ///```
     pub next: *mut rte_mbuf,
     pub __bindgen_anon_4: rte_mbuf__bindgen_ty_5,
+    ///```text
     /// Size of the application private data. In case of an indirect
     /// mbuf, it stores the direct mbuf private data size.
+    ///```
     pub priv_size: u16,
+    ///```text
     /// Timesync flags for use with IEEE1588.
+    ///```
     pub timesync: u16,
 }
+///```text
 /// 16-bit Reference counter.
 /// It should only be accessed using the following functions:
 /// rte_mbuf_refcnt_update(), rte_mbuf_refcnt_read(), and
 /// rte_mbuf_refcnt_set(). The functionality of these functions (atomic,
 /// or non-atomic) is controlled by the CONFIG_RTE_MBUF_REFCNT_ATOMIC
 /// config option.
+///```
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_1 {
+    ///```text
     ///< Atomically accessed refcnt
+    ///```
     pub refcnt_atomic: rte_atomic16_t,
+    ///```text
     ///< Non-atomically accessed refcnt
+    ///```
     pub refcnt: u16,
     _bindgen_union_align: u16,
 }
@@ -238,7 +282,9 @@ impl Default for rte_mbuf__bindgen_ty_1 {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_2 {
+    ///```text
     ///< L2/L3/L4 and tunnel information.
+    ///```
     pub packet_type: u32,
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_2__bindgen_ty_1,
     _bindgen_union_align: u32,
@@ -441,13 +487,21 @@ impl Default for rte_mbuf__bindgen_ty_2 {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_3 {
+    ///```text
     ///< RSS hash result if RSS enabled
+    ///```
     pub rss: u32,
+    ///```text
     ///< Filter identifier if FDIR enabled
+    ///```
     pub fdir: rte_mbuf__bindgen_ty_3__bindgen_ty_1,
+    ///```text
     ///< Hierarchical scheduler
+    ///```
     pub sched: rte_mbuf__bindgen_ty_3__bindgen_ty_2,
+    ///```text
     ///< User defined tags. See rte_distributor_process()
+    ///```
     pub usr: u32,
     _bindgen_union_align: [u32; 2usize],
 }
@@ -682,9 +736,13 @@ impl Default for rte_mbuf__bindgen_ty_3 {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_4 {
+    ///```text
     ///< Can be used for external metadata
+    ///```
     pub userdata: *mut ::std::os::raw::c_void,
+    ///```text
     ///< Allow 8-byte userdata on 32-bit
+    ///```
     pub udata64: u64,
     _bindgen_union_align: u64,
 }
@@ -735,7 +793,9 @@ impl Default for rte_mbuf__bindgen_ty_4 {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_5 {
+    ///```text
     ///< combined for easy fetch
+    ///```
     pub tx_offload: u64,
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_5__bindgen_ty_1,
     _bindgen_union_align: u64,
@@ -1189,7 +1249,9 @@ impl Default for rte_mbuf {
         unsafe { ::std::mem::zeroed() }
     }
 }
+///```text
 ///< Pool from which mbuf was allocated.
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mempool {

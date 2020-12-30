@@ -5,7 +5,9 @@
     non_upper_case_globals
 )]
 
+///```text
 /// <div rustbindgen opaque></div>
+///```
 #[repr(C)]
 #[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -25,7 +27,9 @@ fn bindgen_test_layout_OtherOpaque() {
         concat!("Alignment of ", stringify!(OtherOpaque))
     );
 }
+///```text
 /// <div rustbindgen opaque></div>
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Opaque {

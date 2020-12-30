@@ -5,12 +5,14 @@
     non_upper_case_globals
 )]
 
+///```text
 /// This is intended to replace another type, but won't if we treat this include
 /// as a system include, because clang doesn't parse comments there.
 ///
 /// See #848.
 ///
 /// <div rustbindgen replaces="nsTArray"></div>
+///```
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct nsTArray<T> {

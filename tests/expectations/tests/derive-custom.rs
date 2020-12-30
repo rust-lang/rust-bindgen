@@ -5,7 +5,9 @@
     non_upper_case_globals
 )]
 
+///```text
 /// <div rustbindgen derive="Debug"></div>
+///```
 #[repr(C)]
 #[derive(Default, Debug)]
 pub struct my_type {
@@ -34,8 +36,10 @@ fn bindgen_test_layout_my_type() {
         )
     );
 }
+///```text
 /// <div rustbindgen derive="Debug"></div>
 /// <div rustbindgen derive="Clone"></div>
+///```
 #[repr(C)]
 #[derive(Default, Debug, Clone)]
 pub struct my_type2 {
@@ -64,7 +68,9 @@ fn bindgen_test_layout_my_type2() {
         )
     );
 }
+///```text
 /// <div rustbindgen derive="Debug" derive="Clone"></div>
+///```
 #[repr(C)]
 #[derive(Default, Debug, Clone)]
 pub struct my_type3 {

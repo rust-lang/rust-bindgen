@@ -12,8 +12,10 @@ pub struct Blacklisted<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 
+///```text
 /// This would derive(Hash, Eq, PartialEq) if it didn't contain a blacklisted type,
 /// causing us to conservatively avoid deriving hash/Eq/PartialEq for it.
+///```
 #[repr(C)]
 pub struct WhitelistedOne {
     pub a: Blacklisted<::std::os::raw::c_int>,
@@ -48,7 +50,9 @@ impl Default for WhitelistedOne {
         unsafe { ::std::mem::zeroed() }
     }
 }
+///```text
 /// This can't derive(Hash/Eq) even if it didn't contain a blacklisted type.
+///```
 #[repr(C)]
 pub struct WhitelistedTwo {
     pub b: Blacklisted<f32>,

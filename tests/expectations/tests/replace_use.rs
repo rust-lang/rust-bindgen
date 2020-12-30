@@ -5,7 +5,9 @@
     non_upper_case_globals
 )]
 
+///```text
 /// <div rustbindgen replaces="nsTArray"></div>
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct nsTArray {

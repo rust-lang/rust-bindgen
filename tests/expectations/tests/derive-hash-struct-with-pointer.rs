@@ -5,7 +5,9 @@
     non_upper_case_globals
 )]
 
+///```text
 /// Pointers can derive Hash/PartialOrd/Ord/PartialEq/Eq
+///```
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct ConstPtrMutObj {

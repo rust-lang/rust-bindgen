@@ -12,7 +12,9 @@ pub mod root {
     pub mod foo {
         #[allow(unused_imports)]
         use self::super::super::root;
+        ///```text
         /// <div rustbindgen replaces="foo::Bar"></div>
+        ///```
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct Bar {

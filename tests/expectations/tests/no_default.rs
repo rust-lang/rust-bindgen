@@ -5,7 +5,9 @@
     non_upper_case_globals
 )]
 
+///```text
 /// <div rustbindgen nodefault></div>
+///```
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct DefaultButWait {

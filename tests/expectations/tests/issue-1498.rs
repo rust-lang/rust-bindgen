@@ -9,26 +9,42 @@ pub type size_t = u64;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct rte_memseg {
+    ///```text
     ///< Start physical address.
+    ///```
     pub phys_addr: u64,
     pub __bindgen_anon_1: rte_memseg__bindgen_ty_1,
+    ///```text
     ///< Length of the segment.
+    ///```
     pub len: size_t,
+    ///```text
     ///< The pagesize of underlying memory
+    ///```
     pub hugepage_sz: u64,
+    ///```text
     ///< NUMA socket ID.
+    ///```
     pub socket_id: i32,
+    ///```text
     ///< Number of channels.
+    ///```
     pub nchannel: u32,
+    ///```text
     ///< Number of ranks.
+    ///```
     pub nrank: u32,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union rte_memseg__bindgen_ty_1 {
+    ///```text
     ///< Start virtual address.
+    ///```
     pub addr: *mut ::std::os::raw::c_void,
+    ///```text
     ///< Makes sure addr is always 64 bits
+    ///```
     pub addr_64: u64,
     _bindgen_union_align: u64,
 }

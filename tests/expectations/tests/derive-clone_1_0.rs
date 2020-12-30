@@ -5,8 +5,10 @@
     non_upper_case_globals
 )]
 
-/// Since builtin `Clone` impls were introduced in Rust 1.21 this struct
-/// should impl `Clone` "manually".
+///```text
+/// Since builtin \`Clone\` impls were introduced in Rust 1.21 this struct
+/// should impl \`Clone\` "manually".
+///```
 #[repr(C)]
 #[derive(Copy)]
 pub struct ShouldImplClone {

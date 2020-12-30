@@ -38,7 +38,9 @@ impl Default for Rooted {
         unsafe { ::std::mem::zeroed() }
     }
 }
+///```text
 /// <div rustbindgen replaces="MaybeWrapped"></div>
+///```
 pub type MaybeWrapped<a> = a;
 #[test]
 fn __bindgen_test_layout_MaybeWrapped_open0_int_close0_instantiation() {

@@ -5,14 +5,18 @@
     non_upper_case_globals
 )]
 
-/// This is like `opaque-template-inst-member.hpp` except exercising the cases
+///```text
+/// This is like \`opaque-template-inst-member.hpp\` except exercising the cases
 /// where we are OK to derive Debug/Hash/PartialEq.
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct OpaqueTemplate {
     pub _address: u8,
 }
+///```text
 /// Should derive Debug/Hash/PartialEq.
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct ContainsOpaqueTemplate {
@@ -58,7 +62,9 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
         )
     );
 }
+///```text
 /// Should also derive Debug/Hash/PartialEq.
+///```
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct InheritsOpaqueTemplate {

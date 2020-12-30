@@ -6,15 +6,23 @@
 )]
 
 pub type mbedtls_mpi_uint = ::std::os::raw::c_uint;
+///```text
 /// \brief          MPI structure
+///```
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct mbedtls_mpi {
+    ///```text
     ///<  integer sign
+    ///```
     pub s: ::std::os::raw::c_int,
+    ///```text
     ///<  total # of limbs
+    ///```
     pub n: ::std::os::raw::c_ulong,
+    ///```text
     ///<  pointer to limbs
+    ///```
     pub p: *mut mbedtls_mpi_uint,
 }
 #[test]

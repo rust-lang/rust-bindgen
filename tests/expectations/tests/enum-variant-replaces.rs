@@ -5,13 +5,19 @@
     non_upper_case_globals
 )]
 
+///```text
 /// <div rustbindgen replaces="PASS"></div>
 ///
 /// Should see PASS below.
+///```
 pub const OGRErr_PASS: OGRErr = 0;
+///```text
 /// <div rustbindgen replaces="OGRERR_NONE"></div>
 ///
 /// Should see OGRERR_NONE instead of CUSTOM_OGRERR_NONE below.
+///```
 pub const OGRErr_OGRERR_NONE: OGRErr = 1;
+///```text
 /// <div rustbindgen replaces="OGRErr"></div>
+///```
 pub type OGRErr = ::std::os::raw::c_uint;

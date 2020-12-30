@@ -7,8 +7,10 @@
 
 pub struct BlacklistMe(u8);
 
+///```text
 /// Because this type contains a blacklisted type, it should not derive
-/// Default. Instead, we should emit a `mem::zeroed` implementation.
+/// Default. Instead, we should emit a \`mem::zeroed\` implementation.
+///```
 #[repr(C)]
 pub struct ShouldNotDeriveDefault {
     pub a: BlacklistMe,

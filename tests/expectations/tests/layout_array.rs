@@ -15,6 +15,7 @@ pub type size_t = ::std::os::raw::c_longlong;
 pub struct rte_mempool {
     _unused: [u8; 0],
 }
+///```text
 /// Prototype for implementation specific data provisioning function.
 ///
 /// The function should provide the implementation specific memory for
@@ -23,13 +24,18 @@ pub struct rte_mempool {
 /// it will most likely point to a different type of data structure, and
 /// will be transparent to the application programmer.
 /// This function should set mp->pool_data.
+///```
 pub type rte_mempool_alloc_t = ::std::option::Option<
     unsafe extern "C" fn(mp: *mut rte_mempool) -> ::std::os::raw::c_int,
 >;
+///```text
 /// Free the opaque private data pointed to by mp->pool_data pointer.
+///```
 pub type rte_mempool_free_t =
     ::std::option::Option<unsafe extern "C" fn(mp: *mut rte_mempool)>;
+///```text
 /// Enqueue an object into the external pool.
+///```
 pub type rte_mempool_enqueue_t = ::std::option::Option<
     unsafe extern "C" fn(
         mp: *mut rte_mempool,
@@ -37,7 +43,9 @@ pub type rte_mempool_enqueue_t = ::std::option::Option<
         n: ::std::os::raw::c_uint,
     ) -> ::std::os::raw::c_int,
 >;
+///```text
 /// Dequeue an object from the external pool.
+///```
 pub type rte_mempool_dequeue_t = ::std::option::Option<
     unsafe extern "C" fn(
         mp: *mut rte_mempool,
@@ -45,26 +53,42 @@ pub type rte_mempool_dequeue_t = ::std::option::Option<
         n: ::std::os::raw::c_uint,
     ) -> ::std::os::raw::c_int,
 >;
+///```text
 /// Return the number of available objects in the external pool.
+///```
 pub type rte_mempool_get_count = ::std::option::Option<
     unsafe extern "C" fn(mp: *const rte_mempool) -> ::std::os::raw::c_uint,
 >;
+///```text
 /// Structure defining mempool operations structure
+///```
 #[repr(C)]
 #[repr(align(64))]
 #[derive(Copy, Clone)]
 pub struct rte_mempool_ops {
+    ///```text
     ///< Name of mempool ops struct.
+    ///```
     pub name: [::std::os::raw::c_char; 32usize],
+    ///```text
     ///< Allocate private data.
+    ///```
     pub alloc: rte_mempool_alloc_t,
+    ///```text
     ///< Free the external pool.
+    ///```
     pub free: rte_mempool_free_t,
+    ///```text
     ///< Enqueue an object.
+    ///```
     pub enqueue: rte_mempool_enqueue_t,
+    ///```text
     ///< Dequeue an object.
+    ///```
     pub dequeue: rte_mempool_dequeue_t,
+    ///```text
     ///< Get qty of available objs.
+    ///```
     pub get_count: rte_mempool_get_count,
 }
 #[test]
@@ -173,11 +197,15 @@ impl ::std::cmp::PartialEq for rte_mempool_ops {
             self.get_count == other.get_count
     }
 }
+///```text
 /// The rte_spinlock_t type.
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_spinlock_t {
+    ///```text
     ///< lock status 0 = unlocked, 1 = locked
+    ///```
     pub locked: ::std::os::raw::c_int,
 }
 #[test]
@@ -206,6 +234,7 @@ fn bindgen_test_layout_rte_spinlock_t() {
         )
     );
 }
+///```text
 /// Structure storing the table of registered ops structs, each of which contain
 /// the function pointers for the mempool ops functions.
 /// Each process has its own storage for this ops struct array so that
@@ -213,16 +242,23 @@ fn bindgen_test_layout_rte_spinlock_t() {
 /// The indices used to access the array are valid across processes, whereas
 /// any function pointers stored directly in the mempool struct would not be.
 /// This results in us simply having "ops_index" in the mempool struct.
+///```
 #[repr(C)]
 #[repr(align(64))]
 #[derive(Copy, Clone)]
 pub struct rte_mempool_ops_table {
+    ///```text
     ///< Spinlock for add/delete.
+    ///```
     pub sl: rte_spinlock_t,
+    ///```text
     ///< Number of used ops structs in the table.
+    ///```
     pub num_ops: u32,
     pub __bindgen_padding_0: [u64; 7usize],
+    ///```text
     /// Storage for all possible ops structs.
+    ///```
     pub ops: [rte_mempool_ops; 16usize],
 }
 #[test]
@@ -282,7 +318,9 @@ impl Default for rte_mempool_ops_table {
         unsafe { ::std::mem::zeroed() }
     }
 }
+///```text
 /// Structure to hold malloc heap
+///```
 #[repr(C)]
 #[repr(align(64))]
 #[derive(Copy, Clone)]

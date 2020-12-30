@@ -182,43 +182,81 @@ pub enum JSValueShiftedTag {
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSWhyMagic {
+    ///```text
     /// a hole in a native object's elements
+    ///```
     JS_ELEMENTS_HOLE = 0,
+    ///```text
     /// there is not a pending iterator value
+    ///```
     JS_NO_ITER_VALUE = 1,
+    ///```text
     /// exception value thrown when closing a generator
+    ///```
     JS_GENERATOR_CLOSING = 2,
+    ///```text
     /// compiler sentinel value
+    ///```
     JS_NO_CONSTANT = 3,
+    ///```text
     /// used in debug builds to catch tracing errors
+    ///```
     JS_THIS_POISON = 4,
+    ///```text
     /// used in debug builds to catch tracing errors
+    ///```
     JS_ARG_POISON = 5,
+    ///```text
     /// an empty subnode in the AST serializer
+    ///```
     JS_SERIALIZE_NO_NODE = 6,
+    ///```text
     /// lazy arguments value on the stack
+    ///```
     JS_LAZY_ARGUMENTS = 7,
+    ///```text
     /// optimized-away 'arguments' value
+    ///```
     JS_OPTIMIZED_ARGUMENTS = 8,
+    ///```text
     /// magic value passed to natives to indicate construction
+    ///```
     JS_IS_CONSTRUCTING = 9,
+    ///```text
     /// arguments.callee has been overwritten
+    ///```
     JS_OVERWRITTEN_CALLEE = 10,
+    ///```text
     /// value of static block object slot
+    ///```
     JS_BLOCK_NEEDS_CLONE = 11,
+    ///```text
     /// see class js::HashableValue
+    ///```
     JS_HASH_KEY_EMPTY = 12,
+    ///```text
     /// error while running Ion code
+    ///```
     JS_ION_ERROR = 13,
+    ///```text
     /// missing recover instruction result
+    ///```
     JS_ION_BAILOUT = 14,
+    ///```text
     /// optimized out slot
+    ///```
     JS_OPTIMIZED_OUT = 15,
+    ///```text
     /// uninitialized lexical bindings that produce ReferenceError on touch.
+    ///```
     JS_UNINITIALIZED_LEXICAL = 16,
+    ///```text
     /// for local use
+    ///```
     JS_GENERIC_MAGIC = 17,
+    ///```text
     /// for local use
+    ///```
     JS_WHY_MAGIC_COUNT = 18,
 }
 #[repr(C)]

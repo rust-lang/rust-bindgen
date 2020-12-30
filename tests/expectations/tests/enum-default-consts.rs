@@ -51,5 +51,7 @@ pub mod Neg {
 }
 pub const NoDebug_NoDebug1: NoDebug = 0;
 pub const NoDebug_NoDebug2: NoDebug = 1;
+///```text
 /// <div rustbindgen nodebug></div>
+///```
 pub type NoDebug = ::std::os::raw::c_uint;

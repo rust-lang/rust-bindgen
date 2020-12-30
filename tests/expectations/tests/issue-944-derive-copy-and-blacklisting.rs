@@ -7,7 +7,9 @@
 
 pub struct BlacklistMe(u8);
 
+///```text
 /// Because this type contains a blacklisted type, it should not derive Copy.
+///```
 #[repr(C)]
 pub struct ShouldNotBeCopy {
     pub a: BlacklistMe,

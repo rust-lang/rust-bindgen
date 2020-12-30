@@ -6,30 +6,42 @@
 )]
 
 impl B {
+    ///```text
     /// Document field with three slashes
+    ///```
     pub const VAR_A: B = B(0);
 }
 impl B {
+    ///```text
     /// Document field with preceeding star
+    ///```
     pub const VAR_B: B = B(1);
 }
 impl B {
+    ///```text
     /// Document field with preceeding exclamation
+    ///```
     pub const VAR_C: B = B(2);
 }
 impl B {
+    ///```text
     ///< Document field with following star
+    ///```
     pub const VAR_D: B = B(3);
 }
 impl B {
+    ///```text
     ///< Document field with following exclamation
+    ///```
     pub const VAR_E: B = B(4);
 }
 impl B {
+    ///```text
     /// Document field with preceeding star, with a loong long multiline
     /// comment.
     ///
     /// Very interesting documentation, definitely.
+    ///```
     pub const VAR_F: B = B(5);
 }
 impl ::std::ops::BitOr<B> for B {
@@ -59,6 +71,8 @@ impl ::std::ops::BitAndAssign for B {
     }
 }
 #[repr(transparent)]
+///```text
 /// Document enum
+///```
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct B(pub ::std::os::raw::c_uint);

@@ -354,7 +354,9 @@ impl Default for PODButContainsDtor {
         unsafe { ::std::mem::zeroed() }
     }
 }
+///```text
 /// <div rustbindgen opaque>
+///```
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Opaque {
@@ -390,7 +392,9 @@ fn bindgen_test_layout_POD() {
         )
     );
 }
+///```text
 /// <div rustbindgen replaces="NestedReplaced"></div>
+///```
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct NestedReplaced<T> {
@@ -460,10 +464,12 @@ fn bindgen_test_layout_Untemplated() {
 pub struct Templated {
     pub m_untemplated: Untemplated,
 }
+///```text
 /// If the replacement doesn't happen at the parse level the container would be
 /// copy and the replacement wouldn't, so this wouldn't compile.
 ///
 /// <div rustbindgen replaces="ReplacedWithoutDestructor"></div>
+///```
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct ReplacedWithoutDestructor<T> {
@@ -497,10 +503,12 @@ impl<U> Default for ShouldNotBeCopiableAsWell<U> {
         unsafe { ::std::mem::zeroed() }
     }
 }
+///```text
 /// If the replacement doesn't happen at the parse level the container would be
 /// copy and the replacement wouldn't, so this wouldn't compile.
 ///
 /// <div rustbindgen replaces="ReplacedWithoutDestructorFwd"></div>
+///```
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct ReplacedWithoutDestructorFwd<T> {

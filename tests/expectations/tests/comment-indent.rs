@@ -9,17 +9,21 @@
 pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
+    ///```text
     /// This is a multi-line doc comment.
     ///
     /// This class is really really interesting, look!
+    ///```
     #[repr(C)]
     #[derive(Debug, Default, Copy, Clone)]
     pub struct Foo {
         pub _address: u8,
     }
+    ///```text
     /// This nested class is also a multi-line doc comment.
     ///
     /// This class is not so interesting, but worth a bit of docs too!
+    ///```
     #[repr(C)]
     #[derive(Debug, Default, Copy, Clone)]
     pub struct Foo_Bar {
@@ -54,11 +58,14 @@ pub mod root {
     pub mod test {
         #[allow(unused_imports)]
         use self::super::super::root;
+        ///```text
         /// I'm in a namespace, and thus I may be on a rust module, most of the time.
         /// My documentation is pretty extensive, I guess.
+        ///```
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct Baz {
+            ///```text
             /// This member is plain awesome, just amazing.
             ///
             /// It also has super-extensive docs, with even a nice ascii-art diagram.
@@ -66,6 +73,7 @@ pub mod root {
             /// +------+          +-------+
             /// | foo  |   ---->  | bar   |
             /// +------+          +-------+
+            ///```
             pub member: ::std::os::raw::c_int,
         }
         #[test]
@@ -93,9 +101,11 @@ pub mod root {
                 )
             );
         }
+        ///```text
         /// I'm in an inline namespace, and as such I shouldn't get generated inside
         /// a rust module, except when the relevant option is specified. Also, this
         /// comment shouldn't be misaligned.
+        ///```
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct InInlineNS {
@@ -114,6 +124,8 @@ pub mod root {
                 concat!("Alignment of ", stringify!(InInlineNS))
             );
         }
+        ///```text
+        ///```
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct Bazz {
