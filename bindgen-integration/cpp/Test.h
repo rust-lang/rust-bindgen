@@ -20,8 +20,6 @@
 #define TESTMACRO_STRING_EXPR ("string")
 #define TESTMACRO_STRING_FUNC_NON_UTF8(x) (x "ÿÿ") /* invalid UTF-8 on purpose */
 
-#include <cwchar>
-
 enum {
   MY_ANNOYING_MACRO =
 #define MY_ANNOYING_MACRO 1

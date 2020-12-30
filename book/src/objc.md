@@ -34,6 +34,7 @@ foo = Foo(Foo::alloc().initWithStuff())`.
 
 
 ## Supported Features
+
 * Inheritance matched to rust traits with prefixes of `I` which
 stands for interface.
 * Protocols which match to rust traits with prefixes of `P` which
@@ -43,6 +44,7 @@ name and `id` is a pointer to the objective-c Object.
 * Blocks
 
 ## Useful Notes
+
 * If you're targeting `aarch64-apple-ios`, you'll need to have the clang arg
 `--target=arm64-apple-ios` as mentioned
 [here](https://github.com/rust-lang/rust-bindgen/issues/1211#issuecomment-569804287).
@@ -63,8 +65,10 @@ all of Core Foundation and any other frameworks. This will result in a very
 long compile time.
 
 ## Not (yet) Supported
+
 * Nullablibility attributes which return `Option`s.
 * Probably many other things. Feel free to [open an issue](https://github.com/rust-lang/rust-bindgen/issues).
 
 # Example crate(s)
+
 * [uikit-sys](https://github.com/simlay/uikit-sys)
