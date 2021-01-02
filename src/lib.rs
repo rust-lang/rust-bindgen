@@ -2092,54 +2092,58 @@ fn find_effective_target(clang_args: &[String]) -> (String, bool) {
     (rust_to_clang_target(HOST_TARGET), false)
 }
 
+static NO_CSTDLIB: bool = true; // This option is (currently) only used for debugging.
 impl Bindings {
     /// Generate bindings for the given options.
     pub(crate) fn generate(
         mut options: BindgenOptions,
     ) -> Result<Bindings, BindgenError> {
-        let origname = options
-            .input_header
-            .clone()
-            .unwrap()
-            .split("/")
-            .last()
-            .unwrap()
-            .to_owned();
         let (effective_target, is_host_build) =
             Bindings::parse_config(&mut options)?;
         if options.gen_safe_wrappers {
             // Possible Performance improvements: We are running generate_bindings twice in a slightly different manner. Some parts of what generate_bindings does is identical in the first and second run. Not doing these parts twice would greatly improve bindgens performance.
 
+            let origname = options
+                .input_header
+                .clone()
+                .unwrap()
+                .split("/")
+                .last()
+                .unwrap()
+                .to_owned();
+
             let absolute_path = Path::new(&std::env::var("PWD").unwrap())
-                .join(options.input_header.unwrap());
-            let wrap_cpp_path = format!(
-                "{}/{}_wrap.cpp",
-                std::env::var("OUT_DIR").unwrap(),
-                origname
-            );
-            let mut wrap_file: std::fs::File = std::fs::OpenOptions::new()
-                .write(true)
-                .create(true)
-                .truncate(true)
-                .open(&wrap_cpp_path)
-                .unwrap();
-            wrap_file
-                .write(
-                    format!(
-                        "#include \"{}\"\n#include <cstdlib>\n",
-                        absolute_path.to_str().unwrap()
+                .join(options.input_header.as_ref().unwrap());
+            let mut options_copy = options.partial_clone();
+            if !NO_CSTDLIB {
+                let wrap_cpp_path = format!(
+                    "{}/{}_wrap.cpp",
+                    std::env::var("OUT_DIR").unwrap(),
+                    origname
+                );
+                let mut wrap_file: std::fs::File = std::fs::OpenOptions::new()
+                    .write(true)
+                    .create(true)
+                    .truncate(true)
+                    .open(&wrap_cpp_path)
+                    .unwrap();
+                wrap_file
+                    .write(
+                        format!(
+                            "#include \"{}\"\n#include <cstdlib>\n", // PREFORMANCE: we are generating bindings for cstdlib which is useless if there is no #include <cstdlib> in the options.input_header. This slows our tests down.
+                            absolute_path.to_str().unwrap()
+                        )
+                        .as_bytes(),
                     )
-                    .as_bytes(),
-                )
-                .expect("unable to write");
-            drop(wrap_file);
-            options.input_header = Some(wrap_cpp_path);
+                    .expect("unable to write");
+                drop(wrap_file);
+                options.input_header = Some(wrap_cpp_path);
+            }
             let gen_cpp_path = format!(
                 "{}/{}_gen.cpp",
                 std::env::var("OUT_DIR").unwrap(),
                 origname
             );
-            let mut options_copy = options.partial_clone();
             let bindings = Bindings::generate_bindings(
                 options,
                 effective_target.clone(),
@@ -2153,10 +2157,14 @@ impl Bindings {
                 .open(&gen_cpp_path)
                 .unwrap();
             gen_file.write(
-                format!("#include \"{}\"\n#include <cstdlib>\ntemplate <typename T>\nauto bindgen_destruct_or_throw(T* t) -> decltype(t->~T()) {{\n    t->~T();\n}}\nauto bindgen_destruct_or_throw(void*) -> void {{\n    std::abort();\n}}\n", absolute_path.to_str().unwrap())
-                    .as_bytes(),
-            )
-            .expect("unable to write");
+                format!("#include \"{}\"\n", absolute_path.to_str().unwrap())
+                .as_bytes()
+            ).expect("unable to write");
+            if NO_CSTDLIB {
+                gen_file.write("template <typename T>\nauto bindgen_destruct_or_throw(T* t) -> decltype(t->~T()) {{\n    t->~T();\n}}\nauto bindgen_destruct_or_throw(void*) -> void {{}}\n".as_bytes()).expect("unable to write");
+            } else {
+                gen_file.write("#include <cstdlib>\ntemplate <typename T>\nauto bindgen_destruct_or_throw(T* t) -> decltype(t->~T()) {{\n    t->~T();\n}}\nauto bindgen_destruct_or_throw(void*) -> void {{\n    std::abort();\n}}\n".as_bytes()).expect("unable to write");
+            }
             gen_file
                 .write(bindings.cpp_out.unwrap().as_bytes())
                 .expect("unable to write");
