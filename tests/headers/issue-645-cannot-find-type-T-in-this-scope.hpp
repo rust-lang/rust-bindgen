@@ -4,6 +4,7 @@ template <class> class RefPtr {};
 
 template <typename T>
 class HasRefPtr {
+public:
   typedef T TypedefOfT;
   RefPtr<TypedefOfT> refptr_member;
 };

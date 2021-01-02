@@ -2,6 +2,7 @@
 
 template <typename T>
 class DoesNotUseTemplateParameter {
+public:
     using ButAliasDoesUseIt = T;
 
     int x;

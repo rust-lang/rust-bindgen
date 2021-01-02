@@ -10,6 +10,7 @@ struct Wrapper {
 
 template<typename T>
 class Rooted {
+public:
     using MaybeWrapped = typename Wrapper<T>::Type;
     MaybeWrapped ptr;
 

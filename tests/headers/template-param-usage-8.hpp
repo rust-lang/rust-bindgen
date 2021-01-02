@@ -2,6 +2,7 @@
 
 template <typename T, typename U>
 class IndirectUsage {
+public:
     typedef T Typedefed;
     using Aliased = U;
 

@@ -8,5 +8,6 @@ struct PointerType {
 }
 template<typename T>
 class UniquePtr {
+public:
   typedef typename detail::PointerType<T> Pointer;
 };

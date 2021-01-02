@@ -2,6 +2,7 @@
 
 template <typename T>
 class IndirectlyUsesTemplateParameter {
+public:
     using Aliased = T;
 
     Aliased aliased;
