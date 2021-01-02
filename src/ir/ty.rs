@@ -134,7 +134,7 @@ impl Type {
     /// Is this a template alias type?
     pub fn is_template_alias(&self) -> bool {
         match self.kind {
-            TypeKind::TemplateAlias(..) => true,
+            TypeKind::TemplateAlias { .. } => true,
             _ => false,
         }
     }
@@ -361,10 +361,15 @@ impl Type {
             TypeKind::ObjCInterface(..) => Some(self),
 
             TypeKind::ResolvedTypeRef(inner) |
-            TypeKind::Alias(inner) |
-            TypeKind::TemplateAlias(inner, _) => {
-                ctx.resolve_type(inner).safe_canonical_type(ctx)
-            }
+            TypeKind::Alias {
+                id: inner,
+                is_public: _,
+            } |
+            TypeKind::TemplateAlias {
+                id: inner,
+                pars: _,
+                is_public: _,
+            } => ctx.resolve_type(inner).safe_canonical_type(ctx),
             TypeKind::TemplateInstantiation(ref inst) => ctx
                 .resolve_type(inst.template_definition())
                 .safe_canonical_type(ctx),
@@ -410,7 +415,11 @@ impl Type {
                 .expect_type()
                 .surely_trivially_relocatable(ctx);
         }
-        if let TypeKind::Alias(v) = self.kind() {
+        if let TypeKind::Alias {
+            id: v,
+            is_public: _,
+        } = self.kind()
+        {
             return ctx
                 .resolve_item(v)
                 .kind()
@@ -538,8 +547,8 @@ impl TypeKind {
             TypeKind::Int(..) => "Int",
             TypeKind::Float(..) => "Float",
             TypeKind::Complex(..) => "Complex",
-            TypeKind::Alias(..) => "Alias",
-            TypeKind::TemplateAlias(..) => "TemplateAlias",
+            TypeKind::Alias { .. } => "Alias",
+            TypeKind::TemplateAlias { .. } => "TemplateAlias",
             TypeKind::Array(..) => "Array",
             TypeKind::Vector(..) => "Vector",
             TypeKind::Function(..) => "Function",
@@ -619,8 +628,11 @@ impl TemplateParameters for TypeKind {
                 ctx.resolve_type(id).self_template_params(ctx)
             }
             TypeKind::Comp(ref comp) => comp.self_template_params(ctx),
-            TypeKind::TemplateAlias(_, ref args) => args.clone(),
-
+            TypeKind::TemplateAlias {
+                id: _,
+                pars: ref args,
+                is_public: _,
+            } => args.clone(),
             TypeKind::Opaque |
             TypeKind::TemplateInstantiation(..) |
             TypeKind::Void |
@@ -637,7 +649,10 @@ impl TemplateParameters for TypeKind {
             TypeKind::Reference(_) |
             TypeKind::UnresolvedTypeRef(..) |
             TypeKind::TypeParam |
-            TypeKind::Alias(_) |
+            TypeKind::Alias {
+                id: _,
+                is_public: _,
+            } |
             TypeKind::ObjCId |
             TypeKind::ObjCSel |
             TypeKind::ObjCInterface(_) => vec![],
@@ -686,11 +701,15 @@ pub enum TypeKind {
     Complex(FloatKind),
 
     /// A type alias, with a name, that points to another type.
-    Alias(TypeId),
+    Alias { id: TypeId, is_public: bool },
 
     /// A templated alias, pointing to an inner type, just as `Alias`, but with
     /// template parameters.
-    TemplateAlias(TypeId, Vec<TypeId>),
+    TemplateAlias {
+        id: TypeId,
+        pars: Vec<TypeId>,
+        is_public: bool,
+    },
 
     /// A packed vector type: element type, number of elements
     Vector(TypeId, usize),
@@ -973,6 +992,7 @@ impl Type {
 
                                 // We need to manually unwind this one.
                                 let mut inner = Err(ParseError::Continue);
+                                let mut is_public = None;
                                 let mut args = vec![];
 
                                 location.visit(|cur| {
@@ -986,6 +1006,7 @@ impl Type {
                                             );
 
                                             name = current.spelling();
+                                            is_public = Some(cur.access_specifier() == CX_CXXPublic || cur.access_specifier() == CX_CXXInvalidAccessSpecifier);
 
                                             let inner_ty = cur
                                                 .typedef_type()
@@ -1024,8 +1045,11 @@ impl Type {
                                         return Err(ParseError::Continue);
                                     }
                                 };
-
-                                TypeKind::TemplateAlias(inner_type, args)
+                                TypeKind::TemplateAlias {
+                                    id: inner_type,
+                                    pars: args,
+                                    is_public: is_public.unwrap(),
+                                }
                             }
                             CXCursor_TemplateRef => {
                                 let referenced = location.referenced().unwrap();
@@ -1185,7 +1209,12 @@ impl Type {
                             };
                         };
                     }
-                    TypeKind::Alias(inner)
+                    TypeKind::Alias {
+                        id: inner,
+                        is_public: cursor.access_specifier() == CX_CXXPublic ||
+                            cursor.access_specifier() ==
+                                CX_CXXInvalidAccessSpecifier,
+                    }
                 }
                 CXType_Enum => {
                     let enum_ = Enum::from_ty(ty, ctx).expect("Not an enum?");
@@ -1297,11 +1326,18 @@ impl Trace for Type {
             TypeKind::Array(inner, _) |
             TypeKind::Vector(inner, _) |
             TypeKind::BlockPointer(inner) |
-            TypeKind::Alias(inner) |
+            TypeKind::Alias {
+                id: inner,
+                is_public: _,
+            } |
             TypeKind::ResolvedTypeRef(inner) => {
                 tracer.visit_kind(inner.into(), EdgeKind::TypeReference);
             }
-            TypeKind::TemplateAlias(inner, ref template_params) => {
+            TypeKind::TemplateAlias {
+                id: inner,
+                pars: ref template_params,
+                is_public: _,
+            } => {
                 tracer.visit_kind(inner.into(), EdgeKind::TypeReference);
                 for param in template_params {
                     tracer.visit_kind(

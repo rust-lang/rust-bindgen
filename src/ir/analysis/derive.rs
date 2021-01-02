@@ -380,8 +380,15 @@ impl<'ctx> CannotDerive<'ctx> {
             }
 
             TypeKind::ResolvedTypeRef(..) |
-            TypeKind::TemplateAlias(..) |
-            TypeKind::Alias(..) |
+            TypeKind::TemplateAlias {
+                id: _,
+                pars: _,
+                is_public: _,
+            } |
+            TypeKind::Alias {
+                id: _,
+                is_public: _,
+            } |
             TypeKind::BlockPointer(..) => {
                 let pred = self.derive_trait.consider_edge_typeref();
                 return self.constrain_join(item, pred);

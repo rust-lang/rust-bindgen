@@ -2156,10 +2156,15 @@ impl Bindings {
                 .truncate(true)
                 .open(&gen_cpp_path)
                 .unwrap();
-            gen_file.write(
-                format!("#include \"{}\"\n", absolute_path.to_str().unwrap())
-                .as_bytes()
-            ).expect("unable to write");
+            gen_file
+                .write(
+                    format!(
+                        "#include \"{}\"\n",
+                        absolute_path.to_str().unwrap()
+                    )
+                    .as_bytes(),
+                )
+                .expect("unable to write");
             if NO_CSTDLIB {
                 gen_file.write("template <typename T>\nauto bindgen_destruct_or_throw(T* t) -> decltype(t->~T()) {{\n    t->~T();\n}}\nauto bindgen_destruct_or_throw(void*) -> void {{}}\n".as_bytes()).expect("unable to write");
             } else {
