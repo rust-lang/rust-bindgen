@@ -839,12 +839,7 @@ impl Item {
             return path.join("_").to_owned();
         }
 
-        let mut base_name = target.base_name(ctx);
-        if let ItemKind::Type(typ) = target.kind() {
-            if let TypeKind::Comp(_) = typ.kind() {
-                base_name = ctx.options().raw_comp_name_mangler.0(base_name);
-            }
-        }
+        let base_name = target.base_name(ctx);
 
         // Named template type arguments are never namespaced, and never
         // mangled.

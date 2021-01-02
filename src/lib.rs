@@ -628,16 +628,6 @@ impl Builder {
         self
     }
 
-    /// todo(volker)
-    pub fn raw_comp_name_mangler(
-        mut self,
-        raw_comp_name_mangler: std::rc::Rc<dyn Fn(String) -> String>,
-    ) -> Builder {
-        self.options.raw_comp_name_mangler =
-            DebugWrapper(raw_comp_name_mangler);
-        self
-    }
-
     /// Whether the generated bindings should contain documentation comments
     /// (docstrings) or not.
     ///
@@ -1607,8 +1597,6 @@ struct BindgenOptions {
     /// Generate safe C++ wrappers
     gen_safe_wrappers: bool,
 
-    raw_comp_name_mangler: DebugWrapper<std::rc::Rc<dyn Fn(String) -> String>>,
-
     /// True if we should emulate C++ namespaces with Rust modules in the
     /// generated bindings.
     enable_cxx_namespaces: bool,
@@ -1869,7 +1857,6 @@ impl BindgenOptions {
             emit_ir: self.emit_ir.clone(),
             emit_ir_graphviz: self.emit_ir_graphviz.clone(),
             gen_safe_wrappers: self.gen_safe_wrappers.clone(),
-            raw_comp_name_mangler: self.raw_comp_name_mangler.clone(),
             layout_tests: self.layout_tests.clone(),
             impl_debug: self.impl_debug.clone(),
             impl_partialeq: self.impl_partialeq.clone(),
@@ -1977,7 +1964,6 @@ impl Default for BindgenOptions {
             emit_ir: false,
             emit_ir_graphviz: None,
             gen_safe_wrappers: false,
-            raw_comp_name_mangler: DebugWrapper(std::rc::Rc::new(|name| name)),
             layout_tests: true,
             impl_debug: false,
             impl_partialeq: false,
