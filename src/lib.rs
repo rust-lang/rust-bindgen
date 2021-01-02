@@ -628,6 +628,16 @@ impl Builder {
         self
     }
 
+    /// todo(volker)
+    pub fn raw_comp_name_mangler(
+        mut self,
+        raw_comp_name_mangler: std::rc::Rc<dyn Fn(String) -> String>,
+    ) -> Builder {
+        self.options.raw_comp_name_mangler =
+            DebugWrapper(raw_comp_name_mangler);
+        self
+    }
+
     /// Whether the generated bindings should contain documentation comments
     /// (docstrings) or not.
     ///
@@ -1496,6 +1506,18 @@ impl Builder {
     }
 }
 
+struct DebugWrapper<T>(T);
+impl<T> std::fmt::Debug for DebugWrapper<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", std::any::type_name::<T>())
+    }
+}
+impl<T: Clone> Clone for DebugWrapper<T> {
+    fn clone(&self) -> Self {
+        DebugWrapper(self.0.clone())
+    }
+}
+
 /// Configuration options for generated bindings.
 #[derive(Debug)]
 struct BindgenOptions {
@@ -1584,6 +1606,8 @@ struct BindgenOptions {
 
     /// Generate safe C++ wrappers
     gen_safe_wrappers: bool,
+
+    raw_comp_name_mangler: DebugWrapper<std::rc::Rc<dyn Fn(String) -> String>>,
 
     /// True if we should emulate C++ namespaces with Rust modules in the
     /// generated bindings.
@@ -1845,6 +1869,7 @@ impl BindgenOptions {
             emit_ir: self.emit_ir.clone(),
             emit_ir_graphviz: self.emit_ir_graphviz.clone(),
             gen_safe_wrappers: self.gen_safe_wrappers.clone(),
+            raw_comp_name_mangler: self.raw_comp_name_mangler.clone(),
             layout_tests: self.layout_tests.clone(),
             impl_debug: self.impl_debug.clone(),
             impl_partialeq: self.impl_partialeq.clone(),
@@ -1952,6 +1977,7 @@ impl Default for BindgenOptions {
             emit_ir: false,
             emit_ir_graphviz: None,
             gen_safe_wrappers: false,
+            raw_comp_name_mangler: DebugWrapper(std::rc::Rc::new(|name| name)),
             layout_tests: true,
             impl_debug: false,
             impl_partialeq: false,
@@ -2085,21 +2111,47 @@ impl Bindings {
     pub(crate) fn generate(
         mut options: BindgenOptions,
     ) -> Result<Bindings, BindgenError> {
+        let origname = options
+            .input_header
+            .clone()
+            .unwrap()
+            .split("/")
+            .last()
+            .unwrap()
+            .to_owned();
         let (effective_target, is_host_build) =
             Bindings::parse_config(&mut options)?;
         if options.gen_safe_wrappers {
             // Possible Performance improvements: We are running generate_bindings twice in a slightly different manner. Some parts of what generate_bindings does is identical in the first and second run. Not doing these parts twice would greatly improve bindgens performance.
 
-            let gen_cpp_path = format!(
-                "{}/{}.cpp",
+            let absolute_path = Path::new(&std::env::var("PWD").unwrap())
+                .join(options.input_header.unwrap());
+            let wrap_cpp_path = format!(
+                "{}/{}_wrap.cpp",
                 std::env::var("OUT_DIR").unwrap(),
-                options
-                    .input_header
-                    .clone()
-                    .unwrap()
-                    .split("/")
-                    .last()
-                    .unwrap()
+                origname
+            );
+            let mut wrap_file: std::fs::File = std::fs::OpenOptions::new()
+                .write(true)
+                .create(true)
+                .truncate(true)
+                .open(&wrap_cpp_path)
+                .unwrap();
+            wrap_file
+                .write(
+                    format!(
+                        "#include \"{}\"\n#include <cstdlib>\n",
+                        absolute_path.to_str().unwrap()
+                    )
+                    .as_bytes(),
+                )
+                .expect("unable to write");
+            drop(wrap_file);
+            options.input_header = Some(wrap_cpp_path);
+            let gen_cpp_path = format!(
+                "{}/{}_gen.cpp",
+                std::env::var("OUT_DIR").unwrap(),
+                origname
             );
             let mut options_copy = options.partial_clone();
             let bindings = Bindings::generate_bindings(
@@ -2108,22 +2160,21 @@ impl Bindings {
                 is_host_build,
                 GeneratingStage::GeneratingCpp,
             )?;
-            let mut file: std::fs::File = std::fs::OpenOptions::new()
+            let mut gen_file: std::fs::File = std::fs::OpenOptions::new()
                 .write(true)
                 .create(true)
                 .truncate(true)
                 .open(&gen_cpp_path)
                 .unwrap();
-            let absolute_path = Path::new(&std::env::var("PWD").unwrap())
-                .join(options_copy.input_header.unwrap());
-            file.write(
+            gen_file.write(
                 format!("#include \"{}\"\n#include <cstdlib>\ntemplate <typename T>\nauto bindgen_destruct_or_throw(T* t) -> decltype(t->~T()) {{\n    t->~T();\n}}\nauto bindgen_destruct_or_throw(void*) -> void {{\n    std::abort();\n}}\n", absolute_path.to_str().unwrap())
                     .as_bytes(),
             )
             .expect("unable to write");
-            file.write(bindings.cpp_out.unwrap().as_bytes())
+            gen_file
+                .write(bindings.cpp_out.unwrap().as_bytes())
                 .expect("unable to write");
-            drop(file);
+            drop(gen_file);
 
             let mut args = options_copy.clang_args.clone();
             args.push(gen_cpp_path.clone());

@@ -180,7 +180,7 @@ pub fn cpp_function_wrapper(
                     (
                         format!(
                             "{} *this_ptr",
-                            item.unwrap().canonical_name(ctx) // performance: should we cache item.unwrap().canonical_name(ctx) ?
+                            item.unwrap().kind().expect_type().name().unwrap()
                         ),
                         false,
                     )
