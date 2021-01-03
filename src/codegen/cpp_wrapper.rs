@@ -180,7 +180,7 @@ pub fn cpp_function_wrapper(
                     (
                         format!(
                             "{} *this_ptr",
-                            item.unwrap().kind().expect_type().name().unwrap()
+                            get_cpp_typename_with_namespace(ctx, item.unwrap()).unwrap()
                         ),
                         false,
                     )
