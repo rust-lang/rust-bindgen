@@ -264,6 +264,9 @@ where
                 .help("Dump graphviz dot file.")
                 .value_name("path")
                 .takes_value(true),
+            Arg::with_name("gen-safe-wrappers")
+                .long("gen-safe-wrappers")
+                .help("Generate safe C++ wrappers."),
             Arg::with_name("enable-cxx-namespaces")
                 .long("enable-cxx-namespaces")
                 .help("Enable support for C++ namespaces."),
@@ -688,6 +691,10 @@ where
 
     if let Some(path) = matches.value_of("emit-ir-graphviz") {
         builder = builder.emit_ir_graphviz(path);
+    }
+
+    if matches.is_present("gen-safe-wrappers") {
+        builder = builder.gen_safe_wrappers(true);
     }
 
     if matches.is_present("enable-cxx-namespaces") {
