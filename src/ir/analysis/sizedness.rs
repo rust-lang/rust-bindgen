@@ -266,15 +266,8 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
                 self.insert(id, SizednessResult::NonZeroSized)
             }
 
-            TypeKind::TemplateAlias {
-                id: t,
-                pars: _,
-                is_public: _,
-            } |
-            TypeKind::Alias {
-                id: t,
-                is_public: _,
-            } |
+            TypeKind::TemplateAlias(t, _) |
+            TypeKind::Alias(t) |
             TypeKind::BlockPointer(t) |
             TypeKind::ResolvedTypeRef(t) => {
                 trace!("    aliases and type refs forward to their inner type");

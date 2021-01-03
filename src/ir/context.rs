@@ -1059,16 +1059,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
             match *ty.kind() {
                 TypeKind::Comp(..) |
-                TypeKind::TemplateAlias {
-                    id: _,
-                    pars: _,
-                    is_public: _,
-                } |
+                TypeKind::TemplateAlias(..) |
                 TypeKind::Enum(..) |
-                TypeKind::Alias {
-                    id: _,
-                    is_public: _,
-                } => {}
+                TypeKind::Alias(..) => {}
                 _ => continue,
             }
 
@@ -2738,10 +2731,9 @@ impl ItemResolver {
                 // We intentionally ignore template aliases here, as they are
                 // more complicated, and don't represent a simple renaming of
                 // some type.
-                Some(&TypeKind::Alias {
-                    id: next_id,
-                    is_public: _,
-                }) if self.through_type_aliases => {
+                Some(&TypeKind::Alias(next_id))
+                    if self.through_type_aliases =>
+                {
                     id = next_id.into();
                 }
                 _ => return item,

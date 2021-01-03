@@ -972,10 +972,7 @@ impl Item {
                 enum_.computed_enum_variation(ctx, self) ==
                     EnumVariation::ModuleConsts
             }
-            TypeKind::Alias {
-                id: inner_id,
-                is_public: _,
-            } => {
+            TypeKind::Alias(inner_id) => {
                 // TODO(emilio): Make this "hop through type aliases that aren't
                 // really generated" an option in `ItemResolver`?
                 assert!(inner_id != self.id, "Infinite recursion");

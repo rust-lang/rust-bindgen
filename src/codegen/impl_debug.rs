@@ -221,15 +221,8 @@ impl<'a> ImplDebug<'a> for Item {
             }
 
             TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias {
-                id: t,
-                pars: _,
-                is_public: _,
-            } |
-            TypeKind::Alias {
-                id: t,
-                is_public: _,
-            } |
+            TypeKind::TemplateAlias(t, _) |
+            TypeKind::Alias(t) |
             TypeKind::BlockPointer(t) => {
                 // We follow the aliases
                 ctx.resolve_item(t).impl_debug(ctx, name)

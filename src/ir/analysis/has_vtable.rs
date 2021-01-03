@@ -161,15 +161,8 @@ impl<'ctx> MonotoneFramework for HasVtableAnalysis<'ctx> {
 
         // TODO #851: figure out a way to handle deriving from template type parameters.
         match *ty.kind() {
-            TypeKind::TemplateAlias {
-                id: t,
-                pars: _,
-                is_public: _,
-            } |
-            TypeKind::Alias {
-                id: t,
-                is_public: _,
-            } |
+            TypeKind::TemplateAlias(t, _) |
+            TypeKind::Alias(t) |
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::Reference(t) => {
                 trace!(

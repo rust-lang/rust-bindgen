@@ -159,15 +159,8 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
             }
 
             TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias {
-                id: t,
-                pars: _,
-                is_public: _,
-            } |
-            TypeKind::Alias {
-                id: t,
-                is_public: _,
-            } |
+            TypeKind::TemplateAlias(t, _) |
+            TypeKind::Alias(t) |
             TypeKind::BlockPointer(t) => {
                 if self.has_float.contains(&t.into()) {
                     trace!(

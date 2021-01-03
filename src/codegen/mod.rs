@@ -767,18 +767,7 @@ impl Type {
                 result.saw_block();
             }
             TypeKind::Comp(ref ci) => ci.codegen(ctx, result, item),
-            TypeKind::TemplateAlias {
-                id: inner,
-                pars: _,
-                is_public,
-            } |
-            TypeKind::Alias {
-                id: inner,
-                is_public,
-            } => {
-                if !is_public {
-                    return;
-                }
+            TypeKind::TemplateAlias(inner, _) | TypeKind::Alias(inner) => {
                 let inner_item =
                     inner.into_resolver().through_type_refs().resolve(ctx);
                 let name = item.canonical_name(ctx);
@@ -896,7 +885,7 @@ impl Type {
 
                 tokens.append_all(match alias_style {
                     AliasVariation::TypeAlias => quote! {
-                      pub type #rust_name
+                        pub type #rust_name
                     },
                     AliasVariation::NewType | AliasVariation::NewTypeDeref => {
                         assert!(
@@ -2505,6 +2494,7 @@ impl<'a> EnumBuilder<'a> {
 
             EnumVariation::Consts => {
                 let mut variants = Vec::new();
+
                 variants.push(quote! {
                     #( #attrs )*
                     pub type #ident = #repr;
@@ -3465,15 +3455,8 @@ impl TryToRustTy for Type {
                 inst.try_to_rust_ty(ctx, item)
             }
             TypeKind::ResolvedTypeRef(inner) => inner.try_to_rust_ty(ctx, &()),
-            TypeKind::TemplateAlias {
-                id: _,
-                pars: _,
-                is_public: _,
-            } |
-            TypeKind::Alias {
-                id: _,
-                is_public: _,
-            } |
+            TypeKind::TemplateAlias(..) |
+            TypeKind::Alias(..) |
             TypeKind::BlockPointer(..) => {
                 if self.is_block_pointer() && !ctx.options().generate_block {
                     let void = c_void(ctx);

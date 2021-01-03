@@ -100,15 +100,8 @@ impl<'ctx> MonotoneFramework for HasDestructorAnalysis<'ctx> {
         };
 
         match *ty.kind() {
-            TypeKind::TemplateAlias {
-                id: t,
-                pars: _,
-                is_public: _,
-            } |
-            TypeKind::Alias {
-                id: t,
-                is_public: _,
-            } |
+            TypeKind::TemplateAlias(t, _) |
+            TypeKind::Alias(t) |
             TypeKind::ResolvedTypeRef(t) => {
                 if self.have_destructor.contains(&t.into()) {
                     self.insert(id)
