@@ -2280,7 +2280,9 @@ impl Method {
                 result.push(quote!(
                     impl ::#prefix::ops::#trait_name<#rhs_type> for #ty_for_impl {
                         fn #func_name(&mut self, rhs: #rhs_type) {
-                            #function_name(self, rhs);
+                            unsafe {
+                                #function_name(self, rhs);
+                            }
                         }
                     }
                 ));
