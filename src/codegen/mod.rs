@@ -2225,7 +2225,7 @@ impl Method {
             Some(utils::argument_type_id_to_rust_type(
                 ctx,
                 signature.argument_types()[1].1,
-                /* pointer_to_ref = */ true
+                /* pointer_to_ref = */ true,
             ))
         };
 
@@ -4602,7 +4602,7 @@ mod utils {
             TypeKind::Pointer(inner) => {
                 if pointer_to_ref {
                     let inner = inner.to_rust_ty_or_opaque(ctx, &());
-                    return quote! { &#inner }
+                    return quote! { &#inner };
                 }
 
                 let inner = ctx.resolve_item(inner);
@@ -4643,7 +4643,9 @@ mod utils {
                 assert!(!arg_name.is_empty());
                 let arg_name = ctx.rust_ident(arg_name);
 
-                let arg_ty = argument_type_id_to_rust_type(ctx, ty, /* pointer_to_ref = */ false);
+                let arg_ty = argument_type_id_to_rust_type(
+                    ctx, ty, /* pointer_to_ref = */ false,
+                );
 
                 quote! {
                     #arg_name : #arg_ty
