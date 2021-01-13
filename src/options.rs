@@ -493,6 +493,9 @@ where
                 .long("dynamic-loading")
                 .takes_value(true)
                 .help("Use dynamic loading mode with the given library name."),
+            Arg::with_name("respect-cxx-access-specs")
+                .long("respect-cxx-access-specs")
+                .help("Makes generated bindings `pub` only for items if the items are publically accessible in C++."),
         ]) // .args()
         .get_matches_from(args);
 
@@ -913,6 +916,10 @@ where
 
     if let Some(dynamic_library_name) = matches.value_of("dynamic-loading") {
         builder = builder.dynamic_library_name(dynamic_library_name);
+    }
+
+    if matches.is_present("respect-cxx-access-specs") {
+        builder = builder.respect_cxx_access_specs(true);
     }
 
     let verbose = matches.is_present("verbose");
