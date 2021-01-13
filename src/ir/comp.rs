@@ -148,6 +148,9 @@ pub trait FieldMethods {
     /// If this is a bitfield, how many bits does it need?
     fn bitfield_width(&self) -> Option<u32>;
 
+    /// Is this feild declared public?
+    fn is_public(&self) -> bool;
+
     /// Get the annotations for this field.
     fn annotations(&self) -> &Annotations;
 
@@ -412,6 +415,10 @@ impl FieldMethods for Bitfield {
         self.data.bitfield_width()
     }
 
+    fn is_public(&self) -> bool {
+        self.data.is_public()
+    }
+
     fn annotations(&self) -> &Annotations {
         self.data.annotations()
     }
@@ -436,6 +443,7 @@ impl RawField {
         comment: Option<String>,
         annotations: Option<Annotations>,
         bitfield_width: Option<u32>,
+        public: bool,
         offset: Option<usize>,
     ) -> RawField {
         RawField(FieldData {
@@ -444,6 +452,7 @@ impl RawField {
             comment,
             annotations: annotations.unwrap_or_default(),
             bitfield_width,
+            public,
             offset,
         })
     }
@@ -464,6 +473,10 @@ impl FieldMethods for RawField {
 
     fn bitfield_width(&self) -> Option<u32> {
         self.0.bitfield_width()
+    }
+
+    fn is_public(&self) -> bool {
+        self.0.is_public()
     }
 
     fn annotations(&self) -> &Annotations {
@@ -878,6 +891,9 @@ pub struct FieldData {
     /// If this field is a bitfield, and how many bits does it contain if it is.
     bitfield_width: Option<u32>,
 
+    /// If the C++ field is declared `public`
+    public: bool,
+
     /// The offset of the field (in bits)
     offset: Option<usize>,
 }
@@ -897,6 +913,10 @@ impl FieldMethods for FieldData {
 
     fn bitfield_width(&self) -> Option<u32> {
         self.bitfield_width
+    }
+
+    fn is_public(&self) -> bool {
+        self.public
     }
 
     fn annotations(&self) -> &Annotations {
@@ -934,6 +954,8 @@ pub struct Base {
     pub kind: BaseKind,
     /// Name of the field in which this base should be stored.
     pub field_name: String,
+    /// Whether this base is inherited from publically.
+    pub is_pub: bool,
 }
 
 impl Base {
@@ -960,6 +982,11 @@ impl Base {
         }
 
         true
+    }
+
+    /// Whether this base is inherited from publically.
+    pub fn is_public(&self) -> bool {
+        self.is_pub
     }
 }
 
@@ -1230,7 +1257,7 @@ impl CompInfo {
         let mut maybe_anonymous_struct_field = None;
         cursor.visit(|cur| {
             if cur.kind() != CXCursor_FieldDecl {
-                if let Some((ty, clang_ty, offset)) =
+                if let Some((ty, clang_ty, public, offset)) =
                     maybe_anonymous_struct_field.take()
                 {
                     if cur.kind() == CXCursor_TypedefDecl &&
@@ -1242,8 +1269,9 @@ impl CompInfo {
                         // anonymous field. Detect that case here, and do
                         // nothing.
                     } else {
-                        let field =
-                            RawField::new(None, ty, None, None, None, offset);
+                        let field = RawField::new(
+                            None, ty, None, None, None, public, offset,
+                        );
                         ci.fields.append_raw_field(field);
                     }
                 }
@@ -1251,7 +1279,7 @@ impl CompInfo {
 
             match cur.kind() {
                 CXCursor_FieldDecl => {
-                    if let Some((ty, clang_ty, offset)) =
+                    if let Some((ty, clang_ty, public, offset)) =
                         maybe_anonymous_struct_field.take()
                     {
                         let mut used = false;
@@ -1261,9 +1289,10 @@ impl CompInfo {
                             }
                             CXChildVisit_Continue
                         });
+
                         if !used {
                             let field = RawField::new(
-                                None, ty, None, None, None, offset,
+                                None, ty, None, None, None, public, offset,
                             );
                             ci.fields.append_raw_field(field);
                         }
@@ -1280,6 +1309,7 @@ impl CompInfo {
                     let comment = cur.raw_comment();
                     let annotations = Annotations::new(&cur);
                     let name = cur.spelling();
+                    let is_public = cur.public_accessible();
                     let offset = cur.offset_of_field().ok();
 
                     // Name can be empty if there are bitfields, for example,
@@ -1297,6 +1327,7 @@ impl CompInfo {
                         comment,
                         annotations,
                         bit_width,
+                        is_public,
                         offset,
                     );
                     ci.fields.append_raw_field(field);
@@ -1353,9 +1384,11 @@ impl CompInfo {
                         cur.kind() != CXCursor_EnumDecl
                     {
                         let ty = cur.cur_type();
+                        let public = cur.public_accessible();
                         let offset = cur.offset_of_field().ok();
+
                         maybe_anonymous_struct_field =
-                            Some((inner, ty, offset));
+                            Some((inner, ty, public, offset));
                     }
                 }
                 CXCursor_PackedAttr => {
@@ -1388,6 +1421,8 @@ impl CompInfo {
                         ty: type_id,
                         kind,
                         field_name,
+                        is_pub: cur.access_specifier() ==
+                            clang_sys::CX_CXXPublic,
                     });
                 }
                 CXCursor_Constructor | CXCursor_Destructor |
@@ -1503,8 +1538,9 @@ impl CompInfo {
             CXChildVisit_Continue
         });
 
-        if let Some((ty, _, offset)) = maybe_anonymous_struct_field {
-            let field = RawField::new(None, ty, None, None, None, offset);
+        if let Some((ty, _, public, offset)) = maybe_anonymous_struct_field {
+            let field =
+                RawField::new(None, ty, None, None, None, public, offset);
             ci.fields.append_raw_field(field);
         }
 

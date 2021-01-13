@@ -545,6 +545,10 @@ impl Builder {
             output_vector.push(name.clone());
         }
 
+        if self.options.respect_cxx_access_specs {
+            output_vector.push("--respect-cxx-access-specs".into());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -1518,6 +1522,12 @@ impl Builder {
         self.options.dynamic_library_name = Some(dynamic_library_name.into());
         self
     }
+
+    /// Generate bindings as `pub` only if the bound item is publically accessible by C++.
+    pub fn respect_cxx_access_specs(mut self, doit: bool) -> Self {
+        self.options.respect_cxx_access_specs = doit;
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -1805,6 +1815,10 @@ struct BindgenOptions {
     /// The name of the dynamic library (if we are generating bindings for a shared library). If
     /// this is None, no dynamic bindings are created.
     dynamic_library_name: Option<String>,
+
+    /// Only make generated bindings `pub` if the items would be publically accessible
+    /// by C++.
+    respect_cxx_access_specs: bool,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1941,6 +1955,7 @@ impl Default for BindgenOptions {
             array_pointers_in_arguments: false,
             wasm_import_module_name: None,
             dynamic_library_name: None,
+            respect_cxx_access_specs: false,
         }
     }
 }

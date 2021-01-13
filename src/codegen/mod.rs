@@ -1271,10 +1271,11 @@ impl<'a> FieldCodegen<'a> for FieldData {
             }
         }
 
-        let is_private = self
-            .annotations()
-            .private_fields()
-            .unwrap_or(fields_should_be_private);
+        let is_private = (!self.is_public() &&
+            ctx.options().respect_cxx_access_specs) ||
+            self.annotations()
+                .private_fields()
+                .unwrap_or(fields_should_be_private);
 
         let accessor_kind =
             self.annotations().accessor_kind().unwrap_or(accessor_kind);
@@ -1395,6 +1396,17 @@ impl Bitfield {
     }
 }
 
+fn access_specifier(
+    ctx: &BindgenContext,
+    is_pub: bool,
+) -> proc_macro2::TokenStream {
+    if is_pub || !ctx.options().respect_cxx_access_specs {
+        quote! { pub }
+    } else {
+        quote! {}
+    }
+}
+
 impl<'a> FieldCodegen<'a> for BitfieldUnit {
     type Extra = ();
 
@@ -1455,11 +1467,6 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         let unit_field_name = format!("_bitfield_{}", self.nth());
         let unit_field_ident = ctx.rust_ident(&unit_field_name);
 
-        let field = quote! {
-            pub #unit_field_ident : #field_ty ,
-        };
-        fields.extend(Some(field));
-
         let ctor_name = self.ctor_name();
         let mut ctor_params = vec![];
         let mut ctor_impl = quote! {};
@@ -1468,6 +1475,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         // implement AsRef<[u8]> / AsMut<[u8]> / etc.
         let mut generate_ctor = layout.size <= RUST_DERIVE_IN_ARRAY_LIMIT;
 
+        let mut access_spec = !fields_should_be_private;
         for bf in self.bitfields() {
             // Codegen not allowed for anonymous bitfields
             if bf.name().is_none() {
@@ -1478,6 +1486,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 continue;
             }
 
+            access_spec &= bf.is_public();
             let mut bitfield_representable_as_int = true;
 
             bf.codegen(
@@ -1511,10 +1520,17 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
             ctor_impl = bf.extend_ctor_impl(ctx, param_name, ctor_impl);
         }
 
+        let access_spec = access_specifier(ctx, access_spec);
+
+        let field = quote! {
+            #access_spec #unit_field_ident : #field_ty ,
+        };
+        fields.extend(Some(field));
+
         if generate_ctor {
             methods.extend(Some(quote! {
                 #[inline]
-                pub fn #ctor_name ( #( #ctor_params ),* ) -> #unit_field_ty {
+                #access_spec fn #ctor_name ( #( #ctor_params ),* ) -> #unit_field_ty {
                     let mut __bindgen_bitfield_unit: #unit_field_ty = Default::default();
                     #ctor_impl
                     __bindgen_bitfield_unit
@@ -1550,7 +1566,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
     fn codegen<F, M>(
         &self,
         ctx: &BindgenContext,
-        _fields_should_be_private: bool,
+        fields_should_be_private: bool,
         _codegen_depth: usize,
         _accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
@@ -1590,13 +1606,16 @@ impl<'a> FieldCodegen<'a> for Bitfield {
             bitfield_ty.to_rust_ty_or_opaque(ctx, bitfield_ty_item);
 
         let offset = self.offset_into_unit();
-
         let width = self.width() as u8;
+        let access_spec = access_specifier(
+            ctx,
+            self.is_public() && !fields_should_be_private,
+        );
 
         if parent.is_union() && !parent.can_be_rust_union(ctx) {
             methods.extend(Some(quote! {
                 #[inline]
-                pub fn #getter_name(&self) -> #bitfield_ty {
+                #access_spec fn #getter_name(&self) -> #bitfield_ty {
                     unsafe {
                         ::#prefix::mem::transmute(
                             self.#unit_field_ident.as_ref().get(#offset, #width)
@@ -1606,7 +1625,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 }
 
                 #[inline]
-                pub fn #setter_name(&mut self, val: #bitfield_ty) {
+                #access_spec fn #setter_name(&mut self, val: #bitfield_ty) {
                     unsafe {
                         let val: #bitfield_int_ty = ::#prefix::mem::transmute(val);
                         self.#unit_field_ident.as_mut().set(
@@ -1620,7 +1639,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         } else {
             methods.extend(Some(quote! {
                 #[inline]
-                pub fn #getter_name(&self) -> #bitfield_ty {
+                #access_spec fn #getter_name(&self) -> #bitfield_ty {
                     unsafe {
                         ::#prefix::mem::transmute(
                             self.#unit_field_ident.get(#offset, #width)
@@ -1630,7 +1649,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 }
 
                 #[inline]
-                pub fn #setter_name(&mut self, val: #bitfield_ty) {
+                #access_spec fn #setter_name(&mut self, val: #bitfield_ty) {
                     unsafe {
                         let val: #bitfield_int_ty = ::#prefix::mem::transmute(val);
                         self.#unit_field_ident.set(
@@ -1717,8 +1736,9 @@ impl CodeGenerator for CompInfo {
 
                 struct_layout.saw_base(inner_item.expect_type());
 
+                let access_spec = access_specifier(ctx, base.is_public());
                 fields.push(quote! {
-                    pub #field_name: #inner,
+                    #access_spec #field_name: #inner,
                 });
             }
         }
