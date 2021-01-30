@@ -259,3 +259,12 @@ fn test_macro_customintkind_path() {
     let v: &std::any::Any = &bindings::TESTMACRO_CUSTOMINTKIND_PATH;
     assert!(v.is::<MacroInteger>())
 }
+
+// https://github.com/rust-lang/rust-bindgen/issues/1973
+#[test]
+fn test_homogeneous_aggregate_float_union() {
+    unsafe {
+        let coord = &bindings::coord(1., 2., 3., 4.);
+        assert_eq!([1., 2., 3., 4.], coord.v)
+    }
+}

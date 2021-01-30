@@ -226,3 +226,9 @@ struct my_prefixed_templated_foo {
 my_prefixed_templated_foo<my_prefixed_baz> TEMPLATED_CONST_VALUE;
 
 void my_prefixed_function_to_remove();
+
+typedef union {
+  double v[4];
+} Coord;
+
+Coord coord(double x, double y, double z, double t);
