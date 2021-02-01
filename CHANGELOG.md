@@ -132,6 +132,23 @@
 
 ---
 
+# 0.57.0
+
+Released 2020/02/01
+
+# Added
+
+* Expose module-raw-lines to the CLI (#1936)
+* Added an option to fit macro constants to smaller types (#1945)
+* Add an option to respect C++ access specifiers on fields (#1968)
+
+## Fixed
+
+* Improved C++ auto-detection (#1933)
+* Fixed layout of bitfields in some edge cases (#1950)
+* Escape the dyn keyword properly (#1951)
+* Use absolute paths for unsaved files passed to clang (#1857).
+
 # 0.56.0
 
 Released 2020/11/26
