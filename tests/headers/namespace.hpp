@@ -1,4 +1,4 @@
-// bindgen-flags: --enable-cxx-namespaces
+// bindgen-flags: --enable-cxx-namespaces --module-raw-line root::whatever 'pub type whatever_other_thing_t = whatever_int_t;'
 
 void top_level();
 

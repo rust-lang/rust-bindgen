@@ -25,6 +25,11 @@ fn bindgen_test_layout_NoDebug() {
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<NoDebug>())).i as *const _ as usize },
         0usize,
-        concat!("Offset of field: ", stringify!(NoDebug), "::", stringify!(i))
+        concat!(
+            "Offset of field: ",
+            stringify!(NoDebug),
+            "::",
+            stringify!(i)
+        )
     );
 }

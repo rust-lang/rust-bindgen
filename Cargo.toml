@@ -14,7 +14,7 @@ readme = "README.md"
 repository = "https://github.com/rust-lang/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
 homepage = "https://rust-lang.github.io/rust-bindgen/"
-version = "0.55.1"
+version = "0.57.0"
 edition = "2018"
 build = "build.rs"
 
@@ -47,7 +47,6 @@ shlex = "0.1"
 [dependencies]
 bitflags = "1.0.3"
 cexpr = "0.4"
-cfg-if = "1"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
 clap = { version = "2", optional = true }
 clang-sys = { version = "1", features = ["clang_6_0"] }

@@ -117,7 +117,6 @@ impl DotAttributes for Var {
     }
 }
 
-// TODO(emilio): we could make this more (or less) granular, I guess.
 fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
     if value < 0 ||
         ctx.options().default_macro_constant_type ==
@@ -125,13 +124,28 @@ fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
     {
         if value < i32::min_value() as i64 || value > i32::max_value() as i64 {
             IntKind::I64
-        } else {
+        } else if !ctx.options().fit_macro_constants ||
+            value < i16::min_value() as i64 ||
+            value > i16::max_value() as i64
+        {
             IntKind::I32
+        } else if value < i8::min_value() as i64 ||
+            value > i8::max_value() as i64
+        {
+            IntKind::I16
+        } else {
+            IntKind::I8
         }
     } else if value > u32::max_value() as i64 {
         IntKind::U64
-    } else {
+    } else if !ctx.options().fit_macro_constants ||
+        value > u16::max_value() as i64
+    {
         IntKind::U32
+    } else if value > u8::max_value() as i64 {
+        IntKind::U16
+    } else {
+        IntKind::U8
     }
 }
 

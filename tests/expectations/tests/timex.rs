@@ -7,17 +7,16 @@
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage, Align> {
+pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
-    align: [Align; 0],
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align> {
+impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
-        Self { storage, align: [] }
+        Self { storage }
     }
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
 {
@@ -96,7 +95,8 @@ where
 #[derive(Copy, Clone)]
 pub struct timex {
     pub tai: ::std::os::raw::c_int,
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 44usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 44usize]>,
 }
 #[test]
 fn bindgen_test_layout_timex() {
@@ -130,7 +130,8 @@ impl Default for timex {
 #[derive(Copy, Clone)]
 pub struct timex_named {
     pub tai: ::std::os::raw::c_int,
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 44usize], u32>,
+    pub _bitfield_align_1: [u32; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 44usize]>,
 }
 #[test]
 fn bindgen_test_layout_timex_named() {

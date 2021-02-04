@@ -148,8 +148,8 @@ pub trait FieldMethods {
     /// If this is a bitfield, how many bits does it need?
     fn bitfield_width(&self) -> Option<u32>;
 
-    /// Is this field marked as `mutable`?
-    fn is_mutable(&self) -> bool;
+    /// Is this feild declared public?
+    fn is_public(&self) -> bool;
 
     /// Get the annotations for this field.
     fn annotations(&self) -> &Annotations;
@@ -415,8 +415,8 @@ impl FieldMethods for Bitfield {
         self.data.bitfield_width()
     }
 
-    fn is_mutable(&self) -> bool {
-        self.data.is_mutable()
+    fn is_public(&self) -> bool {
+        self.data.is_public()
     }
 
     fn annotations(&self) -> &Annotations {
@@ -443,7 +443,7 @@ impl RawField {
         comment: Option<String>,
         annotations: Option<Annotations>,
         bitfield_width: Option<u32>,
-        mutable: bool,
+        public: bool,
         offset: Option<usize>,
     ) -> RawField {
         RawField(FieldData {
@@ -452,7 +452,7 @@ impl RawField {
             comment,
             annotations: annotations.unwrap_or_default(),
             bitfield_width,
-            mutable,
+            public,
             offset,
         })
     }
@@ -475,8 +475,8 @@ impl FieldMethods for RawField {
         self.0.bitfield_width()
     }
 
-    fn is_mutable(&self) -> bool {
-        self.0.is_mutable()
+    fn is_public(&self) -> bool {
+        self.0.is_public()
     }
 
     fn annotations(&self) -> &Annotations {
@@ -588,7 +588,7 @@ where
         } else {
             bytes_from_bits_pow2(unit_align_in_bits)
         };
-        let size = align_to(unit_size_in_bits, align * 8) / 8;
+        let size = align_to(unit_size_in_bits, 8) / 8;
         let layout = Layout::new(size, align);
         fields.extend(Some(Field::Bitfields(BitfieldUnit {
             nth: *bitfield_unit_count,
@@ -891,8 +891,8 @@ pub struct FieldData {
     /// If this field is a bitfield, and how many bits does it contain if it is.
     bitfield_width: Option<u32>,
 
-    /// If the C++ field is marked as `mutable`
-    mutable: bool,
+    /// If the C++ field is declared `public`
+    public: bool,
 
     /// The offset of the field (in bits)
     offset: Option<usize>,
@@ -915,8 +915,8 @@ impl FieldMethods for FieldData {
         self.bitfield_width
     }
 
-    fn is_mutable(&self) -> bool {
-        self.mutable
+    fn is_public(&self) -> bool {
+        self.public
     }
 
     fn annotations(&self) -> &Annotations {
@@ -954,6 +954,8 @@ pub struct Base {
     pub kind: BaseKind,
     /// Name of the field in which this base should be stored.
     pub field_name: String,
+    /// Whether this base is inherited from publically.
+    pub is_pub: bool,
 }
 
 impl Base {
@@ -980,6 +982,11 @@ impl Base {
         }
 
         true
+    }
+
+    /// Whether this base is inherited from publically.
+    pub fn is_public(&self) -> bool {
+        self.is_pub
     }
 }
 
@@ -1250,7 +1257,7 @@ impl CompInfo {
         let mut maybe_anonymous_struct_field = None;
         cursor.visit(|cur| {
             if cur.kind() != CXCursor_FieldDecl {
-                if let Some((ty, clang_ty, offset)) =
+                if let Some((ty, clang_ty, public, offset)) =
                     maybe_anonymous_struct_field.take()
                 {
                     if cur.kind() == CXCursor_TypedefDecl &&
@@ -1263,7 +1270,7 @@ impl CompInfo {
                         // nothing.
                     } else {
                         let field = RawField::new(
-                            None, ty, None, None, None, false, offset,
+                            None, ty, None, None, None, public, offset,
                         );
                         ci.fields.append_raw_field(field);
                     }
@@ -1272,7 +1279,7 @@ impl CompInfo {
 
             match cur.kind() {
                 CXCursor_FieldDecl => {
-                    if let Some((ty, clang_ty, offset)) =
+                    if let Some((ty, clang_ty, public, offset)) =
                         maybe_anonymous_struct_field.take()
                     {
                         let mut used = false;
@@ -1282,9 +1289,10 @@ impl CompInfo {
                             }
                             CXChildVisit_Continue
                         });
+
                         if !used {
                             let field = RawField::new(
-                                None, ty, None, None, None, false, offset,
+                                None, ty, None, None, None, public, offset,
                             );
                             ci.fields.append_raw_field(field);
                         }
@@ -1301,7 +1309,7 @@ impl CompInfo {
                     let comment = cur.raw_comment();
                     let annotations = Annotations::new(&cur);
                     let name = cur.spelling();
-                    let is_mutable = cursor.is_mutable_field();
+                    let is_public = cur.public_accessible();
                     let offset = cur.offset_of_field().ok();
 
                     // Name can be empty if there are bitfields, for example,
@@ -1319,7 +1327,7 @@ impl CompInfo {
                         comment,
                         annotations,
                         bit_width,
-                        is_mutable,
+                        is_public,
                         offset,
                     );
                     ci.fields.append_raw_field(field);
@@ -1376,9 +1384,11 @@ impl CompInfo {
                         cur.kind() != CXCursor_EnumDecl
                     {
                         let ty = cur.cur_type();
+                        let public = cur.public_accessible();
                         let offset = cur.offset_of_field().ok();
+
                         maybe_anonymous_struct_field =
-                            Some((inner, ty, offset));
+                            Some((inner, ty, public, offset));
                     }
                 }
                 CXCursor_PackedAttr => {
@@ -1411,6 +1421,8 @@ impl CompInfo {
                         ty: type_id,
                         kind,
                         field_name,
+                        is_pub: cur.access_specifier() ==
+                            clang_sys::CX_CXXPublic,
                     });
                 }
                 CXCursor_Constructor | CXCursor_Destructor |
@@ -1526,9 +1538,9 @@ impl CompInfo {
             CXChildVisit_Continue
         });
 
-        if let Some((ty, _, offset)) = maybe_anonymous_struct_field {
+        if let Some((ty, _, public, offset)) = maybe_anonymous_struct_field {
             let field =
-                RawField::new(None, ty, None, None, None, false, offset);
+                RawField::new(None, ty, None, None, None, public, offset);
             ci.fields.append_raw_field(field);
         }
 
@@ -1576,7 +1588,7 @@ impl CompInfo {
     pub fn is_packed(
         &self,
         ctx: &BindgenContext,
-        layout: &Option<Layout>,
+        layout: Option<&Layout>,
     ) -> bool {
         if self.packed_attr {
             return true;
@@ -1584,7 +1596,7 @@ impl CompInfo {
 
         // Even though `libclang` doesn't expose `#pragma packed(...)`, we can
         // detect it through its effects.
-        if let Some(ref parent_layout) = *layout {
+        if let Some(parent_layout) = layout {
             if self.fields().iter().any(|f| match *f {
                 Field::Bitfields(ref unit) => {
                     unit.layout().align > parent_layout.align
@@ -1739,7 +1751,7 @@ impl IsOpaque for CompInfo {
             //
             // See https://github.com/rust-lang/rust-bindgen/issues/537 and
             // https://github.com/rust-lang/rust/issues/33158
-            if self.is_packed(ctx, layout) &&
+            if self.is_packed(ctx, layout.as_ref()) &&
                 layout.map_or(false, |l| l.align > 1)
             {
                 warn!("Found a type that is both packed and aligned to greater than \

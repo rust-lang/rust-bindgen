@@ -174,7 +174,7 @@ fn compare_generated_header(
         expectation.push(file_name);
         expectation.set_extension("rs");
         expectation_file = fs::File::open(&expectation).ok();
-        looked_at.push(expectation);
+        looked_at.push(expectation.clone());
     }
 
     let mut expected = String::new();
@@ -233,14 +233,33 @@ fn compare_generated_header(
             }
         }
 
-        // Overwrite the expectation with actual output.
-        if env::var_os("BINDGEN_OVERWRITE_EXPECTED").is_some() {
-            let mut expectation_file =
-                fs::File::create(looked_at.last().unwrap())?;
-            expectation_file.write_all(actual.as_bytes())?;
+        if let Some(var) = env::var_os("BINDGEN_OVERWRITE_EXPECTED") {
+            if var == "1" {
+                // Overwrite the expectation with actual output.
+                let mut expectation_file =
+                    fs::File::create(looked_at.last().unwrap())?;
+                expectation_file.write_all(actual.as_bytes())?;
+            } else if var != "0" && var != "" {
+                panic!("Invalid value of BINDGEN_OVERWRITE_EXPECTED");
+            }
         }
 
-        return Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation."));
+        if let Some(var) = env::var_os("BINDGEN_TESTS_DIFFTOOL") {
+            //usecase: var = "meld" -> You can hand check differences
+            let filename = match header.components().last() {
+                Some(std::path::Component::Normal(name)) => name,
+                _ => panic!("Why is the header variable so weird?"),
+            };
+            let actual_result_path =
+                PathBuf::from(env::var("OUT_DIR").unwrap()).join(filename);
+            let mut actual_result_file = fs::File::create(&actual_result_path)?;
+            actual_result_file.write_all(actual.as_bytes())?;
+            std::process::Command::new(var)
+                .args(&[looked_at.last().unwrap(), &actual_result_path])
+                .output()?;
+        }
+
+        return Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation or with BINDGEN_TESTS_DIFFTOOL=meld to do this manually."));
     }
 
     if check_roundtrip {
@@ -452,6 +471,60 @@ fn test_multiple_header_calls_in_builder() {
 
         panic!();
     }
+}
+
+#[test]
+fn test_multiple_header_contents() {
+    let actual = builder()
+        .header_contents("test.h", "int foo(const char* a);")
+        .header_contents("test2.h", "float foo2(const char* b);")
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let (actual, stderr) = rustfmt(actual);
+    println!("{}", stderr);
+
+    let (expected, _) = rustfmt(
+        "extern \"C\" {
+    pub fn foo2(b: *const ::std::os::raw::c_char) -> f32;
+}
+extern \"C\" {
+    pub fn foo(a: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+}
+"
+        .to_string(),
+    );
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn test_mixed_header_and_header_contents() {
+    let actual = builder()
+        .header(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/headers/func_ptr.h"
+        ))
+        .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/char.h"))
+        .header_contents("test.h", "int bar(const char* a);")
+        .header_contents("test2.h", "float bar2(const char* b);")
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let (actual, stderr) = rustfmt(actual);
+    println!("{}", stderr);
+
+    let expected = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/expectations/tests/test_mixed_header_and_header_contents.rs"
+    ));
+    let (expected, _) = rustfmt(expected.to_string());
+
+    assert_eq!(expected, actual);
 }
 
 #[test]

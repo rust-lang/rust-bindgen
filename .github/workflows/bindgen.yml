@@ -1,0 +1,192 @@
+name: bindgen
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  rustfmt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install stable
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          # TODO: Should ideally be stable, but we use some nightly-only
+          # features.
+          toolchain: nightly
+          override: true
+          components: rustfmt
+
+      - name: Run rustfmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: -- --check
+
+  msrv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install msrv
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          # MSRV below is documented in README.md, please update that if you
+          # change this.
+          toolchain: 1.40.0
+          override: true
+
+      - name: Build with msrv
+        run: rm Cargo.lock && cargo +1.40.0 build --lib
+
+  quickchecking:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install stable
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      # TODO: Actually run quickchecks once `bindgen` is reliable enough.
+      - name: Build quickcheck tests
+        run: cd tests/quickchecking && cargo test
+
+  test-expectations:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        # TODO(#1954): These should be run on mac too, but turns out they're
+        # broken.
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install stable
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Test expectations
+        run: cd tests/expectations && cargo test
+
+  test:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        llvm_version: ["3.9", "4.0", "5.0", "9.0"]
+        release_build: [0, 1]
+        no_default_features: [0, 1]
+        # FIXME: There are no pre-built static libclang libraries, so the
+        # `static` feature is not testable atm.
+        feature_runtime: [0, 1]
+        feature_extra_asserts: [0]
+        feature_testing_only_docs: [0]
+
+        exclude:
+          # 3.9 and 4.0 are too old to support regular dynamic linking, so this
+          # is not expected to work.
+          - os: ubuntu-latest
+            llvm_version: "3.9"
+            no_default_features: 1
+            feature_runtime: 0
+
+          - os: ubuntu-latest
+            llvm_version: "4.0"
+            no_default_features: 1
+            feature_runtime: 0
+
+        include:
+          # Test with extra asserts + docs just with latest llvm versions to
+          # prevent explosion
+          - os: ubuntu-latest
+            llvm_version: "9.0"
+            release_build: 0
+            no_default_features: 0
+            feature_extra_asserts: 1
+            feature_testing_only_docs: 1
+
+          # Ensure stuff works on macos too
+          - os: macos-latest
+            llvm_version: "9.0"
+            release_build: 0
+            no_default_features: 0
+            feature_extra_asserts: 0
+            feature_testing_only_docs: 0
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install stable
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Run all the tests
+        env:
+          GITHUB_ACTIONS_OS: ${{matrix.os}}
+          LLVM_VERSION: ${{matrix.llvm_version}}
+          BINDGEN_RELEASE_BUILD: ${{matrix.release_build}}
+          BINDGEN_FEATURE_RUNTIME: ${{matrix.feature_runtime}}
+          BINDGEN_FEATURE_EXTRA_ASSERTS: ${{matrix.feature_extra_asserts}}
+          BINDGEN_FEATURE_TESTING_ONLY_DOCS: ${{matrix.feature_testing_only_docs}}
+          BINDGEN_NO_DEFAULT_FEATURES: ${{matrix.no_default_features}}
+        run: ./ci/test.sh
+
+  test_aarch64:
+    name: "Run tests on AArch64"
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: uraimo/run-on-arch-action@v2.0.8
+        name: Run test commands
+        with:
+          arch: aarch64
+          distro: ubuntu20.04
+          githubToken: ${{ github.token }}
+          env: |
+            LLVM_VERSION: "10.0"
+          dockerRunArgs: |
+            --volume "${HOME}/.cargo:/root/.cargo"
+          install: |
+            apt-get update -q -y
+            apt-get install -q -y curl gcc git g++ libtinfo5 xz-utils
+          run: |
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+            source $HOME/.cargo/env
+            ./ci/test.sh
+
+  test-book:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install stable
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      # NOTE(emilio): Change deploy-book as well if you change this.
+      - name: Test book
+        run: |
+          curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.5/mdbook-v0.4.5-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./mdbook build book
+          ./mdbook test book

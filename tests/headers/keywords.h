@@ -12,6 +12,7 @@ int usize;
 int isize;
 int bool;
 int str;
+int dyn;
 
 int as;
 int box;

@@ -9,122 +9,158 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
-- [0.55.1](#0551)
+- [0.57.0](#0570)
+- [Added](#added-1)
   - [Fixed](#fixed-1)
-- [0.55.0](#0550)
-  - [Removed](#removed-1)
-  - [Added](#added-1)
+- [0.56.0](#0560)
+  - [Added](#added-2)
   - [Changed](#changed-1)
   - [Fixed](#fixed-2)
-- [0.54.1](#0541)
-  - [Added](#added-2)
-  - [Changed](#changed-2)
+- [0.55.1](#0551)
   - [Fixed](#fixed-3)
-- [0.54.0](#0540)
+- [0.55.0](#0550)
+  - [Removed](#removed-1)
   - [Added](#added-3)
-  - [Changed](#changed-3)
+  - [Changed](#changed-2)
   - [Fixed](#fixed-4)
-- [0.53.3](#0533)
+- [0.54.1](#0541)
   - [Added](#added-4)
+  - [Changed](#changed-3)
   - [Fixed](#fixed-5)
-- [0.53.2](#0532)
-  - [Changed](#changed-4)
-- [0.53.1](#0531)
+- [0.54.0](#0540)
   - [Added](#added-5)
-- [0.53.0](#0530)
-  - [Added](#added-6)
-  - [Changed](#changed-5)
+  - [Changed](#changed-4)
   - [Fixed](#fixed-6)
-- [0.52.0](#0520)
-  - [Added](#added-7)
-  - [Changed](#changed-6)
+- [0.53.3](#0533)
+  - [Added](#added-6)
   - [Fixed](#fixed-7)
-- [0.51.1](#0511)
-  - [Fixed](#fixed-8)
-  - [Changed](#changed-7)
-- [0.51.0](#0510)
-  - [Fixed](#fixed-9)
-  - [Changed](#changed-8)
+- [0.53.2](#0532)
+  - [Changed](#changed-5)
+- [0.53.1](#0531)
+  - [Added](#added-7)
+- [0.53.0](#0530)
   - [Added](#added-8)
-- [0.50.0](#0500)
+  - [Changed](#changed-6)
+  - [Fixed](#fixed-8)
+- [0.52.0](#0520)
   - [Added](#added-9)
-- [0.49.3](#0493)
-  - [Added](#added-10)
-- [0.49.2](#0492)
-  - [Changed](#changed-9)
-- [0.49.1](#0491)
+  - [Changed](#changed-7)
+  - [Fixed](#fixed-9)
+- [0.51.1](#0511)
   - [Fixed](#fixed-10)
-  - [Changed](#changed-10)
-- [0.49.0](#0490)
-  - [Added](#added-11)
+  - [Changed](#changed-8)
+- [0.51.0](#0510)
   - [Fixed](#fixed-11)
-  - [Changed](#changed-11)
-- [0.48.1](#0481)
-  - [Fixed](#fixed-12)
-- [0.48.0](#0480)
-  - [Changed](#changed-12)
-  - [Fixed](#fixed-13)
-- [0.47.4](#0474)
+  - [Changed](#changed-9)
+  - [Added](#added-10)
+- [0.50.0](#0500)
+  - [Added](#added-11)
+- [0.49.3](#0493)
   - [Added](#added-12)
-- [0.47.3](#0473)
-  - [Changed](#changed-13)
-- [0.47.2](#0472)
-  - [Fixed](#fixed-14)
-- [0.47.1](#0471)
-  - [Changed](#changed-14)
-  - [Fixed](#fixed-15)
-- [0.47.0](#0470)
-  - [Changed](#changed-15)
-  - [Fixed](#fixed-16)
-- [0.33.1 .. 0.46.0](#0331--0460)
+- [0.49.2](#0492)
+  - [Changed](#changed-10)
+- [0.49.1](#0491)
+  - [Fixed](#fixed-12)
+  - [Changed](#changed-11)
+- [0.49.0](#0490)
   - [Added](#added-13)
-  - [Removed](#removed-2)
-  - [Changed](#changed-16)
-  - [Fixed](#fixed-17)
-- [0.33.1](#0331)
-  - [Fixed](#fixed-18)
-- [0.33.0](#0330)
+  - [Fixed](#fixed-13)
+  - [Changed](#changed-12)
+- [0.48.1](#0481)
+  - [Fixed](#fixed-14)
+- [0.48.0](#0480)
+  - [Changed](#changed-13)
+  - [Fixed](#fixed-15)
+- [0.47.4](#0474)
   - [Added](#added-14)
+- [0.47.3](#0473)
+  - [Changed](#changed-14)
+- [0.47.2](#0472)
+  - [Fixed](#fixed-16)
+- [0.47.1](#0471)
+  - [Changed](#changed-15)
+  - [Fixed](#fixed-17)
+- [0.47.0](#0470)
+  - [Changed](#changed-16)
+  - [Fixed](#fixed-18)
+- [0.33.1 .. 0.46.0](#0331--0460)
+  - [Added](#added-15)
+  - [Removed](#removed-2)
   - [Changed](#changed-17)
+  - [Fixed](#fixed-19)
+- [0.33.1](#0331)
+  - [Fixed](#fixed-20)
+- [0.33.0](#0330)
+- [0.32.2](#0322)
+  - [Fixed](#fixed-21)
+- [0.32.1](#0321)
+  - [Fixed](#fixed-22)
+- [0.32.0](#0320)
+  - [Added](#added-16)
+  - [Changed](#changed-18)
+  - [Fixed](#fixed-23)
+- [0.31.0](#0310)
+  - [Added](#added-17)
+  - [Changed](#changed-19)
   - [Deprecated](#deprecated-1)
   - [Removed](#removed-3)
-  - [Fixed](#fixed-19)
-  - [Security](#security-1)
-- [0.32.2](#0322)
-  - [Fixed](#fixed-20)
-- [0.32.1](#0321)
-  - [Fixed](#fixed-21)
-- [0.32.0](#0320)
-  - [Added](#added-15)
-  - [Changed](#changed-18)
-  - [Fixed](#fixed-22)
-- [0.31.0](#0310)
-  - [Added](#added-16)
-  - [Changed](#changed-19)
-  - [Deprecated](#deprecated-2)
-  - [Removed](#removed-4)
-  - [Fixed](#fixed-23)
-- [0.30.0](#0300)
-  - [Added](#added-17)
-  - [Changed](#changed-20)
-  - [Deprecated](#deprecated-3)
   - [Fixed](#fixed-24)
-- [0.29.0](#0290)
+- [0.30.0](#0300)
   - [Added](#added-18)
-  - [Changed](#changed-21)
+  - [Changed](#changed-20)
+  - [Deprecated](#deprecated-2)
   - [Fixed](#fixed-25)
+- [0.29.0](#0290)
+  - [Added](#added-19)
+  - [Changed](#changed-21)
+  - [Fixed](#fixed-26)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 --------------------------------------------------------------------------------
 
+# Unreleased
+
+## Added
+
+## Changed
+
+## Deprecated
+
+## Removed
+
+## Fixed
+
+## Security
+
+---
+
+# 0.57.0
+
+Released 2021/02/01
+
+# Added
+
+* Expose module-raw-lines to the CLI (#1936)
+* Added an option to fit macro constants to smaller types (#1945)
+* Add an option to respect C++ access specifiers on fields (#1968)
+
+## Fixed
+
+* Improved C++ auto-detection (#1933)
+* Fixed layout of bitfields in some edge cases (#1950)
+* Escape the dyn keyword properly (#1951)
+* Use absolute paths for unsaved files passed to clang (#1857).
+
 # 0.56.0
 
-Released YYYY/MM/DD
+Released 2020/11/26
 
 ## Added
 
 * Objective-c bindings generate `From<ChildClass> for ParentClass` as well as `TryFrom<ParentClass> for ChildClass` ([#1883][]).
+* Experimental dynamic library support via `dynamic_library_name` (#1846).
+* Option to disable deriving `Default` on a per-struct basis (#1930).
 
 ## Changed
 
@@ -132,23 +168,10 @@ Released YYYY/MM/DD
 * Templates and enums now correctly use the same naming scheme as other types
  (#1891).
 
-## Deprecated
-
-* TODO (or remove section if none)
-
-## Removed
-
-* TODO (or remove section if none)
-
 ## Fixed
 
 * Constructors in wasm32 now return a value. (#1877).
 * Fixed objective-c protocol impl blocks for parent classes's protocols ([#1883][]).
-
-## Security
-
-* TODO (or remove section if none)
-
 
 [#1883]: https://github.com/rust-lang/rust-bindgen/issues/1883
 
@@ -704,32 +727,6 @@ Released 2018/02/14
 --------------------------------------------------------------------------------
 
 # 0.33.0
-
-Released YYYY/MM/DD
-
-## Added
-
-* TODO (or remove section if none)
-
-## Changed
-
-* TODO (or remove section if none)
-
-## Deprecated
-
-* TODO (or remove section if none)
-
-## Removed
-
-* TODO (or remove section if none)
-
-## Fixed
-
-* TODO (or remove section if none)
-
-## Security
-
-* TODO (or remove section if none)
 
 --------------------------------------------------------------------------------
 

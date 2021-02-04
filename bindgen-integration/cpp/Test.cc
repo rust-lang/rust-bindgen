@@ -165,3 +165,11 @@ OverloadedOperator OverloadedOperator::operator-() const {
     ret.val = -val;
     return ret;
 }
+Coord coord(double x, double y, double z, double t) {
+    Coord res;
+    res.v[0] = x;
+    res.v[1] = y;
+    res.v[2] = z;
+    res.v[3] = t;
+    return res;
+}

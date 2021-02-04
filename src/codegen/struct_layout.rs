@@ -18,6 +18,7 @@ pub struct StructLayoutTracker<'a> {
     ctx: &'a BindgenContext,
     comp: &'a CompInfo,
     is_packed: bool,
+    known_type_layout: Option<Layout>,
     latest_offset: usize,
     padding_count: usize,
     latest_field_layout: Option<Layout>,
@@ -86,11 +87,14 @@ impl<'a> StructLayoutTracker<'a> {
         ty: &'a Type,
         name: &'a str,
     ) -> Self {
+        let known_type_layout = ty.layout(ctx);
+        let is_packed = comp.is_packed(ctx, known_type_layout.as_ref());
         StructLayoutTracker {
             name,
             ctx,
             comp,
-            is_packed: comp.is_packed(ctx, &ty.layout(ctx)),
+            is_packed,
+            known_type_layout,
             latest_offset: 0,
             padding_count: 0,
             latest_field_layout: None,
@@ -180,22 +184,31 @@ impl<'a> StructLayoutTracker<'a> {
 
         let will_merge_with_bitfield = self.align_to_latest_field(field_layout);
 
+        let padding_bytes = match field_offset {
+            Some(offset) if offset / 8 > self.latest_offset => {
+                offset / 8 - self.latest_offset
+            }
+            _ => {
+                if will_merge_with_bitfield || field_layout.align == 0 {
+                    0
+                } else if !self.is_packed {
+                    self.padding_bytes(field_layout)
+                } else if let Some(l) = self.known_type_layout {
+                    self.padding_bytes(l)
+                } else {
+                    0
+                }
+            }
+        };
+
+        self.latest_offset += padding_bytes;
+
         let padding_layout = if self.is_packed {
             None
         } else {
-            let padding_bytes = match field_offset {
-                Some(offset) if offset / 8 > self.latest_offset => {
-                    offset / 8 - self.latest_offset
-                }
-                _ if will_merge_with_bitfield || field_layout.align == 0 => 0,
-                _ => self.padding_bytes(field_layout),
-            };
-
             // Otherwise the padding is useless.
             let need_padding = padding_bytes >= field_layout.align ||
                 field_layout.align > MAX_GUARANTEED_ALIGN;
-
-            self.latest_offset += padding_bytes;
 
             debug!(
                 "Offset: <padding>: {} -> {}",

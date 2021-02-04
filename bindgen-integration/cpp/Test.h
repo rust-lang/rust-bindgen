@@ -21,8 +21,6 @@
 #include "Invalid_Unicode.h"
 
 
-#include <cwchar>
-
 enum {
   MY_ANNOYING_MACRO =
 #define MY_ANNOYING_MACRO 1
@@ -241,3 +239,8 @@ public:
     int operator[](int index) const;
     OverloadedOperator operator-() const;
 };
+typedef union {
+  double v[4];
+} Coord;
+
+Coord coord(double x, double y, double z, double t);

@@ -16,6 +16,7 @@ pub mod root {
     pub mod whatever {
         #[allow(unused_imports)]
         use self::super::super::root;
+        pub type whatever_other_thing_t = whatever_int_t;
         pub type whatever_int_t = ::std::os::raw::c_int;
         extern "C" {
             #[link_name = "\u{1}_ZN8whatever11in_whateverEv"]

@@ -825,9 +825,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             match name {
                 "abstract" | "alignof" | "as" | "async" | "become" |
                 "box" | "break" | "const" | "continue" | "crate" | "do" |
-                "else" | "enum" | "extern" | "false" | "final" | "fn" |
-                "for" | "if" | "impl" | "in" | "let" | "loop" | "macro" |
-                "match" | "mod" | "move" | "mut" | "offsetof" |
+                "dyn" | "else" | "enum" | "extern" | "false" | "final" |
+                "fn" | "for" | "if" | "impl" | "in" | "let" | "loop" |
+                "macro" | "match" | "mod" | "move" | "mut" | "offsetof" |
                 "override" | "priv" | "proc" | "pub" | "pure" | "ref" |
                 "return" | "Self" | "self" | "sizeof" | "static" |
                 "struct" | "super" | "trait" | "true" | "type" | "typeof" |
@@ -2607,6 +2607,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     pub fn no_debug_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_whitelisting(self)[1..].join("::");
         self.options().no_debug_types.matches(&name)
+    }
+
+    /// Check if `--no-default` flag is enabled for this item.
+    pub fn no_default_by_name(&self, item: &Item) -> bool {
+        let name = item.path_for_whitelisting(self)[1..].join("::");
+        self.options().no_default_types.matches(&name)
     }
 
     /// Check if `--no-hash` flag is enabled for this item.

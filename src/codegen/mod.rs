@@ -1,3 +1,4 @@
+mod dyngen;
 mod error;
 mod helpers;
 mod impl_debug;
@@ -10,6 +11,7 @@ pub(crate) mod bitfield_unit;
 #[cfg(all(test, target_endian = "little"))]
 mod bitfield_unit_tests;
 
+use self::dyngen::DynamicItems;
 use self::helpers::attributes;
 use self::struct_layout::StructLayoutTracker;
 
@@ -116,7 +118,7 @@ fn derives_of_item(item: &Item, ctx: &BindgenContext) -> DerivableTraits {
         derivable_traits |= DerivableTraits::DEBUG;
     }
 
-    if item.can_derive_default(ctx) {
+    if item.can_derive_default(ctx) && !item.annotations().disallow_default() {
         derivable_traits |= DerivableTraits::DEFAULT;
     }
 
@@ -184,6 +186,7 @@ impl From<DerivableTraits> for Vec<&'static str> {
 
 struct CodegenResult<'a> {
     items: Vec<proc_macro2::TokenStream>,
+    dynamic_items: DynamicItems,
 
     /// A monotonic counter used to add stable unique id's to stuff that doesn't
     /// need to be referenced by anything.
@@ -234,6 +237,7 @@ impl<'a> CodegenResult<'a> {
     fn new(codegen_id: &'a Cell<usize>) -> Self {
         CodegenResult {
             items: vec![],
+            dynamic_items: DynamicItems::new(),
             saw_bindgen_union: false,
             saw_incomplete_array: false,
             saw_objc: false,
@@ -245,6 +249,10 @@ impl<'a> CodegenResult<'a> {
             vars_seen: Default::default(),
             overload_counters: Default::default(),
         }
+    }
+
+    fn dynamic_items(&mut self) -> &mut DynamicItems {
+        &mut self.dynamic_items
     }
 
     fn saw_bindgen_union(&mut self) {
@@ -1263,10 +1271,11 @@ impl<'a> FieldCodegen<'a> for FieldData {
             }
         }
 
-        let is_private = self
-            .annotations()
-            .private_fields()
-            .unwrap_or(fields_should_be_private);
+        let is_private = (!self.is_public() &&
+            ctx.options().respect_cxx_access_specs) ||
+            self.annotations()
+                .private_fields()
+                .unwrap_or(fields_should_be_private);
 
         let accessor_kind =
             self.annotations().accessor_kind().unwrap_or(accessor_kind);
@@ -1387,6 +1396,17 @@ impl Bitfield {
     }
 }
 
+fn access_specifier(
+    ctx: &BindgenContext,
+    is_pub: bool,
+) -> proc_macro2::TokenStream {
+    if is_pub || !ctx.options().respect_cxx_access_specs {
+        quote! { pub }
+    } else {
+        quote! {}
+    }
+}
+
 impl<'a> FieldCodegen<'a> for BitfieldUnit {
     type Extra = ();
 
@@ -1429,13 +1449,23 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
             }
         };
 
+        {
+            let align_field_name = format!("_bitfield_align_{}", self.nth());
+            let align_field_ident = ctx.rust_ident(&align_field_name);
+            let align_ty = match self.layout().align {
+                n if n >= 8 => quote! { u64 },
+                4 => quote! { u32 },
+                2 => quote! { u16 },
+                _ => quote! { u8  },
+            };
+            let align_field = quote! {
+                pub #align_field_ident: [#align_ty; 0],
+            };
+            fields.extend(Some(align_field));
+        }
+
         let unit_field_name = format!("_bitfield_{}", self.nth());
         let unit_field_ident = ctx.rust_ident(&unit_field_name);
-
-        let field = quote! {
-            pub #unit_field_ident : #field_ty ,
-        };
-        fields.extend(Some(field));
 
         let ctor_name = self.ctor_name();
         let mut ctor_params = vec![];
@@ -1445,6 +1475,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         // implement AsRef<[u8]> / AsMut<[u8]> / etc.
         let mut generate_ctor = layout.size <= RUST_DERIVE_IN_ARRAY_LIMIT;
 
+        let mut access_spec = !fields_should_be_private;
         for bf in self.bitfields() {
             // Codegen not allowed for anonymous bitfields
             if bf.name().is_none() {
@@ -1455,6 +1486,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 continue;
             }
 
+            access_spec &= bf.is_public();
             let mut bitfield_representable_as_int = true;
 
             bf.codegen(
@@ -1488,10 +1520,17 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
             ctor_impl = bf.extend_ctor_impl(ctx, param_name, ctor_impl);
         }
 
+        let access_spec = access_specifier(ctx, access_spec);
+
+        let field = quote! {
+            #access_spec #unit_field_ident : #field_ty ,
+        };
+        fields.extend(Some(field));
+
         if generate_ctor {
             methods.extend(Some(quote! {
                 #[inline]
-                pub fn #ctor_name ( #( #ctor_params ),* ) -> #unit_field_ty {
+                #access_spec fn #ctor_name ( #( #ctor_params ),* ) -> #unit_field_ty {
                     let mut __bindgen_bitfield_unit: #unit_field_ty = Default::default();
                     #ctor_impl
                     __bindgen_bitfield_unit
@@ -1527,7 +1566,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
     fn codegen<F, M>(
         &self,
         ctx: &BindgenContext,
-        _fields_should_be_private: bool,
+        fields_should_be_private: bool,
         _codegen_depth: usize,
         _accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
@@ -1567,13 +1606,16 @@ impl<'a> FieldCodegen<'a> for Bitfield {
             bitfield_ty.to_rust_ty_or_opaque(ctx, bitfield_ty_item);
 
         let offset = self.offset_into_unit();
-
         let width = self.width() as u8;
+        let access_spec = access_specifier(
+            ctx,
+            self.is_public() && !fields_should_be_private,
+        );
 
         if parent.is_union() && !parent.can_be_rust_union(ctx) {
             methods.extend(Some(quote! {
                 #[inline]
-                pub fn #getter_name(&self) -> #bitfield_ty {
+                #access_spec fn #getter_name(&self) -> #bitfield_ty {
                     unsafe {
                         ::#prefix::mem::transmute(
                             self.#unit_field_ident.as_ref().get(#offset, #width)
@@ -1583,7 +1625,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 }
 
                 #[inline]
-                pub fn #setter_name(&mut self, val: #bitfield_ty) {
+                #access_spec fn #setter_name(&mut self, val: #bitfield_ty) {
                     unsafe {
                         let val: #bitfield_int_ty = ::#prefix::mem::transmute(val);
                         self.#unit_field_ident.as_mut().set(
@@ -1597,7 +1639,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         } else {
             methods.extend(Some(quote! {
                 #[inline]
-                pub fn #getter_name(&self) -> #bitfield_ty {
+                #access_spec fn #getter_name(&self) -> #bitfield_ty {
                     unsafe {
                         ::#prefix::mem::transmute(
                             self.#unit_field_ident.get(#offset, #width)
@@ -1607,7 +1649,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 }
 
                 #[inline]
-                pub fn #setter_name(&mut self, val: #bitfield_ty) {
+                #access_spec fn #setter_name(&mut self, val: #bitfield_ty) {
                     unsafe {
                         let val: #bitfield_int_ty = ::#prefix::mem::transmute(val);
                         self.#unit_field_ident.set(
@@ -1642,7 +1684,7 @@ impl CodeGenerator for CompInfo {
 
         let ty = item.expect_type();
         let layout = ty.layout(ctx);
-        let mut packed = self.is_packed(ctx, &layout);
+        let mut packed = self.is_packed(ctx, layout.as_ref());
 
         let canonical_name = item.canonical_name(ctx);
         let canonical_ident = ctx.rust_ident(&canonical_name);
@@ -1694,8 +1736,9 @@ impl CodeGenerator for CompInfo {
 
                 struct_layout.saw_base(inner_item.expect_type());
 
+                let access_spec = access_specifier(ctx, base.is_public());
                 fields.push(quote! {
-                    pub #field_name: #inner,
+                    #access_spec #field_name: #inner,
                 });
             }
         }
@@ -1892,8 +1935,10 @@ impl CodeGenerator for CompInfo {
         }
 
         if !derivable_traits.contains(DerivableTraits::DEFAULT) {
-            needs_default_impl =
-                ctx.options().derive_default && !self.is_forward_declaration();
+            needs_default_impl = ctx.options().derive_default &&
+                !self.is_forward_declaration() &&
+                !ctx.no_default_by_name(item) &&
+                !item.annotations().disallow_default();
         }
 
         let all_template_params = item.all_template_params(ctx);
@@ -3948,7 +3993,30 @@ impl CodeGenerator for Function {
                 pub fn #ident ( #( #args ),* ) #ret;
             }
         };
-        result.push(tokens);
+
+        // If we're doing dynamic binding generation, add to the dynamic items.
+        if ctx.options().dynamic_library_name.is_some() &&
+            self.kind() == FunctionKind::Function
+        {
+            let args_identifiers =
+                utils::fnsig_argument_identifiers(ctx, signature);
+            let return_item = ctx.resolve_item(signature.return_type());
+            let ret_ty = match *return_item.kind().expect_type().kind() {
+                TypeKind::Void => quote! {()},
+                _ => return_item.to_rust_ty_or_opaque(ctx, &()),
+            };
+            result.dynamic_items().push(
+                ident,
+                abi,
+                signature.is_variadic(),
+                args,
+                args_identifiers,
+                ret,
+                ret_ty,
+            );
+        } else {
+            result.push(tokens);
+        }
     }
 }
 
@@ -4238,11 +4306,18 @@ pub(crate) fn codegen(
             &(),
         );
 
+        if let Some(ref lib_name) = context.options().dynamic_library_name {
+            let lib_ident = context.rust_ident(lib_name);
+            let dynamic_items_tokens =
+                result.dynamic_items().get_tokens(lib_ident);
+            result.push(dynamic_items_tokens);
+        }
+
         result.items
     })
 }
 
-mod utils {
+pub mod utils {
     use super::{error, ToRustTyOrOpaque};
     use crate::ir::context::BindgenContext;
     use crate::ir::function::{Abi, FunctionSig};
@@ -4658,6 +4733,35 @@ mod utils {
         if sig.is_variadic() {
             args.push(quote! { ... })
         }
+
+        args
+    }
+
+    pub fn fnsig_argument_identifiers(
+        ctx: &BindgenContext,
+        sig: &FunctionSig,
+    ) -> Vec<proc_macro2::TokenStream> {
+        let mut unnamed_arguments = 0;
+        let args = sig
+            .argument_types()
+            .iter()
+            .map(|&(ref name, _ty)| {
+                let arg_name = match *name {
+                    Some(ref name) => ctx.rust_mangle(name).into_owned(),
+                    None => {
+                        unnamed_arguments += 1;
+                        format!("arg{}", unnamed_arguments)
+                    }
+                };
+
+                assert!(!arg_name.is_empty());
+                let arg_name = ctx.rust_ident(arg_name);
+
+                quote! {
+                    #arg_name
+                }
+            })
+            .collect::<Vec<_>>();
 
         args
     }

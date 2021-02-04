@@ -632,6 +632,15 @@ impl Cursor {
         unsafe { clang_getCXXAccessSpecifier(self.x) }
     }
 
+    /// Is the cursor's referrent publically accessible in C++?
+    ///
+    /// Returns true if self.access_specifier() is `CX_CXXPublic` or
+    /// `CX_CXXInvalidAccessSpecifier`.
+    pub fn public_accessible(&self) -> bool {
+        let access = self.access_specifier();
+        access == CX_CXXPublic || access == CX_CXXInvalidAccessSpecifier
+    }
+
     /// Is this cursor's referent a field declaration that is marked as
     /// `mutable`?
     pub fn is_mutable_field(&self) -> bool {
