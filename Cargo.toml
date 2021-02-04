@@ -47,7 +47,7 @@ shlex = "0.1"
 [dependencies]
 bitflags = "1.0.3"
 cexpr = "0.4"
-cfg-if = "0.1.0"
+cfg-if = "1"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
 clap = { version = "2", optional = true }
 clang-sys = { version = "1", features = ["clang_6_0"] }
@@ -65,7 +65,7 @@ proc-macro2 = { version = "1", default-features = false }
 
 [dependencies.env_logger]
 optional = true
-version = "0.7"
+version = "0.8"
 
 [dependencies.log]
 optional = true
