@@ -63,6 +63,14 @@ repos to get version 3.9. See http://apt.llvm.org/.
 # pacman -S clang
 ```
 
+#### OpenBSD
+
+```bash
+# pkg_add llvm
+```
+
+Add `export LIBCLANG_PATH=/usr/local/lib` to your profile.
+
 #### From source
 
 If your package manager doesn't yet offer Clang 3.9, you'll need to build from
