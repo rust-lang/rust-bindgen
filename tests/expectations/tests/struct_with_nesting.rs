@@ -17,7 +17,6 @@ pub union foo__bindgen_ty_1 {
     pub b: ::std::os::raw::c_uint,
     pub __bindgen_anon_1: foo__bindgen_ty_1__bindgen_ty_1,
     pub __bindgen_anon_2: foo__bindgen_ty_1__bindgen_ty_2,
-    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]

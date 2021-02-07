@@ -11,7 +11,6 @@
 pub union ShouldNotDerivePartialEq {
     pub a: ::std::os::raw::c_char,
     pub b: ::std::os::raw::c_int,
-    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_ShouldNotDerivePartialEq() {

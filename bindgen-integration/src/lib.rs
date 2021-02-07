@@ -270,6 +270,7 @@ fn test_operator_overloading() {
 	let a = &a - &b; // should call the overloaded C++ operator- (binary)
 	assert!(a == bindings::OverloadedOperator{val: -66, other:0}); // should call the overloaded C++ operator=
 }
+
 // https://github.com/rust-lang/rust-bindgen/issues/1973
 #[cfg_attr(target_arch = "aarch64", should_panic)] // This line should be removed after the bug linked above is fixed
 #[test]

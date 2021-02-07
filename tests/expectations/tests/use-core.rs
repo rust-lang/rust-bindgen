@@ -52,7 +52,6 @@ impl Default for foo {
 pub union _bindgen_ty_1 {
     pub bar: ::std::os::raw::c_int,
     pub baz: ::std::os::raw::c_long,
-    _bindgen_union_align: u64,
 }
 #[test]
 fn bindgen_test_layout__bindgen_ty_1() {

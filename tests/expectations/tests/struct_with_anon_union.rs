@@ -15,7 +15,6 @@ pub struct foo {
 pub union foo__bindgen_ty_1 {
     pub a: ::std::os::raw::c_uint,
     pub b: ::std::os::raw::c_ushort,
-    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_foo__bindgen_ty_1() {

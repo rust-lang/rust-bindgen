@@ -188,7 +188,6 @@ pub union jsval_layout {
     pub asPtr: *mut ::std::os::raw::c_void,
     pub asWord: size_t,
     pub asUIntPtr: usize,
-    _bindgen_union_align: u64,
 }
 #[repr(C)]
 #[repr(align(8))]
@@ -271,7 +270,6 @@ pub union jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     pub i32_: i32,
     pub u32_: u32,
     pub why: JSWhyMagic,
-    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {

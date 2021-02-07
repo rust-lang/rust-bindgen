@@ -2011,7 +2011,6 @@ pub union rte_eth_conf__bindgen_ty_2 {
     pub vmdq_dcb_tx_conf: rte_eth_vmdq_dcb_tx_conf,
     pub dcb_tx_conf: rte_eth_dcb_tx_conf,
     pub vmdq_tx_conf: rte_eth_vmdq_tx_conf,
-    _bindgen_union_align: [u32; 3usize],
 }
 #[test]
 fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
