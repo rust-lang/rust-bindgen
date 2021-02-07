@@ -149,29 +149,6 @@ jobs:
           BINDGEN_NO_DEFAULT_FEATURES: ${{matrix.no_default_features}}
         run: ./ci/test.sh
 
-  test_aarch64:
-    name: "Run tests on AArch64"
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - uses: uraimo/run-on-arch-action@v2.0.8
-        name: Run test commands
-        with:
-          arch: aarch64
-          distro: ubuntu20.04
-          githubToken: ${{ github.token }}
-          env: |
-            LLVM_VERSION: "10.0"
-          dockerRunArgs: |
-            --volume "${HOME}/.cargo:/root/.cargo"
-          install: |
-            apt-get update -q -y
-            apt-get install -q -y curl gcc git g++ libtinfo5 xz-utils
-          run: |
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
-            source $HOME/.cargo/env
-            ./ci/test.sh
-
   test-book:
     runs-on: ubuntu-latest
     steps:
