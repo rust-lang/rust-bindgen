@@ -96,7 +96,6 @@ where
 pub union foo {
     pub a: ::std::os::raw::c_int,
     pub __bindgen_anon_1: foo__bindgen_ty_1,
-    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[repr(align(4))]

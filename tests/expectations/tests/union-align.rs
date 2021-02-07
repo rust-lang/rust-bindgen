@@ -10,7 +10,6 @@
 #[derive(Copy, Clone)]
 pub union Bar {
     pub foo: ::std::os::raw::c_uchar,
-    _bindgen_union_align: u128,
 }
 #[test]
 fn bindgen_test_layout_Bar() {
@@ -31,6 +30,35 @@ fn bindgen_test_layout_Bar() {
     );
 }
 impl Default for Bar {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
+}
+#[repr(C)]
+#[repr(align(16))]
+#[derive(Copy, Clone)]
+pub union Baz {
+    pub bar: Bar,
+}
+#[test]
+fn bindgen_test_layout_Baz() {
+    assert_eq!(
+        ::std::mem::size_of::<Baz>(),
+        16usize,
+        concat!("Size of: ", stringify!(Baz))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Baz>(),
+        16usize,
+        concat!("Alignment of ", stringify!(Baz))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<Baz>())).bar as *const _ as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Baz), "::", stringify!(bar))
+    );
+}
+impl Default for Baz {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }

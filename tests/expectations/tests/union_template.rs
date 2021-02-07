@@ -15,7 +15,6 @@ pub struct NastyStruct {
 pub union NastyStruct__bindgen_ty_1 {
     pub mFoo: *mut ::std::os::raw::c_void,
     pub mDummy: ::std::os::raw::c_ulong,
-    _bindgen_union_align: u64,
 }
 impl Default for NastyStruct__bindgen_ty_1 {
     fn default() -> Self {
@@ -26,7 +25,6 @@ impl Default for NastyStruct__bindgen_ty_1 {
 pub union NastyStruct__bindgen_ty_2 {
     pub wat: ::std::os::raw::c_short,
     pub wut: *mut ::std::os::raw::c_int,
-    _bindgen_union_align: u64,
 }
 impl Default for NastyStruct__bindgen_ty_2 {
     fn default() -> Self {
@@ -42,7 +40,6 @@ impl Default for NastyStruct {
 pub union Whatever {
     pub mTPtr: *mut ::std::os::raw::c_void,
     pub mInt: ::std::os::raw::c_int,
-    _bindgen_union_align: u64,
 }
 impl Default for Whatever {
     fn default() -> Self {

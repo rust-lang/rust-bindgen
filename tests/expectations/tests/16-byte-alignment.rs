@@ -17,7 +17,6 @@ pub struct rte_ipv4_tuple {
 pub union rte_ipv4_tuple__bindgen_ty_1 {
     pub __bindgen_anon_1: rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1,
     pub sctp_tag: u32,
-    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -159,7 +158,6 @@ pub struct rte_ipv6_tuple {
 pub union rte_ipv6_tuple__bindgen_ty_1 {
     pub __bindgen_anon_1: rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1,
     pub sctp_tag: u32,
-    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -295,7 +293,6 @@ impl Default for rte_ipv6_tuple {
 pub union rte_thash_tuple {
     pub v4: rte_ipv4_tuple,
     pub v6: rte_ipv6_tuple,
-    _bindgen_union_align: [u128; 3usize],
 }
 #[test]
 fn bindgen_test_layout_rte_thash_tuple() {

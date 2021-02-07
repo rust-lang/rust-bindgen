@@ -62,7 +62,6 @@ pub struct mozilla_StyleShapeSource {
 pub union mozilla_StyleShapeSource__bindgen_ty_1 {
     pub mPosition: *mut mozilla_Position,
     pub mFragmentOrURL: *mut mozilla_FragmentOrURL,
-    _bindgen_union_align: u64,
 }
 impl Default for mozilla_StyleShapeSource__bindgen_ty_1 {
     fn default() -> Self {

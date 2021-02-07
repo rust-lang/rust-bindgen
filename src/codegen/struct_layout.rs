@@ -19,6 +19,7 @@ pub struct StructLayoutTracker<'a> {
     comp: &'a CompInfo,
     is_packed: bool,
     known_type_layout: Option<Layout>,
+    is_rust_union: bool,
     latest_offset: usize,
     padding_count: usize,
     latest_field_layout: Option<Layout>,
@@ -89,18 +90,25 @@ impl<'a> StructLayoutTracker<'a> {
     ) -> Self {
         let known_type_layout = ty.layout(ctx);
         let is_packed = comp.is_packed(ctx, known_type_layout.as_ref());
+        let is_rust_union = comp.is_union() &&
+            comp.can_be_rust_union(ctx, known_type_layout.as_ref());
         StructLayoutTracker {
             name,
             ctx,
             comp,
             is_packed,
             known_type_layout,
+            is_rust_union,
             latest_offset: 0,
             padding_count: 0,
             latest_field_layout: None,
             max_field_align: 0,
             last_field_was_bitfield: false,
         }
+    }
+
+    pub fn is_rust_union(&self) -> bool {
+        self.is_rust_union
     }
 
     pub fn saw_vtable(&mut self) {
@@ -143,18 +151,9 @@ impl<'a> StructLayoutTracker<'a> {
         // actually generate the dummy alignment.
     }
 
-    pub fn saw_union(&mut self, layout: Layout) {
-        debug!("saw union for {}: {:?}", self.name, layout);
-        self.align_to_latest_field(layout);
-
-        self.latest_offset += self.padding_bytes(layout) + layout.size;
-        self.latest_field_layout = Some(layout);
-        self.max_field_align = cmp::max(self.max_field_align, layout.align);
-    }
-
-    /// Add a padding field if necessary for a given new field _before_ adding
-    /// that field.
-    pub fn pad_field(
+    /// Returns a padding field if necessary for a given new field _before_
+    /// adding that field.
+    pub fn saw_field(
         &mut self,
         field_name: &str,
         field_ty: &Type,
@@ -181,15 +180,27 @@ impl<'a> StructLayoutTracker<'a> {
                 }
             }
         }
+        self.saw_field_with_layout(field_name, field_layout, field_offset)
+    }
 
+    pub fn saw_field_with_layout(
+        &mut self,
+        field_name: &str,
+        field_layout: Layout,
+        field_offset: Option<usize>,
+    ) -> Option<proc_macro2::TokenStream> {
         let will_merge_with_bitfield = self.align_to_latest_field(field_layout);
 
+        let is_union = self.comp.is_union();
         let padding_bytes = match field_offset {
             Some(offset) if offset / 8 > self.latest_offset => {
                 offset / 8 - self.latest_offset
             }
             _ => {
-                if will_merge_with_bitfield || field_layout.align == 0 {
+                if will_merge_with_bitfield ||
+                    field_layout.align == 0 ||
+                    is_union
+                {
                     0
                 } else if !self.is_packed {
                     self.padding_bytes(field_layout)
@@ -203,7 +214,7 @@ impl<'a> StructLayoutTracker<'a> {
 
         self.latest_offset += padding_bytes;
 
-        let padding_layout = if self.is_packed {
+        let padding_layout = if self.is_packed || is_union {
             None
         } else {
             // Otherwise the padding is useless.

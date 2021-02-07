@@ -92,11 +92,11 @@ where
     }
 }
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union U4 {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_U4() {
@@ -144,11 +144,11 @@ impl U4 {
     }
 }
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union B {
     pub _bitfield_align_1: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
-    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_B() {

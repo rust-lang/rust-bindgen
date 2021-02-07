@@ -13,7 +13,6 @@ pub mod root {
     #[derive(Copy, Clone)]
     pub union bar {
         pub baz: ::std::os::raw::c_int,
-        _bindgen_union_align: u32,
     }
     #[test]
     fn bindgen_test_layout_bar() {

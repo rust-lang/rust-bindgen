@@ -1219,7 +1219,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
         ty.append_implicit_template_params(ctx, field_item);
 
         // NB: If supported, we use proper `union` types.
-        let ty = if parent.is_union() && !parent.can_be_rust_union(ctx) {
+        let ty = if parent.is_union() && !struct_layout.is_rust_union() {
             result.saw_bindgen_union();
             if ctx.options().enable_cxx_namespaces {
                 quote! {
@@ -1263,12 +1263,10 @@ impl<'a> FieldCodegen<'a> for FieldData {
             .expect("Each field should have a name in codegen!");
         let field_ident = ctx.rust_ident_raw(field_name.as_str());
 
-        if !parent.is_union() {
-            if let Some(padding_field) =
-                struct_layout.pad_field(&field_name, field_ty, self.offset())
-            {
-                fields.extend(Some(padding_field));
-            }
+        if let Some(padding_field) =
+            struct_layout.saw_field(&field_name, field_ty, self.offset())
+        {
+            fields.extend(Some(padding_field));
         }
 
         let is_private = (!self.is_public() &&
@@ -1433,7 +1431,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         let layout = self.layout();
         let unit_field_ty = helpers::bitfield_unit(ctx, layout);
         let field_ty = {
-            if parent.is_union() && !parent.can_be_rust_union(ctx) {
+            if parent.is_union() && !struct_layout.is_rust_union() {
                 result.saw_bindgen_union();
                 if ctx.options().enable_cxx_namespaces {
                     quote! {
@@ -1571,7 +1569,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         _accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         _result: &mut CodegenResult,
-        _struct_layout: &mut StructLayoutTracker,
+        struct_layout: &mut StructLayoutTracker,
         _fields: &mut F,
         methods: &mut M,
         (unit_field_name, bitfield_representable_as_int): (&'a str, &mut bool),
@@ -1612,7 +1610,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
             self.is_public() && !fields_should_be_private,
         );
 
-        if parent.is_union() && !parent.can_be_rust_union(ctx) {
+        if parent.is_union() && !struct_layout.is_rust_union() {
             methods.extend(Some(quote! {
                 #[inline]
                 #access_spec fn #getter_name(&self) -> #bitfield_ty {
@@ -1768,15 +1766,53 @@ impl CodeGenerator for CompInfo {
             }
         }
 
-        let is_union = self.kind() == CompKind::Union;
-        let layout = item.kind().expect_type().layout(ctx);
-
-        let mut explicit_align = None;
         if is_opaque {
             // Opaque item should not have generated methods, fields.
             debug_assert!(fields.is_empty());
             debug_assert!(methods.is_empty());
+        }
 
+        let is_union = self.kind() == CompKind::Union;
+        let layout = item.kind().expect_type().layout(ctx);
+        let zero_sized = item.is_zero_sized(ctx);
+        let forward_decl = self.is_forward_declaration();
+
+        let mut explicit_align = None;
+
+        // C++ requires every struct to be addressable, so what C++ compilers do
+        // is making the struct 1-byte sized.
+        //
+        // This is apparently not the case for C, see:
+        // https://github.com/rust-lang/rust-bindgen/issues/551
+        //
+        // Just get the layout, and assume C++ if not.
+        //
+        // NOTE: This check is conveniently here to avoid the dummy fields we
+        // may add for unused template parameters.
+        if !forward_decl && zero_sized {
+            let has_address = if is_opaque {
+                // Generate the address field if it's an opaque type and
+                // couldn't determine the layout of the blob.
+                layout.is_none()
+            } else {
+                layout.map_or(true, |l| l.size != 0)
+            };
+
+            if has_address {
+                let layout = Layout::new(1, 1);
+                let ty = helpers::blob(ctx, Layout::new(1, 1));
+                struct_layout.saw_field_with_layout(
+                    "_address",
+                    layout,
+                    /* offset = */ Some(0),
+                );
+                fields.push(quote! {
+                    pub _address: #ty,
+                });
+            }
+        }
+
+        if is_opaque {
             match layout {
                 Some(l) => {
                     explicit_align = Some(l.align);
@@ -1790,7 +1826,7 @@ impl CodeGenerator for CompInfo {
                     warn!("Opaque type without layout! Expect dragons!");
                 }
             }
-        } else if !is_union && !item.is_zero_sized(ctx) {
+        } else if !is_union && !zero_sized {
             if let Some(padding_field) =
                 layout.and_then(|layout| struct_layout.pad_struct(layout))
             {
@@ -1815,57 +1851,26 @@ impl CodeGenerator for CompInfo {
                     }
                 }
             }
-        } else if is_union && !self.is_forward_declaration() {
+        } else if is_union && !forward_decl {
             // TODO(emilio): It'd be nice to unify this with the struct path
             // above somehow.
             let layout = layout.expect("Unable to get layout information?");
-            struct_layout.saw_union(layout);
-
             if struct_layout.requires_explicit_align(layout) {
                 explicit_align = Some(layout.align);
             }
 
-            let ty = helpers::blob(ctx, layout);
-            fields.push(if self.can_be_rust_union(ctx) {
-                quote! {
-                    _bindgen_union_align: #ty ,
-                }
-            } else {
-                quote! {
+            if !struct_layout.is_rust_union() {
+                let ty = helpers::blob(ctx, layout);
+                fields.push(quote! {
                     pub bindgen_union_field: #ty ,
-                }
-            });
+                })
+            }
         }
 
-        // C++ requires every struct to be addressable, so what C++ compilers do
-        // is making the struct 1-byte sized.
-        //
-        // This is apparently not the case for C, see:
-        // https://github.com/rust-lang/rust-bindgen/issues/551
-        //
-        // Just get the layout, and assume C++ if not.
-        //
-        // NOTE: This check is conveniently here to avoid the dummy fields we
-        // may add for unused template parameters.
-        if self.is_forward_declaration() {
+        if forward_decl {
             fields.push(quote! {
                 _unused: [u8; 0],
             });
-        } else if item.is_zero_sized(ctx) {
-            let has_address = if is_opaque {
-                // Generate the address field if it's an opaque type and
-                // couldn't determine the layout of the blob.
-                layout.is_none()
-            } else {
-                layout.map_or(true, |l| l.size != 0)
-            };
-
-            if has_address {
-                let ty = helpers::blob(ctx, Layout::new(1, 1));
-                fields.push(quote! {
-                    pub _address: #ty,
-                });
-            }
         }
 
         let mut generic_param_names = vec![];
@@ -1963,7 +1968,7 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::derives(&derives))
         }
 
-        let mut tokens = if is_union && self.can_be_rust_union(ctx) {
+        let mut tokens = if is_union && struct_layout.is_rust_union() {
             quote! {
                 #( #attributes )*
                 pub union #canonical_ident
