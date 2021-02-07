@@ -89,7 +89,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
+        target:
+          - debian: null
+            cross: null
+            rust: null
         llvm_version: ["3.9", "4.0", "5.0", "9.0"]
+        main_tests: [1]
         release_build: [0, 1]
         no_default_features: [0, 1]
         # FIXME: There are no pre-built static libclang libraries, so the
@@ -121,6 +126,17 @@ jobs:
             feature_extra_asserts: 1
             feature_testing_only_docs: 1
 
+          - os: ubuntu-latest
+            target:
+              debian: arm64
+              cross: aarch64-linux-gnu
+              rust: aarch64-unknown-linux-gnu
+            llvm_version: "9.0"
+            main_tests: 0
+            release_build: 0
+            feature_extra_asserts: 0
+            feature_testing_only_docs: 0
+
           # Ensure stuff works on macos too
           - os: macos-latest
             llvm_version: "9.0"
@@ -131,17 +147,36 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install multiarch packages
+        if: matrix.target.debian
+        run: |
+          sudo apt-get install binfmt-support qemu-user-static gcc-${{matrix.target.cross}} g++-${{matrix.target.cross}}
+          source /etc/lsb-release
+          sudo tee /etc/apt/sources.list <<EOF >/dev/null
+          deb [arch=${{matrix.target.debian}}] http://ports.ubuntu.com/ubuntu-ports/ $DISTRIB_CODENAME main
+          deb [arch=${{matrix.target.debian}}] http://ports.ubuntu.com/ubuntu-ports/ $DISTRIB_CODENAME-updates main
+          deb [arch=${{matrix.target.debian}}] http://ports.ubuntu.com/ubuntu-ports/ $DISTRIB_CODENAME-backports main
+          deb [arch=${{matrix.target.debian}}] http://ports.ubuntu.com/ubuntu-ports/ $DISTRIB_CODENAME-security main
+          EOF
+          sudo dpkg --add-architecture ${{matrix.target.debian}}
+          sudo apt-get update
+          sudo apt-get install libc6:${{matrix.target.debian}} libstdc++6:${{matrix.target.debian}}
+
       - name: Install stable
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
+          target: ${{matrix.target.rust}}
           override: true
 
       - name: Run all the tests
         env:
           GITHUB_ACTIONS_OS: ${{matrix.os}}
+          RUST_CROSS_COMPILER: ${{matrix.target.cross}}
+          RUST_TARGET: ${{matrix.target.rust}}
           LLVM_VERSION: ${{matrix.llvm_version}}
+          BINDGEN_MAIN_TESTS: ${{matrix.main_tests}}
           BINDGEN_RELEASE_BUILD: ${{matrix.release_build}}
           BINDGEN_FEATURE_RUNTIME: ${{matrix.feature_runtime}}
           BINDGEN_FEATURE_EXTRA_ASSERTS: ${{matrix.feature_extra_asserts}}

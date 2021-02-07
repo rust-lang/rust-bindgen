@@ -94,6 +94,9 @@ set_rustfmt_env
 
 get_cargo_args() {
   local args=""
+  if [ ! -z "$RUST_TARGET" ]; then
+    args+=" --target $RUST_TARGET"
+  fi
   if [ "$BINDGEN_RELEASE_BUILD" == "1" ]; then
     args+=" --release"
   fi
@@ -116,13 +119,19 @@ get_cargo_args() {
   echo $args
 }
 
+if [ ! -z "$RUST_CROSS_COMPILER" ]; then
+  export RUSTFLAGS="-C linker=${RUST_CROSS_COMPILER}-gcc"
+fi
+
 CARGO_ARGS=`get_cargo_args`
 
 # Ensure we build without warnings
 cargo rustc --lib $CARGO_ARGS -- -Dwarnings
 
-# Run the tests
-cargo test $CARGO_ARGS
+if [ "$BINDGEN_MAIN_TESTS" == "1" ]; then
+  # Run the tests
+  cargo test $CARGO_ARGS
+fi
 
 assert_no_diff
 
