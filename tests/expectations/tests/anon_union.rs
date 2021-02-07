@@ -35,7 +35,6 @@ pub struct TErrorResult_DOMExceptionInfo {
 pub union TErrorResult__bindgen_ty_1 {
     pub mMessage: *mut TErrorResult_Message,
     pub mDOMExceptionInfo: *mut TErrorResult_DOMExceptionInfo,
-    _bindgen_union_align: u64,
 }
 impl Default for TErrorResult__bindgen_ty_1 {
     fn default() -> Self {

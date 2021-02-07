@@ -481,7 +481,6 @@ pub struct WithAnonUnion {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union WithAnonUnion__bindgen_ty_1 {
-    _bindgen_union_align: u8,
     pub _address: u8,
 }
 #[test]

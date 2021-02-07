@@ -10,7 +10,6 @@
 pub union WithBigArray {
     pub a: ::std::os::raw::c_int,
     pub b: [::std::os::raw::c_int; 33usize],
-    _bindgen_union_align: [u32; 33usize],
 }
 #[test]
 fn bindgen_test_layout_WithBigArray() {
@@ -59,7 +58,6 @@ impl Default for WithBigArray {
 pub union WithBigArray2 {
     pub a: ::std::os::raw::c_int,
     pub b: [::std::os::raw::c_char; 33usize],
-    _bindgen_union_align: [u32; 9usize],
 }
 #[test]
 fn bindgen_test_layout_WithBigArray2() {
@@ -108,7 +106,6 @@ impl Default for WithBigArray2 {
 pub union WithBigMember {
     pub a: ::std::os::raw::c_int,
     pub b: WithBigArray,
-    _bindgen_union_align: [u32; 33usize],
 }
 #[test]
 fn bindgen_test_layout_WithBigMember() {

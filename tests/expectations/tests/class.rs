@@ -340,7 +340,6 @@ impl Default for IncompleteArrayNonCopiable {
 pub union Union {
     pub d: f32,
     pub i: ::std::os::raw::c_int,
-    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_Union() {

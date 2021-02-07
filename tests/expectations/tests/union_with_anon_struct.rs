@@ -9,7 +9,6 @@
 #[derive(Copy, Clone)]
 pub union foo {
     pub bar: foo__bindgen_ty_1,
-    _bindgen_union_align: [u32; 2usize],
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]

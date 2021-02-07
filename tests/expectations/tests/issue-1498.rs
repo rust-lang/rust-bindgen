@@ -30,7 +30,6 @@ pub union rte_memseg__bindgen_ty_1 {
     pub addr: *mut ::std::os::raw::c_void,
     ///< Makes sure addr is always 64 bits
     pub addr_64: u64,
-    _bindgen_union_align: u64,
 }
 #[test]
 fn bindgen_test_layout_rte_memseg__bindgen_ty_1() {

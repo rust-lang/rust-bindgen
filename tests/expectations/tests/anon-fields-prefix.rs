@@ -11,7 +11,6 @@ pub union color {
     pub u1: color__bindgen_ty_1,
     pub u2: color__bindgen_ty_2,
     pub v3: [::std::os::raw::c_uchar; 3usize],
-    _bindgen_union_align: [u8; 3usize],
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]

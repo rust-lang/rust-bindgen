@@ -260,8 +260,6 @@ fn test_macro_customintkind_path() {
     assert!(v.is::<MacroInteger>())
 }
 
-// https://github.com/rust-lang/rust-bindgen/issues/1973
-#[cfg_attr(target_arch = "aarch64", should_panic)] // This line should be removed after the bug linked above is fixed
 #[test]
 fn test_homogeneous_aggregate_float_union() {
     unsafe {

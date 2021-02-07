@@ -17,7 +17,6 @@ pub struct perf_event_attr {
 pub union perf_event_attr__bindgen_ty_1 {
     pub b: ::std::os::raw::c_int,
     pub c: ::std::os::raw::c_int,
-    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_perf_event_attr__bindgen_ty_1() {

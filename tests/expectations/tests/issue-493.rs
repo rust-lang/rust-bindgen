@@ -84,7 +84,6 @@ pub struct basic_string___short {
 pub union basic_string___short__bindgen_ty_1 {
     pub __size_: ::std::os::raw::c_uchar,
     pub __lx: basic_string_value_type,
-    _bindgen_union_align: u8,
 }
 impl Default for basic_string___short__bindgen_ty_1 {
     fn default() -> Self {
@@ -97,6 +96,7 @@ impl Default for basic_string___short {
     }
 }
 #[repr(C)]
+#[repr(align(1))]
 pub struct basic_string___ulx {
     pub __lx: __BindgenUnionField<basic_string___long>,
     pub __lxx: __BindgenUnionField<basic_string___short>,
@@ -129,6 +129,7 @@ pub struct basic_string___rep {
     pub __bindgen_anon_1: basic_string___rep__bindgen_ty_1,
 }
 #[repr(C)]
+#[repr(align(1))]
 pub struct basic_string___rep__bindgen_ty_1 {
     pub __l: __BindgenUnionField<basic_string___long>,
     pub __s: __BindgenUnionField<basic_string___short>,

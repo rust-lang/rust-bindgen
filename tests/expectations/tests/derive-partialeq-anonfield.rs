@@ -12,9 +12,10 @@ pub struct rte_mbuf {
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_1,
 }
 #[repr(C)]
+#[repr(align(1))]
 #[derive(Copy, Clone)]
-pub union rte_mbuf__bindgen_ty_1 {
-    _bindgen_union_align: [u8; 0usize],
+pub struct rte_mbuf__bindgen_ty_1 {
+    pub bindgen_union_field: [u8; 0usize],
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_1() {
