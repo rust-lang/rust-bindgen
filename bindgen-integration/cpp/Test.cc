@@ -144,3 +144,12 @@ Coord coord(double x, double y, double z, double t) {
     res.v[3] = t;
     return res;
 }
+
+CoordOpaque coord_opaque(double x, double y, double z, double t) {
+    CoordOpaque res;
+    res.v[0] = x;
+    res.v[1] = y;
+    res.v[2] = z;
+    res.v[3] = t;
+    return res;
+}

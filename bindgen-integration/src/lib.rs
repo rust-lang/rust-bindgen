@@ -7,6 +7,7 @@ mod bindings {
 use std::ffi::CStr;
 use std::mem;
 use std::os::raw::c_int;
+use std::slice;
 
 #[allow(unused)]
 use bindings::testing::Bar; // This type is generated from module_raw_line.
@@ -267,5 +268,16 @@ fn test_homogeneous_aggregate_float_union() {
     unsafe {
         let coord = &bindings::coord(1., 2., 3., 4.);
         assert_eq!([1., 2., 3., 4.], coord.v)
+    }
+}
+
+// https://github.com/rust-lang/rust-bindgen/issues/1973
+#[cfg_attr(target_arch = "aarch64", should_panic)] // This line should be removed after the bug linked above is fixed
+#[test]
+fn test_homogeneous_aggregate_float_opaque() {
+    unsafe {
+        let coord = &bindings::coord_opaque(1., 2., 3., 4.);
+        let v = unsafe { slice::from_raw_parts(coord as *const _ as *const f64, 4) };
+        assert_eq!([1., 2., 3., 4.], v)
     }
 }

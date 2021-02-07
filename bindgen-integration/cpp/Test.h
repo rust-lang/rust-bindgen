@@ -232,3 +232,9 @@ typedef union {
 } Coord;
 
 Coord coord(double x, double y, double z, double t);
+
+typedef struct {
+  double v[4];
+} CoordOpaque;
+
+CoordOpaque coord_opaque(double x, double y, double z, double t);

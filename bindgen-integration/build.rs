@@ -163,6 +163,7 @@ fn main() {
         .blacklist_function("my_prefixed_function_to_remove")
         .constified_enum("my_prefixed_enum_to_be_constified")
         .opaque_type("my_prefixed_templated_foo<my_prefixed_baz>")
+        .opaque_type("CoordOpaque")
         .generate()
         .expect("Unable to generate bindings");
 
