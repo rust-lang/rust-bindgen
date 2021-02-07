@@ -8,18 +8,8 @@ set -x
 # Give a pipeline a non-zero exit code if one of its constituents fails
 set -o pipefail
 
-# Set default values on environment variables
-BINDGEN_RELEASE_BUILD="${BINDGEN_RELEASE_BUILD:-0}"
-BINDGEN_FEATURE_RUNTIME="${BINDGEN_FEATURE_RUNTIME:-0}"
-BINDGEN_FEATURE_EXTRA_ASSERTS="${BINDGEN_FEATURE_EXTRA_ASSERTS:-0}"
-BINDGEN_FEATURE_TESTING_ONLY_DOCS="${BINDGEN_FEATURE_TESTING_ONLY_DOCS:-0}"
-BINDGEN_NO_DEFAULT_FEATURES="${BINDGEN_NO_DEFAULT_FEATURES:-0}"
-
 function llvm_linux_target_triple() {
-  case "$(uname -m)" in
-    aarch64) echo "aarch64-linux-gnu" ;;
-    *)       echo "x86_64-linux-gnu-ubuntu-16.04" ;;
-  esac
+  echo "x86_64-linux-gnu-ubuntu-16.04"
 }
 
 function llvm_macos_target_triple() {
@@ -62,7 +52,7 @@ function llvm_download() {
   if [ -d "${LLVM_DIRECTORY}" ]; then
     echo "Using cached LLVM download for ${LLVM}..."
   else
-    curl -L -o ${LLVM}.tar.xz $base_url/${LLVM}.tar.xz
+    wget --no-verbose $base_url/${LLVM}.tar.xz
     mkdir -p "${LLVM_DIRECTORY}"
     tar xf ${LLVM}.tar.xz -C "${LLVM_DIRECTORY}" --strip-components=1
   fi
@@ -76,7 +66,7 @@ set_llvm_env() {
   export LLVM_VERSION_TRIPLE=`llvm_version_triple ${LLVM_VERSION}`
   local base_url=`llvm_base_url ${LLVM_VERSION_TRIPLE}`
 
-  if [ "$(uname -s)" == "Linux" ]; then
+  if [ "$GITHUB_ACTIONS_OS" == "ubuntu-latest" ]; then
     llvm_download $base_url `llvm_linux_target_triple ${LLVM_VERSION_TRIPLE}`
     export LD_LIBRARY_PATH="${LLVM_DIRECTORY}/lib":${LD_LIBRARY_PATH:-}
   else
