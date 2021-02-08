@@ -138,12 +138,12 @@ jobs:
             feature_extra_asserts: 0
             feature_testing_only_docs: 0
 
-          # i686
+          # ARMv7
           - os: ubuntu-latest
             target:
-              debian: i386
-              cross: i686-linux-gnu
-              rust: i686-unknown-linux-gnu
+              debian: armhf
+              cross: arm-linux-gnueabihf
+              rust: armv7-unknown-linux-gnueabihf
             llvm_version: "9.0"
             main_tests: 0
             release_build: 0
