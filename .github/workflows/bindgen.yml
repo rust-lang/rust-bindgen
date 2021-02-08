@@ -126,6 +126,7 @@ jobs:
             feature_extra_asserts: 1
             feature_testing_only_docs: 1
 
+          # AArch64
           - os: ubuntu-latest
             target:
               debian: arm64
@@ -137,7 +138,19 @@ jobs:
             feature_extra_asserts: 0
             feature_testing_only_docs: 0
 
-          # Ensure stuff works on macos too
+          # i686
+          - os: ubuntu-latest
+            target:
+              debian: i386
+              cross: i686-linux-gnu
+              rust: i686-unknown-linux-gnu
+            llvm_version: "9.0"
+            main_tests: 0
+            release_build: 0
+            feature_extra_asserts: 0
+            feature_testing_only_docs: 0
+
+          # macOS
           - os: macos-latest
             llvm_version: "9.0"
             release_build: 0
