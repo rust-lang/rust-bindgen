@@ -131,6 +131,12 @@
 
 ## Fixed
 
+* Track union layout more accurately. Fixes [an AArch64 bug] and [an i686 bug] where unions could return garbage data ([#1984])
+
+[#1984]: https://github.com/rust-lang/rust-bindgen/pull/1984
+[an AArch64 bug]: https://github.com/rust-lang/rust-bindgen/issues/1973
+[an i686 bug]: https://github.com/rust-lang/rust-bindgen/issues/1983
+
 ## Security
 
 ---
