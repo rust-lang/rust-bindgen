@@ -139,7 +139,7 @@
 
 Released 2021/02/01
 
-# Added
+## Added
 
 * Expose module-raw-lines to the CLI (#1936)
 * Added an option to fit macro constants to smaller types (#1945)
