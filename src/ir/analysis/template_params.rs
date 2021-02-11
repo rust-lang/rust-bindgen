@@ -137,13 +137,13 @@ use crate::{HashMap, HashSet};
 /// analysis. If we didn't, then we would mistakenly determine that ever
 /// template parameter is always used.
 ///
-/// The final wrinkle is handling of blacklisted types. Normally, we say that
-/// the set of whitelisted items is the transitive closure of items explicitly
-/// called out for whitelisting, *without* any items explicitly called out as
-/// blacklisted. However, for the purposes of this analysis's correctness, we
+/// The final wrinkle is handling of blocklisted types. Normally, we say that
+/// the set of allowlisted items is the transitive closure of items explicitly
+/// called out for allowlisting, *without* any items explicitly called out as
+/// blocklisted. However, for the purposes of this analysis's correctness, we
 /// simplify and consider run the analysis on the full transitive closure of
-/// whitelisted items. We do, however, treat instantiations of blacklisted items
-/// specially; see `constrain_instantiation_of_blacklisted_template` and its
+/// allowlisted items. We do, however, treat instantiations of blocklisted items
+/// specially; see `constrain_instantiation_of_blocklisted_template` and its
 /// documentation for details.
 #[derive(Debug, Clone)]
 pub struct UsedTemplateParameters<'ctx> {
@@ -155,10 +155,10 @@ pub struct UsedTemplateParameters<'ctx> {
 
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 
-    // The set of whitelisted items, without any blacklisted items reachable
-    // from the whitelisted items which would otherwise be considered
-    // whitelisted as well.
-    whitelisted_items: HashSet<ItemId>,
+    // The set of allowlisted items, without any blocklisted items reachable
+    // from the allowlisted items which would otherwise be considered
+    // allowlisted as well.
+    allowlisted_items: HashSet<ItemId>,
 }
 
 impl<'ctx> UsedTemplateParameters<'ctx> {
@@ -221,19 +221,19 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
             )
     }
 
-    /// We say that blacklisted items use all of their template parameters. The
-    /// blacklisted type is most likely implemented explicitly by the user,
+    /// We say that blocklisted items use all of their template parameters. The
+    /// blocklisted type is most likely implemented explicitly by the user,
     /// since it won't be in the generated bindings, and we don't know exactly
     /// what they'll to with template parameters, but we can push the issue down
     /// the line to them.
-    fn constrain_instantiation_of_blacklisted_template(
+    fn constrain_instantiation_of_blocklisted_template(
         &self,
         this_id: ItemId,
         used_by_this_id: &mut ItemSet,
         instantiation: &TemplateInstantiation,
     ) {
         trace!(
-            "    instantiation of blacklisted template, uses all template \
+            "    instantiation of blocklisted template, uses all template \
              arguments"
         );
 
@@ -379,10 +379,10 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
     fn new(ctx: &'ctx BindgenContext) -> UsedTemplateParameters<'ctx> {
         let mut used = HashMap::default();
         let mut dependencies = HashMap::default();
-        let whitelisted_items: HashSet<_> =
-            ctx.whitelisted_items().iter().cloned().collect();
+        let allowlisted_items: HashSet<_> =
+            ctx.allowlisted_items().iter().cloned().collect();
 
-        let whitelisted_and_blacklisted_items: ItemSet = whitelisted_items
+        let allowlisted_and_blocklisted_items: ItemSet = allowlisted_items
             .iter()
             .cloned()
             .flat_map(|i| {
@@ -398,7 +398,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             })
             .collect();
 
-        for item in whitelisted_and_blacklisted_items {
+        for item in allowlisted_and_blocklisted_items {
             dependencies.entry(item).or_insert(vec![]);
             used.entry(item).or_insert(Some(ItemSet::new()));
 
@@ -457,17 +457,17 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
         }
 
         if cfg!(feature = "testing_only_extra_assertions") {
-            // Invariant: The `used` map has an entry for every whitelisted
-            // item, as well as all explicitly blacklisted items that are
-            // reachable from whitelisted items.
+            // Invariant: The `used` map has an entry for every allowlisted
+            // item, as well as all explicitly blocklisted items that are
+            // reachable from allowlisted items.
             //
             // Invariant: the `dependencies` map has an entry for every
-            // whitelisted item.
+            // allowlisted item.
             //
             // (This is so that every item we call `constrain` on is guaranteed
             // to have a set of template parameters, and we can allow
-            // blacklisted templates to use all of their parameters).
-            for item in whitelisted_items.iter() {
+            // blocklisted templates to use all of their parameters).
+            for item in allowlisted_items.iter() {
                 extra_assert!(used.contains_key(item));
                 extra_assert!(dependencies.contains_key(item));
                 item.trace(
@@ -485,15 +485,15 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             ctx: ctx,
             used: used,
             dependencies: dependencies,
-            whitelisted_items: whitelisted_items,
+            allowlisted_items: allowlisted_items,
         }
     }
 
     fn initial_worklist(&self) -> Vec<ItemId> {
-        // The transitive closure of all whitelisted items, including explicitly
-        // blacklisted items.
+        // The transitive closure of all allowlisted items, including explicitly
+        // blocklisted items.
         self.ctx
-            .whitelisted_items()
+            .allowlisted_items()
             .iter()
             .cloned()
             .flat_map(|i| {
@@ -538,7 +538,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             // template definition uses the corresponding template parameter.
             Some(&TypeKind::TemplateInstantiation(ref inst)) => {
                 if self
-                    .whitelisted_items
+                    .allowlisted_items
                     .contains(&inst.template_definition().into())
                 {
                     self.constrain_instantiation(
@@ -547,7 +547,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
                         inst,
                     );
                 } else {
-                    self.constrain_instantiation_of_blacklisted_template(
+                    self.constrain_instantiation_of_blocklisted_template(
                         id,
                         &mut used_by_this_id,
                         inst,

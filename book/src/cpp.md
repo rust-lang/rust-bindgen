@@ -11,11 +11,11 @@ it ends in `.hpp`. If it doesn't, adding `-x c++` clang args can be used to
 force C++ mode. You probably also want to use `-std=c++14` or similar clang args
 as well.
 
-You pretty much **must** use [whitelisting](./whitelisting.md) when working
+You pretty much **must** use [allowlisting](./allowlisting.md) when working
 with C++ to avoid pulling in all of the `std::.*` types, many of which `bindgen`
 cannot handle. Additionally, you may want to mark other types as
 [opaque](./opaque.md) that `bindgen` stumbles on. It is recommended to mark
-all of `std::.*` opaque, and to whitelist only precisely the functions and types
+all of `std::.*` opaque, and to allowlist only precisely the functions and types
 you intend to use.
 
 You should read up on the [FAQs](./faq.md) as well.

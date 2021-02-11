@@ -443,7 +443,7 @@ impl CodeGenerator for Item {
             return;
         }
 
-        if self.is_blacklisted(ctx) || result.seen(self.id()) {
+        if self.is_blocklisted(ctx) || result.seen(self.id()) {
             debug!(
                 "<Item as CodeGenerator>::codegen: Ignoring hidden or seen: \
                  self = {:?}",
@@ -457,7 +457,7 @@ impl CodeGenerator for Item {
             // TODO(emilio, #453): Figure out what to do when this happens
             // legitimately, we could track the opaque stuff and disable the
             // assertion there I guess.
-            warn!("Found non-whitelisted item in code generation: {:?}", self);
+            warn!("Found non-allowlisted item in code generation: {:?}", self);
         }
 
         result.set_seen(self.id());
@@ -725,7 +725,7 @@ impl CodeGenerator for Type {
                 // These items don't need code generation, they only need to be
                 // converted to rust types in fields, arguments, and such.
                 // NOTE(emilio): If you add to this list, make sure to also add
-                // it to BindgenContext::compute_whitelisted_and_codegen_items.
+                // it to BindgenContext::compute_allowlisted_and_codegen_items.
                 return;
             }
             TypeKind::TemplateInstantiation(ref inst) => {
@@ -2261,8 +2261,8 @@ impl MethodCodegen for Method {
 
         // First of all, output the actual function.
         let function_item = ctx.resolve_item(self.signature());
-        if function_item.is_blacklisted(ctx) {
-            // We shouldn't emit a method declaration if the function is blacklisted
+        if function_item.is_blocklisted(ctx) {
+            // We shouldn't emit a method declaration if the function is blocklisted
             return;
         }
         function_item.codegen(ctx, result, &());

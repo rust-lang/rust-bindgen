@@ -306,13 +306,13 @@ impl IsOpaque for TemplateInstantiation {
         // correct fix is to make `canonical_{name,path}` include template
         // arguments properly.
 
-        let mut path = item.path_for_whitelisting(ctx).clone();
+        let mut path = item.path_for_allowlisting(ctx).clone();
         let args: Vec<_> = self
             .template_arguments()
             .iter()
             .map(|arg| {
                 let arg_path =
-                    ctx.resolve_item(*arg).path_for_whitelisting(ctx);
+                    ctx.resolve_item(*arg).path_for_allowlisting(ctx);
                 arg_path[1..].join("::")
             })
             .collect();

@@ -1,4 +1,4 @@
-// bindgen-flags: --enable-cxx-namespaces --whitelist-type StaticRefPtr --opaque-type 'JS::Rooted' -- -std=c++14
+// bindgen-flags: --enable-cxx-namespaces --allowlist-type StaticRefPtr --opaque-type 'JS::Rooted' -- -std=c++14
 
 namespace JS {
 template <typename T> class Rooted { using ElementType = T; };

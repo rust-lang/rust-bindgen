@@ -1,4 +1,4 @@
-// bindgen-flags: --whitelist-type Baz
+// bindgen-flags: --allowlist-type Baz
 
 struct Bar {
   const int m_baz;

@@ -4,13 +4,13 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [Why isn't `bindgen` generating methods for this whitelisted class?](#why-isnt-bindgen-generating-methods-for-this-whitelisted-class)
+- [Why isn't `bindgen` generating methods for this allowlisted class?](#why-isnt-bindgen-generating-methods-for-this-allowlisted-class)
 - [Why isn't `bindgen` generating bindings to inline functions?](#why-isnt-bindgen-generating-bindings-to-inline-functions)
 - [Does `bindgen` support the C++ Standard Template Library (STL)?](#does-bindgen-support-the-c-standard-template-library-stl)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-### Why isn't `bindgen` generating methods for this whitelisted class?
+### Why isn't `bindgen` generating methods for this allowlisted class?
 
 Are the methods `inline` methods, or defined inline in the class? For example:
 
@@ -62,7 +62,7 @@ STL. That ties our hands when it comes to linking: ["Why isn't `bindgen` generat
 As far as generating opaque blobs of bytes with the correct size and alignment,
 `bindgen` can do pretty well. This is typically enough to let you use types that
 transitively contain STL things. We generally recommend marking `std::.*` as
-opaque, and then whitelisting only the specific things you need from the library
+opaque, and then allowlisting only the specific things you need from the library
 you're binding to that is pulling in STL headers.
 
 ### How to deal with bindgen generated padding fields?

@@ -1,7 +1,7 @@
-// bindgen-flags: --blacklist-type RefPtr --raw-line '#[derive(Clone, Copy, Debug)] pub struct RefPtr<T>(T);' -- --std=c++14
+// bindgen-flags: --blocklist-type RefPtr --raw-line '#[derive(Clone, Copy, Debug)] pub struct RefPtr<T>(T);' -- --std=c++14
 
 // This is pretty much the same as the other issue 662 test case, but this time
-// we blacklist RefPtr to exercise the instantiation-of-a-blacklisted-template
+// we blocklist RefPtr to exercise the instantiation-of-a-blocklisted-template
 // path in the template analysis.
 
 template <class> class RefPtr {};

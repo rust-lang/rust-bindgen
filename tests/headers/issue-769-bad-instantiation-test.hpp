@@ -1,4 +1,4 @@
-// bindgen-flags: --enable-cxx-namespaces --whitelist-type Rooted
+// bindgen-flags: --enable-cxx-namespaces --allowlist-type Rooted
 
 template <typename T>
 class Rooted {

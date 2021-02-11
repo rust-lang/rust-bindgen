@@ -183,7 +183,7 @@ where
 {
     let mut dependencies = HashMap::default();
 
-    for &item in ctx.whitelisted_items() {
+    for &item in ctx.allowlisted_items() {
         dependencies.entry(item).or_insert(vec![]);
 
         {
@@ -192,7 +192,7 @@ where
             item.trace(
                 ctx,
                 &mut |sub_item: ItemId, edge_kind| {
-                    if ctx.whitelisted_items().contains(&sub_item) &&
+                    if ctx.allowlisted_items().contains(&sub_item) &&
                         consider_edge(edge_kind)
                     {
                         dependencies

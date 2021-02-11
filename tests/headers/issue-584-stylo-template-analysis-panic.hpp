@@ -1,4 +1,4 @@
-// bindgen-flags: --blacklist-type RefPtr --whitelist-function 'Servo_.*' --raw-line 'pub type RefPtr<T> = T;' -- -std=c++14
+// bindgen-flags: --blocklist-type RefPtr --allowlist-function 'Servo_.*' --raw-line 'pub type RefPtr<T> = T;' -- -std=c++14
 template <class> class RefPtr;
 class b;
 class A {
