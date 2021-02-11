@@ -152,7 +152,7 @@ impl Enum {
         enums: &RegexSet,
         item: &Item,
     ) -> bool {
-        let path = item.path_for_whitelisting(ctx);
+        let path = item.path_for_allowlisting(ctx);
         let enum_ty = item.expect_type();
 
         if enums.matches(&path[1..].join("::")) {

@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --no-recursive-whitelist --whitelist-type "foo"
+// bindgen-flags: --with-derive-hash --no-recursive-allowlist --allowlist-type "foo"
 
 struct foo {
     union {

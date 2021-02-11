@@ -1,12 +1,12 @@
-// bindgen-flags: --whitelist-type Whitelisted --opaque-type Opaque --with-derive-hash --with-derive-partialeq --with-derive-eq -- -std=c++11
+// bindgen-flags: --allowlist-type Allowlisted --opaque-type Opaque --with-derive-hash --with-derive-partialeq --with-derive-eq -- -std=c++11
 
-// These types are not explicitly whitelisted, but are reachable through the
+// These types are not explicitly allowlisted, but are reachable through the
 // opaque type.
 class Pupper {};
 class Doggo {};
 class SuchWow {};
 
-// These types are not whitelisted, and would be reachable through `Opaque` if
+// These types are not allowlisted, and would be reachable through `Opaque` if
 // it were not marked opaque, but since it is, there should be no bindings
 // generated for them.
 class NoBindingsShouldBeGeneratedForMe1 {};
@@ -31,6 +31,6 @@ protected:
     SuchWow eleven_out_of_ten();
 };
 
-class Whitelisted {
+class Allowlisted {
     Opaque some_member;
 };

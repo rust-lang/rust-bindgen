@@ -120,9 +120,9 @@ impl<'a> ImplDebug<'a> for Item {
     ) -> Option<(String, Vec<proc_macro2::TokenStream>)> {
         let name_ident = ctx.rust_ident(name);
 
-        // We don't know if blacklisted items `impl Debug` or not, so we can't
+        // We don't know if blocklisted items `impl Debug` or not, so we can't
         // add them to the format string we're building up.
-        if !ctx.whitelisted_items().contains(&self.id()) {
+        if !ctx.allowlisted_items().contains(&self.id()) {
             return None;
         }
 

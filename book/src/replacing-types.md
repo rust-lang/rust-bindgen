@@ -24,4 +24,4 @@ That way, after code generation, the bindings for the `nsTArray` type are
 the ones that would be generated for `nsTArray_Simple`.
 
 Replacing is only available as an annotation. To replace a C or C++ definition
-with a Rust definition, use [blacklisting](./blacklisting.md).
+with a Rust definition, use [blocklisting](./blocklisting.md).

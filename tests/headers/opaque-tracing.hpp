@@ -1,8 +1,8 @@
-// bindgen-flags: --opaque-type ".*" --whitelist-function=foo  --with-derive-hash --with-derive-partialeq --with-derive-eq
+// bindgen-flags: --opaque-type ".*" --allowlist-function=foo  --with-derive-hash --with-derive-partialeq --with-derive-eq
 
 class Container;
 
-// The whitelist tracing should reach the Container type, even though it's
+// The allowlist tracing should reach the Container type, even though it's
 // marked as opaque.
 void foo(Container* c);
 

@@ -1,4 +1,4 @@
-// bindgen-flags: --whitelist-type U --generate types
+// bindgen-flags: --allowlist-type U --generate types
 
 struct T {};
 struct U {

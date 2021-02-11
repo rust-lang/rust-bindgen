@@ -1,4 +1,4 @@
-// bindgen-flags: --whitelist-type Rooted -- -std=c++14
+// bindgen-flags: --allowlist-type Rooted -- -std=c++14
 
 template <typename a> using MaybeWrapped = a;
 class Rooted {

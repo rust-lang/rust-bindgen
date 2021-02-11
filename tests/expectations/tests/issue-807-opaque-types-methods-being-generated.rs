@@ -104,30 +104,30 @@ extern "C" {
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
-pub struct Whitelisted {
+pub struct Allowlisted {
     pub some_member: Opaque,
 }
 #[test]
-fn bindgen_test_layout_Whitelisted() {
+fn bindgen_test_layout_Allowlisted() {
     assert_eq!(
-        ::std::mem::size_of::<Whitelisted>(),
+        ::std::mem::size_of::<Allowlisted>(),
         1usize,
-        concat!("Size of: ", stringify!(Whitelisted))
+        concat!("Size of: ", stringify!(Allowlisted))
     );
     assert_eq!(
-        ::std::mem::align_of::<Whitelisted>(),
+        ::std::mem::align_of::<Allowlisted>(),
         1usize,
-        concat!("Alignment of ", stringify!(Whitelisted))
+        concat!("Alignment of ", stringify!(Allowlisted))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Whitelisted>())).some_member as *const _
+            &(*(::std::ptr::null::<Allowlisted>())).some_member as *const _
                 as usize
         },
         0usize,
         concat!(
             "Offset of field: ",
-            stringify!(Whitelisted),
+            stringify!(Allowlisted),
             "::",
             stringify!(some_member)
         )

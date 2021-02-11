@@ -1,4 +1,4 @@
-// bindgen-flags: --blacklist-type RefPtr --raw-line "#[derive(Clone, Copy, Debug)] pub struct RefPtr<T>(T);" --whitelist-type "HasRefPtr" -- -std=c++14
+// bindgen-flags: --blocklist-type RefPtr --raw-line "#[derive(Clone, Copy, Debug)] pub struct RefPtr<T>(T);" --allowlist-type "HasRefPtr" -- -std=c++14
 
 template <class> class RefPtr {};
 

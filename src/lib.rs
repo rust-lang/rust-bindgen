@@ -177,8 +177,8 @@ impl Default for CodegenConfig {
 ///
 /// // Configure and generate bindings.
 /// let bindings = builder().header("path/to/input/header")
-///     .whitelist_type("SomeCoolClass")
-///     .whitelist_function("do_some_cool_thing")
+///     .allowlist_type("SomeCoolClass")
+///     .allowlist_function("do_some_cool_thing")
 ///     .generate()?;
 ///
 /// // Write the generated bindings to an output file.
@@ -304,13 +304,13 @@ impl Builder {
             (&self.options.type_alias, "--type-alias"),
             (&self.options.new_type_alias, "--new-type-alias"),
             (&self.options.new_type_alias_deref, "--new-type-alias-deref"),
-            (&self.options.blacklisted_types, "--blacklist-type"),
-            (&self.options.blacklisted_functions, "--blacklist-function"),
-            (&self.options.blacklisted_items, "--blacklist-item"),
+            (&self.options.blocklisted_types, "--blocklist-type"),
+            (&self.options.blocklisted_functions, "--blocklist-function"),
+            (&self.options.blocklisted_items, "--blocklist-item"),
             (&self.options.opaque_types, "--opaque-type"),
-            (&self.options.whitelisted_functions, "--whitelist-function"),
-            (&self.options.whitelisted_types, "--whitelist-type"),
-            (&self.options.whitelisted_vars, "--whitelist-var"),
+            (&self.options.allowlisted_functions, "--allowlist-function"),
+            (&self.options.allowlisted_types, "--allowlist-type"),
+            (&self.options.allowlisted_vars, "--allowlist-var"),
             (&self.options.no_partialeq_types, "--no-partialeq"),
             (&self.options.no_copy_types, "--no-copy"),
             (&self.options.no_debug_types, "--no-debug"),
@@ -379,8 +379,8 @@ impl Builder {
             output_vector.push("--no-doc-comments".into());
         }
 
-        if !self.options.whitelist_recursively {
-            output_vector.push("--no-recursive-whitelist".into());
+        if !self.options.allowlist_recursively {
+            output_vector.push("--no-recursive-allowlist".into());
         }
 
         if self.options.objc_extern_crate {
@@ -661,9 +661,9 @@ impl Builder {
         self
     }
 
-    /// Whether to whitelist recursively or not. Defaults to true.
+    /// Whether to allowlist recursively or not. Defaults to true.
     ///
-    /// Given that we have explicitly whitelisted the "initiate_dance_party"
+    /// Given that we have explicitly allowlisted the "initiate_dance_party"
     /// function in this C header:
     ///
     /// ```c
@@ -676,20 +676,20 @@ impl Builder {
     ///
     /// We would normally generate bindings to both the `initiate_dance_party`
     /// function and the `MoonBoots` struct that it transitively references. By
-    /// configuring with `whitelist_recursively(false)`, `bindgen` will not emit
-    /// bindings for anything except the explicitly whitelisted items, and there
+    /// configuring with `allowlist_recursively(false)`, `bindgen` will not emit
+    /// bindings for anything except the explicitly allowlisted items, and there
     /// would be no emitted struct definition for `MoonBoots`. However, the
     /// `initiate_dance_party` function would still reference `MoonBoots`!
     ///
     /// **Disabling this feature will almost certainly cause `bindgen` to emit
     /// bindings that will not compile!** If you disable this feature, then it
     /// is *your* responsibility to provide definitions for every type that is
-    /// referenced from an explicitly whitelisted item. One way to provide the
+    /// referenced from an explicitly allowlisted item. One way to provide the
     /// definitions is by using the [`Builder::raw_line`](#method.raw_line)
     /// method, another would be to define them in Rust and then `include!(...)`
     /// the bindings immediately afterwards.
-    pub fn whitelist_recursively(mut self, doit: bool) -> Self {
-        self.options.whitelist_recursively = doit;
+    pub fn allowlist_recursively(mut self, doit: bool) -> Self {
+        self.options.allowlist_recursively = doit;
         self
     }
 
@@ -727,30 +727,53 @@ impl Builder {
 
     /// Hide the given type from the generated bindings. Regular expressions are
     /// supported.
-    #[deprecated(note = "Use blacklist_type instead")]
+    #[deprecated(note = "Use blocklist_type instead")]
     pub fn hide_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.blacklist_type(arg)
+        self.blocklist_type(arg)
+    }
+
+    /// Hide the given type from the generated bindings. Regular expressions are
+    /// supported.
+    #[deprecated(note = "Use blocklist_type instead")]
+    pub fn blacklist_type<T: AsRef<str>>(self, arg: T) -> Builder {
+        self.blocklist_type(arg)
     }
 
     /// Hide the given type from the generated bindings. Regular expressions are
     /// supported.
     ///
-    /// To blacklist types prefixed with "mylib" use `"mylib_.*"`.
+    /// To blocklist types prefixed with "mylib" use `"mylib_.*"`.
     /// For more complicated expressions check
     /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn blacklist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blacklisted_types.insert(arg);
+    pub fn blocklist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.blocklisted_types.insert(arg);
         self
     }
 
     /// Hide the given function from the generated bindings. Regular expressions
     /// are supported.
+    #[deprecated(note = "Use blocklist_function instead")]
+    pub fn blacklist_function<T: AsRef<str>>(self, arg: T) -> Builder {
+        self.blocklist_function(arg)
+    }
+
+    /// Hide the given function from the generated bindings. Regular expressions
+    /// are supported.
     ///
-    /// To blacklist functions prefixed with "mylib" use `"mylib_.*"`.
+    /// To blocklist functions prefixed with "mylib" use `"mylib_.*"`.
     /// For more complicated expressions check
     /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn blacklist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blacklisted_functions.insert(arg);
+    pub fn blocklist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.blocklisted_functions.insert(arg);
+        self
+    }
+
+    /// Hide the given item from the generated bindings, regardless of
+    /// whether it's a type, function, module, etc. Regular
+    /// expressions are supported.
+    #[deprecated(note = "Use blocklist_item instead")]
+    pub fn blacklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.blocklisted_items.insert(arg);
         self
     }
 
@@ -758,11 +781,11 @@ impl Builder {
     /// whether it's a type, function, module, etc. Regular
     /// expressions are supported.
     ///
-    /// To blacklist items prefixed with "mylib" use `"mylib_.*"`.
+    /// To blocklist items prefixed with "mylib" use `"mylib_.*"`.
     /// For more complicated expressions check
     /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn blacklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blacklisted_items.insert(arg);
+    pub fn blocklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.blocklisted_items.insert(arg);
         self
     }
 
@@ -777,64 +800,86 @@ impl Builder {
         self
     }
 
-    /// Whitelist the given type so that it (and all types that it transitively
+    /// Allowlist the given type so that it (and all types that it transitively
     /// refers to) appears in the generated bindings. Regular expressions are
     /// supported.
-    #[deprecated(note = "use whitelist_type instead")]
+    #[deprecated(note = "use allowlist_type instead")]
     pub fn whitelisted_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.whitelist_type(arg)
+        self.allowlist_type(arg)
     }
 
-    /// Whitelist the given type so that it (and all types that it transitively
+    /// Allowlist the given type so that it (and all types that it transitively
+    /// refers to) appears in the generated bindings. Regular expressions are
+    /// supported.
+    #[deprecated(note = "use allowlist_type instead")]
+    pub fn whitelist_type<T: AsRef<str>>(self, arg: T) -> Builder {
+        self.allowlist_type(arg)
+    }
+
+    /// Allowlist the given type so that it (and all types that it transitively
     /// refers to) appears in the generated bindings. Regular expressions are
     /// supported.
     ///
-    /// To whitelist types prefixed with "mylib" use `"mylib_.*"`.
+    /// To allowlist types prefixed with "mylib" use `"mylib_.*"`.
     /// For more complicated expressions check
     /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn whitelist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.whitelisted_types.insert(arg);
+    pub fn allowlist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.allowlisted_types.insert(arg);
         self
     }
 
-    /// Whitelist the given function so that it (and all types that it
+    /// Allowlist the given function so that it (and all types that it
     /// transitively refers to) appears in the generated bindings. Regular
     /// expressions are supported.
     ///
-    /// To whitelist functions prefixed with "mylib" use `"mylib_.*"`.
+    /// To allowlist functions prefixed with "mylib" use `"mylib_.*"`.
     /// For more complicated expressions check
     /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn whitelist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.whitelisted_functions.insert(arg);
+    pub fn allowlist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.allowlisted_functions.insert(arg);
         self
     }
 
-    /// Whitelist the given function.
+    /// Allowlist the given function.
     ///
-    /// Deprecated: use whitelist_function instead.
-    #[deprecated(note = "use whitelist_function instead")]
+    /// Deprecated: use allowlist_function instead.
+    #[deprecated(note = "use allowlist_function instead")]
+    pub fn whitelist_function<T: AsRef<str>>(self, arg: T) -> Builder {
+        self.allowlist_function(arg)
+    }
+
+    /// Allowlist the given function.
+    ///
+    /// Deprecated: use allowlist_function instead.
+    #[deprecated(note = "use allowlist_function instead")]
     pub fn whitelisted_function<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.whitelist_function(arg)
+        self.allowlist_function(arg)
     }
 
-    /// Whitelist the given variable so that it (and all types that it
+    /// Allowlist the given variable so that it (and all types that it
     /// transitively refers to) appears in the generated bindings. Regular
     /// expressions are supported.
     ///
-    /// To whitelist variables prefixed with "mylib" use `"mylib_.*"`.
+    /// To allowlist variables prefixed with "mylib" use `"mylib_.*"`.
     /// For more complicated expressions check
     /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn whitelist_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.whitelisted_vars.insert(arg);
+    pub fn allowlist_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.allowlisted_vars.insert(arg);
         self
     }
 
-    /// Whitelist the given variable.
+    /// Deprecated: use allowlist_var instead.
+    #[deprecated(note = "use allowlist_var instead")]
+    pub fn whitelist_var<T: AsRef<str>>(self, arg: T) -> Builder {
+        self.allowlist_var(arg)
+    }
+
+    /// Allowlist the given variable.
     ///
-    /// Deprecated: use whitelist_var instead.
-    #[deprecated(note = "use whitelist_var instead")]
+    /// Deprecated: use allowlist_var instead.
+    #[deprecated(note = "use allowlist_var instead")]
     pub fn whitelisted_var<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.whitelist_var(arg)
+        self.allowlist_var(arg)
     }
 
     /// Set the default style of code to generate for enums
@@ -1163,7 +1208,7 @@ impl Builder {
     /// This method disables that behavior.
     ///
     /// Note that this intentionally does not change the names used for
-    /// whitelisting and blacklisting, which should still be mangled with the
+    /// allowlisting and blocklisting, which should still be mangled with the
     /// namespaces.
     ///
     /// Note, also, that this option may cause bindgen to generate duplicate
@@ -1533,17 +1578,17 @@ impl Builder {
 /// Configuration options for generated bindings.
 #[derive(Debug)]
 struct BindgenOptions {
-    /// The set of types that have been blacklisted and should not appear
+    /// The set of types that have been blocklisted and should not appear
     /// anywhere in the generated code.
-    blacklisted_types: RegexSet,
+    blocklisted_types: RegexSet,
 
-    /// The set of functions that have been blacklisted and should not appear
+    /// The set of functions that have been blocklisted and should not appear
     /// in the generated code.
-    blacklisted_functions: RegexSet,
+    blocklisted_functions: RegexSet,
 
     /// The set of items, regardless of item-type, that have been
-    /// blacklisted and should not appear in the generated code.
-    blacklisted_items: RegexSet,
+    /// blocklisted and should not appear in the generated code.
+    blocklisted_items: RegexSet,
 
     /// The set of types that should be treated as opaque structures in the
     /// generated code.
@@ -1556,15 +1601,15 @@ struct BindgenOptions {
     /// code.
     ///
     /// This includes all types transitively reachable from any type in this
-    /// set. One might think of whitelisted types/vars/functions as GC roots,
+    /// set. One might think of allowlisted types/vars/functions as GC roots,
     /// and the generated Rust code as including everything that gets marked.
-    whitelisted_types: RegexSet,
+    allowlisted_types: RegexSet,
 
-    /// Whitelisted functions. See docs for `whitelisted_types` for more.
-    whitelisted_functions: RegexSet,
+    /// Allowlisted functions. See docs for `allowlisted_types` for more.
+    allowlisted_functions: RegexSet,
 
-    /// Whitelisted variables. See docs for `whitelisted_types` for more.
-    whitelisted_vars: RegexSet,
+    /// Allowlisted variables. See docs for `allowlisted_types` for more.
+    allowlisted_vars: RegexSet,
 
     /// The default style of code to generate for enums
     default_enum_style: codegen::EnumVariation,
@@ -1736,8 +1781,8 @@ struct BindgenOptions {
     /// Whether to generate inline functions. Defaults to false.
     generate_inline_functions: bool,
 
-    /// Whether to whitelist types recursively. Defaults to true.
-    whitelist_recursively: bool,
+    /// Whether to allowlist types recursively. Defaults to true.
+    allowlist_recursively: bool,
 
     /// Instead of emitting 'use objc;' to files generated from objective c files,
     /// generate '#[macro_use] extern crate objc;'
@@ -1777,7 +1822,7 @@ struct BindgenOptions {
 
     /// Whether we should record which items in the regex sets ever matched.
     ///
-    /// This may be a bit slower, but will enable reporting of unused whitelist
+    /// This may be a bit slower, but will enable reporting of unused allowlist
     /// items via the `error!` log.
     record_matches: bool,
 
@@ -1829,12 +1874,12 @@ impl ::std::panic::UnwindSafe for BindgenOptions {}
 impl BindgenOptions {
     fn build(&mut self) {
         let mut regex_sets = [
-            &mut self.whitelisted_vars,
-            &mut self.whitelisted_types,
-            &mut self.whitelisted_functions,
-            &mut self.blacklisted_types,
-            &mut self.blacklisted_functions,
-            &mut self.blacklisted_items,
+            &mut self.allowlisted_vars,
+            &mut self.allowlisted_types,
+            &mut self.allowlisted_functions,
+            &mut self.blocklisted_types,
+            &mut self.blocklisted_functions,
+            &mut self.blocklisted_items,
             &mut self.opaque_types,
             &mut self.bitfield_enums,
             &mut self.constified_enums,
@@ -1878,14 +1923,14 @@ impl Default for BindgenOptions {
         BindgenOptions {
             rust_target,
             rust_features: rust_target.into(),
-            blacklisted_types: Default::default(),
-            blacklisted_functions: Default::default(),
-            blacklisted_items: Default::default(),
+            blocklisted_types: Default::default(),
+            blocklisted_functions: Default::default(),
+            blocklisted_items: Default::default(),
             opaque_types: Default::default(),
             rustfmt_path: Default::default(),
-            whitelisted_types: Default::default(),
-            whitelisted_functions: Default::default(),
-            whitelisted_vars: Default::default(),
+            allowlisted_types: Default::default(),
+            allowlisted_functions: Default::default(),
+            allowlisted_vars: Default::default(),
             default_enum_style: Default::default(),
             bitfield_enums: Default::default(),
             newtype_enums: Default::default(),
@@ -1934,7 +1979,7 @@ impl Default for BindgenOptions {
             conservative_inline_namespaces: false,
             generate_comments: true,
             generate_inline_functions: false,
-            whitelist_recursively: true,
+            allowlist_recursively: true,
             generate_block: false,
             objc_extern_crate: false,
             block_extern_crate: false,
@@ -2520,8 +2565,8 @@ fn commandline_flag_unit_test_function() {
     //Test 2
     let bindings = crate::builder()
         .header("input_header")
-        .whitelist_type("Distinct_Type")
-        .whitelist_function("safe_function");
+        .allowlist_type("Distinct_Type")
+        .allowlist_function("safe_function");
 
     let command_line_flags = bindings.command_line_flags();
     let test_cases = vec![
@@ -2530,9 +2575,9 @@ fn commandline_flag_unit_test_function() {
         "--no-derive-default",
         "--generate",
         "functions,types,vars,methods,constructors,destructors",
-        "--whitelist-type",
+        "--allowlist-type",
         "Distinct_Type",
-        "--whitelist-function",
+        "--allowlist-function",
         "safe_function",
     ]
     .iter()

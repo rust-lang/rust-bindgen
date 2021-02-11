@@ -194,7 +194,7 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
 
     fn initial_worklist(&self) -> Vec<TypeId> {
         self.ctx
-            .whitelisted_items()
+            .allowlisted_items()
             .iter()
             .cloned()
             .filter_map(|id| id.as_type_id(self.ctx))

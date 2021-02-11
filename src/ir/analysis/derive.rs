@@ -138,9 +138,9 @@ impl<'ctx> CannotDerive<'ctx> {
     }
 
     fn constrain_type(&mut self, item: &Item, ty: &Type) -> CanDerive {
-        if !self.ctx.whitelisted_items().contains(&item.id()) {
+        if !self.ctx.allowlisted_items().contains(&item.id()) {
             trace!(
-                "    cannot derive {} for blacklisted type",
+                "    cannot derive {} for blocklisted type",
                 self.derive_trait
             );
             return CanDerive::No;
@@ -640,10 +640,10 @@ impl<'ctx> MonotoneFramework for CannotDerive<'ctx> {
     }
 
     fn initial_worklist(&self) -> Vec<ItemId> {
-        // The transitive closure of all whitelisted items, including explicitly
-        // blacklisted items.
+        // The transitive closure of all allowlisted items, including explicitly
+        // blocklisted items.
         self.ctx
-            .whitelisted_items()
+            .allowlisted_items()
             .iter()
             .cloned()
             .flat_map(|i| {

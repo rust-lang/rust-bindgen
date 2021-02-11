@@ -136,22 +136,25 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
-            Arg::with_name("blacklist-type")
-                .long("blacklist-type")
+            Arg::with_name("blocklist-type")
+                .alias("blacklist-type")
+                .long("blocklist-type")
                 .help("Mark <type> as hidden.")
                 .value_name("type")
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
-            Arg::with_name("blacklist-function")
-                .long("blacklist-function")
+            Arg::with_name("blocklist-function")
+                .alias("blacklist-function")
+                .long("blocklist-function")
                 .help("Mark <function> as hidden.")
                 .value_name("function")
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
-            Arg::with_name("blacklist-item")
-                .long("blacklist-item")
+            Arg::with_name("blocklist-item")
+                .alias("blacklist-item")
+                .long("blocklist-item")
                 .help("Mark <item> as hidden.")
                 .value_name("item")
                 .takes_value(true)
@@ -210,12 +213,13 @@ where
                     "Avoid including doc comments in the output, see: \
                      https://github.com/rust-lang/rust-bindgen/issues/426",
                 ),
-            Arg::with_name("no-recursive-whitelist")
-                .long("no-recursive-whitelist")
+            Arg::with_name("no-recursive-allowlist")
+                .long("no-recursive-allowlist")
+                .alias("no-recursive-whitelist")
                 .help(
-                    "Disable whitelisting types recursively. This will cause \
+                    "Disable allowlisting types recursively. This will cause \
                      bindgen to emit Rust code that won't compile! See the \
-                     `bindgen::Builder::whitelist_recursively` method's \
+                     `bindgen::Builder::allowlist_recursively` method's \
                      documentation for details.",
                 ),
             Arg::with_name("objc-extern-crate")
@@ -364,11 +368,12 @@ where
             Arg::with_name("use-msvc-mangling")
                 .long("use-msvc-mangling")
                 .help("MSVC C++ ABI mangling. DEPRECATED: Has no effect."),
-            Arg::with_name("whitelist-function")
-                .long("whitelist-function")
+            Arg::with_name("allowlist-function")
+                .long("allowlist-function")
+                .alias("whitelist-function")
                 .help(
-                    "Whitelist all the free-standing functions matching \
-                     <regex>. Other non-whitelisted functions will not be \
+                    "Allowlist all the free-standing functions matching \
+                     <regex>. Other non-allowlisted functions will not be \
                      generated.",
                 )
                 .value_name("regex")
@@ -378,21 +383,23 @@ where
             Arg::with_name("generate-inline-functions")
                 .long("generate-inline-functions")
                 .help("Generate inline functions."),
-            Arg::with_name("whitelist-type")
-                .long("whitelist-type")
+            Arg::with_name("allowlist-type")
+                .long("allowlist-type")
+                .alias("whitelist-type")
                 .help(
-                    "Only generate types matching <regex>. Other non-whitelisted types will \
+                    "Only generate types matching <regex>. Other non-allowlisted types will \
                      not be generated.",
                 )
                 .value_name("regex")
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
-            Arg::with_name("whitelist-var")
-                .long("whitelist-var")
+            Arg::with_name("allowlist-var")
+                .long("allowlist-var")
+                .alias("whitelist-var")
                 .help(
-                    "Whitelist all the free-standing variables matching \
-                     <regex>. Other non-whitelisted variables will not be \
+                    "Allowlist all the free-standing variables matching \
+                     <regex>. Other non-allowlisted variables will not be \
                      generated.",
                 )
                 .value_name("regex")
@@ -582,21 +589,21 @@ where
         }
     }
 
-    if let Some(hidden_types) = matches.values_of("blacklist-type") {
+    if let Some(hidden_types) = matches.values_of("blocklist-type") {
         for ty in hidden_types {
-            builder = builder.blacklist_type(ty);
+            builder = builder.blocklist_type(ty);
         }
     }
 
-    if let Some(hidden_functions) = matches.values_of("blacklist-function") {
+    if let Some(hidden_functions) = matches.values_of("blocklist-function") {
         for fun in hidden_functions {
-            builder = builder.blacklist_function(fun);
+            builder = builder.blocklist_function(fun);
         }
     }
 
-    if let Some(hidden_identifiers) = matches.values_of("blacklist-item") {
+    if let Some(hidden_identifiers) = matches.values_of("blocklist-item") {
         for id in hidden_identifiers {
-            builder = builder.blacklist_item(id);
+            builder = builder.blocklist_item(id);
         }
     }
 
@@ -758,8 +765,8 @@ where
         builder = builder.generate_comments(false);
     }
 
-    if matches.is_present("no-recursive-whitelist") {
-        builder = builder.whitelist_recursively(false);
+    if matches.is_present("no-recursive-allowlist") {
+        builder = builder.allowlist_recursively(false);
     }
 
     if matches.is_present("objc-extern-crate") {
@@ -809,21 +816,21 @@ where
         builder = builder.generate_inline_functions(true);
     }
 
-    if let Some(whitelist) = matches.values_of("whitelist-function") {
-        for regex in whitelist {
-            builder = builder.whitelist_function(regex);
+    if let Some(allowlist) = matches.values_of("allowlist-function") {
+        for regex in allowlist {
+            builder = builder.allowlist_function(regex);
         }
     }
 
-    if let Some(whitelist) = matches.values_of("whitelist-type") {
-        for regex in whitelist {
-            builder = builder.whitelist_type(regex);
+    if let Some(allowlist) = matches.values_of("allowlist-type") {
+        for regex in allowlist {
+            builder = builder.allowlist_type(regex);
         }
     }
 
-    if let Some(whitelist) = matches.values_of("whitelist-var") {
-        for regex in whitelist {
-            builder = builder.whitelist_var(regex);
+    if let Some(allowlist) = matches.values_of("allowlist-var") {
+        for regex in allowlist {
+            builder = builder.allowlist_var(regex);
         }
     }
 

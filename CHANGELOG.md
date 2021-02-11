@@ -127,6 +127,42 @@
 
 ## Deprecated
 
+* `bindgen::Builder::whitelist_type` is deprecated in favor of
+  `bindgen::Builder::allowlist_type`. [#1812][]
+
+* `bindgen::Builder::whitelist_function` is deprecated in favor of
+  `bindgen::Builder::allowlist_function`. [#1812][]
+
+* `bindgen::Builder::whitelist_var` is deprecated in favor of
+  `bindgen::Builder::allowlist_var`. [#1812][]
+
+* `--whitelist-type` is deprecated in favor of
+  `--allowlist-type`. [#1812][]
+
+* `--whitelist-function` is deprecated in favor of
+  `--allowlist-function`. [#1812][]
+
+* `--whitelist-var` is deprecated in favor of
+  `--allowlist-var`. [#1812][]
+
+* `bindgen::Builder::blacklist_type` is deprecated in favor of
+  `bindgen::Builder::blocklist_type`. [#1812][]
+
+* `bindgen::Builder::blacklist_function` is deprecated in favor of
+  `bindgen::Builder::blocklist_function`. [#1812][]
+
+* `bindgen::Builder::blacklist_item` is deprecated in favor of
+  `bindgen::Builder::blocklist_item`. [#1812][]
+
+* `--blacklist-type` is deprecated in favor of
+  `--blocklist-type`. [#1812][]
+
+* `--blacklist-function` is deprecated in favor of
+  `--blocklist-function`. [#1812][]
+
+* `--blacklist-item` is deprecated in favor of
+  `--blocklist-item`. [#1812][]
+
 ## Removed
 
 ## Fixed
