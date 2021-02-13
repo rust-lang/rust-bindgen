@@ -146,7 +146,7 @@ fn compare_generated_header(
             expectation.push("libclang-3.9");
         } else {
             match clang_version().parsed {
-                None => {}
+                None => expectation.push("libclang-9"),
                 Some(version) => {
                     let (maj, min) = version;
                     let version_str = if maj >= 9 {
