@@ -2444,10 +2444,12 @@ pub struct ClangVersion {
 pub fn clang_version() -> ClangVersion {
     ensure_libclang_is_loaded();
 
+    //Debian clang version 11.0.1-2
     let raw_v: String = clang::extract_clang_version();
     let split_v: Option<Vec<&str>> = raw_v
         .split_whitespace()
-        .nth(2)
+        .filter(|t| t.chars().next().map_or(false, |v| v.is_ascii_digit()))
+        .next()
         .map(|v| v.split('.').collect());
     match split_v {
         Some(v) => {
