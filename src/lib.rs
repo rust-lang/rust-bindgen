@@ -642,12 +642,7 @@ impl Builder {
     }
 
     /// Whether the generated bindings should contain documentation comments
-    /// (docstrings) or not.
-    ///
-    /// This ideally will always be true, but it may need to be false until we
-    /// implement some processing on comments to work around issues as described
-    /// in [rust-bindgen issue
-    /// #426](https://github.com/rust-lang/rust-bindgen/issues/426).
+    /// (docstrings) or not. This is set to true by default.
     ///
     /// Note that clang by default excludes comments from system headers, pass
     /// `-fretain-comments-from-system-headers` as
@@ -1775,7 +1770,7 @@ struct BindgenOptions {
     conservative_inline_namespaces: bool,
 
     /// Whether to keep documentation comments in the generated output. See the
-    /// documentation for more details.
+    /// documentation for more details. Defaults to true.
     generate_comments: bool,
 
     /// Whether to generate inline functions. Defaults to false.
