@@ -549,6 +549,10 @@ impl Builder {
             output_vector.push("--respect-cxx-access-specs".into());
         }
 
+        if self.options.derive_ignore_blocklist {
+            output_vector.push("--derive-ignore-blocklist".into());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -1568,6 +1572,12 @@ impl Builder {
         self.options.respect_cxx_access_specs = doit;
         self
     }
+
+    /// Ignore the type blocklist when computing type derive information
+    pub fn derive_ignore_blocklist(mut self, doit: bool) -> Self {
+        self.options.derive_ignore_blocklist = doit;
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -1859,6 +1869,9 @@ struct BindgenOptions {
     /// Only make generated bindings `pub` if the items would be publically accessible
     /// by C++.
     respect_cxx_access_specs: bool,
+
+    /// Ignore the type blocklist when computing type derive information
+    derive_ignore_blocklist: bool,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1996,6 +2009,7 @@ impl Default for BindgenOptions {
             wasm_import_module_name: None,
             dynamic_library_name: None,
             respect_cxx_access_specs: false,
+            derive_ignore_blocklist: false,
         }
     }
 }
