@@ -267,7 +267,7 @@ fn compare_generated_header(
         if let Err(e) =
             compare_generated_header(&header, roundtrip_builder, false)
         {
-            return Err(Error::new(ErrorKind::Other, format!("Checking CLI flags roundtrip errored! You probably need to fix Builder::command_line_args. {}", e)));
+            return Err(Error::new(ErrorKind::Other, format!("Checking CLI flags roundtrip errored! You probably need to fix Builder::command_line_flags. {}", e)));
         }
     }
 
