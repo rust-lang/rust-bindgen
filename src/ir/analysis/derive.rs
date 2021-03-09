@@ -138,8 +138,9 @@ impl<'ctx> CannotDerive<'ctx> {
     }
 
     fn constrain_type(&mut self, item: &Item, ty: &Type) -> CanDerive {
-        if !self.ctx.allowlisted_items().contains(&item.id()) {
-            trace!(
+        if !self.ctx.options().derive_ignore_blocklist &&
+            !self.ctx.allowlisted_items().contains(&item.id())
+        {            trace!(
                 "    cannot derive {} for blocklisted type",
                 self.derive_trait
             );
