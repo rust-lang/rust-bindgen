@@ -2524,7 +2524,7 @@ impl<'a> EnumBuilder<'a> {
     /// the representation, and which variation it should be generated as.
     fn new(
         name: &'a str,
-        attrs: Vec<proc_macro2::TokenStream>,
+        mut attrs: Vec<proc_macro2::TokenStream>,
         repr: proc_macro2::TokenStream,
         enum_variation: EnumVariation,
         enum_codegen_depth: usize,
@@ -2543,6 +2543,8 @@ impl<'a> EnumBuilder<'a> {
             },
 
             EnumVariation::Rust { .. } => {
+                // `repr` is guaranteed to be Rustified in Enum::codegen
+                attrs.insert(0, quote! { #[repr( #repr )] });
                 let tokens = quote!();
                 EnumBuilder::Rust {
                     codegen_depth: enum_codegen_depth + 1,
@@ -2820,51 +2822,73 @@ impl CodeGenerator for Enum {
         let ident = ctx.rust_ident(&name);
         let enum_ty = item.expect_type();
         let layout = enum_ty.layout(ctx);
+        let variation = self.computed_enum_variation(ctx, item);
 
-        let repr = self.repr().map(|repr| ctx.resolve_type(repr));
-        let repr = match repr {
-            Some(repr) => match *repr.canonical_type(ctx).kind() {
-                TypeKind::Int(int_kind) => int_kind,
-                _ => panic!("Unexpected type as enum repr"),
-            },
-            None => {
-                warn!(
-                    "Guessing type of enum! Forward declarations of enums \
-                     shouldn't be legal!"
-                );
-                IntKind::Int
+        let repr_translated;
+        let repr = match self.repr().map(|repr| ctx.resolve_type(repr)) {
+            Some(repr)
+                if !ctx.options().translate_enum_integer_types &&
+                    !variation.is_rust() =>
+            {
+                repr
             }
-        };
+            repr => {
+                // An enum's integer type is translated to a native Rust
+                // integer type in 3 cases:
+                // * the enum is Rustified and we need a translated type for
+                //   the repr attribute
+                // * the representation couldn't be determined from the C source
+                // * it was explicitly requested as a bindgen option
 
-        let signed = repr.is_signed();
-        let size = layout
-            .map(|l| l.size)
-            .or_else(|| repr.known_size())
-            .unwrap_or(0);
+                let kind = match repr {
+                    Some(repr) => match *repr.canonical_type(ctx).kind() {
+                        TypeKind::Int(int_kind) => int_kind,
+                        _ => panic!("Unexpected type as enum repr"),
+                    },
+                    None => {
+                        warn!(
+                            "Guessing type of enum! Forward declarations of enums \
+                             shouldn't be legal!"
+                        );
+                        IntKind::Int
+                    }
+                };
 
-        let repr_name = match (signed, size) {
-            (true, 1) => "i8",
-            (false, 1) => "u8",
-            (true, 2) => "i16",
-            (false, 2) => "u16",
-            (true, 4) => "i32",
-            (false, 4) => "u32",
-            (true, 8) => "i64",
-            (false, 8) => "u64",
-            _ => {
-                warn!("invalid enum decl: signed: {}, size: {}", signed, size);
-                "i32"
+                let signed = kind.is_signed();
+                let size = layout
+                    .map(|l| l.size)
+                    .or_else(|| kind.known_size())
+                    .unwrap_or(0);
+
+                let translated = match (signed, size) {
+                    (true, 1) => IntKind::I8,
+                    (false, 1) => IntKind::U8,
+                    (true, 2) => IntKind::I16,
+                    (false, 2) => IntKind::U16,
+                    (true, 4) => IntKind::I32,
+                    (false, 4) => IntKind::U32,
+                    (true, 8) => IntKind::I64,
+                    (false, 8) => IntKind::U64,
+                    _ => {
+                        warn!(
+                            "invalid enum decl: signed: {}, size: {}",
+                            signed, size
+                        );
+                        IntKind::I32
+                    }
+                };
+
+                repr_translated =
+                    Type::new(None, None, TypeKind::Int(translated), false);
+                &repr_translated
             }
         };
 
         let mut attrs = vec![];
 
-        let variation = self.computed_enum_variation(ctx, item);
-
         // TODO(emilio): Delegate this to the builders?
         match variation {
             EnumVariation::Rust { non_exhaustive } => {
-                attrs.push(attributes::repr(repr_name));
                 if non_exhaustive &&
                     ctx.options().rust_features().non_exhaustive
                 {
@@ -2934,13 +2958,7 @@ impl CodeGenerator for Enum {
             });
         }
 
-        let repr = match self.repr() {
-            Some(ty) => ty.to_rust_ty_or_opaque(ctx, &()),
-            None => {
-                let repr_name = ctx.rust_ident_raw(repr_name);
-                quote! { #repr_name }
-            }
-        };
+        let repr = repr.to_rust_ty_or_opaque(ctx, item);
 
         let mut builder = EnumBuilder::new(
             &name,
