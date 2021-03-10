@@ -17,6 +17,8 @@ use std::sync::Once;
 mod options;
 use crate::options::builder_from_flags;
 
+mod parse_callbacks;
+
 // Run `rustfmt` on the given source string and return a tuple of the formatted
 // bindings, and rustfmt's stderr.
 fn rustfmt(source: String) -> (String, String) {
@@ -115,7 +117,7 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
 
 fn compare_generated_header(
     header: &PathBuf,
-    builder: Builder,
+    builder: BuilderState,
     check_roundtrip: bool,
 ) -> Result<(), Error> {
     let file_name = header.file_name().ok_or(Error::new(
@@ -190,13 +192,7 @@ fn compare_generated_header(
         ),
     };
 
-    let flags = if check_roundtrip {
-        let mut flags = builder.command_line_flags();
-        flags.insert(0, "bindgen".into());
-        flags
-    } else {
-        vec![]
-    };
+    let (builder, roundtrip_builder) = builder.into_builder(check_roundtrip)?;
 
     // We skip the generate() error here so we get a full diff below
     let (actual, rustfmt_stderr) = match builder.generate() {
@@ -262,8 +258,7 @@ fn compare_generated_header(
         return Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation or with BINDGEN_TESTS_DIFFTOOL=meld to do this manually."));
     }
 
-    if check_roundtrip {
-        let roundtrip_builder = builder_from_flags(flags.into_iter())?.0;
+    if let Some(roundtrip_builder) = roundtrip_builder {
         if let Err(e) =
             compare_generated_header(&header, roundtrip_builder, false)
         {
@@ -281,7 +276,36 @@ fn builder() -> Builder {
     bindgen::builder().disable_header_comment()
 }
 
-fn create_bindgen_builder(header: &PathBuf) -> Result<Builder, Error> {
+struct BuilderState {
+    builder: Builder,
+    parse_callbacks: Option<String>,
+}
+
+impl BuilderState {
+    fn into_builder(
+        self,
+        with_roundtrip_builder: bool,
+    ) -> Result<(Builder, Option<BuilderState>), Error> {
+        let roundtrip_builder = if with_roundtrip_builder {
+            let mut flags = self.builder.command_line_flags();
+            flags.insert(0, "bindgen".into());
+            let mut builder = builder_from_flags(flags.into_iter())?.0;
+            if let Some(ref parse_cb) = self.parse_callbacks {
+                builder =
+                    builder.parse_callbacks(parse_callbacks::lookup(&parse_cb));
+            }
+            Some(BuilderState {
+                builder,
+                parse_callbacks: self.parse_callbacks,
+            })
+        } else {
+            None
+        };
+        Ok((self.builder, roundtrip_builder))
+    }
+}
+
+fn create_bindgen_builder(header: &PathBuf) -> Result<BuilderState, Error> {
     #[cfg(feature = "logging")]
     let _ = env_logger::try_init();
 
@@ -290,6 +314,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Builder, Error> {
 
     // Scoop up bindgen-flags from test header
     let mut flags = Vec::with_capacity(2);
+    let mut parse_callbacks = None;
 
     for line in reader.lines() {
         let line = line?;
@@ -311,6 +336,10 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Builder, Error> {
                 .map(ToString::to_string)
                 .chain(flags)
                 .collect();
+        } else if line.contains("bindgen-parse-callbacks: ") {
+            let parse_cb =
+                line.split("bindgen-parse-callbacks: ").last().unwrap();
+            parse_callbacks = Some(parse_cb.to_owned());
         }
     }
 
@@ -353,7 +382,14 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Builder, Error> {
         .map(ToString::to_string)
         .chain(flags.into_iter());
 
-    builder_from_flags(args).map(|(builder, _, _)| builder)
+    let mut builder = builder_from_flags(args)?.0;
+    if let Some(ref parse_cb) = parse_callbacks {
+        builder = builder.parse_callbacks(parse_callbacks::lookup(&parse_cb));
+    }
+    Ok(BuilderState {
+        builder,
+        parse_callbacks,
+    })
 }
 
 macro_rules! test_header {
