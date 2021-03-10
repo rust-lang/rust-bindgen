@@ -549,6 +549,10 @@ impl Builder {
             output_vector.push("--respect-cxx-access-specs".into());
         }
 
+        if self.options.translate_enum_integer_types {
+            output_vector.push("--translate-enum-integer-types".into());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -1568,6 +1572,16 @@ impl Builder {
         self.options.respect_cxx_access_specs = doit;
         self
     }
+
+    /// Always translate enum integer types to native Rust integer types.
+    ///
+    /// This will result in enums having types such as `u32` and `i16` instead
+    /// of `c_uint` and `c_short`. Types for Rustified enums are always
+    /// translated.
+    pub fn translate_enum_integer_types(mut self, doit: bool) -> Self {
+        self.options.translate_enum_integer_types = doit;
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -1859,6 +1873,9 @@ struct BindgenOptions {
     /// Only make generated bindings `pub` if the items would be publically accessible
     /// by C++.
     respect_cxx_access_specs: bool,
+
+    /// Always translate enum integer types to native Rust integer types.
+    translate_enum_integer_types: bool,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1996,6 +2013,7 @@ impl Default for BindgenOptions {
             wasm_import_module_name: None,
             dynamic_library_name: None,
             respect_cxx_access_specs: false,
+            translate_enum_integer_types: false,
         }
     }
 }

@@ -503,6 +503,9 @@ where
             Arg::with_name("respect-cxx-access-specs")
                 .long("respect-cxx-access-specs")
                 .help("Makes generated bindings `pub` only for items if the items are publically accessible in C++."),
+            Arg::with_name("translate-enum-integer-types")
+                .long("translate-enum-integer-types")
+                .help("Always translate enum integer types to native Rust integer types."),
         ]) // .args()
         .get_matches_from(args);
 
@@ -927,6 +930,10 @@ where
 
     if matches.is_present("respect-cxx-access-specs") {
         builder = builder.respect_cxx_access_specs(true);
+    }
+
+    if matches.is_present("translate-enum-integer-types") {
+        builder = builder.translate_enum_integer_types(true);
     }
 
     let verbose = matches.is_present("verbose");
