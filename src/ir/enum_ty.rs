@@ -118,7 +118,7 @@ impl Enum {
                             }
                         });
 
-                    let name = ctx
+                    let new_name = ctx
                         .parse_callbacks()
                         .and_then(|callbacks| {
                             callbacks.enum_variant_name(type_name, &name, val)
@@ -130,10 +130,11 @@ impl Enum {
                                 .last()
                                 .cloned()
                         })
-                        .unwrap_or(name);
+                        .unwrap_or_else(|| name.clone());
 
                     let comment = cursor.raw_comment();
                     variants.push(EnumVariant::new(
+                        new_name,
                         name,
                         comment,
                         val,
@@ -224,6 +225,9 @@ pub struct EnumVariant {
     /// The name of the variant.
     name: String,
 
+    /// The original name of the variant (without user mangling)
+    name_for_allowlisting: String,
+
     /// An optional doc comment.
     comment: Option<String>,
 
@@ -251,12 +255,14 @@ impl EnumVariant {
     /// Construct a new enumeration variant from the given parts.
     pub fn new(
         name: String,
+        name_for_allowlisting: String,
         comment: Option<String>,
         val: EnumVariantValue,
         custom_behavior: Option<EnumVariantCustomBehavior>,
     ) -> Self {
         EnumVariant {
             name,
+            name_for_allowlisting,
             comment,
             val,
             custom_behavior,
@@ -266,6 +272,11 @@ impl EnumVariant {
     /// Get this variant's name.
     pub fn name(&self) -> &str {
         &self.name
+    }
+
+    /// Get this variant's name.
+    pub fn name_for_allowlisting(&self) -> &str {
+        &self.name_for_allowlisting
     }
 
     /// Get this variant's value.
