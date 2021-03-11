@@ -503,9 +503,6 @@ where
             Arg::with_name("respect-cxx-access-specs")
                 .long("respect-cxx-access-specs")
                 .help("Makes generated bindings `pub` only for items if the items are publically accessible in C++."),
-            Arg::with_name("derive-ignore-blocklist")
-                .long("derive-ignore-blocklist")
-                .help("Ignore the type blocklist when computing type derive information"),
         ]) // .args()
         .get_matches_from(args);
 
@@ -930,10 +927,6 @@ where
 
     if matches.is_present("respect-cxx-access-specs") {
         builder = builder.respect_cxx_access_specs(true);
-    }
-
-    if matches.is_present("derive-ignore-blocklist") {
-        builder = builder.derive_ignore_blocklist(true);
     }
 
     let verbose = matches.is_present("verbose");
