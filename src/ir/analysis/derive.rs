@@ -16,7 +16,7 @@ use crate::ir::ty::{Type, TypeKind};
 use crate::{Entry, HashMap, HashSet};
 
 /// Which trait to consider when doing the `CannotDerive` analysis.
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum DeriveTrait {
     /// The `Copy` trait.
     Copy,
@@ -139,11 +139,24 @@ impl<'ctx> CannotDerive<'ctx> {
 
     fn constrain_type(&mut self, item: &Item, ty: &Type) -> CanDerive {
         if !self.ctx.allowlisted_items().contains(&item.id()) {
-            trace!(
-                "    cannot derive {} for blocklisted type",
-                self.derive_trait
-            );
-            return CanDerive::No;
+            let can_derive = self
+                .ctx
+                .blocklisted_type_implements_trait(item, self.derive_trait);
+            match can_derive {
+                CanDerive::Yes => trace!(
+                    "    blocklisted type explicitly implements {}",
+                    self.derive_trait
+                ),
+                CanDerive::Manually => trace!(
+                    "    blocklisted type requires manual implementation of {}",
+                    self.derive_trait
+                ),
+                CanDerive::No => trace!(
+                    "    cannot derive {} for blocklisted type",
+                    self.derive_trait
+                ),
+            }
+            return can_derive;
         }
 
         if self.derive_trait.not_by_name(self.ctx, &item) {

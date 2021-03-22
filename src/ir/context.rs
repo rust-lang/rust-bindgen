@@ -28,7 +28,7 @@ use cexpr;
 use clang_sys;
 use proc_macro2::{Ident, Span};
 use std::borrow::Cow;
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::collections::HashMap as StdHashMap;
 use std::iter::IntoIterator;
 use std::mem;
@@ -380,6 +380,10 @@ pub struct BindgenContext {
     /// computed after parsing our IR, and before running any of our analyses.
     allowlisted: Option<ItemSet>,
 
+    /// Cache for calls to `ParseCallbacks::blocklisted_type_implements_trait`
+    blocklisted_types_implement_traits:
+        RefCell<HashMap<DeriveTrait, HashMap<ItemId, CanDerive>>>,
+
     /// The set of `ItemId`s that are allowlisted for code generation _and_ that
     /// we should generate accounting for the codegen options.
     ///
@@ -560,6 +564,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             options,
             generated_bindgen_complex: Cell::new(false),
             allowlisted: None,
+            blocklisted_types_implement_traits: Default::default(),
             codegen_items: None,
             used_template_parameters: None,
             need_bitfield_allocation: Default::default(),
@@ -2203,6 +2208,37 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         assert!(self.current_module == self.root_module);
 
         self.allowlisted.as_ref().unwrap()
+    }
+
+    /// Check whether a particular blocklisted type implements a trait or not.
+    /// Results may be cached.
+    pub fn blocklisted_type_implements_trait(
+        &self,
+        item: &Item,
+        derive_trait: DeriveTrait,
+    ) -> CanDerive {
+        assert!(self.in_codegen_phase());
+        assert!(self.current_module == self.root_module);
+
+        let cb = match self.options.parse_callbacks {
+            Some(ref cb) => cb,
+            None => return CanDerive::No,
+        };
+
+        *self
+            .blocklisted_types_implement_traits
+            .borrow_mut()
+            .entry(derive_trait)
+            .or_default()
+            .entry(item.id())
+            .or_insert_with(|| {
+                item.expect_type()
+                    .name()
+                    .and_then(|name| {
+                        cb.blocklisted_type_implements_trait(name, derive_trait)
+                    })
+                    .unwrap_or(CanDerive::No)
+            })
     }
 
     /// Get a reference to the set of items we should generate.
