@@ -90,14 +90,20 @@ impl DynamicItems {
                     path: P
                 ) -> Result<Self, ::libloading::Error>
                 where P: AsRef<::std::ffi::OsStr> {
-                    let __library = ::libloading::Library::new(path)?;
+                    let library = ::libloading::Library::new(path)?;
+                    Ok(Self::from_library(library))
+                }
+
+                pub unsafe fn from_library<L>(
+                    library: L
+                ) -> Self
+                where L: Into<::libloading::Library> {
+                    let __library = library.into();
                     #( #constructor_inits )*
-                    Ok(
-                        #lib_ident {
-                            __library,
-                            #( #init_fields ),*
-                        }
-                    )
+                    #lib_ident {
+                        __library,
+                        #( #init_fields ),*
+                    }
                 }
 
                 #( #struct_implementation )*

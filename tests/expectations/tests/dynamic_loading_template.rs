@@ -19,14 +19,21 @@ impl TestLib {
     where
         P: AsRef<::std::ffi::OsStr>,
     {
-        let __library = ::libloading::Library::new(path)?;
+        let library = ::libloading::Library::new(path)?;
+        Ok(Self::from_library(library))
+    }
+    pub unsafe fn from_library<L>(library: L) -> Self
+    where
+        L: Into<::libloading::Library>,
+    {
+        let __library = library.into();
         let foo = __library.get(b"foo\0").map(|sym| *sym);
         let foo1 = __library.get(b"foo1\0").map(|sym| *sym);
-        Ok(TestLib {
+        TestLib {
             __library,
             foo,
             foo1,
-        })
+        }
     }
     pub unsafe fn foo(
         &self,
