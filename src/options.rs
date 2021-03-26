@@ -500,6 +500,9 @@ where
                 .long("dynamic-loading")
                 .takes_value(true)
                 .help("Use dynamic loading mode with the given library name."),
+            Arg::with_name("dynamic-link-require-all")
+                .long("dynamic-link-require-all")
+                .help("Require successful linkage to all functions in the library."),
             Arg::with_name("respect-cxx-access-specs")
                 .long("respect-cxx-access-specs")
                 .help("Makes generated bindings `pub` only for items if the items are publically accessible in C++."),
@@ -926,6 +929,10 @@ where
 
     if let Some(dynamic_library_name) = matches.value_of("dynamic-loading") {
         builder = builder.dynamic_library_name(dynamic_library_name);
+    }
+
+    if matches.is_present("dynamic-link-require-all") {
+        builder = builder.dynamic_link_require_all(true);
     }
 
     if matches.is_present("respect-cxx-access-specs") {

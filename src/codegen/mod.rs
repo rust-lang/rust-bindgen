@@ -3869,6 +3869,7 @@ impl CodeGenerator for Function {
                 ident,
                 abi,
                 signature.is_variadic(),
+                ctx.options().dynamic_link_require_all,
                 args,
                 args_identifiers,
                 ret,

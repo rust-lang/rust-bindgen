@@ -5,6 +5,11 @@ use proc_macro2::Ident;
 /// Used to build the output tokens for dynamic bindings.
 #[derive(Default)]
 pub struct DynamicItems {
+    /// Tracks whether or not we contain any required symbols.
+    /// If so, the signature of the generated `from_library` function
+    /// will be altered to return a `Result<Self, ::libloading::Error>`
+    has_required: bool,
+
     /// Tracks the tokens that will appears inside the library struct -- e.g.:
     /// ```ignore
     /// struct Lib {
@@ -77,6 +82,11 @@ impl DynamicItems {
         let constructor_inits = &self.constructor_inits;
         let init_fields = &self.init_fields;
         let struct_implementation = &self.struct_implementation;
+
+        // FIXME: Is there a better way to lay this out? Conditional in the quote
+        // macro?
+        // If we have any required symbols, we must alter the signature of `from_library`
+        // so that it can return a failure code.
         quote! {
             extern crate libloading;
 
@@ -91,19 +101,19 @@ impl DynamicItems {
                 ) -> Result<Self, ::libloading::Error>
                 where P: AsRef<::std::ffi::OsStr> {
                     let library = ::libloading::Library::new(path)?;
-                    Ok(Self::from_library(library))
+                    Self::from_library(library)
                 }
 
                 pub unsafe fn from_library<L>(
                     library: L
-                ) -> Self
+                ) -> Result<Self, ::libloading::Error>
                 where L: Into<::libloading::Library> {
                     let __library = library.into();
                     #( #constructor_inits )*
-                    #lib_ident {
+                    Ok(#lib_ident {
                         __library,
                         #( #init_fields ),*
-                    }
+                    })
                 }
 
                 #( #struct_implementation )*
@@ -116,6 +126,7 @@ impl DynamicItems {
         ident: Ident,
         abi: Abi,
         is_variadic: bool,
+        is_required: bool,
         args: Vec<proc_macro2::TokenStream>,
         args_identifiers: Vec<proc_macro2::TokenStream>,
         ret: proc_macro2::TokenStream,
@@ -125,24 +136,50 @@ impl DynamicItems {
             assert_eq!(args.len(), args_identifiers.len());
         }
 
-        self.struct_members.push(quote! {
-            pub #ident: Result<unsafe extern #abi fn ( #( #args ),* ) #ret, ::libloading::Error>,
-        });
+        self.has_required |= is_required;
+
+        self.struct_members.push(
+            if is_required {
+                quote! {
+                    pub #ident: unsafe extern #abi fn ( #( #args),* ) #ret,
+                }
+            } else {
+                quote! {
+                    pub #ident: Result<unsafe extern #abi fn ( #( #args ),* ) #ret, ::libloading::Error>,
+                }
+            }
+        );
 
         // We can't implement variadic functions from C easily, so we allow to
         // access the function pointer so that the user can call it just fine.
         if !is_variadic {
-            self.struct_implementation.push(quote! {
-                pub unsafe fn #ident ( &self, #( #args ),* ) -> #ret_ty {
-                    let sym = self.#ident.as_ref().expect("Expected function, got error.");
-                    (sym)(#( #args_identifiers ),*)
+            self.struct_implementation.push(
+                if is_required {
+                    quote! {
+                        pub unsafe fn #ident ( &self, #( #args ),* ) -> #ret_ty {
+                            self.#ident(#( #args_identifiers ),*)
+                        }
+                    }
+                } else {
+                    quote! {
+                        pub unsafe fn #ident ( &self, #( #args ),* ) -> #ret_ty {
+                            let sym = self.#ident.as_ref().expect("Expected function, got error.");
+                            (sym)(#( #args_identifiers ),*)
+                        }
+                    }
                 }
-            });
+            );
         }
 
         let ident_str = codegen::helpers::ast_ty::cstr_expr(ident.to_string());
-        self.constructor_inits.push(quote! {
-            let #ident = __library.get(#ident_str).map(|sym| *sym);
+        self.constructor_inits.push(if is_required {
+            quote! {
+                let #ident = __library.get(#ident_str).map(|sym| *sym)?;
+            }
+        } else {
+            quote! {
+                let #ident = __library.get(#ident_str).map(|sym| *sym);
+            }
         });
 
         self.init_fields.push(quote! {
