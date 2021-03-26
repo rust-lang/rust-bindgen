@@ -34,9 +34,9 @@ impl TestLib {
         P: AsRef<::std::ffi::OsStr>,
     {
         let library = ::libloading::Library::new(path)?;
-        Ok(Self::from_library(library))
+        Self::from_library(library)
     }
-    pub unsafe fn from_library<L>(library: L) -> Self
+    pub unsafe fn from_library<L>(library: L) -> Result<Self, ::libloading::Error>
     where
         L: Into<::libloading::Library>,
     {
@@ -44,12 +44,12 @@ impl TestLib {
         let foo = __library.get(b"foo\0").map(|sym| *sym);
         let baz = __library.get(b"baz\0").map(|sym| *sym);
         let bazz = __library.get(b"bazz\0").map(|sym| *sym);
-        TestLib {
+        Ok(TestLib {
             __library,
             foo,
             baz,
             bazz,
-        }
+        })
     }
     pub unsafe fn foo(
         &self,

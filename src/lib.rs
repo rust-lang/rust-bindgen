@@ -545,6 +545,10 @@ impl Builder {
             output_vector.push(name.clone());
         }
 
+        if self.options.dynamic_link_require_all {
+            output_vector.push("--dynamic-link-require-all".into());
+        }
+
         if self.options.respect_cxx_access_specs {
             output_vector.push("--respect-cxx-access-specs".into());
         }
@@ -1567,6 +1571,14 @@ impl Builder {
         self
     }
 
+    /// Require successful linkage for all routines in a shared library.
+    /// This allows us to optimize function calls by being able to safely assume function pointers
+    /// are valid.
+    pub fn dynamic_link_require_all(mut self, req: bool) -> Self {
+        self.options.dynamic_link_require_all = req;
+        self
+    }
+
     /// Generate bindings as `pub` only if the bound item is publically accessible by C++.
     pub fn respect_cxx_access_specs(mut self, doit: bool) -> Self {
         self.options.respect_cxx_access_specs = doit;
@@ -1870,6 +1882,11 @@ struct BindgenOptions {
     /// this is None, no dynamic bindings are created.
     dynamic_library_name: Option<String>,
 
+    /// Require successful linkage for all routines in a shared library.
+    /// This allows us to optimize function calls by being able to safely assume function pointers
+    /// are valid. No effect if `dynamic_library_name` is None.
+    dynamic_link_require_all: bool,
+
     /// Only make generated bindings `pub` if the items would be publically accessible
     /// by C++.
     respect_cxx_access_specs: bool,
@@ -2012,6 +2029,7 @@ impl Default for BindgenOptions {
             array_pointers_in_arguments: false,
             wasm_import_module_name: None,
             dynamic_library_name: None,
+            dynamic_link_require_all: false,
             respect_cxx_access_specs: false,
             translate_enum_integer_types: false,
         }
