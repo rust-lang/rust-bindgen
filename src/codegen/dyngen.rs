@@ -131,39 +131,41 @@ impl DynamicItems {
             assert_eq!(args.len(), args_identifiers.len());
         }
 
-        self.struct_members.push(
-            if is_required {
-                quote! {
-                    pub #ident: unsafe extern #abi fn ( #( #args),* ) #ret,
-                }
-            } else {
-                quote! {
-                    pub #ident: Result<unsafe extern #abi fn ( #( #args ),* ) #ret, ::libloading::Error>,
-                }
+        let signature = quote! { unsafe extern #abi fn ( #( #args),* ) #ret };
+        let member = if is_required {
+            signature
+        } else {
+            quote! { Result<#signature, ::libloading::Error> }
+        };
+
+        self.struct_members.push(quote! {
+            pub #ident: #member,
+        });
+
+        // N.B: If the signature was required, it won't be wrapped in a Result<...>
+        //      and we can simply call it directly.
+        let call_body = if is_required {
+            quote! {
+                self.#ident(#( #args_identifiers ),*)
             }
-        );
+        } else {
+            quote! {
+                let sym = self.#ident.as_ref().expect("Expected function, got error.");
+                (sym)(#( #args_identifiers ),*)
+            }
+        };
 
         // We can't implement variadic functions from C easily, so we allow to
         // access the function pointer so that the user can call it just fine.
         if !is_variadic {
-            self.struct_implementation.push(
-                if is_required {
-                    quote! {
-                        pub unsafe fn #ident ( &self, #( #args ),* ) -> #ret_ty {
-                            self.#ident(#( #args_identifiers ),*)
-                        }
-                    }
-                } else {
-                    quote! {
-                        pub unsafe fn #ident ( &self, #( #args ),* ) -> #ret_ty {
-                            let sym = self.#ident.as_ref().expect("Expected function, got error.");
-                            (sym)(#( #args_identifiers ),*)
-                        }
-                    }
+            self.struct_implementation.push(quote! {
+                pub unsafe fn #ident ( &self, #( #args ),* ) -> #ret_ty {
+                    #call_body
                 }
-            );
+            });
         }
 
+        // N.B: Unwrap the signature upon construction if it is required to be resolved.
         let ident_str = codegen::helpers::ast_ty::cstr_expr(ident.to_string());
         self.constructor_inits.push(if is_required {
             quote! {
