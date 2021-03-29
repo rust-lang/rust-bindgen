@@ -78,10 +78,6 @@ impl DynamicItems {
         let init_fields = &self.init_fields;
         let struct_implementation = &self.struct_implementation;
 
-        // FIXME: Is there a better way to lay this out? Conditional in the quote
-        // macro?
-        // If we have any required symbols, we must alter the signature of `from_library`
-        // so that it can return a failure code.
         quote! {
             extern crate libloading;
 
