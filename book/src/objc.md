@@ -66,7 +66,7 @@ long compile time.
 
 ## Not (yet) Supported
 
-* Nullablibility attributes which return `Option`s.
+* Nullability attributes which return `Option`s.
 * Probably many other things. Feel free to [open an issue](https://github.com/rust-lang/rust-bindgen/issues).
 
 # Example crate(s)
