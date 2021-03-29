@@ -2,7 +2,8 @@
 
 Hi! We'd love to have your contributions! If you want help or mentorship, reach
 out to us in a GitHub issue, or stop by
-[#servo on irc.mozilla.org](irc://irc.mozilla.org#servo) and introduce yourself.
+[#rust on chat.mozilla.org](https://chat.mozilla.org/#/room/#rust:mozilla.org)
+and introduce yourself.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
