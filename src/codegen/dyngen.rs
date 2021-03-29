@@ -5,11 +5,6 @@ use proc_macro2::Ident;
 /// Used to build the output tokens for dynamic bindings.
 #[derive(Default)]
 pub struct DynamicItems {
-    /// Tracks whether or not we contain any required symbols.
-    /// If so, the signature of the generated `from_library` function
-    /// will be altered to return a `Result<Self, ::libloading::Error>`
-    has_required: bool,
-
     /// Tracks the tokens that will appears inside the library struct -- e.g.:
     /// ```ignore
     /// struct Lib {
@@ -135,8 +130,6 @@ impl DynamicItems {
         if !is_variadic {
             assert_eq!(args.len(), args_identifiers.len());
         }
-
-        self.has_required |= is_required;
 
         self.struct_members.push(
             if is_required {
