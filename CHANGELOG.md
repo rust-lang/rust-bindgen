@@ -159,7 +159,8 @@ Released 2021/03/04
 
 ## Fixed
 
- * Track union layout more accurately. [#1984][]
+ * Track union layout more accurately. Fixes [an AArch64 bug] and [makes the
+   bindings more portable] where unions could return garbage data ([#1984])
  * Use original name when checking allowlist for anonymous enum variants. [#2006][]
 
 ## Changed
@@ -201,6 +202,10 @@ Released 2021/03/04
 
 * `--blacklist-item` is deprecated in favor of
   `--blocklist-item`. [#1812][]
+
+[#1984]: https://github.com/rust-lang/rust-bindgen/pull/1984
+[an AArch64 bug]: https://github.com/rust-lang/rust-bindgen/issues/1973
+[makes the bindings more portable]: https://github.com/rust-lang/rust-bindgen/issues/1983
 
 ## Removed
 
