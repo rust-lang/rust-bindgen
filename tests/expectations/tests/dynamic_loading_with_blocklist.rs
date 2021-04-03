@@ -80,7 +80,9 @@ impl TestLib {
         let library = ::libloading::Library::new(path)?;
         Self::from_library(library)
     }
-    pub unsafe fn from_library<L>(library: L) -> Result<Self, ::libloading::Error>
+    pub unsafe fn from_library<L>(
+        library: L,
+    ) -> Result<Self, ::libloading::Error>
     where
         L: Into<::libloading::Library>,
     {
@@ -97,14 +99,12 @@ impl TestLib {
         &self,
         x: *mut ::std::os::raw::c_void,
     ) -> ::std::os::raw::c_int {
-        let sym = self.foo.as_ref().expect("Expected function, got error.");
-        (sym)(x)
+        (self.foo.as_ref().expect("Expected function, got error."))(x)
     }
     pub unsafe fn bar(
         &self,
         x: *mut ::std::os::raw::c_void,
     ) -> ::std::os::raw::c_int {
-        let sym = self.bar.as_ref().expect("Expected function, got error.");
-        (sym)(x)
+        (self.bar.as_ref().expect("Expected function, got error."))(x)
     }
 }

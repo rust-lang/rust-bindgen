@@ -22,7 +22,9 @@ impl TestLib {
         let library = ::libloading::Library::new(path)?;
         Self::from_library(library)
     }
-    pub unsafe fn from_library<L>(library: L) -> Result<Self, ::libloading::Error>
+    pub unsafe fn from_library<L>(
+        library: L,
+    ) -> Result<Self, ::libloading::Error>
     where
         L: Into<::libloading::Library>,
     {
@@ -39,11 +41,9 @@ impl TestLib {
         &self,
         x: ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_int {
-        let sym = self.foo.as_ref().expect("Expected function, got error.");
-        (sym)(x)
+        (self.foo.as_ref().expect("Expected function, got error."))(x)
     }
     pub unsafe fn foo1(&self, x: f32) -> f32 {
-        let sym = self.foo1.as_ref().expect("Expected function, got error.");
-        (sym)(x)
+        (self.foo1.as_ref().expect("Expected function, got error."))(x)
     }
 }
