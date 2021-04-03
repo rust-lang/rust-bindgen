@@ -25,7 +25,9 @@ impl TestLib {
         let library = ::libloading::Library::new(path)?;
         Self::from_library(library)
     }
-    pub unsafe fn from_library<L>(library: L) -> Result<Self, ::libloading::Error>
+    pub unsafe fn from_library<L>(
+        library: L,
+    ) -> Result<Self, ::libloading::Error>
     where
         L: Into<::libloading::Library>,
     {
@@ -45,15 +47,15 @@ impl TestLib {
         x: ::std::os::raw::c_int,
         y: ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_int {
-        self.foo(x, y)
+        (self.foo)(x, y)
     }
     pub unsafe fn bar(
         &self,
         x: *mut ::std::os::raw::c_void,
     ) -> ::std::os::raw::c_int {
-        self.bar(x)
+        (self.bar)(x)
     }
     pub unsafe fn baz(&self) -> ::std::os::raw::c_int {
-        self.baz()
+        (self.baz)()
     }
 }

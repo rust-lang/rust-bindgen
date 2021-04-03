@@ -140,15 +140,13 @@ impl DynamicItems {
 
         // N.B: If the signature was required, it won't be wrapped in a Result<...>
         //      and we can simply call it directly.
-        let call_body = if is_required {
-            quote! {
-                self.#ident(#( #args_identifiers ),*)
-            }
+        let fn_ = if is_required {
+            quote! { self.#ident }
         } else {
-            quote! {
-                let sym = self.#ident.as_ref().expect("Expected function, got error.");
-                (sym)(#( #args_identifiers ),*)
-            }
+            quote! { self.#ident.as_ref().expect("Expected function, got error.") }
+        };
+        let call_body = quote! {
+            (#fn_)(#( #args_identifiers ),*)
         };
 
         // We can't implement variadic functions from C easily, so we allow to
