@@ -146,7 +146,7 @@
 
 # 0.58.0
 
-Released 2021/03/04
+Released 2021/04/03
 
 ## Added
 
