@@ -63,6 +63,12 @@ repos to get version 3.9. See http://apt.llvm.org/.
 # pacman -S clang
 ```
 
+#### Fedora
+
+```bash
+# dnf install clang-devel
+```
+
 #### OpenBSD
 
 ```bash
