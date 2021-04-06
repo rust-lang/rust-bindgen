@@ -696,6 +696,12 @@ impl Builder {
         self
     }
 
+    /// Deprecated alias for allowlist_recursively.
+    #[deprecated(note = "Use allowlist_recursively instead")]
+    pub fn whitelist_recursively(self, doit: bool) -> Self {
+        self.allowlist_recursively(doit)
+    }
+
     /// Generate `#[macro_use] extern crate objc;` instead of `use objc;`
     /// in the prologue of the files generated from objective-c files
     pub fn objc_extern_crate(mut self, doit: bool) -> Self {
