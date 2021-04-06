@@ -144,6 +144,16 @@
 
 ## Security
 
+# 0.58.1
+
+Released 2021/04/06
+
+## Added
+
+ * Re-introduced unintentionally removed
+   `bindgen::Builder::whitelist_recursively` (deprecated in favor of
+  `bindgen::Builder::allowlist_recursively`). [#2022][]
+
 # 0.58.0
 
 Released 2021/04/03
