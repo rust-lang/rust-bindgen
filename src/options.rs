@@ -30,6 +30,10 @@ where
             Arg::with_name("header")
                 .help("C or C++ header file")
                 .required(true),
+            Arg::with_name("depfile")
+                .long("depfile")
+                .takes_value(true)
+                .help("Path to write depfile to"),
             Arg::with_name("default-enum-style")
                 .long("default-enum-style")
                 .help("The default style of code used to generate enums.")
@@ -848,8 +852,14 @@ where
 
     let output = if let Some(path) = matches.value_of("output") {
         let file = File::create(path)?;
+        if let Some(depfile) = matches.value_of("depfile") {
+            builder = builder.depfile(path, depfile);
+        }
         Box::new(io::BufWriter::new(file)) as Box<dyn io::Write>
     } else {
+        if let Some(depfile) = matches.value_of("depfile") {
+            builder = builder.depfile("-", depfile);
+        }
         Box::new(io::BufWriter::new(io::stdout())) as Box<dyn io::Write>
     };
 

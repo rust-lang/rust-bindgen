@@ -43,6 +43,7 @@ required-features = ["clap"]
 diff = "0.1"
 clap = "2"
 shlex = "1"
+tempfile = "3"
 
 [dependencies]
 bitflags = "1.0.3"
