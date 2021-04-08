@@ -4207,6 +4207,16 @@ pub(crate) fn codegen(
             }
         }
 
+        if let Some(spec) = context.options().depfile.as_ref() {
+            match spec.write(context.deps()) {
+                Ok(()) => info!(
+                    "Your depfile was generated successfully into: {}",
+                    spec.depfile_path.display()
+                ),
+                Err(e) => warn!("{}", e),
+            }
+        }
+
         context.resolve_item(context.root_module()).codegen(
             context,
             &mut result,

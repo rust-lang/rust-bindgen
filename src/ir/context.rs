@@ -29,7 +29,7 @@ use clang_sys;
 use proc_macro2::{Ident, Span};
 use std::borrow::Cow;
 use std::cell::{Cell, RefCell};
-use std::collections::HashMap as StdHashMap;
+use std::collections::{BTreeSet, HashMap as StdHashMap};
 use std::iter::IntoIterator;
 use std::mem;
 
@@ -354,6 +354,9 @@ pub struct BindgenContext {
     /// This needs to be an std::HashMap because the cexpr API requires it.
     parsed_macros: StdHashMap<Vec<u8>, cexpr::expr::EvalResult>,
 
+    /// A set of all the included filenames.
+    deps: BTreeSet<String>,
+
     /// The active replacements collected from replaces="xxx" annotations.
     replacements: HashMap<Vec<String>, ItemId>,
 
@@ -545,8 +548,16 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let root_module = Self::build_root_module(ItemId(0));
         let root_module_id = root_module.id().as_module_id_unchecked();
 
+        // depfiles need to include the explicitly listed headers too
+        let mut deps = BTreeSet::default();
+        if let Some(filename) = &options.input_header {
+            deps.insert(filename.clone());
+        }
+        deps.extend(options.extra_input_headers.iter().cloned());
+
         BindgenContext {
             items: vec![Some(root_module)],
+            deps,
             types: Default::default(),
             type_params: Default::default(),
             modules: Default::default(),
@@ -630,6 +641,19 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Get the user-provided callbacks by reference, if any.
     pub fn parse_callbacks(&self) -> Option<&dyn ParseCallbacks> {
         self.options().parse_callbacks.as_ref().map(|t| &**t)
+    }
+
+    /// Add another path to the set of included files.
+    pub fn include_file(&mut self, filename: String) {
+        if let Some(cbs) = self.parse_callbacks() {
+            cbs.include_file(&filename);
+        }
+        self.deps.insert(filename);
+    }
+
+    /// Get any included files.
+    pub fn deps(&self) -> &BTreeSet<String> {
+        &self.deps
     }
 
     /// Define a new item.

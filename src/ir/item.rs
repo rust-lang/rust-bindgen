@@ -1415,9 +1415,7 @@ impl ClangItemParser for Item {
                             );
                         }
                         Some(filename) => {
-                            if let Some(cb) = ctx.parse_callbacks() {
-                                cb.include_file(&filename)
-                            }
+                            ctx.include_file(filename);
                         }
                     }
                 }

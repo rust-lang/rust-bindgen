@@ -51,6 +51,7 @@ macro_rules! doc_mod {
 
 mod clang;
 mod codegen;
+mod deps;
 mod features;
 mod ir;
 mod parse;
@@ -601,6 +602,19 @@ impl Builder {
     /// ```
     pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
         self.input_headers.push(header.into());
+        self
+    }
+
+    /// Add a depfile output which will be written alongside the generated bindings.
+    pub fn depfile<H: Into<String>, D: Into<PathBuf>>(
+        mut self,
+        output_module: H,
+        depfile: D,
+    ) -> Builder {
+        self.options.depfile = Some(deps::DepfileSpec {
+            output_module: output_module.into(),
+            depfile_path: depfile.into(),
+        });
         self
     }
 
@@ -1417,11 +1431,13 @@ impl Builder {
 
         // Transform input headers to arguments on the clang command line.
         self.options.input_header = self.input_headers.pop();
-        self.options
-            .clang_args
-            .extend(self.input_headers.drain(..).flat_map(|header| {
-                iter::once("-include".into()).chain(iter::once(header))
-            }));
+        self.options.extra_input_headers = self.input_headers;
+        self.options.clang_args.extend(
+            self.options.extra_input_headers.iter().flat_map(|header| {
+                iter::once("-include".into())
+                    .chain(iter::once(header.to_string()))
+            }),
+        );
 
         self.options.input_unsaved_files.extend(
             self.input_header_contents
@@ -1624,6 +1640,9 @@ struct BindgenOptions {
     /// The explicit rustfmt path.
     rustfmt_path: Option<PathBuf>,
 
+    /// The path to which we should write a Makefile-syntax depfile (if any).
+    depfile: Option<deps::DepfileSpec>,
+
     /// The set of types that we should have bindings for in the generated
     /// code.
     ///
@@ -1784,6 +1803,9 @@ struct BindgenOptions {
 
     /// The input header file.
     input_header: Option<String>,
+
+    /// Any additional input header files.
+    extra_input_headers: Vec<String>,
 
     /// Unsaved files for input.
     input_unsaved_files: Vec<clang::UnsavedFile>,
@@ -1963,6 +1985,7 @@ impl Default for BindgenOptions {
             blocklisted_items: Default::default(),
             opaque_types: Default::default(),
             rustfmt_path: Default::default(),
+            depfile: Default::default(),
             allowlisted_types: Default::default(),
             allowlisted_functions: Default::default(),
             allowlisted_vars: Default::default(),
@@ -2008,6 +2031,7 @@ impl Default for BindgenOptions {
             module_lines: HashMap::default(),
             clang_args: vec![],
             input_header: None,
+            extra_input_headers: vec![],
             input_unsaved_files: vec![],
             parse_callbacks: None,
             codegen_config: CodegenConfig::all(),

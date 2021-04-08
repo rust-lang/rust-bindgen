@@ -579,6 +579,32 @@ fn no_system_header_includes() {
 }
 
 #[test]
+fn emit_depfile() {
+    let header = PathBuf::from("tests/headers/enum-default-rust.h");
+    let expected_depfile = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join("expectations")
+        .join("tests")
+        .join("enum-default-rust.d");
+    let observed_depfile = tempfile::NamedTempFile::new().unwrap();
+    let mut builder = create_bindgen_builder(&header).unwrap();
+    builder.builder = builder.builder.depfile(
+        "tests/expectations/tests/enum-default-rust.rs",
+        observed_depfile.path(),
+    );
+
+    let check_roundtrip =
+        env::var_os("BINDGEN_DISABLE_ROUNDTRIP_TEST").is_none();
+    let (builder, _roundtrip_builder) =
+        builder.into_builder(check_roundtrip).unwrap();
+    let _bindings = builder.generate().unwrap();
+
+    let observed = std::fs::read_to_string(observed_depfile).unwrap();
+    let expected = std::fs::read_to_string(expected_depfile).unwrap();
+    assert_eq!(observed.trim(), expected.trim());
+}
+
+#[test]
 fn dump_preprocessed_input() {
     let arg_keyword =
         concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/arg_keyword.hpp");
