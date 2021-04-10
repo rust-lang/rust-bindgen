@@ -618,12 +618,18 @@ impl CodeGenerator for Var {
             return;
         }
 
+        let mut attrs = vec![];
+        if let Some(comment) = item.comment(ctx) {
+            attrs.push(attributes::doc(comment));
+        }
+
         let ty = self.ty().to_rust_ty_or_opaque(ctx, &());
 
         if let Some(val) = self.val() {
             match *val {
                 VarType::Bool(val) => {
                     result.push(quote! {
+                        #(#attrs)*
                         pub const #canonical_ident : #ty = #val ;
                     });
                 }
@@ -643,6 +649,7 @@ impl CodeGenerator for Var {
                         helpers::ast_ty::uint_expr(val as _)
                     };
                     result.push(quote! {
+                        #(#attrs)*
                         pub const #canonical_ident : #ty = #val ;
                     });
                 }
@@ -660,12 +667,14 @@ impl CodeGenerator for Var {
                         Ok(string) => {
                             let cstr = helpers::ast_ty::cstr_expr(string);
                             result.push(quote! {
+                                #(#attrs)*
                                 pub const #canonical_ident : &'static #ty = #cstr ;
                             });
                         }
                         Err(..) => {
                             let bytes = helpers::ast_ty::byte_array_expr(bytes);
                             result.push(quote! {
+                                #(#attrs)*
                                 pub const #canonical_ident : #ty = #bytes ;
                             });
                         }
@@ -674,6 +683,7 @@ impl CodeGenerator for Var {
                 VarType::Float(f) => {
                     match helpers::ast_ty::float_expr(ctx, f) {
                         Ok(expr) => result.push(quote! {
+                            #(#attrs)*
                             pub const #canonical_ident : #ty = #expr ;
                         }),
                         Err(..) => return,
@@ -681,13 +691,12 @@ impl CodeGenerator for Var {
                 }
                 VarType::Char(c) => {
                     result.push(quote! {
+                        #(#attrs)*
                         pub const #canonical_ident : #ty = #c ;
                     });
                 }
             }
         } else {
-            let mut attrs = vec![];
-
             // If necessary, apply a `#[link_name]` attribute
             let link_name = self.mangled_name().unwrap_or(self.name());
             if !utils::names_will_be_identical_after_mangling(
