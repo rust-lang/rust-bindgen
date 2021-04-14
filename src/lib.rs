@@ -1405,7 +1405,7 @@ impl Builder {
     pub fn generate(mut self) -> Result<Bindings, ()> {
         // Add any extra arguments from the environment to the clang command line.
         if let Some(extra_clang_args) =
-            env::var("BINDGEN_EXTRA_CLANG_ARGS").ok()
+            get_target_dependent_env_var("BINDGEN_EXTRA_CLANG_ARGS")
         {
             // Try to parse it with shell quoting. If we fail, make it one single big argument.
             if let Some(strings) = shlex::split(&extra_clang_args) {
@@ -2555,6 +2555,21 @@ pub fn clang_version() -> ClangVersion {
         parsed: None,
         full: raw_v.clone(),
     }
+}
+
+/// Looks for the env var `var_${TARGET}`, and falls back to just `var` when it is not found.
+fn get_target_dependent_env_var(var: &str) -> Option<String> {
+    if let Ok(target) = env::var("TARGET") {
+        if let Ok(v) = env::var(&format!("{}_{}", var, target)) {
+            return Some(v);
+        }
+        if let Ok(v) =
+            env::var(&format!("{}_{}", var, target.replace("-", "_")))
+        {
+            return Some(v);
+        }
+    }
+    env::var(var).ok()
 }
 
 /// A ParseCallbacks implementation that will act on file includes by echoing a rerun-if-changed
