@@ -140,9 +140,15 @@ fn main() {
     cc::Build::new()
         .cpp(true)
         .file("cpp/Test.cc")
+        .include("include")
         .compile("libtest.a");
 
     let macros = Arc::new(RwLock::new(HashSet::new()));
+
+    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let out_rust_file = out_path.join("test.rs");
+    let out_rust_file_relative = out_rust_file.strip_prefix(std::env::current_dir().unwrap()).unwrap();
+    let out_dep_file = out_path.join("test.d");
 
     let bindings = Builder::default()
         .rustfmt_bindings(false)
@@ -154,7 +160,7 @@ fn main() {
         .raw_line("extern { fn my_prefixed_function_to_remove(i: i32); }")
         .module_raw_line("root::testing", "pub type Bar = i32;")
         .header("cpp/Test.h")
-        .clang_args(&["-x", "c++", "-std=c++11"])
+        .clang_args(&["-x", "c++", "-std=c++11", "-I", "include"])
         .parse_callbacks(Box::new(MacroCallback {
             macros: macros.clone(),
             seen_hellos: Mutex::new(0),
@@ -163,13 +169,18 @@ fn main() {
         .blocklist_function("my_prefixed_function_to_remove")
         .constified_enum("my_prefixed_enum_to_be_constified")
         .opaque_type("my_prefixed_templated_foo<my_prefixed_baz>")
+        .depfile(out_rust_file_relative.display().to_string(), &out_dep_file)
         .generate()
         .expect("Unable to generate bindings");
 
     assert!(macros.read().unwrap().contains("TESTMACRO"));
+    bindings.write_to_file(&out_rust_file).expect("Couldn't write bindings!");
 
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
-    bindings
-        .write_to_file(out_path.join("test.rs"))
-        .expect("Couldn't write bindings!");
+    let observed_deps = std::fs::read_to_string(out_dep_file).expect("Couldn't read depfile!");
+    let expected_deps = format!("{}: cpp/Test.h include/stub.h", out_rust_file_relative.display());
+    assert_eq!(
+        observed_deps,
+        expected_deps,
+        "including stub via include dir must produce correct dep path",
+    );
 }
