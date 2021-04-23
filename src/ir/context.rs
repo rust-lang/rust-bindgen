@@ -2716,27 +2716,40 @@ impl ItemResolver {
 
     /// Finish configuring and perform the actual item resolution.
     pub fn resolve(self, ctx: &BindgenContext) -> &Item {
+        match self.resolve_fallible(ctx) {
+            Some(item) => item,
+            None => panic!("Not an item: {:?}", self.id),
+        }
+    }
+
+    /// Finish configuring and perform the actual item resolution.
+    pub fn resolve_fallible(self, ctx: &BindgenContext) -> Option<&Item> {
         assert!(ctx.collected_typerefs());
 
         let mut id = self.id;
         loop {
-            let item = ctx.resolve_item(id);
-            let ty_kind = item.as_type().map(|t| t.kind());
-            match ty_kind {
-                Some(&TypeKind::ResolvedTypeRef(next_id))
-                    if self.through_type_refs =>
-                {
-                    id = next_id.into();
+            let item = ctx.resolve_item_fallible(id);
+            match item {
+                None => return None,
+                Some(item) => {
+                    let ty_kind = item.as_type().map(|t| t.kind());
+                    match ty_kind {
+                        Some(&TypeKind::ResolvedTypeRef(next_id))
+                            if self.through_type_refs =>
+                        {
+                            id = next_id.into();
+                        }
+                        // We intentionally ignore template aliases here, as they are
+                        // more complicated, and don't represent a simple renaming of
+                        // some type.
+                        Some(&TypeKind::Alias(next_id))
+                            if self.through_type_aliases =>
+                        {
+                            id = next_id.into();
+                        }
+                        _ => return Some(item),
+                    }
                 }
-                // We intentionally ignore template aliases here, as they are
-                // more complicated, and don't represent a simple renaming of
-                // some type.
-                Some(&TypeKind::Alias(next_id))
-                    if self.through_type_aliases =>
-                {
-                    id = next_id.into();
-                }
-                _ => return item,
             }
         }
     }
