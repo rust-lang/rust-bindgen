@@ -1,3 +1,5 @@
+#include "stub.h" // this bad path is made valid by a `-I include` clang arg
+
 #pragma once
 
 #define TESTMACRO
