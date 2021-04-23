@@ -995,17 +995,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     fn deanonymize_fields(&mut self) {
         let _t = self.timer("deanonymize_fields");
 
-        let comp_item_ids: Vec<ItemId> = self
-            .items()
-            .filter_map(|(id, item)| {
-                if item.kind().as_type()?.is_comp() {
-                    return Some(id);
-                }
-                None
-            })
-            .collect();
-
-        for id in comp_item_ids {
+        for id in self.get_comp_item_ids() {
             self.with_loaned_item(id, |ctx, item| {
                 item.kind_mut()
                     .as_type_mut()
@@ -1187,6 +1177,17 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         let ret = cb(&self);
         (ret, self.options)
+    }
+
+    fn get_comp_item_ids(&self) -> Vec<ItemId> {
+        self.items()
+            .filter_map(|(id, item)| {
+                if item.kind().as_type()?.is_comp() {
+                    return Some(id);
+                }
+                None
+            })
+            .collect()
     }
 
     /// When the `testing_only_extra_assertions` feature is enabled, this
