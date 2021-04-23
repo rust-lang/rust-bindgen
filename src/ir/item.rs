@@ -1558,6 +1558,18 @@ impl ClangItemParser for Item {
             }
         }
 
+        // Treat all types that are declared inside functions as opaque. The Rust binding
+        // won't be able to do anything with them anyway.
+        //
+        // (If we don't do this check here, we can have subtle logic bugs because we generally
+        // ignore function bodies. See issue #2036.)
+        if let Some(ref parent) = ty.declaration().fallible_semantic_parent() {
+            if FunctionKind::from_cursor(parent).is_some() {
+                debug!("Skipping type declared inside function: {:?}", ty);
+                return Ok(Item::new_opaque_type(id, ty, ctx));
+            }
+        }
+
         let decl = {
             let decl = ty.declaration();
             decl.definition().unwrap_or(decl)
