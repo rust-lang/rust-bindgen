@@ -195,6 +195,9 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
             EdgeKind::TemplateDeclaration |
             EdgeKind::TemplateParameterDefinition => false,
 
+            EdgeKind::DependentQualifiedTypeParam |
+            EdgeKind::ContainedDependentQualifiedType => true,
+
             // Since we have to be careful about which edges we consider for
             // this analysis to be correct, we ignore generic edges. We also
             // avoid a `_` wild card to force authors of new edge kinds to
@@ -533,6 +536,10 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             Some(&TypeKind::TypeParam) => {
                 trace!("    named type, trivially uses itself");
                 used_by_this_id.insert(id);
+            }
+            Some(&TypeKind::DependentQualifiedType(tp_id, ..)) => {
+                used_by_this_id.insert(id);
+                used_by_this_id.insert(tp_id.into());
             }
             // Template instantiations only use their template arguments if the
             // template definition uses the corresponding template parameter.

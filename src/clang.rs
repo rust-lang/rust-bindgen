@@ -1303,23 +1303,30 @@ impl Type {
     ///     typename T::Associated member;
     /// };
     /// ```
-    pub fn is_associated_type(&self) -> bool {
+    ///
+    /// If so, returns the type name, e.g. 'member'
+    pub fn get_associated_type_name(&self) -> Option<String> {
         // This is terrible :(
-        fn hacky_parse_associated_type<S: AsRef<str>>(spelling: S) -> bool {
+        fn hacky_parse_associated_type<S: AsRef<str>>(
+            spelling: S,
+        ) -> Option<String> {
             lazy_static! {
                 static ref ASSOC_TYPE_RE: regex::Regex = regex::Regex::new(
-                    r"typename type\-parameter\-\d+\-\d+::.+"
+                    r"typename type\-parameter\-\d+\-\d+::(.+)"
                 )
                 .unwrap();
             }
-            ASSOC_TYPE_RE.is_match(spelling.as_ref())
+            ASSOC_TYPE_RE
+                .captures(spelling.as_ref())
+                .map(|caps| caps.get(1).unwrap().as_str().to_string())
         }
 
-        self.kind() == CXType_Unexposed &&
-            (hacky_parse_associated_type(self.spelling()) ||
-                hacky_parse_associated_type(
-                    self.canonical_type().spelling(),
-                ))
+        if self.kind() != CXType_Unexposed {
+            return None;
+        }
+        hacky_parse_associated_type(self.spelling()).or_else(|| {
+            hacky_parse_associated_type(self.canonical_type().spelling())
+        })
     }
 }
 

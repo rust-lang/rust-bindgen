@@ -175,6 +175,20 @@ pub enum EdgeKind {
 
     /// An edge from a non-templated alias or typedef to the referenced type.
     TypeReference,
+
+    /// An edge from a comp to a dependent qualified type within it.
+    ///
+    /// This is used when determining whether the comp needs to be qualified
+    /// by its template parameters.
+    ContainedDependentQualifiedType,
+
+    /// An edge from a `DependentQualifiedType` to its `TypeParam`
+    ///
+    /// The idea here is to provide an edge from each `DependentQualifiedType` to the
+    /// relevant `TypeParam`. Thus we can identify each `TypeParam` which is used
+    /// by a comp; first by following the `ContainedDependentQualifiedType` edge and then the
+    /// `DependentQualifiedTypeParam` edge.
+    DependentQualifiedTypeParam,
 }
 
 /// A predicate to allow visiting only sub-sets of the whole IR graph by
@@ -229,6 +243,8 @@ pub fn codegen_edges(ctx: &BindgenContext, edge: Edge) -> bool {
         EdgeKind::FunctionReturn |
         EdgeKind::FunctionParameter |
         EdgeKind::VarType |
+        EdgeKind::ContainedDependentQualifiedType |
+        EdgeKind::DependentQualifiedTypeParam |
         EdgeKind::TypeReference => cc.types(),
         EdgeKind::InnerVar => cc.vars(),
         EdgeKind::Method => cc.methods(),

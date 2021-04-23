@@ -313,9 +313,10 @@ pub struct BindgenContext {
     /// item ids during parsing.
     types: HashMap<TypeKey, TypeId>,
 
-    /// Maps from a cursor to the item id of the named template type parameter
-    /// for that cursor.
-    type_params: HashMap<clang::Cursor, TypeId>,
+    /// Maps from a cursor to the item id of the named template type parameters
+    /// for that cursor. There may be several, if there are associated types.
+    /// The inner map stores the associated type name.
+    type_params: HashMap<clang::Cursor, HashMap<Option<String>, TypeId>>,
 
     /// A cursor to module map. Similar reason than above.
     modules: HashMap<Cursor, ModuleId>,
@@ -468,6 +469,13 @@ pub struct BindgenContext {
     /// Populated when we enter codegen by `compute_has_float`; always `None`
     /// before that and `Some` after.
     has_float: Option<HashSet<ItemId>>,
+
+    /// The list of inner type names actually used.
+    ///
+    /// This dictates those for which we bother generating traits, to avoid
+    /// polluting all the generated code with
+    /// "___bindgen_has_inner_type_XYZ" traits.
+    used_inner_type_names: HashSet<String>,
 }
 
 /// A traversal of allowlisted items.
@@ -590,6 +598,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             have_destructor: None,
             has_type_param_in_array: None,
             has_float: None,
+            used_inner_type_names: Default::default(),
         }
     }
 
@@ -783,14 +792,19 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Add a new named template type parameter to this context's item set.
-    pub fn add_type_param(&mut self, item: Item, definition: clang::Cursor) {
+    pub fn add_type_param(
+        &mut self,
+        item: Item,
+        definition: clang::Cursor,
+        associated_type_field_name: Option<String>,
+    ) {
         debug!(
             "BindgenContext::add_type_param: item = {:?}; definition = {:?}",
             item, definition
         );
 
         assert!(
-            item.expect_type().is_type_param(),
+            item.expect_type().is_type_param() || item.expect_type().is_dependent_qualified_type(),
             "Should directly be a named type, not a resolved reference or anything"
         );
         assert_eq!(
@@ -807,23 +821,32 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             "should not have already associated an item with the given id"
         );
 
-        let old_named_ty = self
-            .type_params
-            .insert(definition, id.as_type_id_unchecked());
+        let map_by_field = self.type_params.entry(definition).or_default();
+        let old_entry = map_by_field
+            .insert(associated_type_field_name, id.as_type_id_unchecked());
+
         assert!(
-            old_named_ty.is_none(),
-            "should not have already associated a named type with this id"
+            old_entry.is_none(),
+            "should not have already associated this named type with this cursor"
         );
     }
 
     /// Get the named type defined at the given cursor location, if we've
     /// already added one.
-    pub fn get_type_param(&self, definition: &clang::Cursor) -> Option<TypeId> {
+    pub fn get_type_param(
+        &self,
+        definition: &clang::Cursor,
+        associated_type_field_name: &Option<String>,
+    ) -> Option<TypeId> {
         assert_eq!(
             definition.kind(),
             clang_sys::CXCursor_TemplateTypeParameter
         );
-        self.type_params.get(definition).cloned()
+        self.type_params
+            .get(definition)
+            .map(|by_fields| by_fields.get(associated_type_field_name))
+            .flatten()
+            .cloned()
     }
 
     // TODO: Move all this syntax crap to other part of the code.
@@ -873,6 +896,11 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         T: AsRef<str>,
     {
         Ident::new(name.as_ref(), Span::call_site())
+    }
+
+    /// Returns a Rust ident for an inner type trait name.
+    pub fn inner_type_trait_ident(&self, name: &str) -> Ident {
+        self.rust_ident(format!("__bindgen_has_inner_type_{}", name))
     }
 
     /// Iterate over all items that have been defined.
@@ -1174,6 +1202,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.compute_has_float();
         self.compute_cannot_derive_hash();
         self.compute_cannot_derive_partialord_partialeq_or_eq();
+        self.identify_associated_type_params();
 
         let ret = cb(&self);
         (ret, self.options)
@@ -1188,6 +1217,24 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 None
             })
             .collect()
+    }
+
+    fn identify_associated_type_params(&mut self) {
+        let mut used_inner_type_names = HashSet::default();
+        for id in self.get_comp_item_ids() {
+            self.with_loaned_item(id, |ctx, item| {
+                let fieldnames = item
+                    .kind_mut()
+                    .as_type_mut()
+                    .unwrap()
+                    .as_comp_mut()
+                    .unwrap()
+                    .identify_associated_type_fields(ctx);
+                used_inner_type_names.extend(fieldnames.into_iter());
+            });
+        }
+        self.used_inner_type_names
+            .extend(used_inner_type_names.into_iter());
     }
 
     /// When the `testing_only_extra_assertions` feature is enabled, this
@@ -1478,6 +1525,11 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Get the current module.
     pub fn current_module(&self) -> ModuleId {
         self.current_module
+    }
+
+    /// Check whether this inner type name has been referred to elsewhere.
+    pub fn inner_type_used(&self, name: &str) -> bool {
+        self.used_inner_type_names.contains(name)
     }
 
     /// Add a semantic parent for a given type definition.
@@ -2333,7 +2385,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                     TypeKind::Function(..) |
                                     TypeKind::ResolvedTypeRef(..) |
                                     TypeKind::Opaque |
-                                    TypeKind::TypeParam => return true,
+                                    TypeKind::TypeParam |
+                                    TypeKind::DependentQualifiedType(..) => {
+                                        return true
+                                    }
                                     _ => {}
                                 };
                             }
@@ -2787,6 +2842,13 @@ impl TemplateParameters for PartialType {
     fn self_template_params(&self, _ctx: &BindgenContext) -> Vec<TypeId> {
         // Maybe at some point we will eagerly parse named types, but for now we
         // don't and this information is unavailable.
+        vec![]
+    }
+
+    fn used_dependent_qualified_types(
+        &self,
+        _ctx: &BindgenContext,
+    ) -> Vec<TypeId> {
         vec![]
     }
 

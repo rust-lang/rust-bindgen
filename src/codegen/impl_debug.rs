@@ -159,6 +159,7 @@ impl<'a> ImplDebug<'a> for Item {
             TypeKind::ObjCInterface(..) |
             TypeKind::ObjCId |
             TypeKind::Comp(..) |
+            TypeKind::DependentQualifiedType(..) |
             TypeKind::ObjCSel => debug_print(name, quote! { #name_ident }),
 
             TypeKind::TemplateInstantiation(ref inst) => {

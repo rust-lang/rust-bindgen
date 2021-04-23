@@ -50,6 +50,8 @@ impl<'ctx> HasTypeParameterInArray<'ctx> {
             EdgeKind::VarType |
             EdgeKind::TemplateArgument |
             EdgeKind::TemplateDeclaration |
+            EdgeKind::ContainedDependentQualifiedType |
+            EdgeKind::DependentQualifiedTypeParam |
             EdgeKind::TemplateParameterDefinition => true,
 
             EdgeKind::Constructor |
@@ -133,6 +135,7 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
             TypeKind::Enum(..) |
             TypeKind::Reference(..) |
             TypeKind::TypeParam |
+            TypeKind::DependentQualifiedType(..) |
             TypeKind::Opaque |
             TypeKind::Pointer(..) |
             TypeKind::UnresolvedTypeRef(..) |

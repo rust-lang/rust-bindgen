@@ -91,6 +91,7 @@ pub trait ClangItemParser: Sized {
         with_id: Option<ItemId>,
         location: clang::Cursor,
         ctx: &mut BindgenContext,
+        associated_type_field_name: Option<String>,
     ) -> Option<TypeId>;
 
     /// Create a builtin type.

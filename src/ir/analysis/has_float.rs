@@ -48,6 +48,8 @@ impl<'ctx> HasFloat<'ctx> {
             EdgeKind::VarType |
             EdgeKind::TemplateArgument |
             EdgeKind::TemplateDeclaration |
+            EdgeKind::ContainedDependentQualifiedType |
+            EdgeKind::DependentQualifiedTypeParam |
             EdgeKind::TemplateParameterDefinition => true,
 
             EdgeKind::Constructor |
@@ -122,6 +124,7 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
             TypeKind::Enum(..) |
             TypeKind::Reference(..) |
             TypeKind::TypeParam |
+            TypeKind::DependentQualifiedType(..) |
             TypeKind::Opaque |
             TypeKind::Pointer(..) |
             TypeKind::UnresolvedTypeRef(..) |

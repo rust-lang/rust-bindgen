@@ -220,6 +220,12 @@ impl Trace for Field {
         match *self {
             Field::DataMember(ref data) => {
                 tracer.visit_kind(data.ty.into(), EdgeKind::Field);
+                for type_param in &data.depended_type_params {
+                    tracer.visit_kind(
+                        type_param.into(),
+                        EdgeKind::ContainedDependentQualifiedType,
+                    );
+                }
             }
             Field::Bitfields(BitfieldUnit { ref bitfields, .. }) => {
                 for bf in bitfields {
@@ -454,6 +460,7 @@ impl RawField {
             bitfield_width,
             public,
             offset,
+            depended_type_params: Vec::new(),
         })
     }
 }
@@ -759,16 +766,23 @@ impl CompFields {
         }
     }
 
-    fn deanonymize_fields(&mut self, ctx: &BindgenContext, methods: &[Method]) {
-        let fields = match *self {
+    fn get_fields(&mut self) -> Option<&mut Vec<Field>> {
+        match *self {
             CompFields::AfterComputingBitfieldUnits {
                 ref mut fields, ..
-            } => fields,
+            } => Some(fields),
             // Nothing to do here.
-            CompFields::ErrorComputingBitfieldUnits => return,
+            CompFields::ErrorComputingBitfieldUnits => None,
             CompFields::BeforeComputingBitfieldUnits(_) => {
                 panic!("Not yet computed bitfield units.");
             }
+        }
+    }
+
+    fn deanonymize_fields(&mut self, ctx: &BindgenContext, methods: &[Method]) {
+        let fields = match self.get_fields() {
+            Some(fields) => fields,
+            None => return,
         };
 
         fn has_method(
@@ -848,6 +862,42 @@ impl CompFields {
             }
         }
     }
+
+    fn identify_associated_type_fields(
+        &mut self,
+        ctx: &BindgenContext,
+    ) -> (Vec<TypeId>, Vec<String>) {
+        let mut no_fields = vec![];
+        let mut type_results = vec![];
+        let mut name_results = vec![];
+        for field in self.get_fields().unwrap_or(&mut no_fields).iter_mut() {
+            match field {
+                Field::DataMember(field_data) => {
+                    let ty = field_data.ty;
+                    let field_ty = ty
+                        .into_resolver()
+                        .through_type_refs()
+                        .through_type_aliases()
+                        .resolve(ctx)
+                        .id();
+                    let as_ty_id = field_ty.as_type_id(ctx);
+                    let tid = as_ty_id.unwrap();
+                    let resolved = ctx.resolve_type(tid);
+                    let depended_qualified_type_fields = resolved
+                        .get_dependent_qualified_type_field_names(ctx, tid);
+                    if !depended_qualified_type_fields.is_empty() {
+                        let (tids, mut names): (Vec<_>, Vec<_>) =
+                            depended_qualified_type_fields.into_iter().unzip();
+                        field_data.depended_type_params = tids;
+                        type_results.extend(&field_data.depended_type_params);
+                        name_results.append(&mut names);
+                    }
+                }
+                _ => {}
+            }
+        }
+        (type_results, name_results)
+    }
 }
 
 impl Trace for CompFields {
@@ -896,6 +946,10 @@ pub struct FieldData {
 
     /// The offset of the field (in bits)
     offset: Option<usize>,
+
+    /// If this field depends on type parameters of the
+    /// type, remember which type parameters.
+    depended_type_params: Vec<TypeId>,
 }
 
 impl FieldMethods for FieldData {
@@ -1009,6 +1063,9 @@ pub struct CompInfo {
     /// `TypeKind::TemplateInstantiation`.
     template_params: Vec<TypeId>,
 
+    /// Any fields which depend upon type parameters.
+    dependent_qualified_type_params: Vec<TypeId>,
+
     /// The method declarations inside this class, if in C++ mode.
     methods: Vec<Method>,
 
@@ -1076,6 +1133,7 @@ impl CompInfo {
             kind,
             fields: CompFields::default(),
             template_params: vec![],
+            dependent_qualified_type_params: vec![],
             methods: vec![],
             constructors: vec![],
             destructor: None,
@@ -1395,7 +1453,7 @@ impl CompInfo {
                     ci.packed_attr = true;
                 }
                 CXCursor_TemplateTypeParameter => {
-                    let param = Item::type_param(None, cur, ctx).expect(
+                    let param = Item::type_param(None, cur, ctx, None).expect(
                         "Item::type_param should't fail when pointing \
                          at a TemplateTypeParameter",
                     );
@@ -1637,6 +1695,17 @@ impl CompInfo {
         self.fields.deanonymize_fields(ctx, &self.methods);
     }
 
+    /// Make a note of any fields which depend on template parameters
+    pub fn identify_associated_type_fields(
+        &mut self,
+        ctx: &BindgenContext,
+    ) -> Vec<String> {
+        let (mut typeids, fieldnames) =
+            self.fields.identify_associated_type_fields(ctx);
+        self.dependent_qualified_type_params.append(&mut typeids);
+        fieldnames
+    }
+
     /// Returns whether the current union can be represented as a Rust `union`
     ///
     /// Requirements:
@@ -1784,6 +1853,13 @@ impl IsOpaque for CompInfo {
 impl TemplateParameters for CompInfo {
     fn self_template_params(&self, _ctx: &BindgenContext) -> Vec<TypeId> {
         self.template_params.clone()
+    }
+
+    fn used_dependent_qualified_types(
+        &self,
+        _ctx: &BindgenContext,
+    ) -> Vec<TypeId> {
+        self.dependent_qualified_type_params.clone()
     }
 }
 

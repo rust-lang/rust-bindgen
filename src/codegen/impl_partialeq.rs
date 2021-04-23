@@ -93,6 +93,7 @@ fn gen_field(
         TypeKind::Float(..) |
         TypeKind::Enum(..) |
         TypeKind::TypeParam |
+        TypeKind::DependentQualifiedType(..) |
         TypeKind::UnresolvedTypeRef(..) |
         TypeKind::Reference(..) |
         TypeKind::ObjCInterface(..) |

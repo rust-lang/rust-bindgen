@@ -1240,11 +1240,26 @@ where
         ctx.resolve_item_fallible(*self)
             .map_or(vec![], |item| item.self_template_params(ctx))
     }
+
+    fn used_dependent_qualified_types(
+        &self,
+        ctx: &BindgenContext,
+    ) -> Vec<TypeId> {
+        ctx.resolve_item_fallible(*self)
+            .map_or(vec![], |item| item.used_dependent_qualified_types(ctx))
+    }
 }
 
 impl TemplateParameters for Item {
     fn self_template_params(&self, ctx: &BindgenContext) -> Vec<TypeId> {
         self.kind.self_template_params(ctx)
+    }
+
+    fn used_dependent_qualified_types(
+        &self,
+        ctx: &BindgenContext,
+    ) -> Vec<TypeId> {
+        self.kind.used_dependent_qualified_types(ctx)
     }
 }
 
@@ -1255,6 +1270,18 @@ impl TemplateParameters for ItemKind {
             // If we start emitting bindings to explicitly instantiated
             // functions, then we'll need to check ItemKind::Function for
             // template params.
+            ItemKind::Function(_) | ItemKind::Module(_) | ItemKind::Var(_) => {
+                vec![]
+            }
+        }
+    }
+
+    fn used_dependent_qualified_types(
+        &self,
+        ctx: &BindgenContext,
+    ) -> Vec<TypeId> {
+        match *self {
+            ItemKind::Type(ref ty) => ty.used_dependent_qualified_types(ctx),
             ItemKind::Function(_) | ItemKind::Module(_) | ItemKind::Var(_) => {
                 vec![]
             }
@@ -1570,13 +1597,15 @@ impl ClangItemParser for Item {
         if ty.kind() == clang_sys::CXType_Unexposed ||
             location.cur_type().kind() == clang_sys::CXType_Unexposed
         {
-            if ty.is_associated_type() ||
-                location.cur_type().is_associated_type()
-            {
-                return Ok(Item::new_opaque_type(id, ty, ctx));
-            }
-
-            if let Some(param_id) = Item::type_param(None, location, ctx) {
+            let associated_type_field_name = ty
+                .get_associated_type_name()
+                .or_else(|| location.cur_type().get_associated_type_name());
+            if let Some(param_id) = Item::type_param(
+                None,
+                location,
+                ctx,
+                associated_type_field_name,
+            ) {
                 return Ok(ctx.build_ty_wrapper(id, param_id, None, ty));
             }
         }
@@ -1700,7 +1729,7 @@ impl ClangItemParser for Item {
                         id,
                         ty.spelling()
                     );
-                    Item::type_param(Some(id), location, ctx)
+                    Item::type_param(Some(id), location, ctx, None)
                         .map(Ok)
                         .unwrap_or(Err(ParseError::Recurse))
                 } else {
@@ -1724,6 +1753,7 @@ impl ClangItemParser for Item {
         with_id: Option<ItemId>,
         location: clang::Cursor,
         ctx: &mut BindgenContext,
+        associated_type_field_name: Option<String>,
     ) -> Option<TypeId> {
         let ty = location.cur_type();
 
@@ -1731,10 +1761,12 @@ impl ClangItemParser for Item {
             "Item::type_param:\n\
              \twith_id = {:?},\n\
              \tty = {} {:?},\n\
+             \tassociated_type_field_name = {:?},\n\
              \tlocation: {:?}",
             with_id,
             ty.spelling(),
             ty,
+            associated_type_field_name,
             location
         );
 
@@ -1865,7 +1897,9 @@ impl ClangItemParser for Item {
         // something we know will always exist.
         let parent = ctx.root_module().into();
 
-        if let Some(id) = ctx.get_type_param(&definition) {
+        if let Some(id) =
+            ctx.get_type_param(&definition, &associated_type_field_name)
+        {
             if let Some(with_id) = with_id {
                 return Some(ctx.build_ty_wrapper(
                     with_id,
@@ -1881,17 +1915,56 @@ impl ClangItemParser for Item {
         // See tests/headers/const_tparam.hpp and
         // tests/headers/variadic_tname.hpp.
         let name = ty_spelling.replace("const ", "").replace(".", "");
+        let eventual_id = match associated_type_field_name {
+            None => {
+                let id = with_id.unwrap_or_else(|| ctx.next_item_id());
+                let item = Item::new(
+                    id,
+                    None,
+                    None,
+                    parent,
+                    ItemKind::Type(Type::named(name)),
+                );
+                ctx.add_type_param(item, definition, None);
+                id.as_type_id_unchecked()
+            }
+            Some(associated_type_field_name) => {
+                let tp_id = ctx
+                    .get_type_param(&definition, &None)
+                    .unwrap_or_else(|| {
+                        let tp_id = ctx.next_item_id();
+                        let item = Item::new(
+                            tp_id,
+                            None,
+                            None,
+                            parent,
+                            ItemKind::Type(Type::named(name.clone())),
+                        );
+                        ctx.add_type_param(item, definition, None);
+                        tp_id.as_type_id_unchecked()
+                    });
+                let id = with_id.unwrap_or_else(|| ctx.next_item_id());
+                let named_item = Item::new(
+                    id,
+                    None,
+                    None,
+                    parent,
+                    ItemKind::Type(Type::dependent_qualified_type(
+                        name,
+                        tp_id,
+                        associated_type_field_name.clone(),
+                    )),
+                );
+                ctx.add_type_param(
+                    named_item,
+                    definition,
+                    Some(associated_type_field_name),
+                );
+                id.as_type_id_unchecked()
+            }
+        };
 
-        let id = with_id.unwrap_or_else(|| ctx.next_item_id());
-        let item = Item::new(
-            id,
-            None,
-            None,
-            parent,
-            ItemKind::Type(Type::named(name)),
-        );
-        ctx.add_type_param(item, definition);
-        Some(id.as_type_id_unchecked())
+        Some(eventual_id)
     }
 }
 

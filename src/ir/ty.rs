@@ -123,6 +123,59 @@ impl Type {
         }
     }
 
+    /// Is this type of kind `TypeKind::DependentQualifiedType`?
+    pub fn is_dependent_qualified_type(&self) -> bool {
+        match self.kind {
+            TypeKind::DependentQualifiedType(..) => true,
+            _ => false,
+        }
+    }
+
+    /// Return the "field" name if this is a dependent qualified type.
+    ///
+    /// Not really a field.
+    pub fn get_dependent_qualified_type_field_names(
+        &self,
+        ctx: &BindgenContext,
+        tid: TypeId,
+    ) -> Vec<(TypeId, String)> {
+        let types_to_recurse_into: Vec<TypeId> = match &self.kind {
+            TypeKind::DependentQualifiedType(_, field_name) => {
+                return vec![(tid, field_name.clone())];
+            }
+            TypeKind::TemplateInstantiation(ta) => ta
+                .template_arguments() // prob here
+                .iter()
+                .cloned()
+                .chain(std::iter::once(ta.template_definition()))
+                .collect(),
+            TypeKind::TemplateAlias(inner_type, params) => params
+                .iter()
+                .chain(std::iter::once(inner_type))
+                .cloned()
+                .collect(),
+            _ => return vec![],
+        };
+        types_to_recurse_into
+            .into_iter()
+            .filter_map(
+                |tid| {
+                    tid.into_resolver()
+                        .through_type_refs()
+                        .through_type_aliases()
+                        .resolve_fallible(ctx)
+                }, // avoid recursing back to the item we have loaned.
+            )
+            .map(|item| {
+                let tid = item.id().expect_type_id(ctx);
+                item.expect_type()
+                    .get_dependent_qualified_type_field_names(ctx, tid)
+                    .into_iter()
+            })
+            .flatten()
+            .collect()
+    }
+
     /// Is this a template instantiation type?
     pub fn is_template_instantiation(&self) -> bool {
         match self.kind {
@@ -166,7 +219,8 @@ impl Type {
             TypeKind::Pointer(..) |
             TypeKind::Int(..) |
             TypeKind::Float(..) |
-            TypeKind::TypeParam => true,
+            TypeKind::TypeParam |
+            TypeKind::DependentQualifiedType(..) => true,
             _ => false,
         }
     }
@@ -175,6 +229,25 @@ impl Type {
     pub fn named(name: String) -> Self {
         let name = if name.is_empty() { None } else { Some(name) };
         Self::new(name, None, TypeKind::TypeParam, false)
+    }
+
+    /// Creates a new type which is dependent on
+    /// an inner type of some type param.
+    pub fn dependent_qualified_type(
+        name: String,
+        type_param: TypeId,
+        associated_type_field_name: String,
+    ) -> Self {
+        let name = if name.is_empty() { None } else { Some(name) };
+        Self::new(
+            name,
+            None,
+            TypeKind::DependentQualifiedType(
+                type_param,
+                associated_type_field_name,
+            ),
+            false,
+        )
     }
 
     /// Is this a floating point type?
@@ -342,6 +415,7 @@ impl Type {
     ) -> Option<&'tr Type> {
         match self.kind {
             TypeKind::TypeParam |
+            TypeKind::DependentQualifiedType(..) |
             TypeKind::Array(..) |
             TypeKind::Vector(..) |
             TypeKind::Comp(..) |
@@ -426,7 +500,9 @@ impl AsTemplateParam for TypeKind {
         item: &Item,
     ) -> Option<TypeId> {
         match *self {
-            TypeKind::TypeParam => Some(item.id().expect_type_id(ctx)),
+            TypeKind::TypeParam | TypeKind::DependentQualifiedType(..) => {
+                Some(item.id().expect_type_id(ctx))
+            }
             TypeKind::ResolvedTypeRef(id) => id.as_template_param(ctx, &()),
             _ => None,
         }
@@ -508,6 +584,7 @@ impl TypeKind {
             TypeKind::UnresolvedTypeRef(..) => "UnresolvedTypeRef",
             TypeKind::ResolvedTypeRef(..) => "ResolvedTypeRef",
             TypeKind::TypeParam => "TypeParam",
+            TypeKind::DependentQualifiedType(..) => "DependentQualifiedType",
             TypeKind::ObjCInterface(..) => "ObjCInterface",
             TypeKind::ObjCId => "ObjCId",
             TypeKind::ObjCSel => "ObjCSel",
@@ -567,6 +644,13 @@ impl TemplateParameters for Type {
     fn self_template_params(&self, ctx: &BindgenContext) -> Vec<TypeId> {
         self.kind.self_template_params(ctx)
     }
+
+    fn used_dependent_qualified_types(
+        &self,
+        ctx: &BindgenContext,
+    ) -> Vec<TypeId> {
+        self.kind.used_dependent_qualified_types(ctx)
+    }
 }
 
 impl TemplateParameters for TypeKind {
@@ -594,10 +678,26 @@ impl TemplateParameters for TypeKind {
             TypeKind::Reference(_) |
             TypeKind::UnresolvedTypeRef(..) |
             TypeKind::TypeParam |
+            TypeKind::DependentQualifiedType(..) |
             TypeKind::Alias(_) |
             TypeKind::ObjCId |
             TypeKind::ObjCSel |
             TypeKind::ObjCInterface(_) => vec![],
+        }
+    }
+
+    fn used_dependent_qualified_types(
+        &self,
+        ctx: &BindgenContext,
+    ) -> Vec<TypeId> {
+        match *self {
+            TypeKind::ResolvedTypeRef(id) => {
+                ctx.resolve_type(id).used_dependent_qualified_types(ctx)
+            }
+            TypeKind::Comp(ref comp) => {
+                comp.used_dependent_qualified_types(ctx)
+            }
+            _ => vec![],
         }
     }
 }
@@ -697,6 +797,9 @@ pub enum TypeKind {
 
     /// A named type, that is, a template parameter.
     TypeParam,
+
+    /// A named type associated with a type param.
+    DependentQualifiedType(TypeId, String),
 
     /// Objective C interface. Always referenced through a pointer
     ObjCInterface(ObjCInterface),
@@ -956,7 +1059,7 @@ impl Type {
                                         }
                                         CXCursor_TemplateTypeParameter => {
                                             let param = Item::type_param(
-                                                None, cur, ctx,
+                                                None, cur, ctx, None,
                                             )
                                             .expect(
                                                 "Item::type_param shouldn't \
@@ -1262,6 +1365,13 @@ impl Trace for Type {
 
             TypeKind::ObjCInterface(ref interface) => {
                 interface.trace(context, tracer, &());
+            }
+
+            TypeKind::DependentQualifiedType(type_param, _) => {
+                tracer.visit_kind(
+                    type_param.into(),
+                    EdgeKind::DependentQualifiedTypeParam,
+                );
             }
 
             // None of these variants have edges to other items and types.

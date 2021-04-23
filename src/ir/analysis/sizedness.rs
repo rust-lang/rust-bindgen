@@ -239,7 +239,7 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
                 self.insert(id, SizednessResult::ZeroSized)
             }
 
-            TypeKind::TypeParam => {
+            TypeKind::TypeParam | TypeKind::DependentQualifiedType(..) => {
                 trace!(
                     "    type params sizedness depends on what they're \
                      instantiated as"

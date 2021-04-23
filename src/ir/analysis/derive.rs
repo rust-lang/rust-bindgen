@@ -90,6 +90,8 @@ fn consider_edge_default(kind: EdgeKind) -> bool {
         EdgeKind::VarType |
         EdgeKind::TemplateArgument |
         EdgeKind::TemplateDeclaration |
+        EdgeKind::ContainedDependentQualifiedType |
+        EdgeKind::DependentQualifiedTypeParam |
         EdgeKind::TemplateParameterDefinition => true,
 
         EdgeKind::Constructor |
@@ -212,6 +214,7 @@ impl<'ctx> CannotDerive<'ctx> {
             TypeKind::Float(..) |
             TypeKind::Enum(..) |
             TypeKind::TypeParam |
+            TypeKind::DependentQualifiedType(..) |
             TypeKind::UnresolvedTypeRef(..) |
             TypeKind::Reference(..) |
             TypeKind::ObjCInterface(..) |

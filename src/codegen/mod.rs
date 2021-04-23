@@ -231,6 +231,11 @@ struct CodegenResult<'a> {
     /// function name to the number of overloads we have already codegen'd for
     /// that name. This lets us give each overload a unique suffix.
     overload_counters: HashMap<String, u32>,
+
+    /// Used to record what traits we have generated for the names
+    /// of inner types, such that we generate each trait exactly once.
+    /// (The trait may be implemented by multiple types.)
+    inner_type_traits_generated: HashSet<Ident>,
 }
 
 impl<'a> CodegenResult<'a> {
@@ -248,6 +253,7 @@ impl<'a> CodegenResult<'a> {
             functions_seen: Default::default(),
             vars_seen: Default::default(),
             overload_counters: Default::default(),
+            inner_type_traits_generated: Default::default(),
         }
     }
 
@@ -393,6 +399,7 @@ impl AppendImplicitTemplateParams for proc_macro2::TokenStream {
             TypeKind::Complex(..) |
             TypeKind::Array(..) |
             TypeKind::TypeParam |
+            TypeKind::DependentQualifiedType(..) |
             TypeKind::Opaque |
             TypeKind::Function(..) |
             TypeKind::Enum(..) |
@@ -757,6 +764,25 @@ impl CodeGenerator for Type {
                 // NOTE(emilio): If you add to this list, make sure to also add
                 // it to BindgenContext::compute_allowlisted_and_codegen_items.
                 return;
+            }
+            TypeKind::DependentQualifiedType(_, ref field_name) => {
+                let shortname = ctx.rust_ident(&field_name);
+                let traitname = ctx.inner_type_trait_ident(field_name);
+                if result.inner_type_traits_generated.insert(traitname.clone())
+                {
+                    let mut type_definition = quote! { #shortname };
+                    let derivable_traits = derives_of_item(item, ctx);
+                    append_associated_type_constraints(
+                        ctx,
+                        &derivable_traits,
+                        &mut type_definition,
+                    );
+                    result.push(quote! {
+                        pub trait #traitname {
+                            type #type_definition;
+                        }
+                    });
+                }
             }
             TypeKind::TemplateInstantiation(ref inst) => {
                 inst.codegen(ctx, result, item)
@@ -1908,10 +1934,48 @@ impl CodeGenerator for CompInfo {
 
         let mut generic_param_names = vec![];
 
+        let used_dependent_qualified_types =
+            item.used_dependent_qualified_types(ctx);
+        let mut dependent_qualified_types_by_param: HashMap<
+            crate::ir::context::TypeId,
+            Vec<&String>,
+        > = HashMap::default();
+        for ty_id in used_dependent_qualified_types {
+            let dependent_qualified_type = ctx.resolve_type(ty_id);
+            match dependent_qualified_type.kind() {
+                TypeKind::DependentQualifiedType(
+                    tp_id,
+                    associated_type_name,
+                ) => {
+                    dependent_qualified_types_by_param
+                        .entry(*tp_id)
+                        .or_default()
+                        .push(associated_type_name);
+                }
+                _ => panic!(
+                    "unexpected type kind for dependent qualified type type"
+                ),
+            }
+        }
+
+        let mut where_constraints: std::collections::HashMap<
+            Ident,
+            Vec<Ident>,
+        > = std::collections::HashMap::new();
         for (idx, ty) in item.used_template_params(ctx).iter().enumerate() {
             let param = ctx.resolve_type(*ty);
             let name = param.name().unwrap();
             let ident = ctx.rust_ident(name);
+            if let Some(dependent_qualified_type_field_names) =
+                dependent_qualified_types_by_param.get(ty)
+            {
+                where_constraints.entry(ident.clone()).or_default().extend(
+                    dependent_qualified_type_field_names.into_iter().map(
+                        |field_name| ctx.inner_type_trait_ident(field_name),
+                    ),
+                );
+            }
+
             generic_param_names.push(ident.clone());
 
             let prefix = ctx.trait_prefix();
@@ -2013,8 +2077,28 @@ impl CodeGenerator for CompInfo {
             }
         };
 
+        let mut where_constraints_ts = quote! {};
+        if !where_constraints.is_empty() {
+            for (i, (k, traits)) in where_constraints.into_iter().enumerate() {
+                let prefix = if i == 0 {
+                    quote! { where }
+                } else {
+                    quote! { , }
+                };
+                where_constraints_ts.extend(quote! { #prefix #k });
+                for (j, v) in traits.into_iter().enumerate() {
+                    let sep = if j == 0 {
+                        quote! {:}
+                    } else {
+                        quote! {+}
+                    };
+                    where_constraints_ts.extend(quote! { #sep #v });
+                }
+            }
+        }
+
         tokens.append_all(quote! {
-            #generics {
+            #generics #where_constraints_ts {
                 #( #fields )*
             }
         });
@@ -2028,6 +2112,26 @@ impl CodeGenerator for CompInfo {
             let child_item = ctx.resolve_item(*ty);
             // assert_eq!(child_item.parent_id(), item.id());
             child_item.codegen(ctx, result, &());
+
+            if let Some(shortname) = child_item.expect_type().name() {
+                if !ctx.inner_type_used(shortname) {
+                    continue;
+                }
+                let child_canonical_name = child_item.canonical_name(ctx);
+                let child_canonical_name =
+                    ctx.rust_ident(&child_canonical_name);
+
+                let traitname = ctx.inner_type_trait_ident(&shortname);
+                let shortname = ctx.rust_ident(shortname);
+                let mut template_params = proc_macro2::TokenStream::new();
+                template_params
+                    .append_implicit_template_params(ctx, child_item);
+                result.push(quote! {
+                    impl #generics #traitname for #canonical_ident #generics {
+                        type #shortname = #child_canonical_name #template_params;
+                    }
+                });
+            }
         }
 
         // NOTE: Some unexposed attributes (like alignment attributes) may
@@ -2275,6 +2379,30 @@ impl CodeGenerator for CompInfo {
                 }
             });
         }
+    }
+}
+
+fn append_associated_type_constraints(
+    ctx: &BindgenContext,
+    derivable_traits: &DerivableTraits,
+    ts: &mut proc_macro2::TokenStream,
+) {
+    let trait_bounds: Vec<&'static str> = derivable_traits.clone().into();
+    let mut done_first = false;
+    for id in trait_bounds.into_iter() {
+        let id = match id {
+            "Debug" => quote! { std::fmt::Debug },
+            _ => {
+                let id = ctx.rust_ident(id);
+                quote! { #id }
+            }
+        };
+        ts.append_all(if done_first {
+            quote! { + #id }
+        } else {
+            quote! { : #id }
+        });
+        done_first = true;
     }
 }
 
@@ -3664,6 +3792,15 @@ impl TryToRustTy for Type {
                 let ident = ctx.rust_ident(&name);
                 Ok(quote! {
                     #ident
+                })
+            }
+            TypeKind::DependentQualifiedType(_, ref field_name) => {
+                let name = item.canonical_name(ctx);
+                let ident = ctx.rust_ident(&name);
+                let dependent_type_ident = ctx.rust_ident(&field_name);
+                let trait_id = ctx.inner_type_trait_ident(field_name);
+                Ok(quote! {
+                    < #ident as #trait_id > :: #dependent_type_ident
                 })
             }
             TypeKind::ObjCSel => Ok(quote! {
