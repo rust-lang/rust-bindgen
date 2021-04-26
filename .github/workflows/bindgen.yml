@@ -126,20 +126,16 @@ jobs:
             feature_extra_asserts: 1
             feature_testing_only_docs: 1
 
-          # FIXME: Seems installing multiarch packages fails:
-          #
-          #   https://github.com/rust-lang/rust-bindgen/pull/2037/checks?check_run_id=2441799333
-          #
-          # - os: ubuntu-latest
-          #   target:
-          #     debian: arm64
-          #     cross: aarch64-linux-gnu
-          #     rust: aarch64-unknown-linux-gnu
-          #   llvm_version: "9.0"
-          #   main_tests: 0
-          #   release_build: 0
-          #   feature_extra_asserts: 0
-          #   feature_testing_only_docs: 0
+          - os: ubuntu-latest
+            target:
+              debian: arm64
+              cross: aarch64-linux-gnu
+              rust: aarch64-unknown-linux-gnu
+            llvm_version: "9.0"
+            main_tests: 0
+            release_build: 0
+            feature_extra_asserts: 0
+            feature_testing_only_docs: 0
 
           # Ensure stuff works on macos too
           - os: macos-latest
@@ -164,7 +160,7 @@ jobs:
           EOF
           sudo dpkg --add-architecture ${{matrix.target.debian}}
           sudo apt-get update
-          sudo apt-get install libc6:${{matrix.target.debian}} libstdc++6:${{matrix.target.debian}}
+          sudo apt-get install libc9:${{matrix.target.debian}} libstdc++9:${{matrix.target.debian}}
 
       - name: Install stable
         uses: actions-rs/toolchain@v1
