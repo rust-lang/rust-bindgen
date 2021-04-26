@@ -1832,8 +1832,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     ) -> Option<TypeId> {
         use clang_sys::{CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
         debug!(
-            "builtin_or_resolved_ty: {:?}, {:?}, {:?}",
-            ty, location, parent_id
+            "builtin_or_resolved_ty: {:?}, {:?}, {:?}, {:?}",
+            ty, location, with_id, parent_id
         );
 
         if let Some(decl) = ty.canonical_declaration(location.as_ref()) {
