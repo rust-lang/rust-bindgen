@@ -85,5 +85,5 @@ Note: This requires the Builder's derive_default to be set to true, otherwise th
 This will print out
 
 ```text
-StructWithBitfields: a:1, b:0, c:2
+StructWithBitfields: a:0, b:0, c:0
 ```
