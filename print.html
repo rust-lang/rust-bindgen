@@ -1151,7 +1151,7 @@ StructWithBitfields: a:1, b:1, c:0
     unsafe { print_bitfield(bfield) };
 </code></pre>
 <p>This will print out</p>
-<pre><code class="language-text">StructWithBitfields: a:1, b:0, c:2
+<pre><code class="language-text">StructWithBitfields: a:0, b:0, c:0
 </code></pre>
 <h1><a class="header" href="#frequently-asked-questions" id="frequently-asked-questions">Frequently Asked Questions</a></h1>
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -1160,6 +1160,7 @@ StructWithBitfields: a:1, b:1, c:0
 <li><a href="faq.html#why-isnt-bindgen-generating-methods-for-this-allowlisted-class">Why isn't <code>bindgen</code> generating methods for this allowlisted class?</a></li>
 <li><a href="faq.html#why-isnt-bindgen-generating-bindings-to-inline-functions">Why isn't <code>bindgen</code> generating bindings to inline functions?</a></li>
 <li><a href="faq.html#does-bindgen-support-the-c-standard-template-library-stl">Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</a></li>
+<li><a href="faq.html#how-to-deal-with-bindgen-generated-padding-fields">How to deal with bindgen generated padding fields?</a></li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <h3><a class="header" href="#why-isnt-bindgen-generating-methods-for-this-allowlisted-class" id="why-isnt-bindgen-generating-methods-for-this-allowlisted-class">Why isn't <code>bindgen</code> generating methods for this allowlisted class?</a></h3>
