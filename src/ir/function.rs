@@ -597,6 +597,10 @@ impl ClangSubItemParser for Function {
             return Err(ParseError::Continue);
         }
 
+        if cursor.is_deleted_function() {
+            return Err(ParseError::Continue);
+        }
+
         if !context.options().generate_inline_functions &&
             cursor.is_inlined_function()
         {
