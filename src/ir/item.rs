@@ -4,7 +4,7 @@ use super::super::codegen::{EnumVariation, CONSTIFIED_ENUM_MODULE_REPR_NAME};
 use super::analysis::{HasVtable, HasVtableResult, Sizedness, SizednessResult};
 use super::annotations::Annotations;
 use super::comment;
-use super::comp::MethodKind;
+use super::comp::{CompKind, MethodKind};
 use super::context::{BindgenContext, ItemId, PartialType, TypeId};
 use super::derive::{
     CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveEq,
@@ -904,6 +904,12 @@ impl Item {
             names.push(base_name);
         }
 
+        if ctx.options().c_naming {
+            if let Some(prefix) = self.c_naming_prefix() {
+                names.insert(0, prefix.to_string());
+            }
+        }
+
         let name = names.join("_");
 
         let name = if opt.user_mangled == UserMangled::Yes {
@@ -1053,6 +1059,24 @@ impl Item {
             .collect();
         path.reverse();
         path
+    }
+
+    /// Returns a prefix for the canonical name when C naming is enabled.
+    fn c_naming_prefix(&self) -> Option<&str> {
+        if let ItemKind::Type(typ) = &self.kind {
+            match typ.kind() {
+                TypeKind::Comp(comp_info) => {
+                    match comp_info.kind() {
+                        CompKind::Struct => Some("struct"),
+                        CompKind::Union => Some("union"),
+                    }
+                },
+                TypeKind::Enum(_) => Some("enum"),
+                _ => None,
+            }
+        } else {
+            None
+        }
     }
 }
 
