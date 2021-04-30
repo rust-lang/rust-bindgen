@@ -100,3 +100,21 @@ where
         }
     }
 }
+
+#[inline]
+pub fn signed_val(val: u64, bits: usize) -> i64 {
+    if bits == 64 {
+        return val as i64;
+    }
+
+    debug_assert!(val < (1 << bits));
+
+    let is_neg = ((1 << (bits - 1)) & val) != 0;
+    if !is_neg {
+        return val as i64;
+    }
+
+    let mask = (1 << bits) as u64 - 1;
+    let val = (!(val - 1) & mask) as i64;
+    -val
+}

@@ -1632,6 +1632,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 }
             };
 
+        let is_signed = bitfield_ty.as_integer().unwrap().is_signed();
         let bitfield_ty =
             bitfield_ty.to_rust_ty_or_opaque(ctx, bitfield_ty_item);
 
@@ -1647,10 +1648,18 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 #[inline]
                 #access_spec fn #getter_name(&self) -> #bitfield_ty {
                     unsafe {
-                        ::#prefix::mem::transmute(
-                            self.#unit_field_ident.as_ref().get(#offset, #width)
-                                as #bitfield_int_ty
-                        )
+                        let val = self.#unit_field_ident.as_ref().get(
+                            #offset,
+                            #width
+                        );
+                        if (#is_signed) {
+                            ::#prefix::mem::transmute(
+                                signed_val(val, #width as usize)
+                                    as #bitfield_int_ty
+                            )
+                        } else {
+                            ::#prefix::mem::transmute(val as #bitfield_int_ty)
+                        }
                     }
                 }
 
@@ -1671,10 +1680,15 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 #[inline]
                 #access_spec fn #getter_name(&self) -> #bitfield_ty {
                     unsafe {
-                        ::#prefix::mem::transmute(
-                            self.#unit_field_ident.get(#offset, #width)
-                                as #bitfield_int_ty
-                        )
+                        let val = self.#unit_field_ident.get(#offset, #width);
+                        if (#is_signed) {
+                            ::#prefix::mem::transmute(
+                                signed_val(val, #width as usize)
+                                    as #bitfield_int_ty
+                            )
+                        } else {
+                            ::#prefix::mem::transmute(val as #bitfield_int_ty)
+                        }
                     }
                 }
 
