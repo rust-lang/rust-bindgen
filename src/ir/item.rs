@@ -1063,18 +1063,19 @@ impl Item {
 
     /// Returns a prefix for the canonical name when C naming is enabled.
     fn c_naming_prefix(&self) -> Option<&str> {
-        if let ItemKind::Type(typ) = &self.kind {
-            match typ.kind() {
-                TypeKind::Comp(comp_info) => match comp_info.kind() {
-                    CompKind::Struct => Some("struct"),
-                    CompKind::Union => Some("union"),
-                },
-                TypeKind::Enum(_) => Some("enum"),
-                _ => None,
-            }
-        } else {
-            None
-        }
+        let ty = match self.kind {
+            ItemKind::Type(ref ty) => ty,
+            _ => return None,
+        };
+
+        Some(match ty.kind() {
+            TypeKind::Comp(ref ci) => match ci.kind() {
+                CompKind::Struct => "struct",
+                CompKind::Union => "union",
+            },
+            TypeKind::Enum(..) => "enum",
+            _ => return None,
+        })
     }
 }
 
