@@ -558,6 +558,10 @@ impl Builder {
             output_vector.push("--translate-enum-integer-types".into());
         }
 
+        if self.options.c_naming {
+            output_vector.push("--c-naming".into());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -1616,6 +1620,15 @@ impl Builder {
         self.options.translate_enum_integer_types = doit;
         self
     }
+
+    /// Generate types with C style naming.
+    ///
+    /// This will add prefixes to the generated type names. For example instead of a struct `A` we
+    /// will generate struct `struct_A`. Currently applies to structs, unions, and enums.
+    pub fn c_naming(mut self, doit: bool) -> Self {
+        self.options.c_naming = doit;
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -1921,6 +1934,9 @@ struct BindgenOptions {
 
     /// Always translate enum integer types to native Rust integer types.
     translate_enum_integer_types: bool,
+
+    /// Generate types with C style naming.
+    c_naming: bool,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -2062,6 +2078,7 @@ impl Default for BindgenOptions {
             dynamic_link_require_all: false,
             respect_cxx_access_specs: false,
             translate_enum_integer_types: false,
+            c_naming: false,
         }
     }
 }

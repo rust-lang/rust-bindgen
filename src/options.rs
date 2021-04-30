@@ -513,6 +513,9 @@ where
             Arg::with_name("translate-enum-integer-types")
                 .long("translate-enum-integer-types")
                 .help("Always translate enum integer types to native Rust integer types."),
+            Arg::with_name("c-naming")
+                .long("c-naming")
+                .help("Generate types with C style naming."),
         ]) // .args()
         .get_matches_from(args);
 
@@ -951,6 +954,10 @@ where
 
     if matches.is_present("translate-enum-integer-types") {
         builder = builder.translate_enum_integer_types(true);
+    }
+
+    if matches.is_present("c-naming") {
+        builder = builder.c_naming(true);
     }
 
     let verbose = matches.is_present("verbose");
