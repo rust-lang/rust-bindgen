@@ -15,7 +15,7 @@ not.
 
 ### Library
 
-* [`bindgen::Builder::blocklist_type`](https://docs.rs/bindgen/0.31.3/bindgen/struct.Builder.html#method.blocklist_type)
+* [`bindgen::Builder::blocklist_type`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.blocklist_type)
 
 ### Command Line
 
