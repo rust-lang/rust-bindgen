@@ -16,9 +16,9 @@ transitively used by a definition that matches them.
 
 ### Library
 
-* [`bindgen::Builder::allowlist_type`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.allowlist_type)
-* [`bindgen::Builder::allowlist_function`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.allowlist_function)
-* [`bindgen::Builder::allowlist_var`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.allowlist_var)
+* [`bindgen::Builder::allowlist_type`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.allowlist_type)
+* [`bindgen::Builder::allowlist_function`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.allowlist_function)
+* [`bindgen::Builder::allowlist_var`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.allowlist_var)
 
 ### Command Line
 

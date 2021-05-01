@@ -35,8 +35,8 @@ typedef union {
 
 ### Library
 
-* [`bindgen::Builder::rust_target()`](https://docs.rs/bindgen/0.29.0/bindgen/struct.Builder.html#method.rust_target) <!-- Update when live -->
-* [`bindgen::Builder::derive_default()`](https://docs.rs/bindgen/0.29.0/bindgen/struct.Builder.html#method.derive_default)
+* [`bindgen::Builder::rust_target()`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.rust_target) <!-- Update when live -->
+* [`bindgen::Builder::derive_default()`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.derive_default)
 
 ### Command Line
 
