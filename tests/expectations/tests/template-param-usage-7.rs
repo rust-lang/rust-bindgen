@@ -15,7 +15,11 @@ pub struct DoesNotUseU<T, V> {
 }
 impl<T, V> Default for DoesNotUseU<T, V> {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 pub type Alias = DoesNotUseU<::std::os::raw::c_int, ::std::os::raw::c_char>;

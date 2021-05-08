@@ -212,7 +212,11 @@ fn bindgen_test_layout_rte_eth_rxmode() {
 }
 impl Default for rte_eth_rxmode {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl rte_eth_rxmode {
@@ -459,7 +463,11 @@ fn bindgen_test_layout_rte_eth_txmode() {
 }
 impl Default for rte_eth_txmode {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl rte_eth_txmode {
@@ -607,7 +615,11 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
 }
 impl Default for rte_eth_rss_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(u32)]
@@ -801,7 +813,11 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
 }
 impl Default for rte_eth_vmdq_dcb_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -853,7 +869,11 @@ fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
 }
 impl Default for rte_eth_dcb_rx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -905,7 +925,11 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
 }
 impl Default for rte_eth_vmdq_dcb_tx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -957,7 +981,11 @@ fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
 }
 impl Default for rte_eth_dcb_tx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -994,7 +1022,11 @@ fn bindgen_test_layout_rte_eth_vmdq_tx_conf() {
 }
 impl Default for rte_eth_vmdq_tx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -1171,7 +1203,11 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
 }
 impl Default for rte_eth_vmdq_rx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(u32)]
@@ -1600,7 +1636,11 @@ fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
 }
 impl Default for rte_eth_flex_payload_cfg {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// A structure used to define FDIR masks for flexible payload
@@ -1729,7 +1769,11 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
 }
 impl Default for rte_eth_fdir_flex_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// A structure used to configure the Flow Director (FDIR) feature
@@ -1841,7 +1885,11 @@ fn bindgen_test_layout_rte_fdir_conf() {
 }
 impl Default for rte_fdir_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// A structure used to enable/disable specific device interrupts.
@@ -2002,7 +2050,11 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
 }
 impl Default for rte_eth_conf__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -2066,7 +2118,11 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
 }
 impl Default for rte_eth_conf__bindgen_ty_2 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -2199,6 +2255,10 @@ fn bindgen_test_layout_rte_eth_conf() {
 }
 impl Default for rte_eth_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

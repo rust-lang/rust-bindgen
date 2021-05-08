@@ -45,7 +45,11 @@ fn bindgen_test_layout_AllowlistedOne() {
 }
 impl Default for AllowlistedOne {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// This can't derive(Hash/Eq) even if it didn't contain a blocklisted type.
@@ -80,6 +84,10 @@ fn bindgen_test_layout_AllowlistedTwo() {
 }
 impl Default for AllowlistedTwo {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

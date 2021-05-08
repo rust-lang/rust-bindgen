@@ -25,7 +25,11 @@ fn bindgen_test_layout_Opaque() {
 }
 impl Default for Opaque {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl ::std::fmt::Debug for Opaque {
@@ -64,7 +68,11 @@ fn bindgen_test_layout_OpaqueUser() {
 }
 impl Default for OpaqueUser {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl ::std::fmt::Debug for OpaqueUser {

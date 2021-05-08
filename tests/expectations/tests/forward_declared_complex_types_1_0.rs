@@ -68,7 +68,11 @@ impl Clone for Bar {
 }
 impl Default for Bar {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 extern "C" {

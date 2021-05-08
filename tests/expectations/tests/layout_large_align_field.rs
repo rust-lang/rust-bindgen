@@ -108,7 +108,11 @@ fn bindgen_test_layout_ip_frag() {
 }
 impl Default for ip_frag {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// @internal <src addr, dst_addr, id> to uniquely indetify fragmented datagram.
@@ -239,7 +243,11 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
 }
 impl Default for ip_frag_pkt__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -344,7 +352,11 @@ fn bindgen_test_layout_ip_frag_pkt() {
 }
 impl Default for ip_frag_pkt {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -394,7 +406,11 @@ fn bindgen_test_layout_ip_pkt_list() {
 }
 impl Default for ip_pkt_list {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// fragmentation table statistics
@@ -508,7 +524,11 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
 }
 impl Default for ip_frag_tbl_stat {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// fragmentation table
@@ -695,7 +715,11 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
 }
 impl Default for rte_ip_frag_tbl {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 ///< fragment mbuf
