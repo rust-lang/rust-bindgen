@@ -260,7 +260,11 @@ impl Clone for rte_eth_rxmode {
 }
 impl Default for rte_eth_rxmode {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 impl rte_eth_rxmode {
@@ -512,7 +516,11 @@ impl Clone for rte_eth_txmode {
 }
 impl Default for rte_eth_txmode {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 impl rte_eth_txmode {
@@ -665,7 +673,11 @@ impl Clone for rte_eth_rss_conf {
 }
 impl Default for rte_eth_rss_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(u32)]
@@ -869,7 +881,11 @@ impl Clone for rte_eth_vmdq_dcb_conf {
 }
 impl Default for rte_eth_vmdq_dcb_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -926,7 +942,11 @@ impl Clone for rte_eth_dcb_rx_conf {
 }
 impl Default for rte_eth_dcb_rx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -983,7 +1003,11 @@ impl Clone for rte_eth_vmdq_dcb_tx_conf {
 }
 impl Default for rte_eth_vmdq_dcb_tx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -1040,7 +1064,11 @@ impl Clone for rte_eth_dcb_tx_conf {
 }
 impl Default for rte_eth_dcb_tx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -1082,7 +1110,11 @@ impl Clone for rte_eth_vmdq_tx_conf {
 }
 impl Default for rte_eth_vmdq_tx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -1269,7 +1301,11 @@ impl Clone for rte_eth_vmdq_rx_conf {
 }
 impl Default for rte_eth_vmdq_rx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(u32)]
@@ -1718,7 +1754,11 @@ impl Clone for rte_eth_flex_payload_cfg {
 }
 impl Default for rte_eth_flex_payload_cfg {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 /// A structure used to define FDIR masks for flexible payload
@@ -1857,7 +1897,11 @@ impl Clone for rte_eth_fdir_flex_conf {
 }
 impl Default for rte_eth_fdir_flex_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 /// A structure used to configure the Flow Director (FDIR) feature
@@ -1974,7 +2018,11 @@ impl Clone for rte_fdir_conf {
 }
 impl Default for rte_fdir_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 /// A structure used to enable/disable specific device interrupts.
@@ -2145,7 +2193,11 @@ impl Clone for rte_eth_conf__bindgen_ty_1 {
 }
 impl Default for rte_eth_conf__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -2348,6 +2400,10 @@ impl Clone for rte_eth_conf {
 }
 impl Default for rte_eth_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }

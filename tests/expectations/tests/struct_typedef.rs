@@ -69,7 +69,11 @@ fn bindgen_test_layout__bindgen_ty_1() {
 }
 impl Default for _bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 pub type struct_ptr_t = *mut _bindgen_ty_1;

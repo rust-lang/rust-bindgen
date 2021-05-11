@@ -119,7 +119,11 @@ impl Clone for C {
 }
 impl Default for C {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 impl ::std::cmp::PartialEq for C {
@@ -187,7 +191,11 @@ fn bindgen_test_layout_C_with_zero_length_array() {
 }
 impl Default for C_with_zero_length_array {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -295,7 +303,11 @@ fn bindgen_test_layout_C_with_incomplete_array() {
 }
 impl Default for C_with_incomplete_array {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -431,7 +443,11 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
 }
 impl Default for C_with_zero_length_array_and_incomplete_array {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -581,7 +597,11 @@ fn bindgen_test_layout_IncompleteArrayNonCopiable() {
 }
 impl Default for IncompleteArrayNonCopiable {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]

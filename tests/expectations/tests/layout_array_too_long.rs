@@ -78,7 +78,11 @@ fn bindgen_test_layout_ip_frag() {
 }
 impl Default for ip_frag {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// @internal <src addr, dst_addr, id> to uniquely indetify fragmented datagram.
@@ -209,7 +213,11 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
 }
 impl Default for ip_frag_pkt__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -314,7 +322,11 @@ fn bindgen_test_layout_ip_frag_pkt() {
 }
 impl Default for ip_frag_pkt {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl ::std::cmp::PartialEq for ip_frag_pkt {

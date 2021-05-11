@@ -17,7 +17,11 @@ pub struct BaseWithVtable<T> {
 }
 impl<T> Default for BaseWithVtable<T> {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// This should not have an explicit vtable.
@@ -41,7 +45,11 @@ fn bindgen_test_layout_DerivedWithNoVirtualMethods() {
 }
 impl Default for DerivedWithNoVirtualMethods {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// This should not have an explicit vtable.
@@ -65,7 +73,11 @@ fn bindgen_test_layout_DerivedWithVirtualMethods() {
 }
 impl Default for DerivedWithVirtualMethods {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// This should not have any vtable.
@@ -77,7 +89,11 @@ pub struct BaseWithoutVtable<U> {
 }
 impl<U> Default for BaseWithoutVtable<U> {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -104,7 +120,11 @@ fn bindgen_test_layout_DerivedWithVtable() {
 }
 impl Default for DerivedWithVtable {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// This should not have any vtable.
@@ -128,7 +148,11 @@ fn bindgen_test_layout_DerivedWithoutVtable() {
 }
 impl Default for DerivedWithoutVtable {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]

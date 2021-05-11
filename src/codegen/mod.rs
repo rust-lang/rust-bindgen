@@ -2196,9 +2196,32 @@ impl CodeGenerator for CompInfo {
 
         if needs_default_impl {
             let prefix = ctx.trait_prefix();
+            let body = if ctx.options().rust_features().maybe_uninit {
+                quote! {
+                    let mut s = ::#prefix::mem::MaybeUninit::<Self>::uninit();
+                    unsafe {
+                        ::#prefix::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+                        s.assume_init()
+                    }
+                }
+            } else {
+                quote! {
+                    unsafe {
+                        let mut s: Self = ::#prefix::mem::uninitialized();
+                        ::#prefix::ptr::write_bytes(&mut s, 0, 1);
+                        s
+                    }
+                }
+            };
+            // Note we use `ptr::write_bytes()` instead of `mem::zeroed()` because the latter does
+            // not necessarily ensure padding bytes are zeroed. Some C libraries are sensitive to
+            // non-zero padding bytes, especially when forwards/backwards compatability is
+            // involved.
             result.push(quote! {
                 impl #generics Default for #ty_for_impl {
-                    fn default() -> Self { unsafe { ::#prefix::mem::zeroed() } }
+                    fn default() -> Self {
+                        #body
+                    }
                 }
             });
         }

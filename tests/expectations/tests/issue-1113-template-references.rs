@@ -15,7 +15,11 @@ pub struct Entry<K, V> {
 }
 impl<K, V> Default for Entry<K, V> {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -34,6 +38,10 @@ pub struct nsBaseHashtable_EntryPtr<K, V> {
 }
 impl<K, V> Default for nsBaseHashtable_EntryPtr<K, V> {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

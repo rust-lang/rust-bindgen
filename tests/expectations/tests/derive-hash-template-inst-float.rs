@@ -14,7 +14,11 @@ pub struct foo<T> {
 }
 impl<T> Default for foo<T> {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// Can derive Hash/PartialOrd/Ord/PartialEq/Eq when instantiated with int
@@ -43,7 +47,11 @@ fn bindgen_test_layout_IntStr() {
 }
 impl Default for IntStr {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// Cannot derive Hash/Eq/Ord when instantiated with float but can derive PartialEq/PartialOrd
@@ -77,7 +85,11 @@ fn bindgen_test_layout_FloatStr() {
 }
 impl Default for FloatStr {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
