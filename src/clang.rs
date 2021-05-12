@@ -241,7 +241,7 @@ impl Cursor {
         self.x.kind
     }
 
-    /// Returns true is the cursor is a definition
+    /// Returns true if the cursor is a definition
     pub fn is_definition(&self) -> bool {
         unsafe { clang_isCursorDefinition(self.x) != 0 }
     }
