@@ -26,7 +26,7 @@ fn bindgen_test_layout_Struct() {
     );
 }
 extern "C" {
-    #[link_name = "\u{1}__ZN6Struct8FunctionER5Union"]
+    #[link_name = "\u{1}_ZN6Struct8FunctionER5Union"]
     pub fn Struct_Function(this: *mut Struct, arg1: *mut Union);
 }
 impl Struct {
