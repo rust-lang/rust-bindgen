@@ -25,9 +25,15 @@ fn bindgen_test_layout_ShouldImplClone() {
         concat!("Alignment of ", stringify!(ShouldImplClone))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ShouldImplClone>())).large as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ShouldImplClone>() };
+            let struct_ptr = &struct_instance as *const ShouldImplClone;
+            let field_ptr = std::ptr::addr_of!(struct_instance.large);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

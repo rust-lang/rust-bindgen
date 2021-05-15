@@ -23,8 +23,14 @@ fn bindgen_test_layout_LittleArray() {
         concat!("Alignment of ", stringify!(LittleArray))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<LittleArray>())).a as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<LittleArray>() };
+            let struct_ptr = &struct_instance as *const LittleArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -53,7 +59,15 @@ fn bindgen_test_layout_BigArray() {
         concat!("Alignment of ", stringify!(BigArray))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<BigArray>())).a as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<BigArray>() };
+            let struct_ptr = &struct_instance as *const BigArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -90,8 +104,15 @@ fn bindgen_test_layout_WithLittleArray() {
         concat!("Alignment of ", stringify!(WithLittleArray))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithLittleArray>())).a as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<WithLittleArray>() };
+            let struct_ptr = &struct_instance as *const WithLittleArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -120,8 +141,14 @@ fn bindgen_test_layout_WithBigArray() {
         concat!("Alignment of ", stringify!(WithBigArray))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithBigArray>())).a as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<WithBigArray>() };
+            let struct_ptr = &struct_instance as *const WithBigArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

@@ -23,7 +23,15 @@ fn bindgen_test_layout_struct_a() {
         concat!("Alignment of ", stringify!(struct_a))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<struct_a>())).a as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<struct_a>() };
+            let struct_ptr = &struct_instance as *const struct_a;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -51,26 +59,6 @@ fn bindgen_test_layout_union_b() {
         ::std::mem::align_of::<union_b>(),
         4usize,
         concat!("Alignment of ", stringify!(union_b))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<union_b>())).a as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(union_b),
-            "::",
-            stringify!(a)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<union_b>())).b as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(union_b),
-            "::",
-            stringify!(b)
-        )
     );
 }
 impl Default for union_b {

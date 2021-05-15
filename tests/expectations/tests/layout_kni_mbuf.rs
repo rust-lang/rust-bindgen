@@ -45,9 +45,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         concat!("Alignment of ", stringify!(rte_kni_mbuf))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).buf_addr as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.buf_addr);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -58,9 +63,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).buf_physaddr as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.buf_physaddr);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
         concat!(
@@ -71,8 +81,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pad0 as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.pad0);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         16usize,
         concat!(
@@ -83,9 +99,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).data_off as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.data_off);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         18usize,
         concat!(
@@ -96,8 +117,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pad1 as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.pad1);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         20usize,
         concat!(
@@ -108,9 +135,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).nb_segs as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.nb_segs);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         22usize,
         concat!(
@@ -121,8 +153,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pad4 as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.pad4);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         23usize,
         concat!(
@@ -133,9 +171,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).ol_flags as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.ol_flags);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         24usize,
         concat!(
@@ -146,8 +189,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pad2 as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.pad2);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         32usize,
         concat!(
@@ -158,9 +207,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pkt_len as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.pkt_len);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         36usize,
         concat!(
@@ -171,9 +225,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).data_len as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.data_len);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         40usize,
         concat!(
@@ -184,8 +243,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pad3 as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.pad3);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         64usize,
         concat!(
@@ -196,8 +261,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pool as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.pool);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         72usize,
         concat!(
@@ -208,8 +279,14 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).next as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<rte_kni_mbuf>() };
+            let struct_ptr = &struct_instance as *const rte_kni_mbuf;
+            let field_ptr = std::ptr::addr_of!(struct_instance.next);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         80usize,
         concat!(

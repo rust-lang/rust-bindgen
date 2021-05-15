@@ -51,9 +51,15 @@ fn bindgen_test_layout_WithOpaquePtr() {
         concat!("Alignment of ", stringify!(WithOpaquePtr))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithOpaquePtr>())).whatever as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<WithOpaquePtr>() };
+            let struct_ptr = &struct_instance as *const WithOpaquePtr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.whatever);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -64,8 +70,15 @@ fn bindgen_test_layout_WithOpaquePtr() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithOpaquePtr>())).other as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<WithOpaquePtr>() };
+            let struct_ptr = &struct_instance as *const WithOpaquePtr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.other);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
         concat!(
@@ -76,8 +89,15 @@ fn bindgen_test_layout_WithOpaquePtr() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithOpaquePtr>())).t as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<WithOpaquePtr>() };
+            let struct_ptr = &struct_instance as *const WithOpaquePtr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.t);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         12usize,
         concat!(

@@ -29,9 +29,15 @@ fn bindgen_test_layout_SomeAccessors() {
         concat!("Alignment of ", stringify!(SomeAccessors))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<SomeAccessors>())).mNoAccessor as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<SomeAccessors>() };
+            let struct_ptr = &struct_instance as *const SomeAccessors;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mNoAccessor);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -42,9 +48,15 @@ fn bindgen_test_layout_SomeAccessors() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<SomeAccessors>())).mBothAccessors as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<SomeAccessors>() };
+            let struct_ptr = &struct_instance as *const SomeAccessors;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mBothAccessors);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(
@@ -55,9 +67,16 @@ fn bindgen_test_layout_SomeAccessors() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<SomeAccessors>())).mUnsafeAccessors
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<SomeAccessors>() };
+            let struct_ptr = &struct_instance as *const SomeAccessors;
+            let field_ptr =
+                std::ptr::addr_of!(struct_instance.mUnsafeAccessors);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
         concat!(
@@ -68,9 +87,16 @@ fn bindgen_test_layout_SomeAccessors() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<SomeAccessors>())).mImmutableAccessor
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<SomeAccessors>() };
+            let struct_ptr = &struct_instance as *const SomeAccessors;
+            let field_ptr =
+                std::ptr::addr_of!(struct_instance.mImmutableAccessor);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         12usize,
         concat!(
@@ -125,9 +151,14 @@ fn bindgen_test_layout_AllAccessors() {
         concat!("Alignment of ", stringify!(AllAccessors))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<AllAccessors>())).mBothAccessors as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<AllAccessors>() };
+            let struct_ptr = &struct_instance as *const AllAccessors;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mBothAccessors);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -138,9 +169,15 @@ fn bindgen_test_layout_AllAccessors() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<AllAccessors>())).mAlsoBothAccessors
-                as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<AllAccessors>() };
+            let struct_ptr = &struct_instance as *const AllAccessors;
+            let field_ptr =
+                std::ptr::addr_of!(struct_instance.mAlsoBothAccessors);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(
@@ -189,9 +226,15 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
         concat!("Alignment of ", stringify!(AllUnsafeAccessors))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<AllUnsafeAccessors>())).mBothAccessors
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<AllUnsafeAccessors>() };
+            let struct_ptr = &struct_instance as *const AllUnsafeAccessors;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mBothAccessors);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -202,9 +245,16 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<AllUnsafeAccessors>())).mAlsoBothAccessors
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<AllUnsafeAccessors>() };
+            let struct_ptr = &struct_instance as *const AllUnsafeAccessors;
+            let field_ptr =
+                std::ptr::addr_of!(struct_instance.mAlsoBothAccessors);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(
@@ -262,9 +312,15 @@ fn bindgen_test_layout_ContradictAccessors() {
         concat!("Alignment of ", stringify!(ContradictAccessors))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ContradictAccessors>())).mBothAccessors
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContradictAccessors>() };
+            let struct_ptr = &struct_instance as *const ContradictAccessors;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mBothAccessors);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -275,9 +331,15 @@ fn bindgen_test_layout_ContradictAccessors() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ContradictAccessors>())).mNoAccessors
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContradictAccessors>() };
+            let struct_ptr = &struct_instance as *const ContradictAccessors;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mNoAccessors);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(
@@ -288,9 +350,16 @@ fn bindgen_test_layout_ContradictAccessors() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ContradictAccessors>())).mUnsafeAccessors
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContradictAccessors>() };
+            let struct_ptr = &struct_instance as *const ContradictAccessors;
+            let field_ptr =
+                std::ptr::addr_of!(struct_instance.mUnsafeAccessors);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
         concat!(
@@ -301,9 +370,16 @@ fn bindgen_test_layout_ContradictAccessors() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ContradictAccessors>())).mImmutableAccessor
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContradictAccessors>() };
+            let struct_ptr = &struct_instance as *const ContradictAccessors;
+            let field_ptr =
+                std::ptr::addr_of!(struct_instance.mImmutableAccessor);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         12usize,
         concat!(
@@ -357,8 +433,14 @@ fn bindgen_test_layout_Replaced() {
         concat!("Alignment of ", stringify!(Replaced))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Replaced>())).mAccessor as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Replaced>() };
+            let struct_ptr = &struct_instance as *const Replaced;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mAccessor);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -398,8 +480,14 @@ fn bindgen_test_layout_Wrapper() {
         concat!("Alignment of ", stringify!(Wrapper))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Wrapper>())).mReplaced as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Wrapper>() };
+            let struct_ptr = &struct_instance as *const Wrapper;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mReplaced);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

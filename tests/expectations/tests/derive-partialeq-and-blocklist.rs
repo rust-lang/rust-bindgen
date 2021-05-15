@@ -26,9 +26,16 @@ fn bindgen_test_layout_ShouldNotDerivePartialEq() {
         concat!("Alignment of ", stringify!(ShouldNotDerivePartialEq))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ShouldNotDerivePartialEq>())).a as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ShouldNotDerivePartialEq>() };
+            let struct_ptr =
+                &struct_instance as *const ShouldNotDerivePartialEq;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

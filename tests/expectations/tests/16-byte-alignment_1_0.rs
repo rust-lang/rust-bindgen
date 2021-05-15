@@ -88,10 +88,17 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1>(
-            )))
-            .dport as *const _ as usize
+        {
+            let struct_instance = unsafe {
+                std::mem::zeroed::<rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1>()
+            };
+            let struct_ptr = &struct_instance
+                as *const rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1;
+            let field_ptr = std::ptr::addr_of!(struct_instance.dport);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -102,10 +109,17 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1>(
-            )))
-            .sport as *const _ as usize
+        {
+            let struct_instance = unsafe {
+                std::mem::zeroed::<rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1>()
+            };
+            let struct_ptr = &struct_instance
+                as *const rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1;
+            let field_ptr = std::ptr::addr_of!(struct_instance.sport);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         2usize,
         concat!(
@@ -133,19 +147,6 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1() {
         4usize,
         concat!("Alignment of ", stringify!(rte_ipv4_tuple__bindgen_ty_1))
     );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ipv4_tuple__bindgen_ty_1>())).sctp_tag
-                as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_ipv4_tuple__bindgen_ty_1),
-            "::",
-            stringify!(sctp_tag)
-        )
-    );
 }
 impl Clone for rte_ipv4_tuple__bindgen_ty_1 {
     fn clone(&self) -> Self {
@@ -165,9 +166,15 @@ fn bindgen_test_layout_rte_ipv4_tuple() {
         concat!("Alignment of ", stringify!(rte_ipv4_tuple))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ipv4_tuple>())).src_addr as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_ipv4_tuple>() };
+            let struct_ptr = &struct_instance as *const rte_ipv4_tuple;
+            let field_ptr = std::ptr::addr_of!(struct_instance.src_addr);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -178,9 +185,15 @@ fn bindgen_test_layout_rte_ipv4_tuple() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ipv4_tuple>())).dst_addr as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_ipv4_tuple>() };
+            let struct_ptr = &struct_instance as *const rte_ipv4_tuple;
+            let field_ptr = std::ptr::addr_of!(struct_instance.dst_addr);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(
@@ -236,10 +249,17 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1>(
-            )))
-            .dport as *const _ as usize
+        {
+            let struct_instance = unsafe {
+                std::mem::zeroed::<rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1>()
+            };
+            let struct_ptr = &struct_instance
+                as *const rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1;
+            let field_ptr = std::ptr::addr_of!(struct_instance.dport);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -250,10 +270,17 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1>(
-            )))
-            .sport as *const _ as usize
+        {
+            let struct_instance = unsafe {
+                std::mem::zeroed::<rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1>()
+            };
+            let struct_ptr = &struct_instance
+                as *const rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1;
+            let field_ptr = std::ptr::addr_of!(struct_instance.sport);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         2usize,
         concat!(
@@ -281,19 +308,6 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1() {
         4usize,
         concat!("Alignment of ", stringify!(rte_ipv6_tuple__bindgen_ty_1))
     );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ipv6_tuple__bindgen_ty_1>())).sctp_tag
-                as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_ipv6_tuple__bindgen_ty_1),
-            "::",
-            stringify!(sctp_tag)
-        )
-    );
 }
 impl Clone for rte_ipv6_tuple__bindgen_ty_1 {
     fn clone(&self) -> Self {
@@ -313,9 +327,15 @@ fn bindgen_test_layout_rte_ipv6_tuple() {
         concat!("Alignment of ", stringify!(rte_ipv6_tuple))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ipv6_tuple>())).src_addr as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_ipv6_tuple>() };
+            let struct_ptr = &struct_instance as *const rte_ipv6_tuple;
+            let field_ptr = std::ptr::addr_of!(struct_instance.src_addr);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -326,9 +346,15 @@ fn bindgen_test_layout_rte_ipv6_tuple() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ipv6_tuple>())).dst_addr as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_ipv6_tuple>() };
+            let struct_ptr = &struct_instance as *const rte_ipv6_tuple;
+            let field_ptr = std::ptr::addr_of!(struct_instance.dst_addr);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         16usize,
         concat!(
@@ -357,30 +383,6 @@ fn bindgen_test_layout_rte_thash_tuple() {
         ::std::mem::size_of::<rte_thash_tuple>(),
         48usize,
         concat!("Size of: ", stringify!(rte_thash_tuple))
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_thash_tuple>())).v4 as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_thash_tuple),
-            "::",
-            stringify!(v4)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_thash_tuple>())).v6 as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_thash_tuple),
-            "::",
-            stringify!(v6)
-        )
     );
 }
 impl Clone for rte_thash_tuple {

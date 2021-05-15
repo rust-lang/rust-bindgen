@@ -113,7 +113,15 @@ fn bindgen_test_layout_bitfield() {
         concat!("Alignment of ", stringify!(bitfield))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<bitfield>())).e as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<bitfield>() };
+            let struct_ptr = &struct_instance as *const bitfield;
+            let field_ptr = std::ptr::addr_of!(struct_instance.e);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         4usize,
         concat!(
             "Offset of field: ",

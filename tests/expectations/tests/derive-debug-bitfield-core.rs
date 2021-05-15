@@ -113,8 +113,14 @@ fn bindgen_test_layout_C() {
         concat!("Alignment of ", stringify!(C))
     );
     assert_eq!(
-        unsafe {
-            &(*(::core::ptr::null::<C>())).large_array as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<C>() };
+            let struct_ptr = &struct_instance as *const C;
+            let field_ptr = std::ptr::addr_of!(struct_instance.large_array);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(

@@ -54,8 +54,15 @@ fn bindgen_test_layout_ZeroSizedArray() {
         concat!("Alignment of ", stringify!(ZeroSizedArray))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ZeroSizedArray>())).arr as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ZeroSizedArray>() };
+            let struct_ptr = &struct_instance as *const ZeroSizedArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arr);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -85,9 +92,15 @@ fn bindgen_test_layout_ContainsZeroSizedArray() {
         concat!("Alignment of ", stringify!(ContainsZeroSizedArray))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ContainsZeroSizedArray>())).zsa as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContainsZeroSizedArray>() };
+            let struct_ptr = &struct_instance as *const ContainsZeroSizedArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.zsa);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -137,9 +150,15 @@ fn bindgen_test_layout_DynamicallySizedArray() {
         concat!("Alignment of ", stringify!(DynamicallySizedArray))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<DynamicallySizedArray>())).arr as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<DynamicallySizedArray>() };
+            let struct_ptr = &struct_instance as *const DynamicallySizedArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arr);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -169,9 +188,16 @@ fn bindgen_test_layout_ContainsDynamicallySizedArray() {
         concat!("Alignment of ", stringify!(ContainsDynamicallySizedArray))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ContainsDynamicallySizedArray>())).dsa
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContainsDynamicallySizedArray>() };
+            let struct_ptr =
+                &struct_instance as *const ContainsDynamicallySizedArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.dsa);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

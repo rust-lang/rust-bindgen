@@ -26,22 +26,54 @@ fn bindgen_test_layout_Packed() {
         concat!("Alignment of ", stringify!(Packed))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Packed>())).a as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Packed>() };
+            let struct_ptr = &struct_instance as *const Packed;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Packed), "::", stringify!(a))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Packed>())).b as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Packed>() };
+            let struct_ptr = &struct_instance as *const Packed;
+            let field_ptr = std::ptr::addr_of!(struct_instance.b);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         2usize,
         concat!("Offset of field: ", stringify!(Packed), "::", stringify!(b))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Packed>())).c as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Packed>() };
+            let struct_ptr = &struct_instance as *const Packed;
+            let field_ptr = std::ptr::addr_of!(struct_instance.c);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         4usize,
         concat!("Offset of field: ", stringify!(Packed), "::", stringify!(c))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Packed>())).d as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Packed>() };
+            let struct_ptr = &struct_instance as *const Packed;
+            let field_ptr = std::ptr::addr_of!(struct_instance.d);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         6usize,
         concat!("Offset of field: ", stringify!(Packed), "::", stringify!(d))
     );

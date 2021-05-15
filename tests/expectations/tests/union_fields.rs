@@ -24,43 +24,6 @@ fn bindgen_test_layout_nsStyleUnion() {
         8usize,
         concat!("Alignment of ", stringify!(nsStyleUnion))
     );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<nsStyleUnion>())).mInt as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(nsStyleUnion),
-            "::",
-            stringify!(mInt)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<nsStyleUnion>())).mFloat as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(nsStyleUnion),
-            "::",
-            stringify!(mFloat)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<nsStyleUnion>())).mPointer as *const _
-                as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(nsStyleUnion),
-            "::",
-            stringify!(mPointer)
-        )
-    );
 }
 impl Default for nsStyleUnion {
     fn default() -> Self {

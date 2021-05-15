@@ -39,28 +39,66 @@ fn bindgen_test_layout_Bar() {
         concat!("Alignment of ", stringify!(Bar))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Bar>())).baz1 as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Bar>() };
+            let struct_ptr = &struct_instance as *const Bar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.baz1);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz1))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Bar>())).baz2 as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Bar>() };
+            let struct_ptr = &struct_instance as *const Bar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.baz2);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         4usize,
         concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz2))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Bar>())).baz3 as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Bar>() };
+            let struct_ptr = &struct_instance as *const Bar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.baz3);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         8usize,
         concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz3))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Bar>())).baz4 as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Bar>() };
+            let struct_ptr = &struct_instance as *const Bar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.baz4);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         12usize,
         concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz4))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Bar>())).baz_ptr1 as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Bar>() };
+            let struct_ptr = &struct_instance as *const Bar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.baz_ptr1);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         16usize,
         concat!(
@@ -71,8 +109,14 @@ fn bindgen_test_layout_Bar() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Bar>())).baz_ptr2 as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Bar>() };
+            let struct_ptr = &struct_instance as *const Bar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.baz_ptr2);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         24usize,
         concat!(
@@ -83,8 +127,14 @@ fn bindgen_test_layout_Bar() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Bar>())).baz_ptr3 as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Bar>() };
+            let struct_ptr = &struct_instance as *const Bar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.baz_ptr3);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         32usize,
         concat!(
@@ -95,8 +145,14 @@ fn bindgen_test_layout_Bar() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Bar>())).baz_ptr4 as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Bar>() };
+            let struct_ptr = &struct_instance as *const Bar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.baz_ptr4);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         40usize,
         concat!(

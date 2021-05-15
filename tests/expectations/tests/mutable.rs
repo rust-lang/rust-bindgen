@@ -24,7 +24,15 @@ fn bindgen_test_layout_C() {
         concat!("Alignment of ", stringify!(C))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<C>())).m_member as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<C>() };
+            let struct_ptr = &struct_instance as *const C;
+            let field_ptr = std::ptr::addr_of!(struct_instance.m_member);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -34,7 +42,15 @@ fn bindgen_test_layout_C() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<C>())).m_other as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<C>() };
+            let struct_ptr = &struct_instance as *const C;
+            let field_ptr = std::ptr::addr_of!(struct_instance.m_other);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -62,9 +78,14 @@ fn bindgen_test_layout_NonCopiable() {
         concat!("Alignment of ", stringify!(NonCopiable))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<NonCopiable>())).m_member as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<NonCopiable>() };
+            let struct_ptr = &struct_instance as *const NonCopiable;
+            let field_ptr = std::ptr::addr_of!(struct_instance.m_member);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -99,9 +120,17 @@ fn bindgen_test_layout_NonCopiableWithNonCopiableMutableMember() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<NonCopiableWithNonCopiableMutableMember>()))
-                .m_member as *const _ as usize
+        {
+            let struct_instance = unsafe {
+                std::mem::zeroed::<NonCopiableWithNonCopiableMutableMember>()
+            };
+            let struct_ptr = &struct_instance
+                as *const NonCopiableWithNonCopiableMutableMember;
+            let field_ptr = std::ptr::addr_of!(struct_instance.m_member);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

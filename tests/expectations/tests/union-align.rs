@@ -23,11 +23,6 @@ fn bindgen_test_layout_Bar() {
         16usize,
         concat!("Alignment of ", stringify!(Bar))
     );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Bar>())).foo as *const _ as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(foo))
-    );
 }
 impl Default for Bar {
     fn default() -> Self {
@@ -55,11 +50,6 @@ fn bindgen_test_layout_Baz() {
         ::std::mem::align_of::<Baz>(),
         16usize,
         concat!("Alignment of ", stringify!(Baz))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Baz>())).bar as *const _ as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Baz), "::", stringify!(bar))
     );
 }
 impl Default for Baz {

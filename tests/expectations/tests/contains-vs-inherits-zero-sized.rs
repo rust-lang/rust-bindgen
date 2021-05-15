@@ -44,7 +44,15 @@ fn bindgen_test_layout_Inherits() {
         concat!("Alignment of ", stringify!(Inherits))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Inherits>())).b as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Inherits>() };
+            let struct_ptr = &struct_instance as *const Inherits;
+            let field_ptr = std::ptr::addr_of!(struct_instance.b);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -75,8 +83,14 @@ fn bindgen_test_layout_Contains() {
         concat!("Alignment of ", stringify!(Contains))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Contains>())).empty as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Contains>() };
+            let struct_ptr = &struct_instance as *const Contains;
+            let field_ptr = std::ptr::addr_of!(struct_instance.empty);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -87,7 +101,15 @@ fn bindgen_test_layout_Contains() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Contains>())).b as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Contains>() };
+            let struct_ptr = &struct_instance as *const Contains;
+            let field_ptr = std::ptr::addr_of!(struct_instance.b);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         1usize,
         concat!(
             "Offset of field: ",

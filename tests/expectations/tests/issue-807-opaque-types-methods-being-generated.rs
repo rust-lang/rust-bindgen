@@ -120,9 +120,14 @@ fn bindgen_test_layout_Allowlisted() {
         concat!("Alignment of ", stringify!(Allowlisted))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Allowlisted>())).some_member as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Allowlisted>() };
+            let struct_ptr = &struct_instance as *const Allowlisted;
+            let field_ptr = std::ptr::addr_of!(struct_instance.some_member);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

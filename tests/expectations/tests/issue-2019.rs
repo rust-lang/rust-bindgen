@@ -23,7 +23,15 @@ fn bindgen_test_layout_A() {
         concat!("Alignment of ", stringify!(A))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<A>())).a as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<A>() };
+            let struct_ptr = &struct_instance as *const A;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(A), "::", stringify!(a))
     );
@@ -56,7 +64,15 @@ fn bindgen_test_layout_B() {
         concat!("Alignment of ", stringify!(B))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<B>())).b as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<B>() };
+            let struct_ptr = &struct_instance as *const B;
+            let field_ptr = std::ptr::addr_of!(struct_instance.b);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(B), "::", stringify!(b))
     );

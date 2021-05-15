@@ -27,9 +27,14 @@ fn bindgen_test_layout_UsesArray() {
         concat!("Alignment of ", stringify!(UsesArray))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<UsesArray>())).array_char_16 as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<UsesArray>() };
+            let struct_ptr = &struct_instance as *const UsesArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.array_char_16);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -40,9 +45,14 @@ fn bindgen_test_layout_UsesArray() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<UsesArray>())).array_bool_8 as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<UsesArray>() };
+            let struct_ptr = &struct_instance as *const UsesArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.array_bool_8);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         16usize,
         concat!(
@@ -53,9 +63,14 @@ fn bindgen_test_layout_UsesArray() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<UsesArray>())).array_int_4 as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<UsesArray>() };
+            let struct_ptr = &struct_instance as *const UsesArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.array_int_4);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         24usize,
         concat!(

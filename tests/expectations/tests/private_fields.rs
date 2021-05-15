@@ -110,7 +110,15 @@ fn bindgen_test_layout_PubPriv() {
         concat!("Alignment of ", stringify!(PubPriv))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<PubPriv>())).x as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<PubPriv>() };
+            let struct_ptr = &struct_instance as *const PubPriv;
+            let field_ptr = std::ptr::addr_of!(struct_instance.x);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -120,7 +128,15 @@ fn bindgen_test_layout_PubPriv() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<PubPriv>())).y as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<PubPriv>() };
+            let struct_ptr = &struct_instance as *const PubPriv;
+            let field_ptr = std::ptr::addr_of!(struct_instance.y);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -346,7 +362,15 @@ fn bindgen_test_layout_Base() {
         concat!("Alignment of ", stringify!(Base))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Base>())).member as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Base>() };
+            let struct_ptr = &struct_instance as *const Base;
+            let field_ptr = std::ptr::addr_of!(struct_instance.member);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -416,9 +440,16 @@ fn bindgen_test_layout_WithAnonStruct__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(WithAnonStruct__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithAnonStruct__bindgen_ty_1>())).a
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<WithAnonStruct__bindgen_ty_1>() };
+            let struct_ptr =
+                &struct_instance as *const WithAnonStruct__bindgen_ty_1;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -447,9 +478,16 @@ fn bindgen_test_layout_WithAnonStruct__bindgen_ty_2() {
         concat!("Alignment of ", stringify!(WithAnonStruct__bindgen_ty_2))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithAnonStruct__bindgen_ty_2>())).b
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<WithAnonStruct__bindgen_ty_2>() };
+            let struct_ptr =
+                &struct_instance as *const WithAnonStruct__bindgen_ty_2;
+            let field_ptr = std::ptr::addr_of!(struct_instance.b);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

@@ -41,9 +41,14 @@ fn bindgen_test_layout_ether_addr() {
         concat!("Alignment of ", stringify!(ether_addr))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ether_addr>())).addr_bytes as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ether_addr>() };
+            let struct_ptr = &struct_instance as *const ether_addr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.addr_bytes);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -80,8 +85,14 @@ fn bindgen_test_layout_arp_ipv4() {
         concat!("Alignment of ", stringify!(arp_ipv4))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<arp_ipv4>())).arp_sha as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<arp_ipv4>() };
+            let struct_ptr = &struct_instance as *const arp_ipv4;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arp_sha);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -92,8 +103,14 @@ fn bindgen_test_layout_arp_ipv4() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<arp_ipv4>())).arp_sip as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<arp_ipv4>() };
+            let struct_ptr = &struct_instance as *const arp_ipv4;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arp_sip);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         6usize,
         concat!(
@@ -104,8 +121,14 @@ fn bindgen_test_layout_arp_ipv4() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<arp_ipv4>())).arp_tha as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<arp_ipv4>() };
+            let struct_ptr = &struct_instance as *const arp_ipv4;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arp_tha);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         10usize,
         concat!(
@@ -116,8 +139,14 @@ fn bindgen_test_layout_arp_ipv4() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<arp_ipv4>())).arp_tip as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<arp_ipv4>() };
+            let struct_ptr = &struct_instance as *const arp_ipv4;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arp_tip);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         16usize,
         concat!(
@@ -152,8 +181,14 @@ fn bindgen_test_layout_arp_hdr() {
         concat!("Alignment of ", stringify!(arp_hdr))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_hrd as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<arp_hdr>() };
+            let struct_ptr = &struct_instance as *const arp_hdr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arp_hrd);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -164,8 +199,14 @@ fn bindgen_test_layout_arp_hdr() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_pro as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<arp_hdr>() };
+            let struct_ptr = &struct_instance as *const arp_hdr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arp_pro);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         2usize,
         concat!(
@@ -176,8 +217,14 @@ fn bindgen_test_layout_arp_hdr() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_hln as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<arp_hdr>() };
+            let struct_ptr = &struct_instance as *const arp_hdr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arp_hln);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(
@@ -188,8 +235,14 @@ fn bindgen_test_layout_arp_hdr() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_pln as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<arp_hdr>() };
+            let struct_ptr = &struct_instance as *const arp_hdr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arp_pln);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         5usize,
         concat!(
@@ -200,8 +253,14 @@ fn bindgen_test_layout_arp_hdr() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_op as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<arp_hdr>() };
+            let struct_ptr = &struct_instance as *const arp_hdr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arp_op);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         6usize,
         concat!(
@@ -212,8 +271,14 @@ fn bindgen_test_layout_arp_hdr() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_data as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<arp_hdr>() };
+            let struct_ptr = &struct_instance as *const arp_hdr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arp_data);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
         concat!(

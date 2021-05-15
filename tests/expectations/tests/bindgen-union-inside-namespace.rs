@@ -77,30 +77,6 @@ pub mod root {
                 4usize,
                 concat!("Alignment of ", stringify!(Bar))
             );
-            assert_eq!(
-                unsafe {
-                    &(*(::std::ptr::null::<Bar>())).foo as *const _ as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(Bar),
-                    "::",
-                    stringify!(foo)
-                )
-            );
-            assert_eq!(
-                unsafe {
-                    &(*(::std::ptr::null::<Bar>())).bar as *const _ as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(Bar),
-                    "::",
-                    stringify!(bar)
-                )
-            );
         }
         impl Clone for Bar {
             fn clone(&self) -> Self {

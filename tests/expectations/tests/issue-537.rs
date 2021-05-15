@@ -25,8 +25,14 @@ fn bindgen_test_layout_AlignedToOne() {
         concat!("Alignment of ", stringify!(AlignedToOne))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<AlignedToOne>())).i as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<AlignedToOne>() };
+            let struct_ptr = &struct_instance as *const AlignedToOne;
+            let field_ptr = std::ptr::addr_of!(struct_instance.i);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -57,8 +63,14 @@ fn bindgen_test_layout_AlignedToTwo() {
         concat!("Alignment of ", stringify!(AlignedToTwo))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<AlignedToTwo>())).i as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<AlignedToTwo>() };
+            let struct_ptr = &struct_instance as *const AlignedToTwo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.i);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -91,8 +103,14 @@ fn bindgen_test_layout_PackedToOne() {
         concat!("Alignment of ", stringify!(PackedToOne))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<PackedToOne>())).x as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<PackedToOne>() };
+            let struct_ptr = &struct_instance as *const PackedToOne;
+            let field_ptr = std::ptr::addr_of!(struct_instance.x);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -103,8 +121,14 @@ fn bindgen_test_layout_PackedToOne() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<PackedToOne>())).y as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<PackedToOne>() };
+            let struct_ptr = &struct_instance as *const PackedToOne;
+            let field_ptr = std::ptr::addr_of!(struct_instance.y);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(
@@ -137,8 +161,14 @@ fn bindgen_test_layout_PackedToTwo() {
         concat!("Alignment of ", stringify!(PackedToTwo))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<PackedToTwo>())).x as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<PackedToTwo>() };
+            let struct_ptr = &struct_instance as *const PackedToTwo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.x);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -149,8 +179,14 @@ fn bindgen_test_layout_PackedToTwo() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<PackedToTwo>())).y as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<PackedToTwo>() };
+            let struct_ptr = &struct_instance as *const PackedToTwo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.y);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(

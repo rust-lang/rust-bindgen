@@ -80,9 +80,15 @@ fn bindgen_test_layout_rte_mempool_ops() {
         concat!("Alignment of ", stringify!(rte_mempool_ops))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops>())).name as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops>() };
+            let struct_ptr = &struct_instance as *const rte_mempool_ops;
+            let field_ptr = std::ptr::addr_of!(struct_instance.name);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -93,9 +99,15 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops>())).alloc as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops>() };
+            let struct_ptr = &struct_instance as *const rte_mempool_ops;
+            let field_ptr = std::ptr::addr_of!(struct_instance.alloc);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         32usize,
         concat!(
@@ -106,9 +118,15 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops>())).free as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops>() };
+            let struct_ptr = &struct_instance as *const rte_mempool_ops;
+            let field_ptr = std::ptr::addr_of!(struct_instance.free);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         40usize,
         concat!(
@@ -119,9 +137,15 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops>())).enqueue as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops>() };
+            let struct_ptr = &struct_instance as *const rte_mempool_ops;
+            let field_ptr = std::ptr::addr_of!(struct_instance.enqueue);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         48usize,
         concat!(
@@ -132,9 +156,15 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops>())).dequeue as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops>() };
+            let struct_ptr = &struct_instance as *const rte_mempool_ops;
+            let field_ptr = std::ptr::addr_of!(struct_instance.dequeue);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         56usize,
         concat!(
@@ -145,9 +175,15 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops>())).get_count as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops>() };
+            let struct_ptr = &struct_instance as *const rte_mempool_ops;
+            let field_ptr = std::ptr::addr_of!(struct_instance.get_count);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         64usize,
         concat!(
@@ -197,9 +233,15 @@ fn bindgen_test_layout_rte_spinlock_t() {
         concat!("Alignment of ", stringify!(rte_spinlock_t))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_spinlock_t>())).locked as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_spinlock_t>() };
+            let struct_ptr = &struct_instance as *const rte_spinlock_t;
+            let field_ptr = std::ptr::addr_of!(struct_instance.locked);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -242,9 +284,15 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         concat!("Alignment of ", stringify!(rte_mempool_ops_table))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops_table>())).sl as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops_table>() };
+            let struct_ptr = &struct_instance as *const rte_mempool_ops_table;
+            let field_ptr = std::ptr::addr_of!(struct_instance.sl);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -255,9 +303,15 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops_table>())).num_ops
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops_table>() };
+            let struct_ptr = &struct_instance as *const rte_mempool_ops_table;
+            let field_ptr = std::ptr::addr_of!(struct_instance.num_ops);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(
@@ -268,9 +322,15 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops_table>())).ops as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops_table>() };
+            let struct_ptr = &struct_instance as *const rte_mempool_ops_table;
+            let field_ptr = std::ptr::addr_of!(struct_instance.ops);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         64usize,
         concat!(
@@ -318,9 +378,16 @@ fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(malloc_heap__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<malloc_heap__bindgen_ty_1>())).lh_first
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<malloc_heap__bindgen_ty_1>() };
+            let struct_ptr =
+                &struct_instance as *const malloc_heap__bindgen_ty_1;
+            let field_ptr = std::ptr::addr_of!(struct_instance.lh_first);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -353,8 +420,14 @@ fn bindgen_test_layout_malloc_heap() {
         concat!("Alignment of ", stringify!(malloc_heap))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<malloc_heap>())).lock as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<malloc_heap>() };
+            let struct_ptr = &struct_instance as *const malloc_heap;
+            let field_ptr = std::ptr::addr_of!(struct_instance.lock);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -365,9 +438,14 @@ fn bindgen_test_layout_malloc_heap() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<malloc_heap>())).free_head as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<malloc_heap>() };
+            let struct_ptr = &struct_instance as *const malloc_heap;
+            let field_ptr = std::ptr::addr_of!(struct_instance.free_head);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
         concat!(
@@ -378,9 +456,14 @@ fn bindgen_test_layout_malloc_heap() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<malloc_heap>())).alloc_count as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<malloc_heap>() };
+            let struct_ptr = &struct_instance as *const malloc_heap;
+            let field_ptr = std::ptr::addr_of!(struct_instance.alloc_count);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         112usize,
         concat!(
@@ -391,9 +474,14 @@ fn bindgen_test_layout_malloc_heap() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<malloc_heap>())).total_size as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<malloc_heap>() };
+            let struct_ptr = &struct_instance as *const malloc_heap;
+            let field_ptr = std::ptr::addr_of!(struct_instance.total_size);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         120usize,
         concat!(

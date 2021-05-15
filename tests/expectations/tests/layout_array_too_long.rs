@@ -46,7 +46,15 @@ fn bindgen_test_layout_ip_frag() {
         concat!("Alignment of ", stringify!(ip_frag))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ip_frag>())).ofs as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag>() };
+            let struct_ptr = &struct_instance as *const ip_frag;
+            let field_ptr = std::ptr::addr_of!(struct_instance.ofs);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -56,7 +64,15 @@ fn bindgen_test_layout_ip_frag() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ip_frag>())).len as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag>() };
+            let struct_ptr = &struct_instance as *const ip_frag;
+            let field_ptr = std::ptr::addr_of!(struct_instance.len);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         2usize,
         concat!(
             "Offset of field: ",
@@ -66,7 +82,15 @@ fn bindgen_test_layout_ip_frag() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ip_frag>())).mb as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag>() };
+            let struct_ptr = &struct_instance as *const ip_frag;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mb);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -109,8 +133,14 @@ fn bindgen_test_layout_ip_frag_key() {
         concat!("Alignment of ", stringify!(ip_frag_key))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ip_frag_key>())).src_dst as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_key>() };
+            let struct_ptr = &struct_instance as *const ip_frag_key;
+            let field_ptr = std::ptr::addr_of!(struct_instance.src_dst);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -121,8 +151,14 @@ fn bindgen_test_layout_ip_frag_key() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ip_frag_key>())).id as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_key>() };
+            let struct_ptr = &struct_instance as *const ip_frag_key;
+            let field_ptr = std::ptr::addr_of!(struct_instance.id);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         32usize,
         concat!(
@@ -133,8 +169,14 @@ fn bindgen_test_layout_ip_frag_key() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ip_frag_key>())).key_len as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_key>() };
+            let struct_ptr = &struct_instance as *const ip_frag_key;
+            let field_ptr = std::ptr::addr_of!(struct_instance.key_len);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         36usize,
         concat!(
@@ -185,9 +227,16 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(ip_frag_pkt__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt__bindgen_ty_1>())).tqe_next
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ip_frag_pkt__bindgen_ty_1>() };
+            let struct_ptr =
+                &struct_instance as *const ip_frag_pkt__bindgen_ty_1;
+            let field_ptr = std::ptr::addr_of!(struct_instance.tqe_next);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -198,9 +247,16 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt__bindgen_ty_1>())).tqe_prev
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ip_frag_pkt__bindgen_ty_1>() };
+            let struct_ptr =
+                &struct_instance as *const ip_frag_pkt__bindgen_ty_1;
+            let field_ptr = std::ptr::addr_of!(struct_instance.tqe_prev);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
         concat!(
@@ -233,8 +289,14 @@ fn bindgen_test_layout_ip_frag_pkt() {
         concat!("Alignment of ", stringify!(ip_frag_pkt))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).lru as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
+            let struct_ptr = &struct_instance as *const ip_frag_pkt;
+            let field_ptr = std::ptr::addr_of!(struct_instance.lru);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -245,8 +307,14 @@ fn bindgen_test_layout_ip_frag_pkt() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).key as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
+            let struct_ptr = &struct_instance as *const ip_frag_pkt;
+            let field_ptr = std::ptr::addr_of!(struct_instance.key);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         16usize,
         concat!(
@@ -257,8 +325,14 @@ fn bindgen_test_layout_ip_frag_pkt() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).start as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
+            let struct_ptr = &struct_instance as *const ip_frag_pkt;
+            let field_ptr = std::ptr::addr_of!(struct_instance.start);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         56usize,
         concat!(
@@ -269,9 +343,14 @@ fn bindgen_test_layout_ip_frag_pkt() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).total_size as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
+            let struct_ptr = &struct_instance as *const ip_frag_pkt;
+            let field_ptr = std::ptr::addr_of!(struct_instance.total_size);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         64usize,
         concat!(
@@ -282,9 +361,14 @@ fn bindgen_test_layout_ip_frag_pkt() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).frag_size as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
+            let struct_ptr = &struct_instance as *const ip_frag_pkt;
+            let field_ptr = std::ptr::addr_of!(struct_instance.frag_size);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         68usize,
         concat!(
@@ -295,9 +379,14 @@ fn bindgen_test_layout_ip_frag_pkt() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).last_idx as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
+            let struct_ptr = &struct_instance as *const ip_frag_pkt;
+            let field_ptr = std::ptr::addr_of!(struct_instance.last_idx);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         72usize,
         concat!(
@@ -308,8 +397,14 @@ fn bindgen_test_layout_ip_frag_pkt() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).frags as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
+            let struct_ptr = &struct_instance as *const ip_frag_pkt;
+            let field_ptr = std::ptr::addr_of!(struct_instance.frags);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         80usize,
         concat!(

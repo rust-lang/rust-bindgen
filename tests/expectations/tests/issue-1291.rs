@@ -38,7 +38,15 @@ fn bindgen_test_layout_RTCRay() {
         concat!("Alignment of ", stringify!(RTCRay))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).org as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.org);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -48,8 +56,14 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<RTCRay>())).align0 as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.align0);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         12usize,
         concat!(
@@ -60,7 +74,15 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).dir as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.dir);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         16usize,
         concat!(
             "Offset of field: ",
@@ -70,8 +92,14 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<RTCRay>())).align1 as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.align1);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         28usize,
         concat!(
@@ -82,8 +110,14 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<RTCRay>())).tnear as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.tnear);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         32usize,
         concat!(
@@ -94,7 +128,15 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).tfar as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.tfar);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         36usize,
         concat!(
             "Offset of field: ",
@@ -104,7 +146,15 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).time as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.time);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         40usize,
         concat!(
             "Offset of field: ",
@@ -114,7 +164,15 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).mask as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mask);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         44usize,
         concat!(
             "Offset of field: ",
@@ -124,7 +182,15 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).Ng as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.Ng);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         48usize,
         concat!(
             "Offset of field: ",
@@ -134,8 +200,14 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<RTCRay>())).align2 as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.align2);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         60usize,
         concat!(
@@ -146,18 +218,40 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).u as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.u);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         64usize,
         concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(u))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).v as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.v);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         68usize,
         concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(v))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<RTCRay>())).geomID as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.geomID);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         72usize,
         concat!(
@@ -168,8 +262,14 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<RTCRay>())).primID as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.primID);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         76usize,
         concat!(
@@ -180,8 +280,14 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<RTCRay>())).instID as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
+            let struct_ptr = &struct_instance as *const RTCRay;
+            let field_ptr = std::ptr::addr_of!(struct_instance.instID);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         80usize,
         concat!(

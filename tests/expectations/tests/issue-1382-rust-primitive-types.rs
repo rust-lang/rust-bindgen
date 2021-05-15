@@ -44,47 +44,119 @@ fn bindgen_test_layout_Foo() {
         concat!("Alignment of ", stringify!(Foo))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).i8_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.i8_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Foo), "::", stringify!(i8_))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).u8_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.u8_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         4usize,
         concat!("Offset of field: ", stringify!(Foo), "::", stringify!(u8_))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).i16_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.i16_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         8usize,
         concat!("Offset of field: ", stringify!(Foo), "::", stringify!(i16_))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).u16_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.u16_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         12usize,
         concat!("Offset of field: ", stringify!(Foo), "::", stringify!(u16_))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).i32_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.i32_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         16usize,
         concat!("Offset of field: ", stringify!(Foo), "::", stringify!(i32_))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).u32_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.u32_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         20usize,
         concat!("Offset of field: ", stringify!(Foo), "::", stringify!(u32_))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).i64_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.i64_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         24usize,
         concat!("Offset of field: ", stringify!(Foo), "::", stringify!(i64_))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).u64_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.u64_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         28usize,
         concat!("Offset of field: ", stringify!(Foo), "::", stringify!(u64_))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).i128_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.i128_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         32usize,
         concat!(
             "Offset of field: ",
@@ -94,7 +166,15 @@ fn bindgen_test_layout_Foo() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).u128_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.u128_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         36usize,
         concat!(
             "Offset of field: ",
@@ -104,7 +184,15 @@ fn bindgen_test_layout_Foo() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).isize_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.isize_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         40usize,
         concat!(
             "Offset of field: ",
@@ -114,7 +202,15 @@ fn bindgen_test_layout_Foo() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).usize_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.usize_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         44usize,
         concat!(
             "Offset of field: ",
@@ -124,12 +220,28 @@ fn bindgen_test_layout_Foo() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).f32_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.f32_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         48usize,
         concat!("Offset of field: ", stringify!(Foo), "::", stringify!(f32_))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).f64_ as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.f64_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         52usize,
         concat!("Offset of field: ", stringify!(Foo), "::", stringify!(f64_))
     );

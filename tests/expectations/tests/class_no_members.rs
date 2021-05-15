@@ -59,9 +59,16 @@ fn bindgen_test_layout_whatever_child_with_member() {
         concat!("Alignment of ", stringify!(whatever_child_with_member))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<whatever_child_with_member>())).m_member
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<whatever_child_with_member>() };
+            let struct_ptr =
+                &struct_instance as *const whatever_child_with_member;
+            let field_ptr = std::ptr::addr_of!(struct_instance.m_member);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

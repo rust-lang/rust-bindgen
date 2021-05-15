@@ -22,8 +22,14 @@ fn bindgen_test_layout_Instance() {
         concat!("Alignment of ", stringify!(Instance))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Instance>())).val as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Instance>() };
+            let struct_ptr = &struct_instance as *const Instance;
+            let field_ptr = std::ptr::addr_of!(struct_instance.val);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

@@ -30,32 +30,6 @@ fn bindgen_test_layout_perf_event_attr__bindgen_ty_1() {
         4usize,
         concat!("Alignment of ", stringify!(perf_event_attr__bindgen_ty_1))
     );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<perf_event_attr__bindgen_ty_1>())).b
-                as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(perf_event_attr__bindgen_ty_1),
-            "::",
-            stringify!(b)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<perf_event_attr__bindgen_ty_1>())).c
-                as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(perf_event_attr__bindgen_ty_1),
-            "::",
-            stringify!(c)
-        )
-    );
 }
 impl Default for perf_event_attr__bindgen_ty_1 {
     fn default() -> Self {
@@ -84,9 +58,15 @@ fn bindgen_test_layout_perf_event_attr() {
         concat!("Alignment of ", stringify!(perf_event_attr))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<perf_event_attr>())).type_ as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<perf_event_attr>() };
+            let struct_ptr = &struct_instance as *const perf_event_attr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.type_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -97,8 +77,15 @@ fn bindgen_test_layout_perf_event_attr() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<perf_event_attr>())).a as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<perf_event_attr>() };
+            let struct_ptr = &struct_instance as *const perf_event_attr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(

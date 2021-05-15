@@ -30,8 +30,14 @@ fn bindgen_test_layout_mbedtls_mpi() {
         concat!("Alignment of ", stringify!(mbedtls_mpi))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<mbedtls_mpi>())).s as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<mbedtls_mpi>() };
+            let struct_ptr = &struct_instance as *const mbedtls_mpi;
+            let field_ptr = std::ptr::addr_of!(struct_instance.s);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -42,8 +48,14 @@ fn bindgen_test_layout_mbedtls_mpi() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<mbedtls_mpi>())).n as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<mbedtls_mpi>() };
+            let struct_ptr = &struct_instance as *const mbedtls_mpi;
+            let field_ptr = std::ptr::addr_of!(struct_instance.n);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
         concat!(
@@ -54,8 +66,14 @@ fn bindgen_test_layout_mbedtls_mpi() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<mbedtls_mpi>())).p as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<mbedtls_mpi>() };
+            let struct_ptr = &struct_instance as *const mbedtls_mpi;
+            let field_ptr = std::ptr::addr_of!(struct_instance.p);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         16usize,
         concat!(

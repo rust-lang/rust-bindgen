@@ -132,9 +132,15 @@ fn bindgen_test_layout_Weird() {
         concat!("Alignment of ", stringify!(Weird))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Weird>())).mStrokeDasharrayLength as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
+            let struct_ptr = &struct_instance as *const Weird;
+            let field_ptr =
+                std::ptr::addr_of!(struct_instance.mStrokeDasharrayLength);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -145,8 +151,14 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Weird>())).mClipRule as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
+            let struct_ptr = &struct_instance as *const Weird;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mClipRule);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
         concat!(
@@ -157,9 +169,15 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Weird>())).mColorInterpolation as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
+            let struct_ptr = &struct_instance as *const Weird;
+            let field_ptr =
+                std::ptr::addr_of!(struct_instance.mColorInterpolation);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         9usize,
         concat!(
@@ -170,9 +188,15 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Weird>())).mColorInterpolationFilters
-                as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
+            let struct_ptr = &struct_instance as *const Weird;
+            let field_ptr =
+                std::ptr::addr_of!(struct_instance.mColorInterpolationFilters);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         10usize,
         concat!(
@@ -183,8 +207,14 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Weird>())).mFillRule as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
+            let struct_ptr = &struct_instance as *const Weird;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mFillRule);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         11usize,
         concat!(
@@ -195,9 +225,14 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Weird>())).mImageRendering as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
+            let struct_ptr = &struct_instance as *const Weird;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mImageRendering);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         12usize,
         concat!(
@@ -208,8 +243,14 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Weird>())).mPaintOrder as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
+            let struct_ptr = &struct_instance as *const Weird;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mPaintOrder);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         13usize,
         concat!(
@@ -220,9 +261,14 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Weird>())).mShapeRendering as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
+            let struct_ptr = &struct_instance as *const Weird;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mShapeRendering);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         14usize,
         concat!(
@@ -233,9 +279,14 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Weird>())).mStrokeLinecap as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
+            let struct_ptr = &struct_instance as *const Weird;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mStrokeLinecap);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         15usize,
         concat!(
@@ -246,9 +297,14 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Weird>())).mStrokeLinejoin as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
+            let struct_ptr = &struct_instance as *const Weird;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mStrokeLinejoin);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         16usize,
         concat!(
@@ -259,8 +315,14 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Weird>())).mTextAnchor as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
+            let struct_ptr = &struct_instance as *const Weird;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mTextAnchor);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         17usize,
         concat!(
@@ -271,9 +333,14 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Weird>())).mTextRendering as *const _
-                as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
+            let struct_ptr = &struct_instance as *const Weird;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mTextRendering);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         18usize,
         concat!(

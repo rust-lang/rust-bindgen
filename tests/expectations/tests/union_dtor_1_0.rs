@@ -67,30 +67,6 @@ fn bindgen_test_layout_UnionWithDtor() {
         8usize,
         concat!("Alignment of ", stringify!(UnionWithDtor))
     );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<UnionWithDtor>())).mFoo as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(UnionWithDtor),
-            "::",
-            stringify!(mFoo)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<UnionWithDtor>())).mBar as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(UnionWithDtor),
-            "::",
-            stringify!(mBar)
-        )
-    );
 }
 extern "C" {
     #[link_name = "\u{1}_ZN13UnionWithDtorD1Ev"]

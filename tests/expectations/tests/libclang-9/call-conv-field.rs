@@ -29,9 +29,15 @@ fn bindgen_test_layout_JNINativeInterface_() {
         concat!("Alignment of ", stringify!(JNINativeInterface_))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<JNINativeInterface_>())).GetVersion
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<JNINativeInterface_>() };
+            let struct_ptr = &struct_instance as *const JNINativeInterface_;
+            let field_ptr = std::ptr::addr_of!(struct_instance.GetVersion);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -42,9 +48,15 @@ fn bindgen_test_layout_JNINativeInterface_() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<JNINativeInterface_>())).__hack as *const _
-                as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<JNINativeInterface_>() };
+            let struct_ptr = &struct_instance as *const JNINativeInterface_;
+            let field_ptr = std::ptr::addr_of!(struct_instance.__hack);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
         concat!(

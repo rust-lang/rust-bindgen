@@ -25,8 +25,14 @@ fn bindgen_test_layout_foo() {
         concat!("Alignment of ", stringify!(foo))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<foo>())).my_signed as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<foo>() };
+            let struct_ptr = &struct_instance as *const foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.my_signed);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -37,8 +43,14 @@ fn bindgen_test_layout_foo() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<foo>())).my_unsigned as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<foo>() };
+            let struct_ptr = &struct_instance as *const foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.my_unsigned);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         16usize,
         concat!(

@@ -111,7 +111,15 @@ fn bindgen_test_layout_timex() {
         concat!("Alignment of ", stringify!(timex))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<timex>())).tai as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<timex>() };
+            let struct_ptr = &struct_instance as *const timex;
+            let field_ptr = std::ptr::addr_of!(struct_instance.tai);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -150,8 +158,14 @@ fn bindgen_test_layout_timex_named() {
         concat!("Alignment of ", stringify!(timex_named))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<timex_named>())).tai as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<timex_named>() };
+            let struct_ptr = &struct_instance as *const timex_named;
+            let field_ptr = std::ptr::addr_of!(struct_instance.tai);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

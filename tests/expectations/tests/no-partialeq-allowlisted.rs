@@ -23,8 +23,14 @@ fn bindgen_test_layout_NoPartialEq() {
         concat!("Alignment of ", stringify!(NoPartialEq))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<NoPartialEq>())).i as *const _ as usize
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<NoPartialEq>() };
+            let struct_ptr = &struct_instance as *const NoPartialEq;
+            let field_ptr = std::ptr::addr_of!(struct_instance.i);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

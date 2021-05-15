@@ -29,17 +29,41 @@ pub mod root {
             concat!("Alignment of ", stringify!(i))
         );
         assert_eq!(
-            unsafe { &(*(::std::ptr::null::<i>())).j as *const _ as usize },
+            {
+                let struct_instance = unsafe { std::mem::zeroed::<i>() };
+                let struct_ptr = &struct_instance as *const i;
+                let field_ptr = std::ptr::addr_of!(struct_instance.j);
+                let struct_address = struct_ptr as usize;
+                let field_address = field_ptr as usize;
+                std::mem::forget(struct_instance);
+                field_address.checked_sub(struct_address).unwrap()
+            },
             0usize,
             concat!("Offset of field: ", stringify!(i), "::", stringify!(j))
         );
         assert_eq!(
-            unsafe { &(*(::std::ptr::null::<i>())).k as *const _ as usize },
+            {
+                let struct_instance = unsafe { std::mem::zeroed::<i>() };
+                let struct_ptr = &struct_instance as *const i;
+                let field_ptr = std::ptr::addr_of!(struct_instance.k);
+                let struct_address = struct_ptr as usize;
+                let field_address = field_ptr as usize;
+                std::mem::forget(struct_instance);
+                field_address.checked_sub(struct_address).unwrap()
+            },
             8usize,
             concat!("Offset of field: ", stringify!(i), "::", stringify!(k))
         );
         assert_eq!(
-            unsafe { &(*(::std::ptr::null::<i>())).l as *const _ as usize },
+            {
+                let struct_instance = unsafe { std::mem::zeroed::<i>() };
+                let struct_ptr = &struct_instance as *const i;
+                let field_ptr = std::ptr::addr_of!(struct_instance.l);
+                let struct_address = struct_ptr as usize;
+                let field_address = field_ptr as usize;
+                std::mem::forget(struct_instance);
+                field_address.checked_sub(struct_address).unwrap()
+            },
             16usize,
             concat!("Offset of field: ", stringify!(i), "::", stringify!(l))
         );
@@ -71,7 +95,15 @@ pub mod root {
             concat!("Alignment of ", stringify!(d))
         );
         assert_eq!(
-            unsafe { &(*(::std::ptr::null::<d>())).m as *const _ as usize },
+            {
+                let struct_instance = unsafe { std::mem::zeroed::<d>() };
+                let struct_ptr = &struct_instance as *const d;
+                let field_ptr = std::ptr::addr_of!(struct_instance.m);
+                let struct_address = struct_ptr as usize;
+                let field_address = field_ptr as usize;
+                std::mem::forget(struct_instance);
+                field_address.checked_sub(struct_address).unwrap()
+            },
             0usize,
             concat!("Offset of field: ", stringify!(d), "::", stringify!(m))
         );
@@ -118,7 +150,15 @@ pub mod root {
             concat!("Alignment of ", stringify!(F))
         );
         assert_eq!(
-            unsafe { &(*(::std::ptr::null::<F>())).w as *const _ as usize },
+            {
+                let struct_instance = unsafe { std::mem::zeroed::<F>() };
+                let struct_ptr = &struct_instance as *const F;
+                let field_ptr = std::ptr::addr_of!(struct_instance.w);
+                let struct_address = struct_ptr as usize;
+                let field_address = field_ptr as usize;
+                std::mem::forget(struct_instance);
+                field_address.checked_sub(struct_address).unwrap()
+            },
             0usize,
             concat!("Offset of field: ", stringify!(F), "::", stringify!(w))
         );

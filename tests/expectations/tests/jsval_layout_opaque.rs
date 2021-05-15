@@ -293,45 +293,6 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
             stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1)
         )
     );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()))
-                .i32_ as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
-            "::",
-            stringify!(i32_)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()))
-                .u32_ as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
-            "::",
-            stringify!(u32_)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()))
-                .why as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
-            "::",
-            stringify!(why)
-        )
-    );
 }
 impl Default for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     fn default() -> Self {
@@ -355,9 +316,16 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
         concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_2))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2>())).payload
-                as *const _ as usize
+        {
+            let struct_instance =
+                unsafe { std::mem::zeroed::<jsval_layout__bindgen_ty_2>() };
+            let struct_ptr =
+                &struct_instance as *const jsval_layout__bindgen_ty_2;
+            let field_ptr = std::ptr::addr_of!(struct_instance.payload);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -389,93 +357,6 @@ fn bindgen_test_layout_jsval_layout() {
         8usize,
         concat!("Alignment of ", stringify!(jsval_layout))
     );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).asBits as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(asBits)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).debugView as *const _
-                as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(debugView)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).s as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(s)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).asDouble as *const _
-                as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(asDouble)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).asPtr as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(asPtr)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).asWord as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(asWord)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).asUIntPtr as *const _
-                as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(asUIntPtr)
-        )
-    );
 }
 impl Default for jsval_layout {
     fn default() -> Self {
@@ -504,7 +385,15 @@ fn bindgen_test_layout_Value() {
         concat!("Alignment of ", stringify!(Value))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Value>())).data as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<Value>() };
+            let struct_ptr = &struct_instance as *const Value;
+            let field_ptr = std::ptr::addr_of!(struct_instance.data);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",

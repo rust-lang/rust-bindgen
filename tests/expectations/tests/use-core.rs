@@ -27,17 +27,41 @@ fn bindgen_test_layout_foo() {
         concat!("Alignment of ", stringify!(foo))
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<foo>())).a as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<foo>() };
+            let struct_ptr = &struct_instance as *const foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(a))
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<foo>())).b as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<foo>() };
+            let struct_ptr = &struct_instance as *const foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.b);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         4usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(b))
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<foo>())).bar as *const _ as usize },
+        {
+            let struct_instance = unsafe { std::mem::zeroed::<foo>() };
+            let struct_ptr = &struct_instance as *const foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.bar);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         8usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(bar))
     );
@@ -68,30 +92,6 @@ fn bindgen_test_layout__bindgen_ty_1() {
         ::core::mem::align_of::<_bindgen_ty_1>(),
         8usize,
         concat!("Alignment of ", stringify!(_bindgen_ty_1))
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::core::ptr::null::<_bindgen_ty_1>())).bar as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(_bindgen_ty_1),
-            "::",
-            stringify!(bar)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::core::ptr::null::<_bindgen_ty_1>())).baz as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(_bindgen_ty_1),
-            "::",
-            stringify!(baz)
-        )
     );
 }
 impl Default for _bindgen_ty_1 {
