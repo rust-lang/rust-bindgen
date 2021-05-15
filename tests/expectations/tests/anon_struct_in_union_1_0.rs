@@ -77,9 +77,21 @@ fn bindgen_test_layout_s__bindgen_ty_1_inner() {
         concat!("Alignment of ", stringify!(s__bindgen_ty_1_inner))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<s__bindgen_ty_1_inner>())).b as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize =
+                std::mem::size_of::<s__bindgen_ty_1_inner>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], s__bindgen_ty_1_inner>(
+                    buffer,
+                )
+            };
+            let struct_ptr = &struct_instance as *const s__bindgen_ty_1_inner;
+            let field_ptr = std::ptr::addr_of!(struct_instance.b);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -107,19 +119,6 @@ fn bindgen_test_layout_s__bindgen_ty_1() {
         4usize,
         concat!("Alignment of ", stringify!(s__bindgen_ty_1))
     );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<s__bindgen_ty_1>())).field as *const _
-                as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(s__bindgen_ty_1),
-            "::",
-            stringify!(field)
-        )
-    );
 }
 impl Clone for s__bindgen_ty_1 {
     fn clone(&self) -> Self {
@@ -139,7 +138,18 @@ fn bindgen_test_layout_s() {
         concat!("Alignment of ", stringify!(s))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<s>())).u as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<s>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance =
+                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], s>(buffer) };
+            let struct_ptr = &struct_instance as *const s;
+            let field_ptr = std::ptr::addr_of!(struct_instance.u);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(s), "::", stringify!(u))
     );

@@ -31,8 +31,18 @@ pub mod root {
                 concat!("Alignment of ", stringify!(Bar))
             );
             assert_eq!(
-                unsafe {
-                    &(*(::std::ptr::null::<Bar>())).foo as *const _ as usize
+                {
+                    const STRUCT_SIZE: usize = std::mem::size_of::<Bar>();
+                    let buffer = [0u8; STRUCT_SIZE];
+                    let struct_instance = unsafe {
+                        std::mem::transmute::<[u8; STRUCT_SIZE], Bar>(buffer)
+                    };
+                    let struct_ptr = &struct_instance as *const Bar;
+                    let field_ptr = std::ptr::addr_of!(struct_instance.foo);
+                    let struct_address = struct_ptr as usize;
+                    let field_address = field_ptr as usize;
+                    std::mem::forget(struct_instance);
+                    field_address.checked_sub(struct_address).unwrap()
                 },
                 0usize,
                 concat!(
@@ -43,8 +53,18 @@ pub mod root {
                 )
             );
             assert_eq!(
-                unsafe {
-                    &(*(::std::ptr::null::<Bar>())).baz as *const _ as usize
+                {
+                    const STRUCT_SIZE: usize = std::mem::size_of::<Bar>();
+                    let buffer = [0u8; STRUCT_SIZE];
+                    let struct_instance = unsafe {
+                        std::mem::transmute::<[u8; STRUCT_SIZE], Bar>(buffer)
+                    };
+                    let struct_ptr = &struct_instance as *const Bar;
+                    let field_ptr = std::ptr::addr_of!(struct_instance.baz);
+                    let struct_address = struct_ptr as usize;
+                    let field_address = field_ptr as usize;
+                    std::mem::forget(struct_instance);
+                    field_address.checked_sub(struct_address).unwrap()
                 },
                 4usize,
                 concat!(
@@ -77,8 +97,18 @@ pub mod root {
                 concat!("Alignment of ", stringify!(Foo))
             );
             assert_eq!(
-                unsafe {
-                    &(*(::std::ptr::null::<Foo>())).ptr as *const _ as usize
+                {
+                    const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
+                    let buffer = [0u8; STRUCT_SIZE];
+                    let struct_instance = unsafe {
+                        std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
+                    };
+                    let struct_ptr = &struct_instance as *const Foo;
+                    let field_ptr = std::ptr::addr_of!(struct_instance.ptr);
+                    let struct_address = struct_ptr as usize;
+                    let field_address = field_ptr as usize;
+                    std::mem::forget(struct_instance);
+                    field_address.checked_sub(struct_address).unwrap()
                 },
                 0usize,
                 concat!(

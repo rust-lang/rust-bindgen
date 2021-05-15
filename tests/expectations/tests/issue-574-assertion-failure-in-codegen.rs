@@ -28,8 +28,18 @@ fn bindgen_test_layout__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(_bindgen_ty_1))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<_bindgen_ty_1>())).ar as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<_bindgen_ty_1>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], _bindgen_ty_1>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const _bindgen_ty_1;
+            let field_ptr = std::ptr::addr_of!(struct_instance.ar);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

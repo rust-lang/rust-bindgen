@@ -25,9 +25,18 @@ fn bindgen_test_layout_HasPrivate() {
         concat!("Alignment of ", stringify!(HasPrivate))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<HasPrivate>())).mNotPrivate as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<HasPrivate>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], HasPrivate>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const HasPrivate;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mNotPrivate);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -38,9 +47,18 @@ fn bindgen_test_layout_HasPrivate() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<HasPrivate>())).mIsPrivate as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<HasPrivate>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], HasPrivate>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const HasPrivate;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mIsPrivate);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(
@@ -71,9 +89,18 @@ fn bindgen_test_layout_VeryPrivate() {
         concat!("Alignment of ", stringify!(VeryPrivate))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<VeryPrivate>())).mIsPrivate as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<VeryPrivate>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], VeryPrivate>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const VeryPrivate;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mIsPrivate);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -84,9 +111,18 @@ fn bindgen_test_layout_VeryPrivate() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<VeryPrivate>())).mIsAlsoPrivate as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<VeryPrivate>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], VeryPrivate>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const VeryPrivate;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mIsAlsoPrivate);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(
@@ -118,9 +154,20 @@ fn bindgen_test_layout_ContradictPrivate() {
         concat!("Alignment of ", stringify!(ContradictPrivate))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ContradictPrivate>())).mNotPrivate
-                as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<ContradictPrivate>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], ContradictPrivate>(
+                    buffer,
+                )
+            };
+            let struct_ptr = &struct_instance as *const ContradictPrivate;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mNotPrivate);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -131,9 +178,20 @@ fn bindgen_test_layout_ContradictPrivate() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ContradictPrivate>())).mIsPrivate as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<ContradictPrivate>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], ContradictPrivate>(
+                    buffer,
+                )
+            };
+            let struct_ptr = &struct_instance as *const ContradictPrivate;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mIsPrivate);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(

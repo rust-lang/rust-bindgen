@@ -29,12 +29,36 @@ fn bindgen_test_layout_Bar() {
         concat!("Alignment of ", stringify!(Bar))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Bar>())).f as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Bar>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Bar>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Bar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.f);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Bar), "::", stringify!(f))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Bar>())).m as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Bar>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Bar>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Bar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.m);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         8usize,
         concat!("Offset of field: ", stringify!(Bar), "::", stringify!(m))
     );
@@ -67,12 +91,36 @@ fn bindgen_test_layout_Baz() {
         concat!("Alignment of ", stringify!(Baz))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Baz>())).f as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Baz>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Baz>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Baz;
+            let field_ptr = std::ptr::addr_of!(struct_instance.f);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Baz), "::", stringify!(f))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Baz>())).m as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Baz>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Baz>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Baz;
+            let field_ptr = std::ptr::addr_of!(struct_instance.m);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         8usize,
         concat!("Offset of field: ", stringify!(Baz), "::", stringify!(m))
     );
@@ -105,12 +153,36 @@ fn bindgen_test_layout_Tar() {
         concat!("Alignment of ", stringify!(Tar))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Tar>())).f as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Tar>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Tar>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Tar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.f);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Tar), "::", stringify!(f))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Tar>())).m as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Tar>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Tar>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Tar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.m);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         8usize,
         concat!("Offset of field: ", stringify!(Tar), "::", stringify!(m))
     );
@@ -143,12 +215,36 @@ fn bindgen_test_layout_Taz() {
         concat!("Alignment of ", stringify!(Taz))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Taz>())).f as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Taz>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Taz>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Taz;
+            let field_ptr = std::ptr::addr_of!(struct_instance.f);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Taz), "::", stringify!(f))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Taz>())).m as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Taz>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Taz>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Taz;
+            let field_ptr = std::ptr::addr_of!(struct_instance.m);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         8usize,
         concat!("Offset of field: ", stringify!(Taz), "::", stringify!(m))
     );

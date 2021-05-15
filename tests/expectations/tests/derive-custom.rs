@@ -24,7 +24,19 @@ fn bindgen_test_layout_my_type() {
         concat!("Alignment of ", stringify!(my_type))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<my_type>())).a as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<my_type>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], my_type>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const my_type;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -54,7 +66,19 @@ fn bindgen_test_layout_my_type2() {
         concat!("Alignment of ", stringify!(my_type2))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<my_type2>())).a as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<my_type2>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], my_type2>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const my_type2;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -83,7 +107,19 @@ fn bindgen_test_layout_my_type3() {
         concat!("Alignment of ", stringify!(my_type3))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<my_type3>())).a as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<my_type3>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], my_type3>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const my_type3;
+            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",

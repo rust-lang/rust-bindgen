@@ -43,8 +43,18 @@ fn bindgen_test_layout_NotAnnotated() {
         concat!("Alignment of ", stringify!(NotAnnotated))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<NotAnnotated>())).f as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<NotAnnotated>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], NotAnnotated>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const NotAnnotated;
+            let field_ptr = std::ptr::addr_of!(struct_instance.f);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

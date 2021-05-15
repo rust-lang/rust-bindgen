@@ -23,7 +23,19 @@ fn bindgen_test_layout_Calc() {
         concat!("Alignment of ", stringify!(Calc))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Calc>())).w as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Calc>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Calc>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Calc;
+            let field_ptr = std::ptr::addr_of!(struct_instance.w);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Calc), "::", stringify!(w))
     );
@@ -70,8 +82,18 @@ fn bindgen_test_layout_Test_Size() {
         concat!("Alignment of ", stringify!(Test_Size))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Test_Size>())).mWidth as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Test_Size>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Test_Size>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Test_Size;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mWidth);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -82,8 +104,18 @@ fn bindgen_test_layout_Test_Size() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<Test_Size>())).mHeight as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Test_Size>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Test_Size>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Test_Size;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mHeight);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(

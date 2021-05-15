@@ -29,8 +29,18 @@ fn bindgen_test_layout_TestDouble() {
         concat!("Alignment of ", stringify!(TestDouble))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<TestDouble>())).mMember as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<TestDouble>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], TestDouble>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const TestDouble;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mMember);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -59,9 +69,18 @@ fn bindgen_test_layout_TestDoublePtr() {
         concat!("Alignment of ", stringify!(TestDoublePtr))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<TestDoublePtr>())).mMember as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<TestDoublePtr>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], TestDoublePtr>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const TestDoublePtr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mMember);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -99,8 +118,18 @@ fn bindgen_test_layout_TestFloat() {
         concat!("Alignment of ", stringify!(TestFloat))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<TestFloat>())).mMember as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<TestFloat>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], TestFloat>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const TestFloat;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mMember);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -129,9 +158,18 @@ fn bindgen_test_layout_TestFloatPtr() {
         concat!("Alignment of ", stringify!(TestFloatPtr))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<TestFloatPtr>())).mMember as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<TestFloatPtr>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], TestFloatPtr>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const TestFloatPtr;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mMember);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

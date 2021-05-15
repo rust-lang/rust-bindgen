@@ -23,30 +23,6 @@ fn bindgen_test_layout_WithBigArray() {
         4usize,
         concat!("Alignment of ", stringify!(WithBigArray))
     );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithBigArray>())).a as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithBigArray),
-            "::",
-            stringify!(a)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithBigArray>())).b as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithBigArray),
-            "::",
-            stringify!(b)
-        )
-    );
 }
 impl Default for WithBigArray {
     fn default() -> Self {
@@ -75,30 +51,6 @@ fn bindgen_test_layout_WithBigArray2() {
         4usize,
         concat!("Alignment of ", stringify!(WithBigArray2))
     );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithBigArray2>())).a as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithBigArray2),
-            "::",
-            stringify!(a)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithBigArray2>())).b as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithBigArray2),
-            "::",
-            stringify!(b)
-        )
-    );
 }
 impl Default for WithBigArray2 {
     fn default() -> Self {
@@ -126,30 +78,6 @@ fn bindgen_test_layout_WithBigMember() {
         ::std::mem::align_of::<WithBigMember>(),
         4usize,
         concat!("Alignment of ", stringify!(WithBigMember))
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithBigMember>())).a as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithBigMember),
-            "::",
-            stringify!(a)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithBigMember>())).b as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithBigMember),
-            "::",
-            stringify!(b)
-        )
     );
 }
 impl Default for WithBigMember {

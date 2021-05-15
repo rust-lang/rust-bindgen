@@ -24,8 +24,18 @@ fn bindgen_test_layout_ConstPtrMutObj() {
         concat!("Alignment of ", stringify!(ConstPtrMutObj))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ConstPtrMutObj>())).bar as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<ConstPtrMutObj>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], ConstPtrMutObj>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const ConstPtrMutObj;
+            let field_ptr = std::ptr::addr_of!(struct_instance.bar);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -63,8 +73,18 @@ fn bindgen_test_layout_MutPtrMutObj() {
         concat!("Alignment of ", stringify!(MutPtrMutObj))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<MutPtrMutObj>())).bar as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<MutPtrMutObj>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], MutPtrMutObj>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const MutPtrMutObj;
+            let field_ptr = std::ptr::addr_of!(struct_instance.bar);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -102,8 +122,18 @@ fn bindgen_test_layout_MutPtrConstObj() {
         concat!("Alignment of ", stringify!(MutPtrConstObj))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<MutPtrConstObj>())).bar as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<MutPtrConstObj>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], MutPtrConstObj>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const MutPtrConstObj;
+            let field_ptr = std::ptr::addr_of!(struct_instance.bar);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -141,9 +171,20 @@ fn bindgen_test_layout_ConstPtrConstObj() {
         concat!("Alignment of ", stringify!(ConstPtrConstObj))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ConstPtrConstObj>())).bar as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<ConstPtrConstObj>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], ConstPtrConstObj>(
+                    buffer,
+                )
+            };
+            let struct_ptr = &struct_instance as *const ConstPtrConstObj;
+            let field_ptr = std::ptr::addr_of!(struct_instance.bar);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

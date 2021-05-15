@@ -24,8 +24,18 @@ fn bindgen_test_layout_nsTArray_base() {
         concat!("Alignment of ", stringify!(nsTArray_base))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<nsTArray_base>())).d as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<nsTArray_base>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], nsTArray_base>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const nsTArray_base;
+            let field_ptr = std::ptr::addr_of!(struct_instance.d);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -77,8 +87,18 @@ fn bindgen_test_layout_nsIContent() {
         concat!("Alignment of ", stringify!(nsIContent))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<nsIContent>())).foo as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<nsIContent>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], nsIContent>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const nsIContent;
+            let field_ptr = std::ptr::addr_of!(struct_instance.foo);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

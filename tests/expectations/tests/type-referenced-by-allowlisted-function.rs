@@ -23,8 +23,18 @@ fn bindgen_test_layout_dl_phdr_info() {
         concat!("Alignment of ", stringify!(dl_phdr_info))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<dl_phdr_info>())).x as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<dl_phdr_info>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], dl_phdr_info>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const dl_phdr_info;
+            let field_ptr = std::ptr::addr_of!(struct_instance.x);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

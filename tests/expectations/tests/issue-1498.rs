@@ -43,32 +43,6 @@ fn bindgen_test_layout_rte_memseg__bindgen_ty_1() {
         8usize,
         concat!("Alignment of ", stringify!(rte_memseg__bindgen_ty_1))
     );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_memseg__bindgen_ty_1>())).addr
-                as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_memseg__bindgen_ty_1),
-            "::",
-            stringify!(addr)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_memseg__bindgen_ty_1>())).addr_64
-                as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_memseg__bindgen_ty_1),
-            "::",
-            stringify!(addr_64)
-        )
-    );
 }
 impl Default for rte_memseg__bindgen_ty_1 {
     fn default() -> Self {
@@ -92,9 +66,18 @@ fn bindgen_test_layout_rte_memseg() {
         concat!("Alignment of ", stringify!(rte_memseg))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_memseg>())).phys_addr as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_memseg>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_memseg>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_memseg;
+            let field_ptr = std::ptr::addr_of!(struct_instance.phys_addr);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -105,8 +88,18 @@ fn bindgen_test_layout_rte_memseg() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_memseg>())).len as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_memseg>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_memseg>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_memseg;
+            let field_ptr = std::ptr::addr_of!(struct_instance.len);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         16usize,
         concat!(
@@ -117,9 +110,18 @@ fn bindgen_test_layout_rte_memseg() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_memseg>())).hugepage_sz as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_memseg>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_memseg>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_memseg;
+            let field_ptr = std::ptr::addr_of!(struct_instance.hugepage_sz);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         24usize,
         concat!(
@@ -130,9 +132,18 @@ fn bindgen_test_layout_rte_memseg() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_memseg>())).socket_id as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_memseg>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_memseg>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_memseg;
+            let field_ptr = std::ptr::addr_of!(struct_instance.socket_id);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         32usize,
         concat!(
@@ -143,8 +154,18 @@ fn bindgen_test_layout_rte_memseg() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_memseg>())).nchannel as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_memseg>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_memseg>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_memseg;
+            let field_ptr = std::ptr::addr_of!(struct_instance.nchannel);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         36usize,
         concat!(
@@ -155,8 +176,18 @@ fn bindgen_test_layout_rte_memseg() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_memseg>())).nrank as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_memseg>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_memseg>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_memseg;
+            let field_ptr = std::ptr::addr_of!(struct_instance.nrank);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         40usize,
         concat!(

@@ -61,9 +61,18 @@ fn bindgen_test_layout_rte_ring_prod() {
         concat!("Alignment of ", stringify!(rte_ring_prod))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ring_prod>())).watermark as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_ring_prod>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_ring_prod>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_ring_prod;
+            let field_ptr = std::ptr::addr_of!(struct_instance.watermark);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -92,9 +101,18 @@ fn bindgen_test_layout_rte_ring_cons() {
         concat!("Alignment of ", stringify!(rte_ring_cons))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ring_cons>())).sc_dequeue as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_ring_cons>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_ring_cons>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_ring_cons;
+            let field_ptr = std::ptr::addr_of!(struct_instance.sc_dequeue);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -118,8 +136,18 @@ fn bindgen_test_layout_rte_ring() {
         concat!("Alignment of ", stringify!(rte_ring))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ring>())).memzone as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_ring>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_ring>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_ring;
+            let field_ptr = std::ptr::addr_of!(struct_instance.memzone);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -130,8 +158,18 @@ fn bindgen_test_layout_rte_ring() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ring>())).prod as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_ring>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_ring>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_ring;
+            let field_ptr = std::ptr::addr_of!(struct_instance.prod);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
         concat!(
@@ -142,8 +180,18 @@ fn bindgen_test_layout_rte_ring() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ring>())).cons as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_ring>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_ring>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_ring;
+            let field_ptr = std::ptr::addr_of!(struct_instance.cons);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         12usize,
         concat!(
@@ -154,8 +202,18 @@ fn bindgen_test_layout_rte_ring() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_ring>())).ring as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_ring>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_ring>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_ring;
+            let field_ptr = std::ptr::addr_of!(struct_instance.ring);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         16usize,
         concat!(

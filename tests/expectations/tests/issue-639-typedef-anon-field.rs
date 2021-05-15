@@ -28,7 +28,19 @@ fn bindgen_test_layout_Foo_Bar() {
         concat!("Alignment of ", stringify!(Foo_Bar))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo_Bar>())).abc as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Foo_Bar>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Foo_Bar>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Foo_Bar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.abc);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -51,7 +63,19 @@ fn bindgen_test_layout_Foo() {
         concat!("Alignment of ", stringify!(Foo))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Foo>())).bar as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.bar);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Foo), "::", stringify!(bar))
     );
@@ -79,7 +103,19 @@ fn bindgen_test_layout_Baz_Bar() {
         concat!("Alignment of ", stringify!(Baz_Bar))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Baz_Bar>())).abc as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Baz_Bar>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Baz_Bar>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Baz_Bar;
+            let field_ptr = std::ptr::addr_of!(struct_instance.abc);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",

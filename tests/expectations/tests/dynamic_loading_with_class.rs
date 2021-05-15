@@ -23,7 +23,18 @@ fn bindgen_test_layout_A() {
         concat!("Alignment of ", stringify!(A))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<A>()))._x as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<A>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance =
+                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], A>(buffer) };
+            let struct_ptr = &struct_instance as *const A;
+            let field_ptr = std::ptr::addr_of!(struct_instance._x);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(A), "::", stringify!(_x))
     );

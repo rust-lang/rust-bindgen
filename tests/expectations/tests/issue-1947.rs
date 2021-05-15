@@ -118,8 +118,18 @@ fn bindgen_test_layout_V56AMDY() {
         concat!("Alignment of ", stringify!(V56AMDY))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<V56AMDY>())).MADK as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<V56AMDY>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], V56AMDY>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const V56AMDY;
+            let field_ptr = std::ptr::addr_of!(struct_instance.MADK);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         2usize,
         concat!(
@@ -130,8 +140,18 @@ fn bindgen_test_layout_V56AMDY() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<V56AMDY>())).MABR as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<V56AMDY>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], V56AMDY>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const V56AMDY;
+            let field_ptr = std::ptr::addr_of!(struct_instance.MABR);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         3usize,
         concat!(
@@ -142,8 +162,18 @@ fn bindgen_test_layout_V56AMDY() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<V56AMDY>()))._rB_ as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<V56AMDY>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], V56AMDY>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const V56AMDY;
+            let field_ptr = std::ptr::addr_of!(struct_instance._rB_);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         7usize,
         concat!(

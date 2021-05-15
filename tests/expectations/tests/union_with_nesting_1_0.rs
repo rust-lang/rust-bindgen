@@ -80,32 +80,6 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_1() {
         2usize,
         concat!("Alignment of ", stringify!(foo__bindgen_ty_1__bindgen_ty_1))
     );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_1>())).b1
-                as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(foo__bindgen_ty_1__bindgen_ty_1),
-            "::",
-            stringify!(b1)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_1>())).b2
-                as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(foo__bindgen_ty_1__bindgen_ty_1),
-            "::",
-            stringify!(b2)
-        )
-    );
 }
 impl Clone for foo__bindgen_ty_1__bindgen_ty_1 {
     fn clone(&self) -> Self {
@@ -130,32 +104,6 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
         ::std::mem::align_of::<foo__bindgen_ty_1__bindgen_ty_2>(),
         2usize,
         concat!("Alignment of ", stringify!(foo__bindgen_ty_1__bindgen_ty_2))
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).c1
-                as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(foo__bindgen_ty_1__bindgen_ty_2),
-            "::",
-            stringify!(c1)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).c2
-                as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(foo__bindgen_ty_1__bindgen_ty_2),
-            "::",
-            stringify!(c2)
-        )
     );
 }
 impl Clone for foo__bindgen_ty_1__bindgen_ty_2 {
@@ -192,11 +140,6 @@ fn bindgen_test_layout_foo() {
         ::std::mem::align_of::<foo>(),
         4usize,
         concat!("Alignment of ", stringify!(foo))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<foo>())).a as *const _ as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(a))
     );
 }
 impl Clone for foo {

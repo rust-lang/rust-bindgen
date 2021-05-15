@@ -54,8 +54,18 @@ fn bindgen_test_layout_ZeroSizedArray() {
         concat!("Alignment of ", stringify!(ZeroSizedArray))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ZeroSizedArray>())).arr as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<ZeroSizedArray>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], ZeroSizedArray>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const ZeroSizedArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arr);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -85,9 +95,21 @@ fn bindgen_test_layout_ContainsZeroSizedArray() {
         concat!("Alignment of ", stringify!(ContainsZeroSizedArray))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ContainsZeroSizedArray>())).zsa as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize =
+                std::mem::size_of::<ContainsZeroSizedArray>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], ContainsZeroSizedArray>(
+                    buffer,
+                )
+            };
+            let struct_ptr = &struct_instance as *const ContainsZeroSizedArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.zsa);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -137,9 +159,21 @@ fn bindgen_test_layout_DynamicallySizedArray() {
         concat!("Alignment of ", stringify!(DynamicallySizedArray))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<DynamicallySizedArray>())).arr as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize =
+                std::mem::size_of::<DynamicallySizedArray>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], DynamicallySizedArray>(
+                    buffer,
+                )
+            };
+            let struct_ptr = &struct_instance as *const DynamicallySizedArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.arr);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -169,9 +203,23 @@ fn bindgen_test_layout_ContainsDynamicallySizedArray() {
         concat!("Alignment of ", stringify!(ContainsDynamicallySizedArray))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ContainsDynamicallySizedArray>())).dsa
-                as *const _ as usize
+        {
+            const STRUCT_SIZE: usize =
+                std::mem::size_of::<ContainsDynamicallySizedArray>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<
+                    [u8; STRUCT_SIZE],
+                    ContainsDynamicallySizedArray,
+                >(buffer)
+            };
+            let struct_ptr =
+                &struct_instance as *const ContainsDynamicallySizedArray;
+            let field_ptr = std::ptr::addr_of!(struct_instance.dsa);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

@@ -28,7 +28,19 @@ fn bindgen_test_layout_NoDebug() {
         concat!("Alignment of ", stringify!(NoDebug))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<NoDebug>())).c as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<NoDebug>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], NoDebug>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const NoDebug;
+            let field_ptr = std::ptr::addr_of!(struct_instance.c);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -76,9 +88,23 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
         concat!("Alignment of ", stringify!(ShouldDeriveDebugButDoesNot))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ShouldDeriveDebugButDoesNot>())).c
-                as *const _ as usize
+        {
+            const STRUCT_SIZE: usize =
+                std::mem::size_of::<ShouldDeriveDebugButDoesNot>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<
+                    [u8; STRUCT_SIZE],
+                    ShouldDeriveDebugButDoesNot,
+                >(buffer)
+            };
+            let struct_ptr =
+                &struct_instance as *const ShouldDeriveDebugButDoesNot;
+            let field_ptr = std::ptr::addr_of!(struct_instance.c);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -89,9 +115,23 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ShouldDeriveDebugButDoesNot>())).d
-                as *const _ as usize
+        {
+            const STRUCT_SIZE: usize =
+                std::mem::size_of::<ShouldDeriveDebugButDoesNot>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<
+                    [u8; STRUCT_SIZE],
+                    ShouldDeriveDebugButDoesNot,
+                >(buffer)
+            };
+            let struct_ptr =
+                &struct_instance as *const ShouldDeriveDebugButDoesNot;
+            let field_ptr = std::ptr::addr_of!(struct_instance.d);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         32usize,
         concat!(

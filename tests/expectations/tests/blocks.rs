@@ -47,9 +47,21 @@ fn bindgen_test_layout_contains_block_pointers() {
         concat!("Alignment of ", stringify!(contains_block_pointers))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<contains_block_pointers>())).val as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize =
+                std::mem::size_of::<contains_block_pointers>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], contains_block_pointers>(
+                    buffer,
+                )
+            };
+            let struct_ptr = &struct_instance as *const contains_block_pointers;
+            let field_ptr = std::ptr::addr_of!(struct_instance.val);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -60,9 +72,21 @@ fn bindgen_test_layout_contains_block_pointers() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<contains_block_pointers>())).ptr_val
-                as *const _ as usize
+        {
+            const STRUCT_SIZE: usize =
+                std::mem::size_of::<contains_block_pointers>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], contains_block_pointers>(
+                    buffer,
+                )
+            };
+            let struct_ptr = &struct_instance as *const contains_block_pointers;
+            let field_ptr = std::ptr::addr_of!(struct_instance.ptr_val);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
         concat!(

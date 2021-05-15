@@ -30,9 +30,21 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
         concat!("Alignment of ", stringify!(ContainsOpaqueTemplate))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ContainsOpaqueTemplate>())).mBlah as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize =
+                std::mem::size_of::<ContainsOpaqueTemplate>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], ContainsOpaqueTemplate>(
+                    buffer,
+                )
+            };
+            let struct_ptr = &struct_instance as *const ContainsOpaqueTemplate;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mBlah);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -43,9 +55,21 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<ContainsOpaqueTemplate>())).mBaz as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize =
+                std::mem::size_of::<ContainsOpaqueTemplate>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], ContainsOpaqueTemplate>(
+                    buffer,
+                )
+            };
+            let struct_ptr = &struct_instance as *const ContainsOpaqueTemplate;
+            let field_ptr = std::ptr::addr_of!(struct_instance.mBaz);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         404usize,
         concat!(
@@ -90,9 +114,21 @@ fn bindgen_test_layout_InheritsOpaqueTemplate() {
         concat!("Alignment of ", stringify!(InheritsOpaqueTemplate))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<InheritsOpaqueTemplate>())).wow as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize =
+                std::mem::size_of::<InheritsOpaqueTemplate>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], InheritsOpaqueTemplate>(
+                    buffer,
+                )
+            };
+            let struct_ptr = &struct_instance as *const InheritsOpaqueTemplate;
+            let field_ptr = std::ptr::addr_of!(struct_instance.wow);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         408usize,
         concat!(

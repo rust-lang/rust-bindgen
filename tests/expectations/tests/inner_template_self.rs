@@ -38,9 +38,18 @@ fn bindgen_test_layout_InstantiateIt() {
         concat!("Alignment of ", stringify!(InstantiateIt))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<InstantiateIt>())).m_list as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<InstantiateIt>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], InstantiateIt>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const InstantiateIt;
+            let field_ptr = std::ptr::addr_of!(struct_instance.m_list);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

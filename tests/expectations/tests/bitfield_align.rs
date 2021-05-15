@@ -113,12 +113,34 @@ fn bindgen_test_layout_A() {
         concat!("Alignment of ", stringify!(A))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<A>())).x as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<A>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance =
+                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], A>(buffer) };
+            let struct_ptr = &struct_instance as *const A;
+            let field_ptr = std::ptr::addr_of!(struct_instance.x);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(A), "::", stringify!(x))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<A>())).y as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<A>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance =
+                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], A>(buffer) };
+            let struct_ptr = &struct_instance as *const A;
+            let field_ptr = std::ptr::addr_of!(struct_instance.y);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         3usize,
         concat!("Offset of field: ", stringify!(A), "::", stringify!(y))
     );
@@ -398,12 +420,34 @@ fn bindgen_test_layout_C() {
         concat!("Alignment of ", stringify!(C))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<C>())).x as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<C>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance =
+                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], C>(buffer) };
+            let struct_ptr = &struct_instance as *const C;
+            let field_ptr = std::ptr::addr_of!(struct_instance.x);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(C), "::", stringify!(x))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<C>())).baz as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<C>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance =
+                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], C>(buffer) };
+            let struct_ptr = &struct_instance as *const C;
+            let field_ptr = std::ptr::addr_of!(struct_instance.baz);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         4usize,
         concat!("Offset of field: ", stringify!(C), "::", stringify!(baz))
     );
@@ -695,7 +739,19 @@ fn bindgen_test_layout_Date3() {
         concat!("Alignment of ", stringify!(Date3))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Date3>())).byte as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<Date3>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], Date3>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const Date3;
+            let field_ptr = std::ptr::addr_of!(struct_instance.byte);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         3usize,
         concat!(
             "Offset of field: ",

@@ -34,22 +34,70 @@ fn bindgen_test_layout_foo() {
         concat!("Alignment of ", stringify!(foo))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<foo>())).bar as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<foo>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], foo>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.bar);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         0usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(bar))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<foo>())).baz as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<foo>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], foo>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.baz);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         4usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(baz))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<foo>())).bazz as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<foo>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], foo>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.bazz);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         8usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(bazz))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<foo>())).bazzz as *const _ as usize },
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<foo>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], foo>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.bazzz);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
+        },
         16usize,
         concat!(
             "Offset of field: ",
@@ -59,8 +107,18 @@ fn bindgen_test_layout_foo() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<foo>())).complexFloat as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<foo>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], foo>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.complexFloat);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         24usize,
         concat!(
@@ -71,8 +129,18 @@ fn bindgen_test_layout_foo() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<foo>())).complexDouble as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<foo>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], foo>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const foo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.complexDouble);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         32usize,
         concat!(

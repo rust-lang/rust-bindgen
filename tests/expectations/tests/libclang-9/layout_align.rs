@@ -148,8 +148,18 @@ fn bindgen_test_layout_rte_kni_fifo() {
         concat!("Alignment of ", stringify!(rte_kni_fifo))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).write as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_kni_fifo>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_kni_fifo>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_kni_fifo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.write);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(
@@ -160,8 +170,18 @@ fn bindgen_test_layout_rte_kni_fifo() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).read as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_kni_fifo>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_kni_fifo>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_kni_fifo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.read);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
         concat!(
@@ -172,8 +192,18 @@ fn bindgen_test_layout_rte_kni_fifo() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).len as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_kni_fifo>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_kni_fifo>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_kni_fifo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.len);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
         concat!(
@@ -184,9 +214,18 @@ fn bindgen_test_layout_rte_kni_fifo() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).elem_size as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_kni_fifo>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_kni_fifo>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_kni_fifo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.elem_size);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         12usize,
         concat!(
@@ -197,8 +236,18 @@ fn bindgen_test_layout_rte_kni_fifo() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).buffer as *const _ as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_kni_fifo>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_kni_fifo>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_kni_fifo;
+            let field_ptr = std::ptr::addr_of!(struct_instance.buffer);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         16usize,
         concat!(
@@ -241,9 +290,18 @@ fn bindgen_test_layout_rte_eth_link() {
         concat!("Alignment of ", stringify!(rte_eth_link))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<rte_eth_link>())).link_speed as *const _
-                as usize
+        {
+            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_link>();
+            let buffer = [0u8; STRUCT_SIZE];
+            let struct_instance = unsafe {
+                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_link>(buffer)
+            };
+            let struct_ptr = &struct_instance as *const rte_eth_link;
+            let field_ptr = std::ptr::addr_of!(struct_instance.link_speed);
+            let struct_address = struct_ptr as usize;
+            let field_address = field_ptr as usize;
+            std::mem::forget(struct_instance);
+            field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
         concat!(

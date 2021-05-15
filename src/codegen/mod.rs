@@ -2084,8 +2084,12 @@ impl CodeGenerator for CompInfo {
                         .count() >
                         1;
 
+
+                    // The offset of #[repr(C)] union is always 0, don't need to recheck it.
+                    let is_not_packed_union = is_union && !packed;
+
                     let should_skip_field_offset_checks =
-                        is_opaque || too_many_base_vtables;
+                        is_opaque || too_many_base_vtables || is_not_packed_union;
 
                     let check_field_offset = if should_skip_field_offset_checks
                     {
@@ -2105,8 +2109,26 @@ impl CodeGenerator for CompInfo {
 
                                         Some(quote! {
                                             assert_eq!(
-                                                unsafe {
-                                                    &(*(::#prefix::ptr::null::<#canonical_ident>())).#field_name as *const _ as usize
+                                                {
+                                                    // Create an instance of #canonical_ident struct from zero bit pattern
+                                                    const STRUCT_SIZE: usize = std::mem::size_of::<#canonical_ident>();
+                                                    let buffer = [0u8; STRUCT_SIZE];
+                                                    let struct_instance = unsafe {
+                                                        // It's safe since #canonical_ident struct allows zero bit pattern
+                                                        std::mem::transmute::<[u8; STRUCT_SIZE], #canonical_ident>(buffer)
+                                                    };
+                                                    // Get the pointers to the struct and its field
+                                                    let struct_ptr = &struct_instance as *const #canonical_ident;
+                                                    let field_ptr = std::ptr::addr_of!(struct_instance.#field_name);
+
+                                                    // Get the offset of the field
+                                                    let struct_address =  struct_ptr as usize;
+                                                    let field_address = field_ptr as usize;
+
+                                                    //Do not call the destructor
+                                                    std::mem::forget(struct_instance);
+
+                                                    field_address.checked_sub(struct_address).unwrap()
                                                 },
                                                 #field_offset,
                                                 concat!("Offset of field: ", stringify!(#canonical_ident), "::", stringify!(#field_name))
