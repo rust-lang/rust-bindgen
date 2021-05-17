@@ -32,11 +32,7 @@ pub mod root {
             );
             assert_eq!(
                 {
-                    const STRUCT_SIZE: usize = std::mem::size_of::<Bar>();
-                    let buffer = [0u8; STRUCT_SIZE];
-                    let struct_instance = unsafe {
-                        std::mem::transmute::<[u8; STRUCT_SIZE], Bar>(buffer)
-                    };
+                    let struct_instance = unsafe { std::mem::zeroed::<Bar>() };
                     let struct_ptr = &struct_instance as *const Bar;
                     let field_ptr = std::ptr::addr_of!(struct_instance.foo);
                     let struct_address = struct_ptr as usize;
@@ -54,11 +50,7 @@ pub mod root {
             );
             assert_eq!(
                 {
-                    const STRUCT_SIZE: usize = std::mem::size_of::<Bar>();
-                    let buffer = [0u8; STRUCT_SIZE];
-                    let struct_instance = unsafe {
-                        std::mem::transmute::<[u8; STRUCT_SIZE], Bar>(buffer)
-                    };
+                    let struct_instance = unsafe { std::mem::zeroed::<Bar>() };
                     let struct_ptr = &struct_instance as *const Bar;
                     let field_ptr = std::ptr::addr_of!(struct_instance.baz);
                     let struct_address = struct_ptr as usize;
@@ -98,11 +90,7 @@ pub mod root {
             );
             assert_eq!(
                 {
-                    const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-                    let buffer = [0u8; STRUCT_SIZE];
-                    let struct_instance = unsafe {
-                        std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-                    };
+                    let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
                     let struct_ptr = &struct_instance as *const Foo;
                     let field_ptr = std::ptr::addr_of!(struct_instance.ptr);
                     let struct_address = struct_ptr as usize;

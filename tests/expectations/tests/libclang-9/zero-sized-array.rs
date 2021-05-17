@@ -55,11 +55,8 @@ fn bindgen_test_layout_ZeroSizedArray() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ZeroSizedArray>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ZeroSizedArray>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ZeroSizedArray>() };
             let struct_ptr = &struct_instance as *const ZeroSizedArray;
             let field_ptr = std::ptr::addr_of!(struct_instance.arr);
             let struct_address = struct_ptr as usize;
@@ -96,14 +93,8 @@ fn bindgen_test_layout_ContainsZeroSizedArray() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<ContainsZeroSizedArray>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ContainsZeroSizedArray>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContainsZeroSizedArray>() };
             let struct_ptr = &struct_instance as *const ContainsZeroSizedArray;
             let field_ptr = std::ptr::addr_of!(struct_instance.zsa);
             let struct_address = struct_ptr as usize;
@@ -160,14 +151,8 @@ fn bindgen_test_layout_DynamicallySizedArray() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<DynamicallySizedArray>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], DynamicallySizedArray>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<DynamicallySizedArray>() };
             let struct_ptr = &struct_instance as *const DynamicallySizedArray;
             let field_ptr = std::ptr::addr_of!(struct_instance.arr);
             let struct_address = struct_ptr as usize;
@@ -204,15 +189,8 @@ fn bindgen_test_layout_ContainsDynamicallySizedArray() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<ContainsDynamicallySizedArray>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    ContainsDynamicallySizedArray,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContainsDynamicallySizedArray>() };
             let struct_ptr =
                 &struct_instance as *const ContainsDynamicallySizedArray;
             let field_ptr = std::ptr::addr_of!(struct_instance.dsa);

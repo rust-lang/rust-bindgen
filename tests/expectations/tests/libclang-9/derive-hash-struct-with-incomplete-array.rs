@@ -55,11 +55,7 @@ fn bindgen_test_layout_test() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<test>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], test>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<test>() };
             let struct_ptr = &struct_instance as *const test;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
             let struct_address = struct_ptr as usize;
@@ -72,11 +68,7 @@ fn bindgen_test_layout_test() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<test>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], test>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<test>() };
             let struct_ptr = &struct_instance as *const test;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.zero_length_array);
@@ -114,11 +106,7 @@ fn bindgen_test_layout_test2() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<test2>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], test2>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<test2>() };
             let struct_ptr = &struct_instance as *const test2;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
             let struct_address = struct_ptr as usize;
@@ -131,11 +119,7 @@ fn bindgen_test_layout_test2() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<test2>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], test2>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<test2>() };
             let struct_ptr = &struct_instance as *const test2;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.incomplete_array);
@@ -174,11 +158,7 @@ fn bindgen_test_layout_test3() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<test3>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], test3>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<test3>() };
             let struct_ptr = &struct_instance as *const test3;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
             let struct_address = struct_ptr as usize;
@@ -191,11 +171,7 @@ fn bindgen_test_layout_test3() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<test3>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], test3>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<test3>() };
             let struct_ptr = &struct_instance as *const test3;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.zero_length_array);
@@ -214,11 +190,7 @@ fn bindgen_test_layout_test3() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<test3>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], test3>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<test3>() };
             let struct_ptr = &struct_instance as *const test3;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.incomplete_array);

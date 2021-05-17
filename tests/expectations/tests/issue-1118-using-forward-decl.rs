@@ -25,11 +25,8 @@ fn bindgen_test_layout_nsTArray_base() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<nsTArray_base>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], nsTArray_base>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<nsTArray_base>() };
             let struct_ptr = &struct_instance as *const nsTArray_base;
             let field_ptr = std::ptr::addr_of!(struct_instance.d);
             let struct_address = struct_ptr as usize;
@@ -88,11 +85,7 @@ fn bindgen_test_layout_nsIContent() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<nsIContent>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], nsIContent>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<nsIContent>() };
             let struct_ptr = &struct_instance as *const nsIContent;
             let field_ptr = std::ptr::addr_of!(struct_instance.foo);
             let struct_address = struct_ptr as usize;

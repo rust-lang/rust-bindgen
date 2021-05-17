@@ -25,11 +25,8 @@ fn bindgen_test_layout_ConstPtrMutObj() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ConstPtrMutObj>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ConstPtrMutObj>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ConstPtrMutObj>() };
             let struct_ptr = &struct_instance as *const ConstPtrMutObj;
             let field_ptr = std::ptr::addr_of!(struct_instance.bar);
             let struct_address = struct_ptr as usize;
@@ -74,11 +71,7 @@ fn bindgen_test_layout_MutPtrMutObj() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<MutPtrMutObj>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], MutPtrMutObj>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<MutPtrMutObj>() };
             let struct_ptr = &struct_instance as *const MutPtrMutObj;
             let field_ptr = std::ptr::addr_of!(struct_instance.bar);
             let struct_address = struct_ptr as usize;
@@ -123,11 +116,8 @@ fn bindgen_test_layout_MutPtrConstObj() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<MutPtrConstObj>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], MutPtrConstObj>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<MutPtrConstObj>() };
             let struct_ptr = &struct_instance as *const MutPtrConstObj;
             let field_ptr = std::ptr::addr_of!(struct_instance.bar);
             let struct_address = struct_ptr as usize;
@@ -172,13 +162,8 @@ fn bindgen_test_layout_ConstPtrConstObj() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ConstPtrConstObj>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ConstPtrConstObj>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ConstPtrConstObj>() };
             let struct_ptr = &struct_instance as *const ConstPtrConstObj;
             let field_ptr = std::ptr::addr_of!(struct_instance.bar);
             let struct_address = struct_ptr as usize;

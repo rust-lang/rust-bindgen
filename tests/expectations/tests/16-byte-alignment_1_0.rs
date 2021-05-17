@@ -89,15 +89,8 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<
-                rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1,
-            >();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1,
-                >(buffer)
+                std::mem::zeroed::<rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1>()
             };
             let struct_ptr = &struct_instance
                 as *const rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1;
@@ -117,15 +110,8 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<
-                rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1,
-            >();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1,
-                >(buffer)
+                std::mem::zeroed::<rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1>()
             };
             let struct_ptr = &struct_instance
                 as *const rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1;
@@ -181,11 +167,8 @@ fn bindgen_test_layout_rte_ipv4_tuple() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_ipv4_tuple>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_ipv4_tuple>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_ipv4_tuple>() };
             let struct_ptr = &struct_instance as *const rte_ipv4_tuple;
             let field_ptr = std::ptr::addr_of!(struct_instance.src_addr);
             let struct_address = struct_ptr as usize;
@@ -203,11 +186,8 @@ fn bindgen_test_layout_rte_ipv4_tuple() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_ipv4_tuple>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_ipv4_tuple>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_ipv4_tuple>() };
             let struct_ptr = &struct_instance as *const rte_ipv4_tuple;
             let field_ptr = std::ptr::addr_of!(struct_instance.dst_addr);
             let struct_address = struct_ptr as usize;
@@ -270,15 +250,8 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<
-                rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1,
-            >();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1,
-                >(buffer)
+                std::mem::zeroed::<rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1>()
             };
             let struct_ptr = &struct_instance
                 as *const rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1;
@@ -298,15 +271,8 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<
-                rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1,
-            >();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1,
-                >(buffer)
+                std::mem::zeroed::<rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1>()
             };
             let struct_ptr = &struct_instance
                 as *const rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1;
@@ -362,11 +328,8 @@ fn bindgen_test_layout_rte_ipv6_tuple() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_ipv6_tuple>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_ipv6_tuple>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_ipv6_tuple>() };
             let struct_ptr = &struct_instance as *const rte_ipv6_tuple;
             let field_ptr = std::ptr::addr_of!(struct_instance.src_addr);
             let struct_address = struct_ptr as usize;
@@ -384,11 +347,8 @@ fn bindgen_test_layout_rte_ipv6_tuple() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_ipv6_tuple>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_ipv6_tuple>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_ipv6_tuple>() };
             let struct_ptr = &struct_instance as *const rte_ipv6_tuple;
             let field_ptr = std::ptr::addr_of!(struct_instance.dst_addr);
             let struct_address = struct_ptr as usize;

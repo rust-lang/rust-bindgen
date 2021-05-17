@@ -30,11 +30,7 @@ fn bindgen_test_layout_TestDouble() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<TestDouble>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], TestDouble>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<TestDouble>() };
             let struct_ptr = &struct_instance as *const TestDouble;
             let field_ptr = std::ptr::addr_of!(struct_instance.mMember);
             let struct_address = struct_ptr as usize;
@@ -70,11 +66,8 @@ fn bindgen_test_layout_TestDoublePtr() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<TestDoublePtr>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], TestDoublePtr>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<TestDoublePtr>() };
             let struct_ptr = &struct_instance as *const TestDoublePtr;
             let field_ptr = std::ptr::addr_of!(struct_instance.mMember);
             let struct_address = struct_ptr as usize;
@@ -119,11 +112,7 @@ fn bindgen_test_layout_TestFloat() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<TestFloat>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], TestFloat>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<TestFloat>() };
             let struct_ptr = &struct_instance as *const TestFloat;
             let field_ptr = std::ptr::addr_of!(struct_instance.mMember);
             let struct_address = struct_ptr as usize;
@@ -159,11 +148,7 @@ fn bindgen_test_layout_TestFloatPtr() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<TestFloatPtr>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], TestFloatPtr>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<TestFloatPtr>() };
             let struct_ptr = &struct_instance as *const TestFloatPtr;
             let field_ptr = std::ptr::addr_of!(struct_instance.mMember);
             let struct_address = struct_ptr as usize;

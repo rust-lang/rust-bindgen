@@ -48,14 +48,8 @@ fn bindgen_test_layout_contains_block_pointers() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<contains_block_pointers>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], contains_block_pointers>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<contains_block_pointers>() };
             let struct_ptr = &struct_instance as *const contains_block_pointers;
             let field_ptr = std::ptr::addr_of!(struct_instance.val);
             let struct_address = struct_ptr as usize;
@@ -73,14 +67,8 @@ fn bindgen_test_layout_contains_block_pointers() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<contains_block_pointers>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], contains_block_pointers>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<contains_block_pointers>() };
             let struct_ptr = &struct_instance as *const contains_block_pointers;
             let field_ptr = std::ptr::addr_of!(struct_instance.ptr_val);
             let struct_address = struct_ptr as usize;

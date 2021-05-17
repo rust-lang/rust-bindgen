@@ -133,11 +133,7 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Weird>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Weird>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
             let struct_ptr = &struct_instance as *const Weird;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.mStrokeDasharrayLength);
@@ -156,11 +152,7 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Weird>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Weird>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
             let struct_ptr = &struct_instance as *const Weird;
             let field_ptr = std::ptr::addr_of!(struct_instance.mClipRule);
             let struct_address = struct_ptr as usize;
@@ -178,11 +170,7 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Weird>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Weird>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
             let struct_ptr = &struct_instance as *const Weird;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.mColorInterpolation);
@@ -201,11 +189,7 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Weird>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Weird>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
             let struct_ptr = &struct_instance as *const Weird;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.mColorInterpolationFilters);
@@ -224,11 +208,7 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Weird>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Weird>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
             let struct_ptr = &struct_instance as *const Weird;
             let field_ptr = std::ptr::addr_of!(struct_instance.mFillRule);
             let struct_address = struct_ptr as usize;
@@ -246,11 +226,7 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Weird>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Weird>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
             let struct_ptr = &struct_instance as *const Weird;
             let field_ptr = std::ptr::addr_of!(struct_instance.mImageRendering);
             let struct_address = struct_ptr as usize;
@@ -268,11 +244,7 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Weird>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Weird>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
             let struct_ptr = &struct_instance as *const Weird;
             let field_ptr = std::ptr::addr_of!(struct_instance.mPaintOrder);
             let struct_address = struct_ptr as usize;
@@ -290,11 +262,7 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Weird>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Weird>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
             let struct_ptr = &struct_instance as *const Weird;
             let field_ptr = std::ptr::addr_of!(struct_instance.mShapeRendering);
             let struct_address = struct_ptr as usize;
@@ -312,11 +280,7 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Weird>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Weird>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
             let struct_ptr = &struct_instance as *const Weird;
             let field_ptr = std::ptr::addr_of!(struct_instance.mStrokeLinecap);
             let struct_address = struct_ptr as usize;
@@ -334,11 +298,7 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Weird>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Weird>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
             let struct_ptr = &struct_instance as *const Weird;
             let field_ptr = std::ptr::addr_of!(struct_instance.mStrokeLinejoin);
             let struct_address = struct_ptr as usize;
@@ -356,11 +316,7 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Weird>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Weird>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
             let struct_ptr = &struct_instance as *const Weird;
             let field_ptr = std::ptr::addr_of!(struct_instance.mTextAnchor);
             let struct_address = struct_ptr as usize;
@@ -378,11 +334,7 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Weird>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Weird>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Weird>() };
             let struct_ptr = &struct_instance as *const Weird;
             let field_ptr = std::ptr::addr_of!(struct_instance.mTextRendering);
             let struct_address = struct_ptr as usize;

@@ -24,11 +24,7 @@ fn bindgen_test_layout_Calc() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Calc>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Calc>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Calc>() };
             let struct_ptr = &struct_instance as *const Calc;
             let field_ptr = std::ptr::addr_of!(struct_instance.w);
             let struct_address = struct_ptr as usize;
@@ -83,11 +79,7 @@ fn bindgen_test_layout_Test_Size() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Test_Size>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Test_Size>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Test_Size>() };
             let struct_ptr = &struct_instance as *const Test_Size;
             let field_ptr = std::ptr::addr_of!(struct_instance.mWidth);
             let struct_address = struct_ptr as usize;
@@ -105,11 +97,7 @@ fn bindgen_test_layout_Test_Size() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Test_Size>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Test_Size>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Test_Size>() };
             let struct_ptr = &struct_instance as *const Test_Size;
             let field_ptr = std::ptr::addr_of!(struct_instance.mHeight);
             let struct_address = struct_ptr as usize;

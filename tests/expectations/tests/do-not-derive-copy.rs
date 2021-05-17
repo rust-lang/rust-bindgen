@@ -27,14 +27,8 @@ fn bindgen_test_layout_WouldBeCopyButWeAreNotDerivingCopy() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<WouldBeCopyButWeAreNotDerivingCopy>();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    WouldBeCopyButWeAreNotDerivingCopy,
-                >(buffer)
+                std::mem::zeroed::<WouldBeCopyButWeAreNotDerivingCopy>()
             };
             let struct_ptr =
                 &struct_instance as *const WouldBeCopyButWeAreNotDerivingCopy;

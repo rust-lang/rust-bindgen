@@ -31,11 +31,7 @@ fn bindgen_test_layout_mbedtls_mpi() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<mbedtls_mpi>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], mbedtls_mpi>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<mbedtls_mpi>() };
             let struct_ptr = &struct_instance as *const mbedtls_mpi;
             let field_ptr = std::ptr::addr_of!(struct_instance.s);
             let struct_address = struct_ptr as usize;
@@ -53,11 +49,7 @@ fn bindgen_test_layout_mbedtls_mpi() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<mbedtls_mpi>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], mbedtls_mpi>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<mbedtls_mpi>() };
             let struct_ptr = &struct_instance as *const mbedtls_mpi;
             let field_ptr = std::ptr::addr_of!(struct_instance.n);
             let struct_address = struct_ptr as usize;
@@ -75,11 +67,7 @@ fn bindgen_test_layout_mbedtls_mpi() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<mbedtls_mpi>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], mbedtls_mpi>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<mbedtls_mpi>() };
             let struct_ptr = &struct_instance as *const mbedtls_mpi;
             let field_ptr = std::ptr::addr_of!(struct_instance.p);
             let struct_address = struct_ptr as usize;

@@ -39,14 +39,8 @@ fn bindgen_test_layout_ContainsInstantiation() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<ContainsInstantiation>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ContainsInstantiation>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContainsInstantiation>() };
             let struct_ptr = &struct_instance as *const ContainsInstantiation;
             let field_ptr = std::ptr::addr_of!(struct_instance.not_opaque);
             let struct_address = struct_ptr as usize;
@@ -91,15 +85,8 @@ fn bindgen_test_layout_ContainsOpaqueInstantiation() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<ContainsOpaqueInstantiation>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    ContainsOpaqueInstantiation,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContainsOpaqueInstantiation>() };
             let struct_ptr =
                 &struct_instance as *const ContainsOpaqueInstantiation;
             let field_ptr = std::ptr::addr_of!(struct_instance.opaque);

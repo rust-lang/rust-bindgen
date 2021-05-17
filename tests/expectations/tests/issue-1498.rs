@@ -67,11 +67,7 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_memseg>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_memseg>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_memseg>() };
             let struct_ptr = &struct_instance as *const rte_memseg;
             let field_ptr = std::ptr::addr_of!(struct_instance.phys_addr);
             let struct_address = struct_ptr as usize;
@@ -89,11 +85,7 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_memseg>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_memseg>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_memseg>() };
             let struct_ptr = &struct_instance as *const rte_memseg;
             let field_ptr = std::ptr::addr_of!(struct_instance.len);
             let struct_address = struct_ptr as usize;
@@ -111,11 +103,7 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_memseg>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_memseg>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_memseg>() };
             let struct_ptr = &struct_instance as *const rte_memseg;
             let field_ptr = std::ptr::addr_of!(struct_instance.hugepage_sz);
             let struct_address = struct_ptr as usize;
@@ -133,11 +121,7 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_memseg>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_memseg>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_memseg>() };
             let struct_ptr = &struct_instance as *const rte_memseg;
             let field_ptr = std::ptr::addr_of!(struct_instance.socket_id);
             let struct_address = struct_ptr as usize;
@@ -155,11 +139,7 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_memseg>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_memseg>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_memseg>() };
             let struct_ptr = &struct_instance as *const rte_memseg;
             let field_ptr = std::ptr::addr_of!(struct_instance.nchannel);
             let struct_address = struct_ptr as usize;
@@ -177,11 +157,7 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_memseg>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_memseg>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_memseg>() };
             let struct_ptr = &struct_instance as *const rte_memseg;
             let field_ptr = std::ptr::addr_of!(struct_instance.nrank);
             let struct_address = struct_ptr as usize;

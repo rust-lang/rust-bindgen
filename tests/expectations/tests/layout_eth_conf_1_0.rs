@@ -215,11 +215,8 @@ fn bindgen_test_layout_rte_eth_rxmode() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_rxmode>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_rxmode>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_rxmode>() };
             let struct_ptr = &struct_instance as *const rte_eth_rxmode;
             let field_ptr = std::ptr::addr_of!(struct_instance.mq_mode);
             let struct_address = struct_ptr as usize;
@@ -237,11 +234,8 @@ fn bindgen_test_layout_rte_eth_rxmode() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_rxmode>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_rxmode>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_rxmode>() };
             let struct_ptr = &struct_instance as *const rte_eth_rxmode;
             let field_ptr = std::ptr::addr_of!(struct_instance.max_rx_pkt_len);
             let struct_address = struct_ptr as usize;
@@ -259,11 +253,8 @@ fn bindgen_test_layout_rte_eth_rxmode() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_rxmode>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_rxmode>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_rxmode>() };
             let struct_ptr = &struct_instance as *const rte_eth_rxmode;
             let field_ptr = std::ptr::addr_of!(struct_instance.split_hdr_size);
             let struct_address = struct_ptr as usize;
@@ -512,11 +503,8 @@ fn bindgen_test_layout_rte_eth_txmode() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_txmode>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_txmode>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_txmode>() };
             let struct_ptr = &struct_instance as *const rte_eth_txmode;
             let field_ptr = std::ptr::addr_of!(struct_instance.mq_mode);
             let struct_address = struct_ptr as usize;
@@ -534,11 +522,8 @@ fn bindgen_test_layout_rte_eth_txmode() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_txmode>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_txmode>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_txmode>() };
             let struct_ptr = &struct_instance as *const rte_eth_txmode;
             let field_ptr = std::ptr::addr_of!(struct_instance.pvid);
             let struct_address = struct_ptr as usize;
@@ -674,13 +659,8 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_rss_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_rss_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_rss_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_rss_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.rss_key);
             let struct_address = struct_ptr as usize;
@@ -698,13 +678,8 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_rss_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_rss_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_rss_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_rss_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.rss_key_len);
             let struct_address = struct_ptr as usize;
@@ -722,13 +697,8 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_rss_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_rss_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_rss_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_rss_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.rss_hf);
             let struct_address = struct_ptr as usize;
@@ -832,14 +802,8 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_eth_vmdq_dcb_conf__bindgen_ty_1,
-                >(buffer)
+                std::mem::zeroed::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>()
             };
             let struct_ptr =
                 &struct_instance as *const rte_eth_vmdq_dcb_conf__bindgen_ty_1;
@@ -859,14 +823,8 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_eth_vmdq_dcb_conf__bindgen_ty_1,
-                >(buffer)
+                std::mem::zeroed::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>()
             };
             let struct_ptr =
                 &struct_instance as *const rte_eth_vmdq_dcb_conf__bindgen_ty_1;
@@ -904,14 +862,8 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_dcb_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_dcb_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_dcb_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_dcb_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.nb_queue_pools);
             let struct_address = struct_ptr as usize;
@@ -929,14 +881,8 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_dcb_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_dcb_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_dcb_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_dcb_conf;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.enable_default_pool);
@@ -955,14 +901,8 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_dcb_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_dcb_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_dcb_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_dcb_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.default_pool);
             let struct_address = struct_ptr as usize;
@@ -980,14 +920,8 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_dcb_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_dcb_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_dcb_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_dcb_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.nb_pool_maps);
             let struct_address = struct_ptr as usize;
@@ -1005,14 +939,8 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_dcb_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_dcb_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_dcb_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_dcb_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.pool_map);
             let struct_address = struct_ptr as usize;
@@ -1030,14 +958,8 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_dcb_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_dcb_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_dcb_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_dcb_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.dcb_tc);
             let struct_address = struct_ptr as usize;
@@ -1090,14 +1012,8 @@ fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_dcb_rx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_dcb_rx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_dcb_rx_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_dcb_rx_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.nb_tcs);
             let struct_address = struct_ptr as usize;
@@ -1115,14 +1031,8 @@ fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_dcb_rx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_dcb_rx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_dcb_rx_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_dcb_rx_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.dcb_tc);
             let struct_address = struct_ptr as usize;
@@ -1175,14 +1085,8 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_dcb_tx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_dcb_tx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_dcb_tx_conf>() };
             let struct_ptr =
                 &struct_instance as *const rte_eth_vmdq_dcb_tx_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.nb_queue_pools);
@@ -1201,14 +1105,8 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_dcb_tx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_dcb_tx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_dcb_tx_conf>() };
             let struct_ptr =
                 &struct_instance as *const rte_eth_vmdq_dcb_tx_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.dcb_tc);
@@ -1262,14 +1160,8 @@ fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_dcb_tx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_dcb_tx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_dcb_tx_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_dcb_tx_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.nb_tcs);
             let struct_address = struct_ptr as usize;
@@ -1287,14 +1179,8 @@ fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_dcb_tx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_dcb_tx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_dcb_tx_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_dcb_tx_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.dcb_tc);
             let struct_address = struct_ptr as usize;
@@ -1345,14 +1231,8 @@ fn bindgen_test_layout_rte_eth_vmdq_tx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_tx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_tx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_tx_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_tx_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.nb_queue_pools);
             let struct_address = struct_ptr as usize;
@@ -1426,14 +1306,8 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_rx_conf__bindgen_ty_1>();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_eth_vmdq_rx_conf__bindgen_ty_1,
-                >(buffer)
+                std::mem::zeroed::<rte_eth_vmdq_rx_conf__bindgen_ty_1>()
             };
             let struct_ptr =
                 &struct_instance as *const rte_eth_vmdq_rx_conf__bindgen_ty_1;
@@ -1453,14 +1327,8 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_rx_conf__bindgen_ty_1>();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_eth_vmdq_rx_conf__bindgen_ty_1,
-                >(buffer)
+                std::mem::zeroed::<rte_eth_vmdq_rx_conf__bindgen_ty_1>()
             };
             let struct_ptr =
                 &struct_instance as *const rte_eth_vmdq_rx_conf__bindgen_ty_1;
@@ -1498,14 +1366,8 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_rx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_rx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_rx_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_rx_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.nb_queue_pools);
             let struct_address = struct_ptr as usize;
@@ -1523,14 +1385,8 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_rx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_rx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_rx_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_rx_conf;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.enable_default_pool);
@@ -1549,14 +1405,8 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_rx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_rx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_rx_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_rx_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.default_pool);
             let struct_address = struct_ptr as usize;
@@ -1574,14 +1424,8 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_rx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_rx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_rx_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_rx_conf;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.enable_loop_back);
@@ -1600,14 +1444,8 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_rx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_rx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_rx_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_rx_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.nb_pool_maps);
             let struct_address = struct_ptr as usize;
@@ -1625,14 +1463,8 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_rx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_rx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_rx_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_rx_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.rx_mode);
             let struct_address = struct_ptr as usize;
@@ -1650,14 +1482,8 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_vmdq_rx_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_vmdq_rx_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_vmdq_rx_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_vmdq_rx_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.pool_map);
             let struct_address = struct_ptr as usize;
@@ -1755,13 +1581,8 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_ipv4_flow>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_ipv4_flow>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_ipv4_flow>() };
             let struct_ptr = &struct_instance as *const rte_eth_ipv4_flow;
             let field_ptr = std::ptr::addr_of!(struct_instance.src_ip);
             let struct_address = struct_ptr as usize;
@@ -1779,13 +1600,8 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_ipv4_flow>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_ipv4_flow>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_ipv4_flow>() };
             let struct_ptr = &struct_instance as *const rte_eth_ipv4_flow;
             let field_ptr = std::ptr::addr_of!(struct_instance.dst_ip);
             let struct_address = struct_ptr as usize;
@@ -1803,13 +1619,8 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_ipv4_flow>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_ipv4_flow>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_ipv4_flow>() };
             let struct_ptr = &struct_instance as *const rte_eth_ipv4_flow;
             let field_ptr = std::ptr::addr_of!(struct_instance.tos);
             let struct_address = struct_ptr as usize;
@@ -1827,13 +1638,8 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_ipv4_flow>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_ipv4_flow>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_ipv4_flow>() };
             let struct_ptr = &struct_instance as *const rte_eth_ipv4_flow;
             let field_ptr = std::ptr::addr_of!(struct_instance.ttl);
             let struct_address = struct_ptr as usize;
@@ -1851,13 +1657,8 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_ipv4_flow>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_ipv4_flow>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_ipv4_flow>() };
             let struct_ptr = &struct_instance as *const rte_eth_ipv4_flow;
             let field_ptr = std::ptr::addr_of!(struct_instance.proto);
             let struct_address = struct_ptr as usize;
@@ -1908,13 +1709,8 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_ipv6_flow>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_ipv6_flow>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_ipv6_flow>() };
             let struct_ptr = &struct_instance as *const rte_eth_ipv6_flow;
             let field_ptr = std::ptr::addr_of!(struct_instance.src_ip);
             let struct_address = struct_ptr as usize;
@@ -1932,13 +1728,8 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_ipv6_flow>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_ipv6_flow>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_ipv6_flow>() };
             let struct_ptr = &struct_instance as *const rte_eth_ipv6_flow;
             let field_ptr = std::ptr::addr_of!(struct_instance.dst_ip);
             let struct_address = struct_ptr as usize;
@@ -1956,13 +1747,8 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_ipv6_flow>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_ipv6_flow>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_ipv6_flow>() };
             let struct_ptr = &struct_instance as *const rte_eth_ipv6_flow;
             let field_ptr = std::ptr::addr_of!(struct_instance.tc);
             let struct_address = struct_ptr as usize;
@@ -1980,13 +1766,8 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_ipv6_flow>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_ipv6_flow>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_ipv6_flow>() };
             let struct_ptr = &struct_instance as *const rte_eth_ipv6_flow;
             let field_ptr = std::ptr::addr_of!(struct_instance.proto);
             let struct_address = struct_ptr as usize;
@@ -2004,13 +1785,8 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_ipv6_flow>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_ipv6_flow>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_ipv6_flow>() };
             let struct_ptr = &struct_instance as *const rte_eth_ipv6_flow;
             let field_ptr = std::ptr::addr_of!(struct_instance.hop_limits);
             let struct_address = struct_ptr as usize;
@@ -2070,14 +1846,8 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_masks>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_masks>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_masks>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_masks;
             let field_ptr = std::ptr::addr_of!(struct_instance.vlan_tci_mask);
             let struct_address = struct_ptr as usize;
@@ -2095,14 +1865,8 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_masks>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_masks>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_masks>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_masks;
             let field_ptr = std::ptr::addr_of!(struct_instance.ipv4_mask);
             let struct_address = struct_ptr as usize;
@@ -2120,14 +1884,8 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_masks>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_masks>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_masks>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_masks;
             let field_ptr = std::ptr::addr_of!(struct_instance.ipv6_mask);
             let struct_address = struct_ptr as usize;
@@ -2145,14 +1903,8 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_masks>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_masks>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_masks>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_masks;
             let field_ptr = std::ptr::addr_of!(struct_instance.src_port_mask);
             let struct_address = struct_ptr as usize;
@@ -2170,14 +1922,8 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_masks>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_masks>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_masks>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_masks;
             let field_ptr = std::ptr::addr_of!(struct_instance.dst_port_mask);
             let struct_address = struct_ptr as usize;
@@ -2195,14 +1941,8 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_masks>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_masks>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_masks>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_masks;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.mac_addr_byte_mask);
@@ -2221,14 +1961,8 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_masks>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_masks>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_masks>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_masks;
             let field_ptr = std::ptr::addr_of!(struct_instance.tunnel_id_mask);
             let struct_address = struct_ptr as usize;
@@ -2246,14 +1980,8 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_masks>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_masks>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_masks>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_masks;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.tunnel_type_mask);
@@ -2310,14 +2038,8 @@ fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_flex_payload_cfg>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_flex_payload_cfg>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_flex_payload_cfg>() };
             let struct_ptr =
                 &struct_instance as *const rte_eth_flex_payload_cfg;
             let field_ptr = std::ptr::addr_of!(struct_instance.type_);
@@ -2336,14 +2058,8 @@ fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_flex_payload_cfg>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_flex_payload_cfg>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_flex_payload_cfg>() };
             let struct_ptr =
                 &struct_instance as *const rte_eth_flex_payload_cfg;
             let field_ptr = std::ptr::addr_of!(struct_instance.src_offset);
@@ -2397,14 +2113,8 @@ fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_flex_mask>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_flex_mask>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_flex_mask>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_flex_mask;
             let field_ptr = std::ptr::addr_of!(struct_instance.flow_type);
             let struct_address = struct_ptr as usize;
@@ -2422,14 +2132,8 @@ fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_flex_mask>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_flex_mask>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_flex_mask>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_flex_mask;
             let field_ptr = std::ptr::addr_of!(struct_instance.mask);
             let struct_address = struct_ptr as usize;
@@ -2477,14 +2181,8 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_flex_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_flex_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_flex_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_flex_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.nb_payloads);
             let struct_address = struct_ptr as usize;
@@ -2502,14 +2200,8 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_flex_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_flex_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_flex_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_flex_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.nb_flexmasks);
             let struct_address = struct_ptr as usize;
@@ -2527,14 +2219,8 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_flex_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_flex_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_flex_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_flex_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.flex_set);
             let struct_address = struct_ptr as usize;
@@ -2552,14 +2238,8 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_fdir_flex_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_fdir_flex_conf>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_fdir_flex_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_fdir_flex_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.flex_mask);
             let struct_address = struct_ptr as usize;
@@ -2622,11 +2302,8 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_fdir_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_fdir_conf>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_fdir_conf>() };
             let struct_ptr = &struct_instance as *const rte_fdir_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.mode);
             let struct_address = struct_ptr as usize;
@@ -2644,11 +2321,8 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_fdir_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_fdir_conf>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_fdir_conf>() };
             let struct_ptr = &struct_instance as *const rte_fdir_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.pballoc);
             let struct_address = struct_ptr as usize;
@@ -2666,11 +2340,8 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_fdir_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_fdir_conf>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_fdir_conf>() };
             let struct_ptr = &struct_instance as *const rte_fdir_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.status);
             let struct_address = struct_ptr as usize;
@@ -2688,11 +2359,8 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_fdir_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_fdir_conf>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_fdir_conf>() };
             let struct_ptr = &struct_instance as *const rte_fdir_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.drop_queue);
             let struct_address = struct_ptr as usize;
@@ -2710,11 +2378,8 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_fdir_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_fdir_conf>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_fdir_conf>() };
             let struct_ptr = &struct_instance as *const rte_fdir_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.mask);
             let struct_address = struct_ptr as usize;
@@ -2732,11 +2397,8 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_fdir_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_fdir_conf>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_fdir_conf>() };
             let struct_ptr = &struct_instance as *const rte_fdir_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.flex_conf);
             let struct_address = struct_ptr as usize;
@@ -2790,11 +2452,8 @@ fn bindgen_test_layout_rte_intr_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_intr_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_intr_conf>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_intr_conf>() };
             let struct_ptr = &struct_instance as *const rte_intr_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.lsc);
             let struct_address = struct_ptr as usize;
@@ -2812,11 +2471,8 @@ fn bindgen_test_layout_rte_intr_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_intr_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_intr_conf>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_intr_conf>() };
             let struct_ptr = &struct_instance as *const rte_intr_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.rxq);
             let struct_address = struct_ptr as usize;
@@ -2897,15 +2553,8 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_conf__bindgen_ty_1>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_eth_conf__bindgen_ty_1,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_conf__bindgen_ty_1>() };
             let struct_ptr =
                 &struct_instance as *const rte_eth_conf__bindgen_ty_1;
             let field_ptr = std::ptr::addr_of!(struct_instance.rss_conf);
@@ -2924,15 +2573,8 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_conf__bindgen_ty_1>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_eth_conf__bindgen_ty_1,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_conf__bindgen_ty_1>() };
             let struct_ptr =
                 &struct_instance as *const rte_eth_conf__bindgen_ty_1;
             let field_ptr = std::ptr::addr_of!(struct_instance.vmdq_dcb_conf);
@@ -2951,15 +2593,8 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_conf__bindgen_ty_1>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_eth_conf__bindgen_ty_1,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_conf__bindgen_ty_1>() };
             let struct_ptr =
                 &struct_instance as *const rte_eth_conf__bindgen_ty_1;
             let field_ptr = std::ptr::addr_of!(struct_instance.dcb_rx_conf);
@@ -2978,15 +2613,8 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_eth_conf__bindgen_ty_1>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_eth_conf__bindgen_ty_1,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_eth_conf__bindgen_ty_1>() };
             let struct_ptr =
                 &struct_instance as *const rte_eth_conf__bindgen_ty_1;
             let field_ptr = std::ptr::addr_of!(struct_instance.vmdq_rx_conf);
@@ -3058,11 +2686,7 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_conf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_eth_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.link_speeds);
             let struct_address = struct_ptr as usize;
@@ -3080,11 +2704,7 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_conf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_eth_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.rxmode);
             let struct_address = struct_ptr as usize;
@@ -3102,11 +2722,7 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_conf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_eth_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.txmode);
             let struct_address = struct_ptr as usize;
@@ -3124,11 +2740,7 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_conf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_eth_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.lpbk_mode);
             let struct_address = struct_ptr as usize;
@@ -3146,11 +2758,7 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_conf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_eth_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.rx_adv_conf);
             let struct_address = struct_ptr as usize;
@@ -3168,11 +2776,7 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_conf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_eth_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.tx_adv_conf);
             let struct_address = struct_ptr as usize;
@@ -3190,11 +2794,7 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_conf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_eth_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_conf;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.dcb_capability_en);
@@ -3213,11 +2813,7 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_conf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_eth_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.fdir_conf);
             let struct_address = struct_ptr as usize;
@@ -3235,11 +2831,7 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_eth_conf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_eth_conf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_eth_conf>() };
             let struct_ptr = &struct_instance as *const rte_eth_conf;
             let field_ptr = std::ptr::addr_of!(struct_instance.intr_conf);
             let struct_address = struct_ptr as usize;

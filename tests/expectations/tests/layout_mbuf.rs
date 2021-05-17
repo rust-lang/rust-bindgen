@@ -118,11 +118,8 @@ fn bindgen_test_layout_rte_atomic16_t() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_atomic16_t>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_atomic16_t>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_atomic16_t>() };
             let struct_ptr = &struct_instance as *const rte_atomic16_t;
             let field_ptr = std::ptr::addr_of!(struct_instance.cnt);
             let struct_address = struct_ptr as usize;
@@ -451,8 +448,8 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindg
 ) {
     assert_eq ! (:: std :: mem :: size_of :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > () , 4usize , concat ! ("Size of: " , stringify ! (rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1)));
     assert_eq ! (:: std :: mem :: align_of :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > () , 2usize , concat ! ("Alignment of " , stringify ! (rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1)));
-    assert_eq ! ({ const STRUCT_SIZE : usize = std :: mem :: size_of :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > () ; let buffer = [0u8 ; STRUCT_SIZE] ; let struct_instance = unsafe { std :: mem :: transmute :: < [u8 ; STRUCT_SIZE] , rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > (buffer) } ; let struct_ptr = & struct_instance as * const rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 ; let field_ptr = std :: ptr :: addr_of ! (struct_instance . hash) ; let struct_address = struct_ptr as usize ; let field_address = field_ptr as usize ; std :: mem :: forget (struct_instance) ; field_address . checked_sub (struct_address) . unwrap () } , 0usize , concat ! ("Offset of field: " , stringify ! (rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1) , "::" , stringify ! (hash)));
-    assert_eq ! ({ const STRUCT_SIZE : usize = std :: mem :: size_of :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > () ; let buffer = [0u8 ; STRUCT_SIZE] ; let struct_instance = unsafe { std :: mem :: transmute :: < [u8 ; STRUCT_SIZE] , rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > (buffer) } ; let struct_ptr = & struct_instance as * const rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 ; let field_ptr = std :: ptr :: addr_of ! (struct_instance . id) ; let struct_address = struct_ptr as usize ; let field_address = field_ptr as usize ; std :: mem :: forget (struct_instance) ; field_address . checked_sub (struct_address) . unwrap () } , 2usize , concat ! ("Offset of field: " , stringify ! (rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1) , "::" , stringify ! (id)));
+    assert_eq ! ({ let struct_instance = unsafe { std :: mem :: zeroed :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > () } ; let struct_ptr = & struct_instance as * const rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 ; let field_ptr = std :: ptr :: addr_of ! (struct_instance . hash) ; let struct_address = struct_ptr as usize ; let field_address = field_ptr as usize ; std :: mem :: forget (struct_instance) ; field_address . checked_sub (struct_address) . unwrap () } , 0usize , concat ! ("Offset of field: " , stringify ! (rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1) , "::" , stringify ! (hash)));
+    assert_eq ! ({ let struct_instance = unsafe { std :: mem :: zeroed :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > () } ; let struct_ptr = & struct_instance as * const rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 ; let field_ptr = std :: ptr :: addr_of ! (struct_instance . id) ; let struct_address = struct_ptr as usize ; let field_address = field_ptr as usize ; std :: mem :: forget (struct_instance) ; field_address . checked_sub (struct_address) . unwrap () } , 2usize , concat ! ("Offset of field: " , stringify ! (rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1) , "::" , stringify ! (id)));
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1() {
@@ -505,14 +502,8 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1>();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_mbuf__bindgen_ty_3__bindgen_ty_1,
-                >(buffer)
+                std::mem::zeroed::<rte_mbuf__bindgen_ty_3__bindgen_ty_1>()
             };
             let struct_ptr =
                 &struct_instance as *const rte_mbuf__bindgen_ty_3__bindgen_ty_1;
@@ -566,14 +557,8 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_2() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_2>();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_mbuf__bindgen_ty_3__bindgen_ty_2,
-                >(buffer)
+                std::mem::zeroed::<rte_mbuf__bindgen_ty_3__bindgen_ty_2>()
             };
             let struct_ptr =
                 &struct_instance as *const rte_mbuf__bindgen_ty_3__bindgen_ty_2;
@@ -593,14 +578,8 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_2() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_2>();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    rte_mbuf__bindgen_ty_3__bindgen_ty_2,
-                >(buffer)
+                std::mem::zeroed::<rte_mbuf__bindgen_ty_3__bindgen_ty_2>()
             };
             let struct_ptr =
                 &struct_instance as *const rte_mbuf__bindgen_ty_3__bindgen_ty_2;
@@ -859,11 +838,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.cacheline0);
             let struct_address = struct_ptr as usize;
@@ -881,11 +856,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.buf_addr);
             let struct_address = struct_ptr as usize;
@@ -903,11 +874,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.buf_physaddr);
             let struct_address = struct_ptr as usize;
@@ -925,11 +892,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.buf_len);
             let struct_address = struct_ptr as usize;
@@ -947,11 +910,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.rearm_data);
             let struct_address = struct_ptr as usize;
@@ -969,11 +928,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.data_off);
             let struct_address = struct_ptr as usize;
@@ -991,11 +946,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.nb_segs);
             let struct_address = struct_ptr as usize;
@@ -1013,11 +964,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.port);
             let struct_address = struct_ptr as usize;
@@ -1035,11 +982,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.ol_flags);
             let struct_address = struct_ptr as usize;
@@ -1057,11 +1000,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.rx_descriptor_fields1);
@@ -1080,11 +1019,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.pkt_len);
             let struct_address = struct_ptr as usize;
@@ -1102,11 +1037,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.data_len);
             let struct_address = struct_ptr as usize;
@@ -1124,11 +1055,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.vlan_tci);
             let struct_address = struct_ptr as usize;
@@ -1146,11 +1073,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.hash);
             let struct_address = struct_ptr as usize;
@@ -1168,11 +1091,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.seqn);
             let struct_address = struct_ptr as usize;
@@ -1190,11 +1109,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.vlan_tci_outer);
             let struct_address = struct_ptr as usize;
@@ -1212,11 +1127,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.cacheline1);
             let struct_address = struct_ptr as usize;
@@ -1234,11 +1145,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.pool);
             let struct_address = struct_ptr as usize;
@@ -1256,11 +1163,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.next);
             let struct_address = struct_ptr as usize;
@@ -1278,11 +1181,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.priv_size);
             let struct_address = struct_ptr as usize;
@@ -1300,11 +1199,7 @@ fn bindgen_test_layout_rte_mbuf() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mbuf>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mbuf>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<rte_mbuf>() };
             let struct_ptr = &struct_instance as *const rte_mbuf;
             let field_ptr = std::ptr::addr_of!(struct_instance.timesync);
             let struct_address = struct_ptr as usize;

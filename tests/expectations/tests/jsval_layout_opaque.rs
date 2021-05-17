@@ -317,15 +317,8 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<jsval_layout__bindgen_ty_2>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    jsval_layout__bindgen_ty_2,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<jsval_layout__bindgen_ty_2>() };
             let struct_ptr =
                 &struct_instance as *const jsval_layout__bindgen_ty_2;
             let field_ptr = std::ptr::addr_of!(struct_instance.payload);
@@ -393,11 +386,7 @@ fn bindgen_test_layout_Value() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Value>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Value>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Value>() };
             let struct_ptr = &struct_instance as *const Value;
             let field_ptr = std::ptr::addr_of!(struct_instance.data);
             let struct_address = struct_ptr as usize;

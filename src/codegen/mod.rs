@@ -2111,12 +2111,10 @@ impl CodeGenerator for CompInfo {
                                             assert_eq!(
                                                 {
                                                     // Create an instance of #canonical_ident struct from zero bit pattern
-                                                    const STRUCT_SIZE: usize = std::mem::size_of::<#canonical_ident>();
-                                                    let buffer = [0u8; STRUCT_SIZE];
                                                     let struct_instance = unsafe {
-                                                        // It's safe since #canonical_ident struct allows zero bit pattern
-                                                        std::mem::transmute::<[u8; STRUCT_SIZE], #canonical_ident>(buffer)
+                                                        std::mem::zeroed::<#canonical_ident>()
                                                     };
+
                                                     // Get the pointers to the struct and its field
                                                     let struct_ptr = &struct_instance as *const #canonical_ident;
                                                     let field_ptr = std::ptr::addr_of!(struct_instance.#field_name);

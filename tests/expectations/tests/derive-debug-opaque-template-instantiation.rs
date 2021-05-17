@@ -23,11 +23,7 @@ fn bindgen_test_layout_Instance() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Instance>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Instance>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Instance>() };
             let struct_ptr = &struct_instance as *const Instance;
             let field_ptr = std::ptr::addr_of!(struct_instance.val);
             let struct_address = struct_ptr as usize;

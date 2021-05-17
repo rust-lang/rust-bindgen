@@ -41,11 +41,7 @@ fn bindgen_test_layout_IntStr() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<IntStr>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], IntStr>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<IntStr>() };
             let struct_ptr = &struct_instance as *const IntStr;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
             let struct_address = struct_ptr as usize;
@@ -86,11 +82,7 @@ fn bindgen_test_layout_FloatStr() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<FloatStr>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], FloatStr>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<FloatStr>() };
             let struct_ptr = &struct_instance as *const FloatStr;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
             let struct_address = struct_ptr as usize;

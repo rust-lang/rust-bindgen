@@ -47,11 +47,7 @@ pub mod root {
             );
             assert_eq!(
                 {
-                    const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-                    let buffer = [0u8; STRUCT_SIZE];
-                    let struct_instance = unsafe {
-                        std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-                    };
+                    let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
                     let struct_ptr = &struct_instance as *const Foo;
                     let field_ptr = std::ptr::addr_of!(struct_instance.c);
                     let struct_address = struct_ptr as usize;
@@ -87,11 +83,7 @@ pub mod root {
             );
             assert_eq!(
                 {
-                    const STRUCT_SIZE: usize = std::mem::size_of::<Bar>();
-                    let buffer = [0u8; STRUCT_SIZE];
-                    let struct_instance = unsafe {
-                        std::mem::transmute::<[u8; STRUCT_SIZE], Bar>(buffer)
-                    };
+                    let struct_instance = unsafe { std::mem::zeroed::<Bar>() };
                     let struct_ptr = &struct_instance as *const Bar;
                     let field_ptr = std::ptr::addr_of!(struct_instance.i);
                     let struct_address = struct_ptr as usize;
@@ -127,15 +119,8 @@ pub mod root {
             );
             assert_eq!(
                 {
-                    const STRUCT_SIZE: usize =
-                        std::mem::size_of::<ContainsInstantiation>();
-                    let buffer = [0u8; STRUCT_SIZE];
-                    let struct_instance = unsafe {
-                        std::mem::transmute::<
-                            [u8; STRUCT_SIZE],
-                            ContainsInstantiation,
-                        >(buffer)
-                    };
+                    let struct_instance =
+                        unsafe { std::mem::zeroed::<ContainsInstantiation>() };
                     let struct_ptr =
                         &struct_instance as *const ContainsInstantiation;
                     let field_ptr =
@@ -185,14 +170,8 @@ pub mod root {
             );
             assert_eq!(
                 {
-                    const STRUCT_SIZE: usize =
-                        std::mem::size_of::<ContainsOpaqueInstantiation>();
-                    let buffer = [0u8; STRUCT_SIZE];
                     let struct_instance = unsafe {
-                        std::mem::transmute::<
-                            [u8; STRUCT_SIZE],
-                            ContainsOpaqueInstantiation,
-                        >(buffer)
+                        std::mem::zeroed::<ContainsOpaqueInstantiation>()
                     };
                     let struct_ptr =
                         &struct_instance as *const ContainsOpaqueInstantiation;

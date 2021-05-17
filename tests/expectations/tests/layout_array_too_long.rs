@@ -47,11 +47,7 @@ fn bindgen_test_layout_ip_frag() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ip_frag>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ip_frag>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag>() };
             let struct_ptr = &struct_instance as *const ip_frag;
             let field_ptr = std::ptr::addr_of!(struct_instance.ofs);
             let struct_address = struct_ptr as usize;
@@ -69,11 +65,7 @@ fn bindgen_test_layout_ip_frag() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ip_frag>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ip_frag>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag>() };
             let struct_ptr = &struct_instance as *const ip_frag;
             let field_ptr = std::ptr::addr_of!(struct_instance.len);
             let struct_address = struct_ptr as usize;
@@ -91,11 +83,7 @@ fn bindgen_test_layout_ip_frag() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ip_frag>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ip_frag>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag>() };
             let struct_ptr = &struct_instance as *const ip_frag;
             let field_ptr = std::ptr::addr_of!(struct_instance.mb);
             let struct_address = struct_ptr as usize;
@@ -146,11 +134,7 @@ fn bindgen_test_layout_ip_frag_key() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ip_frag_key>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ip_frag_key>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_key>() };
             let struct_ptr = &struct_instance as *const ip_frag_key;
             let field_ptr = std::ptr::addr_of!(struct_instance.src_dst);
             let struct_address = struct_ptr as usize;
@@ -168,11 +152,7 @@ fn bindgen_test_layout_ip_frag_key() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ip_frag_key>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ip_frag_key>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_key>() };
             let struct_ptr = &struct_instance as *const ip_frag_key;
             let field_ptr = std::ptr::addr_of!(struct_instance.id);
             let struct_address = struct_ptr as usize;
@@ -190,11 +170,7 @@ fn bindgen_test_layout_ip_frag_key() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ip_frag_key>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ip_frag_key>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_key>() };
             let struct_ptr = &struct_instance as *const ip_frag_key;
             let field_ptr = std::ptr::addr_of!(struct_instance.key_len);
             let struct_address = struct_ptr as usize;
@@ -252,15 +228,8 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<ip_frag_pkt__bindgen_ty_1>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    ip_frag_pkt__bindgen_ty_1,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ip_frag_pkt__bindgen_ty_1>() };
             let struct_ptr =
                 &struct_instance as *const ip_frag_pkt__bindgen_ty_1;
             let field_ptr = std::ptr::addr_of!(struct_instance.tqe_next);
@@ -279,15 +248,8 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<ip_frag_pkt__bindgen_ty_1>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    ip_frag_pkt__bindgen_ty_1,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ip_frag_pkt__bindgen_ty_1>() };
             let struct_ptr =
                 &struct_instance as *const ip_frag_pkt__bindgen_ty_1;
             let field_ptr = std::ptr::addr_of!(struct_instance.tqe_prev);
@@ -328,11 +290,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ip_frag_pkt>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ip_frag_pkt>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
             let struct_ptr = &struct_instance as *const ip_frag_pkt;
             let field_ptr = std::ptr::addr_of!(struct_instance.lru);
             let struct_address = struct_ptr as usize;
@@ -350,11 +308,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ip_frag_pkt>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ip_frag_pkt>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
             let struct_ptr = &struct_instance as *const ip_frag_pkt;
             let field_ptr = std::ptr::addr_of!(struct_instance.key);
             let struct_address = struct_ptr as usize;
@@ -372,11 +326,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ip_frag_pkt>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ip_frag_pkt>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
             let struct_ptr = &struct_instance as *const ip_frag_pkt;
             let field_ptr = std::ptr::addr_of!(struct_instance.start);
             let struct_address = struct_ptr as usize;
@@ -394,11 +344,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ip_frag_pkt>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ip_frag_pkt>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
             let struct_ptr = &struct_instance as *const ip_frag_pkt;
             let field_ptr = std::ptr::addr_of!(struct_instance.total_size);
             let struct_address = struct_ptr as usize;
@@ -416,11 +362,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ip_frag_pkt>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ip_frag_pkt>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
             let struct_ptr = &struct_instance as *const ip_frag_pkt;
             let field_ptr = std::ptr::addr_of!(struct_instance.frag_size);
             let struct_address = struct_ptr as usize;
@@ -438,11 +380,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ip_frag_pkt>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ip_frag_pkt>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
             let struct_ptr = &struct_instance as *const ip_frag_pkt;
             let field_ptr = std::ptr::addr_of!(struct_instance.last_idx);
             let struct_address = struct_ptr as usize;
@@ -460,11 +398,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ip_frag_pkt>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ip_frag_pkt>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ip_frag_pkt>() };
             let struct_ptr = &struct_instance as *const ip_frag_pkt;
             let field_ptr = std::ptr::addr_of!(struct_instance.frags);
             let struct_address = struct_ptr as usize;

@@ -55,10 +55,7 @@ fn bindgen_test_layout_C() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<C>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance =
-                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], C>(buffer) };
+            let struct_instance = unsafe { std::mem::zeroed::<C>() };
             let struct_ptr = &struct_instance as *const C;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
             let struct_address = struct_ptr as usize;
@@ -71,10 +68,7 @@ fn bindgen_test_layout_C() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<C>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance =
-                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], C>(buffer) };
+            let struct_instance = unsafe { std::mem::zeroed::<C>() };
             let struct_ptr = &struct_instance as *const C;
             let field_ptr = std::ptr::addr_of!(struct_instance.big_array);
             let struct_address = struct_ptr as usize;
@@ -120,14 +114,8 @@ fn bindgen_test_layout_C_with_zero_length_array() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<C_with_zero_length_array>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], C_with_zero_length_array>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<C_with_zero_length_array>() };
             let struct_ptr =
                 &struct_instance as *const C_with_zero_length_array;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
@@ -146,14 +134,8 @@ fn bindgen_test_layout_C_with_zero_length_array() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<C_with_zero_length_array>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], C_with_zero_length_array>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<C_with_zero_length_array>() };
             let struct_ptr =
                 &struct_instance as *const C_with_zero_length_array;
             let field_ptr = std::ptr::addr_of!(struct_instance.big_array);
@@ -172,14 +154,8 @@ fn bindgen_test_layout_C_with_zero_length_array() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<C_with_zero_length_array>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], C_with_zero_length_array>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<C_with_zero_length_array>() };
             let struct_ptr =
                 &struct_instance as *const C_with_zero_length_array;
             let field_ptr =
@@ -227,15 +203,8 @@ fn bindgen_test_layout_C_with_zero_length_array_2() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<C_with_zero_length_array_2>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    C_with_zero_length_array_2,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<C_with_zero_length_array_2>() };
             let struct_ptr =
                 &struct_instance as *const C_with_zero_length_array_2;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
@@ -254,15 +223,8 @@ fn bindgen_test_layout_C_with_zero_length_array_2() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<C_with_zero_length_array_2>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    C_with_zero_length_array_2,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<C_with_zero_length_array_2>() };
             let struct_ptr =
                 &struct_instance as *const C_with_zero_length_array_2;
             let field_ptr =
@@ -301,14 +263,8 @@ fn bindgen_test_layout_C_with_incomplete_array() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<C_with_incomplete_array>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], C_with_incomplete_array>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<C_with_incomplete_array>() };
             let struct_ptr = &struct_instance as *const C_with_incomplete_array;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
             let struct_address = struct_ptr as usize;
@@ -326,14 +282,8 @@ fn bindgen_test_layout_C_with_incomplete_array() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<C_with_incomplete_array>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], C_with_incomplete_array>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<C_with_incomplete_array>() };
             let struct_ptr = &struct_instance as *const C_with_incomplete_array;
             let field_ptr = std::ptr::addr_of!(struct_instance.big_array);
             let struct_address = struct_ptr as usize;
@@ -351,14 +301,8 @@ fn bindgen_test_layout_C_with_incomplete_array() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<C_with_incomplete_array>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], C_with_incomplete_array>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<C_with_incomplete_array>() };
             let struct_ptr = &struct_instance as *const C_with_incomplete_array;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.incomplete_array);
@@ -405,15 +349,8 @@ fn bindgen_test_layout_C_with_incomplete_array_2() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<C_with_incomplete_array_2>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    C_with_incomplete_array_2,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<C_with_incomplete_array_2>() };
             let struct_ptr =
                 &struct_instance as *const C_with_incomplete_array_2;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
@@ -432,15 +369,8 @@ fn bindgen_test_layout_C_with_incomplete_array_2() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<C_with_incomplete_array_2>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    C_with_incomplete_array_2,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<C_with_incomplete_array_2>() };
             let struct_ptr =
                 &struct_instance as *const C_with_incomplete_array_2;
             let field_ptr =
@@ -486,15 +416,9 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<
-                C_with_zero_length_array_and_incomplete_array,
-            >();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    C_with_zero_length_array_and_incomplete_array,
-                >(buffer)
+                std::mem::zeroed::<C_with_zero_length_array_and_incomplete_array>(
+                )
             };
             let struct_ptr = &struct_instance
                 as *const C_with_zero_length_array_and_incomplete_array;
@@ -514,15 +438,9 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<
-                C_with_zero_length_array_and_incomplete_array,
-            >();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    C_with_zero_length_array_and_incomplete_array,
-                >(buffer)
+                std::mem::zeroed::<C_with_zero_length_array_and_incomplete_array>(
+                )
             };
             let struct_ptr = &struct_instance
                 as *const C_with_zero_length_array_and_incomplete_array;
@@ -542,15 +460,9 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<
-                C_with_zero_length_array_and_incomplete_array,
-            >();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    C_with_zero_length_array_and_incomplete_array,
-                >(buffer)
+                std::mem::zeroed::<C_with_zero_length_array_and_incomplete_array>(
+                )
             };
             let struct_ptr = &struct_instance
                 as *const C_with_zero_length_array_and_incomplete_array;
@@ -571,15 +483,9 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<
-                C_with_zero_length_array_and_incomplete_array,
-            >();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    C_with_zero_length_array_and_incomplete_array,
-                >(buffer)
+                std::mem::zeroed::<C_with_zero_length_array_and_incomplete_array>(
+                )
             };
             let struct_ptr = &struct_instance
                 as *const C_with_zero_length_array_and_incomplete_array;
@@ -637,15 +543,10 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<
-                C_with_zero_length_array_and_incomplete_array_2,
-            >();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
+                std::mem::zeroed::<
                     C_with_zero_length_array_and_incomplete_array_2,
-                >(buffer)
+                >()
             };
             let struct_ptr = &struct_instance
                 as *const C_with_zero_length_array_and_incomplete_array_2;
@@ -665,15 +566,10 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<
-                C_with_zero_length_array_and_incomplete_array_2,
-            >();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
+                std::mem::zeroed::<
                     C_with_zero_length_array_and_incomplete_array_2,
-                >(buffer)
+                >()
             };
             let struct_ptr = &struct_instance
                 as *const C_with_zero_length_array_and_incomplete_array_2;
@@ -694,15 +590,10 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<
-                C_with_zero_length_array_and_incomplete_array_2,
-            >();
-            let buffer = [0u8; STRUCT_SIZE];
             let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
+                std::mem::zeroed::<
                     C_with_zero_length_array_and_incomplete_array_2,
-                >(buffer)
+                >()
             };
             let struct_ptr = &struct_instance
                 as *const C_with_zero_length_array_and_incomplete_array_2;
@@ -741,11 +632,7 @@ fn bindgen_test_layout_WithDtor() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<WithDtor>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], WithDtor>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<WithDtor>() };
             let struct_ptr = &struct_instance as *const WithDtor;
             let field_ptr = std::ptr::addr_of!(struct_instance.b);
             let struct_address = struct_ptr as usize;
@@ -781,15 +668,8 @@ fn bindgen_test_layout_IncompleteArrayNonCopiable() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<IncompleteArrayNonCopiable>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    IncompleteArrayNonCopiable,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<IncompleteArrayNonCopiable>() };
             let struct_ptr =
                 &struct_instance as *const IncompleteArrayNonCopiable;
             let field_ptr = std::ptr::addr_of!(struct_instance.whatever);
@@ -808,15 +688,8 @@ fn bindgen_test_layout_IncompleteArrayNonCopiable() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<IncompleteArrayNonCopiable>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    IncompleteArrayNonCopiable,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<IncompleteArrayNonCopiable>() };
             let struct_ptr =
                 &struct_instance as *const IncompleteArrayNonCopiable;
             let field_ptr =
@@ -891,11 +764,7 @@ fn bindgen_test_layout_WithUnion() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<WithUnion>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], WithUnion>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<WithUnion>() };
             let struct_ptr = &struct_instance as *const WithUnion;
             let field_ptr = std::ptr::addr_of!(struct_instance.data);
             let struct_address = struct_ptr as usize;

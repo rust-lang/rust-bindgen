@@ -29,11 +29,7 @@ fn bindgen_test_layout_A_B() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<A_B>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], A_B>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<A_B>() };
             let struct_ptr = &struct_instance as *const A_B;
             let field_ptr = std::ptr::addr_of!(struct_instance.member_b);
             let struct_address = struct_ptr as usize;
@@ -79,10 +75,7 @@ fn bindgen_test_layout_A() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<A>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance =
-                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], A>(buffer) };
+            let struct_instance = unsafe { std::mem::zeroed::<A>() };
             let struct_ptr = &struct_instance as *const A;
             let field_ptr = std::ptr::addr_of!(struct_instance.member_a);
             let struct_address = struct_ptr as usize;
@@ -118,11 +111,7 @@ fn bindgen_test_layout_A_C() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<A_C>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], A_C>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<A_C>() };
             let struct_ptr = &struct_instance as *const A_C;
             let field_ptr = std::ptr::addr_of!(struct_instance.baz);
             let struct_address = struct_ptr as usize;
@@ -178,10 +167,7 @@ fn bindgen_test_layout_D() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<D>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance =
-                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], D>(buffer) };
+            let struct_instance = unsafe { std::mem::zeroed::<D>() };
             let struct_ptr = &struct_instance as *const D;
             let field_ptr = std::ptr::addr_of!(struct_instance.member);
             let struct_address = struct_ptr as usize;

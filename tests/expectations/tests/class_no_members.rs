@@ -60,15 +60,8 @@ fn bindgen_test_layout_whatever_child_with_member() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<whatever_child_with_member>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    whatever_child_with_member,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<whatever_child_with_member>() };
             let struct_ptr =
                 &struct_instance as *const whatever_child_with_member;
             let field_ptr = std::ptr::addr_of!(struct_instance.m_member);

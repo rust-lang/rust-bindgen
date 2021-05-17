@@ -39,11 +39,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.org);
             let struct_address = struct_ptr as usize;
@@ -61,11 +57,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.align0);
             let struct_address = struct_ptr as usize;
@@ -83,11 +75,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.dir);
             let struct_address = struct_ptr as usize;
@@ -105,11 +93,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.align1);
             let struct_address = struct_ptr as usize;
@@ -127,11 +111,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.tnear);
             let struct_address = struct_ptr as usize;
@@ -149,11 +129,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.tfar);
             let struct_address = struct_ptr as usize;
@@ -171,11 +147,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.time);
             let struct_address = struct_ptr as usize;
@@ -193,11 +165,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.mask);
             let struct_address = struct_ptr as usize;
@@ -215,11 +183,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.Ng);
             let struct_address = struct_ptr as usize;
@@ -237,11 +201,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.align2);
             let struct_address = struct_ptr as usize;
@@ -259,11 +219,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.u);
             let struct_address = struct_ptr as usize;
@@ -276,11 +232,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.v);
             let struct_address = struct_ptr as usize;
@@ -293,11 +245,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.geomID);
             let struct_address = struct_ptr as usize;
@@ -315,11 +263,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.primID);
             let struct_address = struct_ptr as usize;
@@ -337,11 +281,7 @@ fn bindgen_test_layout_RTCRay() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<RTCRay>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], RTCRay>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<RTCRay>() };
             let struct_ptr = &struct_instance as *const RTCRay;
             let field_ptr = std::ptr::addr_of!(struct_instance.instID);
             let struct_address = struct_ptr as usize;

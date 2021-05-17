@@ -28,11 +28,7 @@ fn bindgen_test_layout_UsesArray() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<UsesArray>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], UsesArray>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<UsesArray>() };
             let struct_ptr = &struct_instance as *const UsesArray;
             let field_ptr = std::ptr::addr_of!(struct_instance.array_char_16);
             let struct_address = struct_ptr as usize;
@@ -50,11 +46,7 @@ fn bindgen_test_layout_UsesArray() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<UsesArray>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], UsesArray>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<UsesArray>() };
             let struct_ptr = &struct_instance as *const UsesArray;
             let field_ptr = std::ptr::addr_of!(struct_instance.array_bool_8);
             let struct_address = struct_ptr as usize;
@@ -72,11 +64,7 @@ fn bindgen_test_layout_UsesArray() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<UsesArray>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], UsesArray>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<UsesArray>() };
             let struct_ptr = &struct_instance as *const UsesArray;
             let field_ptr = std::ptr::addr_of!(struct_instance.array_int_4);
             let struct_address = struct_ptr as usize;

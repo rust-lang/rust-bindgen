@@ -45,11 +45,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.i8_);
             let struct_address = struct_ptr as usize;
@@ -62,11 +58,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.u8_);
             let struct_address = struct_ptr as usize;
@@ -79,11 +71,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.i16_);
             let struct_address = struct_ptr as usize;
@@ -96,11 +84,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.u16_);
             let struct_address = struct_ptr as usize;
@@ -113,11 +97,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.i32_);
             let struct_address = struct_ptr as usize;
@@ -130,11 +110,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.u32_);
             let struct_address = struct_ptr as usize;
@@ -147,11 +123,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.i64_);
             let struct_address = struct_ptr as usize;
@@ -164,11 +136,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.u64_);
             let struct_address = struct_ptr as usize;
@@ -181,11 +149,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.i128_);
             let struct_address = struct_ptr as usize;
@@ -203,11 +167,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.u128_);
             let struct_address = struct_ptr as usize;
@@ -225,11 +185,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.isize_);
             let struct_address = struct_ptr as usize;
@@ -247,11 +203,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.usize_);
             let struct_address = struct_ptr as usize;
@@ -269,11 +221,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.f32_);
             let struct_address = struct_ptr as usize;
@@ -286,11 +234,7 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Foo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Foo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Foo>() };
             let struct_ptr = &struct_instance as *const Foo;
             let field_ptr = std::ptr::addr_of!(struct_instance.f64_);
             let struct_address = struct_ptr as usize;

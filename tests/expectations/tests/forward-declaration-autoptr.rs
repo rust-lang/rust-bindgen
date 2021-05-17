@@ -44,11 +44,7 @@ fn bindgen_test_layout_Bar() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Bar>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Bar>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Bar>() };
             let struct_ptr = &struct_instance as *const Bar;
             let field_ptr = std::ptr::addr_of!(struct_instance.m_member);
             let struct_address = struct_ptr as usize;

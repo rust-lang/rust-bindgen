@@ -32,11 +32,8 @@ fn bindgen_test_layout_AllowlistedOne() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<AllowlistedOne>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], AllowlistedOne>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<AllowlistedOne>() };
             let struct_ptr = &struct_instance as *const AllowlistedOne;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
             let struct_address = struct_ptr as usize;
@@ -81,11 +78,8 @@ fn bindgen_test_layout_AllowlistedTwo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<AllowlistedTwo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], AllowlistedTwo>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<AllowlistedTwo>() };
             let struct_ptr = &struct_instance as *const AllowlistedTwo;
             let field_ptr = std::ptr::addr_of!(struct_instance.b);
             let struct_address = struct_ptr as usize;

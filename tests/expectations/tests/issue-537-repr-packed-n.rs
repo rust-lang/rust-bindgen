@@ -27,11 +27,7 @@ fn bindgen_test_layout_AlignedToOne() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<AlignedToOne>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], AlignedToOne>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<AlignedToOne>() };
             let struct_ptr = &struct_instance as *const AlignedToOne;
             let field_ptr = std::ptr::addr_of!(struct_instance.i);
             let struct_address = struct_ptr as usize;
@@ -68,11 +64,7 @@ fn bindgen_test_layout_AlignedToTwo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<AlignedToTwo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], AlignedToTwo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<AlignedToTwo>() };
             let struct_ptr = &struct_instance as *const AlignedToTwo;
             let field_ptr = std::ptr::addr_of!(struct_instance.i);
             let struct_address = struct_ptr as usize;
@@ -112,11 +104,7 @@ fn bindgen_test_layout_PackedToOne() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<PackedToOne>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], PackedToOne>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<PackedToOne>() };
             let struct_ptr = &struct_instance as *const PackedToOne;
             let field_ptr = std::ptr::addr_of!(struct_instance.x);
             let struct_address = struct_ptr as usize;
@@ -134,11 +122,7 @@ fn bindgen_test_layout_PackedToOne() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<PackedToOne>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], PackedToOne>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<PackedToOne>() };
             let struct_ptr = &struct_instance as *const PackedToOne;
             let field_ptr = std::ptr::addr_of!(struct_instance.y);
             let struct_address = struct_ptr as usize;
@@ -176,11 +160,7 @@ fn bindgen_test_layout_PackedToTwo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<PackedToTwo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], PackedToTwo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<PackedToTwo>() };
             let struct_ptr = &struct_instance as *const PackedToTwo;
             let field_ptr = std::ptr::addr_of!(struct_instance.x);
             let struct_address = struct_ptr as usize;
@@ -198,11 +178,7 @@ fn bindgen_test_layout_PackedToTwo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<PackedToTwo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], PackedToTwo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<PackedToTwo>() };
             let struct_ptr = &struct_instance as *const PackedToTwo;
             let field_ptr = std::ptr::addr_of!(struct_instance.y);
             let struct_address = struct_ptr as usize;

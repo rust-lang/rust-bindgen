@@ -41,11 +41,8 @@ pub mod root {
             );
             assert_eq!(
                 {
-                    const STRUCT_SIZE: usize = std::mem::size_of::<sentry>();
-                    let buffer = [0u8; STRUCT_SIZE];
-                    let struct_instance = unsafe {
-                        std::mem::transmute::<[u8; STRUCT_SIZE], sentry>(buffer)
-                    };
+                    let struct_instance =
+                        unsafe { std::mem::zeroed::<sentry>() };
                     let struct_ptr = &struct_instance as *const sentry;
                     let field_ptr =
                         std::ptr::addr_of!(struct_instance.i_am_plain_sentry);
@@ -100,14 +97,8 @@ pub mod root {
             );
             assert_eq!(
                 {
-                    const STRUCT_SIZE: usize =
-                        std::mem::size_of::<NotTemplateWrapper_sentry>();
-                    let buffer = [0u8; STRUCT_SIZE];
                     let struct_instance = unsafe {
-                        std::mem::transmute::<
-                            [u8; STRUCT_SIZE],
-                            NotTemplateWrapper_sentry,
-                        >(buffer)
+                        std::mem::zeroed::<NotTemplateWrapper_sentry>()
                     };
                     let struct_ptr =
                         &struct_instance as *const NotTemplateWrapper_sentry;
@@ -158,14 +149,8 @@ pub mod root {
             );
             assert_eq!(
                 {
-                    const STRUCT_SIZE: usize =
-                        std::mem::size_of::<InlineNotTemplateWrapper_sentry>();
-                    let buffer = [0u8; STRUCT_SIZE];
                     let struct_instance = unsafe {
-                        std::mem::transmute::<
-                            [u8; STRUCT_SIZE],
-                            InlineNotTemplateWrapper_sentry,
-                        >(buffer)
+                        std::mem::zeroed::<InlineNotTemplateWrapper_sentry>()
                     };
                     let struct_ptr = &struct_instance
                         as *const InlineNotTemplateWrapper_sentry;
@@ -280,15 +265,10 @@ pub mod root {
             );
             assert_eq!(
                 {
-                    const STRUCT_SIZE: usize = std::mem::size_of::<
-                        OuterDoubleWrapper_InnerDoubleWrapper_sentry,
-                    >();
-                    let buffer = [0u8; STRUCT_SIZE];
                     let struct_instance = unsafe {
-                        std::mem::transmute::<
-                            [u8; STRUCT_SIZE],
+                        std::mem::zeroed::<
                             OuterDoubleWrapper_InnerDoubleWrapper_sentry,
-                        >(buffer)
+                        >()
                     };
                     let struct_ptr = &struct_instance
                         as *const OuterDoubleWrapper_InnerDoubleWrapper_sentry;
@@ -329,7 +309,7 @@ pub mod root {
         ) {
             assert_eq ! (:: std :: mem :: size_of :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > () , 4usize , concat ! ("Size of: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry)));
             assert_eq ! (:: std :: mem :: align_of :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > () , 4usize , concat ! ("Alignment of " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry)));
-            assert_eq ! ({ const STRUCT_SIZE : usize = std :: mem :: size_of :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > () ; let buffer = [0u8 ; STRUCT_SIZE] ; let struct_instance = unsafe { std :: mem :: transmute :: < [u8 ; STRUCT_SIZE] , OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > (buffer) } ; let struct_ptr = & struct_instance as * const OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry ; let field_ptr = std :: ptr :: addr_of ! (struct_instance . i_am_double_wrapper_inline_sentry) ; let struct_address = struct_ptr as usize ; let field_address = field_ptr as usize ; std :: mem :: forget (struct_instance) ; field_address . checked_sub (struct_address) . unwrap () } , 0usize , concat ! ("Offset of field: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry) , "::" , stringify ! (i_am_double_wrapper_inline_sentry)));
+            assert_eq ! ({ let struct_instance = unsafe { std :: mem :: zeroed :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > () } ; let struct_ptr = & struct_instance as * const OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry ; let field_ptr = std :: ptr :: addr_of ! (struct_instance . i_am_double_wrapper_inline_sentry) ; let struct_address = struct_ptr as usize ; let field_address = field_ptr as usize ; std :: mem :: forget (struct_instance) ; field_address . checked_sub (struct_address) . unwrap () } , 0usize , concat ! ("Offset of field: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry) , "::" , stringify ! (i_am_double_wrapper_inline_sentry)));
         }
         #[test]
         fn bindgen_test_layout_OuterDoubleInlineWrapper_InnerDoubleInlineWrapper(
@@ -402,11 +382,7 @@ pub mod root {
         );
         assert_eq!(
             {
-                const STRUCT_SIZE: usize = std::mem::size_of::<sentry>();
-                let buffer = [0u8; STRUCT_SIZE];
-                let struct_instance = unsafe {
-                    std::mem::transmute::<[u8; STRUCT_SIZE], sentry>(buffer)
-                };
+                let struct_instance = unsafe { std::mem::zeroed::<sentry>() };
                 let struct_ptr = &struct_instance as *const sentry;
                 let field_ptr = std::ptr::addr_of!(
                     struct_instance.i_am_outside_namespace_sentry

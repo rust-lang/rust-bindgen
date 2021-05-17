@@ -27,10 +27,7 @@ fn bindgen_test_layout_a() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<a>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance =
-                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], a>(buffer) };
+            let struct_instance = unsafe { std::mem::zeroed::<a>() };
             let struct_ptr = &struct_instance as *const a;
             let field_ptr = std::ptr::addr_of!(struct_instance.b);
             let struct_address = struct_ptr as usize;
@@ -43,10 +40,7 @@ fn bindgen_test_layout_a() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<a>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance =
-                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], a>(buffer) };
+            let struct_instance = unsafe { std::mem::zeroed::<a>() };
             let struct_ptr = &struct_instance as *const a;
             let field_ptr = std::ptr::addr_of!(struct_instance.c);
             let struct_address = struct_ptr as usize;
@@ -79,10 +73,7 @@ fn bindgen_test_layout_b() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<b>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance =
-                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], b>(buffer) };
+            let struct_instance = unsafe { std::mem::zeroed::<b>() };
             let struct_ptr = &struct_instance as *const b;
             let field_ptr = std::ptr::addr_of!(struct_instance.b);
             let struct_address = struct_ptr as usize;
@@ -95,10 +86,7 @@ fn bindgen_test_layout_b() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<b>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance =
-                unsafe { std::mem::transmute::<[u8; STRUCT_SIZE], b>(buffer) };
+            let struct_instance = unsafe { std::mem::zeroed::<b>() };
             let struct_ptr = &struct_instance as *const b;
             let field_ptr = std::ptr::addr_of!(struct_instance.c);
             let struct_address = struct_ptr as usize;

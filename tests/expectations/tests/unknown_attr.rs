@@ -27,11 +27,7 @@ fn bindgen_test_layout_max_align_t() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<max_align_t>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], max_align_t>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<max_align_t>() };
             let struct_ptr = &struct_instance as *const max_align_t;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.__clang_max_align_nonce1);
@@ -50,11 +46,7 @@ fn bindgen_test_layout_max_align_t() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<max_align_t>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], max_align_t>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<max_align_t>() };
             let struct_ptr = &struct_instance as *const max_align_t;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.__clang_max_align_nonce2);

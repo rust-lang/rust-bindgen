@@ -56,11 +56,7 @@ fn bindgen_test_layout_dm_deps() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<dm_deps>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], dm_deps>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<dm_deps>() };
             let struct_ptr = &struct_instance as *const dm_deps;
             let field_ptr = std::ptr::addr_of!(struct_instance.count);
             let struct_address = struct_ptr as usize;
@@ -78,11 +74,7 @@ fn bindgen_test_layout_dm_deps() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<dm_deps>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], dm_deps>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<dm_deps>() };
             let struct_ptr = &struct_instance as *const dm_deps;
             let field_ptr = std::ptr::addr_of!(struct_instance.filler);
             let struct_address = struct_ptr as usize;
@@ -100,11 +92,7 @@ fn bindgen_test_layout_dm_deps() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<dm_deps>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], dm_deps>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<dm_deps>() };
             let struct_ptr = &struct_instance as *const dm_deps;
             let field_ptr = std::ptr::addr_of!(struct_instance.device);
             let struct_address = struct_ptr as usize;

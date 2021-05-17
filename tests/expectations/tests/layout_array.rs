@@ -81,13 +81,8 @@ fn bindgen_test_layout_rte_mempool_ops() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mempool_ops>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mempool_ops>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops>() };
             let struct_ptr = &struct_instance as *const rte_mempool_ops;
             let field_ptr = std::ptr::addr_of!(struct_instance.name);
             let struct_address = struct_ptr as usize;
@@ -105,13 +100,8 @@ fn bindgen_test_layout_rte_mempool_ops() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mempool_ops>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mempool_ops>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops>() };
             let struct_ptr = &struct_instance as *const rte_mempool_ops;
             let field_ptr = std::ptr::addr_of!(struct_instance.alloc);
             let struct_address = struct_ptr as usize;
@@ -129,13 +119,8 @@ fn bindgen_test_layout_rte_mempool_ops() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mempool_ops>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mempool_ops>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops>() };
             let struct_ptr = &struct_instance as *const rte_mempool_ops;
             let field_ptr = std::ptr::addr_of!(struct_instance.free);
             let struct_address = struct_ptr as usize;
@@ -153,13 +138,8 @@ fn bindgen_test_layout_rte_mempool_ops() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mempool_ops>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mempool_ops>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops>() };
             let struct_ptr = &struct_instance as *const rte_mempool_ops;
             let field_ptr = std::ptr::addr_of!(struct_instance.enqueue);
             let struct_address = struct_ptr as usize;
@@ -177,13 +157,8 @@ fn bindgen_test_layout_rte_mempool_ops() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mempool_ops>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mempool_ops>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops>() };
             let struct_ptr = &struct_instance as *const rte_mempool_ops;
             let field_ptr = std::ptr::addr_of!(struct_instance.dequeue);
             let struct_address = struct_ptr as usize;
@@ -201,13 +176,8 @@ fn bindgen_test_layout_rte_mempool_ops() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_mempool_ops>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mempool_ops>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops>() };
             let struct_ptr = &struct_instance as *const rte_mempool_ops;
             let field_ptr = std::ptr::addr_of!(struct_instance.get_count);
             let struct_address = struct_ptr as usize;
@@ -264,11 +234,8 @@ fn bindgen_test_layout_rte_spinlock_t() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<rte_spinlock_t>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_spinlock_t>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_spinlock_t>() };
             let struct_ptr = &struct_instance as *const rte_spinlock_t;
             let field_ptr = std::ptr::addr_of!(struct_instance.locked);
             let struct_address = struct_ptr as usize;
@@ -318,14 +285,8 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_mempool_ops_table>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mempool_ops_table>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops_table>() };
             let struct_ptr = &struct_instance as *const rte_mempool_ops_table;
             let field_ptr = std::ptr::addr_of!(struct_instance.sl);
             let struct_address = struct_ptr as usize;
@@ -343,14 +304,8 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_mempool_ops_table>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mempool_ops_table>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops_table>() };
             let struct_ptr = &struct_instance as *const rte_mempool_ops_table;
             let field_ptr = std::ptr::addr_of!(struct_instance.num_ops);
             let struct_address = struct_ptr as usize;
@@ -368,14 +323,8 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<rte_mempool_ops_table>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], rte_mempool_ops_table>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<rte_mempool_ops_table>() };
             let struct_ptr = &struct_instance as *const rte_mempool_ops_table;
             let field_ptr = std::ptr::addr_of!(struct_instance.ops);
             let struct_address = struct_ptr as usize;
@@ -430,15 +379,8 @@ fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<malloc_heap__bindgen_ty_1>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<
-                    [u8; STRUCT_SIZE],
-                    malloc_heap__bindgen_ty_1,
-                >(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<malloc_heap__bindgen_ty_1>() };
             let struct_ptr =
                 &struct_instance as *const malloc_heap__bindgen_ty_1;
             let field_ptr = std::ptr::addr_of!(struct_instance.lh_first);
@@ -479,11 +421,7 @@ fn bindgen_test_layout_malloc_heap() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<malloc_heap>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], malloc_heap>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<malloc_heap>() };
             let struct_ptr = &struct_instance as *const malloc_heap;
             let field_ptr = std::ptr::addr_of!(struct_instance.lock);
             let struct_address = struct_ptr as usize;
@@ -501,11 +439,7 @@ fn bindgen_test_layout_malloc_heap() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<malloc_heap>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], malloc_heap>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<malloc_heap>() };
             let struct_ptr = &struct_instance as *const malloc_heap;
             let field_ptr = std::ptr::addr_of!(struct_instance.free_head);
             let struct_address = struct_ptr as usize;
@@ -523,11 +457,7 @@ fn bindgen_test_layout_malloc_heap() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<malloc_heap>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], malloc_heap>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<malloc_heap>() };
             let struct_ptr = &struct_instance as *const malloc_heap;
             let field_ptr = std::ptr::addr_of!(struct_instance.alloc_count);
             let struct_address = struct_ptr as usize;
@@ -545,11 +475,7 @@ fn bindgen_test_layout_malloc_heap() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<malloc_heap>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], malloc_heap>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<malloc_heap>() };
             let struct_ptr = &struct_instance as *const malloc_heap;
             let field_ptr = std::ptr::addr_of!(struct_instance.total_size);
             let struct_address = struct_ptr as usize;

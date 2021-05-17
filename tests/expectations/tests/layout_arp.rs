@@ -42,11 +42,7 @@ fn bindgen_test_layout_ether_addr() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<ether_addr>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ether_addr>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<ether_addr>() };
             let struct_ptr = &struct_instance as *const ether_addr;
             let field_ptr = std::ptr::addr_of!(struct_instance.addr_bytes);
             let struct_address = struct_ptr as usize;
@@ -90,11 +86,7 @@ fn bindgen_test_layout_arp_ipv4() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<arp_ipv4>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], arp_ipv4>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<arp_ipv4>() };
             let struct_ptr = &struct_instance as *const arp_ipv4;
             let field_ptr = std::ptr::addr_of!(struct_instance.arp_sha);
             let struct_address = struct_ptr as usize;
@@ -112,11 +104,7 @@ fn bindgen_test_layout_arp_ipv4() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<arp_ipv4>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], arp_ipv4>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<arp_ipv4>() };
             let struct_ptr = &struct_instance as *const arp_ipv4;
             let field_ptr = std::ptr::addr_of!(struct_instance.arp_sip);
             let struct_address = struct_ptr as usize;
@@ -134,11 +122,7 @@ fn bindgen_test_layout_arp_ipv4() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<arp_ipv4>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], arp_ipv4>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<arp_ipv4>() };
             let struct_ptr = &struct_instance as *const arp_ipv4;
             let field_ptr = std::ptr::addr_of!(struct_instance.arp_tha);
             let struct_address = struct_ptr as usize;
@@ -156,11 +140,7 @@ fn bindgen_test_layout_arp_ipv4() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<arp_ipv4>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], arp_ipv4>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<arp_ipv4>() };
             let struct_ptr = &struct_instance as *const arp_ipv4;
             let field_ptr = std::ptr::addr_of!(struct_instance.arp_tip);
             let struct_address = struct_ptr as usize;
@@ -202,11 +182,7 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<arp_hdr>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], arp_hdr>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<arp_hdr>() };
             let struct_ptr = &struct_instance as *const arp_hdr;
             let field_ptr = std::ptr::addr_of!(struct_instance.arp_hrd);
             let struct_address = struct_ptr as usize;
@@ -224,11 +200,7 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<arp_hdr>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], arp_hdr>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<arp_hdr>() };
             let struct_ptr = &struct_instance as *const arp_hdr;
             let field_ptr = std::ptr::addr_of!(struct_instance.arp_pro);
             let struct_address = struct_ptr as usize;
@@ -246,11 +218,7 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<arp_hdr>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], arp_hdr>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<arp_hdr>() };
             let struct_ptr = &struct_instance as *const arp_hdr;
             let field_ptr = std::ptr::addr_of!(struct_instance.arp_hln);
             let struct_address = struct_ptr as usize;
@@ -268,11 +236,7 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<arp_hdr>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], arp_hdr>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<arp_hdr>() };
             let struct_ptr = &struct_instance as *const arp_hdr;
             let field_ptr = std::ptr::addr_of!(struct_instance.arp_pln);
             let struct_address = struct_ptr as usize;
@@ -290,11 +254,7 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<arp_hdr>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], arp_hdr>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<arp_hdr>() };
             let struct_ptr = &struct_instance as *const arp_hdr;
             let field_ptr = std::ptr::addr_of!(struct_instance.arp_op);
             let struct_address = struct_ptr as usize;
@@ -312,11 +272,7 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<arp_hdr>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], arp_hdr>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<arp_hdr>() };
             let struct_ptr = &struct_instance as *const arp_hdr;
             let field_ptr = std::ptr::addr_of!(struct_instance.arp_data);
             let struct_address = struct_ptr as usize;

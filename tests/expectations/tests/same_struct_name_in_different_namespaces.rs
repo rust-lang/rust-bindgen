@@ -30,11 +30,8 @@ fn bindgen_test_layout_JS_shadow_Zone() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<JS_shadow_Zone>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], JS_shadow_Zone>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<JS_shadow_Zone>() };
             let struct_ptr = &struct_instance as *const JS_shadow_Zone;
             let field_ptr = std::ptr::addr_of!(struct_instance.x);
             let struct_address = struct_ptr as usize;
@@ -52,11 +49,8 @@ fn bindgen_test_layout_JS_shadow_Zone() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<JS_shadow_Zone>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], JS_shadow_Zone>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<JS_shadow_Zone>() };
             let struct_ptr = &struct_instance as *const JS_shadow_Zone;
             let field_ptr = std::ptr::addr_of!(struct_instance.y);
             let struct_address = struct_ptr as usize;

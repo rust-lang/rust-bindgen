@@ -24,11 +24,7 @@ fn bindgen_test_layout_LittleArray() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<LittleArray>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], LittleArray>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<LittleArray>() };
             let struct_ptr = &struct_instance as *const LittleArray;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
             let struct_address = struct_ptr as usize;
@@ -64,11 +60,7 @@ fn bindgen_test_layout_BigArray() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<BigArray>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], BigArray>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<BigArray>() };
             let struct_ptr = &struct_instance as *const BigArray;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
             let struct_address = struct_ptr as usize;
@@ -113,13 +105,8 @@ fn bindgen_test_layout_WithLittleArray() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<WithLittleArray>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], WithLittleArray>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<WithLittleArray>() };
             let struct_ptr = &struct_instance as *const WithLittleArray;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
             let struct_address = struct_ptr as usize;
@@ -155,11 +142,7 @@ fn bindgen_test_layout_WithBigArray() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<WithBigArray>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], WithBigArray>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<WithBigArray>() };
             let struct_ptr = &struct_instance as *const WithBigArray;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);
             let struct_address = struct_ptr as usize;

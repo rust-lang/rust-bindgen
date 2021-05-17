@@ -27,14 +27,8 @@ fn bindgen_test_layout_ShouldNotDerivePartialEq() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<ShouldNotDerivePartialEq>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ShouldNotDerivePartialEq>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ShouldNotDerivePartialEq>() };
             let struct_ptr =
                 &struct_instance as *const ShouldNotDerivePartialEq;
             let field_ptr = std::ptr::addr_of!(struct_instance.a);

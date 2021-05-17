@@ -24,11 +24,7 @@ fn bindgen_test_layout_dl_phdr_info() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<dl_phdr_info>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], dl_phdr_info>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<dl_phdr_info>() };
             let struct_ptr = &struct_instance as *const dl_phdr_info;
             let field_ptr = std::ptr::addr_of!(struct_instance.x);
             let struct_address = struct_ptr as usize;

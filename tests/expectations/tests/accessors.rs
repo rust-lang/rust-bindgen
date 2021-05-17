@@ -30,11 +30,8 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<SomeAccessors>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], SomeAccessors>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<SomeAccessors>() };
             let struct_ptr = &struct_instance as *const SomeAccessors;
             let field_ptr = std::ptr::addr_of!(struct_instance.mNoAccessor);
             let struct_address = struct_ptr as usize;
@@ -52,11 +49,8 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<SomeAccessors>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], SomeAccessors>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<SomeAccessors>() };
             let struct_ptr = &struct_instance as *const SomeAccessors;
             let field_ptr = std::ptr::addr_of!(struct_instance.mBothAccessors);
             let struct_address = struct_ptr as usize;
@@ -74,11 +68,8 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<SomeAccessors>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], SomeAccessors>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<SomeAccessors>() };
             let struct_ptr = &struct_instance as *const SomeAccessors;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.mUnsafeAccessors);
@@ -97,11 +88,8 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<SomeAccessors>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], SomeAccessors>(buffer)
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<SomeAccessors>() };
             let struct_ptr = &struct_instance as *const SomeAccessors;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.mImmutableAccessor);
@@ -164,11 +152,7 @@ fn bindgen_test_layout_AllAccessors() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<AllAccessors>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], AllAccessors>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<AllAccessors>() };
             let struct_ptr = &struct_instance as *const AllAccessors;
             let field_ptr = std::ptr::addr_of!(struct_instance.mBothAccessors);
             let struct_address = struct_ptr as usize;
@@ -186,11 +170,7 @@ fn bindgen_test_layout_AllAccessors() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<AllAccessors>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], AllAccessors>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<AllAccessors>() };
             let struct_ptr = &struct_instance as *const AllAccessors;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.mAlsoBothAccessors);
@@ -247,14 +227,8 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<AllUnsafeAccessors>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], AllUnsafeAccessors>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<AllUnsafeAccessors>() };
             let struct_ptr = &struct_instance as *const AllUnsafeAccessors;
             let field_ptr = std::ptr::addr_of!(struct_instance.mBothAccessors);
             let struct_address = struct_ptr as usize;
@@ -272,14 +246,8 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<AllUnsafeAccessors>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], AllUnsafeAccessors>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<AllUnsafeAccessors>() };
             let struct_ptr = &struct_instance as *const AllUnsafeAccessors;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.mAlsoBothAccessors);
@@ -345,14 +313,8 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<ContradictAccessors>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ContradictAccessors>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContradictAccessors>() };
             let struct_ptr = &struct_instance as *const ContradictAccessors;
             let field_ptr = std::ptr::addr_of!(struct_instance.mBothAccessors);
             let struct_address = struct_ptr as usize;
@@ -370,14 +332,8 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<ContradictAccessors>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ContradictAccessors>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContradictAccessors>() };
             let struct_ptr = &struct_instance as *const ContradictAccessors;
             let field_ptr = std::ptr::addr_of!(struct_instance.mNoAccessors);
             let struct_address = struct_ptr as usize;
@@ -395,14 +351,8 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<ContradictAccessors>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ContradictAccessors>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContradictAccessors>() };
             let struct_ptr = &struct_instance as *const ContradictAccessors;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.mUnsafeAccessors);
@@ -421,14 +371,8 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<ContradictAccessors>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], ContradictAccessors>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<ContradictAccessors>() };
             let struct_ptr = &struct_instance as *const ContradictAccessors;
             let field_ptr =
                 std::ptr::addr_of!(struct_instance.mImmutableAccessor);
@@ -490,11 +434,7 @@ fn bindgen_test_layout_Replaced() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Replaced>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Replaced>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Replaced>() };
             let struct_ptr = &struct_instance as *const Replaced;
             let field_ptr = std::ptr::addr_of!(struct_instance.mAccessor);
             let struct_address = struct_ptr as usize;
@@ -541,11 +481,7 @@ fn bindgen_test_layout_Wrapper() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Wrapper>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Wrapper>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Wrapper>() };
             let struct_ptr = &struct_instance as *const Wrapper;
             let field_ptr = std::ptr::addr_of!(struct_instance.mReplaced);
             let struct_address = struct_ptr as usize;

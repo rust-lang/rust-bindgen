@@ -24,14 +24,8 @@ fn bindgen_test_layout_mozilla_FragmentOrURL() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize =
-                std::mem::size_of::<mozilla_FragmentOrURL>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], mozilla_FragmentOrURL>(
-                    buffer,
-                )
-            };
+            let struct_instance =
+                unsafe { std::mem::zeroed::<mozilla_FragmentOrURL>() };
             let struct_ptr = &struct_instance as *const mozilla_FragmentOrURL;
             let field_ptr = std::ptr::addr_of!(struct_instance.mIsLocalRef);
             let struct_address = struct_ptr as usize;
@@ -112,11 +106,7 @@ fn bindgen_test_layout_Bar() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<Bar>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], Bar>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<Bar>() };
             let struct_ptr = &struct_instance as *const Bar;
             let field_ptr = std::ptr::addr_of!(struct_instance.mFoo);
             let struct_address = struct_ptr as usize;
@@ -155,11 +145,7 @@ fn bindgen_test_layout_nsFoo() {
     );
     assert_eq!(
         {
-            const STRUCT_SIZE: usize = std::mem::size_of::<nsFoo>();
-            let buffer = [0u8; STRUCT_SIZE];
-            let struct_instance = unsafe {
-                std::mem::transmute::<[u8; STRUCT_SIZE], nsFoo>(buffer)
-            };
+            let struct_instance = unsafe { std::mem::zeroed::<nsFoo>() };
             let struct_ptr = &struct_instance as *const nsFoo;
             let field_ptr = std::ptr::addr_of!(struct_instance.mBar);
             let struct_address = struct_ptr as usize;
