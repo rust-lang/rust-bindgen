@@ -1,0 +1,46 @@
+.gen_safe_wrappers(true);
+
+    wrapper_block_return_type_h # osx only
+    wrapper_blocks_hpp # osx only
+    wrapper_blocks_signature_hpp # osx only
+    wrapper_constify_enum_h
+    wrapper_derive_custom_h
+    wrapper_empty_union_hpp
+    wrapper_func_ptr_in_struct_h
+    wrapper_inline_namespace_conservative_hpp
+    wrapper_issue_1034_h
+    wrapper_issue_1076_unnamed_bitfield_alignment_h
+    wrapper_issue_1281_h
+    wrapper_issue_1382_rust_primitive_types_h # not valic c++ if you include the stdlib
+    wrapper_issue_511_h
+    wrapper_issue_848_replacement_system_include_hpp
+    wrapper_jsval_layout_opaque_1_0_hpp # not valic c++ if you include the stdlib
+    wrapper_jsval_layout_opaque_hpp # not valic c++ if you include the stdlib
+    wrapper_keywords_h
+    wrapper_layout_array_h # not valic c++ if you include the stdlib
+    wrapper_layout_h
+    wrapper_layout_mbuf_1_0_h # not valic c++ if you include the stdlib
+    wrapper_layout_mbuf_h # not valic c++ if you include the stdlib
+    wrapper_mangling_win32_hpp
+    wrapper_msvc_no_usr_hpp # not valic c++ if you include the stdlib
+    wrapper_nsbasehashtable_hpp wrapper_nsbasehashtable_hpp
+    wrapper_objc_category_h
+    wrapper_objc_class_h
+    wrapper_objc_class_method_h
+    wrapper_objc_inheritance_h
+    wrapper_objc_interface_h
+    wrapper_objc_interface_type_h
+    wrapper_objc_method_clash_h
+    wrapper_objc_method_h
+    wrapper_objc_pointer_return_types_h
+    wrapper_objc_property_fnptr_h
+    wrapper_objc_protocol_h
+    wrapper_objc_protocol_inheritance_h
+    wrapper_objc_sel_and_id_h
+    wrapper_objc_template_h
+    wrapper_objc_whitelist_h
+    wrapper_overflowed_enum_hpp
+    wrapper_reparented_replacement_hpp # fails because of a /// <div rustbindgen replaces="foo::Bar"></div>
+    wrapper_short_enums_hpp
+    wrapper_struct_typedef_h
+    wrapper_transform_op_hpp

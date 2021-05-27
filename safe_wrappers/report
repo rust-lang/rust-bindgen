@@ -1,0 +1,28 @@
+$ cat example.cpp
+#include <new>
+$ cat test.sh 
+#!/usr/bin/bash
+
+export OUT_DIR="/home/volker/Sync/git/rust-bindgen/safe_wrappers/target/debug/build/safe_wrappers-a406ac0df99c2295/out"
+../target/release/bindgen example.cpp && exit 1
+exit 0
+$ ./test.sh &> /dev/null ; echo $?
+0
+$ creduce ./test.sh example.cpp
+===< 85371 >===
+running 3 interestingness tests in parallel
+===< pass_unifdef :: 0 >===
+===< pass_comments :: 0 >===
+===< pass_ifs :: 0 >===
+===< pass_includes :: 0 >===
+(100.0 %, 0 bytes)
+
+The file being reduced has reached zero size; our work here is done.
+
+If you did not want a zero size file, you must help C-Reduce out by
+making sure that your interestingness test does not find files like
+this to be interesting.
+
+$ cat example.cpp
+$ ./test.sh &> /dev/null ; echo $?
+1

@@ -1,0 +1,60 @@
+diff --git a/src/lib.rs b/src/lib.rs
+index 46864815..05b21695 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -430,6 +430,9 @@ impl Builder {
+             output_vector.push("--emit-ir-graphviz".into());
+             output_vector.push(graph.clone())
+         }
++        if self.options.gen_safe_wrappers {
++            output_vector.push("--gen-safe-wrappers".into());
++        }
+         if self.options.enable_cxx_namespaces {
+             output_vector.push("--enable-cxx-namespaces".into());
+         }
+@@ -2185,8 +2188,6 @@ impl Bindings {
+                 env::var("OUT_DIR").unwrap(),
+                 "/../../../deps/libbindgen_generated.so"
+             ));
+-            println!("cargo:rustc-link-lib=bindgen_generated");
+-            println!("cargo:rustc-link-lib=stdc++");
+ 
+             let mut command = std::process::Command::new("clang");
+             command.args(&args);
+@@ -2378,6 +2379,8 @@ impl Bindings {
+         {
+             let _t = time::Timer::new("parse").with_output(time_phases);
+             parse(&mut context)?;
++            dbg!(&context);
++            panic!();
+         }
+         let ((items, cpp_out), options) = codegen::codegen(context);
+ 
+@@ -2401,6 +2404,11 @@ impl Bindings {
+ 
+     /// Write these bindings as source text to a file.
+     pub fn write_to_file<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
++        if self.options.gen_safe_wrappers {
++            // TODO(volker) doing this here is kind of hacky
++            println!("cargo:rustc-link-lib=bindgen_generated");
++            println!("cargo:rustc-link-lib=stdc++");
++        }
+         let file = OpenOptions::new()
+             .write(true)
+             .truncate(true)
+@@ -2420,6 +2428,7 @@ impl Bindings {
+             );
+             writer.write_all(header.as_bytes())?;
+         }
++        writer.write_all("mod bindgen_bindings {\n    #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals, improper_ctypes)]\n".as_bytes())?;
+ 
+         for line in self.options.raw_lines.iter() {
+             writer.write_all(line.as_bytes())?;
+@@ -2444,6 +2453,7 @@ impl Bindings {
+                 writer.write_all(bindings.as_bytes())?;
+             }
+         }
++        writer.write_all("}\nuse bindgen_bindings::*;\n".as_bytes())?;
+         Ok(())
+     }
+ 

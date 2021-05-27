@@ -1,0 +1,21 @@
+creduce 2.10.0
+fb91843
+Linux
+battle
+5.9.14-arch1-1
+#1 SMP PREEMPT Sat, 12 Dec 2020 14:37:12 +0000
+x86_64
+
+***************************************************
+
+pass_clang::rename-class has encountered a bug:
+crashed: "/usr/libexec/clang_delta" --transformation=rename-class --counter=1 /tmp/creduce-tHPk4g/example.cpp
+
+Please consider tarring up /home/volker/Sync/git/rust-bindgen/safe_wrappers/creduce_bug_000
+and mailing it to creduce-bugs@flux.utah.edu and we will try to fix
+the bug.
+
+This bug is not fatal, C-Reduce will continue to execute.
+
+***************************************************
+

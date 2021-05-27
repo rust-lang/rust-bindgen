@@ -1,0 +1,764 @@
+   Compiling bindgen v0.55.1 (/home/volker/Sync/git/rust-bindgen)
+warning: unreachable statement
+    --> /home/volker/Sync/git/rust-bindgen/src/codegen/mod.rs:1740:9
+     |
+1736 |           panic!();
+     |           --------- any code following this expression is unreachable
+...
+1740 | /         if self.has_non_type_template_params() {
+1741 | |             return;
+1742 | |         }
+     | |_________^ unreachable statement
+     |
+     = note: `#[warn(unreachable_code)]` on by default
+
+warning: unused variable: `result`
+    --> /home/volker/Sync/git/rust-bindgen/src/codegen/mod.rs:1730:9
+     |
+1730 |         result: &mut CodegenResult<'a>,
+     |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_result`
+     |
+     = note: `#[warn(unused_variables)]` on by default
+
+warning: 2 warnings emitted
+
+   Compiling safe_wrappers v0.1.0 (/home/volker/Sync/git/rust-bindgen/safe_wrappers)
+error: failed to run custom build command for `safe_wrappers v0.1.0 (/home/volker/Sync/git/rust-bindgen/safe_wrappers)`
+
+Caused by:
+  process didn't exit successfully: `/home/volker/Sync/git/rust-bindgen/safe_wrappers/target/debug/build/safe_wrappers-e63721bf8d43351c/build-script-build` (exit code: 101)
+  --- stdout
+  cargo:rerun-if-changed=example.cpp
+
+  --- stderr
+  [/home/volker/Sync/git/rust-bindgen/src/codegen/mod.rs:1735] ctx = BindgenContext {
+      items: [
+          Some(
+              Item {
+                  id: ItemId(
+                      0,
+                  ),
+                  local_id: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  next_child_local_id: Cell {
+                      value: 1,
+                  },
+                  canonical_name: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  path_for_whitelisting: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  comment: None,
+                  annotations: Annotations {
+                      opaque: false,
+                      hide: false,
+                      use_instead_of: None,
+                      disallow_copy: false,
+                      disallow_debug: false,
+                      private_fields: None,
+                      accessor_kind: None,
+                      constify_enum_variant: false,
+                      derives: [],
+                  },
+                  parent_id: ItemId(
+                      0,
+                  ),
+                  kind: Module(
+                      Module {
+                          name: Some(
+                              "root",
+                          ),
+                          kind: Normal,
+                          children: {
+                              ItemId(
+                                  1,
+                              ),
+                              ItemId(
+                                  3,
+                              ),
+                              ItemId(
+                                  4,
+                              ),
+                              ItemId(
+                                  5,
+                              ),
+                          },
+                      },
+                  ),
+              },
+          ),
+          Some(
+              Item {
+                  id: ItemId(
+                      1,
+                  ),
+                  local_id: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  next_child_local_id: Cell {
+                      value: 1,
+                  },
+                  canonical_name: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  path_for_whitelisting: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  comment: None,
+                  annotations: Annotations {
+                      opaque: false,
+                      hide: false,
+                      use_instead_of: None,
+                      disallow_copy: false,
+                      disallow_debug: false,
+                      private_fields: None,
+                      accessor_kind: None,
+                      constify_enum_variant: false,
+                      derives: [],
+                  },
+                  parent_id: ItemId(
+                      0,
+                  ),
+                  kind: Type(
+                      Type {
+                          name: Some(
+                              "MyStruct",
+                          ),
+                          layout: Some(
+                              Layout {
+                                  size: 4,
+                                  align: 4,
+                                  packed: false,
+                              },
+                          ),
+                          kind: Comp(
+                              CompInfo {
+                                  kind: Struct,
+                                  fields: AfterComputingBitfieldUnits {
+                                      fields: [
+                                          DataMember(
+                                              FieldData {
+                                                  name: Some(
+                                                      "s",
+                                                  ),
+                                                  ty: TypeId(
+                                                      ItemId(
+                                                          3,
+                                                      ),
+                                                  ),
+                                                  comment: None,
+                                                  annotations: Annotations {
+                                                      opaque: false,
+                                                      hide: false,
+                                                      use_instead_of: None,
+                                                      disallow_copy: false,
+                                                      disallow_debug: false,
+                                                      private_fields: None,
+                                                      accessor_kind: None,
+                                                      constify_enum_variant: false,
+                                                      derives: [],
+                                                  },
+                                                  bitfield_width: None,
+                                                  mutable: false,
+                                                  offset: Some(
+                                                      0,
+                                                  ),
+                                              },
+                                          ),
+                                      ],
+                                      has_bitfield_units: false,
+                                  },
+                                  template_params: [],
+                                  methods: [],
+                                  constructors: [],
+                                  destructor: None,
+                                  base_members: [],
+                                  inner_types: [],
+                                  inner_vars: [],
+                                  has_own_virtual_method: false,
+                                  has_destructor: false,
+                                  has_nonempty_base: false,
+                                  has_non_type_template_params: false,
+                                  packed_attr: false,
+                                  found_unknown_attr: false,
+                                  is_forward_declaration: false,
+                                  is_public: true,
+                              },
+                          ),
+                          is_const: false,
+                      },
+                  ),
+              },
+          ),
+          None,
+          Some(
+              Item {
+                  id: ItemId(
+                      3,
+                  ),
+                  local_id: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  next_child_local_id: Cell {
+                      value: 1,
+                  },
+                  canonical_name: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  path_for_whitelisting: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  comment: None,
+                  annotations: Annotations {
+                      opaque: false,
+                      hide: false,
+                      use_instead_of: None,
+                      disallow_copy: false,
+                      disallow_debug: false,
+                      private_fields: None,
+                      accessor_kind: None,
+                      constify_enum_variant: false,
+                      derives: [],
+                  },
+                  parent_id: ItemId(
+                      0,
+                  ),
+                  kind: Type(
+                      Type {
+                          name: Some(
+                              "int",
+                          ),
+                          layout: Some(
+                              Layout {
+                                  size: 4,
+                                  align: 4,
+                                  packed: false,
+                              },
+                          ),
+                          kind: Int(
+                              Int,
+                          ),
+                          is_const: false,
+                      },
+                  ),
+              },
+          ),
+          Some(
+              Item {
+                  id: ItemId(
+                      4,
+                  ),
+                  local_id: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  next_child_local_id: Cell {
+                      value: 1,
+                  },
+                  canonical_name: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  path_for_whitelisting: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  comment: None,
+                  annotations: Annotations {
+                      opaque: false,
+                      hide: false,
+                      use_instead_of: None,
+                      disallow_copy: false,
+                      disallow_debug: false,
+                      private_fields: None,
+                      accessor_kind: None,
+                      constify_enum_variant: false,
+                      derives: [],
+                  },
+                  parent_id: ItemId(
+                      0,
+                  ),
+                  kind: Type(
+                      Type {
+                          name: Some(
+                              "MyStruct",
+                          ),
+                          layout: Some(
+                              Layout {
+                                  size: 4,
+                                  align: 4,
+                                  packed: false,
+                              },
+                          ),
+                          kind: Alias(
+                              TypeId(
+                                  ItemId(
+                                      5,
+                                  ),
+                              ),
+                          ),
+                          is_const: false,
+                      },
+                  ),
+              },
+          ),
+          Some(
+              Item {
+                  id: ItemId(
+                      5,
+                  ),
+                  local_id: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  next_child_local_id: Cell {
+                      value: 1,
+                  },
+                  canonical_name: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  path_for_whitelisting: LazyCell {
+                      inner: UnsafeCell,
+                  },
+                  comment: None,
+                  annotations: Annotations {
+                      opaque: false,
+                      hide: false,
+                      use_instead_of: None,
+                      disallow_copy: false,
+                      disallow_debug: false,
+                      private_fields: None,
+                      accessor_kind: None,
+                      constify_enum_variant: false,
+                      derives: [],
+                  },
+                  parent_id: ItemId(
+                      0,
+                  ),
+                  kind: Type(
+                      Type {
+                          name: Some(
+                              "struct MyStruct",
+                          ),
+                          layout: Some(
+                              Layout {
+                                  size: 4,
+                                  align: 4,
+                                  packed: false,
+                              },
+                          ),
+                          kind: ResolvedTypeRef(
+                              TypeId(
+                                  ItemId(
+                                      1,
+                                  ),
+                              ),
+                          ),
+                          is_const: false,
+                      },
+                  ),
+              },
+          ),
+      ],
+      types: {
+          USR(
+              "c:@T@MyStruct",
+          ): TypeId(
+              ItemId(
+                  4,
+              ),
+          ),
+          USR(
+              "c:@SA@MyStruct",
+          ): TypeId(
+              ItemId(
+                  1,
+              ),
+          ),
+      },
+      type_params: {},
+      modules: {},
+      root_module: ModuleId(
+          ItemId(
+              0,
+          ),
+      ),
+      current_module: ModuleId(
+          ItemId(
+              0,
+          ),
+      ),
+      semantic_parents: {},
+      currently_parsed_types: [],
+      parsed_macros: {},
+      replacements: {},
+      collected_typerefs: true,
+      in_codegen: true,
+      index: Index { },
+      translation_unit: TranslationUnit { },
+      target_info: Some(
+          TargetInfo {
+              triple: "x86_64-pc-linux-gnu",
+              pointer_width: 64,
+          },
+      ),
+      options: BindgenOptions {
+          blacklisted_types: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          blacklisted_functions: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          blacklisted_items: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          opaque_types: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          rustfmt_path: None,
+          whitelisted_types: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          whitelisted_functions: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          whitelisted_vars: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          default_enum_style: Consts,
+          bitfield_enums: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          newtype_enums: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          rustified_enums: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          rustified_non_exhaustive_enums: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          constified_enum_modules: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          constified_enums: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          default_macro_constant_type: Unsigned,
+          default_alias_style: TypeAlias,
+          type_alias: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          new_type_alias: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          new_type_alias_deref: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          builtins: false,
+          emit_ast: false,
+          emit_ir: false,
+          emit_ir_graphviz: None,
+          gen_safe_wrappers: true,
+          enable_cxx_namespaces: false,
+          enable_function_attribute_detection: false,
+          disable_name_namespacing: false,
+          disable_nested_struct_naming: false,
+          disable_header_comment: false,
+          layout_tests: true,
+          impl_debug: false,
+          impl_partialeq: false,
+          derive_copy: true,
+          derive_debug: true,
+          derive_default: false,
+          derive_hash: false,
+          derive_partialord: false,
+          derive_ord: false,
+          derive_partialeq: false,
+          derive_eq: false,
+          use_core: false,
+          ctypes_prefix: None,
+          anon_fields_prefix: "__bindgen_anon_",
+          time_phases: false,
+          namespaced_constants: true,
+          msvc_mangling: false,
+          convert_floats: true,
+          raw_lines: [],
+          module_lines: {},
+          clang_args: [
+              "-x",
+              "c++",
+              "-isystem",
+              "/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0",
+              "-isystem",
+              "/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0/x86_64-pc-linux-gnu",
+              "-isystem",
+              "/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0/backward",
+              "-isystem",
+              "/usr/local/include",
+              "-isystem",
+              "/usr/lib/clang/11.0.0/include",
+              "-isystem",
+              "/usr/include",
+              "example.cpp",
+          ],
+          input_header: Some(
+              "example.cpp",
+          ),
+          input_unsaved_files: [],
+          parse_callbacks: Some(
+              CargoCallbacks,
+          ),
+          codegen_config: FUNCTIONS | TYPES | VARS | METHODS | CONSTRUCTORS | DESTRUCTORS,
+          conservative_inline_namespaces: false,
+          generate_comments: true,
+          generate_inline_functions: false,
+          whitelist_recursively: true,
+          objc_extern_crate: false,
+          generate_block: false,
+          block_extern_crate: false,
+          enable_mangling: true,
+          detect_include_paths: true,
+          prepend_enum_name: true,
+          rust_target: Stable_1_40,
+          rust_features: RustFeatures {
+              untagged_union: true,
+              associated_const: true,
+              builtin_clone_impls: true,
+              repr_align: true,
+              i128_and_u128: true,
+              must_use_function: true,
+              repr_transparent: true,
+              min_const_fn: true,
+              core_ffi_c_void: true,
+              repr_packed_n: true,
+              maybe_uninit: true,
+              non_exhaustive: true,
+              thiscall_abi: false,
+          },
+          record_matches: true,
+          size_t_is_usize: false,
+          rustfmt_bindings: true,
+          rustfmt_configuration_file: None,
+          no_partialeq_types: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          no_copy_types: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          no_debug_types: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          no_hash_types: RegexSet {
+              items: [],
+              matched: [],
+              set: Some(
+                  RegexSet([]),
+              ),
+              record_matches: true,
+          },
+          array_pointers_in_arguments: false,
+          wasm_import_module_name: None,
+      },
+      generating_stage: GeneratingCpp,
+      generated_bindgen_complex: Cell {
+          value: false,
+      },
+      whitelisted: Some(
+          {
+              ItemId(
+                  0,
+              ),
+              ItemId(
+                  1,
+              ),
+              ItemId(
+                  3,
+              ),
+              ItemId(
+                  4,
+              ),
+              ItemId(
+                  5,
+              ),
+          },
+      ),
+      codegen_items: Some(
+          {
+              ItemId(
+                  0,
+              ),
+              ItemId(
+                  1,
+              ),
+              ItemId(
+                  3,
+              ),
+              ItemId(
+                  4,
+              ),
+              ItemId(
+                  5,
+              ),
+          },
+      ),
+      used_template_parameters: Some(
+          {
+              ItemId(
+                  0,
+              ): {},
+              ItemId(
+                  5,
+              ): {},
+              ItemId(
+                  4,
+              ): {},
+              ItemId(
+                  1,
+              ): {},
+              ItemId(
+                  3,
+              ): {},
+          },
+      ),
+      need_bitfield_allocation: [],
+      cannot_derive_debug: Some(
+          {},
+      ),
+      cannot_derive_default: None,
+      cannot_derive_copy: Some(
+          {},
+      ),
+      cannot_derive_copy_in_array: None,
+      cannot_derive_hash: None,
+      cannot_derive_partialeq_or_partialord: None,
+      sizedness: Some(
+          {
+              TypeId(
+                  ItemId(
+                      5,
+                  ),
+              ): NonZeroSized,
+              TypeId(
+                  ItemId(
+                      4,
+                  ),
+              ): NonZeroSized,
+              TypeId(
+                  ItemId(
+                      1,
+                  ),
+              ): NonZeroSized,
+              TypeId(
+                  ItemId(
+                      3,
+                  ),
+              ): NonZeroSized,
+          },
+      ),
+      have_vtable: Some(
+          {},
+      ),
+      have_destructor: Some(
+          {},
+      ),
+      has_type_param_in_array: Some(
+          {},
+      ),
+      has_float: None,
+  }
+  thread 'main' panicked at 'explicit panic', /home/volker/Sync/git/rust-bindgen/src/codegen/mod.rs:1736:9
+  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

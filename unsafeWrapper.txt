@@ -1,0 +1,38 @@
+.gen_safe_wrappers(false);
+
+
+
+
+    wrapper_constify_enum_h
+    wrapper_derive_custom_h
+    wrapper_empty_union_hpp
+    wrapper_func_ptr_in_struct_h
+    wrapper_inline_namespace_conservative_hpp
+    wrapper_issue_1034_h
+    wrapper_issue_1076_unnamed_bitfield_alignment_h
+    wrapper_issue_1281_h
+    wrapper_issue_511_h
+    wrapper_issue_848_replacement_system_include_hpp
+    wrapper_keywords_h
+    wrapper_layout_h
+    wrapper_mangling_win32_hpp
+    wrapper_objc_category_h
+    wrapper_objc_class_h
+    wrapper_objc_class_method_h
+    wrapper_objc_inheritance_h
+    wrapper_objc_interface_h
+    wrapper_objc_interface_type_h
+    wrapper_objc_method_clash_h
+    wrapper_objc_method_h
+    wrapper_objc_pointer_return_types_h
+    wrapper_objc_property_fnptr_h
+    wrapper_objc_protocol_h
+    wrapper_objc_protocol_inheritance_h
+    wrapper_objc_sel_and_id_h
+    wrapper_objc_template_h
+    wrapper_objc_whitelist_h
+    wrapper_overflowed_enum_hpp
+    
+    wrapper_short_enums_hpp
+    wrapper_struct_typedef_h
+    wrapper_transform_op_hpp
