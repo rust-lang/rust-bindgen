@@ -5,11 +5,13 @@
     non_upper_case_globals
 )]
 
+pub type size_t = ::std::os::raw::c_ulong;
+pub type ssize_t = ::std::os::raw::c_long;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct A {
-    pub len: usize,
-    pub offset: isize,
+    pub len: size_t,
+    pub offset: ssize_t,
     pub next: *mut A,
 }
 #[test]

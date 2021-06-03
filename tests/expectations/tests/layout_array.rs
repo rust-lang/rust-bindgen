@@ -9,7 +9,6 @@ pub const RTE_CACHE_LINE_SIZE: u32 = 64;
 pub const RTE_MEMPOOL_OPS_NAMESIZE: u32 = 32;
 pub const RTE_MEMPOOL_MAX_OPS_IDX: u32 = 16;
 pub const RTE_HEAP_NUM_FREELISTS: u32 = 13;
-pub type size_t = ::std::os::raw::c_longlong;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct rte_mempool {
@@ -298,7 +297,7 @@ pub struct malloc_heap {
     pub lock: rte_spinlock_t,
     pub free_head: [malloc_heap__bindgen_ty_1; 13usize],
     pub alloc_count: ::std::os::raw::c_uint,
-    pub total_size: size_t,
+    pub total_size: usize,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]

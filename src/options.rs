@@ -429,7 +429,12 @@ where
                 ),
             Arg::with_name("size_t-is-usize")
                 .long("size_t-is-usize")
-                .help("Translate size_t to usize."),
+                .help("Ignored - this is enabled by default.")
+                .hidden(true),
+            Arg::with_name("no-size_t-is-usize")
+                .long("no-size_t-is-usize")
+                .help("Do not bind size_t as usize (useful on platforms \
+                       where those types are incompatible)."),
             Arg::with_name("no-rustfmt-bindings")
                 .long("no-rustfmt-bindings")
                 .help("Do not format the generated bindings with rustfmt."),
@@ -874,8 +879,8 @@ where
         builder = builder.record_matches(false);
     }
 
-    if matches.is_present("size_t-is-usize") {
-        builder = builder.size_t_is_usize(true);
+    if matches.is_present("no-size_t-is-usize") {
+        builder = builder.size_t_is_usize(false);
     }
 
     let no_rustfmt_bindings = matches.is_present("no-rustfmt-bindings");

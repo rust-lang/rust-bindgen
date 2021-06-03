@@ -820,9 +820,16 @@ impl CodeGenerator for Type {
                 }
 
                 // If this is a known named type, disallow generating anything
-                // for it too.
+                // for it too. If size_t -> usize conversions are enabled, we
+                // need to check that these conversions are permissible, but
+                // nothing needs to be generated, still.
                 let spelling = self.name().expect("Unnamed alias?");
                 if utils::type_from_named(ctx, spelling).is_some() {
+                    if let "size_t" | "ssize_t" = spelling {
+                        let layout = inner_item.kind().expect_type().layout(ctx).expect("No layout?");
+                        assert!(layout.size == ctx.target_pointer_size() && layout.align == ctx.target_pointer_size(),
+                         "Target platform requires --no-size_t-is-usize");
+                    }
                     return;
                 }
 

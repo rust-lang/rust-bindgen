@@ -5,7 +5,6 @@
     non_upper_case_globals
 )]
 
-pub type size_t = ::std::os::raw::c_ulonglong;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct nsBaseHashtableET {

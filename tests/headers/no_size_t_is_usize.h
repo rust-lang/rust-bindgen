@@ -1,4 +1,4 @@
-// bindgen-flags: --size_t-is-usize
+// bindgen-flags: --no-size_t-is-usize
 
 typedef unsigned long size_t;
 typedef long ssize_t;

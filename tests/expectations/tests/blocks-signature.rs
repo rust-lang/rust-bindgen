@@ -7,7 +7,6 @@
 #![cfg(target_os = "macos")]
 
 extern crate block;
-pub type size_t = ::std::os::raw::c_ulonglong;
 extern "C" {
     #[link_name = "\u{1}_Z8atexit_bU13block_pointerFvvE"]
     pub fn atexit_b(arg1: _bindgen_ty_id_33);
@@ -85,16 +84,11 @@ impl Default for contains_block_pointers {
 }
 pub type _bindgen_ty_id_33 = *const ::block::Block<(), ()>;
 pub type _bindgen_ty_id_40 = *const ::block::Block<
-    (
-        dispatch_data_t,
-        size_t,
-        *const ::std::os::raw::c_void,
-        size_t,
-    ),
+    (dispatch_data_t, usize, *const ::std::os::raw::c_void, usize),
     bool,
 >;
-pub type _bindgen_ty_id_50 = *const ::block::Block<(size_t,), ()>;
-pub type _bindgen_ty_id_56 = *const ::block::Block<(size_t,), ()>;
+pub type _bindgen_ty_id_50 = *const ::block::Block<(usize,), ()>;
+pub type _bindgen_ty_id_56 = *const ::block::Block<(usize,), ()>;
 pub type contains_block_pointers__bindgen_ty_id_61 =
     *const ::block::Block<(::std::os::raw::c_int,), ()>;
 pub type _bindgen_ty_id_68 =

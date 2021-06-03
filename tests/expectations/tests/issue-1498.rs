@@ -5,7 +5,6 @@
     non_upper_case_globals
 )]
 
-pub type size_t = u64;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct rte_memseg {
@@ -13,7 +12,7 @@ pub struct rte_memseg {
     pub phys_addr: u64,
     pub __bindgen_anon_1: rte_memseg__bindgen_ty_1,
     ///< Length of the segment.
-    pub len: size_t,
+    pub len: usize,
     ///< The pagesize of underlying memory
     pub hugepage_sz: u64,
     ///< NUMA socket ID.
