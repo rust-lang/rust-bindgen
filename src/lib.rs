@@ -562,6 +562,10 @@ impl Builder {
             output_vector.push("--c-naming".into());
         }
 
+        if self.options.force_explicit_padding {
+            output_vector.push("--explicit-padding".into());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -1419,6 +1423,17 @@ impl Builder {
         self
     }
 
+    /// If true, always emit explicit padding fields.
+    ///
+    /// If a struct needs to be serialized in its native format (padding bytes
+    /// and all), for example writing it to a file or sending it on the network,
+    /// then this should be enabled, as anything reading the padding bytes of
+    /// a struct may lead to Undefined Behavior.
+    pub fn explicit_padding(mut self, doit: bool) -> Self {
+        self.options.force_explicit_padding = doit;
+        self
+    }
+
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate(mut self) -> Result<Bindings, ()> {
         // Add any extra arguments from the environment to the clang command line.
@@ -1937,6 +1952,9 @@ struct BindgenOptions {
 
     /// Generate types with C style naming.
     c_naming: bool,
+
+    /// Always output explicit padding fields
+    force_explicit_padding: bool,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -2079,6 +2097,7 @@ impl Default for BindgenOptions {
             respect_cxx_access_specs: false,
             translate_enum_integer_types: false,
             c_naming: false,
+            force_explicit_padding: false,
         }
     }
 }

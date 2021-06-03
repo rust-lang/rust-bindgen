@@ -1797,6 +1797,14 @@ impl CodeGenerator for CompInfo {
                     (),
                 );
             }
+            // Check whether an explicit padding field is needed
+            // at the end.
+            if let Some(comp_layout) = layout {
+                fields.extend(
+                    struct_layout
+                        .add_tail_padding(&canonical_name, comp_layout),
+                );
+            }
         }
 
         if is_opaque {

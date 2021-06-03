@@ -516,6 +516,9 @@ where
             Arg::with_name("c-naming")
                 .long("c-naming")
                 .help("Generate types with C style naming."),
+            Arg::with_name("explicit-padding")
+                .long("explicit-padding")
+                .help("Always output explicit padding fields."),
         ]) // .args()
         .get_matches_from(args);
 
@@ -958,6 +961,10 @@ where
 
     if matches.is_present("c-naming") {
         builder = builder.c_naming(true);
+    }
+
+    if matches.is_present("explicit-padding") {
+        builder = builder.explicit_padding(true);
     }
 
     let verbose = matches.is_present("verbose");
