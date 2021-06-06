@@ -2116,6 +2116,7 @@ impl CodeGenerator for CompInfo {
                         .count() >
                         1;
 
+                    let prefix = ctx.trait_prefix();
 
                     // The offset of #[repr(C)] union is always 0, don't need to recheck it.
                     let is_not_packed_union = is_union && !packed;
@@ -2144,19 +2145,19 @@ impl CodeGenerator for CompInfo {
                                                 {
                                                     // Create an instance of #canonical_ident struct from zero bit pattern
                                                     let struct_instance = unsafe {
-                                                        std::mem::zeroed::<#canonical_ident>()
+                                                        #prefix::mem::zeroed::<#canonical_ident>()
                                                     };
 
                                                     // Get the pointers to the struct and its field
                                                     let struct_ptr = &struct_instance as *const #canonical_ident;
-                                                    let field_ptr = std::ptr::addr_of!(struct_instance.#field_name);
+                                                    let field_ptr = #prefix::ptr::addr_of!(struct_instance.#field_name);
 
                                                     // Get the offset of the field
                                                     let struct_address =  struct_ptr as usize;
                                                     let field_address = field_ptr as usize;
 
                                                     //Do not call the destructor
-                                                    std::mem::forget(struct_instance);
+                                                    #prefix::mem::forget(struct_instance);
 
                                                     field_address.checked_sub(struct_address).unwrap()
                                                 },

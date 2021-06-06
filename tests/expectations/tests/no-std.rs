@@ -31,12 +31,12 @@ fn bindgen_test_layout_foo() {
     );
     assert_eq!(
         {
-            let struct_instance = unsafe { std::mem::zeroed::<foo>() };
+            let struct_instance = unsafe { core::mem::zeroed::<foo>() };
             let struct_ptr = &struct_instance as *const foo;
-            let field_ptr = std::ptr::addr_of!(struct_instance.a);
+            let field_ptr = core::ptr::addr_of!(struct_instance.a);
             let struct_address = struct_ptr as usize;
             let field_address = field_ptr as usize;
-            std::mem::forget(struct_instance);
+            core::mem::forget(struct_instance);
             field_address.checked_sub(struct_address).unwrap()
         },
         0usize,
@@ -44,12 +44,12 @@ fn bindgen_test_layout_foo() {
     );
     assert_eq!(
         {
-            let struct_instance = unsafe { std::mem::zeroed::<foo>() };
+            let struct_instance = unsafe { core::mem::zeroed::<foo>() };
             let struct_ptr = &struct_instance as *const foo;
-            let field_ptr = std::ptr::addr_of!(struct_instance.b);
+            let field_ptr = core::ptr::addr_of!(struct_instance.b);
             let struct_address = struct_ptr as usize;
             let field_address = field_ptr as usize;
-            std::mem::forget(struct_instance);
+            core::mem::forget(struct_instance);
             field_address.checked_sub(struct_address).unwrap()
         },
         4usize,
@@ -57,12 +57,12 @@ fn bindgen_test_layout_foo() {
     );
     assert_eq!(
         {
-            let struct_instance = unsafe { std::mem::zeroed::<foo>() };
+            let struct_instance = unsafe { core::mem::zeroed::<foo>() };
             let struct_ptr = &struct_instance as *const foo;
-            let field_ptr = std::ptr::addr_of!(struct_instance.bar);
+            let field_ptr = core::ptr::addr_of!(struct_instance.bar);
             let struct_address = struct_ptr as usize;
             let field_address = field_ptr as usize;
-            std::mem::forget(struct_instance);
+            core::mem::forget(struct_instance);
             field_address.checked_sub(struct_address).unwrap()
         },
         8usize,
