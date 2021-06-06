@@ -119,6 +119,17 @@ impl ParseCallbacks for MacroCallback {
             }
         }
     }
+
+    // Test the "custom derives" capability by adding `PartialEq` to the `Test` struct.
+    fn add_derives(&self, name: &str) -> Vec<String> {
+        if name == "Test" {
+            vec![
+                "PartialEq".into(),
+            ]
+        } else {
+            vec![]
+        }
+    }
 }
 
 impl Drop for MacroCallback {
