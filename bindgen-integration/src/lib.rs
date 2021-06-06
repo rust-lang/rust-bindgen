@@ -267,3 +267,12 @@ fn test_homogeneous_aggregate_float_union() {
         assert_eq!([1., 2., 3., 4.], coord.v)
     }
 }
+
+#[test]
+fn test_custom_derive() {
+    // The `add_derives` callback should have added `#[derive(PartialEq)]`
+    // to the `Test` struct. If it didn't, this will fail to compile.
+    let test1 = unsafe { bindings::Test::new(5) };
+    let test2 = unsafe { bindings::Test::new(6) };
+    assert_ne!(test1, test2);
+}
