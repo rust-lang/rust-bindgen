@@ -240,7 +240,7 @@ impl<'a> StructLayoutTracker<'a> {
             );
 
             let padding_align = if force_padding {
-                0
+                1
             } else {
                 cmp::min(field_layout.align, MAX_GUARANTEED_ALIGN)
             };
