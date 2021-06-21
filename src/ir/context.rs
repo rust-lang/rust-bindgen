@@ -981,12 +981,11 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             mem::replace(&mut self.need_bitfield_allocation, vec![]);
         for id in need_bitfield_allocation {
             self.with_loaned_item(id, |ctx, item| {
-                item.kind_mut()
-                    .as_type_mut()
+                let ty = item.kind_mut().as_type_mut().unwrap();
+                let layout = ty.layout(ctx);
+                ty.as_comp_mut()
                     .unwrap()
-                    .as_comp_mut()
-                    .unwrap()
-                    .compute_bitfield_units(ctx);
+                    .compute_bitfield_units(ctx, layout.as_ref());
             });
         }
     }
