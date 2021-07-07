@@ -123,6 +123,9 @@ macro_rules! rust_target_base {
             /// Rust stable 1.40
             /// * `non_exhaustive` enums/structs ([Tracking issue](https://github.com/rust-lang/rust/issues/44109))
             => Stable_1_40 => 1.40;
+            /// Rust stable 1.47
+            /// * `larger_arrays` ([Tracking issue](https://github.com/rust-lang/rust/pull/74060))
+            => Stable_1_47 => 1.47;
             /// Nightly rust
             ///  * `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))
             => Nightly => nightly;
@@ -134,7 +137,7 @@ rust_target_base!(rust_target_def);
 rust_target_base!(rust_target_values_def);
 
 /// Latest stable release of Rust
-pub const LATEST_STABLE_RUST: RustTarget = RustTarget::Stable_1_40;
+pub const LATEST_STABLE_RUST: RustTarget = RustTarget::Stable_1_47;
 
 /// Create RustFeatures struct definition, new(), and a getter for each field
 macro_rules! rust_feature_def {
@@ -221,6 +224,9 @@ rust_feature_def!(
     }
     Stable_1_40 {
         => non_exhaustive;
+    }
+    Stable_1_47 {
+        => larger_arrays;
     }
     Nightly {
         => thiscall_abi;

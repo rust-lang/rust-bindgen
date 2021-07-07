@@ -1,4 +1,4 @@
-// bindgen-flags: --enable-cxx-namespaces --rustified-enum ".*"
+// bindgen-flags: --enable-cxx-namespaces --rustified-enum ".*" --rust-target 1.40
 template <typename a, int b> class c { a e[b]; };
 class d;
 template <typename g, g f> class C { c<d, f> h; };

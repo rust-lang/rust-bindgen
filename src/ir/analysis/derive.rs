@@ -255,7 +255,7 @@ impl<'ctx> CannotDerive<'ctx> {
                     return CanDerive::No;
                 }
 
-                if self.derive_trait.can_derive_large_array() {
+                if self.derive_trait.can_derive_large_array(&self.ctx) {
                     trace!("    array can derive {}", self.derive_trait);
                     return CanDerive::Yes;
                 }
@@ -377,7 +377,7 @@ impl<'ctx> CannotDerive<'ctx> {
                 // Bitfield units are always represented as arrays of u8, but
                 // they're not traced as arrays, so we need to check here
                 // instead.
-                if !self.derive_trait.can_derive_large_array() &&
+                if !self.derive_trait.can_derive_large_array(&self.ctx) &&
                     info.has_too_large_bitfield_unit() &&
                     !item.is_opaque(self.ctx, &())
                 {
@@ -496,10 +496,17 @@ impl DeriveTrait {
         }
     }
 
-    fn can_derive_large_array(&self) -> bool {
-        match self {
-            DeriveTrait::Copy => true,
-            _ => false,
+    fn can_derive_large_array(&self, ctx: &BindgenContext) -> bool {
+        if ctx.options().rust_features().larger_arrays {
+            match self {
+                DeriveTrait::Default => false,
+                _ => true,
+            }
+        } else {
+            match self {
+                DeriveTrait::Copy => true,
+                _ => false,
+            }
         }
     }
 
@@ -686,7 +693,7 @@ impl<'ctx> MonotoneFramework for CannotDerive<'ctx> {
             Some(ty) => {
                 let mut can_derive = self.constrain_type(item, ty);
                 if let CanDerive::Yes = can_derive {
-                    if !self.derive_trait.can_derive_large_array() &&
+                    if !self.derive_trait.can_derive_large_array(&self.ctx) &&
                         ty.layout(self.ctx).map_or(false, |l| {
                             l.align > RUST_DERIVE_IN_ARRAY_LIMIT
                         })
