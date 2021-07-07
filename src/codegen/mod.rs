@@ -1503,7 +1503,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
 
         // We cannot generate any constructor if the underlying storage can't
         // implement AsRef<[u8]> / AsMut<[u8]> / etc.
-        let mut generate_ctor = layout.size <= RUST_DERIVE_IN_ARRAY_LIMIT;
+        let mut generate_ctor = layout.size <= RUST_DERIVE_IN_ARRAY_LIMIT || ctx.options().rust_features().larger_arrays;
 
         let mut access_spec = !fields_should_be_private;
         for bf in self.bitfields() {
@@ -1512,7 +1512,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 continue;
             }
 
-            if layout.size > RUST_DERIVE_IN_ARRAY_LIMIT {
+            if layout.size > RUST_DERIVE_IN_ARRAY_LIMIT && !ctx.options().rust_features().larger_arrays {
                 continue;
             }
 

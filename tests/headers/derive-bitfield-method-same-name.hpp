@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-partialeq --impl-partialeq --impl-debug
+// bindgen-flags: --with-derive-partialeq --impl-partialeq --impl-debug --rust-target 1.40
 
 /// Because this struct have array larger than 32 items 
 /// and --with-derive-partialeq --impl-partialeq --impl-debug is provided, 

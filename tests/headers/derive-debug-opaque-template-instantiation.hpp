@@ -1,4 +1,4 @@
-// bindgen-flags: --impl-debug
+// bindgen-flags: --impl-debug --rust-target 1.40
 
 // This type is opaque because the second template parameter
 // is a non-type template parameter

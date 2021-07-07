@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq --with-derive-partialord --with-derive-ord
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq --with-derive-partialord --with-derive-ord --rust-target 1.40
 //
 class C {
     int a;

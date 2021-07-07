@@ -1,4 +1,4 @@
-// bindgen-flags: --opaque-type 'OpaqueTemplate' --with-derive-hash --with-derive-partialeq --impl-partialeq --with-derive-eq
+// bindgen-flags: --opaque-type 'OpaqueTemplate' --with-derive-hash --with-derive-partialeq --impl-partialeq --with-derive-eq --rust-target 1.40
 
 template<typename T>
 class OpaqueTemplate {
