@@ -42,11 +42,11 @@ jobs:
           profile: minimal
           # MSRV below is documented in README.md, please update that if you
           # change this.
-          toolchain: 1.40.0
+          toolchain: 1.44.0
           override: true
 
       - name: Build with msrv
-        run: rm Cargo.lock && cargo +1.40.0 build --lib
+        run: rm Cargo.lock && cargo +1.44.0 build --lib
 
   quickchecking:
     runs-on: ubuntu-latest

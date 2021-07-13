@@ -47,7 +47,7 @@ tempfile = "3"
 
 [dependencies]
 bitflags = "1.0.3"
-cexpr = "0.4"
+cexpr = "0.5"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
 clap = { version = "2", optional = true }
 clang-sys = { version = "1", features = ["clang_6_0"] }
@@ -59,8 +59,6 @@ regex = { version = "1.0", default-features = false , features = [ "std", "unico
 which = { version = "3.0", optional = true, default-features = false }
 shlex = "1"
 rustc-hash = "1.0.1"
-# New validation in 0.3.6 breaks bindgen-integration:
-# https://github.com/alexcrichton/proc-macro2/commit/489c642.
 proc-macro2 = { version = "1", default-features = false }
 
 [dependencies.env_logger]
