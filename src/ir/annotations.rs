@@ -42,6 +42,8 @@ pub struct Annotations {
     disallow_debug: bool,
     /// Manually disable deriving/implement default on this type.
     disallow_default: bool,
+    /// Whether to add a #[must_use] annotation to this type.
+    must_use_type: bool,
     /// Whether fields should be marked as private or not. You can set this on
     /// structs (it will apply to all the fields), or individual fields.
     private_fields: Option<bool>,
@@ -84,6 +86,7 @@ impl Default for Annotations {
             disallow_copy: false,
             disallow_debug: false,
             disallow_default: false,
+            must_use_type: false,
             private_fields: None,
             accessor_kind: None,
             constify_enum_variant: false,
@@ -163,6 +166,11 @@ impl Annotations {
         self.disallow_default
     }
 
+    /// Should this type get a `#[must_use]` annotation?
+    pub fn must_use_type(&self) -> bool {
+        self.must_use_type
+    }
+
     /// Should the fields be private?
     pub fn private_fields(&self) -> Option<bool> {
         self.private_fields
@@ -190,6 +198,7 @@ impl Annotations {
                     "nocopy" => self.disallow_copy = true,
                     "nodebug" => self.disallow_debug = true,
                     "nodefault" => self.disallow_default = true,
+                    "mustusetype" => self.must_use_type = true,
                     "replaces" => {
                         self.use_instead_of = Some(
                             attr.value.split("::").map(Into::into).collect(),
