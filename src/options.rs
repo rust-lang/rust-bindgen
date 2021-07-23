@@ -486,6 +486,13 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("must-use-type")
+                .long("must-use-type")
+                .help("Add #[must_use] annotation to types matching <regex>.")
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
             Arg::with_name("enable-function-attribute-detection")
                 .long("enable-function-attribute-detection")
                 .help(
@@ -940,6 +947,12 @@ where
     if let Some(no_hash) = matches.values_of("no-hash") {
         for regex in no_hash {
             builder = builder.no_hash(regex);
+        }
+    }
+    
+    if let Some(must_use_type) = matches.values_of("must-use-type") {
+        for regex in must_use_type {
+            builder = builder.must_use_type(regex);
         }
     }
 

@@ -2023,6 +2023,10 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::derives(&derives))
         }
 
+        if ctx.must_use_type_by_name(item) {
+            attributes.push(attributes::must_use());
+        }
+
         let mut tokens = if is_union && struct_layout.is_rust_union() {
             quote! {
                 #( #attributes )*
