@@ -1,5 +1,8 @@
-// bindgen-flags: --must-use-type MyType
+// bindgen-flags: --must-use-type A
 
-struct MyType;
+struct A;
 
-struct OtherType;
+/** <div rustbindgen mustusetype></div> */
+struct B;
+
+struct C;

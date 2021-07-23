@@ -2023,7 +2023,7 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::derives(&derives))
         }
 
-        if ctx.must_use_type_by_name(item) {
+        if item.annotations().must_use_type() || ctx.must_use_type_by_name(item) {
             attributes.push(attributes::must_use());
         }
 
