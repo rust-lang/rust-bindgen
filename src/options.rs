@@ -949,7 +949,7 @@ where
             builder = builder.no_hash(regex);
         }
     }
-    
+
     if let Some(must_use_type) = matches.values_of("must-use-type") {
         for regex in must_use_type {
             builder = builder.must_use_type(regex);
