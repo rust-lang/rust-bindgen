@@ -2663,6 +2663,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let name = item.path_for_allowlisting(self)[1..].join("::");
         self.options().no_hash_types.matches(&name)
     }
+
+    /// Check if `--must-use-type` flag is enabled for this item.
+    pub fn must_use_type_by_name(&self, item: &Item) -> bool {
+        let name = item.path_for_allowlisting(self)[1..].join("::");
+        self.options().must_use_types.matches(&name)
+    }
 }
 
 /// A builder struct for configuring item resolution options.

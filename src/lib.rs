@@ -317,6 +317,7 @@ impl Builder {
             (&self.options.no_debug_types, "--no-debug"),
             (&self.options.no_default_types, "--no-default"),
             (&self.options.no_hash_types, "--no-hash"),
+            (&self.options.must_use_types, "--must-use-type"),
         ];
 
         for (set, flag) in regex_sets {
@@ -1588,6 +1589,13 @@ impl Builder {
         self
     }
 
+    /// Add `#[must_use]` for the given type. Regular
+    /// expressions are supported.
+    pub fn must_use_type<T: Into<String>>(mut self, arg: T) -> Builder {
+        self.options.must_use_types.insert(arg.into());
+        self
+    }
+
     /// Set whether `arr[size]` should be treated as `*mut T` or `*mut [T; size]` (same for mut)
     pub fn array_pointers_in_arguments(mut self, doit: bool) -> Self {
         self.options.array_pointers_in_arguments = doit;
@@ -1928,6 +1936,9 @@ struct BindgenOptions {
     /// The set of types that we should not derive `Hash` for.
     no_hash_types: RegexSet,
 
+    /// The set of types that we should be annotated with `#[must_use]`.
+    must_use_types: RegexSet,
+
     /// Decide if C arrays should be regular pointers in rust or array pointers
     array_pointers_in_arguments: bool,
 
@@ -1986,6 +1997,7 @@ impl BindgenOptions {
             &mut self.no_debug_types,
             &mut self.no_default_types,
             &mut self.no_hash_types,
+            &mut self.must_use_types,
         ];
         let record_matches = self.record_matches;
         for regex_set in &mut regex_sets {
@@ -2090,6 +2102,7 @@ impl Default for BindgenOptions {
             no_debug_types: Default::default(),
             no_default_types: Default::default(),
             no_hash_types: Default::default(),
+            must_use_types: Default::default(),
             array_pointers_in_arguments: false,
             wasm_import_module_name: None,
             dynamic_library_name: None,
