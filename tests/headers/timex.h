@@ -1,5 +1,3 @@
-// bindgen-flags: --rust-target 1.40
-
 struct timex {
 	int tai;
 

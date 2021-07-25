@@ -1502,9 +1502,11 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         let mut ctor_impl = quote! {};
 
         // We cannot generate any constructor if the underlying storage can't
-        // implement AsRef<[u8]> / AsMut<[u8]> / etc.
-        let mut generate_ctor = layout.size <= RUST_DERIVE_IN_ARRAY_LIMIT ||
-            ctx.options().rust_features().larger_arrays;
+        // implement AsRef<[u8]> / AsMut<[u8]> / etc, or can't derive Default.
+        //
+        // We don't check `larger_arrays` here because Default does still have
+        // the 32 items limitation.
+        let mut generate_ctor = layout.size <= RUST_DERIVE_IN_ARRAY_LIMIT;
 
         let mut access_spec = !fields_should_be_private;
         for bf in self.bitfields() {
