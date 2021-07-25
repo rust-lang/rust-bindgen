@@ -49,7 +49,7 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
 `rustfmt` with:
 
     $ rustup update nightly
-    $ rustup run nightly cargo install -f rustfmt-nightly
+    $ rustup component add rustfmt --toolchain nightly
 "
             );
         }

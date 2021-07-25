@@ -100,7 +100,7 @@ compared. Make sure you have `rustfmt` up to date:
 
 ```
 $ rustup update nightly
-$ rustup run nightly cargo install -f rustfmt-nightly
+$ rustup component add rustfmt --toolchain nightly
 ```
 
 Note: running `cargo test` from the root directory of `bindgen`'s repository does not
