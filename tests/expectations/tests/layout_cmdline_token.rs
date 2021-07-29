@@ -61,6 +61,8 @@ impl Default for cmdline_token_hdr {
         }
     }
 }
+/// Stores a pointer to the ops struct, and the offset: the place to
+/// write the parsed result in the destination structure.
 pub type cmdline_parse_token_hdr_t = cmdline_token_hdr;
 /// A token is defined by this structure.
 ///

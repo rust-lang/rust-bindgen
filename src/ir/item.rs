@@ -1594,8 +1594,8 @@ impl ClangItemParser for Item {
         }
 
         let decl = {
-            let decl = ty.declaration();
-            decl.definition().unwrap_or(decl)
+            let canonical_def = ty.canonical_type().declaration().definition();
+            canonical_def.unwrap_or_else(|| ty.declaration())
         };
 
         let comment = decl.raw_comment().or_else(|| location.raw_comment());
