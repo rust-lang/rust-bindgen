@@ -2723,8 +2723,16 @@ impl ItemResolver {
         assert!(ctx.collected_typerefs());
 
         let mut id = self.id;
+        let mut seen_ids = HashSet::default();
         loop {
             let item = ctx.resolve_item(id);
+
+            // Detect cycles and bail out. These can happen in certain cases
+            // involving incomplete qualified dependent types (#2085).
+            if !seen_ids.insert(id) {
+                return item;
+            }
+
             let ty_kind = item.as_type().map(|t| t.kind());
             match ty_kind {
                 Some(&TypeKind::ResolvedTypeRef(next_id))
