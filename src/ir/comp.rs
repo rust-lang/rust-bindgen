@@ -1408,21 +1408,26 @@ impl CompInfo {
                     let inner = Item::parse(cur, Some(potential_id), ctx)
                         .expect("Inner ClassDecl");
 
-                    let inner = inner.expect_type_id(ctx);
+                    // If we avoided recursion parsing this type (in
+                    // `Item::from_ty_with_id()`), then this might not be a
+                    // valid type ID, so check and gracefully handle this.
+                    if ctx.resolve_item_fallible(inner).is_some() {
+                        let inner = inner.expect_type_id(ctx);
 
-                    ci.inner_types.push(inner);
+                        ci.inner_types.push(inner);
 
-                    // A declaration of an union or a struct without name could
-                    // also be an unnamed field, unfortunately.
-                    if cur.spelling().is_empty() &&
-                        cur.kind() != CXCursor_EnumDecl
-                    {
-                        let ty = cur.cur_type();
-                        let public = cur.public_accessible();
-                        let offset = cur.offset_of_field().ok();
+                        // A declaration of an union or a struct without name
+                        // could also be an unnamed field, unfortunately.
+                        if cur.spelling().is_empty() &&
+                            cur.kind() != CXCursor_EnumDecl
+                        {
+                            let ty = cur.cur_type();
+                            let public = cur.public_accessible();
+                            let offset = cur.offset_of_field().ok();
 
-                        maybe_anonymous_struct_field =
-                            Some((inner, ty, public, offset));
+                            maybe_anonymous_struct_field =
+                                Some((inner, ty, public, offset));
+                        }
                     }
                 }
                 CXCursor_PackedAttr => {
