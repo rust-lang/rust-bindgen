@@ -3000,16 +3000,26 @@ impl CodeGenerator for Enum {
 
         if !variation.is_const() {
             let mut derives = derives_of_item(item, ctx);
-            // For backwards compat, enums always derive Clone/Eq/PartialEq/Hash, even
+            // For backwards compat, enums always derive Debug/Clone/Eq/PartialEq/Hash, even
             // if we don't generate those by default.
+            if !item.annotations().disallow_debug() {
+                derives.insert(DerivableTraits::DEBUG);
+            }
+            if !item.annotations().disallow_copy() {
+                derives.insert(DerivableTraits::COPY);
+            }
             derives.insert(
                 DerivableTraits::CLONE |
-                    DerivableTraits::COPY |
                     DerivableTraits::HASH |
                     DerivableTraits::PARTIAL_EQ |
                     DerivableTraits::EQ,
             );
-            let derives: Vec<_> = derives.into();
+            let mut derives: Vec<_> = derives.into();
+            for derive in item.annotations().derives().iter() {
+                if !derives.contains(&derive.as_str()) {
+                    derives.push(&derive);
+                }
+            }
             attrs.push(attributes::derives(&derives));
         }
 

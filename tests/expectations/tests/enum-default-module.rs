@@ -63,3 +63,9 @@ pub mod NoDebug {
     pub const NoDebug1: Type = 0;
     pub const NoDebug2: Type = 1;
 }
+pub mod Debug {
+    /// <div rustbindgen derive="Debug"></div>
+    pub type Type = ::std::os::raw::c_uint;
+    pub const Debug1: Type = 0;
+    pub const Debug2: Type = 1;
+}

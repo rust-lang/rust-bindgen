@@ -68,3 +68,10 @@ pub enum NoDebug {
     NoDebug1 = 0,
     NoDebug2 = 1,
 }
+#[repr(u32)]
+/// <div rustbindgen derive="Debug"></div>
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum Debug {
+    Debug1 = 0,
+    Debug2 = 1,
+}
