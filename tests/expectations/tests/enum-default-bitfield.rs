@@ -149,3 +149,39 @@ impl ::std::ops::BitAndAssign for NoDebug {
 /// <div rustbindgen nodebug></div>
 #[derive(Copy, Clone, Hash, PartialEq, Eq)]
 pub struct NoDebug(pub ::std::os::raw::c_uint);
+impl Debug {
+    pub const Debug1: Debug = Debug(0);
+}
+impl Debug {
+    pub const Debug2: Debug = Debug(1);
+}
+impl ::std::ops::BitOr<Debug> for Debug {
+    type Output = Self;
+    #[inline]
+    fn bitor(self, other: Self) -> Self {
+        Debug(self.0 | other.0)
+    }
+}
+impl ::std::ops::BitOrAssign for Debug {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: Debug) {
+        self.0 |= rhs.0;
+    }
+}
+impl ::std::ops::BitAnd<Debug> for Debug {
+    type Output = Self;
+    #[inline]
+    fn bitand(self, other: Self) -> Self {
+        Debug(self.0 & other.0)
+    }
+}
+impl ::std::ops::BitAndAssign for Debug {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: Debug) {
+        self.0 &= rhs.0;
+    }
+}
+#[repr(transparent)]
+/// <div rustbindgen derive="Debug"></div>
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct Debug(pub ::std::os::raw::c_uint);

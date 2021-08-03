@@ -23,3 +23,9 @@ enum NoDebug {
     NoDebug1,
     NoDebug2,
 };
+
+/** <div rustbindgen derive="Debug"></div> */
+enum Debug {
+    Debug1,
+    Debug2,
+};

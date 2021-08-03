@@ -57,3 +57,7 @@ pub const NoDebug_NoDebug1: NoDebug = 0;
 pub const NoDebug_NoDebug2: NoDebug = 1;
 /// <div rustbindgen nodebug></div>
 pub type NoDebug = ::std::os::raw::c_uint;
+pub const Debug_Debug1: Debug = 0;
+pub const Debug_Debug2: Debug = 1;
+/// <div rustbindgen derive="Debug"></div>
+pub type Debug = ::std::os::raw::c_uint;
