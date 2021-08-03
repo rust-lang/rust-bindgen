@@ -63,7 +63,7 @@ pub mod Neg {
 }
 #[repr(u32)]
 /// <div rustbindgen nodebug></div>
-#[derive(Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum NoDebug {
     NoDebug1 = 0,
     NoDebug2 = 1,
