@@ -232,6 +232,20 @@ pub fn builder() -> Builder {
     Default::default()
 }
 
+fn get_extra_clang_args() -> Vec<String> {
+    // Add any extra arguments from the environment to the clang command line.
+    let extra_clang_args =
+        match get_target_dependent_env_var("BINDGEN_EXTRA_CLANG_ARGS") {
+            None => return vec![],
+            Some(s) => s,
+        };
+    // Try to parse it with shell quoting. If we fail, make it one single big argument.
+    if let Some(strings) = shlex::split(&extra_clang_args) {
+        return strings;
+    }
+    vec![extra_clang_args]
+}
+
 impl Builder {
     /// Generates the command line flags use for creating `Builder`.
     pub fn command_line_flags(&self) -> Vec<String> {
@@ -1453,16 +1467,7 @@ impl Builder {
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate(mut self) -> Result<Bindings, BindgenError> {
         // Add any extra arguments from the environment to the clang command line.
-        if let Some(extra_clang_args) =
-            get_target_dependent_env_var("BINDGEN_EXTRA_CLANG_ARGS")
-        {
-            // Try to parse it with shell quoting. If we fail, make it one single big argument.
-            if let Some(strings) = shlex::split(&extra_clang_args) {
-                self.options.clang_args.extend(strings);
-            } else {
-                self.options.clang_args.push(extra_clang_args);
-            };
-        }
+        self.options.clang_args.extend(get_extra_clang_args());
 
         // Transform input headers to arguments on the clang command line.
         self.options.input_header = self.input_headers.pop();
@@ -1546,6 +1551,10 @@ impl Builder {
             .stdout(Stdio::piped());
 
         for a in &self.options.clang_args {
+            cmd.arg(a);
+        }
+
+        for a in get_extra_clang_args() {
             cmd.arg(a);
         }
 
