@@ -417,6 +417,8 @@ pub struct Item {
     parent_id: ItemId,
     /// The item kind.
     kind: ItemKind,
+    /// The source location of the item.
+    location: Option<clang::SourceLocation>,
 }
 
 impl AsRef<ItemId> for Item {
@@ -433,6 +435,7 @@ impl Item {
         annotations: Option<Annotations>,
         parent_id: ItemId,
         kind: ItemKind,
+        location: Option<clang::SourceLocation>,
     ) -> Self {
         debug_assert!(id != parent_id || kind.is_module());
         Item {
@@ -445,6 +448,7 @@ impl Item {
             comment,
             annotations: annotations.unwrap_or_default(),
             kind,
+            location,
         }
     }
 
@@ -454,10 +458,15 @@ impl Item {
         ty: &clang::Type,
         ctx: &mut BindgenContext,
     ) -> TypeId {
+        let location = ty.declaration().location();
         let ty = Opaque::from_clang_ty(ty, ctx);
         let kind = ItemKind::Type(ty);
         let parent = ctx.root_module().into();
-        ctx.add_item(Item::new(with_id, None, None, parent, kind), None, None);
+        ctx.add_item(
+            Item::new(with_id, None, None, parent, kind, Some(location)),
+            None,
+            None,
+        );
         with_id.as_type_id_unchecked()
     }
 
@@ -630,6 +639,15 @@ impl Item {
         );
         if self.annotations.hide() {
             return true;
+        }
+
+        if let Some(location) = &self.location {
+            let (file, _, _, _) = location.location();
+            if let Some(filename) = file.name() {
+                if ctx.options().blocklisted_files.matches(&filename) {
+                    return true;
+                }
+            }
         }
 
         let path = self.path_for_allowlisting(ctx);
@@ -1297,7 +1315,7 @@ impl ClangItemParser for Item {
         let id = ctx.next_item_id();
         let module = ctx.root_module().into();
         ctx.add_item(
-            Item::new(id, None, None, module, ItemKind::Type(ty)),
+            Item::new(id, None, None, module, ItemKind::Type(ty), None),
             None,
             None,
         );
@@ -1335,6 +1353,7 @@ impl ClangItemParser for Item {
                                 annotations,
                                 relevant_parent_id,
                                 ItemKind::$what(item),
+                                Some(cursor.location()),
                             ),
                             declaration,
                             Some(cursor),
@@ -1516,6 +1535,7 @@ impl ClangItemParser for Item {
                 None,
                 parent_id.unwrap_or_else(|| current_module.into()),
                 ItemKind::Type(Type::new(None, None, kind, is_const)),
+                Some(location.location()),
             ),
             None,
             None,
@@ -1647,6 +1667,7 @@ impl ClangItemParser for Item {
                         annotations,
                         relevant_parent_id,
                         ItemKind::Type(item),
+                        Some(location.location()),
                     ),
                     declaration,
                     Some(location),
@@ -1875,6 +1896,7 @@ impl ClangItemParser for Item {
             None,
             parent,
             ItemKind::Type(Type::named(name)),
+            Some(location.location()),
         );
         ctx.add_type_param(item, definition);
         Some(id.as_type_id_unchecked())
