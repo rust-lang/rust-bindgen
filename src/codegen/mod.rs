@@ -665,10 +665,21 @@ impl CodeGenerator for Var {
                     match String::from_utf8(bytes.clone()) {
                         Ok(string) => {
                             let cstr = helpers::ast_ty::cstr_expr(string);
-                            result.push(quote! {
-                                #(#attrs)*
-                                pub const #canonical_ident : &'static #ty = #cstr ;
-                            });
+                            if ctx
+                                .options()
+                                .rust_features
+                                .static_lifetime_elision
+                            {
+                                result.push(quote! {
+                                    #(#attrs)*
+                                    pub const #canonical_ident : &#ty = #cstr ;
+                                });
+                            } else {
+                                result.push(quote! {
+                                    #(#attrs)*
+                                    pub const #canonical_ident : &'static #ty = #cstr ;
+                                });
+                            }
                         }
                         Err(..) => {
                             let bytes = helpers::ast_ty::byte_array_expr(bytes);
