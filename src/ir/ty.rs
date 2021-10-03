@@ -1120,7 +1120,16 @@ impl Type {
                     let inner = cursor.typedef_type().expect("Not valid Type?");
                     let inner =
                         Item::from_ty_or_ref(inner, location, None, ctx);
-                    TypeKind::Alias(inner)
+                    if inner == potential_id {
+                        warn!(
+                            "Generating oqaque type instead of self-referential \
+                            typedef");
+                        // This can happen if we bail out of recursive situations
+                        // within the clang parsing.
+                        TypeKind::Opaque
+                    } else {
+                        TypeKind::Alias(inner)
+                    }
                 }
                 CXType_Enum => {
                     let enum_ = Enum::from_ty(ty, ctx).expect("Not an enum?");
