@@ -144,6 +144,8 @@
 
 ## Changed
 
+ * cexpr and nom have been updated, new msrv is 1.46 (#2107).
+
 ## Deprecated
 
 ## Removed

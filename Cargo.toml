@@ -47,7 +47,7 @@ tempfile = "3"
 
 [dependencies]
 bitflags = "1.0.3"
-cexpr = "0.5"
+cexpr = "0.6"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
 clap = { version = "2", optional = true }
 clang-sys = { version = "1", features = ["clang_6_0"] }
