@@ -9,3 +9,9 @@ struct pad_me {
         uint32_t second;
         uint16_t third;
 };
+
+union dont_pad_me {
+        uint8_t first;
+        uint32_t second;
+        uint16_t third;
+};

@@ -279,6 +279,11 @@ impl<'a> StructLayoutTracker<'a> {
             return None;
         }
 
+        // Padding doesn't make sense for rust unions.
+        if self.is_rust_union {
+            return None;
+        }
+
         if self.latest_offset == comp_layout.size {
             // This struct does not contain tail padding.
             return None;
