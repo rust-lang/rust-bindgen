@@ -230,14 +230,14 @@ pub mod ast_ty {
     }
 
     pub fn byte_array_expr(bytes: &[u8]) -> TokenStream {
-        let mut bytes: Vec<_> = bytes.iter().cloned().collect();
+        let mut bytes: Vec<_> = bytes.to_vec();
         bytes.push(0);
         quote! { [ #(#bytes),* ] }
     }
 
     pub fn cstr_expr(mut string: String) -> TokenStream {
         string.push('\0');
-        let b = proc_macro2::Literal::byte_string(&string.as_bytes());
+        let b = proc_macro2::Literal::byte_string(string.as_bytes());
         quote! {
             #b
         }
@@ -271,7 +271,7 @@ pub mod ast_ty {
         }
 
         warn!("Unknown non-finite float number: {:?}", f);
-        return Err(());
+        Err(())
     }
 
     pub fn arguments_from_signature(

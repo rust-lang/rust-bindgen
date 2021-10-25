@@ -428,6 +428,6 @@ impl<'a> StructLayoutTracker<'a> {
 
         // Else, just align the obvious way.
         self.latest_offset += self.padding_bytes(layout);
-        return false;
+        false
     }
 }

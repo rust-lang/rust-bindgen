@@ -545,14 +545,14 @@ fn sanity_check_can_generate_stylo_bindings() {
 
     let now = Instant::now();
 
-    println!("");
-    println!("");
+    println!();
+    println!();
     println!(
         "Generated Stylo bindings in: {:?}",
         now.duration_since(then)
     );
-    println!("");
-    println!("");
+    println!();
+    println!();
 
     // panic!("Uncomment this line to get timing logs");
 }

@@ -86,7 +86,7 @@ impl Enum {
         } else {
             Some(type_name)
         };
-        let type_name = type_name.as_ref().map(String::as_str);
+        let type_name = type_name.as_deref();
 
         let definition = declaration.definition().unwrap_or(declaration);
         definition.visit(|cursor| {
@@ -286,7 +286,7 @@ impl EnumVariant {
 
     /// Get this variant's documentation.
     pub fn comment(&self) -> Option<&str> {
-        self.comment.as_ref().map(|s| &**s)
+        self.comment.as_deref()
     }
 
     /// Returns whether this variant should be enforced to be a constant by code

@@ -239,7 +239,7 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
 
         let args = instantiation
             .template_arguments()
-            .into_iter()
+            .iter()
             .map(|a| {
                 a.into_resolver()
                     .through_type_refs()
@@ -399,8 +399,8 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             .collect();
 
         for item in allowlisted_and_blocklisted_items {
-            dependencies.entry(item).or_insert(vec![]);
-            used.entry(item).or_insert(Some(ItemSet::new()));
+            dependencies.entry(item).or_insert_with(Vec::new);
+            used.entry(item).or_insert_with(|| Some(ItemSet::new()));
 
             {
                 // We reverse our natural IR graph edges to find dependencies
@@ -408,10 +408,11 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
                 item.trace(
                     ctx,
                     &mut |sub_item: ItemId, _| {
-                        used.entry(sub_item).or_insert(Some(ItemSet::new()));
+                        used.entry(sub_item)
+                            .or_insert_with(|| Some(ItemSet::new()));
                         dependencies
                             .entry(sub_item)
-                            .or_insert(vec![])
+                            .or_insert_with(Vec::new)
                             .push(item);
                     },
                     &(),
@@ -421,39 +422,42 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             // Additionally, whether a template instantiation's template
             // arguments are used depends on whether the template declaration's
             // generic template parameters are used.
-            ctx.resolve_item(item).as_type().map(|ty| match ty.kind() {
-                &TypeKind::TemplateInstantiation(ref inst) => {
-                    let decl = ctx.resolve_type(inst.template_definition());
-                    let args = inst.template_arguments();
+            let item_kind =
+                ctx.resolve_item(item).as_type().map(|ty| ty.kind());
+            if let Some(&TypeKind::TemplateInstantiation(ref inst)) = item_kind
+            {
+                let decl = ctx.resolve_type(inst.template_definition());
+                let args = inst.template_arguments();
 
-                    // Although template definitions should always have
-                    // template parameters, there is a single exception:
-                    // opaque templates. Hence the unwrap_or.
-                    let params = decl.self_template_params(ctx);
+                // Although template definitions should always have
+                // template parameters, there is a single exception:
+                // opaque templates. Hence the unwrap_or.
+                let params = decl.self_template_params(ctx);
 
-                    for (arg, param) in args.iter().zip(params.iter()) {
-                        let arg = arg
-                            .into_resolver()
-                            .through_type_aliases()
-                            .through_type_refs()
-                            .resolve(ctx)
-                            .id();
+                for (arg, param) in args.iter().zip(params.iter()) {
+                    let arg = arg
+                        .into_resolver()
+                        .through_type_aliases()
+                        .through_type_refs()
+                        .resolve(ctx)
+                        .id();
 
-                        let param = param
-                            .into_resolver()
-                            .through_type_aliases()
-                            .through_type_refs()
-                            .resolve(ctx)
-                            .id();
+                    let param = param
+                        .into_resolver()
+                        .through_type_aliases()
+                        .through_type_refs()
+                        .resolve(ctx)
+                        .id();
 
-                        used.entry(arg).or_insert(Some(ItemSet::new()));
-                        used.entry(param).or_insert(Some(ItemSet::new()));
+                    used.entry(arg).or_insert_with(|| Some(ItemSet::new()));
+                    used.entry(param).or_insert_with(|| Some(ItemSet::new()));
 
-                        dependencies.entry(arg).or_insert(vec![]).push(param);
-                    }
+                    dependencies
+                        .entry(arg)
+                        .or_insert_with(Vec::new)
+                        .push(param);
                 }
-                _ => {}
-            });
+            }
         }
 
         if cfg!(feature = "testing_only_extra_assertions") {
@@ -482,10 +486,10 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
         }
 
         UsedTemplateParameters {
-            ctx: ctx,
-            used: used,
-            dependencies: dependencies,
-            allowlisted_items: allowlisted_items,
+            ctx,
+            used,
+            dependencies,
+            allowlisted_items,
         }
     }
 

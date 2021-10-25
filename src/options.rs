@@ -717,7 +717,7 @@ where
 
     if let Some(what_to_generate) = matches.value_of("generate") {
         let mut config = CodegenConfig::empty();
-        for what in what_to_generate.split(",") {
+        for what in what_to_generate.split(',') {
             match what {
                 "functions" => config.insert(CodegenConfig::FUNCTIONS),
                 "types" => config.insert(CodegenConfig::TYPES),

@@ -89,7 +89,7 @@ type HashSet<K> = ::rustc_hash::FxHashSet<K>;
 pub(crate) use std::collections::hash_map::Entry;
 
 /// Default prefix for the anon fields.
-pub const DEFAULT_ANON_FIELDS_PREFIX: &'static str = "__bindgen_anon_";
+pub const DEFAULT_ANON_FIELDS_PREFIX: &str = "__bindgen_anon_";
 
 fn file_is_cpp(name_file: &str) -> bool {
     name_file.ends_with(".hpp") ||
@@ -2148,7 +2148,7 @@ pub struct Bindings {
     module: proc_macro2::TokenStream,
 }
 
-pub(crate) const HOST_TARGET: &'static str =
+pub(crate) const HOST_TARGET: &str =
     include_str!(concat!(env!("OUT_DIR"), "/host-target.txt"));
 
 // Some architecture triplets are different between rust and libclang, see #1211
@@ -2156,7 +2156,8 @@ pub(crate) const HOST_TARGET: &'static str =
 fn rust_to_clang_target(rust_target: &str) -> String {
     if rust_target.starts_with("aarch64-apple-") {
         let mut clang_target = "arm64-apple-".to_owned();
-        clang_target.push_str(&rust_target["aarch64-apple-".len()..]);
+        clang_target
+            .push_str(rust_target.strip_prefix("aarch64-apple-").unwrap());
         return clang_target;
     }
     rust_target.to_owned()
@@ -2278,10 +2279,7 @@ impl Bindings {
 
             // Whether we are working with C or C++ inputs.
             let is_cpp = args_are_cpp(&options.clang_args) ||
-                options
-                    .input_header
-                    .as_ref()
-                    .map_or(false, |i| file_is_cpp(&i));
+                options.input_header.as_deref().map_or(false, file_is_cpp);
 
             let search_paths = if is_cpp {
                 clang.cpp_search_paths
@@ -2369,15 +2367,6 @@ impl Bindings {
         })
     }
 
-    /// Convert these bindings into source text (with raw lines prepended).
-    pub fn to_string(&self) -> String {
-        let mut bytes = vec![];
-        self.write(Box::new(&mut bytes) as Box<dyn Write>)
-            .expect("writing to a vec cannot fail");
-        String::from_utf8(bytes)
-            .expect("we should only write bindings that are valid utf-8")
-    }
-
     /// Write these bindings as source text to a file.
     pub fn write_to_file<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
         let file = OpenOptions::new()
@@ -2427,7 +2416,7 @@ impl Bindings {
     }
 
     /// Gets the rustfmt path to rustfmt the generated bindings.
-    fn rustfmt_path<'a>(&'a self) -> io::Result<Cow<'a, PathBuf>> {
+    fn rustfmt_path(&self) -> io::Result<Cow<PathBuf>> {
         debug_assert!(self.options.rustfmt_bindings);
         if let Some(ref p) = self.options.rustfmt_path {
             return Ok(Cow::Borrowed(p));
@@ -2518,6 +2507,18 @@ impl Bindings {
     }
 }
 
+impl std::fmt::Display for Bindings {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut bytes = vec![];
+        self.write(Box::new(&mut bytes) as Box<dyn Write>)
+            .expect("writing to a vec cannot fail");
+        f.write_str(
+            std::str::from_utf8(&bytes)
+                .expect("we should only write bindings that are valid utf-8"),
+        )
+    }
+}
+
 /// Determines whether the given cursor is in any of the files matched by the
 /// options.
 fn filter_builtins(ctx: &BindgenContext, cursor: &clang::Cursor) -> bool {
@@ -2566,7 +2567,7 @@ fn parse(context: &mut BindgenContext) -> Result<(), ()> {
     if context.options().emit_ast {
         fn dump_if_not_builtin(cur: &clang::Cursor) -> CXChildVisitResult {
             if !cur.is_builtin() {
-                clang::ast_dump(&cur, 0)
+                clang::ast_dump(cur, 0)
             } else {
                 CXChildVisit_Continue
             }
@@ -2603,26 +2604,19 @@ pub fn clang_version() -> ClangVersion {
     let raw_v: String = clang::extract_clang_version();
     let split_v: Option<Vec<&str>> = raw_v
         .split_whitespace()
-        .filter(|t| t.chars().next().map_or(false, |v| v.is_ascii_digit()))
-        .next()
+        .find(|t| t.chars().next().map_or(false, |v| v.is_ascii_digit()))
         .map(|v| v.split('.').collect());
-    match split_v {
-        Some(v) => {
-            if v.len() >= 2 {
-                let maybe_major = v[0].parse::<u32>();
-                let maybe_minor = v[1].parse::<u32>();
-                match (maybe_major, maybe_minor) {
-                    (Ok(major), Ok(minor)) => {
-                        return ClangVersion {
-                            parsed: Some((major, minor)),
-                            full: raw_v.clone(),
-                        }
-                    }
-                    _ => {}
-                }
+    if let Some(v) = split_v {
+        if v.len() >= 2 {
+            let maybe_major = v[0].parse::<u32>();
+            let maybe_minor = v[1].parse::<u32>();
+            if let (Ok(major), Ok(minor)) = (maybe_major, maybe_minor) {
+                return ClangVersion {
+                    parsed: Some((major, minor)),
+                    full: raw_v.clone(),
+                };
             }
         }
-        None => {}
     };
     ClangVersion {
         parsed: None,

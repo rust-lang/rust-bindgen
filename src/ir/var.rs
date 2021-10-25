@@ -88,7 +88,7 @@ impl Var {
 
     /// Get this variable's mangled name.
     pub fn mangled_name(&self) -> Option<&str> {
-        self.mangled_name.as_ref().map(|n| &**n)
+        self.mangled_name.as_deref()
     }
 }
 
@@ -282,7 +282,7 @@ impl ClangSubItemParser for Var {
                             .parse_callbacks()
                             .and_then(|c| c.int_macro(&name, value))
                             .unwrap_or_else(|| {
-                                default_macro_constant_type(&ctx, value)
+                                default_macro_constant_type(ctx, value)
                             });
 
                         (TypeKind::Int(kind), VarType::Int(value))
@@ -398,11 +398,8 @@ fn parse_macro(
 
     let parser = expr::IdentifierParser::new(ctx.parsed_macros());
 
-    match parser.macro_definition(&cexpr_tokens) {
-        Ok((_, (id, val))) => {
-            return Some((id.into(), val));
-        }
-        _ => {}
+    if let Ok((_, (id, val))) = parser.macro_definition(&cexpr_tokens) {
+        return Some((id.into(), val));
     }
 
     // Try without the last token, to workaround a libclang bug in versions
