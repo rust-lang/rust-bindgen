@@ -41,6 +41,8 @@ pub struct HasDestructorAnalysis<'ctx> {
 
 impl<'ctx> HasDestructorAnalysis<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
+        // These are the only edges that can affect whether a type has a
+        // destructor or not.
         matches!(
             kind,
             EdgeKind::TypeReference |
