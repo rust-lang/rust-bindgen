@@ -9,6 +9,7 @@ use crate::ir::context::{BindgenContext, ItemId};
 use crate::ir::derive::CanDerive;
 use crate::ir::function::FunctionSig;
 use crate::ir::item::{IsOpaque, Item};
+use crate::ir::layout::Layout;
 use crate::ir::template::TemplateParameters;
 use crate::ir::traversal::{EdgeKind, Trace};
 use crate::ir::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
@@ -672,10 +673,10 @@ impl<'ctx> MonotoneFramework for CannotDerive<'ctx> {
             Some(ty) => {
                 let mut can_derive = self.constrain_type(item, ty);
                 if let CanDerive::Yes = can_derive {
+                    let is_reached_limit =
+                        |l: Layout| l.align > RUST_DERIVE_IN_ARRAY_LIMIT;
                     if !self.derive_trait.can_derive_large_array(self.ctx) &&
-                        ty.layout(self.ctx)
-                            .map(|l| l.align > RUST_DERIVE_IN_ARRAY_LIMIT)
-                            .unwrap_or_default()
+                        ty.layout(self.ctx).map_or(false, is_reached_limit)
                     {
                         // We have to be conservative: the struct *could* have enough
                         // padding that we emit an array that is longer than
