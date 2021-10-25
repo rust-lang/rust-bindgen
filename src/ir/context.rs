@@ -831,83 +831,25 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     // TODO: Move all this syntax crap to other part of the code.
 
     /// Mangles a name so it doesn't conflict with any keyword.
+    #[rustfmt::skip]
     pub fn rust_mangle<'a>(&self, name: &'a str) -> Cow<'a, str> {
         if name.contains('@') ||
             name.contains('?') ||
             name.contains('$') ||
             matches!(
                 name,
-                "abstract" |
-                    "alignof" |
-                    "as" |
-                    "async" |
-                    "become" |
-                    "box" |
-                    "break" |
-                    "const" |
-                    "continue" |
-                    "crate" |
-                    "do" |
-                    "dyn" |
-                    "else" |
-                    "enum" |
-                    "extern" |
-                    "false" |
-                    "final" |
-                    "fn" |
-                    "for" |
-                    "if" |
-                    "impl" |
-                    "in" |
-                    "let" |
-                    "loop" |
-                    "macro" |
-                    "match" |
-                    "mod" |
-                    "move" |
-                    "mut" |
-                    "offsetof" |
-                    "override" |
-                    "priv" |
-                    "proc" |
-                    "pub" |
-                    "pure" |
-                    "ref" |
-                    "return" |
-                    "Self" |
-                    "self" |
-                    "sizeof" |
-                    "static" |
-                    "struct" |
-                    "super" |
-                    "trait" |
-                    "true" |
-                    "type" |
-                    "typeof" |
-                    "unsafe" |
-                    "unsized" |
-                    "use" |
-                    "virtual" |
-                    "where" |
-                    "while" |
-                    "yield" |
-                    "str" |
-                    "bool" |
-                    "f32" |
-                    "f64" |
-                    "usize" |
-                    "isize" |
-                    "u128" |
-                    "i128" |
-                    "u64" |
-                    "i64" |
-                    "u32" |
-                    "i32" |
-                    "u16" |
-                    "i16" |
-                    "u8" |
-                    "i8" |
-                    "_"
+                "abstract" | "alignof" | "as" | "async" | "become" |
+                    "box" | "break" | "const" | "continue" | "crate" | "do" |
+                    "dyn" | "else" | "enum" | "extern" | "false" | "final" |
+                    "fn" | "for" | "if" | "impl" | "in" | "let" | "loop" |
+                    "macro" | "match" | "mod" | "move" | "mut" | "offsetof" |
+                    "override" | "priv" | "proc" | "pub" | "pure" | "ref" |
+                    "return" | "Self" | "self" | "sizeof" | "static" |
+                    "struct" | "super" | "trait" | "true" | "type" | "typeof" |
+                    "unsafe" | "unsized" | "use" | "virtual" | "where" |
+                    "while" | "yield" | "str" | "bool" | "f32" | "f64" |
+                    "usize" | "isize" | "u128" | "i128" | "u64" | "i64" |
+                    "u32" | "i32" | "u16" | "i16" | "u8" | "i8" | "_"
             )
         {
             let mut s = name.to_owned();
