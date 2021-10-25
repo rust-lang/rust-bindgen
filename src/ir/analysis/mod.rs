@@ -184,7 +184,7 @@ where
     let mut dependencies = HashMap::default();
 
     for &item in ctx.allowlisted_items() {
-        dependencies.entry(item).or_insert(vec![]);
+        dependencies.entry(item).or_insert_with(Vec::new);
 
         {
             // We reverse our natural IR graph edges to find dependencies
@@ -197,7 +197,7 @@ where
                     {
                         dependencies
                             .entry(sub_item)
-                            .or_insert(vec![])
+                            .or_insert_with(Vec::new)
                             .push(item);
                     }
                 },

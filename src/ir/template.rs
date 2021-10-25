@@ -134,10 +134,10 @@ pub trait TemplateParameters: Sized {
     where
         Self: ItemAncestors,
     {
-        let ancestors: Vec<_> = self.ancestors(ctx).collect();
+        let mut ancestors: Vec<_> = self.ancestors(ctx).collect();
+        ancestors.reverse();
         ancestors
             .into_iter()
-            .rev()
             .flat_map(|id| id.self_template_params(ctx).into_iter())
             .collect()
     }

@@ -25,7 +25,7 @@ pub enum FieldAccessorKind {
 /// documentation:
 ///
 /// http://www.stack.nl/~dimitri/doxygen/manual/docblocks.html
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Default, Clone, PartialEq, Debug)]
 pub struct Annotations {
     /// Whether this item is marked as opaque. Only applies to types.
     opaque: bool,
@@ -77,24 +77,6 @@ fn parse_accessor(s: &str) -> FieldAccessorKind {
     }
 }
 
-impl Default for Annotations {
-    fn default() -> Self {
-        Annotations {
-            opaque: false,
-            hide: false,
-            use_instead_of: None,
-            disallow_copy: false,
-            disallow_debug: false,
-            disallow_default: false,
-            must_use_type: false,
-            private_fields: None,
-            accessor_kind: None,
-            constify_enum_variant: false,
-            derives: vec![],
-        }
-    }
-}
-
 impl Annotations {
     /// Construct new annotations for the given cursor and its bindgen comments
     /// (if any).
@@ -143,7 +125,7 @@ impl Annotations {
     ///
     /// That is, code for `Foo` is used to generate `Bar`.
     pub fn use_instead_of(&self) -> Option<&[String]> {
-        self.use_instead_of.as_ref().map(|s| &**s)
+        self.use_instead_of.as_deref()
     }
 
     /// The list of derives that have been specified in this annotation.

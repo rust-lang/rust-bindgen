@@ -41,16 +41,14 @@ pub struct HasDestructorAnalysis<'ctx> {
 
 impl<'ctx> HasDestructorAnalysis<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
-        match kind {
-            // These are the only edges that can affect whether a type has a
-            // destructor or not.
+        matches!(
+            kind,
             EdgeKind::TypeReference |
-            EdgeKind::BaseMember |
-            EdgeKind::Field |
-            EdgeKind::TemplateArgument |
-            EdgeKind::TemplateDeclaration => true,
-            _ => false,
-        }
+                EdgeKind::BaseMember |
+                EdgeKind::Field |
+                EdgeKind::TemplateArgument |
+                EdgeKind::TemplateDeclaration
+        )
     }
 
     fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {

@@ -111,11 +111,10 @@ impl Method {
 
     /// Is this a virtual method?
     pub fn is_virtual(&self) -> bool {
-        match self.kind {
-            MethodKind::Virtual { .. } |
-            MethodKind::VirtualDestructor { .. } => true,
-            _ => false,
-        }
+        matches!(
+            self.kind,
+            MethodKind::Virtual { .. } | MethodKind::VirtualDestructor { .. }
+        )
     }
 
     /// Is this a static method?
@@ -630,7 +629,7 @@ where
                         bitfield_unit_count,
                         unit_size_in_bits,
                         unit_align,
-                        mem::replace(&mut bitfields_in_unit, vec![]),
+                        mem::take(&mut bitfields_in_unit),
                         packed,
                     );
 
@@ -639,15 +638,12 @@ where
                     offset = 0;
                     unit_align = 0;
                 }
-            } else {
-                if offset != 0 &&
-                    (bitfield_width == 0 ||
-                        (offset & (bitfield_align * 8 - 1)) +
-                            bitfield_width >
-                            bitfield_size * 8)
-                {
-                    offset = align_to(offset, bitfield_align * 8);
-                }
+            } else if offset != 0 &&
+                (bitfield_width == 0 ||
+                    (offset & (bitfield_align * 8 - 1)) + bitfield_width >
+                        bitfield_size * 8)
+            {
+                offset = align_to(offset, bitfield_align * 8);
             }
         }
 
@@ -706,24 +702,24 @@ where
 /// after.
 #[derive(Debug)]
 enum CompFields {
-    BeforeComputingBitfieldUnits(Vec<RawField>),
-    AfterComputingBitfieldUnits {
+    Before(Vec<RawField>),
+    After {
         fields: Vec<Field>,
         has_bitfield_units: bool,
     },
-    ErrorComputingBitfieldUnits,
+    Error,
 }
 
 impl Default for CompFields {
     fn default() -> CompFields {
-        CompFields::BeforeComputingBitfieldUnits(vec![])
+        CompFields::Before(vec![])
     }
 }
 
 impl CompFields {
     fn append_raw_field(&mut self, raw: RawField) {
         match *self {
-            CompFields::BeforeComputingBitfieldUnits(ref mut raws) => {
+            CompFields::Before(ref mut raws) => {
                 raws.push(raw);
             }
             _ => {
@@ -736,9 +732,7 @@ impl CompFields {
 
     fn compute_bitfield_units(&mut self, ctx: &BindgenContext, packed: bool) {
         let raws = match *self {
-            CompFields::BeforeComputingBitfieldUnits(ref mut raws) => {
-                mem::replace(raws, vec![])
-            }
+            CompFields::Before(ref mut raws) => mem::take(raws),
             _ => {
                 panic!("Already computed bitfield units");
             }
@@ -748,25 +742,23 @@ impl CompFields {
 
         match result {
             Ok((fields, has_bitfield_units)) => {
-                *self = CompFields::AfterComputingBitfieldUnits {
+                *self = CompFields::After {
                     fields,
                     has_bitfield_units,
                 };
             }
             Err(()) => {
-                *self = CompFields::ErrorComputingBitfieldUnits;
+                *self = CompFields::Error;
             }
         }
     }
 
     fn deanonymize_fields(&mut self, ctx: &BindgenContext, methods: &[Method]) {
         let fields = match *self {
-            CompFields::AfterComputingBitfieldUnits {
-                ref mut fields, ..
-            } => fields,
+            CompFields::After { ref mut fields, .. } => fields,
             // Nothing to do here.
-            CompFields::ErrorComputingBitfieldUnits => return,
-            CompFields::BeforeComputingBitfieldUnits(_) => {
+            CompFields::Error => return,
+            CompFields::Before(_) => {
                 panic!("Not yet computed bitfield units.");
             }
         };
@@ -778,7 +770,7 @@ impl CompFields {
         ) -> bool {
             methods.iter().any(|method| {
                 let method_name = ctx.resolve_func(method.signature()).name();
-                method_name == name || ctx.rust_mangle(&method_name) == name
+                method_name == name || ctx.rust_mangle(method_name) == name
             })
         }
 
@@ -820,7 +812,7 @@ impl CompFields {
         for field in fields.iter_mut() {
             match *field {
                 Field::DataMember(FieldData { ref mut name, .. }) => {
-                    if let Some(_) = *name {
+                    if name.is_some() {
                         continue;
                     }
 
@@ -858,13 +850,13 @@ impl Trace for CompFields {
         T: Tracer,
     {
         match *self {
-            CompFields::ErrorComputingBitfieldUnits => {}
-            CompFields::BeforeComputingBitfieldUnits(ref fields) => {
+            CompFields::Error => {}
+            CompFields::Before(ref fields) => {
                 for f in fields {
                     tracer.visit_kind(f.ty().into(), EdgeKind::Field);
                 }
             }
-            CompFields::AfterComputingBitfieldUnits { ref fields, .. } => {
+            CompFields::After { ref fields, .. } => {
                 for f in fields {
                     f.trace(context, tracer, &());
                 }
@@ -900,7 +892,7 @@ pub struct FieldData {
 
 impl FieldMethods for FieldData {
     fn name(&self) -> Option<&str> {
-        self.name.as_ref().map(|n| &**n)
+        self.name.as_deref()
     }
 
     fn ty(&self) -> TypeId {
@@ -908,7 +900,7 @@ impl FieldMethods for FieldData {
     }
 
     fn comment(&self) -> Option<&str> {
-        self.comment.as_ref().map(|c| &**c)
+        self.comment.as_deref()
     }
 
     fn bitfield_width(&self) -> Option<u32> {
@@ -1131,11 +1123,9 @@ impl CompInfo {
     /// Get this type's set of fields.
     pub fn fields(&self) -> &[Field] {
         match self.fields {
-            CompFields::ErrorComputingBitfieldUnits => &[],
-            CompFields::AfterComputingBitfieldUnits { ref fields, .. } => {
-                fields
-            }
-            CompFields::BeforeComputingBitfieldUnits(..) => {
+            CompFields::Error => &[],
+            CompFields::After { ref fields, .. } => fields,
+            CompFields::Before(..) => {
                 panic!("Should always have computed bitfield units first");
             }
         }
@@ -1143,13 +1133,9 @@ impl CompInfo {
 
     fn has_fields(&self) -> bool {
         match self.fields {
-            CompFields::ErrorComputingBitfieldUnits => false,
-            CompFields::AfterComputingBitfieldUnits { ref fields, .. } => {
-                !fields.is_empty()
-            }
-            CompFields::BeforeComputingBitfieldUnits(ref raw_fields) => {
-                !raw_fields.is_empty()
-            }
+            CompFields::Error => false,
+            CompFields::After { ref fields, .. } => !fields.is_empty(),
+            CompFields::Before(ref raw_fields) => !raw_fields.is_empty(),
         }
     }
 
@@ -1159,15 +1145,15 @@ impl CompInfo {
         mut callback: impl FnMut(Layout),
     ) {
         match self.fields {
-            CompFields::ErrorComputingBitfieldUnits => return,
-            CompFields::AfterComputingBitfieldUnits { ref fields, .. } => {
+            CompFields::Error => {}
+            CompFields::After { ref fields, .. } => {
                 for field in fields.iter() {
                     if let Some(layout) = field.layout(ctx) {
                         callback(layout);
                     }
                 }
             }
-            CompFields::BeforeComputingBitfieldUnits(ref raw_fields) => {
+            CompFields::Before(ref raw_fields) => {
                 for field in raw_fields.iter() {
                     let field_ty = ctx.resolve_type(field.0.ty);
                     if let Some(layout) = field_ty.layout(ctx) {
@@ -1180,12 +1166,11 @@ impl CompInfo {
 
     fn has_bitfields(&self) -> bool {
         match self.fields {
-            CompFields::ErrorComputingBitfieldUnits => false,
-            CompFields::AfterComputingBitfieldUnits {
-                has_bitfield_units,
-                ..
+            CompFields::Error => false,
+            CompFields::After {
+                has_bitfield_units, ..
             } => has_bitfield_units,
-            CompFields::BeforeComputingBitfieldUnits(_) => {
+            CompFields::Before(_) => {
                 panic!("Should always have computed bitfield units first");
             }
         }
@@ -1776,7 +1761,7 @@ impl IsOpaque for CompInfo {
         // is a type parameter), then we can't compute bitfield units. We are
         // left with no choice but to make the whole struct opaque, or else we
         // might generate structs with incorrect sizes and alignments.
-        if let CompFields::ErrorComputingBitfieldUnits = self.fields {
+        if let CompFields::Error = self.fields {
             return true;
         }
 

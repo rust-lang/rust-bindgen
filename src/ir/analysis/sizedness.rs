@@ -112,17 +112,17 @@ pub struct SizednessAnalysis<'ctx> {
 
 impl<'ctx> SizednessAnalysis<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
-        match kind {
-            // These are the only edges that can affect whether a type is
-            // zero-sized or not.
+        // These are the only edges that can affect whether a type is
+        // zero-sized or not.
+        matches!(
+            kind,
             EdgeKind::TemplateArgument |
-            EdgeKind::TemplateParameterDefinition |
-            EdgeKind::TemplateDeclaration |
-            EdgeKind::TypeReference |
-            EdgeKind::BaseMember |
-            EdgeKind::Field => true,
-            _ => false,
-        }
+                EdgeKind::TemplateParameterDefinition |
+                EdgeKind::TemplateDeclaration |
+                EdgeKind::TypeReference |
+                EdgeKind::BaseMember |
+                EdgeKind::Field
+        )
     }
 
     /// Insert an incremental result, and return whether this updated our
