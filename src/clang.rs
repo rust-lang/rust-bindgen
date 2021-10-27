@@ -400,12 +400,9 @@ impl Cursor {
     where
         Visitor: FnMut(Cursor) -> CXChildVisitResult,
     {
+        let data = &mut visitor as *mut Visitor;
         unsafe {
-            clang_visitChildren(
-                self.x,
-                visit_children::<Visitor>,
-                mem::transmute(&mut visitor),
-            );
+            clang_visitChildren(self.x, visit_children::<Visitor>, data.cast());
         }
     }
 
