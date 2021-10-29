@@ -641,11 +641,13 @@ impl Item {
             return true;
         }
 
-        if let Some(location) = &self.location {
-            let (file, _, _, _) = location.location();
-            if let Some(filename) = file.name() {
-                if ctx.options().blocklisted_files.matches(&filename) {
-                    return true;
+        if !ctx.options().blocklisted_files.is_empty() {
+            if let Some(location) = &self.location {
+                let (file, _, _, _) = location.location();
+                if let Some(filename) = file.name() {
+                    if ctx.options().blocklisted_files.matches(&filename) {
+                        return true;
+                    }
                 }
             }
         }
