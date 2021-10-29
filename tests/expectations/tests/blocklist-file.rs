@@ -61,3 +61,34 @@ fn bindgen_test_layout_SizedIntegers() {
         )
     );
 }
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct StructWithBlocklistedFwdDecl {
+    pub b: u8,
+}
+#[test]
+fn bindgen_test_layout_StructWithBlocklistedFwdDecl() {
+    assert_eq!(
+        ::std::mem::size_of::<StructWithBlocklistedFwdDecl>(),
+        1usize,
+        concat!("Size of: ", stringify!(StructWithBlocklistedFwdDecl))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<StructWithBlocklistedFwdDecl>(),
+        1usize,
+        concat!("Alignment of ", stringify!(StructWithBlocklistedFwdDecl))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<StructWithBlocklistedFwdDecl>())).b
+                as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(StructWithBlocklistedFwdDecl),
+            "::",
+            stringify!(b)
+        )
+    );
+}

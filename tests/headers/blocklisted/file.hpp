@@ -17,3 +17,10 @@ namespace foo {
 namespace bar {
   void NamespacedFunction();
 }
+
+
+struct StructWithBlocklistedFwdDecl;
+
+struct StructWithBlocklistedDefinition {
+    StructWithBlocklistedFwdDecl* other;
+};
