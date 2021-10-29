@@ -146,6 +146,10 @@ extern "C" {
     pub static mut true_: ::std::os::raw::c_int;
 }
 extern "C" {
+    #[link_name = "\u{1}try"]
+    pub static mut try_: ::std::os::raw::c_int;
+}
+extern "C" {
     #[link_name = "\u{1}type"]
     pub static mut type_: ::std::os::raw::c_int;
 }

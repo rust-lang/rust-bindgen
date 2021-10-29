@@ -845,7 +845,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     "macro" | "match" | "mod" | "move" | "mut" | "offsetof" |
                     "override" | "priv" | "proc" | "pub" | "pure" | "ref" |
                     "return" | "Self" | "self" | "sizeof" | "static" |
-                    "struct" | "super" | "trait" | "true" | "type" | "typeof" |
+                    "struct" | "super" | "trait" | "true" | "try" | "type" | "typeof" |
                     "unsafe" | "unsized" | "use" | "virtual" | "where" |
                     "while" | "yield" | "str" | "bool" | "f32" | "f64" |
                     "usize" | "isize" | "u128" | "i128" | "u64" | "i64" |

@@ -34,6 +34,7 @@ int Self;
 int super;
 int trait;
 int true;
+int try;
 int type;
 int unsafe;
 int use;
