@@ -2642,7 +2642,7 @@ fn get_target_dependent_env_var(var: &str) -> Option<String> {
 /// A ParseCallbacks implementation that will act on file includes by echoing a rerun-if-changed
 /// line
 ///
-/// When running in side a `build.rs` script, this can be used to make cargo invalidate the
+/// When running inside a `build.rs` script, this can be used to make cargo invalidate the
 /// generated bindings whenever any of the files included from the header change:
 /// ```
 /// use bindgen::builder;
