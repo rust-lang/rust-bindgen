@@ -234,3 +234,10 @@ typedef union {
 } Coord;
 
 Coord coord(double x, double y, double z, double t);
+
+// Used to test custom derives on enum. See `test_custom_derive`.
+enum MyOrderedEnum {
+  MICRON,
+  METER,
+  LIGHTYEAR,
+};

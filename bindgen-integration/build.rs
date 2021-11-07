@@ -126,6 +126,10 @@ impl ParseCallbacks for MacroCallback {
             vec![
                 "PartialEq".into(),
             ]
+        } else if name == "MyOrderedEnum" {
+            vec![
+                "PartialOrd".into(),
+            ]
         } else {
             vec![]
         }
