@@ -4,6 +4,7 @@ pub use crate::ir::analysis::DeriveTrait;
 pub use crate::ir::derive::CanDerive as ImplementsTrait;
 pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
 pub use crate::ir::int::IntKind;
+use cexpr::token::Token;
 use std::fmt;
 use std::panic::UnwindSafe;
 
@@ -29,6 +30,10 @@ pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
     /// This function will be run on every macro that is identified.
     fn will_parse_macro(&self, _name: &str) -> MacroParsingBehavior {
         MacroParsingBehavior::Default
+    }
+
+    /// This function allows changing the tokens in a macro defintion
+    fn modify_macro(&self, _name: &str, _tokens: &mut [Token]) {
     }
 
     /// The integer kind an integer macro should have, given a name and the

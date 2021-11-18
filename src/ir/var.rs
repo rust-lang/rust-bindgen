@@ -220,7 +220,7 @@ impl ClangSubItemParser for Var {
                     handle_function_macro(&cursor, &tokens, callbacks)?;
                 }
 
-                let value = parse_macro(ctx, &tokens);
+                let value = parse_macro(ctx, &cursor.spelling(), &tokens);
 
                 let (id, value) = match value {
                     Some(v) => v,
@@ -387,6 +387,7 @@ impl ClangSubItemParser for Var {
 /// Try and parse a macro using all the macros parsed until now.
 fn parse_macro(
     ctx: &BindgenContext,
+    name: &str,
     tokens: &[ClangToken],
 ) -> Option<(Vec<u8>, cexpr::expr::EvalResult)> {
     use cexpr::expr;
@@ -395,6 +396,10 @@ fn parse_macro(
         .iter()
         .filter_map(ClangToken::as_cexpr_token)
         .collect();
+
+    if let Some(callbacks) = ctx.parse_callbacks() {
+        callbacks.modify_macro(name, &mut cexpr_tokens);
+    }
 
     let parser = expr::IdentifierParser::new(ctx.parsed_macros());
 
