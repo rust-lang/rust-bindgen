@@ -34,7 +34,7 @@ pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
     }
 
     /// This function allows changing the tokens in a macro defintion
-    fn modify_macro(&self, _name: &str, _tokens: &mut [Token]) {
+    fn modify_macro(&self, _name: &str, _tokens: &mut Vec<Token>) {
     }
 
     /// The integer kind an integer macro should have, given a name and the
