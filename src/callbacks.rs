@@ -5,6 +5,7 @@ pub use crate::ir::derive::CanDerive as ImplementsTrait;
 pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
 pub use crate::ir::int::IntKind;
 pub use cexpr::token::Token;
+pub use cexpr::token::Kind as TokenKind;
 use std::fmt;
 use std::panic::UnwindSafe;
 
