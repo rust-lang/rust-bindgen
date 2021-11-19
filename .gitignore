@@ -17,5 +17,3 @@ csmith-fuzzing/platform.info
 
 # Backups of test cases from C-Reduce
 **/*.orig
-
-.*sw?
