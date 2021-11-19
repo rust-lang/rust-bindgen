@@ -4,8 +4,8 @@ pub use crate::ir::analysis::DeriveTrait;
 pub use crate::ir::derive::CanDerive as ImplementsTrait;
 pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
 pub use crate::ir::int::IntKind;
-pub use cexpr::token::Token;
 pub use cexpr::token::Kind as TokenKind;
+pub use cexpr::token::Token;
 use std::fmt;
 use std::panic::UnwindSafe;
 
@@ -34,8 +34,7 @@ pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
     }
 
     /// This function allows changing the tokens in a macro defintion
-    fn modify_macro(&self, _name: &str, _tokens: &mut Vec<Token>) {
-    }
+    fn modify_macro(&self, _name: &str, _tokens: &mut Vec<Token>) {}
 
     /// The integer kind an integer macro should have, given a name and the
     /// value of that macro, or `None` if you want the default to be chosen.
