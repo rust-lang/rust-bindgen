@@ -247,8 +247,8 @@ See [./csmith-fuzzing/README.md](./csmith-fuzzing/README.md) for details.
 
 The `tests/quickchecking` crate generates property tests for `bindgen`.
 From the crate's directory you can run the tests with `cargo run`. For details
-on additional configuration including how to preserve / inspect the generated 
-property tests, see 
+on additional configuration including how to preserve / inspect the generated
+property tests, see
 [./tests/quickchecking/README.md](./tests/quickchecking/README.md).
 
 ## Code Overview
@@ -298,6 +298,8 @@ looking at. Here is a summary of the IR types and their relationships:
             * Its type's `ItemId`
             * Optionally, a mangled name
             * Optionally, a value
+    * An optional `clang::SourceLocation` that holds the first source code
+      location where the `Item` was encountered.
 
 The IR forms a graph of interconnected and inter-referencing types and
 functions. The `ir::traversal` module provides IR graph traversal

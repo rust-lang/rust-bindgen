@@ -275,4 +275,14 @@ fn test_custom_derive() {
     let test1 = unsafe { bindings::Test::new(5) };
     let test2 = unsafe { bindings::Test::new(6) };
     assert_ne!(test1, test2);
+
+    // The `add_derives` callback should have added `#[derive(PartialOrd)]`
+    // to the `MyOrderedEnum` enum. If it didn't, this will fail to compile.
+
+    let micron = unsafe { bindings::MyOrderedEnum::MICRON };
+    let meter = unsafe { bindings::MyOrderedEnum::METER };
+    let lightyear = unsafe { bindings::MyOrderedEnum::LIGHTYEAR };
+
+    assert!(meter < lightyear);
+    assert!(meter > micron);
 }

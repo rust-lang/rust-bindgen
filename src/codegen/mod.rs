@@ -665,10 +665,21 @@ impl CodeGenerator for Var {
                     match String::from_utf8(bytes.clone()) {
                         Ok(string) => {
                             let cstr = helpers::ast_ty::cstr_expr(string);
-                            result.push(quote! {
-                                #(#attrs)*
-                                pub const #canonical_ident : &'static #ty = #cstr ;
-                            });
+                            if ctx
+                                .options()
+                                .rust_features
+                                .static_lifetime_elision
+                            {
+                                result.push(quote! {
+                                    #(#attrs)*
+                                    pub const #canonical_ident : &#ty = #cstr ;
+                                });
+                            } else {
+                                result.push(quote! {
+                                    #(#attrs)*
+                                    pub const #canonical_ident : &'static #ty = #cstr ;
+                                });
+                            }
                         }
                         Err(..) => {
                             let bytes = helpers::ast_ty::byte_array_expr(bytes);
@@ -3014,6 +3025,16 @@ impl CodeGenerator for Enum {
                     derives.push(derive);
                 }
             }
+
+            // The custom derives callback may return a list of derive attributes;
+            // add them to the end of the list.
+            let custom_derives;
+            if let Some(cb) = &ctx.options().parse_callbacks {
+                custom_derives = cb.add_derives(&name);
+                // In most cases this will be a no-op, since custom_derives will be empty.
+                derives.extend(custom_derives.iter().map(|s| s.as_str()));
+            };
+
             attrs.push(attributes::derives(&derives));
         }
 

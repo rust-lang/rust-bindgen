@@ -164,6 +164,14 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("blocklist-file")
+                .alias("blacklist-file")
+                .long("blocklist-file")
+                .help("Mark all contents of <path> as hidden.")
+                .value_name("path")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
             Arg::with_name("no-layout-tests")
                 .long("no-layout-tests")
                 .help("Avoid generating layout tests for any type."),
@@ -627,6 +635,12 @@ where
     if let Some(hidden_identifiers) = matches.values_of("blocklist-item") {
         for id in hidden_identifiers {
             builder = builder.blocklist_item(id);
+        }
+    }
+
+    if let Some(hidden_files) = matches.values_of("blocklist-file") {
+        for file in hidden_files {
+            builder = builder.blocklist_file(file);
         }
     }
 

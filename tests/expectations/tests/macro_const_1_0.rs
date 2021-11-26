@@ -5,7 +5,7 @@
     non_upper_case_globals
 )]
 
-pub const foo: &[u8; 4usize] = b"bar\0";
+pub const foo: &'static [u8; 4usize] = b"bar\0";
 pub const CHAR: u8 = 98u8;
 pub const CHARR: u8 = 0u8;
 pub const FLOAT: f64 = 5.09;
