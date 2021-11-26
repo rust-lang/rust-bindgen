@@ -308,6 +308,7 @@ impl Builder {
             (&self.options.blocklisted_types, "--blocklist-type"),
             (&self.options.blocklisted_functions, "--blocklist-function"),
             (&self.options.blocklisted_items, "--blocklist-item"),
+            (&self.options.blocklisted_files, "--blocklist-file"),
             (&self.options.opaque_types, "--opaque-type"),
             (&self.options.allowlisted_functions, "--allowlist-function"),
             (&self.options.allowlisted_types, "--allowlist-type"),
@@ -818,6 +819,13 @@ impl Builder {
     /// [regex](https://docs.rs/regex/*/regex/) docs
     pub fn blocklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.blocklisted_items.insert(arg);
+        self
+    }
+
+    /// Hide any contents of the given file from the generated bindings,
+    /// regardless of whether it's a type, function, module etc.
+    pub fn blocklist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.blocklisted_files.insert(arg);
         self
     }
 
@@ -1669,6 +1677,10 @@ struct BindgenOptions {
     /// blocklisted and should not appear in the generated code.
     blocklisted_items: RegexSet,
 
+    /// The set of files whose contents should be blocklisted and should not
+    /// appear in the generated code.
+    blocklisted_files: RegexSet,
+
     /// The set of types that should be treated as opaque structures in the
     /// generated code.
     opaque_types: RegexSet,
@@ -1982,6 +1994,7 @@ impl BindgenOptions {
             &mut self.blocklisted_types,
             &mut self.blocklisted_functions,
             &mut self.blocklisted_items,
+            &mut self.blocklisted_files,
             &mut self.opaque_types,
             &mut self.bitfield_enums,
             &mut self.constified_enums,
@@ -2029,6 +2042,7 @@ impl Default for BindgenOptions {
             blocklisted_types: Default::default(),
             blocklisted_functions: Default::default(),
             blocklisted_items: Default::default(),
+            blocklisted_files: Default::default(),
             opaque_types: Default::default(),
             rustfmt_path: Default::default(),
             depfile: Default::default(),

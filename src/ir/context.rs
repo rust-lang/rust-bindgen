@@ -1423,7 +1423,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     fn build_root_module(id: ItemId) -> Item {
         let module = Module::new(Some("root".into()), ModuleKind::Normal);
-        Item::new(id, None, None, id, ItemKind::Module(module))
+        Item::new(id, None, None, id, ItemKind::Module(module), None)
     }
 
     /// Get the root module.
@@ -1733,6 +1733,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                             None,
                             self.current_module.into(),
                             ItemKind::Type(sub_ty),
+                            Some(child.location()),
                         );
 
                         // Bypass all the validations in add_item explicitly.
@@ -1797,6 +1798,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             None,
             self.current_module.into(),
             ItemKind::Type(ty),
+            Some(location.location()),
         );
 
         // Bypass all the validations in add_item explicitly.
@@ -1930,6 +1932,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     ) -> TypeId {
         let spelling = ty.spelling();
         let layout = ty.fallible_layout(self).ok();
+        let location = ty.declaration().location();
         let type_kind = TypeKind::ResolvedTypeRef(wrapped_id);
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
         let item = Item::new(
@@ -1938,6 +1941,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             None,
             parent_id.unwrap_or_else(|| self.current_module.into()),
             ItemKind::Type(ty),
+            Some(location),
         );
         self.add_builtin_item(item);
         with_id.as_type_id_unchecked()
@@ -1998,6 +2002,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let spelling = ty.spelling();
         let is_const = ty.is_const();
         let layout = ty.fallible_layout(self).ok();
+        let location = ty.declaration().location();
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
         let id = self.next_item_id();
         let item = Item::new(
@@ -2006,6 +2011,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             None,
             self.root_module.into(),
             ItemKind::Type(ty),
+            Some(location),
         );
         self.add_builtin_item(item);
         Some(id.as_type_id_unchecked())
@@ -2194,6 +2200,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             None,
             self.current_module.into(),
             ItemKind::Module(module),
+            Some(cursor.location()),
         );
 
         let module_id = module.id().as_module_id_unchecked();
@@ -2241,11 +2248,6 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         assert!(self.in_codegen_phase());
         assert!(self.current_module == self.root_module);
 
-        let cb = match self.options.parse_callbacks {
-            Some(ref cb) => cb,
-            None => return CanDerive::No,
-        };
-
         *self
             .blocklisted_types_implement_traits
             .borrow_mut()
@@ -2255,8 +2257,27 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             .or_insert_with(|| {
                 item.expect_type()
                     .name()
-                    .and_then(|name| {
-                        cb.blocklisted_type_implements_trait(name, derive_trait)
+                    .and_then(|name| match self.options.parse_callbacks {
+                        Some(ref cb) => cb.blocklisted_type_implements_trait(
+                            name,
+                            derive_trait,
+                        ),
+                        // Sized integer types from <stdint.h> get mapped to Rust primitive
+                        // types regardless of whether they are blocklisted, so ensure that
+                        // standard traits are considered derivable for them too.
+                        None => match name {
+                            "int8_t" | "uint8_t" | "int16_t" | "uint16_t" |
+                            "int32_t" | "uint32_t" | "int64_t" |
+                            "uint64_t" | "uintptr_t" | "intptr_t" |
+                            "ptrdiff_t" => Some(CanDerive::Yes),
+                            "size_t" if self.options.size_t_is_usize => {
+                                Some(CanDerive::Yes)
+                            }
+                            "ssize_t" if self.options.size_t_is_usize => {
+                                Some(CanDerive::Yes)
+                            }
+                            _ => Some(CanDerive::No),
+                        },
                     })
                     .unwrap_or(CanDerive::No)
             })

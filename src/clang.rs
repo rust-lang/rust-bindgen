@@ -1401,6 +1401,12 @@ impl fmt::Display for SourceLocation {
     }
 }
 
+impl fmt::Debug for SourceLocation {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self)
+    }
+}
+
 /// A comment in the source text.
 ///
 /// Comments are sort of parsed by Clang, and have a tree structure.
