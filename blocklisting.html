@@ -166,8 +166,7 @@
                         <h1><a class="header" href="#blocklisting" id="blocklisting">Blocklisting</a></h1>
 <p>If you need to provide your own custom translation of some type (for example,
 because you need to wrap one of its fields in an <code>UnsafeCell</code>), you can
-explicitly blocklist
-generation of its definition. Uses of the blocklisted type
+explicitly blocklist generation of its definition. Uses of the blocklisted type
 will still appear in other types' definitions. (If you don't want the type to
 appear in the bindings at
 all, <a href="./opaque.html">make it opaque</a> instead of
@@ -175,12 +174,21 @@ blocklisting it.)</p>
 <p>Blocklisted types are pessimistically assumed not to be able to <code>derive</code> any
 traits, which can transitively affect other types' ability to <code>derive</code> traits or
 not.</p>
+<p>The <code>blocklist-file</code> option also allows the blocklisting of all items from a
+particular path regex, for example to block all types defined in system headers
+that are transitively included.</p>
 <h3><a class="header" href="#library" id="library">Library</a></h3>
 <ul>
+<li><a href="https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.blocklist_file"><code>bindgen::Builder::blocklist_file</code></a></li>
+<li><a href="https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.blocklist_function"><code>bindgen::Builder::blocklist_function</code></a></li>
+<li><a href="https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.blocklist_item"><code>bindgen::Builder::blocklist_item</code></a></li>
 <li><a href="https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.blocklist_type"><code>bindgen::Builder::blocklist_type</code></a></li>
 </ul>
 <h3><a class="header" href="#command-line" id="command-line">Command Line</a></h3>
 <ul>
+<li><code>--blocklist-file &lt;path&gt;</code></li>
+<li><code>--blocklist-function &lt;function&gt;</code></li>
+<li><code>--blocklist-item &lt;item&gt;</code></li>
 <li><code>--blocklist-type &lt;type&gt;</code></li>
 </ul>
 <h3><a class="header" href="#annotations" id="annotations">Annotations</a></h3>
