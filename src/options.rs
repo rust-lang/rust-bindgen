@@ -418,6 +418,14 @@ where
                 .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
+            Arg::new("allowlist-file")
+                .alias("allowlist-file")
+                .long("allowlist-file")
+                .help("Allowlist all contents of <path>.")
+                .value_name("path")
+                .takes_value(true)
+                .multiple_occurrences(true)
+                .number_of_values(1),
             Arg::new("verbose")
                 .long("verbose")
                 .help("Print verbose error messages."),
@@ -868,6 +876,12 @@ where
     if let Some(allowlist) = matches.values_of("allowlist-var") {
         for regex in allowlist {
             builder = builder.allowlist_var(regex);
+        }
+    }
+
+    if let Some(hidden_files) = matches.values_of("allowlist-file") {
+        for file in hidden_files {
+            builder = builder.allowlist_file(file);
         }
     }
 

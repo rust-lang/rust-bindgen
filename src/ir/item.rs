@@ -530,6 +530,11 @@ impl Item {
         &mut self.kind
     }
 
+    /// Where in the source is this item located?
+    pub fn location(&self) -> Option<&clang::SourceLocation> {
+        self.location.as_ref()
+    }
+
     /// Get an identifier that differentiates this item from its siblings.
     ///
     /// This should stay relatively stable in the face of code motion outside or

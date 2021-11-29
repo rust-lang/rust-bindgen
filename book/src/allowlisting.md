@@ -19,12 +19,14 @@ transitively used by a definition that matches them.
 * [`bindgen::Builder::allowlist_type`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.allowlist_type)
 * [`bindgen::Builder::allowlist_function`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.allowlist_function)
 * [`bindgen::Builder::allowlist_var`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.allowlist_var)
+* [`bindgen::Builder::allowlist_file`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.allowlist_file)
 
 ### Command Line
 
 * `--allowlist-type <type>`
 * `--allowlist-function <function>`
 * `--allowlist-var <var>`
+* `--allowlist-file <path>`
 
 ### Annotations
 

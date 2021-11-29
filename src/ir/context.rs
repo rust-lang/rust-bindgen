@@ -2296,7 +2296,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     // game.
                     if self.options().allowlisted_types.is_empty() &&
                         self.options().allowlisted_functions.is_empty() &&
-                        self.options().allowlisted_vars.is_empty()
+                        self.options().allowlisted_vars.is_empty() &&
+                        self.options().allowlisted_files.is_empty()
                     {
                         return true;
                     }
@@ -2305,6 +2306,23 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     // you know what you're doing.
                     if item.annotations().use_instead_of().is_some() {
                         return true;
+                    }
+
+                    // Items with a source location in an explicitly allowlisted file
+                    // are always included.
+                    if !self.options().allowlisted_files.is_empty() {
+                        if let Some(location) = item.location() {
+                            let (file, _, _, _) = location.location();
+                            if let Some(filename) = file.name() {
+                                if self
+                                    .options()
+                                    .allowlisted_files
+                                    .matches(&filename)
+                                {
+                                    return true;
+                                }
+                            }
+                        }
                     }
 
                     let name = item.path_for_allowlisting(self)[1..].join("::");
