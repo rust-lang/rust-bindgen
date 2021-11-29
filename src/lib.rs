@@ -313,6 +313,7 @@ impl Builder {
             (&self.options.allowlisted_functions, "--allowlist-function"),
             (&self.options.allowlisted_types, "--allowlist-type"),
             (&self.options.allowlisted_vars, "--allowlist-var"),
+            (&self.options.allowlisted_files, "--allowlist-file"),
             (&self.options.no_partialeq_types, "--no-partialeq"),
             (&self.options.no_copy_types, "--no-copy"),
             (&self.options.no_debug_types, "--no-debug"),
@@ -905,6 +906,12 @@ impl Builder {
     /// [regex](https://docs.rs/regex/*/regex/) docs
     pub fn allowlist_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.allowlisted_vars.insert(arg);
+        self
+    }
+
+    /// Allowlist the given file so that its contents appear in the generated bindings.
+    pub fn allowlist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.allowlisted_files.insert(arg);
         self
     }
 
@@ -1705,6 +1712,9 @@ struct BindgenOptions {
     /// Allowlisted variables. See docs for `allowlisted_types` for more.
     allowlisted_vars: RegexSet,
 
+    /// The set of files whose contents should be allowlisted.
+    allowlisted_files: RegexSet,
+
     /// The default style of code to generate for enums
     default_enum_style: codegen::EnumVariation,
 
@@ -1984,6 +1994,7 @@ impl BindgenOptions {
             &mut self.allowlisted_vars,
             &mut self.allowlisted_types,
             &mut self.allowlisted_functions,
+            &mut self.allowlisted_files,
             &mut self.blocklisted_types,
             &mut self.blocklisted_functions,
             &mut self.blocklisted_items,
@@ -2042,6 +2053,7 @@ impl Default for BindgenOptions {
             allowlisted_types: Default::default(),
             allowlisted_functions: Default::default(),
             allowlisted_vars: Default::default(),
+            allowlisted_files: Default::default(),
             default_enum_style: Default::default(),
             bitfield_enums: Default::default(),
             newtype_enums: Default::default(),
