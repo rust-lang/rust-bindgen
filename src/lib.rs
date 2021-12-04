@@ -1445,38 +1445,8 @@ impl Builder {
 
     /// Generate the Rust bindings using the options built up thus far.
     #[deprecated(since = "0.59.3", note = "please use `gen` instead")]
-    pub fn generate(mut self) -> Result<Bindings, ()> {
-        // Add any extra arguments from the environment to the clang command line.
-        if let Some(extra_clang_args) =
-            get_target_dependent_env_var("BINDGEN_EXTRA_CLANG_ARGS")
-        {
-            // Try to parse it with shell quoting. If we fail, make it one single big argument.
-            if let Some(strings) = shlex::split(&extra_clang_args) {
-                self.options.clang_args.extend(strings);
-            } else {
-                self.options.clang_args.push(extra_clang_args);
-            };
-        }
-
-        // Transform input headers to arguments on the clang command line.
-        self.options.input_header = self.input_headers.pop();
-        self.options.extra_input_headers = self.input_headers;
-        self.options.clang_args.extend(
-            self.options.extra_input_headers.iter().flat_map(|header| {
-                iter::once("-include".into())
-                    .chain(iter::once(header.to_string()))
-            }),
-        );
-
-        self.options.input_unsaved_files.extend(
-            self.input_header_contents
-                .drain(..)
-                .map(|(name, contents)| {
-                    clang::UnsavedFile::new(&name, &contents)
-                }),
-        );
-
-        Bindings::generate(self.options).map_err(|_| ())
+    pub fn generate(self) -> Result<Bindings, ()> {
+        self.gen().map_err(|_| ())
     }
 
     /// Generate the Rust bindings using the options built up thus far, or `Err` on failure.
