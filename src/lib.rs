@@ -2204,6 +2204,8 @@ impl std::fmt::Display for BindgenError {
     }
 }
 
+impl std::error::Error for BindgenError {}
+
 /// Generated Rust bindings.
 #[derive(Debug)]
 pub struct Bindings {
