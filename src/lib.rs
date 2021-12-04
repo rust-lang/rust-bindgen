@@ -180,7 +180,7 @@ impl Default for CodegenConfig {
 /// let bindings = builder().header("path/to/input/header")
 ///     .allowlist_type("SomeCoolClass")
 ///     .allowlist_function("do_some_cool_thing")
-///     .generate()?;
+///     .gen()?;
 ///
 /// // Write the generated bindings to an output file.
 /// bindings.write_to_file("path/to/output.rs")?;
@@ -247,7 +247,7 @@ impl Builder {
 
         // FIXME(emilio): This is a bit hacky, maybe we should stop re-using the
         // RustFeatures to store the "disable_untagged_union" call, and make it
-        // a different flag that we check elsewhere / in generate().
+        // a different flag that we check elsewhere / in gen().
         if !self.options.rust_features.untagged_union &&
             RustFeatures::from(self.options.rust_target).untagged_union
         {
@@ -595,7 +595,7 @@ impl Builder {
     /// ```ignore
     /// let bindings = bindgen::Builder::default()
     ///     .header("input.h")
-    ///     .generate()
+    ///     .gen()
     ///     .unwrap();
     /// ```
     ///
@@ -607,7 +607,7 @@ impl Builder {
     ///     .header("first.h")
     ///     .header("second.h")
     ///     .header("third.h")
-    ///     .generate()
+    ///     .gen()
     ///     .unwrap();
     /// ```
     pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
@@ -2722,7 +2722,7 @@ fn get_target_dependent_env_var(var: &str) -> Option<String> {
 /// let bindings = builder()
 ///     .header("path/to/input/header")
 ///     .parse_callbacks(Box::new(bindgen::CargoCallbacks))
-///     .generate();
+///     .gen();
 /// ```
 #[derive(Debug)]
 pub struct CargoCallbacks;

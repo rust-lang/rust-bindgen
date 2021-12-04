@@ -49,7 +49,7 @@ pub fn main() {
         Ok((builder, output, verbose)) => {
             clang_version_check();
             let builder_result = panic::catch_unwind(|| {
-                builder.generate().expect("Unable to generate bindings")
+                builder.gen().expect("Unable to generate bindings")
             });
 
             if builder_result.is_err() {
@@ -99,7 +99,7 @@ mod test {
         let (builder, _output, _verbose) =
             crate::options::builder_from_flags(command_line_flags.into_iter())
                 .unwrap();
-        builder.generate().expect("failed to generate bindings");
+        builder.gen().expect("failed to generate bindings");
     }
 
     #[test]
