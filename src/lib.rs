@@ -2349,20 +2349,20 @@ impl Bindings {
             if let Ok(md) = std::fs::metadata(h) {
                 if md.is_dir() {
                     return Err(BindgenError::InvalidHeader(format!(
-                        "error: '{}' is a folder",
+                        "'{}' is a folder",
                         h
                     )));
                 }
                 if !can_read(&md.permissions()) {
                     return Err(BindgenError::InvalidHeader(format!(
-                        "error: insufficient permissions to read '{}'",
+                        "insufficient permissions to read '{}'",
                         h
                     )));
                 }
                 options.clang_args.push(h.clone())
             } else {
                 return Err(BindgenError::InvalidHeader(format!(
-                    "error: header '{}' does not exist.",
+                    "header '{}' does not exist.",
                     h
                 )));
             }
