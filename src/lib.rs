@@ -2691,9 +2691,7 @@ fn commandline_flag_unit_test_function() {
     .map(|&x| x.into())
     .collect::<Vec<String>>();
 
-    assert!(test_cases
-        .iter()
-        .all(|ref x| command_line_flags.contains(x),));
+    assert!(test_cases.iter().all(|x| command_line_flags.contains(x)));
 
     //Test 2
     let bindings = crate::builder()
@@ -2718,9 +2716,7 @@ fn commandline_flag_unit_test_function() {
     .collect::<Vec<String>>();
     println!("{:?}", command_line_flags);
 
-    assert!(test_cases
-        .iter()
-        .all(|ref x| command_line_flags.contains(x),));
+    assert!(test_cases.iter().all(|x| command_line_flags.contains(x)));
 }
 
 #[test]
