@@ -32,7 +32,7 @@ fn main() {
         // included header files changed.
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         // Finish the builder and generate the bindings.
-        .generate()
+        .gen()
         // Unwrap the Result and panic on failure.
         .expect("Unable to generate bindings");
 

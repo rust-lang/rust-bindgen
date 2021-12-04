@@ -185,7 +185,7 @@ fn main() {
         .constified_enum("my_prefixed_enum_to_be_constified")
         .opaque_type("my_prefixed_templated_foo<my_prefixed_baz>")
         .depfile(out_rust_file_relative.display().to_string(), &out_dep_file)
-        .generate()
+        .gen()
         .expect("Unable to generate bindings");
 
     assert!(macros.read().unwrap().contains("TESTMACRO"));

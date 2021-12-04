@@ -24,7 +24,7 @@
 ```Rust
 bindgen::Builder::default()
     .header("input.h")
-    .generate()
+    .gen()
     .unwrap()
 ```
 
