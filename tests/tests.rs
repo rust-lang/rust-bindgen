@@ -9,7 +9,7 @@ use bindgen::{clang_version, Builder};
 use std::env;
 use std::fs;
 use std::io::{self, BufRead, BufReader, Error, ErrorKind, Read, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process;
 use std::sync::Once;
 
@@ -116,14 +116,13 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
 }
 
 fn compare_generated_header(
-    header: &PathBuf,
+    header: &Path,
     builder: BuilderState,
     check_roundtrip: bool,
 ) -> Result<(), Error> {
-    let file_name = header.file_name().ok_or(Error::new(
-        ErrorKind::Other,
-        "compare_generated_header expects a file",
-    ))?;
+    let file_name = header.file_name().ok_or_else(|| {
+        Error::new(ErrorKind::Other, "compare_generated_header expects a file")
+    })?;
 
     let mut expectation = PathBuf::from(header);
     expectation.pop();
@@ -260,7 +259,7 @@ fn compare_generated_header(
 
     if let Some(roundtrip_builder) = roundtrip_builder {
         if let Err(e) =
-            compare_generated_header(&header, roundtrip_builder, false)
+            compare_generated_header(header, roundtrip_builder, false)
         {
             return Err(Error::new(ErrorKind::Other, format!("Checking CLI flags roundtrip errored! You probably need to fix Builder::command_line_flags. {}", e)));
         }
@@ -292,7 +291,7 @@ impl BuilderState {
             let mut builder = builder_from_flags(flags.into_iter())?.0;
             if let Some(ref parse_cb) = self.parse_callbacks {
                 builder =
-                    builder.parse_callbacks(parse_callbacks::lookup(&parse_cb));
+                    builder.parse_callbacks(parse_callbacks::lookup(parse_cb));
             }
             Some(BuilderState {
                 builder,
@@ -305,7 +304,7 @@ impl BuilderState {
     }
 }
 
-fn create_bindgen_builder(header: &PathBuf) -> Result<BuilderState, Error> {
+fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
     #[cfg(feature = "logging")]
     let _ = env_logger::try_init();
 
@@ -357,9 +356,9 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<BuilderState, Error> {
     // - add header filename as 1st element
     // - prepend raw lines so they're in the right order for expected output
     // - append the test header's bindgen flags
-    let header_str = header
-        .to_str()
-        .ok_or(Error::new(ErrorKind::Other, "Invalid header file name"))?;
+    let header_str = header.to_str().ok_or_else(|| {
+        Error::new(ErrorKind::Other, "Invalid header file name")
+    })?;
 
     let prepend = [
         "bindgen",
@@ -384,7 +383,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<BuilderState, Error> {
 
     let mut builder = builder_from_flags(args)?.0;
     if let Some(ref parse_cb) = parse_callbacks {
-        builder = builder.parse_callbacks(parse_callbacks::lookup(&parse_cb));
+        builder = builder.parse_callbacks(parse_callbacks::lookup(parse_cb));
     }
     Ok(BuilderState {
         builder,
@@ -631,11 +630,11 @@ fn dump_preprocessed_input() {
     let empty_layout = slurp(empty_layout);
 
     assert!(
-        bindgen_ii.find(&arg_keyword).is_some(),
+        bindgen_ii.contains(&arg_keyword),
         "arg_keyword.hpp is in the preprocessed file"
     );
     assert!(
-        bindgen_ii.find(&empty_layout).is_some(),
+        bindgen_ii.contains(&empty_layout),
         "cpp-empty-layout.hpp is in the preprocessed file"
     );
 }
