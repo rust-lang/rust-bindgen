@@ -2154,6 +2154,7 @@ fn ensure_libclang_is_loaded() {}
 
 /// Error type for rust-bindgen.
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum BindgenError {
     /// Any provided header was invalid.
     InvalidHeader(String),
