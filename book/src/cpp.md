@@ -71,3 +71,8 @@ cannot translate into Rust:
   generate undefined behaviour. See
   [the tracking issue for exceptions](https://github.com/rust-lang/rust-bindgen/issues/1208)
   for more details.
+  
+* Return value optimization. C++ compilers will in certain circumstances optimize functions
+  returning a struct type value to instead take an extra hidden argument that refers
+  to the return value struct. `bindgen` cannot necessarily know about this optimization and
+  thus at present `bindgen`-interfaces for these kinds of functions are invalid. 
