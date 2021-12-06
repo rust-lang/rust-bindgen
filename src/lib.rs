@@ -1827,13 +1827,6 @@ struct BindgenOptions {
     /// Whether to time the bindgen phases.
     time_phases: bool,
 
-    /// True if we should generate constant names that are **directly** under
-    /// namespaces.
-    namespaced_constants: bool,
-
-    /// True if we should use MSVC name mangling rules.
-    msvc_mangling: bool,
-
     /// Whether we should convert float types to f32/f64 types.
     convert_floats: bool,
 
@@ -2084,8 +2077,6 @@ impl Default for BindgenOptions {
             use_core: false,
             ctypes_prefix: None,
             anon_fields_prefix: DEFAULT_ANON_FIELDS_PREFIX.into(),
-            namespaced_constants: true,
-            msvc_mangling: false,
             convert_floats: true,
             raw_lines: vec![],
             module_lines: HashMap::default(),

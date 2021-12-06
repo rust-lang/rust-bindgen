@@ -364,9 +364,6 @@ pub struct BindgenContext {
 
     in_codegen: bool,
 
-    /// The clang index for parsing.
-    index: clang::Index,
-
     /// The translation unit for parsing.
     translation_unit: clang::TranslationUnit,
 
@@ -419,12 +416,6 @@ pub struct BindgenContext {
     /// This is populated when we enter codegen by `compute_cannot_derive_copy`
     /// and is always `None` before that and `Some` after.
     cannot_derive_copy: Option<HashSet<ItemId>>,
-
-    /// The set of (`ItemId`s of) types that can't derive copy in array.
-    ///
-    /// This is populated when we enter codegen by `compute_cannot_derive_copy`
-    /// and is always `None` before that and `Some` after.
-    cannot_derive_copy_in_array: Option<HashSet<ItemId>>,
 
     /// The set of (`ItemId`s of) types that can't derive hash.
     ///
@@ -569,7 +560,6 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             replacements: Default::default(),
             collected_typerefs: false,
             in_codegen: false,
-            index,
             translation_unit,
             target_info,
             options,
@@ -582,7 +572,6 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             cannot_derive_debug: None,
             cannot_derive_default: None,
             cannot_derive_copy: None,
-            cannot_derive_copy_in_array: None,
             cannot_derive_hash: None,
             cannot_derive_partialeq_or_partialord: None,
             sizedness: None,
