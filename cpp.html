@@ -248,6 +248,12 @@ generate undefined behaviour. See
 <a href="https://github.com/rust-lang/rust-bindgen/issues/1208">the tracking issue for exceptions</a>
 for more details.</p>
 </li>
+<li>
+<p>Return value optimization. C++ compilers will in certain circumstances optimize functions
+returning a struct type value to instead take an extra hidden argument that refers
+to the return value struct. <code>bindgen</code> cannot necessarily know about this optimization and
+thus at present <code>bindgen</code>-interfaces for these kinds of functions are invalid. </p>
+</li>
 </ul>
 
                     </main>
