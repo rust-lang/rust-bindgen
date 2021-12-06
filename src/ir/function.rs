@@ -131,6 +131,11 @@ impl Function {
         self.signature
     }
 
+    /// Get this function's comment.
+    pub fn comment(&self) -> Option<&str> {
+        self.comment.as_deref()
+    }
+
     /// Get this function's kind.
     pub fn kind(&self) -> FunctionKind {
         self.kind
