@@ -1267,7 +1267,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             .unwrap()
             .get(&id)
             .cloned()
-            .unwrap_or(SizednessResult::ZeroSized)
+            .unwrap_or_default()
     }
 
     /// Compute whether the type has vtable.
@@ -1291,7 +1291,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             .unwrap()
             .get(&id.into())
             .cloned()
-            .unwrap_or(HasVtableResult::No)
+            .unwrap_or_default()
     }
 
     /// Compute whether the type has a destructor.
@@ -2577,7 +2577,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             .unwrap()
             .get(&id)
             .cloned()
-            .unwrap_or(CanDerive::Yes)
+            .unwrap_or_default()
     }
 
     /// Look up whether the item with `id` can derive `Copy` or not.

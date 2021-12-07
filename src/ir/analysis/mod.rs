@@ -184,7 +184,7 @@ where
     let mut dependencies = HashMap::default();
 
     for &item in ctx.allowlisted_items() {
-        dependencies.entry(item).or_insert_with(Vec::new);
+        dependencies.entry(item).or_default();
 
         {
             // We reverse our natural IR graph edges to find dependencies
@@ -195,10 +195,7 @@ where
                     if ctx.allowlisted_items().contains(&sub_item) &&
                         consider_edge(edge_kind)
                     {
-                        dependencies
-                            .entry(sub_item)
-                            .or_insert_with(Vec::new)
-                            .push(item);
+                        dependencies.entry(sub_item).or_default().push(item);
                     }
                 },
                 &(),
@@ -281,13 +278,9 @@ mod tests {
         fn reverse(&self) -> Graph {
             let mut reversed = Graph::default();
             for (node, edges) in self.0.iter() {
-                reversed.0.entry(*node).or_insert_with(Vec::new);
+                reversed.0.entry(*node).or_default();
                 for referent in edges.iter() {
-                    reversed
-                        .0
-                        .entry(*referent)
-                        .or_insert_with(Vec::new)
-                        .push(*node);
+                    reversed.0.entry(*referent).or_default().push(*node);
                 }
             }
             reversed
@@ -329,20 +322,13 @@ mod tests {
             // Yes, what follows is a **terribly** inefficient set union
             // implementation. Don't copy this code outside of this test!
 
-            let original_size = self
-                .reachable
-                .entry(node)
-                .or_insert_with(HashSet::default)
-                .len();
+            let original_size = self.reachable.entry(node).or_default().len();
 
             for sub_node in self.graph.0[&node].iter() {
                 self.reachable.get_mut(&node).unwrap().insert(*sub_node);
 
-                let sub_reachable = self
-                    .reachable
-                    .entry(*sub_node)
-                    .or_insert_with(HashSet::default)
-                    .clone();
+                let sub_reachable =
+                    self.reachable.entry(*sub_node).or_default().clone();
 
                 for transitive in sub_reachable {
                     self.reachable.get_mut(&node).unwrap().insert(transitive);

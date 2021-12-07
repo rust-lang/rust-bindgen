@@ -1066,7 +1066,7 @@ impl Builder {
         self.options
             .module_lines
             .entry(mod_.into())
-            .or_insert_with(Vec::new)
+            .or_default()
             .push(line.into());
         self
     }
@@ -1081,7 +1081,7 @@ impl Builder {
         self.options
             .module_lines
             .entry(mod_.into())
-            .or_insert_with(Vec::new)
+            .or_default()
             .extend(lines.into_iter().map(Into::into));
         self
     }

@@ -1714,8 +1714,7 @@ impl ClangItemParser for Item {
                         ty.spelling()
                     );
                     Item::type_param(Some(id), location, ctx)
-                        .map(Ok)
-                        .unwrap_or(Err(ParseError::Recurse))
+                        .map_or(Err(ParseError::Recurse), Ok)
                 } else {
                     result
                 }

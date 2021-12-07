@@ -440,7 +440,7 @@ impl<'ctx> CannotDerive<'ctx> {
                     CanDerive::No => trace!("    member {:?} cannot derive {}", sub_id, self.derive_trait),
                 }
 
-                *candidate.get_or_insert(CanDerive::Yes) |= can_derive;
+                *candidate.get_or_insert_default() |= can_derive;
             },
             &(),
         );

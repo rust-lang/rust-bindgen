@@ -399,7 +399,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             .collect();
 
         for item in allowlisted_and_blocklisted_items {
-            dependencies.entry(item).or_insert_with(Vec::new);
+            dependencies.entry(item).or_default();
             used.entry(item).or_insert_with(|| Some(ItemSet::new()));
 
             {
@@ -410,10 +410,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
                     &mut |sub_item: ItemId, _| {
                         used.entry(sub_item)
                             .or_insert_with(|| Some(ItemSet::new()));
-                        dependencies
-                            .entry(sub_item)
-                            .or_insert_with(Vec::new)
-                            .push(item);
+                        dependencies.entry(sub_item).or_default().push(item);
                     },
                     &(),
                 );
@@ -452,10 +449,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
                     used.entry(arg).or_insert_with(|| Some(ItemSet::new()));
                     used.entry(param).or_insert_with(|| Some(ItemSet::new()));
 
-                    dependencies
-                        .entry(arg)
-                        .or_insert_with(Vec::new)
-                        .push(param);
+                    dependencies.entry(arg).or_default().push(param);
                 }
             }
         }
