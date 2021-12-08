@@ -2150,8 +2150,12 @@ fn ensure_libclang_is_loaded() {}
 #[derive(Debug)]
 #[non_exhaustive]
 pub enum BindgenError {
-    /// Any provided header was invalid.
-    InvalidHeader(String),
+    /// The header was a folder.
+    FolderAsHeader(String),
+    /// Permissions to read the header is insufficient.
+    InsufficientPermissions(String),
+    /// The header does not exist.
+    NotExist(String),
     /// Clang diagnosed an error.
     ClangDiagnostic(String),
 }
@@ -2159,8 +2163,12 @@ pub enum BindgenError {
 impl std::fmt::Display for BindgenError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            BindgenError::InvalidHeader(message) => {
-                write!(f, "invalid header: {}", message)
+            BindgenError::FolderAsHeader(h) => write!(f, "'{}' is a folder", h),
+            BindgenError::InsufficientPermissions(h) => {
+                write!(f, "insufficient permissions to read '{}'", h)
+            }
+            BindgenError::NotExist(h) => {
+                write!(f, "header '{}' does not exist.", h)
             }
             BindgenError::ClangDiagnostic(message) => {
                 write!(f, "clang diagnosed error: {}", message)
@@ -2347,23 +2355,16 @@ impl Bindings {
         if let Some(h) = options.input_header.as_ref() {
             if let Ok(md) = std::fs::metadata(h) {
                 if md.is_dir() {
-                    return Err(BindgenError::InvalidHeader(format!(
-                        "'{}' is a folder",
-                        h
-                    )));
+                    return Err(BindgenError::FolderAsHeader(h.into()));
                 }
                 if !can_read(&md.permissions()) {
-                    return Err(BindgenError::InvalidHeader(format!(
-                        "insufficient permissions to read '{}'",
-                        h
-                    )));
+                    return Err(BindgenError::InsufficientPermissions(
+                        h.into(),
+                    ));
                 }
                 options.clang_args.push(h.clone())
             } else {
-                return Err(BindgenError::InvalidHeader(format!(
-                    "header '{}' does not exist.",
-                    h
-                )));
+                return Err(BindgenError::NotExist(h.into()));
             }
         }
 
