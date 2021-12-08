@@ -8,12 +8,8 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 
-const LIBCLANG_VERSION_DIRS: &'static [&'static str] = &[
-    "libclang-3.9",
-    "libclang-4",
-    "libclang-5",
-    "libclang-9",
-];
+const LIBCLANG_VERSION_DIRS: &[&str] =
+    &["libclang-3.9", "libclang-4", "libclang-5", "libclang-9"];
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
@@ -30,7 +26,7 @@ fn main() {
         for entry in fs::read_dir(dir).unwrap() {
             let entry = entry.unwrap();
             let path = entry.path();
-            let path = path.canonicalize().unwrap_or_else(|_| path.into());
+            let path = path.canonicalize().unwrap_or(path);
             if path.extension().map(|e| e.to_string_lossy()) !=
                 Some("rs".into())
             {
