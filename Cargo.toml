@@ -85,3 +85,6 @@ testing_only_libclang_9 = []
 testing_only_libclang_5 = []
 testing_only_libclang_4 = []
 testing_only_libclang_3_9 = []
+
+[workspace]
+members = ["bindgen-integration"]
