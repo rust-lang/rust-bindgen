@@ -180,7 +180,7 @@ impl Default for CodegenConfig {
 /// let bindings = builder().header("path/to/input/header")
 ///     .allowlist_type("SomeCoolClass")
 ///     .allowlist_function("do_some_cool_thing")
-///     .gen()?;
+///     .generate()?;
 ///
 /// // Write the generated bindings to an output file.
 /// bindings.write_to_file("path/to/output.rs")?;
@@ -247,7 +247,7 @@ impl Builder {
 
         // FIXME(emilio): This is a bit hacky, maybe we should stop re-using the
         // RustFeatures to store the "disable_untagged_union" call, and make it
-        // a different flag that we check elsewhere / in gen().
+        // a different flag that we check elsewhere / in generate().
         if !self.options.rust_features.untagged_union &&
             RustFeatures::from(self.options.rust_target).untagged_union
         {
@@ -595,7 +595,7 @@ impl Builder {
     /// ```ignore
     /// let bindings = bindgen::Builder::default()
     ///     .header("input.h")
-    ///     .gen()
+    ///     .generate()
     ///     .unwrap();
     /// ```
     ///
@@ -607,7 +607,7 @@ impl Builder {
     ///     .header("first.h")
     ///     .header("second.h")
     ///     .header("third.h")
-    ///     .gen()
+    ///     .generate()
     ///     .unwrap();
     /// ```
     pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
@@ -1444,13 +1444,7 @@ impl Builder {
     }
 
     /// Generate the Rust bindings using the options built up thus far.
-    #[deprecated(since = "0.59.3", note = "please use `gen` instead")]
-    pub fn generate(self) -> Result<Bindings, ()> {
-        self.gen().map_err(|_| ())
-    }
-
-    /// Generate the Rust bindings using the options built up thus far, or `Err` on failure.
-    pub fn gen(mut self) -> Result<Bindings, BindgenError> {
+    pub fn generate(mut self) -> Result<Bindings, BindgenError> {
         // Add any extra arguments from the environment to the clang command line.
         if let Some(extra_clang_args) =
             get_target_dependent_env_var("BINDGEN_EXTRA_CLANG_ARGS")
@@ -2697,7 +2691,7 @@ fn get_target_dependent_env_var(var: &str) -> Option<String> {
 /// let bindings = builder()
 ///     .header("path/to/input/header")
 ///     .parse_callbacks(Box::new(bindgen::CargoCallbacks))
-///     .gen();
+///     .generate();
 /// ```
 #[derive(Debug)]
 pub struct CargoCallbacks;
