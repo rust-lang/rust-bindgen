@@ -26,15 +26,15 @@ extern crate quickcheck;
 extern crate rand;
 extern crate tempdir;
 
-use std::sync::Mutex;
 use quickcheck::{QuickCheck, StdGen, TestResult};
+use rand::thread_rng;
+use std::error::Error;
 use std::fs::File;
 use std::io::Write;
-use tempdir::TempDir;
-use std::process::{Command, Output};
 use std::path::PathBuf;
-use std::error::Error;
-use rand::thread_rng;
+use std::process::{Command, Output};
+use std::sync::Mutex;
+use tempdir::TempDir;
 
 /// Contains definitions of and impls for types used to fuzz C declarations.
 pub mod fuzzers;
@@ -47,12 +47,15 @@ struct Context {
 
 // Initialize global context.
 lazy_static! {
-    static ref CONTEXT: Mutex<Context> = Mutex::new(Context { output_path: None });
+    static ref CONTEXT: Mutex<Context> =
+        Mutex::new(Context { output_path: None });
 }
 
 // Passes fuzzed header to the `csmith-fuzzing/predicate.py` script, returns
 // output of the associated command.
-fn run_predicate_script(header: fuzzers::HeaderC) -> Result<Output, Box<Error>> {
+fn run_predicate_script(
+    header: fuzzers::HeaderC,
+) -> Result<Output, Box<Error>> {
     let dir = TempDir::new("bindgen_prop")?;
     let header_path = dir.path().join("prop_test.h");
 
@@ -110,7 +113,11 @@ fn bindgen_prop(header: fuzzers::HeaderC) -> TestResult {
 /// fuzzed C headers generated with types defined in the `fuzzers` module.
 /// Success/Failure is dictated by the result of passing the fuzzed headers
 /// to the `csmith-fuzzing/predicate.py` script.
-pub fn test_bindgen(generate_range: usize, tests: usize, output_path: Option<&str>) {
+pub fn test_bindgen(
+    generate_range: usize,
+    tests: usize,
+    output_path: Option<&str>,
+) {
     match output_path {
         Some(path) => {
             CONTEXT.lock().unwrap().output_path =
