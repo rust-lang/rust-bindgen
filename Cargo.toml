@@ -90,4 +90,4 @@ testing_only_libclang_4 = []
 testing_only_libclang_3_9 = []
 
 [workspace]
-members = ["bindgen-integration", "tests/quickchecking"]
+members = ["bindgen-integration", "tests/expectations", "tests/quickchecking"]
