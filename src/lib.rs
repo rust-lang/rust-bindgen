@@ -2147,7 +2147,7 @@ fn ensure_libclang_is_loaded() {
 fn ensure_libclang_is_loaded() {}
 
 /// Error type for rust-bindgen.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum BindgenError {
     /// The header was a folder.
