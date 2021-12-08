@@ -12,13 +12,13 @@ use quickchecking::fuzzers::{
 use rand::thread_rng;
 
 #[test]
-fn test_declaraion_c_does_not_panic() {
+fn test_declaration_c_does_not_panic() {
     let gen = &mut StdGen::new(thread_rng(), 50);
     let _: DeclarationC = Arbitrary::arbitrary(gen);
 }
 
 #[test]
-fn test_declaraion_list_c_does_not_panic() {
+fn test_declaration_list_c_does_not_panic() {
     let gen = StdGen::new(thread_rng(), 50);
     let _: DeclarationListC = Arbitrary::arbitrary(gen);
 }
