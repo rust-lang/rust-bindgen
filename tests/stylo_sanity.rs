@@ -540,7 +540,7 @@ fn sanity_check_can_generate_stylo_bindings() {
         .clang_arg("-DMOZ_STYLO")
         .clang_arg("-DOS_POSIX=1")
         .clang_arg("-DOS_LINUX=1")
-        .gen()
+        .generate()
         .expect("Should generate stylo bindings");
 
     let now = Instant::now();

@@ -193,8 +193,8 @@ fn compare_generated_header(
 
     let (builder, roundtrip_builder) = builder.into_builder(check_roundtrip)?;
 
-    // We skip the gen() error here so we get a full diff below
-    let (actual, rustfmt_stderr) = match builder.gen() {
+    // We skip the generate() error here so we get a full diff below
+    let (actual, rustfmt_stderr) = match builder.generate() {
         Ok(bindings) => {
             let actual = bindings.to_string();
             rustfmt(actual)
@@ -426,7 +426,7 @@ fn test_clang_env_args() {
              #ifdef _ENV_TWO\nextern const int y[] = { 42 };\n#endif\n\
              #ifdef NOT_THREE\nextern const int z[] = { 42 };\n#endif\n",
         )
-        .gen()
+        .generate()
         .unwrap()
         .to_string();
 
@@ -453,7 +453,7 @@ fn test_header_contents() {
         .disable_header_comment()
         .header_contents("test.h", "int foo(const char* a);")
         .clang_arg("--target=x86_64-unknown-linux")
-        .gen()
+        .generate()
         .unwrap()
         .to_string();
 
@@ -480,7 +480,7 @@ fn test_multiple_header_calls_in_builder() {
         ))
         .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/char.h"))
         .clang_arg("--target=x86_64-unknown-linux")
-        .gen()
+        .generate()
         .unwrap()
         .to_string();
 
@@ -514,7 +514,7 @@ fn test_multiple_header_contents() {
         .header_contents("test.h", "int foo(const char* a);")
         .header_contents("test2.h", "float foo2(const char* b);")
         .clang_arg("--target=x86_64-unknown-linux")
-        .gen()
+        .generate()
         .unwrap()
         .to_string();
 
@@ -546,7 +546,7 @@ fn test_mixed_header_and_header_contents() {
         .header_contents("test.h", "int bar(const char* a);")
         .header_contents("test2.h", "float bar2(const char* b);")
         .clang_arg("--target=x86_64-unknown-linux")
-        .gen()
+        .generate()
         .unwrap()
         .to_string();
 
@@ -596,7 +596,7 @@ fn emit_depfile() {
         env::var_os("BINDGEN_DISABLE_ROUNDTRIP_TEST").is_none();
     let (builder, _roundtrip_builder) =
         builder.into_builder(check_roundtrip).unwrap();
-    let _bindings = builder.gen().unwrap();
+    let _bindings = builder.generate().unwrap();
 
     let observed = std::fs::read_to_string(observed_depfile).unwrap();
     let expected = std::fs::read_to_string(expected_depfile).unwrap();
