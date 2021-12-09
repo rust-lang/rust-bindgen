@@ -2151,11 +2151,11 @@ fn ensure_libclang_is_loaded() {}
 #[non_exhaustive]
 pub enum BindgenError {
     /// The header was a folder.
-    FolderAsHeader(String),
+    FolderAsHeader(PathBuf),
     /// Permissions to read the header is insufficient.
-    InsufficientPermissions(String),
+    InsufficientPermissions(PathBuf),
     /// The header does not exist.
-    NotExist(String),
+    NotExist(PathBuf),
     /// Clang diagnosed an error.
     ClangDiagnostic(String),
 }
@@ -2163,12 +2163,14 @@ pub enum BindgenError {
 impl std::fmt::Display for BindgenError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            BindgenError::FolderAsHeader(h) => write!(f, "'{}' is a folder", h),
+            BindgenError::FolderAsHeader(h) => {
+                write!(f, "'{}' is a folder", h.display())
+            }
             BindgenError::InsufficientPermissions(h) => {
-                write!(f, "insufficient permissions to read '{}'", h)
+                write!(f, "insufficient permissions to read '{}'", h.display())
             }
             BindgenError::NotExist(h) => {
-                write!(f, "header '{}' does not exist.", h)
+                write!(f, "header '{}' does not exist.", h.display())
             }
             BindgenError::ClangDiagnostic(message) => {
                 write!(f, "clang diagnosed error: {}", message)
@@ -2349,18 +2351,19 @@ impl Bindings {
         }
 
         if let Some(h) = options.input_header.as_ref() {
-            if let Ok(md) = std::fs::metadata(h) {
+            let path = Path::new(h);
+            if let Ok(md) = std::fs::metadata(path) {
                 if md.is_dir() {
-                    return Err(BindgenError::FolderAsHeader(h.into()));
+                    return Err(BindgenError::FolderAsHeader(path.into()));
                 }
                 if !can_read(&md.permissions()) {
                     return Err(BindgenError::InsufficientPermissions(
-                        h.into(),
+                        path.into(),
                     ));
                 }
                 options.clang_args.push(h.clone())
             } else {
-                return Err(BindgenError::NotExist(h.into()));
+                return Err(BindgenError::NotExist(path.into()));
             }
         }
 
