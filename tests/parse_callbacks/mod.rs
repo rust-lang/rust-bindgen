@@ -1,6 +1,6 @@
 use bindgen::callbacks::*;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct EnumVariantRename;
 
 impl ParseCallbacks for EnumVariantRename {
@@ -14,7 +14,7 @@ impl ParseCallbacks for EnumVariantRename {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct BlocklistedTypeImplementsTrait;
 
 impl ParseCallbacks for BlocklistedTypeImplementsTrait {
