@@ -51,7 +51,7 @@ cexpr = "0.6"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
 clap = { version = "2", optional = true }
 clang-sys = { version = "1", features = ["clang_6_0"] }
-dyn-clone = "1"
+dyn-clone = { version = "1", optional = true }
 lazycell = "1"
 lazy_static = "1"
 peeking_take_while = "0.1.2"
@@ -72,6 +72,8 @@ version = "0.4"
 
 [features]
 default = ["logging", "clap", "runtime", "which-rustfmt"]
+# Implement the `Clone` trait on `bindgen::Builder`
+builder-clone = ["dyn-clone"]
 logging = ["env_logger", "log"]
 static = ["clang-sys/static"]
 runtime = ["clang-sys/runtime"]

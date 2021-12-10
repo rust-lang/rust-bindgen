@@ -219,7 +219,8 @@ impl Default for CodegenConfig {
 /// End-users of the crate may need to set the `BINDGEN_EXTRA_CLANG_ARGS` environment variable to
 /// add additional arguments. For example, to build against a different sysroot a user could set
 /// `BINDGEN_EXTRA_CLANG_ARGS` to `--sysroot=/path/to/sysroot`.
-#[derive(Clone, Debug, Default)]
+#[cfg_attr(feature = "builder-clone", derive(Clone))]
+#[derive(Debug, Default)]
 pub struct Builder {
     options: BindgenOptions,
     input_headers: Vec<String>,
@@ -1663,7 +1664,8 @@ impl Builder {
 }
 
 /// Configuration options for generated bindings.
-#[derive(Clone, Debug)]
+#[cfg_attr(feature = "builder-clone", derive(Clone))]
+#[derive(Debug)]
 struct BindgenOptions {
     /// The set of types that have been blocklisted and should not appear
     /// anywhere in the generated code.
