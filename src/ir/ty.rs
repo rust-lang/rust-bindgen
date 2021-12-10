@@ -1036,6 +1036,15 @@ impl Type {
                         Item::from_ty_or_ref(pointee, location, None, ctx);
                     TypeKind::Pointer(inner)
                 }
+                CXType_Attributed => {
+                    return Self::from_clang_ty(
+                        potential_id,
+                        &canonical_ty,
+                        location,
+                        parent_id,
+                        ctx,
+                    );
+                }
                 CXType_BlockPointer => {
                     let pointee = ty.pointee_type().expect("Not valid Type?");
                     let inner =
