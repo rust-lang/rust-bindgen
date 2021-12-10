@@ -514,7 +514,8 @@ impl BindgenContext {
         let index = clang::Index::new(false, true);
 
         let parse_options =
-            clang_sys::CXTranslationUnit_DetailedPreprocessingRecord;
+            clang_sys::CXTranslationUnit_DetailedPreprocessingRecord |
+                clang_sys::CXTranslationUnit_IncludeAttributedTypes;
 
         let translation_unit = {
             let _t =

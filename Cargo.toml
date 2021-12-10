@@ -50,7 +50,7 @@ bitflags = "1.0.3"
 cexpr = "0.6"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
 clap = { version = "2", optional = true }
-clang-sys = { version = "1", features = ["clang_6_0"] }
+clang-sys = { version = "1", features = ["clang_8_0"] }
 lazycell = "1"
 lazy_static = "1"
 peeking_take_while = "0.1.2"
