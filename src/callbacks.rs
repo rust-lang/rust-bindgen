@@ -25,7 +25,7 @@ impl Default for MacroParsingBehavior {
 
 /// A trait to allow configuring different kinds of types in different
 /// situations.
-pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
+pub trait ParseCallbacks: fmt::Debug + UnwindSafe + dyn_clone::DynClone {
     /// This function will be run on every macro that is identified.
     fn will_parse_macro(&self, _name: &str) -> MacroParsingBehavior {
         MacroParsingBehavior::Default
@@ -104,3 +104,5 @@ pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
         vec![]
     }
 }
+
+dyn_clone::clone_trait_object!(ParseCallbacks);

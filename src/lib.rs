@@ -219,7 +219,7 @@ impl Default for CodegenConfig {
 /// End-users of the crate may need to set the `BINDGEN_EXTRA_CLANG_ARGS` environment variable to
 /// add additional arguments. For example, to build against a different sysroot a user could set
 /// `BINDGEN_EXTRA_CLANG_ARGS` to `--sysroot=/path/to/sysroot`.
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Builder {
     options: BindgenOptions,
     input_headers: Vec<String>,
@@ -1663,7 +1663,7 @@ impl Builder {
 }
 
 /// Configuration options for generated bindings.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct BindgenOptions {
     /// The set of types that have been blocklisted and should not appear
     /// anywhere in the generated code.
@@ -2656,7 +2656,7 @@ fn get_target_dependent_env_var(var: &str) -> Option<String> {
 ///     .parse_callbacks(Box::new(bindgen::CargoCallbacks))
 ///     .generate();
 /// ```
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CargoCallbacks;
 
 impl callbacks::ParseCallbacks for CargoCallbacks {

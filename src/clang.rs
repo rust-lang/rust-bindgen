@@ -1687,6 +1687,7 @@ impl Drop for Diagnostic {
 }
 
 /// A file which has not been saved to disk.
+#[derive(Clone)]
 pub struct UnsavedFile {
     x: CXUnsavedFile,
     /// The name of the unsaved file. Kept here to avoid leaving dangling pointers in
