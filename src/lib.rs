@@ -2164,6 +2164,10 @@ fn rust_to_clang_target(rust_target: &str) -> String {
         clang_target
             .push_str(rust_target.strip_prefix("aarch64-apple-").unwrap());
         return clang_target;
+    } else if rust_target.starts_with("riscv64gc-") {
+        let mut clang_target = "riscv64-".to_owned();
+        clang_target.push_str(rust_target.strip_prefix("riscv64gc-").unwrap());
+        return clang_target;
     }
     rust_target.to_owned()
 }
@@ -2713,4 +2717,12 @@ fn commandline_flag_unit_test_function() {
 #[test]
 fn test_rust_to_clang_target() {
     assert_eq!(rust_to_clang_target("aarch64-apple-ios"), "arm64-apple-ios");
+}
+
+#[test]
+fn test_rust_to_clang_target_riscv() {
+    assert_eq!(
+        rust_to_clang_target("riscv64gc-unknown-linux-gnu"),
+        "riscv64-unknown-linux-gnu"
+    )
 }
