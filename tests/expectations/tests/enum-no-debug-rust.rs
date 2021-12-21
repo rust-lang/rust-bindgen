@@ -13,7 +13,7 @@ pub struct foo {
 pub const foo_FOO_A: foo__bindgen_ty_1 = foo__bindgen_ty_1::FOO_A;
 pub const foo_FOO_B: foo__bindgen_ty_1 = foo__bindgen_ty_1::FOO_B;
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Copy, Clone, Hash, PartialEq, Eq)]
 pub enum foo__bindgen_ty_1 {
     FOO_A = 0,
     FOO_B = 1,
@@ -51,7 +51,7 @@ impl Default for foo {
     }
 }
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Foo {
     Bar = 0,
     Qux = 1,
@@ -70,7 +70,7 @@ pub enum NoDebug {
 }
 #[repr(u32)]
 /// <div rustbindgen derive="Debug"></div>
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Copy, Clone, Hash, PartialEq, Eq, Debug)]
 pub enum Debug {
     Debug1 = 0,
     Debug2 = 1,
