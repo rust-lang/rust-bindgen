@@ -156,7 +156,6 @@ impl ObjCInterface {
                             Item::from_ty_or_ref(c.cur_type(), c, None, ctx)
                                 .into(),
                         );
-
                     }
                 }
                 CXCursor_ObjCProtocolRef => {
