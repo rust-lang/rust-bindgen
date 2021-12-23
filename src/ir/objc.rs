@@ -152,7 +152,10 @@ impl ObjCInterface {
 
                         interface.name = c.spelling();
                         interface.category = Some(cursor.spelling());
-                        real_interface_id_for_category = Some(Item::from_ty_or_ref(c.cur_type(), c, None, ctx).into());
+                        real_interface_id_for_category = Some(
+                            Item::from_ty_or_ref(c.cur_type(), c, None, ctx)
+                                .into(),
+                        );
 
                     }
                 }
