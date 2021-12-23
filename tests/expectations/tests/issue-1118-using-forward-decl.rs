@@ -38,7 +38,11 @@ fn bindgen_test_layout_nsTArray_base() {
 }
 impl Default for nsTArray_base {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -48,7 +52,11 @@ pub struct nsTArray {
 }
 impl Default for nsTArray {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -83,7 +91,11 @@ fn bindgen_test_layout_nsIContent() {
 }
 impl Default for nsIContent {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 extern "C" {

@@ -1,4 +1,4 @@
-// bindgen-flags: --no-debug "NoDebug" --impl-debug
+// bindgen-flags: --no-debug "NoDebug" --impl-debug --rust-target 1.40
 
 template<typename T>
 class Generic {

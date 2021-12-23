@@ -8,7 +8,7 @@
 pub const FOO_BAR: _bindgen_ty_1 = _bindgen_ty_1::FOO_BAR;
 pub const FOO_BAZ: _bindgen_ty_1 = _bindgen_ty_1::FOO_BAZ;
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum _bindgen_ty_1 {
     FOO_BAR = 0,
     FOO_BAZ = 1,
@@ -20,7 +20,7 @@ pub struct Foo {
 }
 pub const Foo_FOO_BAR: Foo__bindgen_ty_1 = Foo__bindgen_ty_1::FOO_BAR;
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Foo__bindgen_ty_1 {
     FOO_BAR = 10,
 }

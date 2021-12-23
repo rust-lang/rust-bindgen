@@ -59,7 +59,6 @@ fn bindgen_test_layout_A_Segment() {
 #[derive(Copy, Clone)]
 pub union A__bindgen_ty_1 {
     pub f: ::std::os::raw::c_int,
-    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_A__bindgen_ty_1() {
@@ -88,14 +87,17 @@ fn bindgen_test_layout_A__bindgen_ty_1() {
 }
 impl Default for A__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union A__bindgen_ty_2 {
     pub d: ::std::os::raw::c_int,
-    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_A__bindgen_ty_2() {
@@ -124,7 +126,11 @@ fn bindgen_test_layout_A__bindgen_ty_2() {
 }
 impl Default for A__bindgen_ty_2 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -159,7 +165,11 @@ fn bindgen_test_layout_A() {
 }
 impl Default for A {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -229,7 +239,7 @@ fn bindgen_test_layout_B() {
     );
 }
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum StepSyntax {
     Keyword = 0,
     FunctionalWithoutKeyword = 1,
@@ -247,7 +257,6 @@ pub struct C {
 pub union C__bindgen_ty_1 {
     pub mFunc: C__bindgen_ty_1__bindgen_ty_1,
     pub __bindgen_anon_1: C__bindgen_ty_1__bindgen_ty_2,
-    _bindgen_union_align: [u32; 4usize],
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
@@ -369,7 +378,11 @@ fn bindgen_test_layout_C__bindgen_ty_1__bindgen_ty_2() {
 }
 impl Default for C__bindgen_ty_1__bindgen_ty_2 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -400,7 +413,11 @@ fn bindgen_test_layout_C__bindgen_ty_1() {
 }
 impl Default for C__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -466,6 +483,10 @@ fn bindgen_test_layout_C() {
 }
 impl Default for C {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

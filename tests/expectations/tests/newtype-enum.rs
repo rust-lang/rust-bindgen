@@ -18,5 +18,5 @@ impl Foo {
     pub const Negative: Foo = Foo(-3);
 }
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Foo(pub ::std::os::raw::c_int);

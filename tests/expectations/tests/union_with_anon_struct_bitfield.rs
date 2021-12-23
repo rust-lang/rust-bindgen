@@ -7,17 +7,16 @@
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage, Align> {
+pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
-    align: [Align; 0],
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align> {
+impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
-        Self { storage, align: [] }
+        Self { storage }
     }
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
 {
@@ -97,13 +96,13 @@ where
 pub union foo {
     pub a: ::std::os::raw::c_int,
     pub __bindgen_anon_1: foo__bindgen_ty_1,
-    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct foo__bindgen_ty_1 {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u32>,
+    pub _bitfield_align_1: [u32; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 #[test]
 fn bindgen_test_layout_foo__bindgen_ty_1() {
@@ -149,11 +148,9 @@ impl foo__bindgen_ty_1 {
     pub fn new_bitfield_1(
         b: ::std::os::raw::c_int,
         c: ::std::os::raw::c_int,
-    ) -> __BindgenBitfieldUnit<[u8; 4usize], u32> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 4usize],
-            u32,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 7u8, {
             let b: u32 = unsafe { ::std::mem::transmute(b) };
             b as u64
@@ -185,6 +182,10 @@ fn bindgen_test_layout_foo() {
 }
 impl Default for foo {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

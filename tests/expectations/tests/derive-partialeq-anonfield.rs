@@ -12,9 +12,10 @@ pub struct rte_mbuf {
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_1,
 }
 #[repr(C)]
+#[repr(align(1))]
 #[derive(Copy, Clone)]
-pub union rte_mbuf__bindgen_ty_1 {
-    _bindgen_union_align: [u8; 0usize],
+pub struct rte_mbuf__bindgen_ty_1 {
+    pub bindgen_union_field: [u8; 0usize],
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_1() {
@@ -31,7 +32,11 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_1() {
 }
 impl Default for rte_mbuf__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -49,6 +54,10 @@ fn bindgen_test_layout_rte_mbuf() {
 }
 impl Default for rte_mbuf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

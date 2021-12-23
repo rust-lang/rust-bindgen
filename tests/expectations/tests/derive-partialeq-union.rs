@@ -11,7 +11,6 @@
 pub union ShouldNotDerivePartialEq {
     pub a: ::std::os::raw::c_char,
     pub b: ::std::os::raw::c_int,
-    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_ShouldNotDerivePartialEq() {
@@ -54,6 +53,10 @@ fn bindgen_test_layout_ShouldNotDerivePartialEq() {
 }
 impl Default for ShouldNotDerivePartialEq {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

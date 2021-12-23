@@ -7,17 +7,16 @@
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage, Align> {
+pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
-    align: [Align; 0],
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align> {
+impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
-        Self { storage, align: [] }
+        Self { storage }
     }
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
 {
@@ -95,50 +94,45 @@ where
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct WithBitfield {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 0usize], u8>,
-    pub __bindgen_padding_0: u32,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub a: ::std::os::raw::c_uint,
 }
 impl WithBitfield {
     #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 0usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 0usize],
-            u8,
-        > = Default::default();
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> =
+            Default::default();
         __bindgen_bitfield_unit
     }
 }
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct WithBitfieldAndAttrPacked {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub a: ::std::os::raw::c_uint,
 }
 impl WithBitfieldAndAttrPacked {
     #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 1usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 1usize],
-            u8,
-        > = Default::default();
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> =
+            Default::default();
         __bindgen_bitfield_unit
     }
 }
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct WithBitfieldAndPacked {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 0usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub a: ::std::os::raw::c_uint,
-    pub __bindgen_padding_0: u8,
 }
 impl WithBitfieldAndPacked {
     #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 0usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 0usize],
-            u8,
-        > = Default::default();
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> =
+            Default::default();
         __bindgen_bitfield_unit
     }
 }

@@ -4,111 +4,133 @@
 
 - [Unreleased](#unreleased)
   - [Added](#added)
+  - [Fixed](#fixed)
   - [Changed](#changed)
   - [Deprecated](#deprecated)
   - [Removed](#removed)
-  - [Fixed](#fixed)
-  - [Security](#security)
-- [0.55.0](#0550)
-  - [Removed](#removed-1)
-  - [Added](#added-1)
-  - [Changed](#changed-1)
   - [Fixed](#fixed-1)
-- [0.54.1](#0541)
-  - [Added](#added-2)
-  - [Changed](#changed-2)
+  - [Security](#security)
+- [0.59.1](#0591)
   - [Fixed](#fixed-2)
-- [0.54.0](#0540)
-  - [Added](#added-3)
-  - [Changed](#changed-3)
+- [0.59.0](#0590)
+  - [Added](#added-1)
   - [Fixed](#fixed-3)
-- [0.53.3](#0533)
-  - [Added](#added-4)
+  - [Changed](#changed-1)
+- [0.58.1](#0581)
+  - [Added](#added-2)
+- [0.58.0](#0580)
+  - [Added](#added-3)
   - [Fixed](#fixed-4)
-- [0.53.2](#0532)
-  - [Changed](#changed-4)
-- [0.53.1](#0531)
-  - [Added](#added-5)
-- [0.53.0](#0530)
-  - [Added](#added-6)
-  - [Changed](#changed-5)
-  - [Fixed](#fixed-5)
-- [0.52.0](#0520)
-  - [Added](#added-7)
-  - [Changed](#changed-6)
-  - [Fixed](#fixed-6)
-- [0.51.1](#0511)
-  - [Fixed](#fixed-7)
-  - [Changed](#changed-7)
-- [0.51.0](#0510)
-  - [Fixed](#fixed-8)
-  - [Changed](#changed-8)
-  - [Added](#added-8)
-- [0.50.0](#0500)
-  - [Added](#added-9)
-- [0.49.3](#0493)
-  - [Added](#added-10)
-- [0.49.2](#0492)
-  - [Changed](#changed-9)
-- [0.49.1](#0491)
-  - [Fixed](#fixed-9)
-  - [Changed](#changed-10)
-- [0.49.0](#0490)
-  - [Added](#added-11)
-  - [Fixed](#fixed-10)
-  - [Changed](#changed-11)
-- [0.48.1](#0481)
-  - [Fixed](#fixed-11)
-- [0.48.0](#0480)
-  - [Changed](#changed-12)
-  - [Fixed](#fixed-12)
-- [0.47.3](#0473)
-  - [Changed](#changed-13)
-- [0.47.2](#0472)
-  - [Fixed](#fixed-13)
-- [0.47.1](#0471)
-  - [Changed](#changed-14)
-  - [Fixed](#fixed-14)
-- [0.47.0](#0470)
-  - [Changed](#changed-15)
-  - [Fixed](#fixed-15)
-- [0.33.1 .. 0.46.0](#0331--0460)
-  - [Added](#added-12)
-  - [Removed](#removed-2)
-  - [Changed](#changed-16)
-  - [Fixed](#fixed-16)
-- [0.33.1](#0331)
-  - [Fixed](#fixed-17)
-- [0.33.0](#0330)
-  - [Added](#added-13)
-  - [Changed](#changed-17)
+  - [Changed](#changed-2)
   - [Deprecated](#deprecated-1)
-  - [Removed](#removed-3)
-  - [Fixed](#fixed-18)
+  - [Removed](#removed-1)
+  - [Fixed](#fixed-5)
   - [Security](#security-1)
-- [0.32.2](#0322)
-  - [Fixed](#fixed-19)
-- [0.32.1](#0321)
-  - [Fixed](#fixed-20)
-- [0.32.0](#0320)
+- [0.57.0](#0570)
+  - [Added](#added-4)
+  - [Fixed](#fixed-6)
+- [0.56.0](#0560)
+  - [Added](#added-5)
+  - [Changed](#changed-3)
+  - [Fixed](#fixed-7)
+- [0.55.1](#0551)
+  - [Fixed](#fixed-8)
+- [0.55.0](#0550)
+  - [Removed](#removed-2)
+  - [Added](#added-6)
+  - [Changed](#changed-4)
+  - [Fixed](#fixed-9)
+- [0.54.1](#0541)
+  - [Added](#added-7)
+  - [Changed](#changed-5)
+  - [Fixed](#fixed-10)
+- [0.54.0](#0540)
+  - [Added](#added-8)
+  - [Changed](#changed-6)
+  - [Fixed](#fixed-11)
+- [0.53.3](#0533)
+  - [Added](#added-9)
+  - [Fixed](#fixed-12)
+- [0.53.2](#0532)
+  - [Changed](#changed-7)
+- [0.53.1](#0531)
+  - [Added](#added-10)
+- [0.53.0](#0530)
+  - [Added](#added-11)
+  - [Changed](#changed-8)
+  - [Fixed](#fixed-13)
+- [0.52.0](#0520)
+  - [Added](#added-12)
+  - [Changed](#changed-9)
+  - [Fixed](#fixed-14)
+- [0.51.1](#0511)
+  - [Fixed](#fixed-15)
+  - [Changed](#changed-10)
+- [0.51.0](#0510)
+  - [Fixed](#fixed-16)
+  - [Changed](#changed-11)
+  - [Added](#added-13)
+- [0.50.0](#0500)
   - [Added](#added-14)
-  - [Changed](#changed-18)
-  - [Fixed](#fixed-21)
-- [0.31.0](#0310)
+- [0.49.3](#0493)
   - [Added](#added-15)
+- [0.49.2](#0492)
+  - [Changed](#changed-12)
+- [0.49.1](#0491)
+  - [Fixed](#fixed-17)
+  - [Changed](#changed-13)
+- [0.49.0](#0490)
+  - [Added](#added-16)
+  - [Fixed](#fixed-18)
+  - [Changed](#changed-14)
+- [0.48.1](#0481)
+  - [Fixed](#fixed-19)
+- [0.48.0](#0480)
+  - [Changed](#changed-15)
+  - [Fixed](#fixed-20)
+- [0.47.4](#0474)
+  - [Added](#added-17)
+- [0.47.3](#0473)
+  - [Changed](#changed-16)
+- [0.47.2](#0472)
+  - [Fixed](#fixed-21)
+- [0.47.1](#0471)
+  - [Changed](#changed-17)
+  - [Fixed](#fixed-22)
+- [0.47.0](#0470)
+  - [Changed](#changed-18)
+  - [Fixed](#fixed-23)
+- [0.33.1 .. 0.46.0](#0331--0460)
+  - [Added](#added-18)
+  - [Removed](#removed-3)
   - [Changed](#changed-19)
+  - [Fixed](#fixed-24)
+- [0.33.1](#0331)
+  - [Fixed](#fixed-25)
+- [0.33.0](#0330)
+- [0.32.2](#0322)
+  - [Fixed](#fixed-26)
+- [0.32.1](#0321)
+  - [Fixed](#fixed-27)
+- [0.32.0](#0320)
+  - [Added](#added-19)
+  - [Changed](#changed-20)
+  - [Fixed](#fixed-28)
+- [0.31.0](#0310)
+  - [Added](#added-20)
+  - [Changed](#changed-21)
   - [Deprecated](#deprecated-2)
   - [Removed](#removed-4)
-  - [Fixed](#fixed-22)
+  - [Fixed](#fixed-29)
 - [0.30.0](#0300)
-  - [Added](#added-16)
-  - [Changed](#changed-20)
+  - [Added](#added-21)
+  - [Changed](#changed-22)
   - [Deprecated](#deprecated-3)
-  - [Fixed](#fixed-23)
+  - [Fixed](#fixed-30)
 - [0.29.0](#0290)
-  - [Added](#added-17)
-  - [Changed](#changed-21)
-  - [Fixed](#fixed-24)
+  - [Added](#added-22)
+  - [Changed](#changed-23)
+  - [Fixed](#fixed-31)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -116,36 +138,175 @@
 
 # Unreleased
 
-Released YYYY/MM/DD
+## Added
+* Objective-c bindings generate impl blocks for categories inherited through parent classes ([#1784][]).
+
+## Fixed
+
+## Changed
+
+ * cexpr and nom have been updated, new msrv is 1.46 (#2107).
+
+## Deprecated
+
+## Removed
+
+## Fixed
+
+## Security
+
+# 0.59.1
+
+Released 2021/07/26
+
+## Fixed
+
+ * Fixed incorrect bitfield constructors generated for very large bitfields (#2082).
+
+# 0.59.0
+
+Released 2021/07/20
+
+## Added
+
+ * Support emitting Makefile-syntax depfiles (#2026)
+ * Add a C naming option (#2045)
+ * Allow explicit padding (#2060)
+ * Add custom derives callback (#2059)
+ * Let Rust derive everything but Default for large arrays in 1.47 and later (#2070).
+
+## Fixed
+
+ * Constants now have docstrings (#2027)
+ * Don't generate bindings for deleted member functions. (#2044)
+ * Zero out padding in custom Default trait implementations (#2051)
+ * Identify forward declarations in params. (#2052)
+ * Add env var EXTRA_CLANG_ARGS_<target>. (#2031)
+
+## Changed
+
+ * cexpr and nom have been updated, new msrv is 1.44 (#2073).
+
+# 0.58.1
+
+Released 2021/04/06
+
+## Added
+
+ * Re-introduced unintentionally removed
+   `bindgen::Builder::whitelist_recursively` (deprecated in favor of
+  `bindgen::Builder::allowlist_recursively`). [#2022][]
+
+# 0.58.0
+
+Released 2021/04/03
+
+## Added
+
+ * Add option to translate enum integer types to native Rust integer types.
+   [#2004][]
+ * Add callback to check derives for blocklisted types. [#2007][]
+ * Add a flag to ensure all symbols are resolved when a library is loaded.
+   [#2013][]
+ * Add from_library for generated dynamic library structs [#2011][].
+
+## Fixed
+
+ * Track union layout more accurately. Fixes [an AArch64 bug] and [makes the
+   bindings more portable] where unions could return garbage data ([#1984])
+ * Use original name when checking allowlist for anonymous enum variants. [#2006][]
+
+## Changed
+
+## Deprecated
+
+* `bindgen::Builder::whitelist_type` is deprecated in favor of
+  `bindgen::Builder::allowlist_type`. [#1812][]
+
+* `bindgen::Builder::whitelist_function` is deprecated in favor of
+  `bindgen::Builder::allowlist_function`. [#1812][]
+
+* `bindgen::Builder::whitelist_var` is deprecated in favor of
+  `bindgen::Builder::allowlist_var`. [#1812][]
+
+* `--whitelist-type` is deprecated in favor of
+  `--allowlist-type`. [#1812][]
+
+* `--whitelist-function` is deprecated in favor of
+  `--allowlist-function`. [#1812][]
+
+* `--whitelist-var` is deprecated in favor of
+  `--allowlist-var`. [#1812][]
+
+* `bindgen::Builder::blacklist_type` is deprecated in favor of
+  `bindgen::Builder::blocklist_type`. [#1812][]
+
+* `bindgen::Builder::blacklist_function` is deprecated in favor of
+  `bindgen::Builder::blocklist_function`. [#1812][]
+
+* `bindgen::Builder::blacklist_item` is deprecated in favor of
+  `bindgen::Builder::blocklist_item`. [#1812][]
+
+* `--blacklist-type` is deprecated in favor of
+  `--blocklist-type`. [#1812][]
+
+* `--blacklist-function` is deprecated in favor of
+  `--blocklist-function`. [#1812][]
+
+* `--blacklist-item` is deprecated in favor of
+  `--blocklist-item`. [#1812][]
+
+[#1984]: https://github.com/rust-lang/rust-bindgen/pull/1984
+[an AArch64 bug]: https://github.com/rust-lang/rust-bindgen/issues/1973
+[makes the bindings more portable]: https://github.com/rust-lang/rust-bindgen/issues/1983
+
+## Removed
+
+## Fixed
+
+## Security
+
+---
+
+# 0.57.0
+
+Released 2021/02/01
+
+## Added
+
+* Expose module-raw-lines to the CLI (#1936)
+* Added an option to fit macro constants to smaller types (#1945)
+* Add an option to respect C++ access specifiers on fields (#1968)
+
+## Fixed
+
+* Improved C++ auto-detection (#1933)
+* Fixed layout of bitfields in some edge cases (#1950)
+* Escape the dyn keyword properly (#1951)
+* Use absolute paths for unsaved files passed to clang (#1857).
+
+# 0.56.0
+
+Released 2020/11/26
 
 ## Added
 
 * Objective-c bindings generate `From<ChildClass> for ParentClass` as well as `TryFrom<ParentClass> for ChildClass` ([#1883][]).
-* Objective-c bindings generate impl blocks for categories inherited through parent classes ([#1784][]).
+* Experimental dynamic library support via `dynamic_library_name` (#1846).
+* Option to disable deriving `Default` on a per-struct basis (#1930).
 
 ## Changed
 
 * Objective-c bindings borrow self rather than take ownership ([#1883][]).
-
-## Deprecated
-
-* TODO (or remove section if none)
-
-## Removed
-
-* TODO (or remove section if none)
+* Templates and enums now correctly use the same naming scheme as other types
+ (#1891).
 
 ## Fixed
 
+* Constructors in wasm32 now return a value. (#1877).
 * Fixed objective-c protocol impl blocks for parent classes's protocols ([#1883][]).
 
-## Security
-
-* TODO (or remove section if none)
-
-
 [#1883]: https://github.com/rust-lang/rust-bindgen/issues/1883
-[#1784]: https://github.com/rust-lang/rust-bindgen/issues/1784
 
 --------------------------------------------------------------------------------
 
@@ -541,6 +702,16 @@ Released 2019/03/04
 
 --------------------------------------------------------------------------------
 
+# 0.47.4
+
+Released 2020/11/13
+
+## Added
+
+* Backported BINDGEN_EXTRA_CLANG_ARGS support per request (#1910).
+
+--------------------------------------------------------------------------------
+
 # 0.47.3
 
 Released 2019/02/25
@@ -689,32 +860,6 @@ Released 2018/02/14
 --------------------------------------------------------------------------------
 
 # 0.33.0
-
-Released YYYY/MM/DD
-
-## Added
-
-* TODO (or remove section if none)
-
-## Changed
-
-* TODO (or remove section if none)
-
-## Deprecated
-
-* TODO (or remove section if none)
-
-## Removed
-
-* TODO (or remove section if none)
-
-## Fixed
-
-* TODO (or remove section if none)
-
-## Security
-
-* TODO (or remove section if none)
 
 --------------------------------------------------------------------------------
 

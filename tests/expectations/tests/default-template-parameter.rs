@@ -15,7 +15,11 @@ pub struct Foo<T, U> {
 }
 impl<T, U> Default for Foo<T, U> {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -25,7 +29,7 @@ fn __bindgen_test_layout_Foo_open0_bool__int_close0_instantiation() {
         8usize,
         concat!(
             "Size of template specialization: ",
-            stringify ! ( Foo < bool , :: std :: os :: raw :: c_int > )
+            stringify ! (Foo < bool , :: std :: os :: raw :: c_int >)
         )
     );
     assert_eq!(
@@ -33,7 +37,7 @@ fn __bindgen_test_layout_Foo_open0_bool__int_close0_instantiation() {
         4usize,
         concat!(
             "Alignment of template specialization: ",
-            stringify ! ( Foo < bool , :: std :: os :: raw :: c_int > )
+            stringify ! (Foo < bool , :: std :: os :: raw :: c_int >)
         )
     );
 }

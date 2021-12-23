@@ -7,17 +7,16 @@
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage, Align> {
+pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
-    align: [Align; 0],
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align> {
+impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
-        Self { storage, align: [] }
+        Self { storage }
     }
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
 {
@@ -97,7 +96,7 @@ pub const JSVAL_PAYLOAD_MASK: u64 = 140737488355327;
 pub const JSVAL_TAG_MASK: i64 = -140737488355328;
 pub type size_t = ::std::os::raw::c_ulonglong;
 #[repr(u8)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSValueType {
     JSVAL_TYPE_DOUBLE = 0,
     JSVAL_TYPE_INT32 = 1,
@@ -112,7 +111,7 @@ pub enum JSValueType {
     JSVAL_TYPE_MISSING = 33,
 }
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSValueTag {
     JSVAL_TAG_MAX_DOUBLE = 131056,
     JSVAL_TAG_INT32 = 131057,
@@ -125,7 +124,7 @@ pub enum JSValueTag {
     JSVAL_TAG_OBJECT = 131064,
 }
 #[repr(u64)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSValueShiftedTag {
     JSVAL_SHIFTED_TAG_MAX_DOUBLE = 18444492278190833663,
     JSVAL_SHIFTED_TAG_INT32 = 18444633011384221696,
@@ -138,7 +137,7 @@ pub enum JSValueShiftedTag {
     JSVAL_SHIFTED_TAG_OBJECT = 18445618173802708992,
 }
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSWhyMagic {
     /// a hole in a native object's elements
     JS_ELEMENTS_HOLE = 0,
@@ -189,13 +188,13 @@ pub union jsval_layout {
     pub asPtr: *mut ::std::os::raw::c_void,
     pub asWord: size_t,
     pub asUIntPtr: usize,
-    _bindgen_union_align: u64,
 }
 #[repr(C)]
 #[repr(align(8))]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct jsval_layout__bindgen_ty_1 {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize], u64>,
+    pub _bitfield_align_1: [u64; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
 }
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_1() {
@@ -212,7 +211,11 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_1() {
 }
 impl Default for jsval_layout__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl jsval_layout__bindgen_ty_1 {
@@ -246,11 +249,9 @@ impl jsval_layout__bindgen_ty_1 {
     pub fn new_bitfield_1(
         payload47: u64,
         tag: JSValueTag,
-    ) -> __BindgenBitfieldUnit<[u8; 8usize], u64> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 8usize],
-            u64,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 8usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 47u8, {
             let payload47: u64 = unsafe { ::std::mem::transmute(payload47) };
             payload47 as u64
@@ -273,7 +274,6 @@ pub union jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     pub i32_: i32,
     pub u32_: u32,
     pub why: JSWhyMagic,
-    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
@@ -335,7 +335,11 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
 }
 impl Default for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -366,7 +370,11 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
 }
 impl Default for jsval_layout__bindgen_ty_2 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -471,7 +479,11 @@ fn bindgen_test_layout_jsval_layout() {
 }
 impl Default for jsval_layout {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -504,6 +516,10 @@ fn bindgen_test_layout_Value() {
 }
 impl Default for Value {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

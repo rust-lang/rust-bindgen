@@ -287,7 +287,7 @@ impl Clone for B {
     }
 }
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum StepSyntax {
     Keyword = 0,
     FunctionalWithoutKeyword = 1,
@@ -437,7 +437,11 @@ impl Clone for C__bindgen_ty_1__bindgen_ty_2 {
 }
 impl Default for C__bindgen_ty_1__bindgen_ty_2 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[test]

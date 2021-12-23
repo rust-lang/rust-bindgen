@@ -10,14 +10,12 @@
 pub union foo {
     pub a: ::std::os::raw::c_uint,
     pub __bindgen_anon_1: foo__bindgen_ty_1,
-    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union foo__bindgen_ty_1 {
     pub b: ::std::os::raw::c_ushort,
     pub c: ::std::os::raw::c_uchar,
-    _bindgen_union_align: u16,
 }
 #[test]
 fn bindgen_test_layout_foo__bindgen_ty_1() {
@@ -58,7 +56,11 @@ fn bindgen_test_layout_foo__bindgen_ty_1() {
 }
 impl Default for foo__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -81,6 +83,10 @@ fn bindgen_test_layout_foo() {
 }
 impl Default for foo {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

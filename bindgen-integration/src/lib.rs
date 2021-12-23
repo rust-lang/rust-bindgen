@@ -175,16 +175,19 @@ fn test_bitfields_seventh() {
 fn test_bitfield_constructors() {
     use std::mem;
     let mut first = bindings::bitfields::First {
+        _bitfield_align_1: [],
         _bitfield_1: bindings::bitfields::First::new_bitfield_1(1, 2, 3),
     };
     assert!(unsafe { first.assert(1, 2, 3) });
 
     let mut second = bindings::bitfields::Second {
+        _bitfield_align_1: [],
         _bitfield_1: bindings::bitfields::Second::new_bitfield_1(1337, true),
     };
     assert!(unsafe { second.assert(1337, true) });
 
     let mut third = bindings::bitfields::Third {
+        _bitfield_align_1: [],
         _bitfield_1: bindings::bitfields::Third::new_bitfield_1(
             42,
             false,
@@ -255,4 +258,31 @@ fn test_matching_with_rename() {
 fn test_macro_customintkind_path() {
     let v: &std::any::Any = &bindings::TESTMACRO_CUSTOMINTKIND_PATH;
     assert!(v.is::<MacroInteger>())
+}
+
+#[test]
+fn test_homogeneous_aggregate_float_union() {
+    unsafe {
+        let coord = &bindings::coord(1., 2., 3., 4.);
+        assert_eq!([1., 2., 3., 4.], coord.v)
+    }
+}
+
+#[test]
+fn test_custom_derive() {
+    // The `add_derives` callback should have added `#[derive(PartialEq)]`
+    // to the `Test` struct. If it didn't, this will fail to compile.
+    let test1 = unsafe { bindings::Test::new(5) };
+    let test2 = unsafe { bindings::Test::new(6) };
+    assert_ne!(test1, test2);
+
+    // The `add_derives` callback should have added `#[derive(PartialOrd)]`
+    // to the `MyOrderedEnum` enum. If it didn't, this will fail to compile.
+
+    let micron = unsafe { bindings::MyOrderedEnum::MICRON };
+    let meter = unsafe { bindings::MyOrderedEnum::METER };
+    let lightyear = unsafe { bindings::MyOrderedEnum::LIGHTYEAR };
+
+    assert!(meter < lightyear);
+    assert!(meter > micron);
 }

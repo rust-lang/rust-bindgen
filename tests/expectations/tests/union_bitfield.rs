@@ -7,17 +7,16 @@
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage, Align> {
+pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
-    align: [Align; 0],
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align> {
+impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
-        Self { storage, align: [] }
+        Self { storage }
     }
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
 {
@@ -93,10 +92,11 @@ where
     }
 }
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union U4 {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize], u8>,
-    _bindgen_union_align: u32,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
 }
 #[test]
 fn bindgen_test_layout_U4() {
@@ -113,7 +113,11 @@ fn bindgen_test_layout_U4() {
 }
 impl Default for U4 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl U4 {
@@ -133,11 +137,9 @@ impl U4 {
     #[inline]
     pub fn new_bitfield_1(
         derp: ::std::os::raw::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 1usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let derp: u32 = unsafe { ::std::mem::transmute(derp) };
             derp as u64
@@ -146,10 +148,11 @@ impl U4 {
     }
 }
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union B {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u32>,
-    _bindgen_union_align: u32,
+    pub _bitfield_align_1: [u32; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 #[test]
 fn bindgen_test_layout_B() {
@@ -166,7 +169,11 @@ fn bindgen_test_layout_B() {
 }
 impl Default for B {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl B {
@@ -200,11 +207,9 @@ impl B {
     pub fn new_bitfield_1(
         foo: ::std::os::raw::c_uint,
         bar: ::std::os::raw::c_uchar,
-    ) -> __BindgenBitfieldUnit<[u8; 4usize], u32> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 4usize],
-            u32,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 31u8, {
             let foo: u32 = unsafe { ::std::mem::transmute(foo) };
             foo as u64

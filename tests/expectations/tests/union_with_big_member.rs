@@ -10,7 +10,6 @@
 pub union WithBigArray {
     pub a: ::std::os::raw::c_int,
     pub b: [::std::os::raw::c_int; 33usize],
-    _bindgen_union_align: [u32; 33usize],
 }
 #[test]
 fn bindgen_test_layout_WithBigArray() {
@@ -51,7 +50,11 @@ fn bindgen_test_layout_WithBigArray() {
 }
 impl Default for WithBigArray {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -59,7 +62,6 @@ impl Default for WithBigArray {
 pub union WithBigArray2 {
     pub a: ::std::os::raw::c_int,
     pub b: [::std::os::raw::c_char; 33usize],
-    _bindgen_union_align: [u32; 9usize],
 }
 #[test]
 fn bindgen_test_layout_WithBigArray2() {
@@ -100,7 +102,11 @@ fn bindgen_test_layout_WithBigArray2() {
 }
 impl Default for WithBigArray2 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -108,7 +114,6 @@ impl Default for WithBigArray2 {
 pub union WithBigMember {
     pub a: ::std::os::raw::c_int,
     pub b: WithBigArray,
-    _bindgen_union_align: [u32; 33usize],
 }
 #[test]
 fn bindgen_test_layout_WithBigMember() {
@@ -149,6 +154,10 @@ fn bindgen_test_layout_WithBigMember() {
 }
 impl Default for WithBigMember {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

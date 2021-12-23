@@ -9,13 +9,15 @@ use bindgen::{clang_version, Builder};
 use std::env;
 use std::fs;
 use std::io::{self, BufRead, BufReader, Error, ErrorKind, Read, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process;
 use std::sync::Once;
 
 #[path = "../src/options.rs"]
 mod options;
 use crate::options::builder_from_flags;
+
+mod parse_callbacks;
 
 // Run `rustfmt` on the given source string and return a tuple of the formatted
 // bindings, and rustfmt's stderr.
@@ -47,7 +49,7 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
 `rustfmt` with:
 
     $ rustup update nightly
-    $ rustup run nightly cargo install -f rustfmt-nightly
+    $ rustup component add rustfmt --toolchain nightly
 "
             );
         }
@@ -114,14 +116,13 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
 }
 
 fn compare_generated_header(
-    header: &PathBuf,
-    builder: Builder,
+    header: &Path,
+    builder: BuilderState,
     check_roundtrip: bool,
 ) -> Result<(), Error> {
-    let file_name = header.file_name().ok_or(Error::new(
-        ErrorKind::Other,
-        "compare_generated_header expects a file",
-    ))?;
+    let file_name = header.file_name().ok_or_else(|| {
+        Error::new(ErrorKind::Other, "compare_generated_header expects a file")
+    })?;
 
     let mut expectation = PathBuf::from(header);
     expectation.pop();
@@ -146,7 +147,7 @@ fn compare_generated_header(
             expectation.push("libclang-3.9");
         } else {
             match clang_version().parsed {
-                None => {}
+                None => expectation.push("libclang-9"),
                 Some(version) => {
                     let (maj, min) = version;
                     let version_str = if maj >= 9 {
@@ -174,7 +175,7 @@ fn compare_generated_header(
         expectation.push(file_name);
         expectation.set_extension("rs");
         expectation_file = fs::File::open(&expectation).ok();
-        looked_at.push(expectation);
+        looked_at.push(expectation.clone());
     }
 
     let mut expected = String::new();
@@ -190,13 +191,7 @@ fn compare_generated_header(
         ),
     };
 
-    let flags = if check_roundtrip {
-        let mut flags = builder.command_line_flags();
-        flags.insert(0, "bindgen".into());
-        flags
-    } else {
-        vec![]
-    };
+    let (builder, roundtrip_builder) = builder.into_builder(check_roundtrip)?;
 
     // We skip the generate() error here so we get a full diff below
     let (actual, rustfmt_stderr) = match builder.generate() {
@@ -233,22 +228,40 @@ fn compare_generated_header(
             }
         }
 
-        // Overwrite the expectation with actual output.
-        if env::var_os("BINDGEN_OVERWRITE_EXPECTED").is_some() {
-            let mut expectation_file =
-                fs::File::create(looked_at.last().unwrap())?;
-            expectation_file.write_all(actual.as_bytes())?;
+        if let Some(var) = env::var_os("BINDGEN_OVERWRITE_EXPECTED") {
+            if var == "1" {
+                // Overwrite the expectation with actual output.
+                let mut expectation_file =
+                    fs::File::create(looked_at.last().unwrap())?;
+                expectation_file.write_all(actual.as_bytes())?;
+            } else if var != "0" && var != "" {
+                panic!("Invalid value of BINDGEN_OVERWRITE_EXPECTED");
+            }
         }
 
-        return Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation."));
+        if let Some(var) = env::var_os("BINDGEN_TESTS_DIFFTOOL") {
+            //usecase: var = "meld" -> You can hand check differences
+            let filename = match header.components().last() {
+                Some(std::path::Component::Normal(name)) => name,
+                _ => panic!("Why is the header variable so weird?"),
+            };
+            let actual_result_path =
+                PathBuf::from(env::var("OUT_DIR").unwrap()).join(filename);
+            let mut actual_result_file = fs::File::create(&actual_result_path)?;
+            actual_result_file.write_all(actual.as_bytes())?;
+            std::process::Command::new(var)
+                .args(&[looked_at.last().unwrap(), &actual_result_path])
+                .output()?;
+        }
+
+        return Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation or with BINDGEN_TESTS_DIFFTOOL=meld to do this manually."));
     }
 
-    if check_roundtrip {
-        let roundtrip_builder = builder_from_flags(flags.into_iter())?.0;
+    if let Some(roundtrip_builder) = roundtrip_builder {
         if let Err(e) =
-            compare_generated_header(&header, roundtrip_builder, false)
+            compare_generated_header(header, roundtrip_builder, false)
         {
-            return Err(Error::new(ErrorKind::Other, format!("Checking CLI flags roundtrip errored! You probably need to fix Builder::command_line_args. {}", e)));
+            return Err(Error::new(ErrorKind::Other, format!("Checking CLI flags roundtrip errored! You probably need to fix Builder::command_line_flags. {}", e)));
         }
     }
 
@@ -262,7 +275,36 @@ fn builder() -> Builder {
     bindgen::builder().disable_header_comment()
 }
 
-fn create_bindgen_builder(header: &PathBuf) -> Result<Builder, Error> {
+struct BuilderState {
+    builder: Builder,
+    parse_callbacks: Option<String>,
+}
+
+impl BuilderState {
+    fn into_builder(
+        self,
+        with_roundtrip_builder: bool,
+    ) -> Result<(Builder, Option<BuilderState>), Error> {
+        let roundtrip_builder = if with_roundtrip_builder {
+            let mut flags = self.builder.command_line_flags();
+            flags.insert(0, "bindgen".into());
+            let mut builder = builder_from_flags(flags.into_iter())?.0;
+            if let Some(ref parse_cb) = self.parse_callbacks {
+                builder =
+                    builder.parse_callbacks(parse_callbacks::lookup(parse_cb));
+            }
+            Some(BuilderState {
+                builder,
+                parse_callbacks: self.parse_callbacks,
+            })
+        } else {
+            None
+        };
+        Ok((self.builder, roundtrip_builder))
+    }
+}
+
+fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
     #[cfg(feature = "logging")]
     let _ = env_logger::try_init();
 
@@ -271,6 +313,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Builder, Error> {
 
     // Scoop up bindgen-flags from test header
     let mut flags = Vec::with_capacity(2);
+    let mut parse_callbacks = None;
 
     for line in reader.lines() {
         let line = line?;
@@ -292,6 +335,10 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Builder, Error> {
                 .map(ToString::to_string)
                 .chain(flags)
                 .collect();
+        } else if line.contains("bindgen-parse-callbacks: ") {
+            let parse_cb =
+                line.split("bindgen-parse-callbacks: ").last().unwrap();
+            parse_callbacks = Some(parse_cb.to_owned());
         }
     }
 
@@ -309,9 +356,9 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Builder, Error> {
     // - add header filename as 1st element
     // - prepend raw lines so they're in the right order for expected output
     // - append the test header's bindgen flags
-    let header_str = header
-        .to_str()
-        .ok_or(Error::new(ErrorKind::Other, "Invalid header file name"))?;
+    let header_str = header.to_str().ok_or_else(|| {
+        Error::new(ErrorKind::Other, "Invalid header file name")
+    })?;
 
     let prepend = [
         "bindgen",
@@ -334,7 +381,14 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Builder, Error> {
         .map(ToString::to_string)
         .chain(flags.into_iter());
 
-    builder_from_flags(args).map(|(builder, _, _)| builder)
+    let mut builder = builder_from_flags(args)?.0;
+    if let Some(ref parse_cb) = parse_callbacks {
+        builder = builder.parse_callbacks(parse_callbacks::lookup(parse_cb));
+    }
+    Ok(BuilderState {
+        builder,
+        parse_callbacks,
+    })
 }
 
 macro_rules! test_header {
@@ -455,6 +509,60 @@ fn test_multiple_header_calls_in_builder() {
 }
 
 #[test]
+fn test_multiple_header_contents() {
+    let actual = builder()
+        .header_contents("test.h", "int foo(const char* a);")
+        .header_contents("test2.h", "float foo2(const char* b);")
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let (actual, stderr) = rustfmt(actual);
+    println!("{}", stderr);
+
+    let (expected, _) = rustfmt(
+        "extern \"C\" {
+    pub fn foo2(b: *const ::std::os::raw::c_char) -> f32;
+}
+extern \"C\" {
+    pub fn foo(a: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+}
+"
+        .to_string(),
+    );
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn test_mixed_header_and_header_contents() {
+    let actual = builder()
+        .header(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/headers/func_ptr.h"
+        ))
+        .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/char.h"))
+        .header_contents("test.h", "int bar(const char* a);")
+        .header_contents("test2.h", "float bar2(const char* b);")
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let (actual, stderr) = rustfmt(actual);
+    println!("{}", stderr);
+
+    let expected = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/expectations/tests/test_mixed_header_and_header_contents.rs"
+    ));
+    let (expected, _) = rustfmt(expected.to_string());
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
 // Doesn't support executing sh file on Windows.
 // We may want to implement it in Rust so that we support all systems.
 #[cfg(not(target_os = "windows"))]
@@ -467,6 +575,32 @@ fn no_system_header_includes() {
         .wait()
         .expect("should wait for ./ci/no-includes OK")
         .success());
+}
+
+#[test]
+fn emit_depfile() {
+    let header = PathBuf::from("tests/headers/enum-default-rust.h");
+    let expected_depfile = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join("expectations")
+        .join("tests")
+        .join("enum-default-rust.d");
+    let observed_depfile = tempfile::NamedTempFile::new().unwrap();
+    let mut builder = create_bindgen_builder(&header).unwrap();
+    builder.builder = builder.builder.depfile(
+        "tests/expectations/tests/enum-default-rust.rs",
+        observed_depfile.path(),
+    );
+
+    let check_roundtrip =
+        env::var_os("BINDGEN_DISABLE_ROUNDTRIP_TEST").is_none();
+    let (builder, _roundtrip_builder) =
+        builder.into_builder(check_roundtrip).unwrap();
+    let _bindings = builder.generate().unwrap();
+
+    let observed = std::fs::read_to_string(observed_depfile).unwrap();
+    let expected = std::fs::read_to_string(expected_depfile).unwrap();
+    assert_eq!(observed.trim(), expected.trim());
 }
 
 #[test]
@@ -496,11 +630,11 @@ fn dump_preprocessed_input() {
     let empty_layout = slurp(empty_layout);
 
     assert!(
-        bindgen_ii.find(&arg_keyword).is_some(),
+        bindgen_ii.contains(&arg_keyword),
         "arg_keyword.hpp is in the preprocessed file"
     );
     assert!(
-        bindgen_ii.find(&empty_layout).is_some(),
+        bindgen_ii.contains(&empty_layout),
         "cpp-empty-layout.hpp is in the preprocessed file"
     );
 }

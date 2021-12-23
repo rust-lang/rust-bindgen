@@ -160,7 +160,11 @@ fn bindgen_test_layout_rte_mempool_ops() {
 }
 impl Default for rte_mempool_ops {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl ::std::cmp::PartialEq for rte_mempool_ops {
@@ -279,7 +283,11 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
 }
 impl Default for rte_mempool_ops_table {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// Structure to hold malloc heap
@@ -325,7 +333,11 @@ fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
 }
 impl Default for malloc_heap__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -394,7 +406,11 @@ fn bindgen_test_layout_malloc_heap() {
 }
 impl Default for malloc_heap {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl ::std::cmp::PartialEq for malloc_heap {

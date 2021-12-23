@@ -1,4 +1,4 @@
-// bindgen-flags: --blacklist-type Wrapper -- --std=c++11
+// bindgen-flags: --blocklist-type Wrapper -- --std=c++11
 
 template<typename T>
 struct Wrapper {

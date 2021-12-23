@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq --rust-target 1.40
 //
 struct S {
     char large_array[33];

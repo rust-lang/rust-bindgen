@@ -8,7 +8,7 @@ used to prevent bindgen to autoderive the `Copy` and `Clone` traits for a type.
 
 ### Library
 
-* [`bindgen::Builder::no_copy`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.no_copy)
+* [`bindgen::Builder::no_copy`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.no_copy)
 
 ### Command Line
 

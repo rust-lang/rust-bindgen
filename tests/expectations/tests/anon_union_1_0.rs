@@ -59,7 +59,7 @@ pub struct TErrorResult {
 pub const TErrorResult_UnionState_HasException: TErrorResult_UnionState =
     TErrorResult_UnionState::HasMessage;
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum TErrorResult_UnionState {
     HasMessage = 0,
 }
@@ -83,7 +83,11 @@ pub struct TErrorResult__bindgen_ty_1 {
 }
 impl Default for TErrorResult {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -111,7 +115,11 @@ impl Clone for ErrorResult {
 }
 impl Default for ErrorResult {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[test]

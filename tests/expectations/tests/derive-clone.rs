@@ -39,6 +39,10 @@ fn bindgen_test_layout_ShouldDeriveClone() {
 }
 impl Default for ShouldDeriveClone {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

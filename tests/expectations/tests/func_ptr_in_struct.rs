@@ -6,7 +6,7 @@
 )]
 
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum baz {
     __bindgen_cannot_repr_c_on_empty_enum = 0,
 }

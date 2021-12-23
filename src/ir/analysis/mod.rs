@@ -183,8 +183,8 @@ where
 {
     let mut dependencies = HashMap::default();
 
-    for &item in ctx.whitelisted_items() {
-        dependencies.entry(item).or_insert(vec![]);
+    for &item in ctx.allowlisted_items() {
+        dependencies.entry(item).or_insert_with(Vec::new);
 
         {
             // We reverse our natural IR graph edges to find dependencies
@@ -192,12 +192,12 @@ where
             item.trace(
                 ctx,
                 &mut |sub_item: ItemId, edge_kind| {
-                    if ctx.whitelisted_items().contains(&sub_item) &&
+                    if ctx.allowlisted_items().contains(&sub_item) &&
                         consider_edge(edge_kind)
                     {
                         dependencies
                             .entry(sub_item)
-                            .or_insert(vec![])
+                            .or_insert_with(Vec::new)
                             .push(item);
                     }
                 },
@@ -281,9 +281,13 @@ mod tests {
         fn reverse(&self) -> Graph {
             let mut reversed = Graph::default();
             for (node, edges) in self.0.iter() {
-                reversed.0.entry(*node).or_insert(vec![]);
+                reversed.0.entry(*node).or_insert_with(Vec::new);
                 for referent in edges.iter() {
-                    reversed.0.entry(*referent).or_insert(vec![]).push(*node);
+                    reversed
+                        .0
+                        .entry(*referent)
+                        .or_insert_with(Vec::new)
+                        .push(*node);
                 }
             }
             reversed
@@ -306,8 +310,8 @@ mod tests {
             let reversed = graph.reverse();
             ReachableFrom {
                 reachable: Default::default(),
-                graph: graph,
-                reversed: reversed,
+                graph,
+                reversed,
             }
         }
 
@@ -328,7 +332,7 @@ mod tests {
             let original_size = self
                 .reachable
                 .entry(node)
-                .or_insert(HashSet::default())
+                .or_insert_with(HashSet::default)
                 .len();
 
             for sub_node in self.graph.0[&node].iter() {
@@ -337,7 +341,7 @@ mod tests {
                 let sub_reachable = self
                     .reachable
                     .entry(*sub_node)
-                    .or_insert(HashSet::default())
+                    .or_insert_with(HashSet::default)
                     .clone();
 
                 for transitive in sub_reachable {

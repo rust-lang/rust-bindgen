@@ -12,6 +12,7 @@ int usize;
 int isize;
 int bool;
 int str;
+int dyn;
 
 int as;
 int box;
@@ -33,6 +34,7 @@ int Self;
 int super;
 int trait;
 int true;
+int try;
 int type;
 int unsafe;
 int use;

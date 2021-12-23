@@ -16,6 +16,7 @@ pub mod root {
     pub mod whatever {
         #[allow(unused_imports)]
         use self::super::super::root;
+        pub type whatever_other_thing_t = whatever_int_t;
         pub type whatever_int_t = ::std::os::raw::c_int;
         extern "C" {
             #[link_name = "\u{1}_ZN8whatever11in_whateverEv"]
@@ -65,7 +66,11 @@ pub mod root {
     }
     impl<T> Default for C<T> {
         fn default() -> Self {
-            unsafe { ::std::mem::zeroed() }
+            let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+            unsafe {
+                ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+                s.assume_init()
+            }
         }
     }
     pub mod w {
@@ -81,7 +86,11 @@ pub mod root {
         }
         impl<T> Default for D<T> {
             fn default() -> Self {
-                unsafe { ::std::mem::zeroed() }
+                let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+                unsafe {
+                    ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+                    s.assume_init()
+                }
             }
         }
         extern "C" {

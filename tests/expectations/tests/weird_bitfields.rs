@@ -7,17 +7,16 @@
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage, Align> {
+pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
-    align: [Align; 0],
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align> {
+impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
-        Self { storage, align: [] }
+        Self { storage }
     }
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
 {
@@ -93,7 +92,7 @@ where
     }
 }
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum nsStyleSVGOpacitySource {
     eStyleSVGOpacitySource_Normal = 0,
     eStyleSVGOpacitySource_ContextFillOpacity = 1,
@@ -103,7 +102,8 @@ pub enum nsStyleSVGOpacitySource {
 #[derive(Debug, Copy, Clone)]
 pub struct Weird {
     pub mStrokeDasharrayLength: ::std::os::raw::c_uint,
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u16>,
+    pub _bitfield_align_1: [u16; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
     pub mClipRule: ::std::os::raw::c_uchar,
     pub mColorInterpolation: ::std::os::raw::c_uchar,
     pub mColorInterpolationFilters: ::std::os::raw::c_uchar,
@@ -115,7 +115,8 @@ pub struct Weird {
     pub mStrokeLinejoin: ::std::os::raw::c_uchar,
     pub mTextAnchor: ::std::os::raw::c_uchar,
     pub mTextRendering: ::std::os::raw::c_uchar,
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 2usize], u8>,
+    pub _bitfield_align_2: [u8; 0],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }
 #[test]
@@ -285,7 +286,11 @@ fn bindgen_test_layout_Weird() {
 }
 impl Default for Weird {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl Weird {
@@ -319,11 +324,9 @@ impl Weird {
     pub fn new_bitfield_1(
         bitTest: ::std::os::raw::c_uint,
         bitTest2: ::std::os::raw::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 4usize], u16> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 4usize],
-            u16,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 16u8, {
             let bitTest: u32 = unsafe { ::std::mem::transmute(bitTest) };
             bitTest as u64
@@ -406,11 +409,9 @@ impl Weird {
         mStrokeDasharrayFromObject: bool,
         mStrokeDashoffsetFromObject: bool,
         mStrokeWidthFromObject: bool,
-    ) -> __BindgenBitfieldUnit<[u8; 2usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 2usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 3u8, {
             let mFillOpacitySource: u32 =
                 unsafe { ::std::mem::transmute(mFillOpacitySource) };

@@ -1,4 +1,4 @@
-// bindgen-flags: --enable-cxx-namespaces --whitelist-type JSAutoCompartment -- -std=c++11
+// bindgen-flags: --enable-cxx-namespaces --allowlist-type JSAutoCompartment -- -std=c++11
 
 namespace mozilla {
     template <typename> class a {};

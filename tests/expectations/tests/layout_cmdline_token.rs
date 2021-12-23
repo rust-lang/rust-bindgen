@@ -54,9 +54,15 @@ fn bindgen_test_layout_cmdline_token_hdr() {
 }
 impl Default for cmdline_token_hdr {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
+/// Stores a pointer to the ops struct, and the offset: the place to
+/// write the parsed result in the destination structure.
 pub type cmdline_parse_token_hdr_t = cmdline_token_hdr;
 /// A token is defined by this structure.
 ///
@@ -177,7 +183,7 @@ fn bindgen_test_layout_cmdline_token_ops() {
     );
 }
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum cmdline_numtype {
     UINT8 = 0,
     UINT16 = 1,
@@ -221,7 +227,11 @@ fn bindgen_test_layout_cmdline_token_num_data() {
 }
 impl Default for cmdline_token_num_data {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -271,7 +281,11 @@ fn bindgen_test_layout_cmdline_token_num() {
 }
 impl Default for cmdline_token_num {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 pub type cmdline_parse_token_num_t = cmdline_token_num;

@@ -17,7 +17,6 @@ pub struct perf_event_attr {
 pub union perf_event_attr__bindgen_ty_1 {
     pub b: ::std::os::raw::c_int,
     pub c: ::std::os::raw::c_int,
-    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_perf_event_attr__bindgen_ty_1() {
@@ -60,7 +59,11 @@ fn bindgen_test_layout_perf_event_attr__bindgen_ty_1() {
 }
 impl Default for perf_event_attr__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl ::std::fmt::Debug for perf_event_attr__bindgen_ty_1 {
@@ -108,7 +111,11 @@ fn bindgen_test_layout_perf_event_attr() {
 }
 impl Default for perf_event_attr {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl ::std::fmt::Debug for perf_event_attr {

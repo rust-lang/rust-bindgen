@@ -8,7 +8,7 @@
 pub const match_: _bindgen_ty_1 = _bindgen_ty_1::match_;
 pub const whatever_else: _bindgen_ty_1 = _bindgen_ty_1::whatever_else;
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum _bindgen_ty_1 {
     match_ = 0,
     whatever_else = 1,
@@ -41,7 +41,11 @@ fn bindgen_test_layout_C() {
 }
 impl Default for C {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 extern "C" {

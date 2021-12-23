@@ -11,7 +11,6 @@ pub union color {
     pub u1: color__bindgen_ty_1,
     pub u2: color__bindgen_ty_2,
     pub v3: [::std::os::raw::c_uchar; 3usize],
-    _bindgen_union_align: [u8; 3usize],
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -151,6 +150,10 @@ fn bindgen_test_layout_color() {
 }
 impl Default for color {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

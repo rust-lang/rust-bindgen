@@ -7,7 +7,7 @@ used to prevent bindgen to autoderive the `Debug` traits for a type.
 
 ### Library
 
-* [`bindgen::Builder::no_debug`](https://docs.rs/bindgen/0.54.2/bindgen/struct.Builder.html#method.no_debug)
+* [`bindgen::Builder::no_debug`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.no_debug)
 
 ### Command Line
 

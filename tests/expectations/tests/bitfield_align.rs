@@ -7,17 +7,16 @@
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage, Align> {
+pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
-    align: [Align; 0],
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align> {
+impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
-        Self { storage, align: [] }
+        Self { storage }
     }
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
 {
@@ -97,7 +96,8 @@ where
 #[derive(Debug, Default, Copy, Clone)]
 pub struct A {
     pub x: ::std::os::raw::c_uchar,
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub y: ::std::os::raw::c_uchar,
 }
 #[test]
@@ -266,11 +266,9 @@ impl A {
         b8: ::std::os::raw::c_uint,
         b9: ::std::os::raw::c_uint,
         b10: ::std::os::raw::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 2usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 2usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let b1: u32 = unsafe { ::std::mem::transmute(b1) };
             b1 as u64
@@ -318,7 +316,8 @@ impl A {
 #[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct B {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u32>,
+    pub _bitfield_align_1: [u32; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 #[test]
 fn bindgen_test_layout_B() {
@@ -364,11 +363,9 @@ impl B {
     pub fn new_bitfield_1(
         foo: ::std::os::raw::c_uint,
         bar: ::std::os::raw::c_uchar,
-    ) -> __BindgenBitfieldUnit<[u8; 4usize], u32> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 4usize],
-            u32,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 31u8, {
             let foo: u32 = unsafe { ::std::mem::transmute(foo) };
             foo as u64
@@ -384,7 +381,8 @@ impl B {
 #[derive(Debug, Default, Copy, Clone)]
 pub struct C {
     pub x: ::std::os::raw::c_uchar,
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub baz: ::std::os::raw::c_uint,
 }
 #[test]
@@ -441,11 +439,9 @@ impl C {
     pub fn new_bitfield_1(
         b1: ::std::os::raw::c_uint,
         b2: ::std::os::raw::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 1usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let b1: u32 = unsafe { ::std::mem::transmute(b1) };
             b1 as u64
@@ -461,7 +457,8 @@ impl C {
 #[repr(align(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Date1 {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize]>,
     pub __bindgen_padding_0: u8,
 }
 #[test]
@@ -536,11 +533,9 @@ impl Date1 {
         nMonthDay: ::std::os::raw::c_ushort,
         nMonth: ::std::os::raw::c_ushort,
         nYear: ::std::os::raw::c_ushort,
-    ) -> __BindgenBitfieldUnit<[u8; 3usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 3usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 3usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 3u8, {
             let nWeekDay: u16 = unsafe { ::std::mem::transmute(nWeekDay) };
             nWeekDay as u64
@@ -564,7 +559,8 @@ impl Date1 {
 #[repr(align(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Date2 {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 #[test]
 fn bindgen_test_layout_Date2() {
@@ -652,11 +648,9 @@ impl Date2 {
         nMonth: ::std::os::raw::c_ushort,
         nYear: ::std::os::raw::c_ushort,
         byte: ::std::os::raw::c_uchar,
-    ) -> __BindgenBitfieldUnit<[u8; 4usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 4usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 3u8, {
             let nWeekDay: u16 = unsafe { ::std::mem::transmute(nWeekDay) };
             nWeekDay as u64
@@ -684,7 +678,8 @@ impl Date2 {
 #[repr(align(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Date3 {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize]>,
     pub byte: ::std::os::raw::c_uchar,
 }
 #[test]
@@ -769,11 +764,9 @@ impl Date3 {
         nMonthDay: ::std::os::raw::c_ushort,
         nMonth: ::std::os::raw::c_ushort,
         nYear: ::std::os::raw::c_ushort,
-    ) -> __BindgenBitfieldUnit<[u8; 3usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 3usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 3usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 3u8, {
             let nWeekDay: u16 = unsafe { ::std::mem::transmute(nWeekDay) };
             nWeekDay as u64

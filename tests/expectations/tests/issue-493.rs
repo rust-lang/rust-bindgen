@@ -65,13 +65,17 @@ pub struct basic_string___long {
 }
 impl Default for basic_string___long {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 pub const basic_string___min_cap: basic_string__bindgen_ty_1 =
     basic_string__bindgen_ty_1::__min_cap;
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum basic_string__bindgen_ty_1 {
     __min_cap = 0,
 }
@@ -84,19 +88,27 @@ pub struct basic_string___short {
 pub union basic_string___short__bindgen_ty_1 {
     pub __size_: ::std::os::raw::c_uchar,
     pub __lx: basic_string_value_type,
-    _bindgen_union_align: u8,
 }
 impl Default for basic_string___short__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl Default for basic_string___short {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
+#[repr(align(1))]
 pub struct basic_string___ulx {
     pub __lx: __BindgenUnionField<basic_string___long>,
     pub __lxx: __BindgenUnionField<basic_string___short>,
@@ -104,13 +116,17 @@ pub struct basic_string___ulx {
 }
 impl Default for basic_string___ulx {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 pub const basic_string___n_words: basic_string__bindgen_ty_2 =
     basic_string__bindgen_ty_2::__n_words;
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum basic_string__bindgen_ty_2 {
     __n_words = 0,
 }
@@ -121,7 +137,11 @@ pub struct basic_string___raw {
 }
 impl Default for basic_string___raw {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -129,6 +149,7 @@ pub struct basic_string___rep {
     pub __bindgen_anon_1: basic_string___rep__bindgen_ty_1,
 }
 #[repr(C)]
+#[repr(align(1))]
 pub struct basic_string___rep__bindgen_ty_1 {
     pub __l: __BindgenUnionField<basic_string___long>,
     pub __s: __BindgenUnionField<basic_string___short>,
@@ -137,11 +158,19 @@ pub struct basic_string___rep__bindgen_ty_1 {
 }
 impl Default for basic_string___rep__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl Default for basic_string___rep {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

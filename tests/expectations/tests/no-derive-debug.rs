@@ -11,7 +11,7 @@ pub struct foo {
     bar: ::std::os::raw::c_int,
 }
 
-/// bar should compile. It will normally derive debug, but our blacklist of foo
+/// bar should compile. It will normally derive debug, but our blocklist of foo
 /// and replacement for another type that doesn't implement it would prevent it
 /// from building if --no-derive-debug didn't work.
 #[repr(C)]
@@ -44,6 +44,10 @@ fn bindgen_test_layout_bar() {
 }
 impl Default for bar {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

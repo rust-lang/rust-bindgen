@@ -7,17 +7,16 @@
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage, Align> {
+pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
-    align: [Align; 0],
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align> {
+impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
-        Self { storage, align: [] }
+        Self { storage }
     }
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
 {
@@ -190,7 +189,6 @@ pub union rte_mbuf__bindgen_ty_1 {
     pub refcnt_atomic: rte_atomic16_t,
     ///< Non-atomically accessed refcnt
     pub refcnt: u16,
-    _bindgen_union_align: u16,
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_1() {
@@ -233,7 +231,11 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_1() {
 }
 impl Default for rte_mbuf__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -242,13 +244,13 @@ pub union rte_mbuf__bindgen_ty_2 {
     ///< L2/L3/L4 and tunnel information.
     pub packet_type: u32,
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_2__bindgen_ty_1,
-    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_2__bindgen_ty_1() {
@@ -370,11 +372,9 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         inner_l2_type: u32,
         inner_l3_type: u32,
         inner_l4_type: u32,
-    ) -> __BindgenBitfieldUnit<[u8; 4usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 4usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 4u8, {
             let l2_type: u32 = unsafe { ::std::mem::transmute(l2_type) };
             l2_type as u64
@@ -437,7 +437,11 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_2() {
 }
 impl Default for rte_mbuf__bindgen_ty_2 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -451,7 +455,6 @@ pub union rte_mbuf__bindgen_ty_3 {
     pub sched: rte_mbuf__bindgen_ty_3__bindgen_ty_2,
     ///< User defined tags. See rte_distributor_process()
     pub usr: u32,
-    _bindgen_union_align: [u32; 2usize],
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -465,7 +468,6 @@ pub union rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
     pub __bindgen_anon_1:
         rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1,
     pub lo: u32,
-    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -476,10 +478,10 @@ pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1(
 ) {
-    assert_eq ! ( :: std :: mem :: size_of :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > ( ) , 4usize , concat ! ( "Size of: " , stringify ! ( rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 ) ) );
-    assert_eq ! ( :: std :: mem :: align_of :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > ( ) , 2usize , concat ! ( "Alignment of " , stringify ! ( rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 ) ) );
-    assert_eq ! ( unsafe { & ( * ( :: std :: ptr :: null :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > ( ) ) ) . hash as * const _ as usize } , 0usize , concat ! ( "Offset of field: " , stringify ! ( rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 ) , "::" , stringify ! ( hash ) ) );
-    assert_eq ! ( unsafe { & ( * ( :: std :: ptr :: null :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > ( ) ) ) . id as * const _ as usize } , 2usize , concat ! ( "Offset of field: " , stringify ! ( rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 ) , "::" , stringify ! ( id ) ) );
+    assert_eq ! (:: std :: mem :: size_of :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > () , 4usize , concat ! ("Size of: " , stringify ! (rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1)));
+    assert_eq ! (:: std :: mem :: align_of :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > () , 2usize , concat ! ("Alignment of " , stringify ! (rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1)));
+    assert_eq ! (unsafe { & (* (:: std :: ptr :: null :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > ())) . hash as * const _ as usize } , 0usize , concat ! ("Offset of field: " , stringify ! (rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1) , "::" , stringify ! (hash)));
+    assert_eq ! (unsafe { & (* (:: std :: ptr :: null :: < rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 > ())) . id as * const _ as usize } , 2usize , concat ! ("Offset of field: " , stringify ! (rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1) , "::" , stringify ! (id)));
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1() {
@@ -520,7 +522,11 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1() {
 }
 impl Default for rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -557,7 +563,11 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1() {
 }
 impl Default for rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -678,7 +688,11 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_3() {
 }
 impl Default for rte_mbuf__bindgen_ty_3 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -688,7 +702,6 @@ pub union rte_mbuf__bindgen_ty_4 {
     pub userdata: *mut ::std::os::raw::c_void,
     ///< Allow 8-byte userdata on 32-bit
     pub udata64: u64,
-    _bindgen_union_align: u64,
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_4() {
@@ -731,7 +744,11 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_4() {
 }
 impl Default for rte_mbuf__bindgen_ty_4 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -740,13 +757,13 @@ pub union rte_mbuf__bindgen_ty_5 {
     ///< combined for easy fetch
     pub tx_offload: u64,
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_5__bindgen_ty_1,
-    _bindgen_union_align: u64,
 }
 #[repr(C)]
 #[repr(align(8))]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize], u16>,
+    pub _bitfield_align_1: [u16; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 7usize]>,
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_5__bindgen_ty_1() {
@@ -854,11 +871,9 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         tso_segsz: u64,
         outer_l3_len: u64,
         outer_l2_len: u64,
-    ) -> __BindgenBitfieldUnit<[u8; 8usize], u16> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 8usize],
-            u16,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 7usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 7usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 7u8, {
             let l2_len: u64 = unsafe { ::std::mem::transmute(l2_len) };
             l2_len as u64
@@ -916,7 +931,11 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_5() {
 }
 impl Default for rte_mbuf__bindgen_ty_5 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -1189,7 +1208,11 @@ fn bindgen_test_layout_rte_mbuf() {
 }
 impl Default for rte_mbuf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 ///< Pool from which mbuf was allocated.

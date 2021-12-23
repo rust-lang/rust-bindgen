@@ -69,19 +69,23 @@ fn bindgen_test_layout__bindgen_ty_1() {
 }
 impl Default for _bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 pub type struct_ptr_t = *mut _bindgen_ty_1;
 pub type struct_ptr_ptr_t = *mut *mut _bindgen_ty_1;
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum typedef_named_enum {
     ENUM_HAS_NAME = 1,
 }
 pub const ENUM_IS_ANON: _bindgen_ty_2 = _bindgen_ty_2::ENUM_IS_ANON;
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum _bindgen_ty_2 {
     ENUM_IS_ANON = 0,
 }

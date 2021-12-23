@@ -49,6 +49,10 @@ fn bindgen_test_layout_foo() {
 }
 impl Default for foo {
     fn default() -> Self {
-        unsafe { ::core::mem::zeroed() }
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }

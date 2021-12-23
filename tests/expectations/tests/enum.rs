@@ -38,7 +38,11 @@ fn bindgen_test_layout_foo() {
 }
 impl Default for foo {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 pub const Foo_Bar: Foo = 0;
@@ -47,3 +51,11 @@ pub type Foo = ::std::os::raw::c_uint;
 pub const Neg_MinusOne: Neg = -1;
 pub const Neg_One: Neg = 1;
 pub type Neg = ::std::os::raw::c_int;
+pub const NoDebug_NoDebug1: NoDebug = 0;
+pub const NoDebug_NoDebug2: NoDebug = 1;
+/// <div rustbindgen nodebug></div>
+pub type NoDebug = ::std::os::raw::c_uint;
+pub const Debug_Debug1: Debug = 0;
+pub const Debug_Debug2: Debug = 1;
+/// <div rustbindgen derive="Debug"></div>
+pub type Debug = ::std::os::raw::c_uint;

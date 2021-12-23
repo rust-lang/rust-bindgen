@@ -42,7 +42,7 @@ pub const IP_FIRST_FRAG_IDX: _bindgen_ty_1 = _bindgen_ty_1::IP_FIRST_FRAG_IDX;
 pub const IP_MIN_FRAG_NUM: _bindgen_ty_1 = _bindgen_ty_1::IP_MIN_FRAG_NUM;
 pub const IP_MAX_FRAG_NUM: _bindgen_ty_1 = _bindgen_ty_1::IP_MAX_FRAG_NUM;
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum _bindgen_ty_1 {
     ///< index of last fragment
     IP_LAST_FRAG_IDX = 0,
@@ -108,7 +108,11 @@ fn bindgen_test_layout_ip_frag() {
 }
 impl Default for ip_frag {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// @internal <src addr, dst_addr, id> to uniquely indetify fragmented datagram.
@@ -239,7 +243,11 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
 }
 impl Default for ip_frag_pkt__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]
@@ -344,7 +352,11 @@ fn bindgen_test_layout_ip_frag_pkt() {
 }
 impl Default for ip_frag_pkt {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -394,7 +406,11 @@ fn bindgen_test_layout_ip_pkt_list() {
 }
 impl Default for ip_pkt_list {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// fragmentation table statistics
@@ -508,7 +524,11 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
 }
 impl Default for ip_frag_tbl_stat {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 /// fragmentation table
@@ -695,7 +715,11 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
 }
 impl Default for rte_ip_frag_tbl {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 ///< fragment mbuf

@@ -1,4 +1,4 @@
-// bindgen-flags: --blacklist-type RefPtr_Proxy_member_function
+// bindgen-flags: --blocklist-type RefPtr_Proxy_member_function
 
 template<typename T>
 class RefPtr {

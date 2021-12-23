@@ -7,17 +7,16 @@
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage, Align> {
+pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
-    align: [Align; 0],
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align> {
+impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub fn new(storage: Storage) -> Self {
-        Self { storage, align: [] }
+        Self { storage }
     }
 }
-impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
 {
@@ -170,7 +169,7 @@ pub const RTE_ETH_FLOW_MAX: u32 = 22;
 #[repr(u32)]
 ///  A set of values to identify what method is to be used to route
 ///  packets to multiple queues.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_rx_mq_mode {
     /// None of DCB,RSS or VMDQ mode
     ETH_MQ_RX_NONE = 0,
@@ -199,7 +198,8 @@ pub struct rte_eth_rxmode {
     pub max_rx_pkt_len: u32,
     ///< hdr buf size (header_split enabled).
     pub split_hdr_size: u16,
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
 }
 #[test]
 fn bindgen_test_layout_rte_eth_rxmode() {
@@ -260,7 +260,11 @@ impl Clone for rte_eth_rxmode {
 }
 impl Default for rte_eth_rxmode {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 impl rte_eth_rxmode {
@@ -392,11 +396,9 @@ impl rte_eth_rxmode {
         hw_strip_crc: u16,
         enable_scatter: u16,
         enable_lro: u16,
-    ) -> __BindgenBitfieldUnit<[u8; 2usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 2usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let header_split: u16 =
                 unsafe { ::std::mem::transmute(header_split) };
@@ -447,7 +449,7 @@ impl rte_eth_rxmode {
 #[repr(u32)]
 /// A set of values to identify what method is to be used to transmit
 /// packets using multi-TCs.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_tx_mq_mode {
     ///< It is in neither DCB nor VT mode.
     ETH_MQ_TX_NONE = 0,
@@ -465,7 +467,8 @@ pub struct rte_eth_txmode {
     ///< TX multi-queues mode.
     pub mq_mode: rte_eth_tx_mq_mode,
     pub pvid: u16,
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize], u8>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: u8,
 }
 #[test]
@@ -513,7 +516,11 @@ impl Clone for rte_eth_txmode {
 }
 impl Default for rte_eth_txmode {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 impl rte_eth_txmode {
@@ -561,11 +568,9 @@ impl rte_eth_txmode {
         hw_vlan_reject_tagged: u8,
         hw_vlan_reject_untagged: u8,
         hw_vlan_insert_pvid: u8,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
-            [u8; 1usize],
-            u8,
-        > = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> =
+            Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let hw_vlan_reject_tagged: u8 =
                 unsafe { ::std::mem::transmute(hw_vlan_reject_tagged) };
@@ -668,13 +673,17 @@ impl Clone for rte_eth_rss_conf {
 }
 impl Default for rte_eth_rss_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(u32)]
 /// This enum indicates the possible number of traffic classes
 /// in DCB configratioins
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_nb_tcs {
     ///< 4 TCs with DCB.
     ETH_4_TCS = 4,
@@ -684,7 +693,7 @@ pub enum rte_eth_nb_tcs {
 #[repr(u32)]
 /// This enum indicates the possible number of queue pools
 /// in VMDQ configurations.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_nb_pools {
     ///< 8 VMDq pools.
     ETH_8_POOLS = 8,
@@ -872,7 +881,11 @@ impl Clone for rte_eth_vmdq_dcb_conf {
 }
 impl Default for rte_eth_vmdq_dcb_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -929,7 +942,11 @@ impl Clone for rte_eth_dcb_rx_conf {
 }
 impl Default for rte_eth_dcb_rx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -986,7 +1003,11 @@ impl Clone for rte_eth_vmdq_dcb_tx_conf {
 }
 impl Default for rte_eth_vmdq_dcb_tx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -1043,7 +1064,11 @@ impl Clone for rte_eth_dcb_tx_conf {
 }
 impl Default for rte_eth_dcb_tx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -1085,7 +1110,11 @@ impl Clone for rte_eth_vmdq_tx_conf {
 }
 impl Default for rte_eth_vmdq_tx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -1272,12 +1301,16 @@ impl Clone for rte_eth_vmdq_rx_conf {
 }
 impl Default for rte_eth_vmdq_rx_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(u32)]
 ///  Flow Director setting modes: none, signature or perfect.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_fdir_mode {
     ///< Disable FDIR support.
     RTE_FDIR_MODE_NONE = 0,
@@ -1293,7 +1326,7 @@ pub enum rte_fdir_mode {
 #[repr(u32)]
 ///  Memory space that can be configured to store Flow Director filters
 ///  in the board memory.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_fdir_pballoc_type {
     ///< 64k.
     RTE_FDIR_PBALLOC_64K = 0,
@@ -1304,7 +1337,7 @@ pub enum rte_fdir_pballoc_type {
 }
 #[repr(u32)]
 ///  Select report mode of FDIR hash information in RX descriptors.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_fdir_status_mode {
     ///< Never report FDIR hash.
     RTE_FDIR_NO_REPORT_STATUS = 0,
@@ -1657,7 +1690,7 @@ impl Clone for rte_eth_fdir_masks {
 }
 #[repr(u32)]
 /// Payload type
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_payload_type {
     RTE_ETH_PAYLOAD_UNKNOWN = 0,
     RTE_ETH_RAW_PAYLOAD = 1,
@@ -1721,7 +1754,11 @@ impl Clone for rte_eth_flex_payload_cfg {
 }
 impl Default for rte_eth_flex_payload_cfg {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 /// A structure used to define FDIR masks for flexible payload
@@ -1860,7 +1897,11 @@ impl Clone for rte_eth_fdir_flex_conf {
 }
 impl Default for rte_eth_fdir_flex_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 /// A structure used to configure the Flow Director (FDIR) feature
@@ -1977,7 +2018,11 @@ impl Clone for rte_fdir_conf {
 }
 impl Default for rte_fdir_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 /// A structure used to enable/disable specific device interrupts.
@@ -2148,7 +2193,11 @@ impl Clone for rte_eth_conf__bindgen_ty_1 {
 }
 impl Default for rte_eth_conf__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]
@@ -2351,6 +2400,10 @@ impl Clone for rte_eth_conf {
 }
 impl Default for rte_eth_conf {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::std::mem::uninitialized();
+            ::std::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }

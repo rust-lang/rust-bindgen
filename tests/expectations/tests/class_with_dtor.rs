@@ -13,7 +13,11 @@ pub struct HandleWithDtor<T> {
 }
 impl<T> Default for HandleWithDtor<T> {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 pub type HandleValue = HandleWithDtor<::std::os::raw::c_int>;
@@ -50,7 +54,11 @@ fn bindgen_test_layout_WithoutDtor() {
 }
 impl Default for WithoutDtor {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[test]

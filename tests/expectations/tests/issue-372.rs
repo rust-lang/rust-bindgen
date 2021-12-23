@@ -46,7 +46,11 @@ pub mod root {
     }
     impl Default for i {
         fn default() -> Self {
-            unsafe { ::std::mem::zeroed() }
+            let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+            unsafe {
+                ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+                s.assume_init()
+            }
         }
     }
     #[repr(C)]
@@ -74,11 +78,15 @@ pub mod root {
     }
     impl Default for d {
         fn default() -> Self {
-            unsafe { ::std::mem::zeroed() }
+            let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+            unsafe {
+                ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+                s.assume_init()
+            }
         }
     }
     #[repr(u32)]
-    #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+    #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
     pub enum n {
         o = 0,
         p = 1,
@@ -117,7 +125,11 @@ pub mod root {
     }
     impl Default for F {
         fn default() -> Self {
-            unsafe { ::std::mem::zeroed() }
+            let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+            unsafe {
+                ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+                s.assume_init()
+            }
         }
     }
 }

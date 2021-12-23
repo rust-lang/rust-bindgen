@@ -2,7 +2,8 @@
 
 Hi! We'd love to have your contributions! If you want help or mentorship, reach
 out to us in a GitHub issue, or stop by
-[#servo on irc.mozilla.org](irc://irc.mozilla.org#servo) and introduce yourself.
+[#rust on chat.mozilla.org](https://chat.mozilla.org/#/room/#rust:mozilla.org)
+and introduce yourself.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -99,7 +100,7 @@ compared. Make sure you have `rustfmt` up to date:
 
 ```
 $ rustup update nightly
-$ rustup run nightly cargo install -f rustfmt-nightly
+$ rustup component add rustfmt --toolchain nightly
 ```
 
 Note: running `cargo test` from the root directory of `bindgen`'s repository does not
@@ -124,6 +125,12 @@ the expected bindings with `bindgen`'s current output:
 ```
 $ BINDGEN_OVERWRITE_EXPECTED=1 cargo test
 ```
+
+If you set the BINDGEN_TESTS_DIFFTOOL environment variable, `cargo test` will
+execute $BINDGEN_TESTS_DIFFTOOL /path/of/expected/output /path/of/actual/output
+when the expected output differs from the actual output. You can use this to
+hand check differences by setting it to e.g. "meld" (assuming you have meld
+installed).
 
 If you're not changing command line arguments, you may want to set
 `BINDGEN_DISABLE_ROUNDTRIP_TEST` to avoid a lot of tests for round-tripping of
@@ -240,8 +247,8 @@ See [./csmith-fuzzing/README.md](./csmith-fuzzing/README.md) for details.
 
 The `tests/quickchecking` crate generates property tests for `bindgen`.
 From the crate's directory you can run the tests with `cargo run`. For details
-on additional configuration including how to preserve / inspect the generated 
-property tests, see 
+on additional configuration including how to preserve / inspect the generated
+property tests, see
 [./tests/quickchecking/README.md](./tests/quickchecking/README.md).
 
 ## Code Overview
@@ -291,6 +298,8 @@ looking at. Here is a summary of the IR types and their relationships:
             * Its type's `ItemId`
             * Optionally, a mangled name
             * Optionally, a value
+    * An optional `clang::SourceLocation` that holds the first source code
+      location where the `Item` was encountered.
 
 The IR forms a graph of interconnected and inter-referencing types and
 functions. The `ir::traversal` module provides IR graph traversal

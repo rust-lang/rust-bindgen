@@ -8,7 +8,7 @@
 pub const foo: _bindgen_ty_1 = _bindgen_ty_1::foo;
 pub const bar: _bindgen_ty_1 = _bindgen_ty_1::bar;
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum _bindgen_ty_1 {
     foo = 4,
     bar = 8,
@@ -23,5 +23,5 @@ pub const BAZ: ::std::os::raw::c_longlong = 24;
 pub const fuzz: f64 = 51.0;
 pub const BAZZ: ::std::os::raw::c_char = 53;
 pub const WAT: ::std::os::raw::c_char = 0;
-pub const bytestring: &'static [u8; 4usize] = b"Foo\0";
+pub const bytestring: &[u8; 4usize] = b"Foo\0";
 pub const NOT_UTF8: [u8; 5usize] = [240u8, 40u8, 140u8, 40u8, 0u8];

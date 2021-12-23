@@ -92,7 +92,11 @@ impl Clone for foo {
 }
 impl Default for foo {
     fn default() -> Self {
-        unsafe { ::core::mem::zeroed() }
+        unsafe {
+            let mut s: Self = ::core::mem::uninitialized();
+            ::core::ptr::write_bytes(&mut s, 0, 1);
+            s
+        }
     }
 }
 #[repr(C)]

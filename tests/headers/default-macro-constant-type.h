@@ -8,6 +8,24 @@
 #define N_1 (-1LL)
 #define N_2 (-2LL)
 
+#define MAX_U16  0xFFFFULL
+#define MAX_I16 (0x8000ULL - 1)
+
+#define MAX_I16_Plus1 (MAX_I16 + 1)
+#define MAX_U16_Plus1 (MAX_U16 + 1)
+
+#define MAX_I16_Minus1 (MAX_I16 - 1)
+#define MAX_U16_Minus1 (MAX_U16 - 1)
+
+#define MIN_U16 0
+#define MIN_I16 (- (1ULL<<15))
+
+#define MIN_U16_Plus1 (MIN_U16 + 1)
+#define MIN_I16_Plus1 (MIN_I16 + 1)
+
+#define MIN_U16_Minus1 (MIN_U16 - 1)
+#define MIN_I16_Minus1 (MIN_I16 - 1)
+
 #define MAX_U32  0xFFFFFFFFULL
 #define MAX_I32 (0x80000000ULL - 1)
 

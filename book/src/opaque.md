@@ -10,7 +10,7 @@ automatically, but other times it needs some explicit help from you.
 
 ### Library
 
-* [`bindgen::Builder::opaque_type`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.opaque_type)
+* [`bindgen::Builder::opaque_type`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.opaque_type)
 
 ### Command Line
 

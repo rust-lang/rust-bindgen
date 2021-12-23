@@ -135,3 +135,12 @@ Seventh::assert(bool first,
 int my_prefixed_function_name() {
   return 4;
 }
+
+Coord coord(double x, double y, double z, double t) {
+    Coord res;
+    res.v[0] = x;
+    res.v[1] = y;
+    res.v[2] = z;
+    res.v[3] = t;
+    return res;
+}

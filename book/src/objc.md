@@ -1,7 +1,7 @@
 # Generating Bindings to Objective-C
 
 `bindgen` does not (yet) have full objective-c support but it can generate bindings
-for a lot of the apple frameworks without too much blacklisting.
+for a lot of the apple frameworks without too much blocklisting.
 
 In order to generate bindings, you will need `-x objective-c` as the clang
 args. If you'd like to use [block](https://crates.io/crates/block) you will need
@@ -34,6 +34,7 @@ foo = Foo(Foo::alloc().initWithStuff())`.
 
 
 ## Supported Features
+
 * Inheritance matched to rust traits with prefixes of `I` which
 stands for interface.
 * Protocols which match to rust traits with prefixes of `P` which
@@ -43,11 +44,12 @@ name and `id` is a pointer to the objective-c Object.
 * Blocks
 
 ## Useful Notes
+
 * If you're targeting `aarch64-apple-ios`, you'll need to have the clang arg
 `--target=arm64-apple-ios` as mentioned
 [here](https://github.com/rust-lang/rust-bindgen/issues/1211#issuecomment-569804287).
 * The generated bindings will almost certainly have some conflicts so you will
-have to blacklist a few things. There are a few cases of the parameters being
+have to blocklist a few things. There are a few cases of the parameters being
 poorly named in the objective-c headers. But if you're using anything with
 Core Foundation, you'll find that `time.h` as has a variable called timezone that
 conflicts with some of the things in `NSCalendar.h`.
@@ -63,8 +65,10 @@ all of Core Foundation and any other frameworks. This will result in a very
 long compile time.
 
 ## Not (yet) Supported
-* Nullablibility attributes which return `Option`s.
+
+* Nullability attributes which return `Option`s.
 * Probably many other things. Feel free to [open an issue](https://github.com/rust-lang/rust-bindgen/issues).
 
 # Example crate(s)
+
 * [uikit-sys](https://github.com/simlay/uikit-sys)

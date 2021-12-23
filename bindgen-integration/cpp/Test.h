@@ -1,3 +1,5 @@
+#include "stub.h" // this bad path is made valid by a `-I include` clang arg
+
 #pragma once
 
 #define TESTMACRO
@@ -19,8 +21,6 @@
 //#define TESTMACRO_INVALID("string") // A conforming preprocessor rejects this
 #define TESTMACRO_STRING_EXPR ("string")
 #define TESTMACRO_STRING_FUNC_NON_UTF8(x) (x "ÿÿ") /* invalid UTF-8 on purpose */
-
-#include <cwchar>
 
 enum {
   MY_ANNOYING_MACRO =
@@ -228,3 +228,16 @@ struct my_prefixed_templated_foo {
 my_prefixed_templated_foo<my_prefixed_baz> TEMPLATED_CONST_VALUE;
 
 void my_prefixed_function_to_remove();
+
+typedef union {
+  double v[4];
+} Coord;
+
+Coord coord(double x, double y, double z, double t);
+
+// Used to test custom derives on enum. See `test_custom_derive`.
+enum MyOrderedEnum {
+  MICRON,
+  METER,
+  LIGHTYEAR,
+};

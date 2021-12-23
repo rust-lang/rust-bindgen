@@ -15,37 +15,50 @@ pub struct NastyStruct {
 pub union NastyStruct__bindgen_ty_1 {
     pub mFoo: *mut ::std::os::raw::c_void,
     pub mDummy: ::std::os::raw::c_ulong,
-    _bindgen_union_align: u64,
 }
 impl Default for NastyStruct__bindgen_ty_1 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
 pub union NastyStruct__bindgen_ty_2 {
     pub wat: ::std::os::raw::c_short,
     pub wut: *mut ::std::os::raw::c_int,
-    _bindgen_union_align: u64,
 }
 impl Default for NastyStruct__bindgen_ty_2 {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 impl Default for NastyStruct {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
 #[repr(C)]
 pub union Whatever {
     pub mTPtr: *mut ::std::os::raw::c_void,
     pub mInt: ::std::os::raw::c_int,
-    _bindgen_union_align: u64,
 }
 impl Default for Whatever {
     fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
     }
 }
