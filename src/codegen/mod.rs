@@ -1049,15 +1049,65 @@ impl<'a> CodeGenerator for Vtable<'a> {
     ) {
         assert_eq!(item.id(), self.item_id);
         debug_assert!(item.is_enabled_for_codegen(ctx));
-
-        // For now, generate an empty struct, later we should generate function
-        // pointers and whatnot.
         let name = ctx.rust_ident(&self.canonical_name(ctx));
-        let void = helpers::ast_ty::c_void(ctx);
-        result.push(quote! {
-            #[repr(C)]
-            pub struct #name ( #void );
-        });
+
+        // For now, we will only generate vtables for classes that do not inherit from others.
+        if self.base_classes.is_empty() {
+            let methods = self
+                .methods
+                .iter()
+                .filter_map(|m| {
+                    if !m.is_virtual() {
+                        return None;
+                    }
+
+                    let function_item = ctx.resolve_item(m.signature());
+                    if !function_item.process_before_codegen(ctx, result) {
+                        return None;
+                    }
+
+                    let function = function_item.expect_function();
+                    let signature_item = ctx.resolve_item(function.signature());
+                    let signature = match signature_item.expect_type().kind() {
+                        TypeKind::Function(ref sig) => sig,
+                        _ => panic!("Function signature type mismatch"),
+                    };
+
+                    // FIXME: Is there a canonical name without the class prepended?
+                    let function_name = function_item.canonical_name(ctx);
+
+                    // FIXME: Need to account for overloading with times_seen (separately from regular function path).
+                    let function_name = ctx.rust_ident(function_name);
+                    let mut args = utils::fnsig_arguments(ctx, signature);
+                    let ret = utils::fnsig_return_ty(ctx, signature);
+
+                    args[0] = if m.is_const() {
+                        quote! { &self }
+                    } else {
+                        quote! { &mut self }
+                    };
+
+                    Some(quote! {
+                        #function_name : fn( #( #args ),* ) #ret
+                    })
+                })
+                .collect::<Vec<_>>();
+
+            result.push(quote! {
+                #[repr(C)]
+                pub struct #name {
+                    #( #methods ),*
+                }
+            })
+        } else {
+            // For the cases we don't support, simply generate an empty struct.
+            let void = helpers::ast_ty::c_void(ctx);
+
+            result.push(quote! {
+                #[repr(C)]
+                pub struct #name ( #void );
+            });
+        }
     }
 }
 
