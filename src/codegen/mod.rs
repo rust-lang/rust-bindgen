@@ -4050,9 +4050,19 @@ impl CodeGenerator for Function {
 fn objc_method_codegen(
     ctx: &BindgenContext,
     method: &ObjCMethod,
+    methods: &mut Vec<proc_macro2::TokenStream>,
     class_name: Option<&str>,
+    rust_class_name: &str,
     prefix: &str,
-) -> proc_macro2::TokenStream {
+) {
+    // This would ideally resolve the method into an Item, and use
+    // Item::process_before_codegen; however, ObjC methods are not currently
+    // made into function items.
+    let name = format!("{}::{}{}", rust_class_name, prefix, method.rust_name());
+    if ctx.options().blocklisted_items.matches(name) {
+        return;
+    }
+
     let signature = method.signature();
     let fn_args = utils::fnsig_arguments(ctx, signature);
     let fn_ret = utils::fnsig_return_ty(ctx, signature);
@@ -4090,11 +4100,11 @@ fn objc_method_codegen(
     let method_name =
         ctx.rust_ident(format!("{}{}", prefix, method.rust_name()));
 
-    quote! {
+    methods.push(quote! {
         unsafe fn #method_name #sig where <Self as std::ops::Deref>::Target: objc::Message + Sized {
             #body
         }
-    }
+    });
 }
 
 impl CodeGenerator for ObjCInterface {
@@ -4110,10 +4120,17 @@ impl CodeGenerator for ObjCInterface {
         debug_assert!(item.is_enabled_for_codegen(ctx));
 
         let mut impl_items = vec![];
+        let rust_class_name = item.path_for_allowlisting(ctx)[1..].join("::");
 
         for method in self.methods() {
-            let impl_item = objc_method_codegen(ctx, method, None, "");
-            impl_items.push(impl_item);
+            objc_method_codegen(
+                ctx,
+                method,
+                &mut impl_items,
+                None,
+                &rust_class_name,
+                "",
+            );
         }
 
         for class_method in self.class_methods() {
@@ -4123,13 +4140,14 @@ impl CodeGenerator for ObjCInterface {
                 .map(|m| m.rust_name())
                 .any(|x| x == class_method.rust_name());
             let prefix = if ambiquity { "class_" } else { "" };
-            let impl_item = objc_method_codegen(
+            objc_method_codegen(
                 ctx,
                 class_method,
+                &mut impl_items,
                 Some(self.name()),
+                &rust_class_name,
                 prefix,
             );
-            impl_items.push(impl_item);
         }
 
         let trait_name = ctx.rust_ident(self.rust_name());
