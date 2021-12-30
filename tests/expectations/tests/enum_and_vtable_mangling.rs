@@ -14,7 +14,9 @@ pub enum _bindgen_ty_1 {
     whatever_else = 1,
 }
 #[repr(C)]
-pub struct C__bindgen_vtable(::std::os::raw::c_void);
+pub struct C__bindgen_vtable {
+    C_match: fn(this: &mut C),
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct C {

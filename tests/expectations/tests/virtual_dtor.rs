@@ -6,7 +6,9 @@
 )]
 
 #[repr(C)]
-pub struct nsSlots__bindgen_vtable(::std::os::raw::c_void);
+pub struct nsSlots__bindgen_vtable {
+    nsSlots_nsSlots_destructor: fn(this: &mut nsSlots),
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct nsSlots {

@@ -6,7 +6,9 @@
 )]
 
 #[repr(C)]
-pub struct nsISupports__bindgen_vtable(::std::os::raw::c_void);
+pub struct nsISupports__bindgen_vtable {
+    nsISupports_QueryInterface: fn(this: &mut nsISupports) -> *mut nsISupports,
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct nsISupports {
