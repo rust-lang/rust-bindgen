@@ -1041,19 +1041,19 @@ impl<'a> CodeGenerator for Vtable<'a> {
         assert_eq!(item.id(), self.item_id);
         debug_assert!(item.is_enabled_for_codegen(ctx));
         let name = ctx.rust_ident(&self.canonical_name(ctx));
-        let class_ident = ctx.rust_ident(self.item_id.canonical_name(ctx));
 
-        // For now, we will only generate vtables for classes that do not inherit from others.
-        if self.comp_info.base_members().is_empty() {
-            // Map the destructor into a Method, and chain it into the below iteration.
-            let dtor = self
+        // For now, we will only generate vtables for classes that:
+        // - do not inherit from others (compilers merge VTable from primary parent class).
+        // - do not contain a virtual destructor (requires ordering; platforms generate different vtables).
+        if self.comp_info.base_members().is_empty() &&
+            self.comp_info.destructor().is_none()
+        {
+            let class_ident = ctx.rust_ident(self.item_id.canonical_name(ctx));
+
+            let methods = self
                 .comp_info
-                .destructor()
-                .map(|(kind, id)| Method::new(kind, id, false));
-
-            let methods = dtor
+                .methods()
                 .iter()
-                .chain(self.comp_info.methods().iter())
                 .filter_map(|m| {
                     if !m.is_virtual() {
                         return None;

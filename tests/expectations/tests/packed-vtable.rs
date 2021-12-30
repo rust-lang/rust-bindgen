@@ -7,9 +7,7 @@
 #![cfg(feature = "nightly")]
 
 #[repr(C)]
-pub struct PackedVtable__bindgen_vtable {
-    pub PackedVtable_PackedVtable_destructor: fn(this: &mut PackedVtable),
-}
+pub struct PackedVtable__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C, packed)]
 #[derive(Debug)]
 pub struct PackedVtable {
