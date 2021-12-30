@@ -1050,6 +1050,7 @@ impl<'a> CodeGenerator for Vtable<'a> {
         assert_eq!(item.id(), self.item_id);
         debug_assert!(item.is_enabled_for_codegen(ctx));
         let name = ctx.rust_ident(&self.canonical_name(ctx));
+        let class_ident = ctx.rust_ident(self.item_id.canonical_name(ctx));
 
         // For now, we will only generate vtables for classes that do not inherit from others.
         if self.base_classes.is_empty() {
@@ -1062,10 +1063,6 @@ impl<'a> CodeGenerator for Vtable<'a> {
                     }
 
                     let function_item = ctx.resolve_item(m.signature());
-                    if !function_item.process_before_codegen(ctx, result) {
-                        return None;
-                    }
-
                     let function = function_item.expect_function();
                     let signature_item = ctx.resolve_item(function.signature());
                     let signature = match signature_item.expect_type().kind() {
@@ -1082,9 +1079,9 @@ impl<'a> CodeGenerator for Vtable<'a> {
                     let ret = utils::fnsig_return_ty(ctx, signature);
 
                     args[0] = if m.is_const() {
-                        quote! { &self }
+                        quote! { this: & #class_ident }
                     } else {
-                        quote! { &mut self }
+                        quote! { this: &mut #class_ident }
                     };
 
                     Some(quote! {
