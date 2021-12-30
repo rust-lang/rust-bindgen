@@ -7,7 +7,7 @@
 
 #[repr(C)]
 pub struct nsSlots__bindgen_vtable {
-    nsSlots_nsSlots_destructor: fn(this: &mut nsSlots),
+    pub nsSlots_nsSlots_destructor: fn(this: &mut nsSlots),
 }
 #[repr(C)]
 #[derive(Debug)]

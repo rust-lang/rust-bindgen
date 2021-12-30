@@ -7,7 +7,7 @@
 
 #[repr(C)]
 pub struct Base__bindgen_vtable {
-    Base_AsDerived: fn(this: &mut Base) -> *mut Derived,
+    pub Base_AsDerived: fn(this: &mut Base) -> *mut Derived,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

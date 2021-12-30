@@ -7,7 +7,8 @@
 
 #[repr(C)]
 pub struct nsISupports__bindgen_vtable {
-    nsISupports_QueryInterface: fn(this: &mut nsISupports) -> *mut nsISupports,
+    pub nsISupports_QueryInterface:
+        fn(this: &mut nsISupports) -> *mut nsISupports,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

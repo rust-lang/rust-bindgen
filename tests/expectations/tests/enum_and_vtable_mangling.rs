@@ -15,7 +15,7 @@ pub enum _bindgen_ty_1 {
 }
 #[repr(C)]
 pub struct C__bindgen_vtable {
-    C_match: fn(this: &mut C),
+    pub C_match: fn(this: &mut C),
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
