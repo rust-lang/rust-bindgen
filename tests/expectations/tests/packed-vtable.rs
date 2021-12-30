@@ -8,7 +8,7 @@
 
 #[repr(C)]
 pub struct PackedVtable__bindgen_vtable {
-    PackedVtable_PackedVtable_destructor: fn(this: &mut PackedVtable),
+    pub PackedVtable_PackedVtable_destructor: fn(this: &mut PackedVtable),
 }
 #[repr(C, packed)]
 #[derive(Debug)]

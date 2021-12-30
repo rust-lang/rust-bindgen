@@ -7,8 +7,8 @@
 
 #[repr(C)]
 pub struct PureVirtualIFace__bindgen_vtable {
-    PureVirtualIFace_Foo: fn(this: &mut PureVirtualIFace),
-    PureVirtualIFace_Bar:
+    pub PureVirtualIFace_Foo: fn(this: &mut PureVirtualIFace),
+    pub PureVirtualIFace_Bar:
         fn(this: &mut PureVirtualIFace, arg1: ::std::os::raw::c_uint),
 }
 #[repr(C)]
@@ -40,7 +40,7 @@ impl Default for PureVirtualIFace {
 }
 #[repr(C)]
 pub struct AnotherInterface__bindgen_vtable {
-    AnotherInterface_Baz: fn(this: &mut AnotherInterface),
+    pub AnotherInterface_Baz: fn(this: &mut AnotherInterface),
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

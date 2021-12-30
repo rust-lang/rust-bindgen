@@ -1082,7 +1082,7 @@ impl<'a> CodeGenerator for Vtable<'a> {
                     };
 
                     Some(quote! {
-                        #function_name : fn( #( #args ),* ) #ret
+                        pub #function_name : fn( #( #args ),* ) #ret
                     })
                 })
                 .collect::<Vec<_>>();
