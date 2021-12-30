@@ -21,8 +21,8 @@ use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::FieldAccessorKind;
 use crate::ir::comment;
 use crate::ir::comp::{
-    Base, Bitfield, BitfieldUnit, CompInfo, CompKind, Field, FieldData,
-    FieldMethods, Method, MethodKind,
+    Bitfield, BitfieldUnit, CompInfo, CompKind, Field, FieldData, FieldMethods,
+    Method, MethodKind,
 };
 use crate::ir::context::{BindgenContext, ItemId};
 use crate::ir::derive::{
@@ -1017,23 +1017,14 @@ impl CodeGenerator for Type {
 
 struct Vtable<'a> {
     item_id: ItemId,
+    /// A reference to the originating compound object.
     #[allow(dead_code)]
-    methods: &'a [Method],
-    #[allow(dead_code)]
-    base_classes: &'a [Base],
+    comp_info: &'a CompInfo,
 }
 
 impl<'a> Vtable<'a> {
-    fn new(
-        item_id: ItemId,
-        methods: &'a [Method],
-        base_classes: &'a [Base],
-    ) -> Self {
-        Vtable {
-            item_id,
-            methods,
-            base_classes,
-        }
+    fn new(item_id: ItemId, comp_info: &'a CompInfo) -> Self {
+        Vtable { item_id, comp_info }
     }
 }
 
@@ -1053,10 +1044,16 @@ impl<'a> CodeGenerator for Vtable<'a> {
         let class_ident = ctx.rust_ident(self.item_id.canonical_name(ctx));
 
         // For now, we will only generate vtables for classes that do not inherit from others.
-        if self.base_classes.is_empty() {
-            let methods = self
-                .methods
+        if self.comp_info.base_members().is_empty() {
+            // Map the destructor into a Method, and chain it into the below iteration.
+            let dtor = self
+                .comp_info
+                .destructor()
+                .map(|(kind, id)| Method::new(kind, id, false));
+
+            let methods = dtor
                 .iter()
+                .chain(self.comp_info.methods().iter())
                 .filter_map(|m| {
                     if !m.is_virtual() {
                         return None;
@@ -1796,8 +1793,7 @@ impl CodeGenerator for CompInfo {
 
         if !is_opaque {
             if item.has_vtable_ptr(ctx) {
-                let vtable =
-                    Vtable::new(item.id(), self.methods(), self.base_members());
+                let vtable = Vtable::new(item.id(), &self);
                 vtable.codegen(ctx, result, item);
 
                 let vtable_type = vtable

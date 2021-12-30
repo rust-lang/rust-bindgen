@@ -6,7 +6,7 @@
 )]
 
 #[repr(C)]
-pub struct VirtualMethods__bindgen_vtable(::std::os::raw::c_void);
+pub struct VirtualMethods__bindgen_vtable {}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct VirtualMethods {

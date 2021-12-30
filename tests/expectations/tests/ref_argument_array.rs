@@ -7,7 +7,10 @@
 
 pub const NSID_LENGTH: u32 = 10;
 #[repr(C)]
-pub struct nsID__bindgen_vtable(::std::os::raw::c_void);
+pub struct nsID__bindgen_vtable {
+    nsID_ToProvidedString:
+        fn(this: &mut nsID, aDest: *mut [::std::os::raw::c_char; 10usize]),
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct nsID {

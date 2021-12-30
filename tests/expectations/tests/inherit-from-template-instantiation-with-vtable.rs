@@ -6,7 +6,7 @@
 )]
 
 #[repr(C)]
-pub struct BaseWithVtable__bindgen_vtable(::std::os::raw::c_void);
+pub struct BaseWithVtable__bindgen_vtable {}
 /// This should have an explicit vtable.
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

@@ -6,7 +6,9 @@
 )]
 
 #[repr(C)]
-pub struct Base__bindgen_vtable(::std::os::raw::c_void);
+pub struct Base__bindgen_vtable {
+    Base_AsDerived: fn(this: &mut Base) -> *mut Derived,
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Base {

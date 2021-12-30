@@ -6,7 +6,10 @@
 )]
 
 #[repr(C)]
-pub struct Foo__bindgen_vtable(::std::os::raw::c_void);
+pub struct Foo__bindgen_vtable {
+    Foo_Foo_destructor: fn(this: &mut Foo),
+    Foo_Bar: fn(this: &mut Foo),
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct Foo {
