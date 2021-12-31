@@ -1082,7 +1082,7 @@ impl<'a> CodeGenerator for Vtable<'a> {
                     };
 
                     Some(quote! {
-                        pub #function_name : fn( #( #args ),* ) #ret
+                        pub #function_name : unsafe extern "C" fn( #( #args ),* ) #ret
                     })
                 })
                 .collect::<Vec<_>>();
