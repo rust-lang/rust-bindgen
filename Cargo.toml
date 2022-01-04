@@ -41,7 +41,7 @@ required-features = ["clap"]
 
 [dev-dependencies]
 diff = "0.1"
-clap = "2"
+clap = "3"
 shlex = "1"
 tempfile = "3"
 
@@ -49,7 +49,7 @@ tempfile = "3"
 bitflags = "1.0.3"
 cexpr = "0.6"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
-clap = { version = "2", optional = true }
+clap = { version = "3", optional = true }
 clang-sys = { version = "1", features = ["clang_6_0"] }
 lazycell = "1"
 lazy_static = "1"

@@ -25,16 +25,16 @@ where
     let matches = App::new("bindgen")
         .version(option_env!("CARGO_PKG_VERSION").unwrap_or("unknown"))
         .about("Generates Rust bindings from C/C++ headers.")
-        .usage("bindgen [FLAGS] [OPTIONS] <header> -- <clang-args>...")
+        .override_usage("bindgen [FLAGS] [OPTIONS] <header> -- <clang-args>...")
         .args(&[
-            Arg::with_name("header")
+            Arg::new("header")
                 .help("C or C++ header file")
                 .required(true),
-            Arg::with_name("depfile")
+            Arg::new("depfile")
                 .long("depfile")
                 .takes_value(true)
                 .help("Path to write depfile to"),
-            Arg::with_name("default-enum-style")
+            Arg::new("default-enum-style")
                 .long("default-enum-style")
                 .help("The default style of code used to generate enums.")
                 .value_name("variant")
@@ -47,8 +47,8 @@ where
                     "rust",
                     "rust_non_exhaustive",
                 ])
-                .multiple(false),
-            Arg::with_name("bitfield-enum")
+                .multiple_occurrences(false),
+            Arg::new("bitfield-enum")
                 .long("bitfield-enum")
                 .help(
                     "Mark any enum whose name matches <regex> as a set of \
@@ -56,23 +56,23 @@ where
                 )
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("newtype-enum")
+            Arg::new("newtype-enum")
                 .long("newtype-enum")
                 .help("Mark any enum whose name matches <regex> as a newtype.")
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("rustified-enum")
+            Arg::new("rustified-enum")
                 .long("rustified-enum")
                 .help("Mark any enum whose name matches <regex> as a Rust enum.")
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("constified-enum")
+            Arg::new("constified-enum")
                 .long("constified-enum")
                 .help(
                     "Mark any enum whose name matches <regex> as a series of \
@@ -80,9 +80,9 @@ where
                 )
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("constified-enum-module")
+            Arg::new("constified-enum-module")
                 .long("constified-enum-module")
                 .help(
                     "Mark any enum whose name matches <regex> as a module of \
@@ -90,16 +90,16 @@ where
                 )
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("default-macro-constant-type")
+            Arg::new("default-macro-constant-type")
                 .long("default-macro-constant-type")
                 .help("The default signed/unsigned type for C macro constants.")
                 .value_name("variant")
                 .default_value("unsigned")
                 .possible_values(&["signed", "unsigned"])
-                .multiple(false),
-            Arg::with_name("default-alias-style")
+                .multiple_occurrences(false),
+            Arg::new("default-alias-style")
                 .long("default-alias-style")
                 .help("The default style of code used to generate typedefs.")
                 .value_name("variant")
@@ -109,8 +109,8 @@ where
                     "new_type",
                     "new_type_deref",
                 ])
-                .multiple(false),
-            Arg::with_name("normal-alias")
+                .multiple_occurrences(false),
+            Arg::new("normal-alias")
                 .long("normal-alias")
                 .help(
                     "Mark any typedef alias whose name matches <regex> to use \
@@ -118,9 +118,9 @@ where
                 )
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-             Arg::with_name("new-type-alias")
+             Arg::new("new-type-alias")
                 .long("new-type-alias")
                 .help(
                     "Mark any typedef alias whose name matches <regex> to have \
@@ -128,9 +128,9 @@ where
                 )
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-             Arg::with_name("new-type-alias-deref")
+             Arg::new("new-type-alias-deref")
                 .long("new-type-alias-deref")
                 .help(
                     "Mark any typedef alias whose name matches <regex> to have \
@@ -138,94 +138,94 @@ where
                 )
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("blocklist-type")
+            Arg::new("blocklist-type")
                 .alias("blacklist-type")
                 .long("blocklist-type")
                 .help("Mark <type> as hidden.")
                 .value_name("type")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("blocklist-function")
+            Arg::new("blocklist-function")
                 .alias("blacklist-function")
                 .long("blocklist-function")
                 .help("Mark <function> as hidden.")
                 .value_name("function")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("blocklist-item")
+            Arg::new("blocklist-item")
                 .alias("blacklist-item")
                 .long("blocklist-item")
                 .help("Mark <item> as hidden.")
                 .value_name("item")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("blocklist-file")
+            Arg::new("blocklist-file")
                 .alias("blacklist-file")
                 .long("blocklist-file")
                 .help("Mark all contents of <path> as hidden.")
                 .value_name("path")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("no-layout-tests")
+            Arg::new("no-layout-tests")
                 .long("no-layout-tests")
                 .help("Avoid generating layout tests for any type."),
-            Arg::with_name("no-derive-copy")
+            Arg::new("no-derive-copy")
                 .long("no-derive-copy")
                 .help("Avoid deriving Copy on any type."),
-            Arg::with_name("no-derive-debug")
+            Arg::new("no-derive-debug")
                 .long("no-derive-debug")
                 .help("Avoid deriving Debug on any type."),
-            Arg::with_name("no-derive-default")
+            Arg::new("no-derive-default")
                 .long("no-derive-default")
-                .hidden(true)
+                .hide(true)
                 .help("Avoid deriving Default on any type."),
-            Arg::with_name("impl-debug").long("impl-debug").help(
+            Arg::new("impl-debug").long("impl-debug").help(
                 "Create Debug implementation, if it can not be derived \
                  automatically.",
             ),
-            Arg::with_name("impl-partialeq")
+            Arg::new("impl-partialeq")
                 .long("impl-partialeq")
                 .help(
                     "Create PartialEq implementation, if it can not be derived \
                      automatically.",
                 ),
-            Arg::with_name("with-derive-default")
+            Arg::new("with-derive-default")
                 .long("with-derive-default")
                 .help("Derive Default on any type."),
-            Arg::with_name("with-derive-hash")
+            Arg::new("with-derive-hash")
                 .long("with-derive-hash")
                 .help("Derive hash on any type."),
-            Arg::with_name("with-derive-partialeq")
+            Arg::new("with-derive-partialeq")
                 .long("with-derive-partialeq")
                 .help("Derive partialeq on any type."),
-            Arg::with_name("with-derive-partialord")
+            Arg::new("with-derive-partialord")
                 .long("with-derive-partialord")
                 .help("Derive partialord on any type."),
-            Arg::with_name("with-derive-eq")
+            Arg::new("with-derive-eq")
                 .long("with-derive-eq")
                 .help(
                     "Derive eq on any type. Enable this option also \
                      enables --with-derive-partialeq",
                 ),
-            Arg::with_name("with-derive-ord")
+            Arg::new("with-derive-ord")
                 .long("with-derive-ord")
                 .help(
                     "Derive ord on any type. Enable this option also \
                      enables --with-derive-partialord",
                 ),
-            Arg::with_name("no-doc-comments")
+            Arg::new("no-doc-comments")
                 .long("no-doc-comments")
                 .help(
                     "Avoid including doc comments in the output, see: \
                      https://github.com/rust-lang/rust-bindgen/issues/426",
                 ),
-            Arg::with_name("no-recursive-allowlist")
+            Arg::new("no-recursive-allowlist")
                 .long("no-recursive-allowlist")
                 .alias("no-recursive-whitelist")
                 .help(
@@ -234,23 +234,23 @@ where
                      `bindgen::Builder::allowlist_recursively` method's \
                      documentation for details.",
                 ),
-            Arg::with_name("objc-extern-crate")
+            Arg::new("objc-extern-crate")
                 .long("objc-extern-crate")
                 .help("Use extern crate instead of use for objc."),
-            Arg::with_name("generate-block")
+            Arg::new("generate-block")
                 .long("generate-block")
                 .help("Generate block signatures instead of void pointers."),
-            Arg::with_name("block-extern-crate")
+            Arg::new("block-extern-crate")
                 .long("block-extern-crate")
                 .help("Use extern crate instead of use for block."),
-            Arg::with_name("distrust-clang-mangling")
+            Arg::new("distrust-clang-mangling")
                 .long("distrust-clang-mangling")
                 .help("Do not trust the libclang-provided mangling"),
-            Arg::with_name("builtins").long("builtins").help(
+            Arg::new("builtins").long("builtins").help(
                 "Output bindings for builtin definitions, e.g. \
                  __builtin_va_list.",
             ),
-            Arg::with_name("ctypes-prefix")
+            Arg::new("ctypes-prefix")
                 .long("ctypes-prefix")
                 .help(
                     "Use the given prefix before raw types instead of \
@@ -258,61 +258,61 @@ where
                 )
                 .value_name("prefix")
                 .takes_value(true),
-            Arg::with_name("anon-fields-prefix")
+            Arg::new("anon-fields-prefix")
                 .long("anon-fields-prefix")
                 .help("Use the given prefix for the anon fields.")
                 .value_name("prefix")
                 .default_value(DEFAULT_ANON_FIELDS_PREFIX)
                 .takes_value(true),
-            Arg::with_name("time-phases")
+            Arg::new("time-phases")
                 .long("time-phases")
                 .help("Time the different bindgen phases and print to stderr"),
             // All positional arguments after the end of options marker, `--`
-            Arg::with_name("clang-args").last(true).multiple(true),
-            Arg::with_name("emit-clang-ast")
+            Arg::new("clang-args").last(true).multiple_occurrences(true),
+            Arg::new("emit-clang-ast")
                 .long("emit-clang-ast")
                 .help("Output the Clang AST for debugging purposes."),
-            Arg::with_name("emit-ir")
+            Arg::new("emit-ir")
                 .long("emit-ir")
                 .help("Output our internal IR for debugging purposes."),
-            Arg::with_name("emit-ir-graphviz")
+            Arg::new("emit-ir-graphviz")
                 .long("emit-ir-graphviz")
                 .help("Dump graphviz dot file.")
                 .value_name("path")
                 .takes_value(true),
-            Arg::with_name("enable-cxx-namespaces")
+            Arg::new("enable-cxx-namespaces")
                 .long("enable-cxx-namespaces")
                 .help("Enable support for C++ namespaces."),
-            Arg::with_name("disable-name-namespacing")
+            Arg::new("disable-name-namespacing")
                 .long("disable-name-namespacing")
                 .help(
                     "Disable namespacing via mangling, causing bindgen to \
                      generate names like \"Baz\" instead of \"foo_bar_Baz\" \
                      for an input name \"foo::bar::Baz\".",
                 ),
-            Arg::with_name("disable-nested-struct-naming")
+            Arg::new("disable-nested-struct-naming")
                 .long("disable-nested-struct-naming")
                 .help(
                     "Disable nested struct naming, causing bindgen to generate \
                      names like \"bar\" instead of \"foo_bar\" for a nested \
                      definition \"struct foo { struct bar { } b; };\"."
                 ),
-            Arg::with_name("disable-untagged-union")
+            Arg::new("disable-untagged-union")
                 .long("disable-untagged-union")
                 .help(
                     "Disable support for native Rust unions.",
                 ),
-            Arg::with_name("disable-header-comment")
+            Arg::new("disable-header-comment")
                 .long("disable-header-comment")
                 .help("Suppress insertion of bindgen's version identifier into generated bindings.")
-                .multiple(true),
-            Arg::with_name("ignore-functions")
+                .multiple_occurrences(true),
+            Arg::new("ignore-functions")
                 .long("ignore-functions")
                 .help(
                     "Do not generate bindings for functions or methods. This \
                      is useful when you only care about struct layouts.",
                 ),
-            Arg::with_name("generate")
+            Arg::new("generate")
                 .long("generate")
                 .help(
                     "Generate only given items, split by commas. \
@@ -320,67 +320,67 @@ where
                      \"methods\", \"constructors\" and \"destructors\".",
                 )
                 .takes_value(true),
-            Arg::with_name("ignore-methods")
+            Arg::new("ignore-methods")
                 .long("ignore-methods")
                 .help("Do not generate bindings for methods."),
-            Arg::with_name("no-convert-floats")
+            Arg::new("no-convert-floats")
                 .long("no-convert-floats")
                 .help("Do not automatically convert floats to f32/f64."),
-            Arg::with_name("no-prepend-enum-name")
+            Arg::new("no-prepend-enum-name")
                 .long("no-prepend-enum-name")
                 .help("Do not prepend the enum name to constant or newtype variants."),
-            Arg::with_name("no-include-path-detection")
+            Arg::new("no-include-path-detection")
                 .long("no-include-path-detection")
                 .help("Do not try to detect default include paths"),
-            Arg::with_name("fit-macro-constant-types")
+            Arg::new("fit-macro-constant-types")
                 .long("fit-macro-constant-types")
                 .help("Try to fit macro constants into types smaller than u32/i32"),
-            Arg::with_name("unstable-rust")
+            Arg::new("unstable-rust")
                 .long("unstable-rust")
                 .help("Generate unstable Rust code (deprecated; use --rust-target instead).")
-                .multiple(true), // FIXME: Pass legacy test suite
-            Arg::with_name("opaque-type")
+                .multiple_occurrences(true), // FIXME: Pass legacy test suite
+            Arg::new("opaque-type")
                 .long("opaque-type")
                 .help("Mark <type> as opaque.")
                 .value_name("type")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("output")
-                .short("o")
+            Arg::new("output")
+                .short('o')
                 .long("output")
                 .help("Write Rust bindings to <output>.")
                 .takes_value(true),
-            Arg::with_name("raw-line")
+            Arg::new("raw-line")
                 .long("raw-line")
                 .help("Add a raw line of Rust code at the beginning of output.")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("module-raw-line")
+            Arg::new("module-raw-line")
                 .long("module-raw-line")
                 .help("Add a raw line of Rust code to a given module.")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(2)
                 .value_names(&["module-name", "raw-line"]),
-            Arg::with_name("rust-target")
+            Arg::new("rust-target")
                 .long("rust-target")
-                .help(&rust_target_help)
+                .help(rust_target_help.as_ref())
                 .takes_value(true),
-            Arg::with_name("use-core")
+            Arg::new("use-core")
                 .long("use-core")
                 .help("Use types from Rust core instead of std."),
-            Arg::with_name("conservative-inline-namespaces")
+            Arg::new("conservative-inline-namespaces")
                 .long("conservative-inline-namespaces")
                 .help(
                     "Conservatively generate inline namespaces to avoid name \
                      conflicts.",
                 ),
-            Arg::with_name("use-msvc-mangling")
+            Arg::new("use-msvc-mangling")
                 .long("use-msvc-mangling")
                 .help("MSVC C++ ABI mangling. DEPRECATED: Has no effect."),
-            Arg::with_name("allowlist-function")
+            Arg::new("allowlist-function")
                 .long("allowlist-function")
                 .alias("whitelist-function")
                 .help(
@@ -390,12 +390,12 @@ where
                 )
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("generate-inline-functions")
+            Arg::new("generate-inline-functions")
                 .long("generate-inline-functions")
                 .help("Generate inline functions."),
-            Arg::with_name("allowlist-type")
+            Arg::new("allowlist-type")
                 .long("allowlist-type")
                 .alias("whitelist-type")
                 .help(
@@ -404,9 +404,9 @@ where
                 )
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("allowlist-var")
+            Arg::new("allowlist-var")
                 .long("allowlist-var")
                 .alias("whitelist-var")
                 .help(
@@ -416,12 +416,12 @@ where
                 )
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("verbose")
+            Arg::new("verbose")
                 .long("verbose")
                 .help("Print verbose error messages."),
-            Arg::with_name("dump-preprocessed-input")
+            Arg::new("dump-preprocessed-input")
                 .long("dump-preprocessed-input")
                 .help(
                     "Preprocess and dump the input header files to disk. \
@@ -429,26 +429,26 @@ where
                      filing issues. The resulting file will be named \
                      something like `__bindgen.i` or `__bindgen.ii`.",
                 ),
-            Arg::with_name("no-record-matches")
+            Arg::new("no-record-matches")
                 .long("no-record-matches")
                 .help(
                     "Do not record matching items in the regex sets. \
                      This disables reporting of unused items.",
                 ),
-            Arg::with_name("size_t-is-usize")
+            Arg::new("size_t-is-usize")
                 .long("size_t-is-usize")
                 .help("Translate size_t to usize."),
-            Arg::with_name("no-rustfmt-bindings")
+            Arg::new("no-rustfmt-bindings")
                 .long("no-rustfmt-bindings")
                 .help("Do not format the generated bindings with rustfmt."),
-            Arg::with_name("rustfmt-bindings")
+            Arg::new("rustfmt-bindings")
                 .long("rustfmt-bindings")
                 .help(
                     "Format the generated bindings with rustfmt. DEPRECATED: \
                      --rustfmt-bindings is now enabled by default. Disable \
                      with --no-rustfmt-bindings.",
                 ),
-            Arg::with_name("rustfmt-configuration-file")
+            Arg::new("rustfmt-configuration-file")
                 .long("rustfmt-configuration-file")
                 .help(
                     "The absolute path to the rustfmt configuration file. \
@@ -457,81 +457,81 @@ where
                 )
                 .value_name("path")
                 .takes_value(true)
-                .multiple(false)
+                .multiple_occurrences(false)
                 .number_of_values(1),
-            Arg::with_name("no-partialeq")
+            Arg::new("no-partialeq")
                 .long("no-partialeq")
                 .help("Avoid deriving PartialEq for types matching <regex>.")
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("no-copy")
+            Arg::new("no-copy")
                 .long("no-copy")
                 .help("Avoid deriving Copy for types matching <regex>.")
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("no-debug")
+            Arg::new("no-debug")
                 .long("no-debug")
                 .help("Avoid deriving Debug for types matching <regex>.")
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("no-default")
+            Arg::new("no-default")
                 .long("no-default")
                 .help("Avoid deriving/implement Default for types matching <regex>.")
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("no-hash")
+            Arg::new("no-hash")
                 .long("no-hash")
                 .help("Avoid deriving Hash for types matching <regex>.")
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("must-use-type")
+            Arg::new("must-use-type")
                 .long("must-use-type")
                 .help("Add #[must_use] annotation to types matching <regex>.")
                 .value_name("regex")
                 .takes_value(true)
-                .multiple(true)
+                .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::with_name("enable-function-attribute-detection")
+            Arg::new("enable-function-attribute-detection")
                 .long("enable-function-attribute-detection")
                 .help(
                     "Enables detecting unexposed attributes in functions (slow).
                        Used to generate #[must_use] annotations.",
                 ),
-            Arg::with_name("use-array-pointers-in-arguments")
+            Arg::new("use-array-pointers-in-arguments")
                 .long("use-array-pointers-in-arguments")
                 .help("Use `*const [T; size]` instead of `*const T` for C arrays"),
-            Arg::with_name("wasm-import-module-name")
+            Arg::new("wasm-import-module-name")
                 .long("wasm-import-module-name")
                 .value_name("name")
                 .takes_value(true)
                 .help("The name to be used in a #[link(wasm_import_module = ...)] statement"),
-            Arg::with_name("dynamic-loading")
+            Arg::new("dynamic-loading")
                 .long("dynamic-loading")
                 .takes_value(true)
                 .help("Use dynamic loading mode with the given library name."),
-            Arg::with_name("dynamic-link-require-all")
+            Arg::new("dynamic-link-require-all")
                 .long("dynamic-link-require-all")
                 .help("Require successful linkage to all functions in the library."),
-            Arg::with_name("respect-cxx-access-specs")
+            Arg::new("respect-cxx-access-specs")
                 .long("respect-cxx-access-specs")
                 .help("Makes generated bindings `pub` only for items if the items are publically accessible in C++."),
-            Arg::with_name("translate-enum-integer-types")
+            Arg::new("translate-enum-integer-types")
                 .long("translate-enum-integer-types")
                 .help("Always translate enum integer types to native Rust integer types."),
-            Arg::with_name("c-naming")
+            Arg::new("c-naming")
                 .long("c-naming")
                 .help("Generate types with C style naming."),
-            Arg::with_name("explicit-padding")
+            Arg::new("explicit-padding")
                 .long("explicit-padding")
                 .help("Always output explicit padding fields."),
         ]) // .args()
