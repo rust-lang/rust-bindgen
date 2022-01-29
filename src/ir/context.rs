@@ -1970,6 +1970,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             CXType_Double => TypeKind::Float(FloatKind::Double),
             CXType_LongDouble => TypeKind::Float(FloatKind::LongDouble),
             CXType_Float128 => TypeKind::Float(FloatKind::Float128),
+            CXType_Atomic => {
+                // TODO(#2151): Preserve atomicity in a useful way somehow.
+                return self.build_builtin_ty(&ty.atomic_value_type());
+            }
             CXType_Complex => {
                 let float_type =
                     ty.elem_type().expect("Not able to resolve complex type?");

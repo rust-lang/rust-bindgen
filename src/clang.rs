@@ -1068,6 +1068,15 @@ impl Type {
         }
     }
 
+    /// If this is an atomic type, returns the underlying value type, otherwise
+    /// an invalid type.
+    #[inline]
+    pub fn atomic_value_type(&self) -> Self {
+        Self {
+            x: unsafe { clang_Type_getValueType(self.x) },
+        }
+    }
+
     /// What is the size of this type? Paper over invalid types by returning `0`
     /// for them.
     pub fn size(&self, ctx: &BindgenContext) -> usize {
