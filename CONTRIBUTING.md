@@ -71,7 +71,7 @@ latest version of libclang. In that case, you may want to either uninstall other
 versions of llvm, or specify the path of the desired libclang explicitly:
 
 ```
-$ export LIBCLANG_PATH=path/to/clang-3.9/lib
+$ export LIBCLANG_PATH=path/to/clang-9.0/lib
 ```
 
 Additionally, you may want to build and test with the `testing_only_docs`
@@ -195,9 +195,9 @@ can add multiple test expectations, one for each supported `libclang`
 version. Instead of having a single `tests/expectations/tests/my_test.rs` file,
 add each of:
 
+* `tests/expectations/tests/libclang-9/my_test.rs`
+* `tests/expectations/tests/libclang-5/my_test.rs`
 * `tests/expectations/tests/libclang-4/my_test.rs`
-* `tests/expectations/tests/libclang-3.9/my_test.rs`
-* `tests/expectations/tests/libclang-3.8/my_test.rs`
 
 If you need to update the test expectations for a test file that generates
 different bindings for different `libclang` versions, you *don't* need to have
