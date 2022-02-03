@@ -30,7 +30,7 @@ pub mod attributes {
         let which_ones = which_ones
             .iter()
             .cloned()
-            .map(|one| Ident::new(one, Span::call_site()));
+            .map(|one| TokenStream::from_str(one).expect("derive to be valid"));
         quote! {
             #[derive( #( #which_ones ),* )]
         }
