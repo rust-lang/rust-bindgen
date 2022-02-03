@@ -128,7 +128,7 @@ impl ParseCallbacks for MacroCallback {
             ]
         } else if name == "MyOrderedEnum" {
             vec![
-                "PartialOrd".into(),
+                "std::cmp::PartialOrd".into(),
             ]
         } else {
             vec![]
