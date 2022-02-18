@@ -1077,9 +1077,9 @@ impl<'a> CodeGenerator for Vtable<'a> {
                     let ret = utils::fnsig_return_ty(ctx, signature);
 
                     args[0] = if m.is_const() {
-                        quote! { this: & #class_ident }
+                        quote! { this: *const #class_ident }
                     } else {
-                        quote! { this: &mut #class_ident }
+                        quote! { this: *mut #class_ident }
                     };
 
                     Some(quote! {

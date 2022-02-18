@@ -8,7 +8,7 @@
 #[repr(C)]
 pub struct nsISupports__bindgen_vtable {
     pub nsISupports_QueryInterface:
-        unsafe extern "C" fn(this: &mut nsISupports) -> *mut nsISupports,
+        unsafe extern "C" fn(this: *mut nsISupports) -> *mut nsISupports,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

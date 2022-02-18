@@ -9,7 +9,7 @@ pub const NSID_LENGTH: u32 = 10;
 #[repr(C)]
 pub struct nsID__bindgen_vtable {
     pub nsID_ToProvidedString: unsafe extern "C" fn(
-        this: &mut nsID,
+        this: *mut nsID,
         aDest: *mut [::std::os::raw::c_char; 10usize],
     ),
 }
