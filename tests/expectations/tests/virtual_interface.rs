@@ -7,9 +7,9 @@
 
 #[repr(C)]
 pub struct PureVirtualIFace__bindgen_vtable {
-    pub PureVirtualIFace_Foo: unsafe extern "C" fn(this: &mut PureVirtualIFace),
+    pub PureVirtualIFace_Foo: unsafe extern "C" fn(this: *mut PureVirtualIFace),
     pub PureVirtualIFace_Bar: unsafe extern "C" fn(
-        this: &mut PureVirtualIFace,
+        this: *mut PureVirtualIFace,
         arg1: ::std::os::raw::c_uint,
     ),
 }
@@ -42,7 +42,7 @@ impl Default for PureVirtualIFace {
 }
 #[repr(C)]
 pub struct AnotherInterface__bindgen_vtable {
-    pub AnotherInterface_Baz: unsafe extern "C" fn(this: &mut AnotherInterface),
+    pub AnotherInterface_Baz: unsafe extern "C" fn(this: *mut AnotherInterface),
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
