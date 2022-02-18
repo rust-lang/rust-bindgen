@@ -365,6 +365,7 @@ fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
         "--no-rustfmt-bindings",
         "--with-derive-default",
         "--disable-header-comment",
+        "--vtable-generation",
         header_str,
         "--raw-line",
         "",
