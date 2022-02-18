@@ -542,6 +542,9 @@ where
             Arg::new("explicit-padding")
                 .long("explicit-padding")
                 .help("Always output explicit padding fields."),
+            Arg::new("vtable-generation")
+                .long("vtable-generation")
+                .help("Enables generation of vtable functions."),
         ]) // .args()
         .get_matches_from(args);
 
@@ -1006,6 +1009,10 @@ where
 
     if matches.is_present("explicit-padding") {
         builder = builder.explicit_padding(true);
+    }
+
+    if matches.is_present("vtable-generation") {
+        builder = builder.vtable_generation(true);
     }
 
     let verbose = matches.is_present("verbose");

@@ -1045,7 +1045,8 @@ impl<'a> CodeGenerator for Vtable<'a> {
         // For now, we will only generate vtables for classes that:
         // - do not inherit from others (compilers merge VTable from primary parent class).
         // - do not contain a virtual destructor (requires ordering; platforms generate different vtables).
-        if self.comp_info.base_members().is_empty() &&
+        if ctx.options().vtable_generation &&
+            self.comp_info.base_members().is_empty() &&
             self.comp_info.destructor().is_none()
         {
             let class_ident = ctx.rust_ident(self.item_id.canonical_name(ctx));
@@ -1793,7 +1794,7 @@ impl CodeGenerator for CompInfo {
 
         if !is_opaque {
             if item.has_vtable_ptr(ctx) {
-                let vtable = Vtable::new(item.id(), &self);
+                let vtable = Vtable::new(item.id(), self);
                 vtable.codegen(ctx, result, item);
 
                 let vtable_type = vtable
