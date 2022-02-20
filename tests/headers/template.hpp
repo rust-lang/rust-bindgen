@@ -32,9 +32,7 @@ struct C {
     B<const int&> mBConstRef;
     B<int*&> mPtrRef;
     B<int(&)[1]> mArrayRef;
-    // clang 3.x ignores const in this case, so they generate different
-    // result than clang 4.0.
-    // B<const int[1]> mBConstArray;
+    B<const int[1]> mBConstArray;
 };
 
 template<typename T>
