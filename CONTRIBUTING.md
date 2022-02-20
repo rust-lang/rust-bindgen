@@ -197,7 +197,6 @@ add each of:
 
 * `tests/expectations/tests/libclang-9/my_test.rs`
 * `tests/expectations/tests/libclang-5/my_test.rs`
-* `tests/expectations/tests/libclang-4/my_test.rs`
 
 If you need to update the test expectations for a test file that generates
 different bindings for different `libclang` versions, you *don't* need to have
