@@ -1,9 +1,11 @@
 use bindgen::{
-    builder, AliasVariation, Builder, CodegenConfig, EnumVariation,
-    MacroTypeVariation, RustTarget, DEFAULT_ANON_FIELDS_PREFIX,
+    builder, callbacks::ParseCallbacks, AliasVariation, Builder, CodegenConfig,
+    EnumVariation, MacroTypeVariation, RustTarget, DEFAULT_ANON_FIELDS_PREFIX,
     RUST_TARGET_STRINGS,
 };
 use clap::{App, Arg};
+use regex::RegexSet as RxSet;
+use std::collections::BTreeSet;
 use std::fs::File;
 use std::io::{self, stderr, Error, ErrorKind, Write};
 use std::path::PathBuf;
@@ -219,6 +221,16 @@ where
                     "Derive ord on any type. Enable this option also \
                      enables --with-derive-partialord",
                 ),
+            Arg::new("with-custom-derive")
+                .long("with-custom-derive")
+                .help(
+                    "Add custom derives to types matching <regex>. \
+                     The format is 'CustomDerive1,CustomDerive2-<regex>"
+                )
+                .value_name("derive")
+                .takes_value(true)
+                .multiple_occurrences(true)
+                .number_of_values(1),
             Arg::new("no-doc-comments")
                 .long("no-doc-comments")
                 .help(
@@ -703,6 +715,13 @@ where
         builder = builder.derive_ord(true);
     }
 
+    if let Some(values) = matches.values_of("with-custom-derive") {
+        let rules = values
+            .map(FromStr::from_str)
+            .collect::<Result<Vec<CustomDeriveRule>, _>>()?;
+        builder = builder.parse_callbacks(Box::new(CustomDerive::new(rules)?));
+    }
+
     if matches.is_present("no-derive-default") {
         builder = builder.derive_default(false);
     }
@@ -1018,4 +1037,66 @@ where
     let verbose = matches.is_present("verbose");
 
     Ok((builder, output, verbose))
+}
+
+struct CustomDeriveRule {
+    regex: String,
+    derives: Vec<String>,
+}
+
+impl FromStr for CustomDeriveRule {
+    type Err = Error;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        let (derives_str, regex_str) =
+            value.split_once("/").ok_or_else(|| {
+                Error::new(
+                    ErrorKind::Other,
+                    format!("Malformed --with-custom-derive item '{}'", value),
+                )
+            })?;
+        Ok(Self {
+            regex: format!("^{}$", regex_str),
+            derives: derives_str.split(",").map(|d| d.to_string()).collect(),
+        })
+    }
+}
+
+#[derive(Debug)]
+struct CustomDerive {
+    regex: RxSet,
+    derives: Vec<Vec<String>>,
+}
+
+impl CustomDerive {
+    fn new(
+        rules: impl IntoIterator<Item = CustomDeriveRule>,
+    ) -> Result<Self, Error> {
+        let (regexes, derives): (Vec<String>, Vec<Vec<String>>) = rules
+            .into_iter()
+            .map(|rule| (rule.regex, rule.derives))
+            .unzip();
+        Ok(Self {
+            regex: RxSet::new(regexes).map_err(|e| {
+                Error::new(
+                    ErrorKind::Other,
+                    format!(
+                        "Invalid regex in --with-custom-derive item: {}",
+                        e
+                    ),
+                )
+            })?,
+            derives,
+        })
+    }
+}
+
+impl ParseCallbacks for CustomDerive {
+    fn add_derives(&self, name: &str) -> Vec<String> {
+        let mut derives_to_add = BTreeSet::new();
+        for idx in self.regex.matches(name) {
+            derives_to_add.extend(self.derives[idx].iter().cloned());
+        }
+        derives_to_add.into_iter().collect()
+    }
 }
