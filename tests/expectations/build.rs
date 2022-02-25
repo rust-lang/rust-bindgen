@@ -53,7 +53,7 @@ fn main() {
 #[path = "{}"]
 mod {};
 "###,
-                path.display(),
+                path.display().to_string().replace('\\', "\\\\"),
                 module_name,
             ));
         }
