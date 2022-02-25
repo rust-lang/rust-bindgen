@@ -412,6 +412,7 @@ macro_rules! test_header {
 include!(concat!(env!("OUT_DIR"), "/tests.rs"));
 
 #[test]
+#[cfg_attr(target_os = "windows", ignore)]
 fn test_clang_env_args() {
     std::env::set_var(
         "BINDGEN_EXTRA_CLANG_ARGS",
