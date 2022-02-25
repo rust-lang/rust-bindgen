@@ -112,6 +112,7 @@ impl DynamicItems {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn push(
         &mut self,
         ident: Ident,
@@ -122,6 +123,7 @@ impl DynamicItems {
         args_identifiers: Vec<proc_macro2::TokenStream>,
         ret: proc_macro2::TokenStream,
         ret_ty: proc_macro2::TokenStream,
+        attributes: Vec<proc_macro2::TokenStream>,
     ) {
         if !is_variadic {
             assert_eq!(args.len(), args_identifiers.len());
@@ -153,6 +155,7 @@ impl DynamicItems {
         // access the function pointer so that the user can call it just fine.
         if !is_variadic {
             self.struct_implementation.push(quote! {
+                #(#attributes)*
                 pub unsafe fn #ident ( &self, #( #args ),* ) -> #ret_ty {
                     #call_body
                 }
