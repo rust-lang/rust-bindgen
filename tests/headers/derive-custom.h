@@ -1,4 +1,4 @@
-// bindgen-flags: --no-derive-debug --no-derive-copy --default-enum-style rust
+// bindgen-flags: --no-derive-debug --no-derive-copy --default-enum-style rust --no-layout-tests
 
 /** <div rustbindgen derive="Debug"></div> */
 struct my_type;

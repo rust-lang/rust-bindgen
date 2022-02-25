@@ -1,4 +1,4 @@
-
+// bindgen-flags: --no-layout-tests
 typedef unsigned mbedtls_mpi_uint;
 
 /**
