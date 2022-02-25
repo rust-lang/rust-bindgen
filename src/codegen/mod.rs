@@ -3907,6 +3907,8 @@ impl CodeGenerator for Function {
             Linkage::External => {}
         }
 
+        #[allow(clippy::needless_late_init)]
+        let is_dynamic_function;
         // Pure virtual methods have no actual symbol, so we can't generate
         // something meaningful for them.
         match self.kind() {
@@ -3915,7 +3917,14 @@ impl CodeGenerator for Function {
             {
                 return None;
             }
-            _ => {}
+            FunctionKind::Function => {
+                // If we're generating for dynamic loading, some attributes can not be emitted.
+                is_dynamic_function =
+                    ctx.options().dynamic_library_name.is_some()
+            }
+            _ => {
+                is_dynamic_function = false;
+            }
         }
 
         // Similar to static member variables in a class template, we can't
@@ -3958,7 +3967,6 @@ impl CodeGenerator for Function {
         {
             attributes.push(attributes::must_use());
         }
-
         if let Some(comment) = item.comment(ctx) {
             attributes.push(attributes::doc(comment));
         }
@@ -3995,11 +4003,13 @@ impl CodeGenerator for Function {
         }
 
         let link_name = mangled_name.unwrap_or(name);
-        if !utils::names_will_be_identical_after_mangling(
-            &canonical_name,
-            link_name,
-            Some(abi),
-        ) {
+        if !is_dynamic_function &&
+            !utils::names_will_be_identical_after_mangling(
+                &canonical_name,
+                link_name,
+                Some(abi),
+            )
+        {
             attributes.push(attributes::link_name(link_name));
         }
 
@@ -4021,9 +4031,7 @@ impl CodeGenerator for Function {
         };
 
         // If we're doing dynamic binding generation, add to the dynamic items.
-        if ctx.options().dynamic_library_name.is_some() &&
-            self.kind() == FunctionKind::Function
-        {
+        if is_dynamic_function {
             let args_identifiers =
                 utils::fnsig_argument_identifiers(ctx, signature);
             let return_item = ctx.resolve_item(signature.return_type());
@@ -4040,6 +4048,7 @@ impl CodeGenerator for Function {
                 args_identifiers,
                 ret,
                 ret_ty,
+                attributes,
             );
         } else {
             result.push(tokens);
