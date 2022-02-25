@@ -4,6 +4,7 @@
     non_camel_case_types,
     non_upper_case_globals
 )]
+#![cfg(not(target_os = "windows"))]
 
 pub const Foo_Bar: Foo = 0;
 pub const Foo_Qux: Foo = 1;

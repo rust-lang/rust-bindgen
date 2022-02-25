@@ -4,7 +4,7 @@
     non_camel_case_types,
     non_upper_case_globals
 )]
-
+#![cfg(not(target_os = "windows"))]
 extern crate core;
 
 #[repr(C)]

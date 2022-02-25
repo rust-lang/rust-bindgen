@@ -1,3 +1,4 @@
+// bindgen-flags: --raw-line '#![cfg(not(target_os="windows"))]'
 #define POINTER_WIDTH (sizeof(void*) * 8)
 
 struct Foo {
