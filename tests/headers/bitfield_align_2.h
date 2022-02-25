@@ -1,4 +1,4 @@
-// bindgen-flags: --rustified-enum ".*"
+// bindgen-flags: --rustified-enum ".*" --raw-line '#![cfg(not(target_os="windows"))]'
 enum MyEnum {
     ONE,
     TWO,
