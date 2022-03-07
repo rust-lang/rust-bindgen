@@ -6,8 +6,7 @@
 )]
 #![cfg(target_os = "macos")]
 
-#[macro_use]
-extern crate objc;
+use objc::{self, class, msg_send, sel, sel_impl};
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 extern "C" {

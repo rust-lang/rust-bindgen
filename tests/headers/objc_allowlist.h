@@ -1,4 +1,4 @@
-// bindgen-flags: --objc-extern-crate --allowlist-type AllowlistMe --allowlist-type AllowlistMe_InterestingCategory -- -x objective-c
+// bindgen-flags: --allowlist-type IAllowlistMe --allowlist-type AllowlistMe_InterestingCategory -- -x objective-c
 // bindgen-osx-only
 
 

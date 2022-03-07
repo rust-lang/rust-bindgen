@@ -6,12 +6,11 @@
 )]
 #![cfg(target_os = "macos")]
 
-#[macro_use]
-extern crate objc;
+use objc::{self, class, msg_send, sel, sel_impl};
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 #[repr(transparent)]
-#[derive(Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct Foo(pub id);
 impl std::ops::Deref for Foo {
     type Target = objc::runtime::Object;
@@ -22,11 +21,11 @@ impl std::ops::Deref for Foo {
 unsafe impl objc::Message for Foo {}
 impl Foo {
     pub fn alloc() -> Self {
-        Self(unsafe { msg_send!(objc::class!(Foo), alloc) })
+        Self(unsafe { msg_send!(class!(Foo), alloc) })
     }
 }
 impl<ObjectType: 'static> IFoo<ObjectType> for Foo {}
-pub trait IFoo<ObjectType>: Sized + std::ops::Deref {
+pub trait IFoo<ObjectType: 'static>: Sized + std::ops::Deref {
     unsafe fn get(&self) -> u64
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
@@ -35,7 +34,7 @@ pub trait IFoo<ObjectType>: Sized + std::ops::Deref {
     }
 }
 #[repr(transparent)]
-#[derive(Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct FooMultiGeneric(pub id);
 impl std::ops::Deref for FooMultiGeneric {
     type Target = objc::runtime::Object;
@@ -46,14 +45,14 @@ impl std::ops::Deref for FooMultiGeneric {
 unsafe impl objc::Message for FooMultiGeneric {}
 impl FooMultiGeneric {
     pub fn alloc() -> Self {
-        Self(unsafe { msg_send!(objc::class!(FooMultiGeneric), alloc) })
+        Self(unsafe { msg_send!(class!(FooMultiGeneric), alloc) })
     }
 }
 impl<KeyType: 'static, ObjectType: 'static>
     IFooMultiGeneric<KeyType, ObjectType> for FooMultiGeneric
 {
 }
-pub trait IFooMultiGeneric<KeyType, ObjectType>:
+pub trait IFooMultiGeneric<KeyType: 'static, ObjectType: 'static>:
     Sized + std::ops::Deref
 {
     unsafe fn objectForKey_(&self, key: u64) -> u64
