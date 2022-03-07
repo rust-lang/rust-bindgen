@@ -1,4 +1,4 @@
-// bindgen-flags: --objc-extern-crate -- -x objective-c
+// bindgen-flags: -- -x objective-c
 // bindgen-osx-only
 
 @class Foo;

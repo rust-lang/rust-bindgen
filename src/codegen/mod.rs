@@ -4129,7 +4129,7 @@ impl CodeGenerator for ObjCInterface {
                 .collect();
 
             quote! {
-                pub trait #trait_name <#(#template_names),*> : #trait_constraints {
+                pub trait #trait_name <#(#template_names:'static),*> : #trait_constraints {
                     #( #impl_items )*
                 }
             }
@@ -4145,7 +4145,7 @@ impl CodeGenerator for ObjCInterface {
         if !self.is_category() && !self.is_protocol() {
             let struct_block = quote! {
                 #[repr(transparent)]
-                #[derive(Clone)]
+                #[derive(Debug, Copy, Clone)]
                 pub struct #class_name(pub id);
                 impl std::ops::Deref for #class_name {
                     type Target = objc::runtime::Object;
@@ -4159,7 +4159,7 @@ impl CodeGenerator for ObjCInterface {
                 impl #class_name {
                     pub fn alloc() -> Self {
                         Self(unsafe {
-                            msg_send!(objc::class!(#class_name), alloc)
+                            msg_send!(class!(#class_name), alloc)
                         })
                     }
                 }
@@ -4381,7 +4381,7 @@ pub mod utils {
             }
         } else {
             quote! {
-                use objc;
+                use objc::{self, msg_send, sel, sel_impl, class};
             }
         };
 

@@ -140,7 +140,12 @@
 
 ## Added
 
+ * Objective-C structs now derive `Debug` and `Copy` to support C and Objective-C structs. [(#2176)][]
+
 ## Fixed
+
+ * Fixed lifetimes with Objective-C trait templates. [(#2176)][]
+ * Fixed objc imports for non-`#[macro_use]` use. [(#2176)][]
 
 ## Changed
 
@@ -153,6 +158,9 @@
 ## Fixed
 
 ## Security
+
+
+ [(#2176)]: https://github.com/rust-lang/rust-bindgen/pull/2176
 
 # 0.59.1
 

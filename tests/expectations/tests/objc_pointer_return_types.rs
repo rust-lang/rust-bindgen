@@ -6,12 +6,11 @@
 )]
 #![cfg(target_os = "macos")]
 
-#[macro_use]
-extern crate objc;
+use objc::{self, class, msg_send, sel, sel_impl};
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 #[repr(transparent)]
-#[derive(Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct Bar(pub id);
 impl std::ops::Deref for Bar {
     type Target = objc::runtime::Object;
@@ -22,13 +21,13 @@ impl std::ops::Deref for Bar {
 unsafe impl objc::Message for Bar {}
 impl Bar {
     pub fn alloc() -> Self {
-        Self(unsafe { msg_send!(objc::class!(Bar), alloc) })
+        Self(unsafe { msg_send!(class!(Bar), alloc) })
     }
 }
 impl IBar for Bar {}
 pub trait IBar: Sized + std::ops::Deref {}
 #[repr(transparent)]
-#[derive(Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct Foo(pub id);
 impl std::ops::Deref for Foo {
     type Target = objc::runtime::Object;
@@ -39,7 +38,7 @@ impl std::ops::Deref for Foo {
 unsafe impl objc::Message for Foo {}
 impl Foo {
     pub fn alloc() -> Self {
-        Self(unsafe { msg_send!(objc::class!(Foo), alloc) })
+        Self(unsafe { msg_send!(class!(Foo), alloc) })
     }
 }
 impl IFoo for Foo {}

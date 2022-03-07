@@ -76,7 +76,7 @@ jobs:
       matrix:
         # TODO(#1954): These should be run on mac too, but turns out they're
         # broken.
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v2
 
