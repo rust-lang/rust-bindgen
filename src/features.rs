@@ -129,6 +129,7 @@ macro_rules! rust_target_base {
             => Stable_1_47 => 1.47;
             /// Nightly rust
             ///  * `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))
+            ///  * `vectorcall` calling convention (no tracking issue)
             => Nightly => nightly;
         );
     }
@@ -234,6 +235,7 @@ rust_feature_def!(
     }
     Nightly {
         => thiscall_abi;
+        => vectorcall_abi;
     }
 );
 
@@ -259,7 +261,8 @@ mod test {
                 !f_1_0.associated_const &&
                 !f_1_0.builtin_clone_impls &&
                 !f_1_0.repr_align &&
-                !f_1_0.thiscall_abi
+                !f_1_0.thiscall_abi &&
+                !f_1_0.vectorcall_abi
         );
         let f_1_21 = RustFeatures::from(RustTarget::Stable_1_21);
         assert!(
@@ -269,7 +272,8 @@ mod test {
                 f_1_21.associated_const &&
                 f_1_21.builtin_clone_impls &&
                 !f_1_21.repr_align &&
-                !f_1_21.thiscall_abi
+                !f_1_21.thiscall_abi &&
+                !f_1_21.vectorcall_abi
         );
         let f_nightly = RustFeatures::from(RustTarget::Nightly);
         assert!(
@@ -280,7 +284,8 @@ mod test {
                 f_nightly.builtin_clone_impls &&
                 f_nightly.maybe_uninit &&
                 f_nightly.repr_align &&
-                f_nightly.thiscall_abi
+                f_nightly.thiscall_abi &&
+                f_nightly.vectorcall_abi
         );
     }
 

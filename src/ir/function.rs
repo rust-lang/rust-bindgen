@@ -181,6 +181,8 @@ pub enum Abi {
     Fastcall,
     /// The "thiscall" ABI.
     ThisCall,
+    /// The "vectorcall" ABI.
+    Vectorcall,
     /// The "aapcs" ABI.
     Aapcs,
     /// The "win64" ABI.
@@ -203,6 +205,7 @@ impl quote::ToTokens for Abi {
             Abi::Stdcall => quote! { "stdcall" },
             Abi::Fastcall => quote! { "fastcall" },
             Abi::ThisCall => quote! { "thiscall" },
+            Abi::Vectorcall => quote! { "vectorcall" },
             Abi::Aapcs => quote! { "aapcs" },
             Abi::Win64 => quote! { "win64" },
             Abi::Unknown(cc) => panic!(
@@ -241,6 +244,7 @@ fn get_abi(cc: CXCallingConv) -> Abi {
         CXCallingConv_X86StdCall => Abi::Stdcall,
         CXCallingConv_X86FastCall => Abi::Fastcall,
         CXCallingConv_X86ThisCall => Abi::ThisCall,
+        CXCallingConv_X86VectorCall => Abi::Vectorcall,
         CXCallingConv_AAPCS => Abi::Aapcs,
         CXCallingConv_X86_64Win64 => Abi::Win64,
         other => Abi::Unknown(other),
