@@ -17,6 +17,7 @@ use self::struct_layout::StructLayoutTracker;
 
 use super::BindgenOptions;
 
+use crate::features::RustFeatures;
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::FieldAccessorKind;
 use crate::ir::comment;
@@ -2414,10 +2415,22 @@ impl MethodCodegen for Method {
             _ => panic!("How in the world?"),
         };
 
-        if let (Abi::ThisCall, false) =
-            (signature.abi(), ctx.options().rust_features().thiscall_abi)
-        {
-            return;
+        match (signature.abi(), ctx.options().rust_features()) {
+            (
+                Abi::ThisCall,
+                RustFeatures {
+                    thiscall_abi: false,
+                    ..
+                },
+            ) |
+            (
+                Abi::Vectorcall,
+                RustFeatures {
+                    vectorcall_abi: false,
+                    ..
+                },
+            ) => return,
+            _ => {}
         }
 
         // Do not generate variadic methods, since rust does not allow
@@ -3867,6 +3880,12 @@ impl TryToRustTy for FunctionSig {
                 warn!("Skipping function with thiscall ABI that isn't supported by the configured Rust target");
                 Ok(proc_macro2::TokenStream::new())
             }
+            Abi::Vectorcall
+                if !ctx.options().rust_features().vectorcall_abi =>
+            {
+                warn!("Skipping function with vectorcall ABI that isn't supported by the configured Rust target");
+                Ok(proc_macro2::TokenStream::new())
+            }
             _ => Ok(quote! {
                 unsafe extern #abi fn ( #( #arguments ),* ) #ret
             }),
@@ -3956,6 +3975,12 @@ impl CodeGenerator for Function {
         let abi = match signature.abi() {
             Abi::ThisCall if !ctx.options().rust_features().thiscall_abi => {
                 warn!("Skipping function with thiscall ABI that isn't supported by the configured Rust target");
+                return None;
+            }
+            Abi::Vectorcall
+                if !ctx.options().rust_features().vectorcall_abi =>
+            {
+                warn!("Skipping function with vectorcall ABI that isn't supported by the configured Rust target");
                 return None;
             }
             Abi::Win64 if signature.is_variadic() => {
