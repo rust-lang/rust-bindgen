@@ -17,7 +17,6 @@ use self::struct_layout::StructLayoutTracker;
 
 use super::BindgenOptions;
 
-use crate::features::RustFeatures;
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::FieldAccessorKind;
 use crate::ir::comment;
@@ -2415,22 +2414,14 @@ impl MethodCodegen for Method {
             _ => panic!("How in the world?"),
         };
 
-        match (signature.abi(), ctx.options().rust_features()) {
-            (
-                Abi::ThisCall,
-                RustFeatures {
-                    thiscall_abi: false,
-                    ..
-                },
-            ) |
-            (
-                Abi::Vectorcall,
-                RustFeatures {
-                    vectorcall_abi: false,
-                    ..
-                },
-            ) => return,
-            _ => {}
+        let supported_abi = match signature.abi() {
+            Abi::ThisCall => ctx.options().rust_features().thiscall_abi,
+            Abi::Vectorcall => ctx.options().rust_features().vectorcall_abi,
+            _ => true,
+        };
+
+        if !supported_abi {
+            return;
         }
 
         // Do not generate variadic methods, since rust does not allow
