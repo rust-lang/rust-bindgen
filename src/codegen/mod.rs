@@ -3907,25 +3907,19 @@ impl CodeGenerator for Function {
             Linkage::External => {}
         }
 
-        #[allow(clippy::needless_late_init)]
-        let is_dynamic_function;
         // Pure virtual methods have no actual symbol, so we can't generate
         // something meaningful for them.
-        match self.kind() {
+        let is_dynamic_function = match self.kind() {
             FunctionKind::Method(ref method_kind)
                 if method_kind.is_pure_virtual() =>
             {
                 return None;
             }
             FunctionKind::Function => {
-                // If we're generating for dynamic loading, some attributes can not be emitted.
-                is_dynamic_function =
-                    ctx.options().dynamic_library_name.is_some()
+                ctx.options().dynamic_library_name.is_some()
             }
-            _ => {
-                is_dynamic_function = false;
-            }
-        }
+            _ => false,
+        };
 
         // Similar to static member variables in a class template, we can't
         // generate bindings to template functions, because the set of
