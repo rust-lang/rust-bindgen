@@ -201,13 +201,8 @@ extern &quot;C&quot; {
 <h2><a class="header" href="#clang" id="clang">Clang</a></h2>
 <p><code>bindgen</code> leverages <code>libclang</code> to preprocess, parse, and type check C and C++
 header files.</p>
-<p>It is recommended to use Clang 4.0 or greater, however <code>bindgen</code> can run with
-older Clangs with some features disabled.</p>
-<ul>
-<li><strong>If you are generating bindings to C++,</strong> you almost definitely want 4.0 or
-greater.</li>
-</ul>
-<h3><a class="header" href="#installing-clang-40" id="installing-clang-40">Installing Clang 4.0</a></h3>
+<p>It is required to use Clang 5.0 or greater.</p>
+<h3><a class="header" href="#installing-clang" id="installing-clang">Installing Clang</a></h3>
 <h4><a class="header" href="#windows" id="windows">Windows</a></h4>
 <p>Download and install the official pre-built binary from
 <a href="http://releases.llvm.org/download.html">LLVM download page</a>.</p>
@@ -228,9 +223,7 @@ to <code>D:\programs\LLVM</code>, then you'd set the value to be <code>D:\progra
 <h4><a class="header" href="#debian-based-linuxes" id="debian-based-linuxes">Debian-based Linuxes</a></h4>
 <pre><code class="language-bash"># apt install llvm-dev libclang-dev clang
 </code></pre>
-<p>Ubuntu 18.04 provides the necessary packages directly. If you are using older
-version of Ubuntu or other Debian-based distros, you may need to add the LLVM
-repos to get version 4.0. See http://apt.llvm.org/.</p>
+<p>Ubuntu 18.04 provides the necessary packages directly.</p>
 <h4><a class="header" href="#arch" id="arch">Arch</a></h4>
 <pre><code class="language-bash"># pacman -S clang
 </code></pre>
@@ -242,7 +235,7 @@ repos to get version 4.0. See http://apt.llvm.org/.</p>
 </code></pre>
 <p>Add <code>export LIBCLANG_PATH=/usr/local/lib</code> to your profile.</p>
 <h4><a class="header" href="#from-source" id="from-source">From source</a></h4>
-<p>If your package manager doesn't yet offer Clang 4.0, you'll need to build from
+<p>If your package manager doesn't yet offer Clang 5.0, you'll need to build from
 source. For that, follow the
 instructions <a href="http://clang.llvm.org/get_started.html">here</a>.</p>
 <p>Those instructions list optional steps. For <code>bindgen</code>:</p>
