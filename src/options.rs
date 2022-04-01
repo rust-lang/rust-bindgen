@@ -132,6 +132,40 @@ where
                 .value_name("regex")
                 .multiple_occurrences(true)
                 .number_of_values(1),
+            Arg::new("default-non-rust-union-style")
+                .long("default-non-rust-union-style")
+                .help(
+                    "The default style of code used to generate unions with \
+                     non-Copy members.",
+                )
+                .value_name("style")
+                .default_value("bindgen_wrapper")
+                .possible_values(&[
+                    "bindgen_wrapper",
+                    "manually_drop",
+                ])
+                .multiple_occurrences(false),
+            Arg::new("bindgen-wrapper-union")
+                .long("bindgen-wrapper-union")
+                .help(
+                    "Mark any union whose name matches <regex> and who has a \
+                     non-Copy member to use a bindgen-generated wrapper for \
+                     fields.",
+                )
+                .value_name("regex")
+                .takes_value(true)
+                .multiple_occurrences(true)
+                .number_of_values(1),
+            Arg::new("manually-drop-union")
+                .long("manually-drop-union")
+                .help(
+                    "Mark any union whose name matches <regex> and who has a \
+                    non-Copy member to use ManuallyDrop for fields.",
+                )
+                .value_name("regex")
+                .takes_value(true)
+                .multiple_occurrences(true)
+                .number_of_values(1),
             Arg::new("blocklist-type")
                 .alias("blacklist-type")
                 .long("blocklist-type")
