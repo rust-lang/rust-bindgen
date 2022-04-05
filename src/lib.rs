@@ -1095,6 +1095,9 @@ impl Builder {
 
     /// Mark the given union (or set of union, if using a pattern) to use
     /// [`::core::mem::ManuallyDrop`] for its members if at least one is non-Copy.
+    ///
+    /// Note: `ManuallyDrop` was stabilized in Rust 1.20.0, do not use it if your
+    /// MSRV is lower.
     pub fn manually_drop_union<T: AsRef<str>>(mut self, arg: T) -> Self {
         self.options.manually_drop_union.insert(arg);
         self

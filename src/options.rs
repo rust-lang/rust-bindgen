@@ -136,7 +136,8 @@ where
                 .long("default-non-rust-union-style")
                 .help(
                     "The default style of code used to generate unions with \
-                     non-Copy members.",
+                     non-Copy members. Note that ManuallyDrop was first \
+                     stabilized in Rust 1.20.0.",
                 )
                 .value_name("style")
                 .default_value("bindgen_wrapper")
@@ -160,7 +161,8 @@ where
                 .long("manually-drop-union")
                 .help(
                     "Mark any union whose name matches <regex> and who has a \
-                    non-Copy member to use ManuallyDrop for fields.",
+                     non-Copy member to use ManuallyDrop (stabilized in Rust \
+                     1.20.0) for fields.",
                 )
                 .value_name("regex")
                 .takes_value(true)
