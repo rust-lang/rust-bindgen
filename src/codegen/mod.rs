@@ -1230,7 +1230,7 @@ trait FieldCodegen<'a> {
 }
 
 impl<'a> FieldCodegen<'a> for Field {
-    type Extra = ();
+    type Extra = &'a str;
 
     fn codegen<F, M>(
         &self,
@@ -1243,7 +1243,7 @@ impl<'a> FieldCodegen<'a> for Field {
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
         methods: &mut M,
-        _: (),
+        parent_canonical_name: Self::Extra,
     ) where
         F: Extend<proc_macro2::TokenStream>,
         M: Extend<proc_macro2::TokenStream>,
@@ -1260,7 +1260,7 @@ impl<'a> FieldCodegen<'a> for Field {
                     struct_layout,
                     fields,
                     methods,
-                    (),
+                    parent_canonical_name,
                 );
             }
             Field::Bitfields(ref unit) => {
@@ -1282,7 +1282,7 @@ impl<'a> FieldCodegen<'a> for Field {
 }
 
 impl<'a> FieldCodegen<'a> for FieldData {
-    type Extra = ();
+    type Extra = &'a str;
 
     fn codegen<F, M>(
         &self,
@@ -1295,7 +1295,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
         methods: &mut M,
-        _: (),
+        parent_canonical_name: Self::Extra,
     ) where
         F: Extend<proc_macro2::TokenStream>,
         M: Extend<proc_macro2::TokenStream>,
@@ -1312,14 +1312,37 @@ impl<'a> FieldCodegen<'a> for FieldData {
 
         // NB: If supported, we use proper `union` types.
         let ty = if parent.is_union() && !struct_layout.is_rust_union() {
-            result.saw_bindgen_union();
-            if ctx.options().enable_cxx_namespaces {
-                quote! {
-                    root::__BindgenUnionField<#ty>
-                }
+            let union_style = if ctx
+                .options()
+                .bindgen_wrapper_union
+                .matches(parent_canonical_name)
+            {
+                NonRustUnionStyle::BindgenWrapper
+            } else if ctx
+                .options()
+                .manually_drop_union
+                .matches(parent_canonical_name)
+            {
+                NonRustUnionStyle::ManuallyDrop
             } else {
-                quote! {
-                    __BindgenUnionField<#ty>
+                ctx.options().default_non_rust_union_style
+            };
+
+            match union_style {
+                NonRustUnionStyle::ManuallyDrop => quote! {
+                    ::core::mem::ManuallyDrop<#ty>
+                },
+                NonRustUnionStyle::BindgenWrapper => {
+                    result.saw_bindgen_union();
+                    if ctx.options().enable_cxx_namespaces {
+                        quote! {
+                            root::__BindgenUnionField<#ty>
+                        }
+                    } else {
+                        quote! {
+                            __BindgenUnionField<#ty>
+                        }
+                    }
                 }
             }
         } else if let Some(item) = field_ty.is_incomplete_array(ctx) {
@@ -1858,7 +1881,7 @@ impl CodeGenerator for CompInfo {
                     &mut struct_layout,
                     &mut fields,
                     &mut methods,
-                    (),
+                    &canonical_name,
                 );
             }
             // Check whether an explicit padding field is needed

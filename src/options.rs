@@ -1,7 +1,7 @@
 use bindgen::{
     builder, AliasVariation, Builder, CodegenConfig, EnumVariation,
-    MacroTypeVariation, RustTarget, DEFAULT_ANON_FIELDS_PREFIX,
-    RUST_TARGET_STRINGS,
+    MacroTypeVariation, NonRustUnionStyle, RustTarget,
+    DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
 };
 use clap::{App, Arg};
 use std::fs::File;
@@ -647,6 +647,27 @@ where
     if let Some(new_type_deref) = matches.values_of("new-type-alias-deref") {
         for regex in new_type_deref {
             builder = builder.new_type_alias_deref(regex);
+        }
+    }
+
+    if let Some(variant) = matches.value_of("default-non-rust-union-style") {
+        builder = builder.default_non_rust_union_style(
+            NonRustUnionStyle::from_str(variant)?,
+        );
+    }
+
+    if let Some(bindgen_wrapper_union) =
+        matches.values_of("bindgen-wrapper-union")
+    {
+        for regex in bindgen_wrapper_union {
+            builder = builder.bindgen_wrapper_union(regex);
+        }
+    }
+
+    if let Some(manually_drop_union) = matches.values_of("manually-drop-union")
+    {
+        for regex in manually_drop_union {
+            builder = builder.manually_drop_union(regex);
         }
     }
 
