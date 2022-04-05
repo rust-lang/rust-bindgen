@@ -305,6 +305,13 @@ impl Builder {
                 .push(self.options.default_alias_style.as_str().into());
         }
 
+        if self.options.default_non_rust_union_style != Default::default() {
+            output_vector.push("--default-non-rust-union-style".into());
+            output_vector.push(
+                self.options.default_non_rust_union_style.as_str().into(),
+            );
+        }
+
         let regex_sets = &[
             (&self.options.bitfield_enums, "--bitfield-enum"),
             (&self.options.newtype_enums, "--newtype-enum"),
@@ -321,6 +328,11 @@ impl Builder {
             (&self.options.type_alias, "--type-alias"),
             (&self.options.new_type_alias, "--new-type-alias"),
             (&self.options.new_type_alias_deref, "--new-type-alias-deref"),
+            (
+                &self.options.bindgen_wrapper_union,
+                "--bindgen-wrapper-union",
+            ),
+            (&self.options.manually_drop_union, "--manually-drop-union"),
             (&self.options.blocklisted_types, "--blocklist-type"),
             (&self.options.blocklisted_functions, "--blocklist-function"),
             (&self.options.blocklisted_items, "--blocklist-item"),
