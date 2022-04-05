@@ -1432,9 +1432,17 @@ fn wrap_non_copy_type_for_union(
     let union_style = union_style_from_ctx_and_name(ctx, parent_canonical_name);
 
     match union_style {
-        NonRustUnionStyle::ManuallyDrop => quote! {
-            ::core::mem::ManuallyDrop<#field_ty>
-        },
+        NonRustUnionStyle::ManuallyDrop => {
+            if ctx.options().use_core {
+                quote! {
+                    ::core::mem::ManuallyDrop<#field_ty>
+                }
+            } else {
+                quote! {
+                    ::std::mem::ManuallyDrop<#field_ty>
+                }
+            }
+        }
         NonRustUnionStyle::BindgenWrapper => {
             result.saw_bindgen_union();
             if ctx.options().enable_cxx_namespaces {
