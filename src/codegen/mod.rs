@@ -1274,7 +1274,7 @@ impl<'a> FieldCodegen<'a> for Field {
                     struct_layout,
                     fields,
                     methods,
-                    (),
+                    parent_canonical_name,
                 );
             }
         }
@@ -1312,39 +1312,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
 
         // NB: If supported, we use proper `union` types.
         let ty = if parent.is_union() && !struct_layout.is_rust_union() {
-            let union_style = if ctx
-                .options()
-                .bindgen_wrapper_union
-                .matches(parent_canonical_name)
-            {
-                NonRustUnionStyle::BindgenWrapper
-            } else if ctx
-                .options()
-                .manually_drop_union
-                .matches(parent_canonical_name)
-            {
-                NonRustUnionStyle::ManuallyDrop
-            } else {
-                ctx.options().default_non_rust_union_style
-            };
-
-            match union_style {
-                NonRustUnionStyle::ManuallyDrop => quote! {
-                    ::core::mem::ManuallyDrop<#ty>
-                },
-                NonRustUnionStyle::BindgenWrapper => {
-                    result.saw_bindgen_union();
-                    if ctx.options().enable_cxx_namespaces {
-                        quote! {
-                            root::__BindgenUnionField<#ty>
-                        }
-                    } else {
-                        quote! {
-                            __BindgenUnionField<#ty>
-                        }
-                    }
-                }
-            }
+            wrap_non_copy_type_for_union(ctx, parent_canonical_name, result, ty)
         } else if let Some(item) = field_ty.is_incomplete_array(ctx) {
             result.saw_incomplete_array();
 
@@ -1455,6 +1423,46 @@ impl<'a> FieldCodegen<'a> for FieldData {
     }
 }
 
+fn wrap_non_copy_type_for_union(
+    ctx: &BindgenContext,
+    parent_canonical_name: &str,
+    result: &mut CodegenResult,
+    field_ty: proc_macro2::TokenStream,
+) -> proc_macro2::TokenStream {
+    let union_style = union_style_from_ctx_and_name(ctx, parent_canonical_name);
+
+    match union_style {
+        NonRustUnionStyle::ManuallyDrop => quote! {
+            ::core::mem::ManuallyDrop<#field_ty>
+        },
+        NonRustUnionStyle::BindgenWrapper => {
+            result.saw_bindgen_union();
+            if ctx.options().enable_cxx_namespaces {
+                quote! {
+                    root::__BindgenUnionField<#field_ty>
+                }
+            } else {
+                quote! {
+                    __BindgenUnionField<#field_ty>
+                }
+            }
+        }
+    }
+}
+
+fn union_style_from_ctx_and_name(
+    ctx: &BindgenContext,
+    canonical_name: &str,
+) -> NonRustUnionStyle {
+    if ctx.options().bindgen_wrapper_union.matches(canonical_name) {
+        NonRustUnionStyle::BindgenWrapper
+    } else if ctx.options().manually_drop_union.matches(canonical_name) {
+        NonRustUnionStyle::ManuallyDrop
+    } else {
+        ctx.options().default_non_rust_union_style
+    }
+}
+
 impl BitfieldUnit {
     /// Get the constructor name for this bitfield unit.
     fn ctor_name(&self) -> proc_macro2::TokenStream {
@@ -1521,7 +1529,7 @@ fn access_specifier(
 }
 
 impl<'a> FieldCodegen<'a> for BitfieldUnit {
-    type Extra = ();
+    type Extra = &'a str;
 
     fn codegen<F, M>(
         &self,
@@ -1534,7 +1542,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
         methods: &mut M,
-        _: (),
+        parent_canonical_name: Self::Extra,
     ) where
         F: Extend<proc_macro2::TokenStream>,
         M: Extend<proc_macro2::TokenStream>,
@@ -1547,16 +1555,12 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         let unit_field_ty = helpers::bitfield_unit(ctx, layout);
         let field_ty = {
             if parent.is_union() && !struct_layout.is_rust_union() {
-                result.saw_bindgen_union();
-                if ctx.options().enable_cxx_namespaces {
-                    quote! {
-                        root::__BindgenUnionField<#unit_field_ty>
-                    }
-                } else {
-                    quote! {
-                        __BindgenUnionField<#unit_field_ty>
-                    }
-                }
+                wrap_non_copy_type_for_union(
+                    ctx,
+                    parent_canonical_name,
+                    result,
+                    unit_field_ty.clone(),
+                )
             } else {
                 unit_field_ty.clone()
             }
@@ -1987,7 +1991,10 @@ impl CodeGenerator for CompInfo {
                 explicit_align = Some(layout.align);
             }
 
-            if !struct_layout.is_rust_union() {
+            if !struct_layout.is_rust_union() &&
+                union_style_from_ctx_and_name(ctx, &canonical_name) ==
+                    NonRustUnionStyle::BindgenWrapper
+            {
                 let ty = helpers::blob(ctx, layout);
                 fields.push(quote! {
                     pub bindgen_union_field: #ty ,
@@ -2110,6 +2117,15 @@ impl CodeGenerator for CompInfo {
         }
 
         let mut tokens = if is_union && struct_layout.is_rust_union() {
+            quote! {
+                #( #attributes )*
+                pub union #canonical_ident
+            }
+        } else if is_union &&
+            !struct_layout.is_rust_union() &&
+            union_style_from_ctx_and_name(ctx, &canonical_name) ==
+                NonRustUnionStyle::ManuallyDrop
+        {
             quote! {
                 #( #attributes )*
                 pub union #canonical_ident
