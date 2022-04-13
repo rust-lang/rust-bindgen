@@ -2625,7 +2625,6 @@ enum EnumBuilder<'a> {
         is_bitfield: bool,
     },
     Consts {
-        repr: proc_macro2::TokenStream,
         variants: Vec<proc_macro2::TokenStream>,
         codegen_depth: usize,
     },
@@ -2696,7 +2695,6 @@ impl<'a> EnumBuilder<'a> {
                 });
 
                 EnumBuilder::Consts {
-                    repr,
                     variants,
                     codegen_depth: enum_codegen_depth,
                 }
@@ -2800,7 +2798,7 @@ impl<'a> EnumBuilder<'a> {
                 self
             }
 
-            EnumBuilder::Consts { ref repr, .. } => {
+            EnumBuilder::Consts { .. } => {
                 let constant_name = match mangling_prefix {
                     Some(prefix) => {
                         Cow::Owned(format!("{}_{}", prefix, variant_name))
@@ -2808,12 +2806,10 @@ impl<'a> EnumBuilder<'a> {
                     None => variant_name,
                 };
 
-                let ty = if is_ty_named { &rust_ty } else { repr };
-
                 let ident = ctx.rust_ident(constant_name);
                 result.push(quote! {
                     #doc
-                    pub const #ident : #ty = #expr ;
+                    pub const #ident : #rust_ty = #expr ;
                 });
 
                 self
