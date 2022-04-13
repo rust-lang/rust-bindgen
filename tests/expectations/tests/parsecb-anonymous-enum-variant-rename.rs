@@ -5,5 +5,5 @@
     non_upper_case_globals
 )]
 
-pub const RENAMED_MyVal: ::std::os::raw::c_uint = 0;
+pub const RENAMED_MyVal: _bindgen_ty_1 = 0;
 pub type _bindgen_ty_1 = ::std::os::raw::c_uint;

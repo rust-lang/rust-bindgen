@@ -10,8 +10,8 @@
 pub struct foo {
     pub member: foo__bindgen_ty_1,
 }
-pub const foo_FOO_A: ::std::os::raw::c_uint = 0;
-pub const foo_FOO_B: ::std::os::raw::c_uint = 1;
+pub const foo_FOO_A: foo__bindgen_ty_1 = 0;
+pub const foo_FOO_B: foo__bindgen_ty_1 = 1;
 pub type foo__bindgen_ty_1 = ::std::os::raw::c_uint;
 #[test]
 fn bindgen_test_layout_foo() {
