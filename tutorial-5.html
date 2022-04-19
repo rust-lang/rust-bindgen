@@ -224,7 +224,7 @@ mod tests {
             // Finish the compression stream.
             let result = BZ2_bzCompressEnd(&amp;mut stream as *mut _);
             match result {
-                r if r == (BZ_PARAM_ERROR as _) =&gt; panic!(BZ_PARAM_ERROR),
+                r if r == (BZ_PARAM_ERROR as _) =&gt; panic!(&quot;BZ_PARAM_ERROR&quot;),
                 r if r == (BZ_OK as _) =&gt; {},
                 r =&gt; panic!(&quot;Unknown return value = {}&quot;, r),
             }
