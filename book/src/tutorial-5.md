@@ -61,7 +61,7 @@ mod tests {
             // Finish the compression stream.
             let result = BZ2_bzCompressEnd(&mut stream as *mut _);
             match result {
-                r if r == (BZ_PARAM_ERROR as _) => panic!(BZ_PARAM_ERROR),
+                r if r == (BZ_PARAM_ERROR as _) => panic!("BZ_PARAM_ERROR"),
                 r if r == (BZ_OK as _) => {},
                 r => panic!("Unknown return value = {}", r),
             }
