@@ -219,7 +219,7 @@ def run_bindgen(args, bindings):
     if not args.expect_bindgen_fail and child.returncode != 0:
         exit_1("Error: running `bindgen` failed", child)
 
-    for arg in args.bindings_grep:
+    for arg in args.bindings_grep or []:
         pattern = regexp(arg)
         with open(bindings, mode="r") as f:
             if not contains(pattern, f):
