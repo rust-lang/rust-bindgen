@@ -7,6 +7,8 @@ bindings to `bzip2` at compile time. The resulting bindings will be written to
 `$OUT_DIR/bindings.rs` where `$OUT_DIR` is chosen by `cargo` and is something
 like `./target/debug/build/bindgen-tutorial-bzip2-sys-afc7747d7eafd720/out/`.
 
+Note that the associated shared object to `bz2` is `libbz2.so`. In general, a `lib<name>.so` should be referenced in the build file by `<name>`.
+
 ```rust,ignore
 extern crate bindgen;
 
@@ -14,6 +16,9 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
+    // Tell cargo to look for shared libraries in the specified directory
+    println!("cargo:rustc-link-search=/path/to/lib");
+
     // Tell cargo to tell rustc to link the system bzip2
     // shared library.
     println!("cargo:rustc-link-lib=bz2");
