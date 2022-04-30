@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install stable
         uses: actions-rs/toolchain@v1
@@ -40,7 +40,7 @@ jobs:
   msrv:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install msrv
         uses: actions-rs/toolchain@v1
@@ -57,7 +57,7 @@ jobs:
   quickchecking:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install stable
         uses: actions-rs/toolchain@v1
@@ -78,7 +78,7 @@ jobs:
         # broken.
         os: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install stable
         uses: actions-rs/toolchain@v1
@@ -142,7 +142,7 @@ jobs:
             feature_extra_asserts: 0
             feature_testing_only_docs: 0
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install multiarch packages
         if: matrix.target.debian
@@ -184,7 +184,7 @@ jobs:
   test-book:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install stable
         uses: actions-rs/toolchain@v1
