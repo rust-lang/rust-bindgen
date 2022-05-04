@@ -9,7 +9,6 @@
 #[repr(C)]
 pub struct PackedVtable__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C, packed)]
-#[derive(Debug)]
 pub struct PackedVtable {
     pub vtable_: *const PackedVtable__bindgen_vtable,
 }

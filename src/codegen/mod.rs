@@ -110,16 +110,12 @@ bitflags! {
     }
 }
 
-fn derives_of_item(item: &Item, ctx: &BindgenContext) -> DerivableTraits {
+fn derives_of_item(
+    item: &Item,
+    ctx: &BindgenContext,
+    packed: bool,
+) -> DerivableTraits {
     let mut derivable_traits = DerivableTraits::empty();
-
-    if item.can_derive_debug(ctx) && !item.annotations().disallow_debug() {
-        derivable_traits |= DerivableTraits::DEBUG;
-    }
-
-    if item.can_derive_default(ctx) && !item.annotations().disallow_default() {
-        derivable_traits |= DerivableTraits::DEFAULT;
-    }
 
     let all_template_params = item.all_template_params(ctx);
 
@@ -137,6 +133,18 @@ fn derives_of_item(item: &Item, ctx: &BindgenContext) -> DerivableTraits {
             // It's not hard to fix though.
             derivable_traits |= DerivableTraits::CLONE;
         }
+    } else if packed {
+        // If the struct or union is packed, deriving from Copy is required for
+        // deriving from any other trait.
+        return derivable_traits;
+    }
+
+    if item.can_derive_debug(ctx) && !item.annotations().disallow_debug() {
+        derivable_traits |= DerivableTraits::DEBUG;
+    }
+
+    if item.can_derive_default(ctx) && !item.annotations().disallow_default() {
+        derivable_traits |= DerivableTraits::DEFAULT;
     }
 
     if item.can_derive_hash(ctx) {
@@ -926,7 +934,9 @@ impl CodeGenerator for Type {
 
                         let mut attributes =
                             vec![attributes::repr("transparent")];
-                        let derivable_traits = derives_of_item(item, ctx);
+                        let packed = false; // Types can't be packed in Rust.
+                        let derivable_traits =
+                            derives_of_item(item, ctx, packed);
                         if !derivable_traits.is_empty() {
                             let derives: Vec<_> = derivable_traits.into();
                             attributes.push(attributes::derives(&derives))
@@ -2026,7 +2036,7 @@ impl CodeGenerator for CompInfo {
             }
         }
 
-        let derivable_traits = derives_of_item(item, ctx);
+        let derivable_traits = derives_of_item(item, ctx, packed);
         if !derivable_traits.contains(DerivableTraits::DEBUG) {
             needs_debug_impl = ctx.options().derive_debug &&
                 ctx.options().impl_debug &&
@@ -3048,7 +3058,8 @@ impl CodeGenerator for Enum {
         }
 
         if !variation.is_const() {
-            let mut derives = derives_of_item(item, ctx);
+            let packed = false; // Enums can't be packed in Rust.
+            let mut derives = derives_of_item(item, ctx, packed);
             // For backwards compat, enums always derive
             // Clone/Eq/PartialEq/Hash, even if we don't generate those by
             // default.
