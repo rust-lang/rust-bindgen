@@ -170,12 +170,16 @@ And of course in our case, we will be generating Rust FFI
 bindings to <code>bzip2</code> at compile time. The resulting bindings will be written to
 <code>$OUT_DIR/bindings.rs</code> where <code>$OUT_DIR</code> is chosen by <code>cargo</code> and is something
 like <code>./target/debug/build/bindgen-tutorial-bzip2-sys-afc7747d7eafd720/out/</code>.</p>
+<p>Note that the associated shared object to <code>bz2</code> is <code>libbz2.so</code>. In general, a <code>lib&lt;name&gt;.so</code> should be referenced in the build file by <code>&lt;name&gt;</code>.</p>
 <pre><code class="language-rust ignore">extern crate bindgen;
 
 use std::env;
 use std::path::PathBuf;
 
 fn main() {
+    // Tell cargo to look for shared libraries in the specified directory
+    println!(&quot;cargo:rustc-link-search=/path/to/lib&quot;);
+
     // Tell cargo to tell rustc to link the system bzip2
     // shared library.
     println!(&quot;cargo:rustc-link-lib=bz2&quot;);
