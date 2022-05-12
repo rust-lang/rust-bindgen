@@ -32,7 +32,9 @@ fn bindgen_test_layout_AllowlistedOne() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllowlistedOne>())).a as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<AllowlistedOne>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -71,7 +73,9 @@ fn bindgen_test_layout_AllowlistedTwo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllowlistedTwo>())).b as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<AllowlistedTwo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
         },
         0usize,
         concat!(

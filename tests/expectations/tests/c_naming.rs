@@ -23,7 +23,11 @@ fn bindgen_test_layout_struct_a() {
         concat!("Alignment of ", stringify!(struct_a))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<struct_a>())).a as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<struct_a>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -53,7 +57,11 @@ fn bindgen_test_layout_union_b() {
         concat!("Alignment of ", stringify!(union_b))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<union_b>())).a as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<union_b>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -63,7 +71,11 @@ fn bindgen_test_layout_union_b() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<union_b>())).b as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<union_b>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

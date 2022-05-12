@@ -25,8 +25,9 @@ fn bindgen_test_layout_ShouldDeriveClone() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ShouldDeriveClone>())).large as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ShouldDeriveClone>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).large) as usize - ptr as usize
         },
         0usize,
         concat!(

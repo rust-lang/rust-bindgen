@@ -112,7 +112,9 @@ fn bindgen_test_layout_C() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C>())).large_array as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<C>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize
         },
         4usize,
         concat!(

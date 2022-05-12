@@ -52,8 +52,9 @@ fn bindgen_test_layout_WithOpaquePtr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithOpaquePtr>())).whatever as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<WithOpaquePtr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).whatever) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -65,7 +66,9 @@ fn bindgen_test_layout_WithOpaquePtr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithOpaquePtr>())).other as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<WithOpaquePtr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).other) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -77,7 +80,9 @@ fn bindgen_test_layout_WithOpaquePtr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithOpaquePtr>())).t as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<WithOpaquePtr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).t) as usize - ptr as usize
         },
         12usize,
         concat!(

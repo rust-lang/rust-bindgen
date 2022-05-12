@@ -62,8 +62,9 @@ fn bindgen_test_layout_rte_ring_prod() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ring_prod>())).watermark as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ring_prod>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).watermark) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -93,8 +94,9 @@ fn bindgen_test_layout_rte_ring_cons() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ring_cons>())).sc_dequeue as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ring_cons>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).sc_dequeue) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -119,7 +121,9 @@ fn bindgen_test_layout_rte_ring() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ring>())).memzone as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ring>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).memzone) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -131,7 +135,9 @@ fn bindgen_test_layout_rte_ring() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ring>())).prod as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ring>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).prod) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -143,7 +149,9 @@ fn bindgen_test_layout_rte_ring() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ring>())).cons as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ring>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).cons) as usize - ptr as usize
         },
         12usize,
         concat!(
@@ -155,7 +163,9 @@ fn bindgen_test_layout_rte_ring() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ring>())).ring as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ring>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).ring) as usize - ptr as usize
         },
         16usize,
         concat!(

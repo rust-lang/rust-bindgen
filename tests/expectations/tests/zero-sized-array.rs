@@ -55,7 +55,9 @@ fn bindgen_test_layout_ZeroSizedArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ZeroSizedArray>())).arr as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<ZeroSizedArray>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).arr) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -86,8 +88,10 @@ fn bindgen_test_layout_ContainsZeroSizedArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContainsZeroSizedArray>())).zsa as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ContainsZeroSizedArray>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).zsa) as usize - ptr as usize
         },
         0usize,
         concat!(

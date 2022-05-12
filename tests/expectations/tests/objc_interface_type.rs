@@ -45,7 +45,9 @@ fn bindgen_test_layout_FooStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<FooStruct>())).foo as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<FooStruct>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
         },
         0usize,
         concat!(

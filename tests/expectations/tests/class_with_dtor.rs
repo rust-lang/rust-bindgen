@@ -40,8 +40,10 @@ fn bindgen_test_layout_WithoutDtor() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithoutDtor>())).shouldBeWithDtor as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<WithoutDtor>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).shouldBeWithDtor) as usize -
+                ptr as usize
         },
         0usize,
         concat!(

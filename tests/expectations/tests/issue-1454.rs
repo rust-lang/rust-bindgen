@@ -28,7 +28,9 @@ fn bindgen_test_layout_local_type() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<local_type>())).inner as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<local_type>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).inner) as usize - ptr as usize
         },
         0usize,
         concat!(

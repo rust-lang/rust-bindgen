@@ -29,7 +29,9 @@ fn bindgen_test_layout_AutoIdVector() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AutoIdVector>())).ar as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<AutoIdVector>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).ar) as usize - ptr as usize
         },
         0usize,
         concat!(

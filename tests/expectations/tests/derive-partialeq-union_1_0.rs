@@ -70,8 +70,10 @@ fn bindgen_test_layout_ShouldDerivePartialEq() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ShouldDerivePartialEq>())).a as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ShouldDerivePartialEq>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -83,8 +85,10 @@ fn bindgen_test_layout_ShouldDerivePartialEq() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ShouldDerivePartialEq>())).b as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ShouldDerivePartialEq>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
         },
         0usize,
         concat!(

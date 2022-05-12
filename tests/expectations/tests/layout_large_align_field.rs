@@ -76,7 +76,11 @@ fn bindgen_test_layout_ip_frag() {
         concat!("Alignment of ", stringify!(ip_frag))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ip_frag>())).ofs as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<ip_frag>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).ofs) as usize - ptr as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -86,7 +90,11 @@ fn bindgen_test_layout_ip_frag() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ip_frag>())).len as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<ip_frag>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize
+        },
         2usize,
         concat!(
             "Offset of field: ",
@@ -96,7 +104,11 @@ fn bindgen_test_layout_ip_frag() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ip_frag>())).mb as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<ip_frag>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mb) as usize - ptr as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -140,7 +152,9 @@ fn bindgen_test_layout_ip_frag_key() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_key>())).src_dst as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_key>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).src_dst) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -152,7 +166,9 @@ fn bindgen_test_layout_ip_frag_key() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_key>())).id as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_key>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).id) as usize - ptr as usize
         },
         32usize,
         concat!(
@@ -164,7 +180,9 @@ fn bindgen_test_layout_ip_frag_key() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_key>())).key_len as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_key>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).key_len) as usize - ptr as usize
         },
         36usize,
         concat!(
@@ -216,8 +234,10 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt__bindgen_ty_1>())).tqe_next
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ip_frag_pkt__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).tqe_next) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -229,8 +249,10 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt__bindgen_ty_1>())).tqe_prev
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ip_frag_pkt__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).tqe_prev) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -264,7 +286,9 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).lru as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_pkt>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).lru) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -276,7 +300,9 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).key as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_pkt>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).key) as usize - ptr as usize
         },
         16usize,
         concat!(
@@ -288,7 +314,9 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).start as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_pkt>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).start) as usize - ptr as usize
         },
         56usize,
         concat!(
@@ -300,8 +328,9 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).total_size as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_pkt>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).total_size) as usize - ptr as usize
         },
         64usize,
         concat!(
@@ -313,8 +342,9 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).frag_size as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_pkt>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).frag_size) as usize - ptr as usize
         },
         68usize,
         concat!(
@@ -326,8 +356,9 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).last_idx as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_pkt>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).last_idx) as usize - ptr as usize
         },
         72usize,
         concat!(
@@ -339,7 +370,9 @@ fn bindgen_test_layout_ip_frag_pkt() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_pkt>())).frags as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_pkt>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).frags) as usize - ptr as usize
         },
         80usize,
         concat!(
@@ -379,8 +412,9 @@ fn bindgen_test_layout_ip_pkt_list() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_pkt_list>())).tqh_first as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_pkt_list>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).tqh_first) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -392,8 +426,9 @@ fn bindgen_test_layout_ip_pkt_list() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_pkt_list>())).tqh_last as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_pkt_list>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).tqh_last) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -445,8 +480,9 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_tbl_stat>())).find_num as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_tbl_stat>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).find_num) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -458,8 +494,9 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_tbl_stat>())).add_num as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_tbl_stat>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).add_num) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -471,8 +508,9 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_tbl_stat>())).del_num as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_tbl_stat>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).del_num) as usize - ptr as usize
         },
         16usize,
         concat!(
@@ -484,8 +522,9 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_tbl_stat>())).reuse_num as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_tbl_stat>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).reuse_num) as usize - ptr as usize
         },
         24usize,
         concat!(
@@ -497,8 +536,9 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_tbl_stat>())).fail_total as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_tbl_stat>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).fail_total) as usize - ptr as usize
         },
         32usize,
         concat!(
@@ -510,8 +550,9 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ip_frag_tbl_stat>())).fail_nospace
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<ip_frag_tbl_stat>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).fail_nospace) as usize - ptr as usize
         },
         40usize,
         concat!(
@@ -573,8 +614,9 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ip_frag_tbl>())).max_cycles as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ip_frag_tbl>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).max_cycles) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -586,8 +628,9 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ip_frag_tbl>())).entry_mask as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ip_frag_tbl>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).entry_mask) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -599,8 +642,9 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ip_frag_tbl>())).max_entries as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ip_frag_tbl>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).max_entries) as usize - ptr as usize
         },
         12usize,
         concat!(
@@ -612,8 +656,9 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ip_frag_tbl>())).use_entries as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ip_frag_tbl>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).use_entries) as usize - ptr as usize
         },
         16usize,
         concat!(
@@ -625,8 +670,9 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ip_frag_tbl>())).bucket_entries
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ip_frag_tbl>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).bucket_entries) as usize - ptr as usize
         },
         20usize,
         concat!(
@@ -638,8 +684,9 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ip_frag_tbl>())).nb_entries as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ip_frag_tbl>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).nb_entries) as usize - ptr as usize
         },
         24usize,
         concat!(
@@ -651,8 +698,9 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ip_frag_tbl>())).nb_buckets as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ip_frag_tbl>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).nb_buckets) as usize - ptr as usize
         },
         28usize,
         concat!(
@@ -664,8 +712,9 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ip_frag_tbl>())).last as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ip_frag_tbl>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).last) as usize - ptr as usize
         },
         32usize,
         concat!(
@@ -677,7 +726,9 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ip_frag_tbl>())).lru as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ip_frag_tbl>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).lru) as usize - ptr as usize
         },
         40usize,
         concat!(
@@ -689,8 +740,9 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ip_frag_tbl>())).stat as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ip_frag_tbl>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).stat) as usize - ptr as usize
         },
         64usize,
         concat!(
@@ -702,7 +754,9 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ip_frag_tbl>())).pkt as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_ip_frag_tbl>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).pkt) as usize - ptr as usize
         },
         128usize,
         concat!(

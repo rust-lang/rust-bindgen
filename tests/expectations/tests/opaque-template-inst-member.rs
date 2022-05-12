@@ -31,8 +31,10 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContainsOpaqueTemplate>())).mBlah as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ContainsOpaqueTemplate>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBlah) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -44,8 +46,10 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContainsOpaqueTemplate>())).mBaz as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ContainsOpaqueTemplate>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBaz) as usize - ptr as usize
         },
         404usize,
         concat!(
@@ -91,8 +95,10 @@ fn bindgen_test_layout_InheritsOpaqueTemplate() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<InheritsOpaqueTemplate>())).wow as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<InheritsOpaqueTemplate>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).wow) as usize - ptr as usize
         },
         408usize,
         concat!(

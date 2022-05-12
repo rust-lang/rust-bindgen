@@ -79,7 +79,9 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<Bar>())).foo as *const _ as usize
+                    let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
+                    let ptr = uninit.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
                 },
                 0usize,
                 concat!(
@@ -91,7 +93,9 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<Bar>())).bar as *const _ as usize
+                    let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
+                    let ptr = uninit.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
                 },
                 0usize,
                 concat!(

@@ -27,8 +27,10 @@ fn bindgen_test_layout_ShouldNotDerivePartialEq() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ShouldNotDerivePartialEq>())).a as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ShouldNotDerivePartialEq>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(

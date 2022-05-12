@@ -30,8 +30,9 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SomeAccessors>())).mNoAccessor as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<SomeAccessors>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mNoAccessor) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -43,8 +44,9 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SomeAccessors>())).mBothAccessors as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<SomeAccessors>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBothAccessors) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -56,8 +58,10 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SomeAccessors>())).mUnsafeAccessors
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<SomeAccessors>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mUnsafeAccessors) as usize -
+                ptr as usize
         },
         8usize,
         concat!(
@@ -69,8 +73,10 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SomeAccessors>())).mImmutableAccessor
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<SomeAccessors>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mImmutableAccessor) as usize -
+                ptr as usize
         },
         12usize,
         concat!(
@@ -126,8 +132,9 @@ fn bindgen_test_layout_AllAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllAccessors>())).mBothAccessors as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<AllAccessors>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBothAccessors) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -139,8 +146,10 @@ fn bindgen_test_layout_AllAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllAccessors>())).mAlsoBothAccessors
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<AllAccessors>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mAlsoBothAccessors) as usize -
+                ptr as usize
         },
         4usize,
         concat!(
@@ -190,8 +199,10 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllUnsafeAccessors>())).mBothAccessors
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<AllUnsafeAccessors>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBothAccessors) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -203,8 +214,11 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllUnsafeAccessors>())).mAlsoBothAccessors
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<AllUnsafeAccessors>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mAlsoBothAccessors) as usize -
+                ptr as usize
         },
         4usize,
         concat!(
@@ -263,8 +277,10 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContradictAccessors>())).mBothAccessors
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ContradictAccessors>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBothAccessors) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -276,8 +292,10 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContradictAccessors>())).mNoAccessors
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ContradictAccessors>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mNoAccessors) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -289,8 +307,11 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContradictAccessors>())).mUnsafeAccessors
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ContradictAccessors>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mUnsafeAccessors) as usize -
+                ptr as usize
         },
         8usize,
         concat!(
@@ -302,8 +323,11 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContradictAccessors>())).mImmutableAccessor
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ContradictAccessors>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mImmutableAccessor) as usize -
+                ptr as usize
         },
         12usize,
         concat!(
@@ -358,7 +382,9 @@ fn bindgen_test_layout_Replaced() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Replaced>())).mAccessor as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<Replaced>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mAccessor) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -399,7 +425,9 @@ fn bindgen_test_layout_Wrapper() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Wrapper>())).mReplaced as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<Wrapper>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mReplaced) as usize - ptr as usize
         },
         0usize,
         concat!(

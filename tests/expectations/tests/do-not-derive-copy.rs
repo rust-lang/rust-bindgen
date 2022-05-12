@@ -27,8 +27,11 @@ fn bindgen_test_layout_WouldBeCopyButWeAreNotDerivingCopy() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WouldBeCopyButWeAreNotDerivingCopy>())).x
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<
+                WouldBeCopyButWeAreNotDerivingCopy,
+            >::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
         },
         0usize,
         concat!(

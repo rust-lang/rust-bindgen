@@ -47,7 +47,9 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<Foo>())).c as *const _ as usize
+                    let uninit = ::std::mem::MaybeUninit::<Foo>::uninit();
+                    let ptr = uninit.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
                 },
                 0usize,
                 concat!(
@@ -77,7 +79,9 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<Bar>())).i as *const _ as usize
+                    let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
+                    let ptr = uninit.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
                 },
                 0usize,
                 concat!(
@@ -107,8 +111,10 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<ContainsInstantiation>())).not_opaque
-                        as *const _ as usize
+                    let uninit = :: std :: mem :: MaybeUninit :: < ContainsInstantiation > :: uninit () ;
+                    let ptr = uninit.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).not_opaque) as usize -
+                        ptr as usize
                 },
                 0usize,
                 concat!(
@@ -150,8 +156,11 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<ContainsOpaqueInstantiation>()))
-                        .opaque as *const _ as usize
+                    let uninit = ::std::mem::MaybeUninit::<
+                        ContainsOpaqueInstantiation,
+                    >::uninit();
+                    let ptr = uninit.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).opaque) as usize - ptr as usize
                 },
                 0usize,
                 concat!(

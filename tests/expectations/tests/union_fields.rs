@@ -26,7 +26,9 @@ fn bindgen_test_layout_nsStyleUnion() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<nsStyleUnion>())).mInt as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<nsStyleUnion>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mInt) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -38,7 +40,9 @@ fn bindgen_test_layout_nsStyleUnion() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<nsStyleUnion>())).mFloat as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<nsStyleUnion>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mFloat) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -50,8 +54,9 @@ fn bindgen_test_layout_nsStyleUnion() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<nsStyleUnion>())).mPointer as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<nsStyleUnion>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mPointer) as usize - ptr as usize
         },
         0usize,
         concat!(

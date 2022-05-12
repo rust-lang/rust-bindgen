@@ -24,7 +24,9 @@ fn bindgen_test_layout_dl_phdr_info() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dl_phdr_info>())).x as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<dl_phdr_info>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
         },
         0usize,
         concat!(

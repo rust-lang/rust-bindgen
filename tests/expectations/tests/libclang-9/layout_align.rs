@@ -149,7 +149,9 @@ fn bindgen_test_layout_rte_kni_fifo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).write as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_kni_fifo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).write) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -161,7 +163,9 @@ fn bindgen_test_layout_rte_kni_fifo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).read as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_kni_fifo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).read) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -173,7 +177,9 @@ fn bindgen_test_layout_rte_kni_fifo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).len as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_kni_fifo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -185,8 +191,9 @@ fn bindgen_test_layout_rte_kni_fifo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).elem_size as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_kni_fifo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).elem_size) as usize - ptr as usize
         },
         12usize,
         concat!(
@@ -198,7 +205,9 @@ fn bindgen_test_layout_rte_kni_fifo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).buffer as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_kni_fifo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).buffer) as usize - ptr as usize
         },
         16usize,
         concat!(
@@ -242,8 +251,9 @@ fn bindgen_test_layout_rte_eth_link() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_link>())).link_speed as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_link>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).link_speed) as usize - ptr as usize
         },
         0usize,
         concat!(

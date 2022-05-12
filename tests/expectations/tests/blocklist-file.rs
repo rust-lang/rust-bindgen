@@ -26,7 +26,9 @@ fn bindgen_test_layout_SizedIntegers() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SizedIntegers>())).x as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<SizedIntegers>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -38,7 +40,9 @@ fn bindgen_test_layout_SizedIntegers() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SizedIntegers>())).y as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<SizedIntegers>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
         },
         2usize,
         concat!(
@@ -50,7 +54,9 @@ fn bindgen_test_layout_SizedIntegers() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SizedIntegers>())).z as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<SizedIntegers>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).z) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -80,8 +86,11 @@ fn bindgen_test_layout_StructWithBlocklistedFwdDecl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<StructWithBlocklistedFwdDecl>())).b
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<StructWithBlocklistedFwdDecl>::uninit(
+                );
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
         },
         0usize,
         concat!(

@@ -24,7 +24,9 @@ fn bindgen_test_layout_nsFoo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<nsFoo>())).details as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<nsFoo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).details) as usize - ptr as usize
         },
         0usize,
         concat!(

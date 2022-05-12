@@ -39,8 +39,10 @@ fn bindgen_test_layout_ContainsInstantiation() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContainsInstantiation>())).not_opaque
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ContainsInstantiation>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).not_opaque) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -79,8 +81,11 @@ fn bindgen_test_layout_ContainsOpaqueInstantiation() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContainsOpaqueInstantiation>())).opaque
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ContainsOpaqueInstantiation>::uninit(
+                );
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).opaque) as usize - ptr as usize
         },
         0usize,
         concat!(

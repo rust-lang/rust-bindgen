@@ -54,12 +54,20 @@ fn bindgen_test_layout_C() {
         concat!("Alignment of ", stringify!(C))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<C>())).a as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<C>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(C), "::", stringify!(a))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<C>())).big_array as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<C>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).big_array) as usize - ptr as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -98,8 +106,10 @@ fn bindgen_test_layout_C_with_zero_length_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array>())).a as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<C_with_zero_length_array>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -111,8 +121,10 @@ fn bindgen_test_layout_C_with_zero_length_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array>())).big_array
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<C_with_zero_length_array>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).big_array) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -124,8 +136,11 @@ fn bindgen_test_layout_C_with_zero_length_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array>()))
-                .zero_length_array as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<C_with_zero_length_array>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).zero_length_array) as usize -
+                ptr as usize
         },
         37usize,
         concat!(
@@ -165,8 +180,10 @@ fn bindgen_test_layout_C_with_zero_length_array_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array_2>())).a as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<C_with_zero_length_array_2>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -178,8 +195,11 @@ fn bindgen_test_layout_C_with_zero_length_array_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array_2>()))
-                .zero_length_array as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<C_with_zero_length_array_2>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).zero_length_array) as usize -
+                ptr as usize
         },
         4usize,
         concat!(
@@ -210,8 +230,10 @@ fn bindgen_test_layout_C_with_incomplete_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_incomplete_array>())).a as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<C_with_incomplete_array>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -223,8 +245,10 @@ fn bindgen_test_layout_C_with_incomplete_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_incomplete_array>())).big_array
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<C_with_incomplete_array>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).big_array) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -236,8 +260,11 @@ fn bindgen_test_layout_C_with_incomplete_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_incomplete_array>())).incomplete_array
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<C_with_incomplete_array>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).incomplete_array) as usize -
+                ptr as usize
         },
         37usize,
         concat!(
@@ -277,8 +304,10 @@ fn bindgen_test_layout_C_with_incomplete_array_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_incomplete_array_2>())).a as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<C_with_incomplete_array_2>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -290,8 +319,11 @@ fn bindgen_test_layout_C_with_incomplete_array_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_incomplete_array_2>()))
-                .incomplete_array as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<C_with_incomplete_array_2>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).incomplete_array) as usize -
+                ptr as usize
         },
         4usize,
         concat!(
@@ -329,10 +361,11 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<
+            let uninit = ::std::mem::MaybeUninit::<
                 C_with_zero_length_array_and_incomplete_array,
-            >()))
-            .a as *const _ as usize
+            >::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -344,10 +377,11 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<
+            let uninit = ::std::mem::MaybeUninit::<
                 C_with_zero_length_array_and_incomplete_array,
-            >()))
-            .big_array as *const _ as usize
+            >::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).big_array) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -359,10 +393,12 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<
+            let uninit = ::std::mem::MaybeUninit::<
                 C_with_zero_length_array_and_incomplete_array,
-            >()))
-            .zero_length_array as *const _ as usize
+            >::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).zero_length_array) as usize -
+                ptr as usize
         },
         37usize,
         concat!(
@@ -374,10 +410,12 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<
+            let uninit = ::std::mem::MaybeUninit::<
                 C_with_zero_length_array_and_incomplete_array,
-            >()))
-            .incomplete_array as *const _ as usize
+            >::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).incomplete_array) as usize -
+                ptr as usize
         },
         37usize,
         concat!(
@@ -426,10 +464,11 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<
+            let uninit = ::std::mem::MaybeUninit::<
                 C_with_zero_length_array_and_incomplete_array_2,
-            >()))
-            .a as *const _ as usize
+            >::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -441,10 +480,12 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<
+            let uninit = ::std::mem::MaybeUninit::<
                 C_with_zero_length_array_and_incomplete_array_2,
-            >()))
-            .zero_length_array as *const _ as usize
+            >::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).zero_length_array) as usize -
+                ptr as usize
         },
         4usize,
         concat!(
@@ -456,10 +497,12 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<
+            let uninit = ::std::mem::MaybeUninit::<
                 C_with_zero_length_array_and_incomplete_array_2,
-            >()))
-            .incomplete_array as *const _ as usize
+            >::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).incomplete_array) as usize -
+                ptr as usize
         },
         4usize,
         concat!(
@@ -488,7 +531,11 @@ fn bindgen_test_layout_WithDtor() {
         concat!("Alignment of ", stringify!(WithDtor))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<WithDtor>())).b as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<WithDtor>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -517,8 +564,10 @@ fn bindgen_test_layout_IncompleteArrayNonCopiable() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<IncompleteArrayNonCopiable>())).whatever
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<IncompleteArrayNonCopiable>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).whatever) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -530,8 +579,11 @@ fn bindgen_test_layout_IncompleteArrayNonCopiable() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<IncompleteArrayNonCopiable>()))
-                .incomplete_array as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<IncompleteArrayNonCopiable>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).incomplete_array) as usize -
+                ptr as usize
         },
         8usize,
         concat!(
@@ -570,12 +622,20 @@ fn bindgen_test_layout_Union() {
         concat!("Alignment of ", stringify!(Union))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Union>())).d as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<Union>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Union), "::", stringify!(d))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Union>())).i as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<Union>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Union), "::", stringify!(i))
     );
@@ -608,7 +668,9 @@ fn bindgen_test_layout_WithUnion() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithUnion>())).data as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<WithUnion>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).data) as usize - ptr as usize
         },
         0usize,
         concat!(

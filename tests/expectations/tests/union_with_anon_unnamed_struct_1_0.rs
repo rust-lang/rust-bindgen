@@ -77,8 +77,10 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<pixel__bindgen_ty_1>())).r as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<pixel__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).r) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -90,8 +92,10 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<pixel__bindgen_ty_1>())).g as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<pixel__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).g) as usize - ptr as usize
         },
         1usize,
         concat!(
@@ -103,8 +107,10 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<pixel__bindgen_ty_1>())).b as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<pixel__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
         },
         2usize,
         concat!(
@@ -116,8 +122,10 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<pixel__bindgen_ty_1>())).a as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<pixel__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         3usize,
         concat!(
@@ -146,7 +154,11 @@ fn bindgen_test_layout_pixel() {
         concat!("Alignment of ", stringify!(pixel))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pixel>())).rgba as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<pixel>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).rgba) as usize - ptr as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

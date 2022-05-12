@@ -26,8 +26,9 @@ fn bindgen_test_layout_HasPrivate() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<HasPrivate>())).mNotPrivate as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<HasPrivate>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mNotPrivate) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -39,8 +40,9 @@ fn bindgen_test_layout_HasPrivate() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<HasPrivate>())).mIsPrivate as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<HasPrivate>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mIsPrivate) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -72,8 +74,9 @@ fn bindgen_test_layout_VeryPrivate() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<VeryPrivate>())).mIsPrivate as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<VeryPrivate>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mIsPrivate) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -85,8 +88,9 @@ fn bindgen_test_layout_VeryPrivate() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<VeryPrivate>())).mIsAlsoPrivate as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<VeryPrivate>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mIsAlsoPrivate) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -119,8 +123,9 @@ fn bindgen_test_layout_ContradictPrivate() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContradictPrivate>())).mNotPrivate
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<ContradictPrivate>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mNotPrivate) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -132,8 +137,9 @@ fn bindgen_test_layout_ContradictPrivate() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContradictPrivate>())).mIsPrivate as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ContradictPrivate>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mIsPrivate) as usize - ptr as usize
         },
         4usize,
         concat!(

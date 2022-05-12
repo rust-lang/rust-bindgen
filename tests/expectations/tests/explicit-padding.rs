@@ -28,7 +28,9 @@ fn bindgen_test_layout_pad_me() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<pad_me>())).first as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<pad_me>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).first) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -40,7 +42,9 @@ fn bindgen_test_layout_pad_me() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<pad_me>())).second as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<pad_me>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).second) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -52,7 +56,9 @@ fn bindgen_test_layout_pad_me() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<pad_me>())).third as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<pad_me>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).third) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -84,7 +90,9 @@ fn bindgen_test_layout_dont_pad_me() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dont_pad_me>())).first as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<dont_pad_me>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).first) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -96,7 +104,9 @@ fn bindgen_test_layout_dont_pad_me() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dont_pad_me>())).second as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<dont_pad_me>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).second) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -108,7 +118,9 @@ fn bindgen_test_layout_dont_pad_me() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dont_pad_me>())).third as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<dont_pad_me>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).third) as usize - ptr as usize
         },
         0usize,
         concat!(

@@ -30,7 +30,9 @@ fn bindgen_test_layout_JS_shadow_Zone() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<JS_shadow_Zone>())).x as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<JS_shadow_Zone>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -42,7 +44,9 @@ fn bindgen_test_layout_JS_shadow_Zone() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<JS_shadow_Zone>())).y as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<JS_shadow_Zone>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
         },
         4usize,
         concat!(

@@ -26,22 +26,38 @@ fn bindgen_test_layout_Packed() {
         concat!("Alignment of ", stringify!(Packed))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Packed>())).a as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<Packed>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Packed), "::", stringify!(a))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Packed>())).b as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<Packed>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+        },
         2usize,
         concat!("Offset of field: ", stringify!(Packed), "::", stringify!(b))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Packed>())).c as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<Packed>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
+        },
         4usize,
         concat!("Offset of field: ", stringify!(Packed), "::", stringify!(c))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Packed>())).d as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<Packed>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize
+        },
         6usize,
         concat!("Offset of field: ", stringify!(Packed), "::", stringify!(d))
     );
