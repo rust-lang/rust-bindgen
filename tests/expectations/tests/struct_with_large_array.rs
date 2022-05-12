@@ -24,7 +24,9 @@ fn bindgen_test_layout_S() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<S>())).large_array as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<S>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize
         },
         0usize,
         concat!(

@@ -44,7 +44,11 @@ pub mod root {
                 concat!("Alignment of ", stringify!(A))
             );
             assert_eq!(
-                unsafe { &(*(::std::ptr::null::<A>())).b as *const _ as usize },
+                unsafe {
+                    let uninit = ::std::mem::MaybeUninit::<A>::uninit();
+                    let ptr = uninit.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+                },
                 0usize,
                 concat!(
                     "Offset of field: ",

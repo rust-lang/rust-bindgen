@@ -60,8 +60,10 @@ fn bindgen_test_layout_whatever_child_with_member() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<whatever_child_with_member>())).m_member
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<whatever_child_with_member>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).m_member) as usize - ptr as usize
         },
         0usize,
         concat!(

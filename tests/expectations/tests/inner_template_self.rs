@@ -39,8 +39,9 @@ fn bindgen_test_layout_InstantiateIt() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<InstantiateIt>())).m_list as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<InstantiateIt>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).m_list) as usize - ptr as usize
         },
         0usize,
         concat!(

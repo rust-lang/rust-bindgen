@@ -119,7 +119,9 @@ fn bindgen_test_layout_V56AMDY() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<V56AMDY>())).MADK as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<V56AMDY>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).MADK) as usize - ptr as usize
         },
         2usize,
         concat!(
@@ -131,7 +133,9 @@ fn bindgen_test_layout_V56AMDY() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<V56AMDY>())).MABR as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<V56AMDY>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).MABR) as usize - ptr as usize
         },
         3usize,
         concat!(
@@ -143,7 +147,9 @@ fn bindgen_test_layout_V56AMDY() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<V56AMDY>()))._rB_ as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<V56AMDY>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr)._rB_) as usize - ptr as usize
         },
         7usize,
         concat!(

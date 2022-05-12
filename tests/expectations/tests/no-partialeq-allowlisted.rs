@@ -24,7 +24,9 @@ fn bindgen_test_layout_NoPartialEq() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<NoPartialEq>())).i as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<NoPartialEq>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
         },
         0usize,
         concat!(

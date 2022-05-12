@@ -25,8 +25,9 @@ fn bindgen_test_layout_whatever() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<whatever>())).replacement as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<whatever>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).replacement) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -55,7 +56,11 @@ fn bindgen_test_layout_container() {
         concat!("Alignment of ", stringify!(container))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<container>())).c as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<container>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

@@ -70,8 +70,11 @@ fn bindgen_test_layout_StructWithAllowlistedDefinition() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<StructWithAllowlistedDefinition>())).other
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<
+                StructWithAllowlistedDefinition,
+            >::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).other) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -110,8 +113,11 @@ fn bindgen_test_layout_StructWithAllowlistedFwdDecl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<StructWithAllowlistedFwdDecl>())).b
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<StructWithAllowlistedFwdDecl>::uninit(
+                );
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -141,7 +147,9 @@ fn bindgen_test_layout_AllowlistMe() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllowlistMe>())).foo as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<AllowlistMe>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
         },
         0usize,
         concat!(

@@ -42,8 +42,9 @@ fn bindgen_test_layout_ether_addr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ether_addr>())).addr_bytes as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ether_addr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).addr_bytes) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -81,7 +82,9 @@ fn bindgen_test_layout_arp_ipv4() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_ipv4>())).arp_sha as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<arp_ipv4>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).arp_sha) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -93,7 +96,9 @@ fn bindgen_test_layout_arp_ipv4() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_ipv4>())).arp_sip as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<arp_ipv4>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).arp_sip) as usize - ptr as usize
         },
         6usize,
         concat!(
@@ -105,7 +110,9 @@ fn bindgen_test_layout_arp_ipv4() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_ipv4>())).arp_tha as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<arp_ipv4>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).arp_tha) as usize - ptr as usize
         },
         10usize,
         concat!(
@@ -117,7 +124,9 @@ fn bindgen_test_layout_arp_ipv4() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_ipv4>())).arp_tip as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<arp_ipv4>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).arp_tip) as usize - ptr as usize
         },
         16usize,
         concat!(
@@ -153,7 +162,9 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_hrd as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<arp_hdr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).arp_hrd) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -165,7 +176,9 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_pro as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<arp_hdr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).arp_pro) as usize - ptr as usize
         },
         2usize,
         concat!(
@@ -177,7 +190,9 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_hln as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<arp_hdr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).arp_hln) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -189,7 +204,9 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_pln as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<arp_hdr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).arp_pln) as usize - ptr as usize
         },
         5usize,
         concat!(
@@ -201,7 +218,9 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_op as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<arp_hdr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).arp_op) as usize - ptr as usize
         },
         6usize,
         concat!(
@@ -213,7 +232,9 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_data as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<arp_hdr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).arp_data) as usize - ptr as usize
         },
         8usize,
         concat!(

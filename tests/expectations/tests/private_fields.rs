@@ -110,7 +110,11 @@ fn bindgen_test_layout_PubPriv() {
         concat!("Alignment of ", stringify!(PubPriv))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<PubPriv>())).x as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<PubPriv>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -120,7 +124,11 @@ fn bindgen_test_layout_PubPriv() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<PubPriv>())).y as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<PubPriv>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -346,7 +354,11 @@ fn bindgen_test_layout_Base() {
         concat!("Alignment of ", stringify!(Base))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Base>())).member as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<Base>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -417,8 +429,11 @@ fn bindgen_test_layout_WithAnonStruct__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithAnonStruct__bindgen_ty_1>())).a
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<WithAnonStruct__bindgen_ty_1>::uninit(
+                );
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -448,8 +463,11 @@ fn bindgen_test_layout_WithAnonStruct__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithAnonStruct__bindgen_ty_2>())).b
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<WithAnonStruct__bindgen_ty_2>::uninit(
+                );
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
         },
         0usize,
         concat!(

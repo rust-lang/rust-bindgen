@@ -28,8 +28,9 @@ fn bindgen_test_layout_UsesArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<UsesArray>())).array_char_16 as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<UsesArray>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).array_char_16) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -41,8 +42,9 @@ fn bindgen_test_layout_UsesArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<UsesArray>())).array_bool_8 as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<UsesArray>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).array_bool_8) as usize - ptr as usize
         },
         16usize,
         concat!(
@@ -54,8 +56,9 @@ fn bindgen_test_layout_UsesArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<UsesArray>())).array_int_4 as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<UsesArray>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).array_int_4) as usize - ptr as usize
         },
         24usize,
         concat!(

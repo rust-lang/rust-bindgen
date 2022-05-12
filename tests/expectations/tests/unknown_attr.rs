@@ -27,8 +27,10 @@ fn bindgen_test_layout_max_align_t() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<max_align_t>())).__clang_max_align_nonce1
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<max_align_t>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).__clang_max_align_nonce1) as usize -
+                ptr as usize
         },
         0usize,
         concat!(
@@ -40,8 +42,10 @@ fn bindgen_test_layout_max_align_t() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<max_align_t>())).__clang_max_align_nonce2
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<max_align_t>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).__clang_max_align_nonce2) as usize -
+                ptr as usize
         },
         16usize,
         concat!(

@@ -32,8 +32,9 @@ fn bindgen_test_layout_perf_event_attr__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<perf_event_attr__bindgen_ty_1>())).b
-                as *const _ as usize
+            let uninit = :: std :: mem :: MaybeUninit :: < perf_event_attr__bindgen_ty_1 > :: uninit () ;
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -45,8 +46,9 @@ fn bindgen_test_layout_perf_event_attr__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<perf_event_attr__bindgen_ty_1>())).c
-                as *const _ as usize
+            let uninit = :: std :: mem :: MaybeUninit :: < perf_event_attr__bindgen_ty_1 > :: uninit () ;
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -85,8 +87,9 @@ fn bindgen_test_layout_perf_event_attr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<perf_event_attr>())).type_ as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<perf_event_attr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).type_) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -98,7 +101,9 @@ fn bindgen_test_layout_perf_event_attr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<perf_event_attr>())).a as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<perf_event_attr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         4usize,
         concat!(

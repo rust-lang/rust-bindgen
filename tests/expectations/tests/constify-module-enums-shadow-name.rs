@@ -30,7 +30,11 @@ fn bindgen_test_layout_bar() {
         concat!("Alignment of ", stringify!(bar))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<bar>())).member as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<bar>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

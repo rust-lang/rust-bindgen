@@ -2192,7 +2192,9 @@ impl CodeGenerator for CompInfo {
                                         quote! {
                                             assert_eq!(
                                                 unsafe {
-                                                    &(*(::#prefix::ptr::null::<#canonical_ident>())).#field_name as *const _ as usize
+                                                    let uninit = ::#prefix::mem::MaybeUninit::<#canonical_ident>::uninit();
+                                                    let ptr = uninit.as_ptr();
+                                                    ::#prefix::ptr::addr_of!((*ptr).#field_name) as usize - ptr as usize
                                                 },
                                                 #field_offset,
                                                 concat!("Offset of field: ", stringify!(#canonical_ident), "::", stringify!(#field_name))

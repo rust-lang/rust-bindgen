@@ -27,8 +27,9 @@ fn bindgen_test_layout_cmdline_token_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_hdr>())).ops as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<cmdline_token_hdr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).ops) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -40,8 +41,9 @@ fn bindgen_test_layout_cmdline_token_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_hdr>())).offset as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<cmdline_token_hdr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).offset) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -131,8 +133,9 @@ fn bindgen_test_layout_cmdline_token_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_ops>())).parse as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<cmdline_token_ops>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).parse) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -144,8 +147,9 @@ fn bindgen_test_layout_cmdline_token_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_ops>())).complete_get_nb
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<cmdline_token_ops>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).complete_get_nb) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -157,8 +161,10 @@ fn bindgen_test_layout_cmdline_token_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_ops>())).complete_get_elt
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<cmdline_token_ops>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).complete_get_elt) as usize -
+                ptr as usize
         },
         16usize,
         concat!(
@@ -170,8 +176,9 @@ fn bindgen_test_layout_cmdline_token_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_ops>())).get_help as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<cmdline_token_ops>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).get_help) as usize - ptr as usize
         },
         24usize,
         concat!(
@@ -213,8 +220,10 @@ fn bindgen_test_layout_cmdline_token_num_data() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_num_data>())).type_ as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<cmdline_token_num_data>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).type_) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -254,8 +263,9 @@ fn bindgen_test_layout_cmdline_token_num() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_num>())).hdr as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<cmdline_token_num>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).hdr) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -267,8 +277,9 @@ fn bindgen_test_layout_cmdline_token_num() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_num>())).num_data as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<cmdline_token_num>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).num_data) as usize - ptr as usize
         },
         16usize,
         concat!(

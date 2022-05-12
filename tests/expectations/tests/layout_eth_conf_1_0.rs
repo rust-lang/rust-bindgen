@@ -215,8 +215,9 @@ fn bindgen_test_layout_rte_eth_rxmode() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_rxmode>())).mq_mode as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_rxmode>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mq_mode) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -228,8 +229,9 @@ fn bindgen_test_layout_rte_eth_rxmode() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_rxmode>())).max_rx_pkt_len
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_rxmode>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).max_rx_pkt_len) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -241,8 +243,9 @@ fn bindgen_test_layout_rte_eth_rxmode() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_rxmode>())).split_hdr_size
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_rxmode>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).split_hdr_size) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -485,8 +488,9 @@ fn bindgen_test_layout_rte_eth_txmode() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_txmode>())).mq_mode as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_txmode>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mq_mode) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -498,7 +502,9 @@ fn bindgen_test_layout_rte_eth_txmode() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_txmode>())).pvid as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_txmode>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).pvid) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -628,8 +634,9 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_rss_conf>())).rss_key as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_rss_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).rss_key) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -641,8 +648,9 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_rss_conf>())).rss_key_len as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_rss_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).rss_key_len) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -654,8 +662,9 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_rss_conf>())).rss_hf as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_rss_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).rss_hf) as usize - ptr as usize
         },
         16usize,
         concat!(
@@ -753,8 +762,11 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>()))
-                .vlan_id as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<
+                rte_eth_vmdq_dcb_conf__bindgen_ty_1,
+            >::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).vlan_id) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -766,8 +778,11 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>()))
-                .pools as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<
+                rte_eth_vmdq_dcb_conf__bindgen_ty_1,
+            >::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).pools) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -797,8 +812,10 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf>())).nb_queue_pools
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_dcb_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).nb_queue_pools) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -810,8 +827,11 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf>()))
-                .enable_default_pool as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_dcb_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).enable_default_pool) as usize -
+                ptr as usize
         },
         4usize,
         concat!(
@@ -823,8 +843,10 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf>())).default_pool
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_dcb_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).default_pool) as usize - ptr as usize
         },
         5usize,
         concat!(
@@ -836,8 +858,10 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf>())).nb_pool_maps
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_dcb_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).nb_pool_maps) as usize - ptr as usize
         },
         6usize,
         concat!(
@@ -849,8 +873,10 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf>())).pool_map
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_dcb_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).pool_map) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -862,8 +888,10 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf>())).dcb_tc as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_dcb_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dcb_tc) as usize - ptr as usize
         },
         1032usize,
         concat!(
@@ -910,8 +938,10 @@ fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_dcb_rx_conf>())).nb_tcs as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_dcb_rx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).nb_tcs) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -923,8 +953,10 @@ fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_dcb_rx_conf>())).dcb_tc as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_dcb_rx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dcb_tc) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -971,8 +1003,10 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_tx_conf>())).nb_queue_pools
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_dcb_tx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).nb_queue_pools) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -984,8 +1018,10 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_tx_conf>())).dcb_tc
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_dcb_tx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dcb_tc) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -1032,8 +1068,10 @@ fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_dcb_tx_conf>())).nb_tcs as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_dcb_tx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).nb_tcs) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -1045,8 +1083,10 @@ fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_dcb_tx_conf>())).dcb_tc as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_dcb_tx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dcb_tc) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -1091,8 +1131,10 @@ fn bindgen_test_layout_rte_eth_vmdq_tx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_tx_conf>())).nb_queue_pools
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_tx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).nb_queue_pools) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -1160,8 +1202,11 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf__bindgen_ty_1>()))
-                .vlan_id as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<
+                rte_eth_vmdq_rx_conf__bindgen_ty_1,
+            >::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).vlan_id) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -1173,8 +1218,11 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf__bindgen_ty_1>())).pools
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<
+                rte_eth_vmdq_rx_conf__bindgen_ty_1,
+            >::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).pools) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -1204,8 +1252,10 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).nb_queue_pools
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_rx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).nb_queue_pools) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -1217,8 +1267,11 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).enable_default_pool
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_rx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).enable_default_pool) as usize -
+                ptr as usize
         },
         4usize,
         concat!(
@@ -1230,8 +1283,10 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).default_pool
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_rx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).default_pool) as usize - ptr as usize
         },
         5usize,
         concat!(
@@ -1243,8 +1298,11 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).enable_loop_back
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_rx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).enable_loop_back) as usize -
+                ptr as usize
         },
         6usize,
         concat!(
@@ -1256,8 +1314,10 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).nb_pool_maps
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_rx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).nb_pool_maps) as usize - ptr as usize
         },
         7usize,
         concat!(
@@ -1269,8 +1329,10 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).rx_mode as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_rx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).rx_mode) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -1282,8 +1344,10 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).pool_map
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_vmdq_rx_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).pool_map) as usize - ptr as usize
         },
         16usize,
         concat!(
@@ -1375,8 +1439,9 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_ipv4_flow>())).src_ip as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_ipv4_flow>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).src_ip) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -1388,8 +1453,9 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_ipv4_flow>())).dst_ip as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_ipv4_flow>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dst_ip) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -1401,8 +1467,9 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_ipv4_flow>())).tos as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_ipv4_flow>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).tos) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -1414,8 +1481,9 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_ipv4_flow>())).ttl as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_ipv4_flow>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).ttl) as usize - ptr as usize
         },
         9usize,
         concat!(
@@ -1427,8 +1495,9 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_ipv4_flow>())).proto as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_ipv4_flow>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).proto) as usize - ptr as usize
         },
         10usize,
         concat!(
@@ -1473,8 +1542,9 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_ipv6_flow>())).src_ip as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_ipv6_flow>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).src_ip) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -1486,8 +1556,9 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_ipv6_flow>())).dst_ip as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_ipv6_flow>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dst_ip) as usize - ptr as usize
         },
         16usize,
         concat!(
@@ -1499,8 +1570,9 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_ipv6_flow>())).tc as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_ipv6_flow>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).tc) as usize - ptr as usize
         },
         32usize,
         concat!(
@@ -1512,8 +1584,9 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_ipv6_flow>())).proto as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_ipv6_flow>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).proto) as usize - ptr as usize
         },
         33usize,
         concat!(
@@ -1525,8 +1598,9 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_ipv6_flow>())).hop_limits as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_ipv6_flow>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).hop_limits) as usize - ptr as usize
         },
         34usize,
         concat!(
@@ -1580,8 +1654,10 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).vlan_tci_mask
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_masks>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).vlan_tci_mask) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -1593,8 +1669,10 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).ipv4_mask as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_masks>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).ipv4_mask) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -1606,8 +1684,10 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).ipv6_mask as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_masks>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).ipv6_mask) as usize - ptr as usize
         },
         16usize,
         concat!(
@@ -1619,8 +1699,10 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).src_port_mask
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_masks>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).src_port_mask) as usize - ptr as usize
         },
         52usize,
         concat!(
@@ -1632,8 +1714,10 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).dst_port_mask
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_masks>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dst_port_mask) as usize - ptr as usize
         },
         54usize,
         concat!(
@@ -1645,8 +1729,11 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).mac_addr_byte_mask
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_masks>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mac_addr_byte_mask) as usize -
+                ptr as usize
         },
         56usize,
         concat!(
@@ -1658,8 +1745,10 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).tunnel_id_mask
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_masks>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).tunnel_id_mask) as usize - ptr as usize
         },
         60usize,
         concat!(
@@ -1671,8 +1760,11 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).tunnel_type_mask
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_masks>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).tunnel_type_mask) as usize -
+                ptr as usize
         },
         64usize,
         concat!(
@@ -1722,8 +1814,10 @@ fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_flex_payload_cfg>())).type_
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_flex_payload_cfg>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).type_) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -1735,8 +1829,10 @@ fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_flex_payload_cfg>())).src_offset
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_flex_payload_cfg>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).src_offset) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -1783,8 +1879,10 @@ fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_flex_mask>())).flow_type
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_flex_mask>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).flow_type) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -1796,8 +1894,10 @@ fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_flex_mask>())).mask as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_flex_mask>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mask) as usize - ptr as usize
         },
         2usize,
         concat!(
@@ -1839,8 +1939,10 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_flex_conf>())).nb_payloads
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_flex_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).nb_payloads) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -1852,8 +1954,10 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_flex_conf>())).nb_flexmasks
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_flex_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).nb_flexmasks) as usize - ptr as usize
         },
         2usize,
         concat!(
@@ -1865,8 +1969,10 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_flex_conf>())).flex_set
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_flex_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).flex_set) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -1878,8 +1984,10 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_fdir_flex_conf>())).flex_mask
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_fdir_flex_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).flex_mask) as usize - ptr as usize
         },
         292usize,
         concat!(
@@ -1936,7 +2044,9 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_fdir_conf>())).mode as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_fdir_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mode) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -1948,8 +2058,9 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_fdir_conf>())).pballoc as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_fdir_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).pballoc) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -1961,8 +2072,9 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_fdir_conf>())).status as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_fdir_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).status) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -1974,8 +2086,9 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_fdir_conf>())).drop_queue as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_fdir_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).drop_queue) as usize - ptr as usize
         },
         12usize,
         concat!(
@@ -1987,7 +2100,9 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_fdir_conf>())).mask as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_fdir_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mask) as usize - ptr as usize
         },
         16usize,
         concat!(
@@ -1999,8 +2114,9 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_fdir_conf>())).flex_conf as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_fdir_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).flex_conf) as usize - ptr as usize
         },
         84usize,
         concat!(
@@ -2048,7 +2164,9 @@ fn bindgen_test_layout_rte_intr_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_intr_conf>())).lsc as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_intr_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).lsc) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -2060,7 +2178,9 @@ fn bindgen_test_layout_rte_intr_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_intr_conf>())).rxq as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_intr_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).rxq) as usize - ptr as usize
         },
         2usize,
         concat!(
@@ -2135,8 +2255,10 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_1>())).rss_conf
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_conf__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).rss_conf) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -2148,8 +2270,10 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_1>())).vmdq_dcb_conf
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_conf__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).vmdq_dcb_conf) as usize - ptr as usize
         },
         24usize,
         concat!(
@@ -2161,8 +2285,10 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_1>())).dcb_rx_conf
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_conf__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dcb_rx_conf) as usize - ptr as usize
         },
         1064usize,
         concat!(
@@ -2174,8 +2300,10 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_1>())).vmdq_rx_conf
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_conf__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).vmdq_rx_conf) as usize - ptr as usize
         },
         1080usize,
         concat!(
@@ -2222,8 +2350,11 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_2>()))
-                .vmdq_dcb_tx_conf as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_conf__bindgen_ty_2>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).vmdq_dcb_tx_conf) as usize -
+                ptr as usize
         },
         0usize,
         concat!(
@@ -2235,8 +2366,10 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_2>())).dcb_tx_conf
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_conf__bindgen_ty_2>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dcb_tx_conf) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -2248,8 +2381,10 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_2>())).vmdq_tx_conf
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_eth_conf__bindgen_ty_2>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).vmdq_tx_conf) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -2279,8 +2414,9 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf>())).link_speeds as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).link_speeds) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -2292,7 +2428,9 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf>())).rxmode as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).rxmode) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -2304,7 +2442,9 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf>())).txmode as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).txmode) as usize - ptr as usize
         },
         16usize,
         concat!(
@@ -2316,8 +2456,9 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf>())).lpbk_mode as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).lpbk_mode) as usize - ptr as usize
         },
         24usize,
         concat!(
@@ -2329,8 +2470,9 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf>())).rx_adv_conf as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).rx_adv_conf) as usize - ptr as usize
         },
         32usize,
         concat!(
@@ -2342,8 +2484,9 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf>())).tx_adv_conf as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).tx_adv_conf) as usize - ptr as usize
         },
         2152usize,
         concat!(
@@ -2355,8 +2498,10 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf>())).dcb_capability_en
-                as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dcb_capability_en) as usize -
+                ptr as usize
         },
         2164usize,
         concat!(
@@ -2368,8 +2513,9 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf>())).fdir_conf as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).fdir_conf) as usize - ptr as usize
         },
         2168usize,
         concat!(
@@ -2381,8 +2527,9 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_conf>())).intr_conf as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_conf>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).intr_conf) as usize - ptr as usize
         },
         2940usize,
         concat!(

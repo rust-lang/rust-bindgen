@@ -44,7 +44,9 @@ fn bindgen_test_layout_container() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<container>())).contained as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<container>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).contained) as usize - ptr as usize
         },
         0usize,
         concat!(

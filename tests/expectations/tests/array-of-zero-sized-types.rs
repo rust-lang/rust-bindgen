@@ -45,8 +45,9 @@ fn bindgen_test_layout_HasArrayOfEmpty() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<HasArrayOfEmpty>())).empties as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<HasArrayOfEmpty>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).empties) as usize - ptr as usize
         },
         0usize,
         concat!(

@@ -56,7 +56,9 @@ fn bindgen_test_layout_dm_deps() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dm_deps>())).count as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<dm_deps>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).count) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -68,7 +70,9 @@ fn bindgen_test_layout_dm_deps() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dm_deps>())).filler as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<dm_deps>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).filler) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -80,7 +84,9 @@ fn bindgen_test_layout_dm_deps() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dm_deps>())).device as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<dm_deps>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).device) as usize - ptr as usize
         },
         8usize,
         concat!(

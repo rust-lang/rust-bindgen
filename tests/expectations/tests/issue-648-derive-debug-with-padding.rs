@@ -26,7 +26,11 @@ fn bindgen_test_layout_NoDebug() {
         concat!("Alignment of ", stringify!(NoDebug))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<NoDebug>())).c as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<NoDebug>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -75,8 +79,11 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ShouldDeriveDebugButDoesNot>())).c
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ShouldDeriveDebugButDoesNot>::uninit(
+                );
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -88,8 +95,11 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ShouldDeriveDebugButDoesNot>())).d
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<ShouldDeriveDebugButDoesNot>::uninit(
+                );
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize
         },
         32usize,
         concat!(

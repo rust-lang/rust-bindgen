@@ -27,7 +27,9 @@ fn bindgen_test_layout_AlignedToOne() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AlignedToOne>())).i as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<AlignedToOne>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -58,7 +60,9 @@ fn bindgen_test_layout_AlignedToTwo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AlignedToTwo>())).i as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<AlignedToTwo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -92,7 +96,9 @@ fn bindgen_test_layout_PackedToOne() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<PackedToOne>())).x as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<PackedToOne>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -104,7 +110,9 @@ fn bindgen_test_layout_PackedToOne() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<PackedToOne>())).y as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<PackedToOne>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -136,7 +144,9 @@ fn bindgen_test_layout_PackedToTwo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<PackedToTwo>())).x as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<PackedToTwo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -148,7 +158,9 @@ fn bindgen_test_layout_PackedToTwo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<PackedToTwo>())).y as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<PackedToTwo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
         },
         4usize,
         concat!(

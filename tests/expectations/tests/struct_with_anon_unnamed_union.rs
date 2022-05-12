@@ -30,7 +30,9 @@ fn bindgen_test_layout_foo__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1>())).a as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<foo__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -42,7 +44,9 @@ fn bindgen_test_layout_foo__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1>())).b as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<foo__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
         },
         0usize,
         concat!(

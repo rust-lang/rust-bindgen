@@ -30,7 +30,9 @@ fn bindgen_test_layout_TestDouble() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<TestDouble>())).mMember as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<TestDouble>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -60,8 +62,9 @@ fn bindgen_test_layout_TestDoublePtr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<TestDoublePtr>())).mMember as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<TestDoublePtr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -100,7 +103,9 @@ fn bindgen_test_layout_TestFloat() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<TestFloat>())).mMember as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<TestFloat>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -130,8 +135,9 @@ fn bindgen_test_layout_TestFloatPtr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<TestFloatPtr>())).mMember as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<TestFloatPtr>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize
         },
         0usize,
         concat!(

@@ -33,8 +33,10 @@ fn bindgen_test_layout_color__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<color__bindgen_ty_1>())).r as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<color__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).r) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -46,8 +48,10 @@ fn bindgen_test_layout_color__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<color__bindgen_ty_1>())).g as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<color__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).g) as usize - ptr as usize
         },
         1usize,
         concat!(
@@ -59,8 +63,10 @@ fn bindgen_test_layout_color__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<color__bindgen_ty_1>())).b as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<color__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
         },
         2usize,
         concat!(
@@ -92,8 +98,10 @@ fn bindgen_test_layout_color__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<color__bindgen_ty_2>())).y as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<color__bindgen_ty_2>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -105,8 +113,10 @@ fn bindgen_test_layout_color__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<color__bindgen_ty_2>())).u as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<color__bindgen_ty_2>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).u) as usize - ptr as usize
         },
         1usize,
         concat!(
@@ -118,8 +128,10 @@ fn bindgen_test_layout_color__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<color__bindgen_ty_2>())).v as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<color__bindgen_ty_2>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).v) as usize - ptr as usize
         },
         2usize,
         concat!(
@@ -143,7 +155,11 @@ fn bindgen_test_layout_color() {
         concat!("Alignment of ", stringify!(color))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<color>())).v3 as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<color>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).v3) as usize - ptr as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(color), "::", stringify!(v3))
     );

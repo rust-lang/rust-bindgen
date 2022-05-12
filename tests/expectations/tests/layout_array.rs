@@ -81,8 +81,9 @@ fn bindgen_test_layout_rte_mempool_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops>())).name as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).name) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -94,8 +95,9 @@ fn bindgen_test_layout_rte_mempool_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops>())).alloc as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).alloc) as usize - ptr as usize
         },
         32usize,
         concat!(
@@ -107,8 +109,9 @@ fn bindgen_test_layout_rte_mempool_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops>())).free as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).free) as usize - ptr as usize
         },
         40usize,
         concat!(
@@ -120,8 +123,9 @@ fn bindgen_test_layout_rte_mempool_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops>())).enqueue as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).enqueue) as usize - ptr as usize
         },
         48usize,
         concat!(
@@ -133,8 +137,9 @@ fn bindgen_test_layout_rte_mempool_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops>())).dequeue as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dequeue) as usize - ptr as usize
         },
         56usize,
         concat!(
@@ -146,8 +151,9 @@ fn bindgen_test_layout_rte_mempool_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops>())).get_count as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).get_count) as usize - ptr as usize
         },
         64usize,
         concat!(
@@ -198,8 +204,9 @@ fn bindgen_test_layout_rte_spinlock_t() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_spinlock_t>())).locked as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_spinlock_t>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).locked) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -243,8 +250,10 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops_table>())).sl as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_mempool_ops_table>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).sl) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -256,8 +265,10 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops_table>())).num_ops
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_mempool_ops_table>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).num_ops) as usize - ptr as usize
         },
         4usize,
         concat!(
@@ -269,8 +280,10 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_mempool_ops_table>())).ops as *const _
-                as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<rte_mempool_ops_table>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).ops) as usize - ptr as usize
         },
         64usize,
         concat!(
@@ -319,8 +332,10 @@ fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<malloc_heap__bindgen_ty_1>())).lh_first
-                as *const _ as usize
+            let uninit =
+                ::std::mem::MaybeUninit::<malloc_heap__bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).lh_first) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -354,7 +369,9 @@ fn bindgen_test_layout_malloc_heap() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<malloc_heap>())).lock as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<malloc_heap>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).lock) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -366,8 +383,9 @@ fn bindgen_test_layout_malloc_heap() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<malloc_heap>())).free_head as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<malloc_heap>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).free_head) as usize - ptr as usize
         },
         8usize,
         concat!(
@@ -379,8 +397,9 @@ fn bindgen_test_layout_malloc_heap() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<malloc_heap>())).alloc_count as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<malloc_heap>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).alloc_count) as usize - ptr as usize
         },
         112usize,
         concat!(
@@ -392,8 +411,9 @@ fn bindgen_test_layout_malloc_heap() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<malloc_heap>())).total_size as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<malloc_heap>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).total_size) as usize - ptr as usize
         },
         120usize,
         concat!(

@@ -31,8 +31,10 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<typedef_struct>())).foo as *const _
-                        as usize
+                    let uninit =
+                        ::std::mem::MaybeUninit::<typedef_struct>::uninit();
+                    let ptr = uninit.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
                 },
                 0usize,
                 concat!(
@@ -71,8 +73,10 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<_bindgen_ty_1>())).foo as *const _
-                        as usize
+                    let uninit =
+                        ::std::mem::MaybeUninit::<_bindgen_ty_1>::uninit();
+                    let ptr = uninit.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
                 },
                 0usize,
                 concat!(

@@ -44,8 +44,10 @@ pub mod root {
                 );
                 assert_eq!(
                     unsafe {
-                        &(*(::std::ptr::null::<bar>())).this_should_work
-                            as *const _ as usize
+                        let uninit = ::std::mem::MaybeUninit::<bar>::uninit();
+                        let ptr = uninit.as_ptr();
+                        ::std::ptr::addr_of!((*ptr).this_should_work) as usize -
+                            ptr as usize
                     },
                     0usize,
                     concat!(

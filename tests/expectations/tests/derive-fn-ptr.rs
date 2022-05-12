@@ -44,7 +44,9 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Foo>())).callback as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<Foo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).callback) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -90,7 +92,9 @@ fn bindgen_test_layout_Bar() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Bar>())).callback as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).callback) as usize - ptr as usize
         },
         0usize,
         concat!(

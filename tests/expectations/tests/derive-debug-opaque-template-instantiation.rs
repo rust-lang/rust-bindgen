@@ -23,7 +23,9 @@ fn bindgen_test_layout_Instance() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Instance>())).val as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<Instance>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).val) as usize - ptr as usize
         },
         0usize,
         concat!(

@@ -25,7 +25,9 @@ fn bindgen_test_layout_ConstPtrMutObj() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ConstPtrMutObj>())).bar as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<ConstPtrMutObj>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -64,7 +66,9 @@ fn bindgen_test_layout_MutPtrMutObj() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<MutPtrMutObj>())).bar as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<MutPtrMutObj>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -103,7 +107,9 @@ fn bindgen_test_layout_MutPtrConstObj() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<MutPtrConstObj>())).bar as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<MutPtrConstObj>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -142,8 +148,9 @@ fn bindgen_test_layout_ConstPtrConstObj() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ConstPtrConstObj>())).bar as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<ConstPtrConstObj>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
         },
         0usize,
         concat!(

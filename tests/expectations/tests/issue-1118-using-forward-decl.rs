@@ -25,7 +25,9 @@ fn bindgen_test_layout_nsTArray_base() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<nsTArray_base>())).d as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<nsTArray_base>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -78,7 +80,9 @@ fn bindgen_test_layout_nsIContent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<nsIContent>())).foo as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<nsIContent>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
         },
         0usize,
         concat!(

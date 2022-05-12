@@ -55,7 +55,9 @@ fn bindgen_test_layout_OpaqueUser() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<OpaqueUser>())).opaque as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<OpaqueUser>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).opaque) as usize - ptr as usize
         },
         0usize,
         concat!(

@@ -69,7 +69,9 @@ fn bindgen_test_layout_WithBigArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBigArray>())).a as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<WithBigArray>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -81,7 +83,9 @@ fn bindgen_test_layout_WithBigArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBigArray>())).b as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<WithBigArray>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -127,7 +131,9 @@ fn bindgen_test_layout_WithBigArray2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBigArray2>())).a as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<WithBigArray2>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -139,7 +145,9 @@ fn bindgen_test_layout_WithBigArray2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBigArray2>())).b as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<WithBigArray2>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -176,7 +184,9 @@ fn bindgen_test_layout_WithBigMember() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBigMember>())).a as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<WithBigMember>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -188,7 +198,9 @@ fn bindgen_test_layout_WithBigMember() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBigMember>())).b as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<WithBigMember>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
         },
         0usize,
         concat!(

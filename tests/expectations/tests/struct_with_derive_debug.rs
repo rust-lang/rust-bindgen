@@ -24,7 +24,9 @@ fn bindgen_test_layout_LittleArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<LittleArray>())).a as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<LittleArray>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -53,7 +55,11 @@ fn bindgen_test_layout_BigArray() {
         concat!("Alignment of ", stringify!(BigArray))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<BigArray>())).a as *const _ as usize },
+        unsafe {
+            let uninit = ::std::mem::MaybeUninit::<BigArray>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -91,7 +97,9 @@ fn bindgen_test_layout_WithLittleArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithLittleArray>())).a as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<WithLittleArray>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -121,7 +129,9 @@ fn bindgen_test_layout_WithBigArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBigArray>())).a as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<WithBigArray>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(

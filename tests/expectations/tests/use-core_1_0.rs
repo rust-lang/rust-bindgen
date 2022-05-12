@@ -70,17 +70,29 @@ fn bindgen_test_layout_foo() {
         concat!("Alignment of ", stringify!(foo))
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<foo>())).a as *const _ as usize },
+        unsafe {
+            let uninit = ::core::mem::MaybeUninit::<foo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::core::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(a))
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<foo>())).b as *const _ as usize },
+        unsafe {
+            let uninit = ::core::mem::MaybeUninit::<foo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::core::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+        },
         4usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(b))
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<foo>())).bar as *const _ as usize },
+        unsafe {
+            let uninit = ::core::mem::MaybeUninit::<foo>::uninit();
+            let ptr = uninit.as_ptr();
+            ::core::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
+        },
         8usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(bar))
     );
@@ -120,7 +132,9 @@ fn bindgen_test_layout__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::core::ptr::null::<_bindgen_ty_1>())).bar as *const _ as usize
+            let uninit = ::core::mem::MaybeUninit::<_bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::core::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -132,7 +146,9 @@ fn bindgen_test_layout__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::core::ptr::null::<_bindgen_ty_1>())).baz as *const _ as usize
+            let uninit = ::core::mem::MaybeUninit::<_bindgen_ty_1>::uninit();
+            let ptr = uninit.as_ptr();
+            ::core::ptr::addr_of!((*ptr).baz) as usize - ptr as usize
         },
         0usize,
         concat!(

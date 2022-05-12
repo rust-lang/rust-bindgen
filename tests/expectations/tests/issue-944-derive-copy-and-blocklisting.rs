@@ -26,7 +26,9 @@ fn bindgen_test_layout_ShouldNotBeCopy() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ShouldNotBeCopy>())).a as *const _ as usize
+            let uninit = ::std::mem::MaybeUninit::<ShouldNotBeCopy>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
         },
         0usize,
         concat!(

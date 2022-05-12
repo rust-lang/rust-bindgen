@@ -181,8 +181,9 @@ fn bindgen_test_layout_rte_eth_link() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_link>())).link_speed as *const _
-                as usize
+            let uninit = ::std::mem::MaybeUninit::<rte_eth_link>::uninit();
+            let ptr = uninit.as_ptr();
+            ::std::ptr::addr_of!((*ptr).link_speed) as usize - ptr as usize
         },
         0usize,
         concat!(
