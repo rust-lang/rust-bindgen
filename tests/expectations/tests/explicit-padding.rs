@@ -28,7 +28,8 @@ fn bindgen_test_layout_pad_me() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<pad_me>())).first as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<pad_me>())).first)
+                as usize
         },
         0usize,
         concat!(
@@ -40,7 +41,8 @@ fn bindgen_test_layout_pad_me() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<pad_me>())).second as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<pad_me>())).second)
+                as usize
         },
         4usize,
         concat!(
@@ -52,7 +54,8 @@ fn bindgen_test_layout_pad_me() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<pad_me>())).third as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<pad_me>())).third)
+                as usize
         },
         8usize,
         concat!(
@@ -84,7 +87,8 @@ fn bindgen_test_layout_dont_pad_me() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dont_pad_me>())).first as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<dont_pad_me>())).first)
+                as usize
         },
         0usize,
         concat!(
@@ -96,7 +100,8 @@ fn bindgen_test_layout_dont_pad_me() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dont_pad_me>())).second as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<dont_pad_me>())).second)
+                as usize
         },
         0usize,
         concat!(
@@ -108,7 +113,8 @@ fn bindgen_test_layout_dont_pad_me() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dont_pad_me>())).third as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<dont_pad_me>())).third)
+                as usize
         },
         0usize,
         concat!(

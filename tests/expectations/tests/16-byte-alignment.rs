@@ -44,9 +44,12 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1>(
-            )))
-            .dport as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<
+                    rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1,
+                >()))
+                .dport
+            ) as usize
         },
         0usize,
         concat!(
@@ -58,9 +61,12 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1>(
-            )))
-            .sport as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<
+                    rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1,
+                >()))
+                .sport
+            ) as usize
         },
         2usize,
         concat!(
@@ -85,8 +91,10 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ipv4_tuple__bindgen_ty_1>())).sctp_tag
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_ipv4_tuple__bindgen_ty_1>()))
+                    .sctp_tag
+            ) as usize
         },
         0usize,
         concat!(
@@ -120,8 +128,9 @@ fn bindgen_test_layout_rte_ipv4_tuple() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ipv4_tuple>())).src_addr as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_ipv4_tuple>())).src_addr
+            ) as usize
         },
         0usize,
         concat!(
@@ -133,8 +142,9 @@ fn bindgen_test_layout_rte_ipv4_tuple() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ipv4_tuple>())).dst_addr as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_ipv4_tuple>())).dst_addr
+            ) as usize
         },
         4usize,
         concat!(
@@ -193,9 +203,12 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1>(
-            )))
-            .dport as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<
+                    rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1,
+                >()))
+                .dport
+            ) as usize
         },
         0usize,
         concat!(
@@ -207,9 +220,12 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1>(
-            )))
-            .sport as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<
+                    rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1,
+                >()))
+                .sport
+            ) as usize
         },
         2usize,
         concat!(
@@ -234,8 +250,10 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ipv6_tuple__bindgen_ty_1>())).sctp_tag
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_ipv6_tuple__bindgen_ty_1>()))
+                    .sctp_tag
+            ) as usize
         },
         0usize,
         concat!(
@@ -269,8 +287,9 @@ fn bindgen_test_layout_rte_ipv6_tuple() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ipv6_tuple>())).src_addr as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_ipv6_tuple>())).src_addr
+            ) as usize
         },
         0usize,
         concat!(
@@ -282,8 +301,9 @@ fn bindgen_test_layout_rte_ipv6_tuple() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ipv6_tuple>())).dst_addr as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_ipv6_tuple>())).dst_addr
+            ) as usize
         },
         16usize,
         concat!(
@@ -324,7 +344,8 @@ fn bindgen_test_layout_rte_thash_tuple() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_thash_tuple>())).v4 as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_thash_tuple>())).v4)
+                as usize
         },
         0usize,
         concat!(
@@ -336,7 +357,8 @@ fn bindgen_test_layout_rte_thash_tuple() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_thash_tuple>())).v6 as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_thash_tuple>())).v6)
+                as usize
         },
         0usize,
         concat!(

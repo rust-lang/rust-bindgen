@@ -26,7 +26,8 @@ fn bindgen_test_layout_SizedIntegers() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SizedIntegers>())).x as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<SizedIntegers>())).x)
+                as usize
         },
         0usize,
         concat!(
@@ -38,7 +39,8 @@ fn bindgen_test_layout_SizedIntegers() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SizedIntegers>())).y as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<SizedIntegers>())).y)
+                as usize
         },
         2usize,
         concat!(
@@ -50,7 +52,8 @@ fn bindgen_test_layout_SizedIntegers() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SizedIntegers>())).z as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<SizedIntegers>())).z)
+                as usize
         },
         4usize,
         concat!(
@@ -80,8 +83,9 @@ fn bindgen_test_layout_StructWithBlocklistedFwdDecl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<StructWithBlocklistedFwdDecl>())).b
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<StructWithBlocklistedFwdDecl>())).b
+            ) as usize
         },
         0usize,
         concat!(

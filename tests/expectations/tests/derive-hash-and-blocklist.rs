@@ -26,8 +26,9 @@ fn bindgen_test_layout_ShouldNotDeriveHash() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ShouldNotDeriveHash>())).a as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ShouldNotDeriveHash>())).a
+            ) as usize
         },
         0usize,
         concat!(

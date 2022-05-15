@@ -23,7 +23,9 @@ fn bindgen_test_layout_NoCopy() {
         concat!("Alignment of ", stringify!(NoCopy))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<NoCopy>())).i as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<NoCopy>())).i) as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(NoCopy), "::", stringify!(i))
     );

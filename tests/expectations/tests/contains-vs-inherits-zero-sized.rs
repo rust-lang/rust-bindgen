@@ -44,7 +44,9 @@ fn bindgen_test_layout_Inherits() {
         concat!("Alignment of ", stringify!(Inherits))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Inherits>())).b as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Inherits>())).b) as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -76,7 +78,8 @@ fn bindgen_test_layout_Contains() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Contains>())).empty as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Contains>())).empty)
+                as usize
         },
         0usize,
         concat!(
@@ -87,7 +90,9 @@ fn bindgen_test_layout_Contains() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Contains>())).b as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Contains>())).b) as usize
+        },
         1usize,
         concat!(
             "Offset of field: ",

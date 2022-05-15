@@ -70,8 +70,10 @@ fn bindgen_test_layout_StructWithAllowlistedDefinition() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<StructWithAllowlistedDefinition>())).other
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<StructWithAllowlistedDefinition>()))
+                    .other
+            ) as usize
         },
         0usize,
         concat!(
@@ -110,8 +112,9 @@ fn bindgen_test_layout_StructWithAllowlistedFwdDecl() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<StructWithAllowlistedFwdDecl>())).b
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<StructWithAllowlistedFwdDecl>())).b
+            ) as usize
         },
         0usize,
         concat!(
@@ -141,7 +144,8 @@ fn bindgen_test_layout_AllowlistMe() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllowlistMe>())).foo as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<AllowlistMe>())).foo)
+                as usize
         },
         0usize,
         concat!(

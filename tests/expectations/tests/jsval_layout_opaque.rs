@@ -295,8 +295,7 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()))
-                .i32_ as *const _ as usize
+            :: std :: ptr :: addr_of ! ((* (:: std :: ptr :: null :: < jsval_layout__bindgen_ty_2__bindgen_ty_1 > ())) . i32_) as usize
         },
         0usize,
         concat!(
@@ -308,8 +307,7 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()))
-                .u32_ as *const _ as usize
+            :: std :: ptr :: addr_of ! ((* (:: std :: ptr :: null :: < jsval_layout__bindgen_ty_2__bindgen_ty_1 > ())) . u32_) as usize
         },
         0usize,
         concat!(
@@ -321,8 +319,7 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()))
-                .why as *const _ as usize
+            :: std :: ptr :: addr_of ! ((* (:: std :: ptr :: null :: < jsval_layout__bindgen_ty_2__bindgen_ty_1 > ())) . why) as usize
         },
         0usize,
         concat!(
@@ -356,8 +353,9 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2>())).payload
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<jsval_layout__bindgen_ty_2>())).payload
+            ) as usize
         },
         0usize,
         concat!(
@@ -391,7 +389,8 @@ fn bindgen_test_layout_jsval_layout() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).asBits as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<jsval_layout>())).asBits)
+                as usize
         },
         0usize,
         concat!(
@@ -403,8 +402,9 @@ fn bindgen_test_layout_jsval_layout() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).debugView as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<jsval_layout>())).debugView
+            ) as usize
         },
         0usize,
         concat!(
@@ -416,7 +416,8 @@ fn bindgen_test_layout_jsval_layout() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).s as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<jsval_layout>())).s)
+                as usize
         },
         0usize,
         concat!(
@@ -428,8 +429,9 @@ fn bindgen_test_layout_jsval_layout() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).asDouble as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<jsval_layout>())).asDouble
+            ) as usize
         },
         0usize,
         concat!(
@@ -441,7 +443,8 @@ fn bindgen_test_layout_jsval_layout() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).asPtr as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<jsval_layout>())).asPtr)
+                as usize
         },
         0usize,
         concat!(
@@ -453,7 +456,8 @@ fn bindgen_test_layout_jsval_layout() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).asWord as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<jsval_layout>())).asWord)
+                as usize
         },
         0usize,
         concat!(
@@ -465,8 +469,9 @@ fn bindgen_test_layout_jsval_layout() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout>())).asUIntPtr as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<jsval_layout>())).asUIntPtr
+            ) as usize
         },
         0usize,
         concat!(
@@ -504,7 +509,9 @@ fn bindgen_test_layout_Value() {
         concat!("Alignment of ", stringify!(Value))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Value>())).data as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Value>())).data) as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

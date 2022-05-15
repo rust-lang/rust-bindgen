@@ -69,7 +69,8 @@ fn bindgen_test_layout_WithBigArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBigArray>())).a as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<WithBigArray>())).a)
+                as usize
         },
         0usize,
         concat!(
@@ -81,7 +82,8 @@ fn bindgen_test_layout_WithBigArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBigArray>())).b as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<WithBigArray>())).b)
+                as usize
         },
         0usize,
         concat!(
@@ -127,7 +129,8 @@ fn bindgen_test_layout_WithBigArray2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBigArray2>())).a as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<WithBigArray2>())).a)
+                as usize
         },
         0usize,
         concat!(
@@ -139,7 +142,8 @@ fn bindgen_test_layout_WithBigArray2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBigArray2>())).b as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<WithBigArray2>())).b)
+                as usize
         },
         0usize,
         concat!(
@@ -176,7 +180,8 @@ fn bindgen_test_layout_WithBigMember() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBigMember>())).a as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<WithBigMember>())).a)
+                as usize
         },
         0usize,
         concat!(
@@ -188,7 +193,8 @@ fn bindgen_test_layout_WithBigMember() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBigMember>())).b as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<WithBigMember>())).b)
+                as usize
         },
         0usize,
         concat!(

@@ -23,7 +23,9 @@ fn bindgen_test_layout_Doggo() {
         concat!("Alignment of ", stringify!(Doggo))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Doggo>())).x as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Doggo>())).x) as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Doggo), "::", stringify!(x))
     );

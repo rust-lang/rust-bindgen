@@ -28,7 +28,8 @@ fn bindgen_test_layout_local_type() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<local_type>())).inner as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<local_type>())).inner)
+                as usize
         },
         0usize,
         concat!(

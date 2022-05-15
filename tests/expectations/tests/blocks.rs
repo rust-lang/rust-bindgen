@@ -48,8 +48,9 @@ fn bindgen_test_layout_contains_block_pointers() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<contains_block_pointers>())).val as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<contains_block_pointers>())).val
+            ) as usize
         },
         0usize,
         concat!(
@@ -61,8 +62,9 @@ fn bindgen_test_layout_contains_block_pointers() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<contains_block_pointers>())).ptr_val
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<contains_block_pointers>())).ptr_val
+            ) as usize
         },
         8usize,
         concat!(

@@ -27,8 +27,9 @@ fn bindgen_test_layout_cmdline_token_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_hdr>())).ops as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<cmdline_token_hdr>())).ops
+            ) as usize
         },
         0usize,
         concat!(
@@ -40,8 +41,9 @@ fn bindgen_test_layout_cmdline_token_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_hdr>())).offset as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<cmdline_token_hdr>())).offset
+            ) as usize
         },
         8usize,
         concat!(
@@ -131,8 +133,9 @@ fn bindgen_test_layout_cmdline_token_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_ops>())).parse as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<cmdline_token_ops>())).parse
+            ) as usize
         },
         0usize,
         concat!(
@@ -144,8 +147,9 @@ fn bindgen_test_layout_cmdline_token_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_ops>())).complete_get_nb
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<cmdline_token_ops>())).complete_get_nb
+            ) as usize
         },
         8usize,
         concat!(
@@ -157,8 +161,9 @@ fn bindgen_test_layout_cmdline_token_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_ops>())).complete_get_elt
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<cmdline_token_ops>())).complete_get_elt
+            ) as usize
         },
         16usize,
         concat!(
@@ -170,8 +175,9 @@ fn bindgen_test_layout_cmdline_token_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_ops>())).get_help as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<cmdline_token_ops>())).get_help
+            ) as usize
         },
         24usize,
         concat!(
@@ -213,8 +219,9 @@ fn bindgen_test_layout_cmdline_token_num_data() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_num_data>())).type_ as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<cmdline_token_num_data>())).type_
+            ) as usize
         },
         0usize,
         concat!(
@@ -254,8 +261,9 @@ fn bindgen_test_layout_cmdline_token_num() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_num>())).hdr as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<cmdline_token_num>())).hdr
+            ) as usize
         },
         0usize,
         concat!(
@@ -267,8 +275,9 @@ fn bindgen_test_layout_cmdline_token_num() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_num>())).num_data as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<cmdline_token_num>())).num_data
+            ) as usize
         },
         16usize,
         concat!(

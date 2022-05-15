@@ -23,7 +23,9 @@ fn bindgen_test_layout_Rooted() {
         concat!("Alignment of ", stringify!(Rooted))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Rooted>())).ptr as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Rooted>())).ptr) as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

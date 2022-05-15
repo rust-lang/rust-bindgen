@@ -55,7 +55,8 @@ fn bindgen_test_layout_OpaqueUser() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<OpaqueUser>())).opaque as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<OpaqueUser>())).opaque)
+                as usize
         },
         0usize,
         concat!(

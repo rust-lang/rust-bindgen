@@ -44,7 +44,8 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Foo>())).callback as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Foo>())).callback)
+                as usize
         },
         0usize,
         concat!(
@@ -90,7 +91,8 @@ fn bindgen_test_layout_Bar() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Bar>())).callback as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).callback)
+                as usize
         },
         0usize,
         concat!(

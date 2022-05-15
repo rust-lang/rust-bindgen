@@ -178,7 +178,8 @@ fn bindgen_test_layout_ClassAInner() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ClassAInner>())).x as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<ClassAInner>())).x)
+                as usize
         },
         0usize,
         concat!(
@@ -217,7 +218,8 @@ fn bindgen_test_layout_ClassCInnerA() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ClassCInnerA>())).member as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<ClassCInnerA>())).member)
+                as usize
         },
         0usize,
         concat!(
@@ -256,7 +258,8 @@ fn bindgen_test_layout_ClassCInnerB() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ClassCInnerB>())).cache as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<ClassCInnerB>())).cache)
+                as usize
         },
         0usize,
         concat!(

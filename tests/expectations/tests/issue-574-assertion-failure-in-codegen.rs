@@ -29,7 +29,8 @@ fn bindgen_test_layout__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_bindgen_ty_1>())).ar as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<_bindgen_ty_1>())).ar)
+                as usize
         },
         0usize,
         concat!(

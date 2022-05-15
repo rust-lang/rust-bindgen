@@ -27,8 +27,9 @@ fn bindgen_test_layout_ShouldNotDeriveDefault() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ShouldNotDeriveDefault>())).a as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ShouldNotDeriveDefault>())).a
+            ) as usize
         },
         0usize,
         concat!(

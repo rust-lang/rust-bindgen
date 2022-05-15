@@ -82,8 +82,9 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_1>())).b1
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_1>())).b1
+            ) as usize
         },
         0usize,
         concat!(
@@ -95,8 +96,9 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_1>())).b2
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_1>())).b2
+            ) as usize
         },
         0usize,
         concat!(
@@ -133,8 +135,9 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).c1
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).c1
+            ) as usize
         },
         0usize,
         concat!(
@@ -146,8 +149,9 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).c2
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).c2
+            ) as usize
         },
         0usize,
         concat!(
@@ -194,7 +198,9 @@ fn bindgen_test_layout_foo() {
         concat!("Alignment of ", stringify!(foo))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<foo>())).a as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<foo>())).a) as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(a))
     );

@@ -44,7 +44,8 @@ fn bindgen_test_layout_container() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<container>())).contained as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<container>())).contained)
+                as usize
         },
         0usize,
         concat!(

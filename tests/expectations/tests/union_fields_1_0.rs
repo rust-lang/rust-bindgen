@@ -70,7 +70,8 @@ fn bindgen_test_layout_nsStyleUnion() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<nsStyleUnion>())).mInt as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<nsStyleUnion>())).mInt)
+                as usize
         },
         0usize,
         concat!(
@@ -82,7 +83,8 @@ fn bindgen_test_layout_nsStyleUnion() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<nsStyleUnion>())).mFloat as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<nsStyleUnion>())).mFloat)
+                as usize
         },
         0usize,
         concat!(
@@ -94,8 +96,9 @@ fn bindgen_test_layout_nsStyleUnion() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<nsStyleUnion>())).mPointer as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<nsStyleUnion>())).mPointer
+            ) as usize
         },
         0usize,
         concat!(

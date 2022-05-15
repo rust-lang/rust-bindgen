@@ -111,7 +111,9 @@ fn bindgen_test_layout_timex() {
         concat!("Alignment of ", stringify!(timex))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<timex>())).tai as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<timex>())).tai) as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -151,7 +153,8 @@ fn bindgen_test_layout_timex_named() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<timex_named>())).tai as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<timex_named>())).tai)
+                as usize
         },
         0usize,
         concat!(

@@ -110,7 +110,9 @@ fn bindgen_test_layout_PubPriv() {
         concat!("Alignment of ", stringify!(PubPriv))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<PubPriv>())).x as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<PubPriv>())).x) as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -120,7 +122,9 @@ fn bindgen_test_layout_PubPriv() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<PubPriv>())).y as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<PubPriv>())).y) as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -346,7 +350,10 @@ fn bindgen_test_layout_Base() {
         concat!("Alignment of ", stringify!(Base))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Base>())).member as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Base>())).member)
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -417,8 +424,9 @@ fn bindgen_test_layout_WithAnonStruct__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithAnonStruct__bindgen_ty_1>())).a
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<WithAnonStruct__bindgen_ty_1>())).a
+            ) as usize
         },
         0usize,
         concat!(
@@ -448,8 +456,9 @@ fn bindgen_test_layout_WithAnonStruct__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithAnonStruct__bindgen_ty_2>())).b
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<WithAnonStruct__bindgen_ty_2>())).b
+            ) as usize
         },
         0usize,
         concat!(

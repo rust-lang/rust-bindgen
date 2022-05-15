@@ -557,7 +557,19 @@ fn test_mixed_header_and_header_contents() {
     ));
     let (expected, _) = rustfmt(expected.to_string());
 
-    assert_eq!(expected, actual);
+    if actual != expected {
+        println!("Generated bindings differ from expected!");
+
+        for diff in diff::lines(&actual, &expected) {
+            match diff {
+                diff::Result::Left(l) => println!("-{}", l),
+                diff::Result::Both(l, _) => println!(" {}", l),
+                diff::Result::Right(r) => println!("+{}", r),
+            }
+        }
+
+        panic!();
+    }
 }
 
 #[test]

@@ -47,7 +47,8 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<Foo>())).c as *const _ as usize
+                    ::std::ptr::addr_of!((*(::std::ptr::null::<Foo>())).c)
+                        as usize
                 },
                 0usize,
                 concat!(
@@ -77,7 +78,8 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<Bar>())).i as *const _ as usize
+                    ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).i)
+                        as usize
                 },
                 0usize,
                 concat!(
@@ -107,8 +109,10 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<ContainsInstantiation>())).not_opaque
-                        as *const _ as usize
+                    ::std::ptr::addr_of!(
+                        (*(::std::ptr::null::<ContainsInstantiation>()))
+                            .not_opaque
+                    ) as usize
                 },
                 0usize,
                 concat!(
@@ -150,8 +154,10 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<ContainsOpaqueInstantiation>()))
-                        .opaque as *const _ as usize
+                    ::std::ptr::addr_of!(
+                        (*(::std::ptr::null::<ContainsOpaqueInstantiation>()))
+                            .opaque
+                    ) as usize
                 },
                 0usize,
                 concat!(

@@ -31,8 +31,9 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<typedef_struct>())).foo as *const _
-                        as usize
+                    ::std::ptr::addr_of!(
+                        (*(::std::ptr::null::<typedef_struct>())).foo
+                    ) as usize
                 },
                 0usize,
                 concat!(
@@ -71,8 +72,9 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<_bindgen_ty_1>())).foo as *const _
-                        as usize
+                    ::std::ptr::addr_of!(
+                        (*(::std::ptr::null::<_bindgen_ty_1>())).foo
+                    ) as usize
                 },
                 0usize,
                 concat!(

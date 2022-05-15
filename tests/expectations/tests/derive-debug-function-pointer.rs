@@ -27,7 +27,8 @@ fn bindgen_test_layout_Nice() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Nice>())).pointer as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Nice>())).pointer)
+                as usize
         },
         0usize,
         concat!(
@@ -39,7 +40,8 @@ fn bindgen_test_layout_Nice() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Nice>())).large_array as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Nice>())).large_array)
+                as usize
         },
         8usize,
         concat!(

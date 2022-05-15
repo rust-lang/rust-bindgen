@@ -69,7 +69,8 @@ fn bindgen_test_layout_UnionWithDtor() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<UnionWithDtor>())).mFoo as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<UnionWithDtor>())).mFoo)
+                as usize
         },
         0usize,
         concat!(
@@ -81,7 +82,8 @@ fn bindgen_test_layout_UnionWithDtor() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<UnionWithDtor>())).mBar as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<UnionWithDtor>())).mBar)
+                as usize
         },
         0usize,
         concat!(

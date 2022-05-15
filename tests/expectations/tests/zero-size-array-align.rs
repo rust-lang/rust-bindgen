@@ -56,7 +56,8 @@ fn bindgen_test_layout_dm_deps() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dm_deps>())).count as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<dm_deps>())).count)
+                as usize
         },
         0usize,
         concat!(
@@ -68,7 +69,8 @@ fn bindgen_test_layout_dm_deps() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dm_deps>())).filler as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<dm_deps>())).filler)
+                as usize
         },
         4usize,
         concat!(
@@ -80,7 +82,8 @@ fn bindgen_test_layout_dm_deps() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dm_deps>())).device as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<dm_deps>())).device)
+                as usize
         },
         8usize,
         concat!(

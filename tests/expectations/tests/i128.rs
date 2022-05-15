@@ -26,7 +26,8 @@ fn bindgen_test_layout_foo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<foo>())).my_signed as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<foo>())).my_signed)
+                as usize
         },
         0usize,
         concat!(
@@ -38,7 +39,8 @@ fn bindgen_test_layout_foo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<foo>())).my_unsigned as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<foo>())).my_unsigned)
+                as usize
         },
         16usize,
         concat!(

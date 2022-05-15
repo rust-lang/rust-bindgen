@@ -45,8 +45,9 @@ fn bindgen_test_layout_rte_memseg__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_memseg__bindgen_ty_1>())).addr
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_memseg__bindgen_ty_1>())).addr
+            ) as usize
         },
         0usize,
         concat!(
@@ -58,8 +59,9 @@ fn bindgen_test_layout_rte_memseg__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_memseg__bindgen_ty_1>())).addr_64
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_memseg__bindgen_ty_1>())).addr_64
+            ) as usize
         },
         0usize,
         concat!(
@@ -93,8 +95,9 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_memseg>())).phys_addr as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_memseg>())).phys_addr
+            ) as usize
         },
         0usize,
         concat!(
@@ -106,7 +109,8 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_memseg>())).len as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_memseg>())).len)
+                as usize
         },
         16usize,
         concat!(
@@ -118,8 +122,9 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_memseg>())).hugepage_sz as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_memseg>())).hugepage_sz
+            ) as usize
         },
         24usize,
         concat!(
@@ -131,8 +136,9 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_memseg>())).socket_id as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_memseg>())).socket_id
+            ) as usize
         },
         32usize,
         concat!(
@@ -144,7 +150,8 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_memseg>())).nchannel as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_memseg>())).nchannel)
+                as usize
         },
         36usize,
         concat!(
@@ -156,7 +163,8 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_memseg>())).nrank as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_memseg>())).nrank)
+                as usize
         },
         40usize,
         concat!(

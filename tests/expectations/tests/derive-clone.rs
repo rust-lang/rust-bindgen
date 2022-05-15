@@ -25,8 +25,9 @@ fn bindgen_test_layout_ShouldDeriveClone() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ShouldDeriveClone>())).large as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ShouldDeriveClone>())).large
+            ) as usize
         },
         0usize,
         concat!(

@@ -41,8 +41,9 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<sentry>())).i_am_plain_sentry
-                        as *const _ as usize
+                    ::std::ptr::addr_of!(
+                        (*(::std::ptr::null::<sentry>())).i_am_plain_sentry
+                    ) as usize
                 },
                 0usize,
                 concat!(
@@ -90,9 +91,10 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<NotTemplateWrapper_sentry>()))
-                        .i_am_not_template_wrapper_sentry
-                        as *const _ as usize
+                    ::std::ptr::addr_of!(
+                        (*(::std::ptr::null::<NotTemplateWrapper_sentry>()))
+                            .i_am_not_template_wrapper_sentry
+                    ) as usize
                 },
                 0usize,
                 concat!(
@@ -133,9 +135,11 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<InlineNotTemplateWrapper_sentry>()))
+                    ::std::ptr::addr_of!(
+                        (*(::std::ptr::null::<InlineNotTemplateWrapper_sentry>(
+                        )))
                         .i_am_inline_not_template_wrapper_sentry
-                        as *const _ as usize
+                    ) as usize
                 },
                 0usize,
                 concat!(
@@ -240,11 +244,12 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<
-                        OuterDoubleWrapper_InnerDoubleWrapper_sentry,
-                    >()))
-                    .i_am_double_wrapper_sentry as *const _
-                        as usize
+                    ::std::ptr::addr_of!(
+                        (*(::std::ptr::null::<
+                            OuterDoubleWrapper_InnerDoubleWrapper_sentry,
+                        >()))
+                        .i_am_double_wrapper_sentry
+                    ) as usize
                 },
                 0usize,
                 concat!(
@@ -275,7 +280,7 @@ pub mod root {
         ) {
             assert_eq ! (:: std :: mem :: size_of :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > () , 4usize , concat ! ("Size of: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry)));
             assert_eq ! (:: std :: mem :: align_of :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > () , 4usize , concat ! ("Alignment of " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry)));
-            assert_eq ! (unsafe { & (* (:: std :: ptr :: null :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > ())) . i_am_double_wrapper_inline_sentry as * const _ as usize } , 0usize , concat ! ("Offset of field: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry) , "::" , stringify ! (i_am_double_wrapper_inline_sentry)));
+            assert_eq ! (unsafe { :: std :: ptr :: addr_of ! ((* (:: std :: ptr :: null :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > ())) . i_am_double_wrapper_inline_sentry) as usize } , 0usize , concat ! ("Offset of field: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry) , "::" , stringify ! (i_am_double_wrapper_inline_sentry)));
         }
         #[test]
         fn bindgen_test_layout_OuterDoubleInlineWrapper_InnerDoubleInlineWrapper(
@@ -348,8 +353,10 @@ pub mod root {
         );
         assert_eq!(
             unsafe {
-                &(*(::std::ptr::null::<sentry>())).i_am_outside_namespace_sentry
-                    as *const _ as usize
+                ::std::ptr::addr_of!(
+                    (*(::std::ptr::null::<sentry>()))
+                        .i_am_outside_namespace_sentry
+                ) as usize
             },
             0usize,
             concat!(

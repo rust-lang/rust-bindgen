@@ -30,8 +30,9 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SomeAccessors>())).mNoAccessor as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<SomeAccessors>())).mNoAccessor
+            ) as usize
         },
         0usize,
         concat!(
@@ -43,8 +44,9 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SomeAccessors>())).mBothAccessors as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<SomeAccessors>())).mBothAccessors
+            ) as usize
         },
         4usize,
         concat!(
@@ -56,8 +58,9 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SomeAccessors>())).mUnsafeAccessors
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<SomeAccessors>())).mUnsafeAccessors
+            ) as usize
         },
         8usize,
         concat!(
@@ -69,8 +72,9 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<SomeAccessors>())).mImmutableAccessor
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<SomeAccessors>())).mImmutableAccessor
+            ) as usize
         },
         12usize,
         concat!(
@@ -126,8 +130,9 @@ fn bindgen_test_layout_AllAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllAccessors>())).mBothAccessors as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<AllAccessors>())).mBothAccessors
+            ) as usize
         },
         0usize,
         concat!(
@@ -139,8 +144,9 @@ fn bindgen_test_layout_AllAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllAccessors>())).mAlsoBothAccessors
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<AllAccessors>())).mAlsoBothAccessors
+            ) as usize
         },
         4usize,
         concat!(
@@ -190,8 +196,9 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllUnsafeAccessors>())).mBothAccessors
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<AllUnsafeAccessors>())).mBothAccessors
+            ) as usize
         },
         0usize,
         concat!(
@@ -203,8 +210,10 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllUnsafeAccessors>())).mAlsoBothAccessors
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<AllUnsafeAccessors>()))
+                    .mAlsoBothAccessors
+            ) as usize
         },
         4usize,
         concat!(
@@ -263,8 +272,9 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContradictAccessors>())).mBothAccessors
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ContradictAccessors>())).mBothAccessors
+            ) as usize
         },
         0usize,
         concat!(
@@ -276,8 +286,9 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContradictAccessors>())).mNoAccessors
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ContradictAccessors>())).mNoAccessors
+            ) as usize
         },
         4usize,
         concat!(
@@ -289,8 +300,9 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContradictAccessors>())).mUnsafeAccessors
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ContradictAccessors>())).mUnsafeAccessors
+            ) as usize
         },
         8usize,
         concat!(
@@ -302,8 +314,10 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContradictAccessors>())).mImmutableAccessor
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ContradictAccessors>()))
+                    .mImmutableAccessor
+            ) as usize
         },
         12usize,
         concat!(
@@ -358,7 +372,8 @@ fn bindgen_test_layout_Replaced() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Replaced>())).mAccessor as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Replaced>())).mAccessor)
+                as usize
         },
         0usize,
         concat!(
@@ -399,7 +414,8 @@ fn bindgen_test_layout_Wrapper() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Wrapper>())).mReplaced as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Wrapper>())).mReplaced)
+                as usize
         },
         0usize,
         concat!(

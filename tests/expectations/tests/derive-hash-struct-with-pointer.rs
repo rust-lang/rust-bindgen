@@ -25,7 +25,8 @@ fn bindgen_test_layout_ConstPtrMutObj() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ConstPtrMutObj>())).bar as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<ConstPtrMutObj>())).bar)
+                as usize
         },
         0usize,
         concat!(
@@ -64,7 +65,8 @@ fn bindgen_test_layout_MutPtrMutObj() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<MutPtrMutObj>())).bar as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<MutPtrMutObj>())).bar)
+                as usize
         },
         0usize,
         concat!(
@@ -103,7 +105,8 @@ fn bindgen_test_layout_MutPtrConstObj() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<MutPtrConstObj>())).bar as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<MutPtrConstObj>())).bar)
+                as usize
         },
         0usize,
         concat!(
@@ -142,8 +145,9 @@ fn bindgen_test_layout_ConstPtrConstObj() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ConstPtrConstObj>())).bar as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ConstPtrConstObj>())).bar
+            ) as usize
         },
         0usize,
         concat!(

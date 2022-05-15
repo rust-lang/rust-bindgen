@@ -33,8 +33,9 @@ fn bindgen_test_layout_color__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<color__bindgen_ty_1>())).r as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<color__bindgen_ty_1>())).r
+            ) as usize
         },
         0usize,
         concat!(
@@ -46,8 +47,9 @@ fn bindgen_test_layout_color__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<color__bindgen_ty_1>())).g as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<color__bindgen_ty_1>())).g
+            ) as usize
         },
         1usize,
         concat!(
@@ -59,8 +61,9 @@ fn bindgen_test_layout_color__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<color__bindgen_ty_1>())).b as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<color__bindgen_ty_1>())).b
+            ) as usize
         },
         2usize,
         concat!(
@@ -92,8 +95,9 @@ fn bindgen_test_layout_color__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<color__bindgen_ty_2>())).y as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<color__bindgen_ty_2>())).y
+            ) as usize
         },
         0usize,
         concat!(
@@ -105,8 +109,9 @@ fn bindgen_test_layout_color__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<color__bindgen_ty_2>())).u as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<color__bindgen_ty_2>())).u
+            ) as usize
         },
         1usize,
         concat!(
@@ -118,8 +123,9 @@ fn bindgen_test_layout_color__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<color__bindgen_ty_2>())).v as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<color__bindgen_ty_2>())).v
+            ) as usize
         },
         2usize,
         concat!(
@@ -143,7 +149,9 @@ fn bindgen_test_layout_color() {
         concat!("Alignment of ", stringify!(color))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<color>())).v3 as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<color>())).v3) as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(color), "::", stringify!(v3))
     );

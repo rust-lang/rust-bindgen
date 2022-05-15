@@ -23,7 +23,9 @@ fn bindgen_test_layout_A() {
         concat!("Alignment of ", stringify!(A))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<A>())).foo as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<A>())).foo) as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(A), "::", stringify!(foo))
     );
@@ -49,7 +51,9 @@ fn bindgen_test_layout_B() {
         concat!("Alignment of ", stringify!(B))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<B>())).bar as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<B>())).bar) as usize
+        },
         8usize,
         concat!("Offset of field: ", stringify!(B), "::", stringify!(bar))
     );
@@ -84,7 +88,9 @@ fn bindgen_test_layout_C() {
         concat!("Alignment of ", stringify!(C))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<C>())).baz as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<C>())).baz) as usize
+        },
         8usize,
         concat!("Offset of field: ", stringify!(C), "::", stringify!(baz))
     );

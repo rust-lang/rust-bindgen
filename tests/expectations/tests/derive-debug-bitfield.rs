@@ -112,7 +112,8 @@ fn bindgen_test_layout_C() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C>())).large_array as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<C>())).large_array)
+                as usize
         },
         4usize,
         concat!(

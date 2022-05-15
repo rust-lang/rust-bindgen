@@ -149,7 +149,8 @@ fn bindgen_test_layout_rte_kni_fifo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).write as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_kni_fifo>())).write)
+                as usize
         },
         0usize,
         concat!(
@@ -161,7 +162,8 @@ fn bindgen_test_layout_rte_kni_fifo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).read as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_kni_fifo>())).read)
+                as usize
         },
         4usize,
         concat!(
@@ -173,7 +175,8 @@ fn bindgen_test_layout_rte_kni_fifo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).len as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_kni_fifo>())).len)
+                as usize
         },
         8usize,
         concat!(
@@ -185,8 +188,9 @@ fn bindgen_test_layout_rte_kni_fifo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).elem_size as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_kni_fifo>())).elem_size
+            ) as usize
         },
         12usize,
         concat!(
@@ -198,7 +202,8 @@ fn bindgen_test_layout_rte_kni_fifo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_fifo>())).buffer as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_kni_fifo>())).buffer)
+                as usize
         },
         16usize,
         concat!(
@@ -242,8 +247,9 @@ fn bindgen_test_layout_rte_eth_link() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_eth_link>())).link_speed as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_eth_link>())).link_speed
+            ) as usize
         },
         0usize,
         concat!(

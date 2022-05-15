@@ -23,7 +23,9 @@ fn bindgen_test_layout_struct_a() {
         concat!("Alignment of ", stringify!(struct_a))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<struct_a>())).a as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<struct_a>())).a) as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -53,7 +55,9 @@ fn bindgen_test_layout_union_b() {
         concat!("Alignment of ", stringify!(union_b))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<union_b>())).a as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<union_b>())).a) as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -63,7 +67,9 @@ fn bindgen_test_layout_union_b() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<union_b>())).b as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<union_b>())).b) as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

@@ -30,8 +30,9 @@ fn bindgen_test_layout_JNINativeInterface_() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<JNINativeInterface_>())).GetVersion
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<JNINativeInterface_>())).GetVersion
+            ) as usize
         },
         0usize,
         concat!(
@@ -43,8 +44,9 @@ fn bindgen_test_layout_JNINativeInterface_() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<JNINativeInterface_>())).__hack as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<JNINativeInterface_>())).__hack
+            ) as usize
         },
         8usize,
         concat!(

@@ -121,8 +121,9 @@ fn bindgen_test_layout_Allowlisted() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Allowlisted>())).some_member as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<Allowlisted>())).some_member
+            ) as usize
         },
         0usize,
         concat!(

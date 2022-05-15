@@ -26,22 +26,30 @@ fn bindgen_test_layout_Packed() {
         concat!("Alignment of ", stringify!(Packed))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Packed>())).a as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Packed>())).a) as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Packed), "::", stringify!(a))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Packed>())).b as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Packed>())).b) as usize
+        },
         2usize,
         concat!("Offset of field: ", stringify!(Packed), "::", stringify!(b))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Packed>())).c as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Packed>())).c) as usize
+        },
         4usize,
         concat!("Offset of field: ", stringify!(Packed), "::", stringify!(c))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Packed>())).d as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Packed>())).d) as usize
+        },
         6usize,
         concat!("Offset of field: ", stringify!(Packed), "::", stringify!(d))
     );

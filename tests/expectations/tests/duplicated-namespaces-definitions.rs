@@ -32,7 +32,8 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<Bar>())).foo as *const _ as usize
+                    ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).foo)
+                        as usize
                 },
                 0usize,
                 concat!(
@@ -44,7 +45,8 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<Bar>())).baz as *const _ as usize
+                    ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).baz)
+                        as usize
                 },
                 4usize,
                 concat!(
@@ -78,7 +80,8 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<Foo>())).ptr as *const _ as usize
+                    ::std::ptr::addr_of!((*(::std::ptr::null::<Foo>())).ptr)
+                        as usize
                 },
                 0usize,
                 concat!(

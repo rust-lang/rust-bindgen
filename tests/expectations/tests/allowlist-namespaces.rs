@@ -53,7 +53,8 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<Test>())).helper as *const _ as usize
+                    ::std::ptr::addr_of!((*(::std::ptr::null::<Test>())).helper)
+                        as usize
                 },
                 0usize,
                 concat!(

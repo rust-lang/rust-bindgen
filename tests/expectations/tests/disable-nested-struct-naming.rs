@@ -46,7 +46,9 @@ fn bindgen_test_layout_bar4() {
         concat!("Alignment of ", stringify!(bar4))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<bar4>())).x4 as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<bar4>())).x4) as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(bar4), "::", stringify!(x4))
     );
@@ -68,8 +70,9 @@ fn bindgen_test_layout_bar1__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<bar1__bindgen_ty_1__bindgen_ty_1>())).x3
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<bar1__bindgen_ty_1__bindgen_ty_1>())).x3
+            ) as usize
         },
         0usize,
         concat!(
@@ -81,8 +84,9 @@ fn bindgen_test_layout_bar1__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<bar1__bindgen_ty_1__bindgen_ty_1>())).b4
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<bar1__bindgen_ty_1__bindgen_ty_1>())).b4
+            ) as usize
         },
         4usize,
         concat!(
@@ -107,8 +111,9 @@ fn bindgen_test_layout_bar1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<bar1__bindgen_ty_1>())).x2 as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<bar1__bindgen_ty_1>())).x2
+            ) as usize
         },
         0usize,
         concat!(
@@ -120,8 +125,9 @@ fn bindgen_test_layout_bar1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<bar1__bindgen_ty_1>())).b3 as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<bar1__bindgen_ty_1>())).b3
+            ) as usize
         },
         4usize,
         concat!(
@@ -145,12 +151,16 @@ fn bindgen_test_layout_bar1() {
         concat!("Alignment of ", stringify!(bar1))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<bar1>())).x1 as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<bar1>())).x1) as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(bar1), "::", stringify!(x1))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<bar1>())).b2 as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<bar1>())).b2) as usize
+        },
         4usize,
         concat!("Offset of field: ", stringify!(bar1), "::", stringify!(b2))
     );
@@ -168,7 +178,9 @@ fn bindgen_test_layout_foo() {
         concat!("Alignment of ", stringify!(foo))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<foo>())).b1 as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<foo>())).b1) as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(b1))
     );
@@ -201,7 +213,9 @@ fn bindgen_test_layout_baz() {
         concat!("Alignment of ", stringify!(baz))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<baz>())).x as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<baz>())).x) as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(baz), "::", stringify!(x))
     );
@@ -220,8 +234,9 @@ fn bindgen_test_layout__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_bindgen_ty_1__bindgen_ty_1>())).b
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<_bindgen_ty_1__bindgen_ty_1>())).b
+            ) as usize
         },
         0usize,
         concat!(
@@ -246,7 +261,8 @@ fn bindgen_test_layout__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_bindgen_ty_1>())).anon2 as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<_bindgen_ty_1>())).anon2)
+                as usize
         },
         0usize,
         concat!(

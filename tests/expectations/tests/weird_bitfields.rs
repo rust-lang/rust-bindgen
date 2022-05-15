@@ -133,8 +133,9 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Weird>())).mStrokeDasharrayLength as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<Weird>())).mStrokeDasharrayLength
+            ) as usize
         },
         0usize,
         concat!(
@@ -146,7 +147,8 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Weird>())).mClipRule as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Weird>())).mClipRule)
+                as usize
         },
         8usize,
         concat!(
@@ -158,8 +160,9 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Weird>())).mColorInterpolation as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<Weird>())).mColorInterpolation
+            ) as usize
         },
         9usize,
         concat!(
@@ -171,8 +174,9 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Weird>())).mColorInterpolationFilters
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<Weird>())).mColorInterpolationFilters
+            ) as usize
         },
         10usize,
         concat!(
@@ -184,7 +188,8 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Weird>())).mFillRule as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Weird>())).mFillRule)
+                as usize
         },
         11usize,
         concat!(
@@ -196,8 +201,9 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Weird>())).mImageRendering as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<Weird>())).mImageRendering
+            ) as usize
         },
         12usize,
         concat!(
@@ -209,7 +215,8 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Weird>())).mPaintOrder as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Weird>())).mPaintOrder)
+                as usize
         },
         13usize,
         concat!(
@@ -221,8 +228,9 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Weird>())).mShapeRendering as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<Weird>())).mShapeRendering
+            ) as usize
         },
         14usize,
         concat!(
@@ -234,8 +242,9 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Weird>())).mStrokeLinecap as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<Weird>())).mStrokeLinecap
+            ) as usize
         },
         15usize,
         concat!(
@@ -247,8 +256,9 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Weird>())).mStrokeLinejoin as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<Weird>())).mStrokeLinejoin
+            ) as usize
         },
         16usize,
         concat!(
@@ -260,7 +270,8 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Weird>())).mTextAnchor as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Weird>())).mTextAnchor)
+                as usize
         },
         17usize,
         concat!(
@@ -272,8 +283,9 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Weird>())).mTextRendering as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<Weird>())).mTextRendering
+            ) as usize
         },
         18usize,
         concat!(

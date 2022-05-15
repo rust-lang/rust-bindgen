@@ -44,7 +44,8 @@ fn bindgen_test_layout_NotAnnotated() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<NotAnnotated>())).f as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<NotAnnotated>())).f)
+                as usize
         },
         0usize,
         concat!(

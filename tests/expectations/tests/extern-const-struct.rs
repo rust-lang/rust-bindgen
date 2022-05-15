@@ -24,7 +24,8 @@ fn bindgen_test_layout_nsFoo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<nsFoo>())).details as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<nsFoo>())).details)
+                as usize
         },
         0usize,
         concat!(

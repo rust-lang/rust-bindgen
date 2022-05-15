@@ -26,7 +26,8 @@ fn bindgen_test_layout_ShouldNotBeCopy() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ShouldNotBeCopy>())).a as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<ShouldNotBeCopy>())).a)
+                as usize
         },
         0usize,
         concat!(

@@ -26,8 +26,9 @@ fn bindgen_test_layout_ShouldManuallyImplDebug() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ShouldManuallyImplDebug>())).a as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ShouldManuallyImplDebug>())).a
+            ) as usize
         },
         0usize,
         concat!(

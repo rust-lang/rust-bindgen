@@ -24,8 +24,9 @@ fn bindgen_test_layout_typedef_named_struct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<typedef_named_struct>())).has_name
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<typedef_named_struct>())).has_name
+            ) as usize
         },
         0usize,
         concat!(
@@ -55,8 +56,9 @@ fn bindgen_test_layout__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<_bindgen_ty_1>())).no_name as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<_bindgen_ty_1>())).no_name
+            ) as usize
         },
         0usize,
         concat!(

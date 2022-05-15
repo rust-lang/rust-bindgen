@@ -29,7 +29,8 @@ fn bindgen_test_layout_AutoIdVector() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AutoIdVector>())).ar as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<AutoIdVector>())).ar)
+                as usize
         },
         0usize,
         concat!(

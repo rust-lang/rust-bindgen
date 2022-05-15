@@ -82,7 +82,8 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<Baz>())).member as *const _ as usize
+                    ::std::ptr::addr_of!((*(::std::ptr::null::<Baz>())).member)
+                        as usize
                 },
                 0usize,
                 concat!(

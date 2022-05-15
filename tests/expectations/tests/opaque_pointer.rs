@@ -52,8 +52,9 @@ fn bindgen_test_layout_WithOpaquePtr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithOpaquePtr>())).whatever as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<WithOpaquePtr>())).whatever
+            ) as usize
         },
         0usize,
         concat!(
@@ -65,7 +66,8 @@ fn bindgen_test_layout_WithOpaquePtr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithOpaquePtr>())).other as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<WithOpaquePtr>())).other)
+                as usize
         },
         8usize,
         concat!(
@@ -77,7 +79,8 @@ fn bindgen_test_layout_WithOpaquePtr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithOpaquePtr>())).t as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<WithOpaquePtr>())).t)
+                as usize
         },
         12usize,
         concat!(

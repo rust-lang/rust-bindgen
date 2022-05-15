@@ -39,28 +39,37 @@ fn bindgen_test_layout_Bar() {
         concat!("Alignment of ", stringify!(Bar))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Bar>())).baz1 as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).baz1) as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz1))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Bar>())).baz2 as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).baz2) as usize
+        },
         4usize,
         concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz2))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Bar>())).baz3 as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).baz3) as usize
+        },
         8usize,
         concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz3))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Bar>())).baz4 as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).baz4) as usize
+        },
         12usize,
         concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz4))
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Bar>())).baz_ptr1 as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).baz_ptr1)
+                as usize
         },
         16usize,
         concat!(
@@ -72,7 +81,8 @@ fn bindgen_test_layout_Bar() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Bar>())).baz_ptr2 as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).baz_ptr2)
+                as usize
         },
         24usize,
         concat!(
@@ -84,7 +94,8 @@ fn bindgen_test_layout_Bar() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Bar>())).baz_ptr3 as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).baz_ptr3)
+                as usize
         },
         32usize,
         concat!(
@@ -96,7 +107,8 @@ fn bindgen_test_layout_Bar() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Bar>())).baz_ptr4 as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).baz_ptr4)
+                as usize
         },
         40usize,
         concat!(

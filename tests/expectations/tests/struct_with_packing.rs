@@ -24,12 +24,16 @@ fn bindgen_test_layout_a() {
         concat!("Alignment of ", stringify!(a))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<a>())).b as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<a>())).b) as usize
+        },
         0usize,
         concat!("Offset of field: ", stringify!(a), "::", stringify!(b))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<a>())).c as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<a>())).c) as usize
+        },
         1usize,
         concat!("Offset of field: ", stringify!(a), "::", stringify!(c))
     );

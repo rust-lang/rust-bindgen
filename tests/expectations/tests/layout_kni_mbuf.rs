@@ -46,8 +46,9 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).buf_addr as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_kni_mbuf>())).buf_addr
+            ) as usize
         },
         0usize,
         concat!(
@@ -59,8 +60,9 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).buf_physaddr as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_kni_mbuf>())).buf_physaddr
+            ) as usize
         },
         8usize,
         concat!(
@@ -72,7 +74,8 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pad0 as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_kni_mbuf>())).pad0)
+                as usize
         },
         16usize,
         concat!(
@@ -84,8 +87,9 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).data_off as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_kni_mbuf>())).data_off
+            ) as usize
         },
         18usize,
         concat!(
@@ -97,7 +101,8 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pad1 as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_kni_mbuf>())).pad1)
+                as usize
         },
         20usize,
         concat!(
@@ -109,8 +114,9 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).nb_segs as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_kni_mbuf>())).nb_segs
+            ) as usize
         },
         22usize,
         concat!(
@@ -122,7 +128,8 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pad4 as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_kni_mbuf>())).pad4)
+                as usize
         },
         23usize,
         concat!(
@@ -134,8 +141,9 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).ol_flags as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_kni_mbuf>())).ol_flags
+            ) as usize
         },
         24usize,
         concat!(
@@ -147,7 +155,8 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pad2 as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_kni_mbuf>())).pad2)
+                as usize
         },
         32usize,
         concat!(
@@ -159,8 +168,9 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pkt_len as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_kni_mbuf>())).pkt_len
+            ) as usize
         },
         36usize,
         concat!(
@@ -172,8 +182,9 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).data_len as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_kni_mbuf>())).data_len
+            ) as usize
         },
         40usize,
         concat!(
@@ -185,7 +196,8 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pad3 as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_kni_mbuf>())).pad3)
+                as usize
         },
         64usize,
         concat!(
@@ -197,7 +209,8 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).pool as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_kni_mbuf>())).pool)
+                as usize
         },
         72usize,
         concat!(
@@ -209,7 +222,8 @@ fn bindgen_test_layout_rte_kni_mbuf() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_kni_mbuf>())).next as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_kni_mbuf>())).next)
+                as usize
         },
         80usize,
         concat!(

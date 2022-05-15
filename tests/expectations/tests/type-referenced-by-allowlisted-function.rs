@@ -24,7 +24,8 @@ fn bindgen_test_layout_dl_phdr_info() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<dl_phdr_info>())).x as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<dl_phdr_info>())).x)
+                as usize
         },
         0usize,
         concat!(

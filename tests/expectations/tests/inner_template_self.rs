@@ -39,8 +39,9 @@ fn bindgen_test_layout_InstantiateIt() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<InstantiateIt>())).m_list as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<InstantiateIt>())).m_list
+            ) as usize
         },
         0usize,
         concat!(

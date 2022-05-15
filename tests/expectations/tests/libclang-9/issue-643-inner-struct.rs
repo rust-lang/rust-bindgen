@@ -62,8 +62,9 @@ fn bindgen_test_layout_rte_ring_prod() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ring_prod>())).watermark as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_ring_prod>())).watermark
+            ) as usize
         },
         0usize,
         concat!(
@@ -93,8 +94,9 @@ fn bindgen_test_layout_rte_ring_cons() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ring_cons>())).sc_dequeue as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<rte_ring_cons>())).sc_dequeue
+            ) as usize
         },
         0usize,
         concat!(
@@ -119,7 +121,8 @@ fn bindgen_test_layout_rte_ring() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ring>())).memzone as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_ring>())).memzone)
+                as usize
         },
         0usize,
         concat!(
@@ -131,7 +134,8 @@ fn bindgen_test_layout_rte_ring() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ring>())).prod as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_ring>())).prod)
+                as usize
         },
         8usize,
         concat!(
@@ -143,7 +147,8 @@ fn bindgen_test_layout_rte_ring() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ring>())).cons as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_ring>())).cons)
+                as usize
         },
         12usize,
         concat!(
@@ -155,7 +160,8 @@ fn bindgen_test_layout_rte_ring() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<rte_ring>())).ring as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<rte_ring>())).ring)
+                as usize
         },
         16usize,
         concat!(

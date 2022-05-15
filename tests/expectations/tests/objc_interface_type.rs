@@ -45,7 +45,8 @@ fn bindgen_test_layout_FooStruct() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<FooStruct>())).foo as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<FooStruct>())).foo)
+                as usize
         },
         0usize,
         concat!(

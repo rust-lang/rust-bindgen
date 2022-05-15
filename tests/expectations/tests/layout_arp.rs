@@ -42,8 +42,9 @@ fn bindgen_test_layout_ether_addr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ether_addr>())).addr_bytes as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ether_addr>())).addr_bytes
+            ) as usize
         },
         0usize,
         concat!(
@@ -81,7 +82,8 @@ fn bindgen_test_layout_arp_ipv4() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_ipv4>())).arp_sha as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<arp_ipv4>())).arp_sha)
+                as usize
         },
         0usize,
         concat!(
@@ -93,7 +95,8 @@ fn bindgen_test_layout_arp_ipv4() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_ipv4>())).arp_sip as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<arp_ipv4>())).arp_sip)
+                as usize
         },
         6usize,
         concat!(
@@ -105,7 +108,8 @@ fn bindgen_test_layout_arp_ipv4() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_ipv4>())).arp_tha as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<arp_ipv4>())).arp_tha)
+                as usize
         },
         10usize,
         concat!(
@@ -117,7 +121,8 @@ fn bindgen_test_layout_arp_ipv4() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_ipv4>())).arp_tip as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<arp_ipv4>())).arp_tip)
+                as usize
         },
         16usize,
         concat!(
@@ -153,7 +158,8 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_hrd as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<arp_hdr>())).arp_hrd)
+                as usize
         },
         0usize,
         concat!(
@@ -165,7 +171,8 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_pro as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<arp_hdr>())).arp_pro)
+                as usize
         },
         2usize,
         concat!(
@@ -177,7 +184,8 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_hln as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<arp_hdr>())).arp_hln)
+                as usize
         },
         4usize,
         concat!(
@@ -189,7 +197,8 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_pln as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<arp_hdr>())).arp_pln)
+                as usize
         },
         5usize,
         concat!(
@@ -201,7 +210,8 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_op as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<arp_hdr>())).arp_op)
+                as usize
         },
         6usize,
         concat!(
@@ -213,7 +223,8 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<arp_hdr>())).arp_data as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<arp_hdr>())).arp_data)
+                as usize
         },
         8usize,
         concat!(

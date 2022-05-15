@@ -31,8 +31,9 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContainsOpaqueTemplate>())).mBlah as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ContainsOpaqueTemplate>())).mBlah
+            ) as usize
         },
         0usize,
         concat!(
@@ -44,8 +45,9 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContainsOpaqueTemplate>())).mBaz as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ContainsOpaqueTemplate>())).mBaz
+            ) as usize
         },
         404usize,
         concat!(
@@ -91,8 +93,9 @@ fn bindgen_test_layout_InheritsOpaqueTemplate() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<InheritsOpaqueTemplate>())).wow as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<InheritsOpaqueTemplate>())).wow
+            ) as usize
         },
         408usize,
         concat!(

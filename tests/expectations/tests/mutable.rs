@@ -24,7 +24,9 @@ fn bindgen_test_layout_C() {
         concat!("Alignment of ", stringify!(C))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<C>())).m_member as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<C>())).m_member) as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -34,7 +36,9 @@ fn bindgen_test_layout_C() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<C>())).m_other as *const _ as usize },
+        unsafe {
+            ::std::ptr::addr_of!((*(::std::ptr::null::<C>())).m_other) as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -63,8 +67,9 @@ fn bindgen_test_layout_NonCopiable() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<NonCopiable>())).m_member as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<NonCopiable>())).m_member
+            ) as usize
         },
         0usize,
         concat!(
@@ -100,8 +105,11 @@ fn bindgen_test_layout_NonCopiableWithNonCopiableMutableMember() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<NonCopiableWithNonCopiableMutableMember>()))
-                .m_member as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<NonCopiableWithNonCopiableMutableMember>(
+                )))
+                .m_member
+            ) as usize
         },
         0usize,
         concat!(

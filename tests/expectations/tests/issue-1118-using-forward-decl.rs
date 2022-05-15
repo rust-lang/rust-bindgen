@@ -25,7 +25,8 @@ fn bindgen_test_layout_nsTArray_base() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<nsTArray_base>())).d as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<nsTArray_base>())).d)
+                as usize
         },
         0usize,
         concat!(
@@ -78,7 +79,8 @@ fn bindgen_test_layout_nsIContent() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<nsIContent>())).foo as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<nsIContent>())).foo)
+                as usize
         },
         0usize,
         concat!(

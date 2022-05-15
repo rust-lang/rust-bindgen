@@ -32,7 +32,8 @@ fn bindgen_test_layout_AllowlistedOne() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllowlistedOne>())).a as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<AllowlistedOne>())).a)
+                as usize
         },
         0usize,
         concat!(
@@ -71,7 +72,8 @@ fn bindgen_test_layout_AllowlistedTwo() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllowlistedTwo>())).b as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<AllowlistedTwo>())).b)
+                as usize
         },
         0usize,
         concat!(

@@ -42,7 +42,8 @@ fn bindgen_test_layout_AllowlistMe() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<AllowlistMe>())).a as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<AllowlistMe>())).a)
+                as usize
         },
         0usize,
         concat!(

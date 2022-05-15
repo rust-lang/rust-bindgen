@@ -40,8 +40,9 @@ fn bindgen_test_layout_WithoutDtor() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithoutDtor>())).shouldBeWithDtor as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<WithoutDtor>())).shouldBeWithDtor
+            ) as usize
         },
         0usize,
         concat!(

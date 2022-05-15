@@ -44,8 +44,9 @@ pub mod root {
                 );
                 assert_eq!(
                     unsafe {
-                        &(*(::std::ptr::null::<bar>())).this_should_work
-                            as *const _ as usize
+                        ::std::ptr::addr_of!(
+                            (*(::std::ptr::null::<bar>())).this_should_work
+                        ) as usize
                     },
                     0usize,
                     concat!(

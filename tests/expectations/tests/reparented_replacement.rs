@@ -32,7 +32,8 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(::std::ptr::null::<Bar>())).bazz as *const _ as usize
+                    ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).bazz)
+                        as usize
                 },
                 0usize,
                 concat!(

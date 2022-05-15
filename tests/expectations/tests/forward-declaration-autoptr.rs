@@ -44,7 +44,8 @@ fn bindgen_test_layout_Bar() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Bar>())).m_member as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Bar>())).m_member)
+                as usize
         },
         0usize,
         concat!(

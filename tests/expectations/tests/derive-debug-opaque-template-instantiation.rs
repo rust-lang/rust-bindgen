@@ -23,7 +23,8 @@ fn bindgen_test_layout_Instance() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Instance>())).val as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<Instance>())).val)
+                as usize
         },
         0usize,
         concat!(

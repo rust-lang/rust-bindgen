@@ -55,7 +55,8 @@ fn bindgen_test_layout_ZeroSizedArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ZeroSizedArray>())).arr as *const _ as usize
+            ::std::ptr::addr_of!((*(::std::ptr::null::<ZeroSizedArray>())).arr)
+                as usize
         },
         0usize,
         concat!(
@@ -86,8 +87,9 @@ fn bindgen_test_layout_ContainsZeroSizedArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContainsZeroSizedArray>())).zsa as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ContainsZeroSizedArray>())).zsa
+            ) as usize
         },
         0usize,
         concat!(
@@ -138,8 +140,9 @@ fn bindgen_test_layout_DynamicallySizedArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<DynamicallySizedArray>())).arr as *const _
-                as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<DynamicallySizedArray>())).arr
+            ) as usize
         },
         0usize,
         concat!(
@@ -170,8 +173,9 @@ fn bindgen_test_layout_ContainsDynamicallySizedArray() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<ContainsDynamicallySizedArray>())).dsa
-                as *const _ as usize
+            ::std::ptr::addr_of!(
+                (*(::std::ptr::null::<ContainsDynamicallySizedArray>())).dsa
+            ) as usize
         },
         0usize,
         concat!(
