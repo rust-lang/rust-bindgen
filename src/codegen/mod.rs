@@ -3965,9 +3965,18 @@ impl CodeGenerator for Function {
 
         let mut attributes = vec![];
 
-        if signature.must_use() &&
-            ctx.options().rust_features().must_use_function
-        {
+        let must_use = ctx.options().rust_features().must_use_function && {
+            signature.must_use() || {
+                let ret_item = ctx.resolve_item(signature.return_type());
+                // TODO: If the return type already has #[must_use], the function does not
+                // need the annotation. This would preserve the codegen behavior before
+                // type aliases with #[must_use] were supported.
+                ret_item.annotations().must_use_type()
+                    || ctx.must_use_type_by_name(ret_item)
+            }
+        };
+
+        if must_use {
             attributes.push(attributes::must_use());
         }
         if let Some(comment) = item.comment(ctx) {
