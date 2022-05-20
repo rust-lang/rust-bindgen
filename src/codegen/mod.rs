@@ -3976,12 +3976,12 @@ impl CodeGenerator for Function {
                     .resolve(ctx);
 
                 let must_use_resolved_ty =
-                    resolved_ret.annotations().must_use_type()
-                        || ctx.must_use_type_by_name(resolved_ret);
+                    resolved_ret.annotations().must_use_type() ||
+                        ctx.must_use_type_by_name(resolved_ret);
 
                 let ret = ctx.resolve_item(ret_ty);
-                let must_use_ty = ret.annotations().must_use_type()
-                    || ctx.must_use_type_by_name(ret);
+                let must_use_ty = ret.annotations().must_use_type() ||
+                    ctx.must_use_type_by_name(ret);
 
                 // If the return type already has #[must_use], the function does not
                 // need the annotation. This preserves the codegen behavior before
