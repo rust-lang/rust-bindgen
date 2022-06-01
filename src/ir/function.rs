@@ -635,6 +635,12 @@ impl ClangSubItemParser for Function {
             // but seems easy enough to handle it here.
             name.push_str("_destructor");
         }
+        if let Some(callbacks) = context.parse_callbacks() {
+            if let Some(nm) = callbacks.link_name_override(&name) {
+                name = nm;
+            }
+        }
+        assert!(!name.is_empty(), "Empty function name.");
 
         let mangled_name = cursor_mangling(context, &cursor);
         let comment = cursor.raw_comment();

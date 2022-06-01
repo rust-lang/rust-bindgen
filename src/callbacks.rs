@@ -31,6 +31,12 @@ pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
         MacroParsingBehavior::Default
     }
 
+    /// This function will run for every function. The returned value determines the name visible
+    /// in the bindings.
+    fn link_name_override(&self, _function_name: &str) -> Option<String> {
+        None
+    }
+
     /// The integer kind an integer macro should have, given a name and the
     /// value of that macro, or `None` if you want the default to be chosen.
     fn int_macro(&self, _name: &str, _value: i64) -> Option<IntKind> {
