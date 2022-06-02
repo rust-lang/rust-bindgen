@@ -1,15 +1,15 @@
-use std::fmt::Debug;
+use bindgen::callbacks::ParseCallbacks;
 use bindgen::{
     builder, AliasVariation, Builder, CodegenConfig, EnumVariation,
     MacroTypeVariation, RustTarget, DEFAULT_ANON_FIELDS_PREFIX,
     RUST_TARGET_STRINGS,
 };
 use clap::{App, Arg};
+use std::fmt::Debug;
 use std::fs::File;
 use std::io::{self, stderr, Error, ErrorKind, Write};
 use std::path::PathBuf;
 use std::str::FromStr;
-use bindgen::callbacks::ParseCallbacks;
 
 #[derive(Debug)]
 pub struct LinkNameOverrideParseCallback {
@@ -25,10 +25,7 @@ impl LinkNameOverrideParseCallback {
 }
 
 impl ParseCallbacks for LinkNameOverrideParseCallback {
-    fn link_name_override(
-        &self,
-        function_name: &str,
-    ) -> Option<String> {
+    fn link_name_override(&self, function_name: &str) -> Option<String> {
         if let Some(prefix) = &self.remove_function_prefix {
             if function_name.starts_with(prefix) {
                 return Some(function_name[prefix.len()..].to_string());
