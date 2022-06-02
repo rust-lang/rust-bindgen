@@ -1,4 +1,5 @@
 use bindgen::callbacks::*;
+use crate::options::LinkNameOverrideParseCallback;
 
 #[derive(Debug)]
 struct EnumVariantRename;
@@ -36,7 +37,15 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
         "enum-variant-rename" => Box::new(EnumVariantRename),
         "blocklisted-type-implements-trait" => {
             Box::new(BlocklistedTypeImplementsTrait)
+        },
+        call_back => {
+            if call_back.starts_with("remove-function-prefix-") {
+                let prefix = call_back.split("remove-function-prefix-").last().to_owned();
+                let lnopc = LinkNameOverrideParseCallback::new(prefix.unwrap());
+                Box::new(lnopc)
+            } else {
+                panic!("Couldn't find name ParseCallbacks: {}", cb)
+            }
         }
-        _ => panic!("Couldn't find name ParseCallbacks: {}", cb),
     }
 }
