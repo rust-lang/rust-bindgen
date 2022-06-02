@@ -167,15 +167,15 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
             // For each of these kinds of edges, if the referent uses a template
             // parameter, then it should be considered that the origin of the
             // edge also uses the template parameter.
-            EdgeKind::TemplateArgument |
-            EdgeKind::BaseMember |
-            EdgeKind::Field |
-            EdgeKind::Constructor |
-            EdgeKind::Destructor |
-            EdgeKind::VarType |
-            EdgeKind::FunctionReturn |
-            EdgeKind::FunctionParameter |
-            EdgeKind::TypeReference => true,
+            EdgeKind::TemplateArgument
+            | EdgeKind::BaseMember
+            | EdgeKind::Field
+            | EdgeKind::Constructor
+            | EdgeKind::Destructor
+            | EdgeKind::VarType
+            | EdgeKind::FunctionReturn
+            | EdgeKind::FunctionParameter
+            | EdgeKind::TypeReference => true,
 
             // An inner var or type using a template parameter is orthogonal
             // from whether we use it. See template-param-usage-{6,11}.hpp.
@@ -192,8 +192,8 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
 
             // If we considered these edges, we would end up mistakenly claiming
             // that every template parameter always used.
-            EdgeKind::TemplateDeclaration |
-            EdgeKind::TemplateParameterDefinition => false,
+            EdgeKind::TemplateDeclaration
+            | EdgeKind::TemplateParameterDefinition => false,
 
             // Since we have to be careful about which edges we consider for
             // this analysis to be correct, we ignore generic edges. We also

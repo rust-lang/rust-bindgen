@@ -42,21 +42,21 @@ pub struct HasFloat<'ctx> {
 impl<'ctx> HasFloat<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
-            EdgeKind::BaseMember |
-            EdgeKind::Field |
-            EdgeKind::TypeReference |
-            EdgeKind::VarType |
-            EdgeKind::TemplateArgument |
-            EdgeKind::TemplateDeclaration |
-            EdgeKind::TemplateParameterDefinition => true,
+            EdgeKind::BaseMember
+            | EdgeKind::Field
+            | EdgeKind::TypeReference
+            | EdgeKind::VarType
+            | EdgeKind::TemplateArgument
+            | EdgeKind::TemplateDeclaration
+            | EdgeKind::TemplateParameterDefinition => true,
 
-            EdgeKind::Constructor |
-            EdgeKind::Destructor |
-            EdgeKind::FunctionReturn |
-            EdgeKind::FunctionParameter |
-            EdgeKind::InnerType |
-            EdgeKind::InnerVar |
-            EdgeKind::Method => false,
+            EdgeKind::Constructor
+            | EdgeKind::Destructor
+            | EdgeKind::FunctionReturn
+            | EdgeKind::FunctionParameter
+            | EdgeKind::InnerType
+            | EdgeKind::InnerVar
+            | EdgeKind::Method => false,
             EdgeKind::Generic => false,
         }
     }
@@ -115,19 +115,19 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
         };
 
         match *ty.kind() {
-            TypeKind::Void |
-            TypeKind::NullPtr |
-            TypeKind::Int(..) |
-            TypeKind::Function(..) |
-            TypeKind::Enum(..) |
-            TypeKind::Reference(..) |
-            TypeKind::TypeParam |
-            TypeKind::Opaque |
-            TypeKind::Pointer(..) |
-            TypeKind::UnresolvedTypeRef(..) |
-            TypeKind::ObjCInterface(..) |
-            TypeKind::ObjCId |
-            TypeKind::ObjCSel => {
+            TypeKind::Void
+            | TypeKind::NullPtr
+            | TypeKind::Int(..)
+            | TypeKind::Function(..)
+            | TypeKind::Enum(..)
+            | TypeKind::Reference(..)
+            | TypeKind::TypeParam
+            | TypeKind::Opaque
+            | TypeKind::Pointer(..)
+            | TypeKind::UnresolvedTypeRef(..)
+            | TypeKind::ObjCInterface(..)
+            | TypeKind::ObjCId
+            | TypeKind::ObjCSel => {
                 trace!("    simple type that do not have float");
                 ConstrainResult::Same
             }
@@ -158,10 +158,10 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
                 ConstrainResult::Same
             }
 
-            TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) |
-            TypeKind::BlockPointer(t) => {
+            TypeKind::ResolvedTypeRef(t)
+            | TypeKind::TemplateAlias(t, _)
+            | TypeKind::Alias(t)
+            | TypeKind::BlockPointer(t) => {
                 if self.has_float.contains(&t.into()) {
                     trace!(
                         "    aliases and type refs to T which have float \

@@ -146,19 +146,19 @@ impl<'a> ImplDebug<'a> for Item {
 
         match *ty.kind() {
             // Handle the simple cases.
-            TypeKind::Void |
-            TypeKind::NullPtr |
-            TypeKind::Int(..) |
-            TypeKind::Float(..) |
-            TypeKind::Complex(..) |
-            TypeKind::Function(..) |
-            TypeKind::Enum(..) |
-            TypeKind::Reference(..) |
-            TypeKind::UnresolvedTypeRef(..) |
-            TypeKind::ObjCInterface(..) |
-            TypeKind::ObjCId |
-            TypeKind::Comp(..) |
-            TypeKind::ObjCSel => debug_print(name, quote! { #name_ident }),
+            TypeKind::Void
+            | TypeKind::NullPtr
+            | TypeKind::Int(..)
+            | TypeKind::Float(..)
+            | TypeKind::Complex(..)
+            | TypeKind::Function(..)
+            | TypeKind::Enum(..)
+            | TypeKind::Reference(..)
+            | TypeKind::UnresolvedTypeRef(..)
+            | TypeKind::ObjCInterface(..)
+            | TypeKind::ObjCId
+            | TypeKind::Comp(..)
+            | TypeKind::ObjCSel => debug_print(name, quote! { #name_ident }),
 
             TypeKind::TemplateInstantiation(ref inst) => {
                 if inst.is_opaque(ctx, self) {
@@ -180,8 +180,8 @@ impl<'a> ImplDebug<'a> for Item {
                         format!("{}: Array with length {}", name, len),
                         vec![],
                     ))
-                } else if len < RUST_DERIVE_IN_ARRAY_LIMIT ||
-                    ctx.options().rust_features().larger_arrays
+                } else if len < RUST_DERIVE_IN_ARRAY_LIMIT
+                    || ctx.options().rust_features().larger_arrays
                 {
                     // The simple case
                     debug_print(name, quote! { #name_ident })
@@ -219,10 +219,10 @@ impl<'a> ImplDebug<'a> for Item {
                 }
             }
 
-            TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) |
-            TypeKind::BlockPointer(t) => {
+            TypeKind::ResolvedTypeRef(t)
+            | TypeKind::TemplateAlias(t, _)
+            | TypeKind::Alias(t)
+            | TypeKind::BlockPointer(t) => {
                 // We follow the aliases
                 ctx.resolve_item(t).impl_debug(ctx, name)
             }

@@ -44,21 +44,21 @@ impl<'ctx> HasTypeParameterInArray<'ctx> {
         match kind {
             // These are the only edges that can affect whether a type has type parameter
             // in array or not.
-            EdgeKind::BaseMember |
-            EdgeKind::Field |
-            EdgeKind::TypeReference |
-            EdgeKind::VarType |
-            EdgeKind::TemplateArgument |
-            EdgeKind::TemplateDeclaration |
-            EdgeKind::TemplateParameterDefinition => true,
+            EdgeKind::BaseMember
+            | EdgeKind::Field
+            | EdgeKind::TypeReference
+            | EdgeKind::VarType
+            | EdgeKind::TemplateArgument
+            | EdgeKind::TemplateDeclaration
+            | EdgeKind::TemplateParameterDefinition => true,
 
-            EdgeKind::Constructor |
-            EdgeKind::Destructor |
-            EdgeKind::FunctionReturn |
-            EdgeKind::FunctionParameter |
-            EdgeKind::InnerType |
-            EdgeKind::InnerVar |
-            EdgeKind::Method => false,
+            EdgeKind::Constructor
+            | EdgeKind::Destructor
+            | EdgeKind::FunctionReturn
+            | EdgeKind::FunctionParameter
+            | EdgeKind::InnerType
+            | EdgeKind::InnerVar
+            | EdgeKind::Method => false,
             EdgeKind::Generic => false,
         }
     }
@@ -123,22 +123,22 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
         match *ty.kind() {
             // Handle the simple cases. These cannot have array in type parameter
             // without further information.
-            TypeKind::Void |
-            TypeKind::NullPtr |
-            TypeKind::Int(..) |
-            TypeKind::Float(..) |
-            TypeKind::Vector(..) |
-            TypeKind::Complex(..) |
-            TypeKind::Function(..) |
-            TypeKind::Enum(..) |
-            TypeKind::Reference(..) |
-            TypeKind::TypeParam |
-            TypeKind::Opaque |
-            TypeKind::Pointer(..) |
-            TypeKind::UnresolvedTypeRef(..) |
-            TypeKind::ObjCInterface(..) |
-            TypeKind::ObjCId |
-            TypeKind::ObjCSel => {
+            TypeKind::Void
+            | TypeKind::NullPtr
+            | TypeKind::Int(..)
+            | TypeKind::Float(..)
+            | TypeKind::Vector(..)
+            | TypeKind::Complex(..)
+            | TypeKind::Function(..)
+            | TypeKind::Enum(..)
+            | TypeKind::Reference(..)
+            | TypeKind::TypeParam
+            | TypeKind::Opaque
+            | TypeKind::Pointer(..)
+            | TypeKind::UnresolvedTypeRef(..)
+            | TypeKind::ObjCInterface(..)
+            | TypeKind::ObjCId
+            | TypeKind::ObjCSel => {
                 trace!("    simple type that do not have array");
                 ConstrainResult::Same
             }
@@ -160,10 +160,10 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
                 }
             }
 
-            TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) |
-            TypeKind::BlockPointer(t) => {
+            TypeKind::ResolvedTypeRef(t)
+            | TypeKind::TemplateAlias(t, _)
+            | TypeKind::Alias(t)
+            | TypeKind::BlockPointer(t) => {
                 if self.has_type_parameter_in_array.contains(&t.into()) {
                     trace!(
                         "    aliases and type refs to T which have array \

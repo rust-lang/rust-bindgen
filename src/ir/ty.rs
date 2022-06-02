@@ -137,15 +137,15 @@ impl Type {
     pub fn is_builtin_or_type_param(&self) -> bool {
         matches!(
             self.kind,
-            TypeKind::Void |
-                TypeKind::NullPtr |
-                TypeKind::Function(..) |
-                TypeKind::Array(..) |
-                TypeKind::Reference(..) |
-                TypeKind::Pointer(..) |
-                TypeKind::Int(..) |
-                TypeKind::Float(..) |
-                TypeKind::TypeParam
+            TypeKind::Void
+                | TypeKind::NullPtr
+                | TypeKind::Function(..)
+                | TypeKind::Array(..)
+                | TypeKind::Reference(..)
+                | TypeKind::Pointer(..)
+                | TypeKind::Int(..)
+                | TypeKind::Float(..)
+                | TypeKind::TypeParam
         )
     }
 
@@ -302,28 +302,28 @@ impl Type {
         ctx: &'tr BindgenContext,
     ) -> Option<&'tr Type> {
         match self.kind {
-            TypeKind::TypeParam |
-            TypeKind::Array(..) |
-            TypeKind::Vector(..) |
-            TypeKind::Comp(..) |
-            TypeKind::Opaque |
-            TypeKind::Int(..) |
-            TypeKind::Float(..) |
-            TypeKind::Complex(..) |
-            TypeKind::Function(..) |
-            TypeKind::Enum(..) |
-            TypeKind::Reference(..) |
-            TypeKind::Void |
-            TypeKind::NullPtr |
-            TypeKind::Pointer(..) |
-            TypeKind::BlockPointer(..) |
-            TypeKind::ObjCId |
-            TypeKind::ObjCSel |
-            TypeKind::ObjCInterface(..) => Some(self),
+            TypeKind::TypeParam
+            | TypeKind::Array(..)
+            | TypeKind::Vector(..)
+            | TypeKind::Comp(..)
+            | TypeKind::Opaque
+            | TypeKind::Int(..)
+            | TypeKind::Float(..)
+            | TypeKind::Complex(..)
+            | TypeKind::Function(..)
+            | TypeKind::Enum(..)
+            | TypeKind::Reference(..)
+            | TypeKind::Void
+            | TypeKind::NullPtr
+            | TypeKind::Pointer(..)
+            | TypeKind::BlockPointer(..)
+            | TypeKind::ObjCId
+            | TypeKind::ObjCSel
+            | TypeKind::ObjCInterface(..) => Some(self),
 
-            TypeKind::ResolvedTypeRef(inner) |
-            TypeKind::Alias(inner) |
-            TypeKind::TemplateAlias(inner, _) => {
+            TypeKind::ResolvedTypeRef(inner)
+            | TypeKind::Alias(inner)
+            | TypeKind::TemplateAlias(inner, _) => {
                 ctx.resolve_type(inner).safe_canonical_type(ctx)
             }
             TypeKind::TemplateInstantiation(ref inst) => ctx
@@ -339,13 +339,13 @@ impl Type {
     pub fn should_be_traced_unconditionally(&self) -> bool {
         matches!(
             self.kind,
-            TypeKind::Comp(..) |
-                TypeKind::Function(..) |
-                TypeKind::Pointer(..) |
-                TypeKind::Array(..) |
-                TypeKind::Reference(..) |
-                TypeKind::TemplateInstantiation(..) |
-                TypeKind::ResolvedTypeRef(..)
+            TypeKind::Comp(..)
+                | TypeKind::Function(..)
+                | TypeKind::Pointer(..)
+                | TypeKind::Array(..)
+                | TypeKind::Reference(..)
+                | TypeKind::TemplateInstantiation(..)
+                | TypeKind::ResolvedTypeRef(..)
         )
     }
 }
@@ -539,26 +539,26 @@ impl TemplateParameters for TypeKind {
             TypeKind::Comp(ref comp) => comp.self_template_params(ctx),
             TypeKind::TemplateAlias(_, ref args) => args.clone(),
 
-            TypeKind::Opaque |
-            TypeKind::TemplateInstantiation(..) |
-            TypeKind::Void |
-            TypeKind::NullPtr |
-            TypeKind::Int(_) |
-            TypeKind::Float(_) |
-            TypeKind::Complex(_) |
-            TypeKind::Array(..) |
-            TypeKind::Vector(..) |
-            TypeKind::Function(_) |
-            TypeKind::Enum(_) |
-            TypeKind::Pointer(_) |
-            TypeKind::BlockPointer(_) |
-            TypeKind::Reference(_) |
-            TypeKind::UnresolvedTypeRef(..) |
-            TypeKind::TypeParam |
-            TypeKind::Alias(_) |
-            TypeKind::ObjCId |
-            TypeKind::ObjCSel |
-            TypeKind::ObjCInterface(_) => vec![],
+            TypeKind::Opaque
+            | TypeKind::TemplateInstantiation(..)
+            | TypeKind::Void
+            | TypeKind::NullPtr
+            | TypeKind::Int(_)
+            | TypeKind::Float(_)
+            | TypeKind::Complex(_)
+            | TypeKind::Array(..)
+            | TypeKind::Vector(..)
+            | TypeKind::Function(_)
+            | TypeKind::Enum(_)
+            | TypeKind::Pointer(_)
+            | TypeKind::BlockPointer(_)
+            | TypeKind::Reference(_)
+            | TypeKind::UnresolvedTypeRef(..)
+            | TypeKind::TypeParam
+            | TypeKind::Alias(_)
+            | TypeKind::ObjCId
+            | TypeKind::ObjCSel
+            | TypeKind::ObjCInterface(_) => vec![],
         }
     }
 }
@@ -749,8 +749,8 @@ impl Type {
             ));
         }
 
-        let kind = if location.kind() == CXCursor_TemplateRef ||
-            (ty.template_args().is_some() && ty_kind != CXType_Typedef)
+        let kind = if location.kind() == CXCursor_TemplateRef
+            || (ty.template_args().is_some() && ty_kind != CXType_Typedef)
         {
             // This is a template instantiation.
             match TemplateInstantiation::from_ty(ty, ctx) {
@@ -812,8 +812,8 @@ impl Type {
                         TypeKind::Comp(complex)
                     } else {
                         match location.kind() {
-                            CXCursor_CXXBaseSpecifier |
-                            CXCursor_ClassTemplate => {
+                            CXCursor_CXXBaseSpecifier
+                            | CXCursor_ClassTemplate => {
                                 if location.kind() == CXCursor_CXXBaseSpecifier
                                 {
                                     // In the case we're parsing a base specifier
@@ -1028,9 +1028,9 @@ impl Type {
                 //
                 // We might need to, though, if the context is already in the
                 // process of resolving them.
-                CXType_ObjCObjectPointer |
-                CXType_MemberPointer |
-                CXType_Pointer => {
+                CXType_ObjCObjectPointer
+                | CXType_MemberPointer
+                | CXType_Pointer => {
                     let pointee = ty.pointee_type().unwrap();
                     let inner =
                         Item::from_ty_or_ref(pointee, location, None, ctx);
@@ -1179,10 +1179,9 @@ impl Type {
 
         let name = if name.is_empty() { None } else { Some(name) };
 
-        let is_const = ty.is_const() ||
-            (ty.kind() == CXType_ConstantArray &&
-                ty.elem_type()
-                    .map_or(false, |element| element.is_const()));
+        let is_const = ty.is_const()
+            || (ty.kind() == CXType_ConstantArray
+                && ty.elem_type().map_or(false, |element| element.is_const()));
 
         let ty = Type::new(name, layout, kind, is_const);
         // TODO: maybe declaration.canonical()?
@@ -1198,13 +1197,13 @@ impl Trace for Type {
         T: Tracer,
     {
         match *self.kind() {
-            TypeKind::Pointer(inner) |
-            TypeKind::Reference(inner) |
-            TypeKind::Array(inner, _) |
-            TypeKind::Vector(inner, _) |
-            TypeKind::BlockPointer(inner) |
-            TypeKind::Alias(inner) |
-            TypeKind::ResolvedTypeRef(inner) => {
+            TypeKind::Pointer(inner)
+            | TypeKind::Reference(inner)
+            | TypeKind::Array(inner, _)
+            | TypeKind::Vector(inner, _)
+            | TypeKind::BlockPointer(inner)
+            | TypeKind::Alias(inner)
+            | TypeKind::ResolvedTypeRef(inner) => {
                 tracer.visit_kind(inner.into(), EdgeKind::TypeReference);
             }
             TypeKind::TemplateAlias(inner, ref template_params) => {
@@ -1235,16 +1234,16 @@ impl Trace for Type {
             }
 
             // None of these variants have edges to other items and types.
-            TypeKind::Opaque |
-            TypeKind::UnresolvedTypeRef(_, _, None) |
-            TypeKind::TypeParam |
-            TypeKind::Void |
-            TypeKind::NullPtr |
-            TypeKind::Int(_) |
-            TypeKind::Float(_) |
-            TypeKind::Complex(_) |
-            TypeKind::ObjCId |
-            TypeKind::ObjCSel => {}
+            TypeKind::Opaque
+            | TypeKind::UnresolvedTypeRef(_, _, None)
+            | TypeKind::TypeParam
+            | TypeKind::Void
+            | TypeKind::NullPtr
+            | TypeKind::Int(_)
+            | TypeKind::Float(_)
+            | TypeKind::Complex(_)
+            | TypeKind::ObjCId
+            | TypeKind::ObjCSel => {}
         }
     }
 }

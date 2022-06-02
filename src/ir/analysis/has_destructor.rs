@@ -45,11 +45,11 @@ impl<'ctx> HasDestructorAnalysis<'ctx> {
         // destructor or not.
         matches!(
             kind,
-            EdgeKind::TypeReference |
-                EdgeKind::BaseMember |
-                EdgeKind::Field |
-                EdgeKind::TemplateArgument |
-                EdgeKind::TemplateDeclaration
+            EdgeKind::TypeReference
+                | EdgeKind::BaseMember
+                | EdgeKind::Field
+                | EdgeKind::TemplateArgument
+                | EdgeKind::TemplateDeclaration
         )
     }
 
@@ -100,9 +100,9 @@ impl<'ctx> MonotoneFramework for HasDestructorAnalysis<'ctx> {
         };
 
         match *ty.kind() {
-            TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) |
-            TypeKind::ResolvedTypeRef(t) => {
+            TypeKind::TemplateAlias(t, _)
+            | TypeKind::Alias(t)
+            | TypeKind::ResolvedTypeRef(t) => {
                 if self.have_destructor.contains(&t.into()) {
                     self.insert(id)
                 } else {
@@ -139,12 +139,12 @@ impl<'ctx> MonotoneFramework for HasDestructorAnalysis<'ctx> {
             }
 
             TypeKind::TemplateInstantiation(ref inst) => {
-                let definition_or_arg_destructor = self
-                    .have_destructor
-                    .contains(&inst.template_definition().into()) ||
-                    inst.template_arguments().iter().any(|arg| {
-                        self.have_destructor.contains(&arg.into())
-                    });
+                let definition_or_arg_destructor =
+                    self.have_destructor
+                        .contains(&inst.template_definition().into())
+                        || inst.template_arguments().iter().any(|arg| {
+                            self.have_destructor.contains(&arg.into())
+                        });
                 if definition_or_arg_destructor {
                     self.insert(id)
                 } else {

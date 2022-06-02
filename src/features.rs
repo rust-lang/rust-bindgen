@@ -255,37 +255,37 @@ mod test {
     fn target_features() {
         let f_1_0 = RustFeatures::from(RustTarget::Stable_1_0);
         assert!(
-            !f_1_0.static_lifetime_elision &&
-                !f_1_0.core_ffi_c_void &&
-                !f_1_0.untagged_union &&
-                !f_1_0.associated_const &&
-                !f_1_0.builtin_clone_impls &&
-                !f_1_0.repr_align &&
-                !f_1_0.thiscall_abi &&
-                !f_1_0.vectorcall_abi
+            !f_1_0.static_lifetime_elision
+                && !f_1_0.core_ffi_c_void
+                && !f_1_0.untagged_union
+                && !f_1_0.associated_const
+                && !f_1_0.builtin_clone_impls
+                && !f_1_0.repr_align
+                && !f_1_0.thiscall_abi
+                && !f_1_0.vectorcall_abi
         );
         let f_1_21 = RustFeatures::from(RustTarget::Stable_1_21);
         assert!(
-            f_1_21.static_lifetime_elision &&
-                !f_1_21.core_ffi_c_void &&
-                f_1_21.untagged_union &&
-                f_1_21.associated_const &&
-                f_1_21.builtin_clone_impls &&
-                !f_1_21.repr_align &&
-                !f_1_21.thiscall_abi &&
-                !f_1_21.vectorcall_abi
+            f_1_21.static_lifetime_elision
+                && !f_1_21.core_ffi_c_void
+                && f_1_21.untagged_union
+                && f_1_21.associated_const
+                && f_1_21.builtin_clone_impls
+                && !f_1_21.repr_align
+                && !f_1_21.thiscall_abi
+                && !f_1_21.vectorcall_abi
         );
         let f_nightly = RustFeatures::from(RustTarget::Nightly);
         assert!(
-            f_nightly.static_lifetime_elision &&
-                f_nightly.core_ffi_c_void &&
-                f_nightly.untagged_union &&
-                f_nightly.associated_const &&
-                f_nightly.builtin_clone_impls &&
-                f_nightly.maybe_uninit &&
-                f_nightly.repr_align &&
-                f_nightly.thiscall_abi &&
-                f_nightly.vectorcall_abi
+            f_nightly.static_lifetime_elision
+                && f_nightly.core_ffi_c_void
+                && f_nightly.untagged_union
+                && f_nightly.associated_const
+                && f_nightly.builtin_clone_impls
+                && f_nightly.maybe_uninit
+                && f_nightly.repr_align
+                && f_nightly.thiscall_abi
+                && f_nightly.vectorcall_abi
         );
     }
 

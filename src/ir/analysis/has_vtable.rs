@@ -83,9 +83,9 @@ impl<'ctx> HasVtableAnalysis<'ctx> {
         // vtable or not.
         matches!(
             kind,
-            EdgeKind::TypeReference |
-                EdgeKind::BaseMember |
-                EdgeKind::TemplateDeclaration
+            EdgeKind::TypeReference
+                | EdgeKind::BaseMember
+                | EdgeKind::TemplateDeclaration
         )
     }
 
@@ -161,10 +161,10 @@ impl<'ctx> MonotoneFramework for HasVtableAnalysis<'ctx> {
 
         // TODO #851: figure out a way to handle deriving from template type parameters.
         match *ty.kind() {
-            TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) |
-            TypeKind::ResolvedTypeRef(t) |
-            TypeKind::Reference(t) => {
+            TypeKind::TemplateAlias(t, _)
+            | TypeKind::Alias(t)
+            | TypeKind::ResolvedTypeRef(t)
+            | TypeKind::Reference(t) => {
                 trace!(
                     "    aliases and references forward to their inner type"
                 );

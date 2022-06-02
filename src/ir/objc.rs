@@ -176,8 +176,8 @@ impl ObjCInterface {
                         }
                     }
                 }
-                CXCursor_ObjCInstanceMethodDecl |
-                CXCursor_ObjCClassMethodDecl => {
+                CXCursor_ObjCInstanceMethodDecl
+                | CXCursor_ObjCClassMethodDecl => {
                     let name = c.spelling();
                     let signature =
                         FunctionSig::from_ty(&c.cur_type(), &c, ctx)

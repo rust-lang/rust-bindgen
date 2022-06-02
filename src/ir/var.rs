@@ -118,19 +118,19 @@ impl DotAttributes for Var {
 }
 
 fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
-    if value < 0 ||
-        ctx.options().default_macro_constant_type ==
-            MacroTypeVariation::Signed
+    if value < 0
+        || ctx.options().default_macro_constant_type
+            == MacroTypeVariation::Signed
     {
         if value < i32::min_value() as i64 || value > i32::max_value() as i64 {
             IntKind::I64
-        } else if !ctx.options().fit_macro_constants ||
-            value < i16::min_value() as i64 ||
-            value > i16::max_value() as i64
+        } else if !ctx.options().fit_macro_constants
+            || value < i16::min_value() as i64
+            || value > i16::max_value() as i64
         {
             IntKind::I32
-        } else if value < i8::min_value() as i64 ||
-            value > i8::max_value() as i64
+        } else if value < i8::min_value() as i64
+            || value > i8::max_value() as i64
         {
             IntKind::I16
         } else {
@@ -138,8 +138,8 @@ fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
         }
     } else if value > u32::max_value() as i64 {
         IntKind::U64
-    } else if !ctx.options().fit_macro_constants ||
-        value > u16::max_value() as i64
+    } else if !ctx.options().fit_macro_constants
+        || value > u16::max_value() as i64
     {
         IntKind::U32
     } else if value > u8::max_value() as i64 {
@@ -284,9 +284,10 @@ impl ClangSubItemParser for Var {
 
                 // TODO(emilio): do we have to special-case constant arrays in
                 // some other places?
-                let is_const = ty.is_const() ||
-                    (ty.kind() == CXType_ConstantArray &&
-                        ty.elem_type()
+                let is_const = ty.is_const()
+                    || (ty.kind() == CXType_ConstantArray
+                        && ty
+                            .elem_type()
                             .map_or(false, |element| element.is_const()));
 
                 let ty = match Item::from_ty(&ty, cursor, None, ctx) {

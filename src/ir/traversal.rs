@@ -220,16 +220,16 @@ pub fn codegen_edges(ctx: &BindgenContext, edge: Edge) -> bool {
         // We statically know the kind of item that non-generic edges can point
         // to, so we don't need to actually resolve the item and check
         // `Item::is_enabled_for_codegen`.
-        EdgeKind::TemplateParameterDefinition |
-        EdgeKind::TemplateArgument |
-        EdgeKind::TemplateDeclaration |
-        EdgeKind::BaseMember |
-        EdgeKind::Field |
-        EdgeKind::InnerType |
-        EdgeKind::FunctionReturn |
-        EdgeKind::FunctionParameter |
-        EdgeKind::VarType |
-        EdgeKind::TypeReference => cc.types(),
+        EdgeKind::TemplateParameterDefinition
+        | EdgeKind::TemplateArgument
+        | EdgeKind::TemplateDeclaration
+        | EdgeKind::BaseMember
+        | EdgeKind::Field
+        | EdgeKind::InnerType
+        | EdgeKind::FunctionReturn
+        | EdgeKind::FunctionParameter
+        | EdgeKind::VarType
+        | EdgeKind::TypeReference => cc.types(),
         EdgeKind::InnerVar => cc.vars(),
         EdgeKind::Method => cc.methods(),
         EdgeKind::Constructor => cc.constructors(),

@@ -192,8 +192,8 @@ where
             item.trace(
                 ctx,
                 &mut |sub_item: ItemId, edge_kind| {
-                    if ctx.allowlisted_items().contains(&sub_item) &&
-                        consider_edge(edge_kind)
+                    if ctx.allowlisted_items().contains(&sub_item)
+                        && consider_edge(edge_kind)
                     {
                         dependencies
                             .entry(sub_item)

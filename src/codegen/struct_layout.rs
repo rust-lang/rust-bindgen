@@ -90,8 +90,8 @@ impl<'a> StructLayoutTracker<'a> {
     ) -> Self {
         let known_type_layout = ty.layout(ctx);
         let is_packed = comp.is_packed(ctx, known_type_layout.as_ref());
-        let is_rust_union = comp.is_union() &&
-            comp.can_be_rust_union(ctx, known_type_layout.as_ref());
+        let is_rust_union = comp.is_union()
+            && comp.can_be_rust_union(ctx, known_type_layout.as_ref());
         StructLayoutTracker {
             name,
             ctx,
@@ -197,9 +197,9 @@ impl<'a> StructLayoutTracker<'a> {
                 offset / 8 - self.latest_offset
             }
             _ => {
-                if will_merge_with_bitfield ||
-                    field_layout.align == 0 ||
-                    is_union
+                if will_merge_with_bitfield
+                    || field_layout.align == 0
+                    || is_union
                 {
                     0
                 } else if !self.is_packed {
@@ -220,9 +220,9 @@ impl<'a> StructLayoutTracker<'a> {
             let force_padding = self.ctx.options().force_explicit_padding;
 
             // Otherwise the padding is useless.
-            let need_padding = force_padding ||
-                padding_bytes >= field_layout.align ||
-                field_layout.align > MAX_GUARANTEED_ALIGN;
+            let need_padding = force_padding
+                || padding_bytes >= field_layout.align
+                || field_layout.align > MAX_GUARANTEED_ALIGN;
 
             debug!(
                 "Offset: <padding>: {} -> {}",
@@ -330,15 +330,15 @@ impl<'a> StructLayoutTracker<'a> {
         // Note that if the last field we saw was a bitfield, we may need to pad
         // regardless, because bitfields don't respect alignment as strictly as
         // other fields.
-        if padding_bytes >= layout.align ||
-            (self.last_field_was_bitfield &&
-                padding_bytes >= self.latest_field_layout.unwrap().align) ||
-            (!repr_align && layout.align > MAX_GUARANTEED_ALIGN)
+        if padding_bytes >= layout.align
+            || (self.last_field_was_bitfield
+                && padding_bytes >= self.latest_field_layout.unwrap().align)
+            || (!repr_align && layout.align > MAX_GUARANTEED_ALIGN)
         {
             let layout = if self.is_packed {
                 Layout::new(padding_bytes, 1)
-            } else if self.last_field_was_bitfield ||
-                layout.align > MAX_GUARANTEED_ALIGN
+            } else if self.last_field_was_bitfield
+                || layout.align > MAX_GUARANTEED_ALIGN
             {
                 // We've already given up on alignment here.
                 Layout::for_size(self.ctx, padding_bytes)
@@ -420,9 +420,9 @@ impl<'a> StructLayoutTracker<'a> {
         // Avoid divide-by-zero errors if align is 0.
         let align = cmp::max(1, layout.align);
 
-        if self.last_field_was_bitfield &&
-            new_field_layout.align <= layout.size % align &&
-            new_field_layout.size <= layout.size % align
+        if self.last_field_was_bitfield
+            && new_field_layout.align <= layout.size % align
+            && new_field_layout.size <= layout.size % align
         {
             // The new field will be coalesced into some of the remaining bits.
             //

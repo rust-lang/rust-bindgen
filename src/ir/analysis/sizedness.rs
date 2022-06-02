@@ -116,12 +116,12 @@ impl<'ctx> SizednessAnalysis<'ctx> {
         // zero-sized or not.
         matches!(
             kind,
-            EdgeKind::TemplateArgument |
-                EdgeKind::TemplateParameterDefinition |
-                EdgeKind::TemplateDeclaration |
-                EdgeKind::TypeReference |
-                EdgeKind::BaseMember |
-                EdgeKind::Field
+            EdgeKind::TemplateArgument
+                | EdgeKind::TemplateParameterDefinition
+                | EdgeKind::TemplateDeclaration
+                | EdgeKind::TypeReference
+                | EdgeKind::BaseMember
+                | EdgeKind::Field
         )
     }
 
@@ -247,16 +247,16 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
                 self.insert(id, SizednessResult::DependsOnTypeParam)
             }
 
-            TypeKind::Int(..) |
-            TypeKind::Float(..) |
-            TypeKind::Complex(..) |
-            TypeKind::Function(..) |
-            TypeKind::Enum(..) |
-            TypeKind::Reference(..) |
-            TypeKind::NullPtr |
-            TypeKind::ObjCId |
-            TypeKind::ObjCSel |
-            TypeKind::Pointer(..) => {
+            TypeKind::Int(..)
+            | TypeKind::Float(..)
+            | TypeKind::Complex(..)
+            | TypeKind::Function(..)
+            | TypeKind::Enum(..)
+            | TypeKind::Reference(..)
+            | TypeKind::NullPtr
+            | TypeKind::ObjCId
+            | TypeKind::ObjCSel
+            | TypeKind::Pointer(..) => {
                 trace!("    {:?} is known not to be zero-sized", ty.kind());
                 self.insert(id, SizednessResult::NonZeroSized)
             }
@@ -266,10 +266,10 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
                 self.insert(id, SizednessResult::NonZeroSized)
             }
 
-            TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) |
-            TypeKind::BlockPointer(t) |
-            TypeKind::ResolvedTypeRef(t) => {
+            TypeKind::TemplateAlias(t, _)
+            | TypeKind::Alias(t)
+            | TypeKind::BlockPointer(t)
+            | TypeKind::ResolvedTypeRef(t) => {
                 trace!("    aliases and type refs forward to their inner type");
                 self.forward(t, id)
             }

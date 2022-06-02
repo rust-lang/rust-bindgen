@@ -93,11 +93,11 @@ impl IntKind {
             // TODO(emilio): wchar_t can in theory be signed, but we have no way
             // to know whether it is or not right now (unlike char, there's no
             // WChar_S / WChar_U).
-            Bool | UChar | UShort | UInt | ULong | ULongLong | U8 | U16 |
-            WChar | U32 | U64 | U128 => false,
+            Bool | UChar | UShort | UInt | ULong | ULongLong | U8 | U16
+            | WChar | U32 | U64 | U128 => false,
 
-            SChar | Short | Int | Long | LongLong | I8 | I16 | I32 | I64 |
-            I128 => true,
+            SChar | Short | Int | Long | LongLong | I8 | I16 | I32 | I64
+            | I128 => true,
 
             Char { is_signed } => is_signed,
 
