@@ -4078,9 +4078,7 @@ fn objc_method_codegen(
 
     let body = if method.is_class_method() {
         let class_name = ctx.rust_ident(
-            class_name
-                .expect("Generating a class method without class name?")
-                .to_owned(),
+            class_name.expect("Generating a class method without class name?"),
         );
         quote! {
             msg_send!(class!(#class_name), #methods_and_args)
