@@ -1899,7 +1899,7 @@ impl ClangItemParser for Item {
 
         // See tests/headers/const_tparam.hpp and
         // tests/headers/variadic_tname.hpp.
-        let name = ty_spelling.replace("const ", "").replace(".", "");
+        let name = ty_spelling.replace("const ", "").replace('.', "");
 
         let id = with_id.unwrap_or_else(|| ctx.next_item_id());
         let item = Item::new(

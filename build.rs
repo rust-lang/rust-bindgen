@@ -85,6 +85,6 @@ fn main() {
     );
     println!(
         "cargo:rerun-if-env-changed=BINDGEN_EXTRA_CLANG_ARGS_{}",
-        std::env::var("TARGET").unwrap().replace("-", "_")
+        std::env::var("TARGET").unwrap().replace('-', "_")
     );
 }
