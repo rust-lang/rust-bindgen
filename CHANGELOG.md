@@ -1,109 +1,112 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
 - [Unreleased](#unreleased)
   - [Added](#added)
-  - [Fixed](#fixed)
   - [Changed](#changed)
-  - [Deprecated](#deprecated)
   - [Removed](#removed)
-  - [Fixed](#fixed-1)
+  - [Fixed](#fixed)
   - [Security](#security)
+- [0.60.0](#0600)
+  - [Added](#added-1)
+  - [Fixed](#fixed-1)
+  - [Changed](#changed-1)
+  - [Removed](#removed-1)
+- [0.59.2](#0592)
 - [0.59.1](#0591)
   - [Fixed](#fixed-2)
 - [0.59.0](#0590)
-  - [Added](#added-1)
-  - [Fixed](#fixed-3)
-  - [Changed](#changed-1)
-- [0.58.1](#0581)
   - [Added](#added-2)
-- [0.58.0](#0580)
-  - [Added](#added-3)
-  - [Fixed](#fixed-4)
+  - [Fixed](#fixed-3)
   - [Changed](#changed-2)
-  - [Deprecated](#deprecated-1)
-  - [Removed](#removed-1)
+- [0.58.1](#0581)
+  - [Added](#added-3)
+- [0.58.0](#0580)
+  - [Added](#added-4)
+  - [Fixed](#fixed-4)
+  - [Changed](#changed-3)
+  - [Deprecated](#deprecated)
+  - [Removed](#removed-2)
   - [Fixed](#fixed-5)
   - [Security](#security-1)
 - [0.57.0](#0570)
-  - [Added](#added-4)
+  - [Added](#added-5)
   - [Fixed](#fixed-6)
 - [0.56.0](#0560)
-  - [Added](#added-5)
-  - [Changed](#changed-3)
+  - [Added](#added-6)
+  - [Changed](#changed-4)
   - [Fixed](#fixed-7)
 - [0.55.1](#0551)
   - [Fixed](#fixed-8)
 - [0.55.0](#0550)
-  - [Removed](#removed-2)
-  - [Added](#added-6)
-  - [Changed](#changed-4)
-  - [Fixed](#fixed-9)
-- [0.54.1](#0541)
+  - [Removed](#removed-3)
   - [Added](#added-7)
   - [Changed](#changed-5)
-  - [Fixed](#fixed-10)
-- [0.54.0](#0540)
+  - [Fixed](#fixed-9)
+- [0.54.1](#0541)
   - [Added](#added-8)
   - [Changed](#changed-6)
+  - [Fixed](#fixed-10)
+- [0.54.0](#0540)
+  - [Added](#added-9)
+  - [Changed](#changed-7)
   - [Fixed](#fixed-11)
 - [0.53.3](#0533)
-  - [Added](#added-9)
+  - [Added](#added-10)
   - [Fixed](#fixed-12)
 - [0.53.2](#0532)
-  - [Changed](#changed-7)
-- [0.53.1](#0531)
-  - [Added](#added-10)
-- [0.53.0](#0530)
-  - [Added](#added-11)
   - [Changed](#changed-8)
-  - [Fixed](#fixed-13)
-- [0.52.0](#0520)
+- [0.53.1](#0531)
+  - [Added](#added-11)
+- [0.53.0](#0530)
   - [Added](#added-12)
   - [Changed](#changed-9)
+  - [Fixed](#fixed-13)
+- [0.52.0](#0520)
+  - [Added](#added-13)
+  - [Changed](#changed-10)
   - [Fixed](#fixed-14)
 - [0.51.1](#0511)
   - [Fixed](#fixed-15)
-  - [Changed](#changed-10)
+  - [Changed](#changed-11)
 - [0.51.0](#0510)
   - [Fixed](#fixed-16)
-  - [Changed](#changed-11)
-  - [Added](#added-13)
-- [0.50.0](#0500)
-  - [Added](#added-14)
-- [0.49.3](#0493)
-  - [Added](#added-15)
-- [0.49.2](#0492)
   - [Changed](#changed-12)
+  - [Added](#added-14)
+- [0.50.0](#0500)
+  - [Added](#added-15)
+- [0.49.3](#0493)
+  - [Added](#added-16)
+- [0.49.2](#0492)
+  - [Changed](#changed-13)
 - [0.49.1](#0491)
   - [Fixed](#fixed-17)
-  - [Changed](#changed-13)
-- [0.49.0](#0490)
-  - [Added](#added-16)
-  - [Fixed](#fixed-18)
   - [Changed](#changed-14)
+- [0.49.0](#0490)
+  - [Added](#added-17)
+  - [Fixed](#fixed-18)
+  - [Changed](#changed-15)
 - [0.48.1](#0481)
   - [Fixed](#fixed-19)
 - [0.48.0](#0480)
-  - [Changed](#changed-15)
+  - [Changed](#changed-16)
   - [Fixed](#fixed-20)
 - [0.47.4](#0474)
-  - [Added](#added-17)
+  - [Added](#added-18)
 - [0.47.3](#0473)
-  - [Changed](#changed-16)
+  - [Changed](#changed-17)
 - [0.47.2](#0472)
   - [Fixed](#fixed-21)
 - [0.47.1](#0471)
-  - [Changed](#changed-17)
+  - [Changed](#changed-18)
   - [Fixed](#fixed-22)
 - [0.47.0](#0470)
-  - [Changed](#changed-18)
+  - [Changed](#changed-19)
   - [Fixed](#fixed-23)
 - [0.33.1 .. 0.46.0](#0331--0460)
-  - [Added](#added-18)
-  - [Removed](#removed-3)
-  - [Changed](#changed-19)
+  - [Added](#added-19)
+  - [Removed](#removed-4)
+  - [Changed](#changed-20)
   - [Fixed](#fixed-24)
 - [0.33.1](#0331)
   - [Fixed](#fixed-25)
@@ -113,23 +116,23 @@
 - [0.32.1](#0321)
   - [Fixed](#fixed-27)
 - [0.32.0](#0320)
-  - [Added](#added-19)
-  - [Changed](#changed-20)
-  - [Fixed](#fixed-28)
-- [0.31.0](#0310)
   - [Added](#added-20)
   - [Changed](#changed-21)
-  - [Deprecated](#deprecated-2)
-  - [Removed](#removed-4)
-  - [Fixed](#fixed-29)
-- [0.30.0](#0300)
+  - [Fixed](#fixed-28)
+- [0.31.0](#0310)
   - [Added](#added-21)
   - [Changed](#changed-22)
-  - [Deprecated](#deprecated-3)
-  - [Fixed](#fixed-30)
-- [0.29.0](#0290)
+  - [Deprecated](#deprecated-1)
+  - [Removed](#removed-5)
+  - [Fixed](#fixed-29)
+- [0.30.0](#0300)
   - [Added](#added-22)
   - [Changed](#changed-23)
+  - [Deprecated](#deprecated-2)
+  - [Fixed](#fixed-30)
+- [0.29.0](#0290)
+  - [Added](#added-23)
+  - [Changed](#changed-24)
   - [Fixed](#fixed-31)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -140,18 +143,7 @@
 
 ## Added
 
- * Objective-C structs now derive `Debug` and `Copy` to support C and Objective-C structs. [(#2176)][]
-
-## Fixed
-
- * Fixed lifetimes with Objective-C trait templates. [(#2176)][]
- * Fixed objc imports for non-`#[macro_use]` use. [(#2176)][]
-
 ## Changed
-
- * cexpr and nom have been updated, new msrv is 1.46 (#2107).
-
-## Deprecated
 
 ## Removed
 
@@ -159,8 +151,50 @@
 
 ## Security
 
+# 0.60.0
+
+Released 2022/06/05
+
+## Added
+
+ * Objective-C structs now derive `Debug` and `Copy` to support C and Objective-C structs. [(#2176)][]
+ * Allow fully-qualified derives. (#2156)
+ * Bindings generation now returns a more suitable error (#2125)
+ * `--version --verbose` now prints clang version (#2140).
+ * Experimental vtable generation (#2145).
+ * Added an `--allowlist-file` option (#2122).
+ * Support for vectorcall ABI (#2177).
+
+## Fixed
+
+ * Fixed lifetimes with Objective-C trait templates. [(#2176)][]
+ * Fixed objc imports for non-`#[macro_use]` use. [(#2176)][]
+ * Handle differences between clang and rustc targets for RISCV (#2137).
+ * `BINDGEN_EXTRA_CLANG_ARGS` is respected on the CLI now (#1723).
+ * Use common type alias for anonymous enums in consts mode (#2191)
+ * Look for `#[must_use]` in typedefs (#2206).
+ * Fixed derive on packed structs (#2083).
+ * Fixed warnings on layout tests (#2203).
+
+## Changed
+
+ * cexpr, clap, and nom have been updated, new msrv is 1.54.
+
+## Removed
+
+ * Support for ancient libclang versions has been removed.
 
  [(#2176)]: https://github.com/rust-lang/rust-bindgen/pull/2176
+
+# 0.59.2
+
+Released 2021/11/26
+
+ * cexpr+env_logger bump.
+ * Various fixes for C++ crashes / hangs.
+ * Enums now respect annotations and derives properly in more cases.
+ * Some more APIs (blocklist-file, etc).
+ * 'static lifetime is elided when appropriate.
 
 # 0.59.1
 
