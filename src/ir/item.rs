@@ -1096,6 +1096,11 @@ impl Item {
             _ => return None,
         })
     }
+
+    /// Whether this is a #[must_use] type.
+    pub fn must_use(&self, ctx: &BindgenContext) -> bool {
+        self.annotations().must_use_type() || ctx.must_use_type_by_name(self)
+    }
 }
 
 impl<T> IsOpaque for T

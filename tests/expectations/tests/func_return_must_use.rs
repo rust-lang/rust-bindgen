@@ -17,6 +17,7 @@ pub struct MustUseStruct {
     _unused: [u8; 0],
 }
 extern "C" {
+    #[must_use]
     pub fn return_struct() -> MustUseStruct;
 }
 /// <div rustbindgen mustusetype></div>
@@ -47,6 +48,7 @@ fn bindgen_test_layout_AnnotatedStruct() {
     );
 }
 extern "C" {
+    #[must_use]
     pub fn return_annotated_struct() -> AnnotatedStruct;
 }
 #[repr(C)]

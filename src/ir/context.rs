@@ -1921,8 +1921,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let item = Item::new(
             with_id,
             None,
-            self.resolve_item_fallible(wrapped_id)
-                .map(|item| item.annotations().clone()),
+            None,
             parent_id.unwrap_or_else(|| self.current_module.into()),
             ItemKind::Type(ty),
             Some(location),
