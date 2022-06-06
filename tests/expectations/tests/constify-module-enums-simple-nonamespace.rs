@@ -28,24 +28,40 @@ fn bindgen_test_layout_Bar() {
         8usize,
         concat!("Alignment of ", stringify!(Bar))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).baz1) as usize - ptr as usize
-        },
-        0usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz1))
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).baz2) as usize - ptr as usize
-        },
-        8usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz2))
-    );
+    fn test_field_baz1() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).baz1) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Bar),
+                "::",
+                stringify!(baz1)
+            )
+        );
+    }
+    test_field_baz1();
+    fn test_field_baz2() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).baz2) as usize - ptr as usize
+            },
+            8usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Bar),
+                "::",
+                stringify!(baz2)
+            )
+        );
+    }
+    test_field_baz2();
 }
 impl Default for Bar {
     fn default() -> Self {

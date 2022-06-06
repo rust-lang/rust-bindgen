@@ -25,34 +25,40 @@ fn bindgen_test_layout_Nice() {
         8usize,
         concat!("Alignment of ", stringify!(Nice))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Nice>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).pointer) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Nice),
-            "::",
-            stringify!(pointer)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Nice>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize
-        },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Nice),
-            "::",
-            stringify!(large_array)
-        )
-    );
+    fn test_field_pointer() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Nice>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).pointer) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Nice),
+                "::",
+                stringify!(pointer)
+            )
+        );
+    }
+    test_field_pointer();
+    fn test_field_large_array() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Nice>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize
+            },
+            8usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Nice),
+                "::",
+                stringify!(large_array)
+            )
+        );
+    }
+    test_field_large_array();
 }
 impl Default for Nice {
     fn default() -> Self {

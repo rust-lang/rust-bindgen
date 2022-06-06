@@ -37,204 +37,259 @@ fn bindgen_test_layout_RTCRay() {
         16usize,
         concat!("Alignment of ", stringify!(RTCRay))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).org) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(RTCRay),
-            "::",
-            stringify!(org)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).align0) as usize - ptr as usize
-        },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(RTCRay),
-            "::",
-            stringify!(align0)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).dir) as usize - ptr as usize
-        },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(RTCRay),
-            "::",
-            stringify!(dir)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).align1) as usize - ptr as usize
-        },
-        28usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(RTCRay),
-            "::",
-            stringify!(align1)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).tnear) as usize - ptr as usize
-        },
-        32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(RTCRay),
-            "::",
-            stringify!(tnear)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).tfar) as usize - ptr as usize
-        },
-        36usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(RTCRay),
-            "::",
-            stringify!(tfar)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).time) as usize - ptr as usize
-        },
-        40usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(RTCRay),
-            "::",
-            stringify!(time)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mask) as usize - ptr as usize
-        },
-        44usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(RTCRay),
-            "::",
-            stringify!(mask)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).Ng) as usize - ptr as usize
-        },
-        48usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(RTCRay),
-            "::",
-            stringify!(Ng)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).align2) as usize - ptr as usize
-        },
-        60usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(RTCRay),
-            "::",
-            stringify!(align2)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).u) as usize - ptr as usize
-        },
-        64usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(u))
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).v) as usize - ptr as usize
-        },
-        68usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(v))
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).geomID) as usize - ptr as usize
-        },
-        72usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(RTCRay),
-            "::",
-            stringify!(geomID)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).primID) as usize - ptr as usize
-        },
-        76usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(RTCRay),
-            "::",
-            stringify!(primID)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).instID) as usize - ptr as usize
-        },
-        80usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(RTCRay),
-            "::",
-            stringify!(instID)
-        )
-    );
+    fn test_field_org() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).org) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(org)
+            )
+        );
+    }
+    test_field_org();
+    fn test_field_align0() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).align0) as usize - ptr as usize
+            },
+            12usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(align0)
+            )
+        );
+    }
+    test_field_align0();
+    fn test_field_dir() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).dir) as usize - ptr as usize
+            },
+            16usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(dir)
+            )
+        );
+    }
+    test_field_dir();
+    fn test_field_align1() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).align1) as usize - ptr as usize
+            },
+            28usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(align1)
+            )
+        );
+    }
+    test_field_align1();
+    fn test_field_tnear() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).tnear) as usize - ptr as usize
+            },
+            32usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(tnear)
+            )
+        );
+    }
+    test_field_tnear();
+    fn test_field_tfar() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).tfar) as usize - ptr as usize
+            },
+            36usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(tfar)
+            )
+        );
+    }
+    test_field_tfar();
+    fn test_field_time() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).time) as usize - ptr as usize
+            },
+            40usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(time)
+            )
+        );
+    }
+    test_field_time();
+    fn test_field_mask() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mask) as usize - ptr as usize
+            },
+            44usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(mask)
+            )
+        );
+    }
+    test_field_mask();
+    fn test_field_Ng() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).Ng) as usize - ptr as usize
+            },
+            48usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(Ng)
+            )
+        );
+    }
+    test_field_Ng();
+    fn test_field_align2() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).align2) as usize - ptr as usize
+            },
+            60usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(align2)
+            )
+        );
+    }
+    test_field_align2();
+    fn test_field_u() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).u) as usize - ptr as usize
+            },
+            64usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(u)
+            )
+        );
+    }
+    test_field_u();
+    fn test_field_v() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).v) as usize - ptr as usize
+            },
+            68usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(v)
+            )
+        );
+    }
+    test_field_v();
+    fn test_field_geomID() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).geomID) as usize - ptr as usize
+            },
+            72usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(geomID)
+            )
+        );
+    }
+    test_field_geomID();
+    fn test_field_primID() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).primID) as usize - ptr as usize
+            },
+            76usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(primID)
+            )
+        );
+    }
+    test_field_primID();
+    fn test_field_instID() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<RTCRay>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).instID) as usize - ptr as usize
+            },
+            80usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(RTCRay),
+                "::",
+                stringify!(instID)
+            )
+        );
+    }
+    test_field_instID();
 }

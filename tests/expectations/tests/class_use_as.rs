@@ -23,20 +23,23 @@ fn bindgen_test_layout_whatever() {
         4usize,
         concat!("Alignment of ", stringify!(whatever))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<whatever>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).replacement) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(whatever),
-            "::",
-            stringify!(replacement)
-        )
-    );
+    fn test_field_replacement() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<whatever>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).replacement) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(whatever),
+                "::",
+                stringify!(replacement)
+            )
+        );
+    }
+    test_field_replacement();
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -55,18 +58,21 @@ fn bindgen_test_layout_container() {
         4usize,
         concat!("Alignment of ", stringify!(container))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<container>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(container),
-            "::",
-            stringify!(c)
-        )
-    );
+    fn test_field_c() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<container>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(container),
+                "::",
+                stringify!(c)
+            )
+        );
+    }
+    test_field_c();
 }

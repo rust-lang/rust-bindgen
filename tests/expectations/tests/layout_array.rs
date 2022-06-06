@@ -79,90 +79,114 @@ fn bindgen_test_layout_rte_mempool_ops() {
         64usize,
         concat!("Alignment of ", stringify!(rte_mempool_ops))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).name) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops),
-            "::",
-            stringify!(name)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).alloc) as usize - ptr as usize
-        },
-        32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops),
-            "::",
-            stringify!(alloc)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).free) as usize - ptr as usize
-        },
-        40usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops),
-            "::",
-            stringify!(free)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).enqueue) as usize - ptr as usize
-        },
-        48usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops),
-            "::",
-            stringify!(enqueue)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).dequeue) as usize - ptr as usize
-        },
-        56usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops),
-            "::",
-            stringify!(dequeue)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).get_count) as usize - ptr as usize
-        },
-        64usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops),
-            "::",
-            stringify!(get_count)
-        )
-    );
+    fn test_field_name() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).name) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rte_mempool_ops),
+                "::",
+                stringify!(name)
+            )
+        );
+    }
+    test_field_name();
+    fn test_field_alloc() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).alloc) as usize - ptr as usize
+            },
+            32usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rte_mempool_ops),
+                "::",
+                stringify!(alloc)
+            )
+        );
+    }
+    test_field_alloc();
+    fn test_field_free() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).free) as usize - ptr as usize
+            },
+            40usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rte_mempool_ops),
+                "::",
+                stringify!(free)
+            )
+        );
+    }
+    test_field_free();
+    fn test_field_enqueue() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).enqueue) as usize - ptr as usize
+            },
+            48usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rte_mempool_ops),
+                "::",
+                stringify!(enqueue)
+            )
+        );
+    }
+    test_field_enqueue();
+    fn test_field_dequeue() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).dequeue) as usize - ptr as usize
+            },
+            56usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rte_mempool_ops),
+                "::",
+                stringify!(dequeue)
+            )
+        );
+    }
+    test_field_dequeue();
+    fn test_field_get_count() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<rte_mempool_ops>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).get_count) as usize - ptr as usize
+            },
+            64usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rte_mempool_ops),
+                "::",
+                stringify!(get_count)
+            )
+        );
+    }
+    test_field_get_count();
 }
 impl Default for rte_mempool_ops {
     fn default() -> Self {
@@ -202,20 +226,24 @@ fn bindgen_test_layout_rte_spinlock_t() {
         4usize,
         concat!("Alignment of ", stringify!(rte_spinlock_t))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<rte_spinlock_t>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).locked) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_spinlock_t),
-            "::",
-            stringify!(locked)
-        )
-    );
+    fn test_field_locked() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<rte_spinlock_t>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).locked) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rte_spinlock_t),
+                "::",
+                stringify!(locked)
+            )
+        );
+    }
+    test_field_locked();
 }
 /// Structure storing the table of registered ops structs, each of which contain
 /// the function pointers for the mempool ops functions.
@@ -248,51 +276,60 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         64usize,
         concat!("Alignment of ", stringify!(rte_mempool_ops_table))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<rte_mempool_ops_table>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).sl) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops_table),
-            "::",
-            stringify!(sl)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<rte_mempool_ops_table>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).num_ops) as usize - ptr as usize
-        },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops_table),
-            "::",
-            stringify!(num_ops)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<rte_mempool_ops_table>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).ops) as usize - ptr as usize
-        },
-        64usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops_table),
-            "::",
-            stringify!(ops)
-        )
-    );
+    fn test_field_sl() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<rte_mempool_ops_table>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).sl) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rte_mempool_ops_table),
+                "::",
+                stringify!(sl)
+            )
+        );
+    }
+    test_field_sl();
+    fn test_field_num_ops() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<rte_mempool_ops_table>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).num_ops) as usize - ptr as usize
+            },
+            4usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rte_mempool_ops_table),
+                "::",
+                stringify!(num_ops)
+            )
+        );
+    }
+    test_field_num_ops();
+    fn test_field_ops() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<rte_mempool_ops_table>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ops) as usize - ptr as usize
+            },
+            64usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rte_mempool_ops_table),
+                "::",
+                stringify!(ops)
+            )
+        );
+    }
+    test_field_ops();
 }
 impl Default for rte_mempool_ops_table {
     fn default() -> Self {
@@ -330,21 +367,23 @@ fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
         8usize,
         concat!("Alignment of ", stringify!(malloc_heap__bindgen_ty_1))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<malloc_heap__bindgen_ty_1>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).lh_first) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(malloc_heap__bindgen_ty_1),
-            "::",
-            stringify!(lh_first)
-        )
-    );
+    fn test_field_lh_first() {
+        assert_eq!(
+            unsafe {
+                let uninit = :: std :: mem :: MaybeUninit :: < malloc_heap__bindgen_ty_1 > :: uninit () ;
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).lh_first) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(malloc_heap__bindgen_ty_1),
+                "::",
+                stringify!(lh_first)
+            )
+        );
+    }
+    test_field_lh_first();
 }
 impl Default for malloc_heap__bindgen_ty_1 {
     fn default() -> Self {
@@ -367,62 +406,74 @@ fn bindgen_test_layout_malloc_heap() {
         64usize,
         concat!("Alignment of ", stringify!(malloc_heap))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<malloc_heap>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).lock) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(malloc_heap),
-            "::",
-            stringify!(lock)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<malloc_heap>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).free_head) as usize - ptr as usize
-        },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(malloc_heap),
-            "::",
-            stringify!(free_head)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<malloc_heap>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).alloc_count) as usize - ptr as usize
-        },
-        112usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(malloc_heap),
-            "::",
-            stringify!(alloc_count)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<malloc_heap>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).total_size) as usize - ptr as usize
-        },
-        120usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(malloc_heap),
-            "::",
-            stringify!(total_size)
-        )
-    );
+    fn test_field_lock() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<malloc_heap>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).lock) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(malloc_heap),
+                "::",
+                stringify!(lock)
+            )
+        );
+    }
+    test_field_lock();
+    fn test_field_free_head() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<malloc_heap>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).free_head) as usize - ptr as usize
+            },
+            8usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(malloc_heap),
+                "::",
+                stringify!(free_head)
+            )
+        );
+    }
+    test_field_free_head();
+    fn test_field_alloc_count() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<malloc_heap>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).alloc_count) as usize - ptr as usize
+            },
+            112usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(malloc_heap),
+                "::",
+                stringify!(alloc_count)
+            )
+        );
+    }
+    test_field_alloc_count();
+    fn test_field_total_size() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<malloc_heap>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).total_size) as usize - ptr as usize
+            },
+            120usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(malloc_heap),
+                "::",
+                stringify!(total_size)
+            )
+        );
+    }
+    test_field_total_size();
 }
 impl Default for malloc_heap {
     fn default() -> Self {

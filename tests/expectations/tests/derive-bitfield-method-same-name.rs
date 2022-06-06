@@ -114,20 +114,23 @@ fn bindgen_test_layout_Foo() {
         4usize,
         concat!("Alignment of ", stringify!(Foo))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Foo>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).large) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Foo),
-            "::",
-            stringify!(large)
-        )
-    );
+    fn test_field_large() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Foo>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).large) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Foo),
+                "::",
+                stringify!(large)
+            )
+        );
+    }
+    test_field_large();
 }
 extern "C" {
     #[link_name = "\u{1}_ZN3Foo4typeEv"]

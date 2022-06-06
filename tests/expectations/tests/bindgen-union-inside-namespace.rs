@@ -77,34 +77,40 @@ pub mod root {
                 4usize,
                 concat!("Alignment of ", stringify!(Bar))
             );
-            assert_eq!(
-                unsafe {
-                    let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
-                    let ptr = uninit.as_ptr();
-                    ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(Bar),
-                    "::",
-                    stringify!(foo)
-                )
-            );
-            assert_eq!(
-                unsafe {
-                    let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
-                    let ptr = uninit.as_ptr();
-                    ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(Bar),
-                    "::",
-                    stringify!(bar)
-                )
-            );
+            fn test_field_foo() {
+                assert_eq!(
+                    unsafe {
+                        let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
+                        let ptr = uninit.as_ptr();
+                        ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
+                    },
+                    0usize,
+                    concat!(
+                        "Offset of field: ",
+                        stringify!(Bar),
+                        "::",
+                        stringify!(foo)
+                    )
+                );
+            }
+            test_field_foo();
+            fn test_field_bar() {
+                assert_eq!(
+                    unsafe {
+                        let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
+                        let ptr = uninit.as_ptr();
+                        ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
+                    },
+                    0usize,
+                    concat!(
+                        "Offset of field: ",
+                        stringify!(Bar),
+                        "::",
+                        stringify!(bar)
+                    )
+                );
+            }
+            test_field_bar();
         }
         impl Clone for Bar {
             fn clone(&self) -> Self {

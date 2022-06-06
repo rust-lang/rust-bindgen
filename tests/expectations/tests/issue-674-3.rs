@@ -32,15 +32,23 @@ pub mod root {
             1usize,
             concat!("Alignment of ", stringify!(a))
         );
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<a>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-            },
-            0usize,
-            concat!("Offset of field: ", stringify!(a), "::", stringify!(b))
-        );
+        fn test_field_b() {
+            assert_eq!(
+                unsafe {
+                    let uninit = ::std::mem::MaybeUninit::<a>::uninit();
+                    let ptr = uninit.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+                },
+                0usize,
+                concat!(
+                    "Offset of field: ",
+                    stringify!(a),
+                    "::",
+                    stringify!(b)
+                )
+            );
+        }
+        test_field_b();
     }
     #[repr(C)]
     #[derive(Debug, Default, Copy, Clone)]
@@ -59,19 +67,23 @@ pub mod root {
             1usize,
             concat!("Alignment of ", stringify!(nsCSSValue))
         );
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<nsCSSValue>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(nsCSSValue),
-                "::",
-                stringify!(c)
-            )
-        );
+        fn test_field_c() {
+            assert_eq!(
+                unsafe {
+                    let uninit =
+                        ::std::mem::MaybeUninit::<nsCSSValue>::uninit();
+                    let ptr = uninit.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
+                },
+                0usize,
+                concat!(
+                    "Offset of field: ",
+                    stringify!(nsCSSValue),
+                    "::",
+                    stringify!(c)
+                )
+            );
+        }
+        test_field_c();
     }
 }

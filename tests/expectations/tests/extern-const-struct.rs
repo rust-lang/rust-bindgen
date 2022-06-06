@@ -22,20 +22,23 @@ fn bindgen_test_layout_nsFoo() {
         4usize,
         concat!("Alignment of ", stringify!(nsFoo))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<nsFoo>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).details) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(nsFoo),
-            "::",
-            stringify!(details)
-        )
-    );
+    fn test_field_details() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<nsFoo>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).details) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(nsFoo),
+                "::",
+                stringify!(details)
+            )
+        );
+    }
+    test_field_details();
 }
 impl Default for nsFoo {
     fn default() -> Self {

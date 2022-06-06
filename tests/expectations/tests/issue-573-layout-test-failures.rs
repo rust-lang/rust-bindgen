@@ -27,20 +27,23 @@ fn bindgen_test_layout_AutoIdVector() {
         1usize,
         concat!("Alignment of ", stringify!(AutoIdVector))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<AutoIdVector>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).ar) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(AutoIdVector),
-            "::",
-            stringify!(ar)
-        )
-    );
+    fn test_field_ar() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<AutoIdVector>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ar) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(AutoIdVector),
+                "::",
+                stringify!(ar)
+            )
+        );
+    }
+    test_field_ar();
 }
 #[test]
 fn __bindgen_test_layout_Outer_open0_int_close0_instantiation() {

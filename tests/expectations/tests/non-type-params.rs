@@ -26,46 +26,57 @@ fn bindgen_test_layout_UsesArray() {
         4usize,
         concat!("Alignment of ", stringify!(UsesArray))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<UsesArray>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).array_char_16) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(UsesArray),
-            "::",
-            stringify!(array_char_16)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<UsesArray>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).array_bool_8) as usize - ptr as usize
-        },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(UsesArray),
-            "::",
-            stringify!(array_bool_8)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<UsesArray>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).array_int_4) as usize - ptr as usize
-        },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(UsesArray),
-            "::",
-            stringify!(array_int_4)
-        )
-    );
+    fn test_field_array_char_16() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<UsesArray>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).array_char_16) as usize -
+                    ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(UsesArray),
+                "::",
+                stringify!(array_char_16)
+            )
+        );
+    }
+    test_field_array_char_16();
+    fn test_field_array_bool_8() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<UsesArray>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).array_bool_8) as usize -
+                    ptr as usize
+            },
+            16usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(UsesArray),
+                "::",
+                stringify!(array_bool_8)
+            )
+        );
+    }
+    test_field_array_bool_8();
+    fn test_field_array_int_4() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<UsesArray>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).array_int_4) as usize - ptr as usize
+            },
+            24usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(UsesArray),
+                "::",
+                stringify!(array_int_4)
+            )
+        );
+    }
+    test_field_array_int_4();
 }

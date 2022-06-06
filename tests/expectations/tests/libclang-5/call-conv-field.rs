@@ -28,36 +28,42 @@ fn bindgen_test_layout_JNINativeInterface_() {
         8usize,
         concat!("Alignment of ", stringify!(JNINativeInterface_))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<JNINativeInterface_>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).GetVersion) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(JNINativeInterface_),
-            "::",
-            stringify!(GetVersion)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<JNINativeInterface_>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).__hack) as usize - ptr as usize
-        },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(JNINativeInterface_),
-            "::",
-            stringify!(__hack)
-        )
-    );
+    fn test_field_GetVersion() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<JNINativeInterface_>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).GetVersion) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(JNINativeInterface_),
+                "::",
+                stringify!(GetVersion)
+            )
+        );
+    }
+    test_field_GetVersion();
+    fn test_field___hack() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<JNINativeInterface_>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).__hack) as usize - ptr as usize
+            },
+            8usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(JNINativeInterface_),
+                "::",
+                stringify!(__hack)
+            )
+        );
+    }
+    test_field___hack();
 }
 extern "stdcall" {
     pub fn bar();

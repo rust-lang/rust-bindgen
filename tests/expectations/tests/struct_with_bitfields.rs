@@ -112,20 +112,23 @@ fn bindgen_test_layout_bitfield() {
         4usize,
         concat!("Alignment of ", stringify!(bitfield))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<bitfield>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).e) as usize - ptr as usize
-        },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(bitfield),
-            "::",
-            stringify!(e)
-        )
-    );
+    fn test_field_e() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<bitfield>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).e) as usize - ptr as usize
+            },
+            4usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(bitfield),
+                "::",
+                stringify!(e)
+            )
+        );
+    }
+    test_field_e();
 }
 impl bitfield {
     #[inline]

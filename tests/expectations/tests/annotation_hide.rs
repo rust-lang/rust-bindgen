@@ -42,18 +42,21 @@ fn bindgen_test_layout_NotAnnotated() {
         4usize,
         concat!("Alignment of ", stringify!(NotAnnotated))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<NotAnnotated>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(NotAnnotated),
-            "::",
-            stringify!(f)
-        )
-    );
+    fn test_field_f() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<NotAnnotated>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(NotAnnotated),
+                "::",
+                stringify!(f)
+            )
+        );
+    }
+    test_field_f();
 }

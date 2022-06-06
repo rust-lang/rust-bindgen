@@ -43,20 +43,23 @@ fn bindgen_test_layout_FooStruct() {
         8usize,
         concat!("Alignment of ", stringify!(FooStruct))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<FooStruct>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(FooStruct),
-            "::",
-            stringify!(foo)
-        )
-    );
+    fn test_field_foo() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<FooStruct>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(FooStruct),
+                "::",
+                stringify!(foo)
+            )
+        );
+    }
+    test_field_foo();
 }
 impl Default for FooStruct {
     fn default() -> Self {

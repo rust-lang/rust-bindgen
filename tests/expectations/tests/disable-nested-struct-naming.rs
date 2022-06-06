@@ -45,15 +45,23 @@ fn bindgen_test_layout_bar4() {
         4usize,
         concat!("Alignment of ", stringify!(bar4))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<bar4>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x4) as usize - ptr as usize
-        },
-        0usize,
-        concat!("Offset of field: ", stringify!(bar4), "::", stringify!(x4))
-    );
+    fn test_field_x4() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<bar4>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).x4) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(bar4),
+                "::",
+                stringify!(x4)
+            )
+        );
+    }
+    test_field_x4();
 }
 #[test]
 fn bindgen_test_layout_bar1__bindgen_ty_1__bindgen_ty_1() {
@@ -70,38 +78,44 @@ fn bindgen_test_layout_bar1__bindgen_ty_1__bindgen_ty_1() {
             stringify!(bar1__bindgen_ty_1__bindgen_ty_1)
         )
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<
-                bar1__bindgen_ty_1__bindgen_ty_1,
-            >::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x3) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(bar1__bindgen_ty_1__bindgen_ty_1),
-            "::",
-            stringify!(x3)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<
-                bar1__bindgen_ty_1__bindgen_ty_1,
-            >::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b4) as usize - ptr as usize
-        },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(bar1__bindgen_ty_1__bindgen_ty_1),
-            "::",
-            stringify!(b4)
-        )
-    );
+    fn test_field_x3() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<
+                    bar1__bindgen_ty_1__bindgen_ty_1,
+                >::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).x3) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(bar1__bindgen_ty_1__bindgen_ty_1),
+                "::",
+                stringify!(x3)
+            )
+        );
+    }
+    test_field_x3();
+    fn test_field_b4() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<
+                    bar1__bindgen_ty_1__bindgen_ty_1,
+                >::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).b4) as usize - ptr as usize
+            },
+            4usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(bar1__bindgen_ty_1__bindgen_ty_1),
+                "::",
+                stringify!(b4)
+            )
+        );
+    }
+    test_field_b4();
 }
 #[test]
 fn bindgen_test_layout_bar1__bindgen_ty_1() {
@@ -115,36 +129,42 @@ fn bindgen_test_layout_bar1__bindgen_ty_1() {
         4usize,
         concat!("Alignment of ", stringify!(bar1__bindgen_ty_1))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<bar1__bindgen_ty_1>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x2) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(bar1__bindgen_ty_1),
-            "::",
-            stringify!(x2)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<bar1__bindgen_ty_1>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b3) as usize - ptr as usize
-        },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(bar1__bindgen_ty_1),
-            "::",
-            stringify!(b3)
-        )
-    );
+    fn test_field_x2() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<bar1__bindgen_ty_1>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).x2) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(bar1__bindgen_ty_1),
+                "::",
+                stringify!(x2)
+            )
+        );
+    }
+    test_field_x2();
+    fn test_field_b3() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<bar1__bindgen_ty_1>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).b3) as usize - ptr as usize
+            },
+            4usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(bar1__bindgen_ty_1),
+                "::",
+                stringify!(b3)
+            )
+        );
+    }
+    test_field_b3();
 }
 #[test]
 fn bindgen_test_layout_bar1() {
@@ -158,24 +178,40 @@ fn bindgen_test_layout_bar1() {
         4usize,
         concat!("Alignment of ", stringify!(bar1))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<bar1>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x1) as usize - ptr as usize
-        },
-        0usize,
-        concat!("Offset of field: ", stringify!(bar1), "::", stringify!(x1))
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<bar1>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b2) as usize - ptr as usize
-        },
-        4usize,
-        concat!("Offset of field: ", stringify!(bar1), "::", stringify!(b2))
-    );
+    fn test_field_x1() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<bar1>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).x1) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(bar1),
+                "::",
+                stringify!(x1)
+            )
+        );
+    }
+    test_field_x1();
+    fn test_field_b2() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<bar1>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).b2) as usize - ptr as usize
+            },
+            4usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(bar1),
+                "::",
+                stringify!(b2)
+            )
+        );
+    }
+    test_field_b2();
 }
 #[test]
 fn bindgen_test_layout_foo() {
@@ -189,15 +225,18 @@ fn bindgen_test_layout_foo() {
         4usize,
         concat!("Alignment of ", stringify!(foo))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<foo>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b1) as usize - ptr as usize
-        },
-        0usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(b1))
-    );
+    fn test_field_b1() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<foo>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).b1) as usize - ptr as usize
+            },
+            0usize,
+            concat!("Offset of field: ", stringify!(foo), "::", stringify!(b1))
+        );
+    }
+    test_field_b1();
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -226,15 +265,18 @@ fn bindgen_test_layout_baz() {
         4usize,
         concat!("Alignment of ", stringify!(baz))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<baz>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-        },
-        0usize,
-        concat!("Offset of field: ", stringify!(baz), "::", stringify!(x))
-    );
+    fn test_field_x() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<baz>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
+            },
+            0usize,
+            concat!("Offset of field: ", stringify!(baz), "::", stringify!(x))
+        );
+    }
+    test_field_x();
 }
 #[test]
 fn bindgen_test_layout__bindgen_ty_1__bindgen_ty_1() {
@@ -248,22 +290,25 @@ fn bindgen_test_layout__bindgen_ty_1__bindgen_ty_1() {
         4usize,
         concat!("Alignment of ", stringify!(_bindgen_ty_1__bindgen_ty_1))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<_bindgen_ty_1__bindgen_ty_1>::uninit(
-                );
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(_bindgen_ty_1__bindgen_ty_1),
-            "::",
-            stringify!(b)
-        )
-    );
+    fn test_field_b() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<
+                    _bindgen_ty_1__bindgen_ty_1,
+                >::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(_bindgen_ty_1__bindgen_ty_1),
+                "::",
+                stringify!(b)
+            )
+        );
+    }
+    test_field_b();
 }
 #[test]
 fn bindgen_test_layout__bindgen_ty_1() {
@@ -277,20 +322,23 @@ fn bindgen_test_layout__bindgen_ty_1() {
         4usize,
         concat!("Alignment of ", stringify!(_bindgen_ty_1))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<_bindgen_ty_1>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).anon2) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(_bindgen_ty_1),
-            "::",
-            stringify!(anon2)
-        )
-    );
+    fn test_field_anon2() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<_bindgen_ty_1>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).anon2) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(_bindgen_ty_1),
+                "::",
+                stringify!(anon2)
+            )
+        );
+    }
+    test_field_anon2();
 }
 extern "C" {
     pub static mut anon1: _bindgen_ty_1;

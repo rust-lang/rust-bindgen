@@ -22,20 +22,23 @@ fn bindgen_test_layout_Rooted() {
         4usize,
         concat!("Alignment of ", stringify!(Rooted))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Rooted>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).ptr) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Rooted),
-            "::",
-            stringify!(ptr)
-        )
-    );
+    fn test_field_ptr() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Rooted>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ptr) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Rooted),
+                "::",
+                stringify!(ptr)
+            )
+        );
+    }
+    test_field_ptr();
 }
 impl Default for Rooted {
     fn default() -> Self {

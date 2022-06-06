@@ -45,20 +45,23 @@ pub mod root {
                 1usize,
                 concat!("Alignment of ", stringify!(Foo))
             );
-            assert_eq!(
-                unsafe {
-                    let uninit = ::std::mem::MaybeUninit::<Foo>::uninit();
-                    let ptr = uninit.as_ptr();
-                    ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(Foo),
-                    "::",
-                    stringify!(c)
-                )
-            );
+            fn test_field_c() {
+                assert_eq!(
+                    unsafe {
+                        let uninit = ::std::mem::MaybeUninit::<Foo>::uninit();
+                        let ptr = uninit.as_ptr();
+                        ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
+                    },
+                    0usize,
+                    concat!(
+                        "Offset of field: ",
+                        stringify!(Foo),
+                        "::",
+                        stringify!(c)
+                    )
+                );
+            }
+            test_field_c();
         }
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -77,20 +80,23 @@ pub mod root {
                 4usize,
                 concat!("Alignment of ", stringify!(Bar))
             );
-            assert_eq!(
-                unsafe {
-                    let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
-                    let ptr = uninit.as_ptr();
-                    ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(Bar),
-                    "::",
-                    stringify!(i)
-                )
-            );
+            fn test_field_i() {
+                assert_eq!(
+                    unsafe {
+                        let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
+                        let ptr = uninit.as_ptr();
+                        ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
+                    },
+                    0usize,
+                    concat!(
+                        "Offset of field: ",
+                        stringify!(Bar),
+                        "::",
+                        stringify!(i)
+                    )
+                );
+            }
+            test_field_i();
         }
         #[repr(C)]
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -109,21 +115,26 @@ pub mod root {
                 1usize,
                 concat!("Alignment of ", stringify!(ContainsInstantiation))
             );
-            assert_eq!(
-                unsafe {
-                    let uninit = :: std :: mem :: MaybeUninit :: < ContainsInstantiation > :: uninit () ;
-                    let ptr = uninit.as_ptr();
-                    ::std::ptr::addr_of!((*ptr).not_opaque) as usize -
-                        ptr as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(ContainsInstantiation),
-                    "::",
-                    stringify!(not_opaque)
-                )
-            );
+            fn test_field_not_opaque() {
+                assert_eq!(
+                    unsafe {
+                        let uninit = ::std::mem::MaybeUninit::<
+                            ContainsInstantiation,
+                        >::uninit();
+                        let ptr = uninit.as_ptr();
+                        ::std::ptr::addr_of!((*ptr).not_opaque) as usize -
+                            ptr as usize
+                    },
+                    0usize,
+                    concat!(
+                        "Offset of field: ",
+                        stringify!(ContainsInstantiation),
+                        "::",
+                        stringify!(not_opaque)
+                    )
+                );
+            }
+            test_field_not_opaque();
         }
         impl Default for ContainsInstantiation {
             fn default() -> Self {
@@ -154,22 +165,26 @@ pub mod root {
                     stringify!(ContainsOpaqueInstantiation)
                 )
             );
-            assert_eq!(
-                unsafe {
-                    let uninit = ::std::mem::MaybeUninit::<
-                        ContainsOpaqueInstantiation,
-                    >::uninit();
-                    let ptr = uninit.as_ptr();
-                    ::std::ptr::addr_of!((*ptr).opaque) as usize - ptr as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(ContainsOpaqueInstantiation),
-                    "::",
-                    stringify!(opaque)
-                )
-            );
+            fn test_field_opaque() {
+                assert_eq!(
+                    unsafe {
+                        let uninit = ::std::mem::MaybeUninit::<
+                            ContainsOpaqueInstantiation,
+                        >::uninit();
+                        let ptr = uninit.as_ptr();
+                        ::std::ptr::addr_of!((*ptr).opaque) as usize -
+                            ptr as usize
+                    },
+                    0usize,
+                    concat!(
+                        "Offset of field: ",
+                        stringify!(ContainsOpaqueInstantiation),
+                        "::",
+                        stringify!(opaque)
+                    )
+                );
+            }
+            test_field_opaque();
         }
     }
     #[test]

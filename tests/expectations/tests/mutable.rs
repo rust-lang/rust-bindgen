@@ -23,34 +23,40 @@ fn bindgen_test_layout_C() {
         4usize,
         concat!("Alignment of ", stringify!(C))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).m_member) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(C),
-            "::",
-            stringify!(m_member)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).m_other) as usize - ptr as usize
-        },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(C),
-            "::",
-            stringify!(m_other)
-        )
-    );
+    fn test_field_m_member() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).m_member) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(C),
+                "::",
+                stringify!(m_member)
+            )
+        );
+    }
+    test_field_m_member();
+    fn test_field_m_other() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).m_other) as usize - ptr as usize
+            },
+            4usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(C),
+                "::",
+                stringify!(m_other)
+            )
+        );
+    }
+    test_field_m_other();
 }
 #[repr(C)]
 #[derive(Debug, Default)]
@@ -69,20 +75,23 @@ fn bindgen_test_layout_NonCopiable() {
         4usize,
         concat!("Alignment of ", stringify!(NonCopiable))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<NonCopiable>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).m_member) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(NonCopiable),
-            "::",
-            stringify!(m_member)
-        )
-    );
+    fn test_field_m_member() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<NonCopiable>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).m_member) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(NonCopiable),
+                "::",
+                stringify!(m_member)
+            )
+        );
+    }
+    test_field_m_member();
 }
 #[repr(C)]
 #[derive(Debug, Default)]
@@ -107,20 +116,23 @@ fn bindgen_test_layout_NonCopiableWithNonCopiableMutableMember() {
             stringify!(NonCopiableWithNonCopiableMutableMember)
         )
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<
-                NonCopiableWithNonCopiableMutableMember,
-            >::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).m_member) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(NonCopiableWithNonCopiableMutableMember),
-            "::",
-            stringify!(m_member)
-        )
-    );
+    fn test_field_m_member() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<
+                    NonCopiableWithNonCopiableMutableMember,
+                >::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).m_member) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(NonCopiableWithNonCopiableMutableMember),
+                "::",
+                stringify!(m_member)
+            )
+        );
+    }
+    test_field_m_member();
 }
