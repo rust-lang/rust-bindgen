@@ -151,6 +151,14 @@
 
 ## Security
 
+# 0.60.1
+
+Released 2022/06/06
+
+## Fixed
+
+ * Fixed stack overflow in generated tests for structs with many fields (#2219).
+
 # 0.60.0
 
 Released 2022/06/05
