@@ -33,7 +33,7 @@ pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
 
     /// This function will run for every function. The returned value determines the name visible
     /// in the bindings.
-    fn link_name_override(&self, _function_name: &str) -> Option<String> {
+    fn generated_name_override(&self, _function_name: &str) -> Option<String> {
         None
     }
 

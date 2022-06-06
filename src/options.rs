@@ -25,7 +25,7 @@ impl LinkNameOverrideParseCallback {
 }
 
 impl ParseCallbacks for LinkNameOverrideParseCallback {
-    fn link_name_override(&self, function_name: &str) -> Option<String> {
+    fn generated_name_override(&self, function_name: &str) -> Option<String> {
         if let Some(prefix) = &self.remove_function_prefix {
             if function_name.starts_with(prefix) {
                 return Some(function_name[prefix.len()..].to_string());
