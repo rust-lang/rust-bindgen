@@ -1,5 +1,28 @@
-use crate::options::LinkNameOverrideParseCallback;
 use bindgen::callbacks::*;
+
+#[derive(Debug)]
+pub struct RemoveFunctionPrefixParseCallback {
+    pub remove_function_prefix: Option<String>,
+}
+
+impl RemoveFunctionPrefixParseCallback {
+    pub fn new(prefix: &str) -> Self {
+        RemoveFunctionPrefixParseCallback {
+            remove_function_prefix: Some(prefix.to_string()),
+        }
+    }
+}
+
+impl ParseCallbacks for RemoveFunctionPrefixParseCallback {
+    fn generated_name_override(&self, function_name: &str) -> Option<String> {
+        if let Some(prefix) = &self.remove_function_prefix {
+            if function_name.starts_with(prefix) {
+                return Some(function_name[prefix.len()..].to_string());
+            }
+        }
+        None
+    }
+}
 
 #[derive(Debug)]
 struct EnumVariantRename;
@@ -44,7 +67,7 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
                     .split("remove-function-prefix-")
                     .last()
                     .to_owned();
-                let lnopc = LinkNameOverrideParseCallback::new(prefix.unwrap());
+                let lnopc = RemoveFunctionPrefixParseCallback::new(prefix.unwrap());
                 Box::new(lnopc)
             } else {
                 panic!("Couldn't find name ParseCallbacks: {}", cb)

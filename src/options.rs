@@ -1,39 +1,13 @@
-use bindgen::callbacks::ParseCallbacks;
 use bindgen::{
     builder, AliasVariation, Builder, CodegenConfig, EnumVariation,
     MacroTypeVariation, RustTarget, DEFAULT_ANON_FIELDS_PREFIX,
     RUST_TARGET_STRINGS,
 };
 use clap::{App, Arg};
-use std::fmt::Debug;
 use std::fs::File;
 use std::io::{self, stderr, Error, ErrorKind, Write};
 use std::path::PathBuf;
 use std::str::FromStr;
-
-#[derive(Debug)]
-pub struct LinkNameOverrideParseCallback {
-    pub remove_function_prefix: Option<String>,
-}
-
-impl LinkNameOverrideParseCallback {
-    pub fn new(prefix: &str) -> Self {
-        LinkNameOverrideParseCallback {
-            remove_function_prefix: Some(prefix.to_string()),
-        }
-    }
-}
-
-impl ParseCallbacks for LinkNameOverrideParseCallback {
-    fn generated_name_override(&self, function_name: &str) -> Option<String> {
-        if let Some(prefix) = &self.remove_function_prefix {
-            if function_name.starts_with(prefix) {
-                return Some(function_name[prefix.len()..].to_string());
-            }
-        }
-        None
-    }
-}
 
 /// Construct a new [`Builder`](./struct.Builder.html) from command line flags.
 pub fn builder_from_flags<I>(
@@ -571,11 +545,6 @@ where
             Arg::new("vtable-generation")
                 .long("vtable-generation")
                 .help("Enables generation of vtable functions."),
-            Arg::new("remove-function-prefix")
-                .long("remove-function-prefix")
-                .multiple_occurrences(true)
-                .takes_value(true)
-                .help("Remove prefix when generating Rust function name."),
             Arg::new("V")
                 .long("version")
                 .help("Prints the version, and exits"),
@@ -1059,11 +1028,6 @@ where
 
     if matches.is_present("vtable-generation") {
         builder = builder.vtable_generation(true);
-    }
-
-    if let Some(prefix) = matches.value_of("remove-function-prefix") {
-        let lnopc = LinkNameOverrideParseCallback::new(prefix);
-        builder = builder.parse_callbacks(Box::new(lnopc));
     }
 
     let verbose = matches.is_present("verbose");
