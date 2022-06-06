@@ -24,48 +24,57 @@ fn bindgen_test_layout_SizedIntegers() {
         4usize,
         concat!("Alignment of ", stringify!(SizedIntegers))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<SizedIntegers>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(SizedIntegers),
-            "::",
-            stringify!(x)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<SizedIntegers>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
-        },
-        2usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(SizedIntegers),
-            "::",
-            stringify!(y)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<SizedIntegers>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).z) as usize - ptr as usize
-        },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(SizedIntegers),
-            "::",
-            stringify!(z)
-        )
-    );
+    fn test_field_x() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<SizedIntegers>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(SizedIntegers),
+                "::",
+                stringify!(x)
+            )
+        );
+    }
+    test_field_x();
+    fn test_field_y() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<SizedIntegers>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
+            },
+            2usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(SizedIntegers),
+                "::",
+                stringify!(y)
+            )
+        );
+    }
+    test_field_y();
+    fn test_field_z() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<SizedIntegers>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).z) as usize - ptr as usize
+            },
+            4usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(SizedIntegers),
+                "::",
+                stringify!(z)
+            )
+        );
+    }
+    test_field_z();
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -84,20 +93,23 @@ fn bindgen_test_layout_StructWithBlocklistedFwdDecl() {
         1usize,
         concat!("Alignment of ", stringify!(StructWithBlocklistedFwdDecl))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<StructWithBlocklistedFwdDecl>::uninit(
-                );
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(StructWithBlocklistedFwdDecl),
-            "::",
-            stringify!(b)
-        )
-    );
+    fn test_field_b() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<
+                    StructWithBlocklistedFwdDecl,
+                >::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(StructWithBlocklistedFwdDecl),
+                "::",
+                stringify!(b)
+            )
+        );
+    }
+    test_field_b();
 }

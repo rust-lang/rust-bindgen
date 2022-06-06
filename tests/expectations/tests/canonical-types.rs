@@ -176,20 +176,23 @@ fn bindgen_test_layout_ClassAInner() {
         8usize,
         concat!("Alignment of ", stringify!(ClassAInner))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<ClassAInner>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ClassAInner),
-            "::",
-            stringify!(x)
-        )
-    );
+    fn test_field_x() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<ClassAInner>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(ClassAInner),
+                "::",
+                stringify!(x)
+            )
+        );
+    }
+    test_field_x();
 }
 impl Default for ClassAInner {
     fn default() -> Self {
@@ -217,20 +220,23 @@ fn bindgen_test_layout_ClassCInnerA() {
         8usize,
         concat!("Alignment of ", stringify!(ClassCInnerA))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<ClassCInnerA>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ClassCInnerA),
-            "::",
-            stringify!(member)
-        )
-    );
+    fn test_field_member() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<ClassCInnerA>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(ClassCInnerA),
+                "::",
+                stringify!(member)
+            )
+        );
+    }
+    test_field_member();
 }
 impl Default for ClassCInnerA {
     fn default() -> Self {
@@ -258,20 +264,23 @@ fn bindgen_test_layout_ClassCInnerB() {
         8usize,
         concat!("Alignment of ", stringify!(ClassCInnerB))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<ClassCInnerB>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).cache) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ClassCInnerB),
-            "::",
-            stringify!(cache)
-        )
-    );
+    fn test_field_cache() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<ClassCInnerB>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).cache) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(ClassCInnerB),
+                "::",
+                stringify!(cache)
+            )
+        );
+    }
+    test_field_cache();
 }
 impl Default for ClassCInnerB {
     fn default() -> Self {

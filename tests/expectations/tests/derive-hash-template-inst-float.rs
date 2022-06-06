@@ -39,15 +39,23 @@ fn bindgen_test_layout_IntStr() {
         4usize,
         concat!("Alignment of ", stringify!(IntStr))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<IntStr>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
-        0usize,
-        concat!("Offset of field: ", stringify!(IntStr), "::", stringify!(a))
-    );
+    fn test_field_a() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<IntStr>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(IntStr),
+                "::",
+                stringify!(a)
+            )
+        );
+    }
+    test_field_a();
 }
 impl Default for IntStr {
     fn default() -> Self {
@@ -76,20 +84,23 @@ fn bindgen_test_layout_FloatStr() {
         4usize,
         concat!("Alignment of ", stringify!(FloatStr))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<FloatStr>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(FloatStr),
-            "::",
-            stringify!(a)
-        )
-    );
+    fn test_field_a() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<FloatStr>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(FloatStr),
+                "::",
+                stringify!(a)
+            )
+        );
+    }
+    test_field_a();
 }
 impl Default for FloatStr {
     fn default() -> Self {

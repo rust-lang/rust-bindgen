@@ -27,20 +27,23 @@ fn bindgen_test_layout__bindgen_ty_1() {
         1usize,
         concat!("Alignment of ", stringify!(_bindgen_ty_1))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<_bindgen_ty_1>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).ar) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(_bindgen_ty_1),
-            "::",
-            stringify!(ar)
-        )
-    );
+    fn test_field_ar() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<_bindgen_ty_1>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ar) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(_bindgen_ty_1),
+                "::",
+                stringify!(ar)
+            )
+        );
+    }
+    test_field_ar();
 }
 extern "C" {
     pub static mut AutoIdVector: _bindgen_ty_1;

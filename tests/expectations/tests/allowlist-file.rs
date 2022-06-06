@@ -68,22 +68,25 @@ fn bindgen_test_layout_StructWithAllowlistedDefinition() {
         8usize,
         concat!("Alignment of ", stringify!(StructWithAllowlistedDefinition))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<
-                StructWithAllowlistedDefinition,
-            >::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).other) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(StructWithAllowlistedDefinition),
-            "::",
-            stringify!(other)
-        )
-    );
+    fn test_field_other() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<
+                    StructWithAllowlistedDefinition,
+                >::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).other) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(StructWithAllowlistedDefinition),
+                "::",
+                stringify!(other)
+            )
+        );
+    }
+    test_field_other();
 }
 impl Default for StructWithAllowlistedDefinition {
     fn default() -> Self {
@@ -111,22 +114,25 @@ fn bindgen_test_layout_StructWithAllowlistedFwdDecl() {
         4usize,
         concat!("Alignment of ", stringify!(StructWithAllowlistedFwdDecl))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<StructWithAllowlistedFwdDecl>::uninit(
-                );
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(StructWithAllowlistedFwdDecl),
-            "::",
-            stringify!(b)
-        )
-    );
+    fn test_field_b() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<
+                    StructWithAllowlistedFwdDecl,
+                >::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(StructWithAllowlistedFwdDecl),
+                "::",
+                stringify!(b)
+            )
+        );
+    }
+    test_field_b();
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -145,18 +151,21 @@ fn bindgen_test_layout_AllowlistMe() {
         4usize,
         concat!("Alignment of ", stringify!(AllowlistMe))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<AllowlistMe>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(AllowlistMe),
-            "::",
-            stringify!(foo)
-        )
-    );
+    fn test_field_foo() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<AllowlistMe>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(AllowlistMe),
+                "::",
+                stringify!(foo)
+            )
+        );
+    }
+    test_field_foo();
 }

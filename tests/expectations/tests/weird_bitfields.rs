@@ -131,177 +131,218 @@ fn bindgen_test_layout_Weird() {
         4usize,
         concat!("Alignment of ", stringify!(Weird))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mStrokeDasharrayLength) as usize -
-                ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Weird),
-            "::",
-            stringify!(mStrokeDasharrayLength)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mClipRule) as usize - ptr as usize
-        },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Weird),
-            "::",
-            stringify!(mClipRule)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mColorInterpolation) as usize -
-                ptr as usize
-        },
-        9usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Weird),
-            "::",
-            stringify!(mColorInterpolation)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mColorInterpolationFilters) as usize -
-                ptr as usize
-        },
-        10usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Weird),
-            "::",
-            stringify!(mColorInterpolationFilters)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mFillRule) as usize - ptr as usize
-        },
-        11usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Weird),
-            "::",
-            stringify!(mFillRule)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mImageRendering) as usize - ptr as usize
-        },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Weird),
-            "::",
-            stringify!(mImageRendering)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mPaintOrder) as usize - ptr as usize
-        },
-        13usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Weird),
-            "::",
-            stringify!(mPaintOrder)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mShapeRendering) as usize - ptr as usize
-        },
-        14usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Weird),
-            "::",
-            stringify!(mShapeRendering)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mStrokeLinecap) as usize - ptr as usize
-        },
-        15usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Weird),
-            "::",
-            stringify!(mStrokeLinecap)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mStrokeLinejoin) as usize - ptr as usize
-        },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Weird),
-            "::",
-            stringify!(mStrokeLinejoin)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mTextAnchor) as usize - ptr as usize
-        },
-        17usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Weird),
-            "::",
-            stringify!(mTextAnchor)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mTextRendering) as usize - ptr as usize
-        },
-        18usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Weird),
-            "::",
-            stringify!(mTextRendering)
-        )
-    );
+    fn test_field_mStrokeDasharrayLength() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mStrokeDasharrayLength) as usize -
+                    ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Weird),
+                "::",
+                stringify!(mStrokeDasharrayLength)
+            )
+        );
+    }
+    test_field_mStrokeDasharrayLength();
+    fn test_field_mClipRule() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mClipRule) as usize - ptr as usize
+            },
+            8usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Weird),
+                "::",
+                stringify!(mClipRule)
+            )
+        );
+    }
+    test_field_mClipRule();
+    fn test_field_mColorInterpolation() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mColorInterpolation) as usize -
+                    ptr as usize
+            },
+            9usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Weird),
+                "::",
+                stringify!(mColorInterpolation)
+            )
+        );
+    }
+    test_field_mColorInterpolation();
+    fn test_field_mColorInterpolationFilters() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mColorInterpolationFilters) as usize -
+                    ptr as usize
+            },
+            10usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Weird),
+                "::",
+                stringify!(mColorInterpolationFilters)
+            )
+        );
+    }
+    test_field_mColorInterpolationFilters();
+    fn test_field_mFillRule() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mFillRule) as usize - ptr as usize
+            },
+            11usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Weird),
+                "::",
+                stringify!(mFillRule)
+            )
+        );
+    }
+    test_field_mFillRule();
+    fn test_field_mImageRendering() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mImageRendering) as usize -
+                    ptr as usize
+            },
+            12usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Weird),
+                "::",
+                stringify!(mImageRendering)
+            )
+        );
+    }
+    test_field_mImageRendering();
+    fn test_field_mPaintOrder() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mPaintOrder) as usize - ptr as usize
+            },
+            13usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Weird),
+                "::",
+                stringify!(mPaintOrder)
+            )
+        );
+    }
+    test_field_mPaintOrder();
+    fn test_field_mShapeRendering() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mShapeRendering) as usize -
+                    ptr as usize
+            },
+            14usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Weird),
+                "::",
+                stringify!(mShapeRendering)
+            )
+        );
+    }
+    test_field_mShapeRendering();
+    fn test_field_mStrokeLinecap() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mStrokeLinecap) as usize -
+                    ptr as usize
+            },
+            15usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Weird),
+                "::",
+                stringify!(mStrokeLinecap)
+            )
+        );
+    }
+    test_field_mStrokeLinecap();
+    fn test_field_mStrokeLinejoin() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mStrokeLinejoin) as usize -
+                    ptr as usize
+            },
+            16usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Weird),
+                "::",
+                stringify!(mStrokeLinejoin)
+            )
+        );
+    }
+    test_field_mStrokeLinejoin();
+    fn test_field_mTextAnchor() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mTextAnchor) as usize - ptr as usize
+            },
+            17usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Weird),
+                "::",
+                stringify!(mTextAnchor)
+            )
+        );
+    }
+    test_field_mTextAnchor();
+    fn test_field_mTextRendering() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Weird>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mTextRendering) as usize -
+                    ptr as usize
+            },
+            18usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Weird),
+                "::",
+                stringify!(mTextRendering)
+            )
+        );
+    }
+    test_field_mTextRendering();
 }
 impl Default for Weird {
     fn default() -> Self {

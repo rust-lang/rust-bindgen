@@ -22,15 +22,23 @@ fn bindgen_test_layout_Doggo() {
         4usize,
         concat!("Alignment of ", stringify!(Doggo))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Doggo>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-        },
-        0usize,
-        concat!("Offset of field: ", stringify!(Doggo), "::", stringify!(x))
-    );
+    fn test_field_x() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Doggo>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Doggo),
+                "::",
+                stringify!(x)
+            )
+        );
+    }
+    test_field_x();
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]

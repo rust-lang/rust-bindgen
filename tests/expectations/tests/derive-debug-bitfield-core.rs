@@ -112,20 +112,24 @@ fn bindgen_test_layout_C() {
         4usize,
         concat!("Alignment of ", stringify!(C))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::core::mem::MaybeUninit::<C>::uninit();
-            let ptr = uninit.as_ptr();
-            ::core::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize
-        },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(C),
-            "::",
-            stringify!(large_array)
-        )
-    );
+    fn test_field_large_array() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::core::mem::MaybeUninit::<C>::uninit();
+                let ptr = uninit.as_ptr();
+                ::core::ptr::addr_of!((*ptr).large_array) as usize -
+                    ptr as usize
+            },
+            4usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(C),
+                "::",
+                stringify!(large_array)
+            )
+        );
+    }
+    test_field_large_array();
 }
 impl Default for C {
     fn default() -> Self {

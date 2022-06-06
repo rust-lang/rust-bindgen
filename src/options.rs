@@ -49,13 +49,13 @@ where
     );
 
     let matches = App::new("bindgen")
-        .version(option_env!("CARGO_PKG_VERSION").unwrap_or("unknown"))
         .about("Generates Rust bindings from C/C++ headers.")
+        .setting(clap::AppSettings::NoAutoVersion)
         .override_usage("bindgen [FLAGS] [OPTIONS] <header> -- <clang-args>...")
         .args(&[
             Arg::new("header")
                 .help("C or C++ header file")
-                .required(true),
+                .required_unless_present("V"),
             Arg::new("depfile")
                 .long("depfile")
                 .takes_value(true)
@@ -575,9 +575,24 @@ where
                 .long("remove-function-prefix")
                 .multiple_occurrences(true)
                 .takes_value(true)
-                .help("Remove prefix when generating Rust function name.")
+                .help("Remove prefix when generating Rust function name."),
+            Arg::new("V")
+                .long("version")
+                .help("Prints the version, and exits"),
         ]) // .args()
         .get_matches_from(args);
+
+    let verbose = matches.is_present("verbose");
+    if matches.is_present("V") {
+        println!(
+            "bindgen {}",
+            option_env!("CARGO_PKG_VERSION").unwrap_or("unknown")
+        );
+        if verbose {
+            println!("Clang: {}", crate::clang_version().full);
+        }
+        std::process::exit(0);
+    }
 
     let mut builder = builder();
 

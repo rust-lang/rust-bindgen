@@ -36,20 +36,24 @@ pub mod root {
             1usize,
             concat!("Alignment of ", stringify!(CapturingContentInfo))
         );
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<CapturingContentInfo>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(CapturingContentInfo),
-                "::",
-                stringify!(a)
-            )
-        );
+        fn test_field_a() {
+            assert_eq!(
+                unsafe {
+                    let uninit =
+                        ::std::mem::MaybeUninit::<CapturingContentInfo>::uninit(
+                        );
+                    let ptr = uninit.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+                },
+                0usize,
+                concat!(
+                    "Offset of field: ",
+                    stringify!(CapturingContentInfo),
+                    "::",
+                    stringify!(a)
+                )
+            );
+        }
+        test_field_a();
     }
 }

@@ -22,20 +22,23 @@ fn bindgen_test_layout_LittleArray() {
         4usize,
         concat!("Alignment of ", stringify!(LittleArray))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<LittleArray>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(LittleArray),
-            "::",
-            stringify!(a)
-        )
-    );
+    fn test_field_a() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<LittleArray>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(LittleArray),
+                "::",
+                stringify!(a)
+            )
+        );
+    }
+    test_field_a();
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -54,20 +57,23 @@ fn bindgen_test_layout_BigArray() {
         4usize,
         concat!("Alignment of ", stringify!(BigArray))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<BigArray>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(BigArray),
-            "::",
-            stringify!(a)
-        )
-    );
+    fn test_field_a() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<BigArray>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(BigArray),
+                "::",
+                stringify!(a)
+            )
+        );
+    }
+    test_field_a();
 }
 impl Default for BigArray {
     fn default() -> Self {
@@ -95,20 +101,24 @@ fn bindgen_test_layout_WithLittleArray() {
         4usize,
         concat!("Alignment of ", stringify!(WithLittleArray))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<WithLittleArray>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithLittleArray),
-            "::",
-            stringify!(a)
-        )
-    );
+    fn test_field_a() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<WithLittleArray>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(WithLittleArray),
+                "::",
+                stringify!(a)
+            )
+        );
+    }
+    test_field_a();
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -127,20 +137,23 @@ fn bindgen_test_layout_WithBigArray() {
         4usize,
         concat!("Alignment of ", stringify!(WithBigArray))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<WithBigArray>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithBigArray),
-            "::",
-            stringify!(a)
-        )
-    );
+    fn test_field_a() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<WithBigArray>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(WithBigArray),
+                "::",
+                stringify!(a)
+            )
+        );
+    }
+    test_field_a();
 }
 impl Default for WithBigArray {
     fn default() -> Self {

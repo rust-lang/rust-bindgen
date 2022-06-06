@@ -80,20 +80,24 @@ pub mod root {
                 4usize,
                 concat!("Alignment of ", stringify!(Baz))
             );
-            assert_eq!(
-                unsafe {
-                    let uninit = ::std::mem::MaybeUninit::<Baz>::uninit();
-                    let ptr = uninit.as_ptr();
-                    ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(Baz),
-                    "::",
-                    stringify!(member)
-                )
-            );
+            fn test_field_member() {
+                assert_eq!(
+                    unsafe {
+                        let uninit = ::std::mem::MaybeUninit::<Baz>::uninit();
+                        let ptr = uninit.as_ptr();
+                        ::std::ptr::addr_of!((*ptr).member) as usize -
+                            ptr as usize
+                    },
+                    0usize,
+                    concat!(
+                        "Offset of field: ",
+                        stringify!(Baz),
+                        "::",
+                        stringify!(member)
+                    )
+                );
+            }
+            test_field_member();
         }
         /// I'm in an inline namespace, and as such I shouldn't get generated inside
         /// a rust module, except when the relevant option is specified. Also, this

@@ -23,20 +23,23 @@ fn bindgen_test_layout_nsTArray_base() {
         8usize,
         concat!("Alignment of ", stringify!(nsTArray_base))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<nsTArray_base>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(nsTArray_base),
-            "::",
-            stringify!(d)
-        )
-    );
+    fn test_field_d() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<nsTArray_base>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(nsTArray_base),
+                "::",
+                stringify!(d)
+            )
+        );
+    }
+    test_field_d();
 }
 impl Default for nsTArray_base {
     fn default() -> Self {
@@ -78,20 +81,23 @@ fn bindgen_test_layout_nsIContent() {
         8usize,
         concat!("Alignment of ", stringify!(nsIContent))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<nsIContent>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(nsIContent),
-            "::",
-            stringify!(foo)
-        )
-    );
+    fn test_field_foo() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<nsIContent>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(nsIContent),
+                "::",
+                stringify!(foo)
+            )
+        );
+    }
+    test_field_foo();
 }
 impl Default for nsIContent {
     fn default() -> Self {

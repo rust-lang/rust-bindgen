@@ -597,7 +597,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Returns the pointer width to use for the target for the current
     /// translation.
     pub fn target_pointer_size(&self) -> usize {
-        return self.target_info.pointer_width / 8;
+        self.target_info.pointer_width / 8
     }
 
     /// Get the stack of partially parsed types that we are in the middle of
@@ -836,9 +836,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             )
         {
             let mut s = name.to_owned();
-            s = s.replace("@", "_");
-            s = s.replace("?", "_");
-            s = s.replace("$", "_");
+            s = s.replace('@', "_");
+            s = s.replace('?', "_");
+            s = s.replace('$', "_");
             s.push('_');
             return Cow::Owned(s);
         }

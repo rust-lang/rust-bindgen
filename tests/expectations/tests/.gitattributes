@@ -1,0 +1,2 @@
+# Prevent Github Linguist from counting generated files in statistics.
+*.rs linguist-generated

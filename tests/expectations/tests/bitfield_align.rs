@@ -112,24 +112,30 @@ fn bindgen_test_layout_A() {
         4usize,
         concat!("Alignment of ", stringify!(A))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<A>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-        },
-        0usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(x))
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<A>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
-        },
-        3usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(y))
-    );
+    fn test_field_x() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<A>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
+            },
+            0usize,
+            concat!("Offset of field: ", stringify!(A), "::", stringify!(x))
+        );
+    }
+    test_field_x();
+    fn test_field_y() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<A>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
+            },
+            3usize,
+            concat!("Offset of field: ", stringify!(A), "::", stringify!(y))
+        );
+    }
+    test_field_y();
 }
 impl A {
     #[inline]
@@ -405,24 +411,30 @@ fn bindgen_test_layout_C() {
         4usize,
         concat!("Alignment of ", stringify!(C))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-        },
-        0usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(x))
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize
-        },
-        4usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(baz))
-    );
+    fn test_field_x() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
+            },
+            0usize,
+            concat!("Offset of field: ", stringify!(C), "::", stringify!(x))
+        );
+    }
+    test_field_x();
+    fn test_field_baz() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize
+            },
+            4usize,
+            concat!("Offset of field: ", stringify!(C), "::", stringify!(baz))
+        );
+    }
+    test_field_baz();
 }
 impl C {
     #[inline]
@@ -710,20 +722,23 @@ fn bindgen_test_layout_Date3() {
         2usize,
         concat!("Alignment of ", stringify!(Date3))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Date3>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).byte) as usize - ptr as usize
-        },
-        3usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Date3),
-            "::",
-            stringify!(byte)
-        )
-    );
+    fn test_field_byte() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Date3>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).byte) as usize - ptr as usize
+            },
+            3usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Date3),
+                "::",
+                stringify!(byte)
+            )
+        );
+    }
+    test_field_byte();
 }
 impl Date3 {
     #[inline]

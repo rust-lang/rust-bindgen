@@ -2714,7 +2714,7 @@ fn get_target_dependent_env_var(var: &str) -> Option<String> {
             return Some(v);
         }
         if let Ok(v) =
-            env::var(&format!("{}_{}", var, target.replace("-", "_")))
+            env::var(&format!("{}_{}", var, target.replace('-', "_")))
         {
             return Some(v);
         }

@@ -2082,8 +2082,7 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::derives(&derives))
         }
 
-        if item.annotations().must_use_type() || ctx.must_use_type_by_name(item)
-        {
+        if item.must_use(ctx) {
             attributes.push(attributes::must_use());
         }
 
@@ -2177,19 +2176,23 @@ impl CodeGenerator for CompInfo {
                     {
                         vec![]
                     } else {
-                        let asserts = self.fields()
-                                .iter()
-                                .filter_map(|field| match *field {
-                                    Field::DataMember(ref f) if f.name().is_some() => Some(f),
-                                    _ => None,
-                                })
-                                .flat_map(|field| {
-                                    let name = field.name().unwrap();
-                                    field.offset().map(|offset| {
-                                        let field_offset = offset / 8;
-                                        let field_name = ctx.rust_ident(name);
-
-                                        quote! {
+                        self.fields()
+                            .iter()
+                            .filter_map(|field| match *field {
+                                Field::DataMember(ref f) if f.name().is_some() => Some(f),
+                                _ => None,
+                            })
+                            .flat_map(|field| {
+                                let name = field.name().unwrap();
+                                field.offset().map(|offset| {
+                                    let field_offset = offset / 8;
+                                    let field_name = ctx.rust_ident(name);
+                                    // Put each check in its own function, so
+                                    // that rustc with opt-level=0 doesn't take
+                                    // too much stack space, see #2218.
+                                    let test_fn = Ident::new(&format!("test_field_{}", name), Span::call_site());
+                                    quote! {
+                                        fn #test_fn() {
                                             assert_eq!(
                                                 unsafe {
                                                     let uninit = ::#prefix::mem::MaybeUninit::<#canonical_ident>::uninit();
@@ -2200,11 +2203,11 @@ impl CodeGenerator for CompInfo {
                                                 concat!("Offset of field: ", stringify!(#canonical_ident), "::", stringify!(#field_name))
                                             );
                                         }
-                                    })
+                                        #test_fn();
+                                    }
                                 })
-                                .collect::<Vec<proc_macro2::TokenStream>>();
-
-                        asserts
+                            })
+                            .collect::<Vec<proc_macro2::TokenStream>>()
                     };
 
                     let item = quote! {
@@ -3054,8 +3057,7 @@ impl CodeGenerator for Enum {
             attrs.push(attributes::doc(comment));
         }
 
-        if item.annotations().must_use_type() || ctx.must_use_type_by_name(item)
-        {
+        if item.must_use(ctx) {
             attrs.push(attributes::must_use());
         }
 
@@ -3965,11 +3967,21 @@ impl CodeGenerator for Function {
 
         let mut attributes = vec![];
 
-        if signature.must_use() &&
-            ctx.options().rust_features().must_use_function
-        {
-            attributes.push(attributes::must_use());
+        if ctx.options().rust_features().must_use_function {
+            let must_use = signature.must_use() || {
+                let ret_ty = signature
+                    .return_type()
+                    .into_resolver()
+                    .through_type_refs()
+                    .resolve(ctx);
+                ret_ty.must_use(ctx)
+            };
+
+            if must_use {
+                attributes.push(attributes::must_use());
+            }
         }
+
         if let Some(comment) = item.comment(ctx) {
             attributes.push(attributes::doc(comment));
         }
@@ -4087,9 +4099,7 @@ fn objc_method_codegen(
 
     let body = if method.is_class_method() {
         let class_name = ctx.rust_ident(
-            class_name
-                .expect("Generating a class method without class name?")
-                .to_owned(),
+            class_name.expect("Generating a class method without class name?"),
         );
         quote! {
             msg_send!(class!(#class_name), #methods_and_args)

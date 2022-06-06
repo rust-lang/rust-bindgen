@@ -24,36 +24,44 @@ fn bindgen_test_layout_ShouldNotDerivePartialEq() {
         4usize,
         concat!("Alignment of ", stringify!(ShouldNotDerivePartialEq))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<ShouldNotDerivePartialEq>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldNotDerivePartialEq),
-            "::",
-            stringify!(a)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<ShouldNotDerivePartialEq>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldNotDerivePartialEq),
-            "::",
-            stringify!(b)
-        )
-    );
+    fn test_field_a() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<ShouldNotDerivePartialEq>::uninit(
+                    );
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(ShouldNotDerivePartialEq),
+                "::",
+                stringify!(a)
+            )
+        );
+    }
+    test_field_a();
+    fn test_field_b() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<ShouldNotDerivePartialEq>::uninit(
+                    );
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(ShouldNotDerivePartialEq),
+                "::",
+                stringify!(b)
+            )
+        );
+    }
+    test_field_b();
 }
 impl Default for ShouldNotDerivePartialEq {
     fn default() -> Self {

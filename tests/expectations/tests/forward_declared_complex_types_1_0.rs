@@ -55,15 +55,18 @@ fn bindgen_test_layout_Bar() {
         8usize,
         concat!("Alignment of ", stringify!(Bar))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize
-        },
-        0usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(f))
-    );
+    fn test_field_f() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize
+            },
+            0usize,
+            concat!("Offset of field: ", stringify!(Bar), "::", stringify!(f))
+        );
+    }
+    test_field_f();
 }
 impl Clone for Bar {
     fn clone(&self) -> Self {

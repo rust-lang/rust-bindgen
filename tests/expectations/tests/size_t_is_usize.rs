@@ -24,33 +24,47 @@ fn bindgen_test_layout_A() {
         8usize,
         concat!("Alignment of ", stringify!(A))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<A>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize
-        },
-        0usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(len))
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<A>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).offset) as usize - ptr as usize
-        },
-        8usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(offset))
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<A>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).next) as usize - ptr as usize
-        },
-        16usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(next))
-    );
+    fn test_field_len() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<A>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize
+            },
+            0usize,
+            concat!("Offset of field: ", stringify!(A), "::", stringify!(len))
+        );
+    }
+    test_field_len();
+    fn test_field_offset() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<A>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).offset) as usize - ptr as usize
+            },
+            8usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(A),
+                "::",
+                stringify!(offset)
+            )
+        );
+    }
+    test_field_offset();
+    fn test_field_next() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<A>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).next) as usize - ptr as usize
+            },
+            16usize,
+            concat!("Offset of field: ", stringify!(A), "::", stringify!(next))
+        );
+    }
+    test_field_next();
 }
 impl Default for A {
     fn default() -> Self {
