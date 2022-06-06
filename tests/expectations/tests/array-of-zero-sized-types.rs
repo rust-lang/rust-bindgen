@@ -43,18 +43,22 @@ fn bindgen_test_layout_HasArrayOfEmpty() {
         1usize,
         concat!("Alignment of ", stringify!(HasArrayOfEmpty))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<HasArrayOfEmpty>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).empties) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(HasArrayOfEmpty),
-            "::",
-            stringify!(empties)
-        )
-    );
+    fn test_field_empties() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<HasArrayOfEmpty>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).empties) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(HasArrayOfEmpty),
+                "::",
+                stringify!(empties)
+            )
+        );
+    }
+    test_field_empties();
 }

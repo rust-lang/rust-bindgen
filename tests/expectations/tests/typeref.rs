@@ -22,21 +22,24 @@ fn bindgen_test_layout_mozilla_FragmentOrURL() {
         1usize,
         concat!("Alignment of ", stringify!(mozilla_FragmentOrURL))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<mozilla_FragmentOrURL>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mIsLocalRef) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(mozilla_FragmentOrURL),
-            "::",
-            stringify!(mIsLocalRef)
-        )
-    );
+    fn test_field_mIsLocalRef() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<mozilla_FragmentOrURL>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mIsLocalRef) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(mozilla_FragmentOrURL),
+                "::",
+                stringify!(mIsLocalRef)
+            )
+        );
+    }
+    test_field_mIsLocalRef();
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -100,15 +103,23 @@ fn bindgen_test_layout_Bar() {
         8usize,
         concat!("Alignment of ", stringify!(Bar))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mFoo) as usize - ptr as usize
-        },
-        0usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(mFoo))
-    );
+    fn test_field_mFoo() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mFoo) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Bar),
+                "::",
+                stringify!(mFoo)
+            )
+        );
+    }
+    test_field_mFoo();
 }
 impl Default for Bar {
     fn default() -> Self {
@@ -135,20 +146,23 @@ fn bindgen_test_layout_nsFoo() {
         8usize,
         concat!("Alignment of ", stringify!(nsFoo))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<nsFoo>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mBar) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(nsFoo),
-            "::",
-            stringify!(mBar)
-        )
-    );
+    fn test_field_mBar() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<nsFoo>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).mBar) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(nsFoo),
+                "::",
+                stringify!(mBar)
+            )
+        );
+    }
+    test_field_mBar();
 }
 impl Default for nsFoo {
     fn default() -> Self {

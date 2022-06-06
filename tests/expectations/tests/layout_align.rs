@@ -179,20 +179,23 @@ fn bindgen_test_layout_rte_eth_link() {
         8usize,
         concat!("Alignment of ", stringify!(rte_eth_link))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<rte_eth_link>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).link_speed) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_eth_link),
-            "::",
-            stringify!(link_speed)
-        )
-    );
+    fn test_field_link_speed() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rte_eth_link>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).link_speed) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rte_eth_link),
+                "::",
+                stringify!(link_speed)
+            )
+        );
+    }
+    test_field_link_speed();
 }
 impl rte_eth_link {
     #[inline]

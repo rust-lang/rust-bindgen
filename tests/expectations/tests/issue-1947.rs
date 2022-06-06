@@ -117,48 +117,57 @@ fn bindgen_test_layout_V56AMDY() {
         2usize,
         concat!("Alignment of ", stringify!(V56AMDY))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<V56AMDY>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).MADK) as usize - ptr as usize
-        },
-        2usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(V56AMDY),
-            "::",
-            stringify!(MADK)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<V56AMDY>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).MABR) as usize - ptr as usize
-        },
-        3usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(V56AMDY),
-            "::",
-            stringify!(MABR)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<V56AMDY>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr)._rB_) as usize - ptr as usize
-        },
-        7usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(V56AMDY),
-            "::",
-            stringify!(_rB_)
-        )
-    );
+    fn test_field_MADK() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<V56AMDY>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).MADK) as usize - ptr as usize
+            },
+            2usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(V56AMDY),
+                "::",
+                stringify!(MADK)
+            )
+        );
+    }
+    test_field_MADK();
+    fn test_field_MABR() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<V56AMDY>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).MABR) as usize - ptr as usize
+            },
+            3usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(V56AMDY),
+                "::",
+                stringify!(MABR)
+            )
+        );
+    }
+    test_field_MABR();
+    fn test_field__rB_() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<V56AMDY>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr)._rB_) as usize - ptr as usize
+            },
+            7usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(V56AMDY),
+                "::",
+                stringify!(_rB_)
+            )
+        );
+    }
+    test_field__rB_();
 }
 impl V56AMDY {
     #[inline]

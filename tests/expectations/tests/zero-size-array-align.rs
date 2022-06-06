@@ -54,46 +54,55 @@ fn bindgen_test_layout_dm_deps() {
         8usize,
         concat!("Alignment of ", stringify!(dm_deps))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<dm_deps>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).count) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(dm_deps),
-            "::",
-            stringify!(count)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<dm_deps>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).filler) as usize - ptr as usize
-        },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(dm_deps),
-            "::",
-            stringify!(filler)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<dm_deps>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).device) as usize - ptr as usize
-        },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(dm_deps),
-            "::",
-            stringify!(device)
-        )
-    );
+    fn test_field_count() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<dm_deps>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).count) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(dm_deps),
+                "::",
+                stringify!(count)
+            )
+        );
+    }
+    test_field_count();
+    fn test_field_filler() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<dm_deps>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).filler) as usize - ptr as usize
+            },
+            4usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(dm_deps),
+                "::",
+                stringify!(filler)
+            )
+        );
+    }
+    test_field_filler();
+    fn test_field_device() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<dm_deps>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).device) as usize - ptr as usize
+            },
+            8usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(dm_deps),
+                "::",
+                stringify!(device)
+            )
+        );
+    }
+    test_field_device();
 }

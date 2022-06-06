@@ -21,20 +21,23 @@ fn bindgen_test_layout_Instance() {
         4usize,
         concat!("Alignment of ", stringify!(Instance))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Instance>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).val) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Instance),
-            "::",
-            stringify!(val)
-        )
-    );
+    fn test_field_val() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Instance>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).val) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Instance),
+                "::",
+                stringify!(val)
+            )
+        );
+    }
+    test_field_val();
 }
 impl Default for Instance {
     fn default() -> Self {

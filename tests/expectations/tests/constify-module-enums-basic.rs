@@ -30,21 +30,24 @@ fn bindgen_test_layout_bar() {
         4usize,
         concat!("Alignment of ", stringify!(bar))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<bar>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).this_should_work) as usize -
-                ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(bar),
-            "::",
-            stringify!(this_should_work)
-        )
-    );
+    fn test_field_this_should_work() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<bar>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).this_should_work) as usize -
+                    ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(bar),
+                "::",
+                stringify!(this_should_work)
+            )
+        );
+    }
+    test_field_this_should_work();
 }
 impl Default for bar {
     fn default() -> Self {

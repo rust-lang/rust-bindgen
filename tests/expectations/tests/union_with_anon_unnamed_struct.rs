@@ -31,66 +31,78 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
         1usize,
         concat!("Alignment of ", stringify!(pixel__bindgen_ty_1))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<pixel__bindgen_ty_1>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).r) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(pixel__bindgen_ty_1),
-            "::",
-            stringify!(r)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<pixel__bindgen_ty_1>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).g) as usize - ptr as usize
-        },
-        1usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(pixel__bindgen_ty_1),
-            "::",
-            stringify!(g)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<pixel__bindgen_ty_1>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-        },
-        2usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(pixel__bindgen_ty_1),
-            "::",
-            stringify!(b)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<pixel__bindgen_ty_1>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
-        3usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(pixel__bindgen_ty_1),
-            "::",
-            stringify!(a)
-        )
-    );
+    fn test_field_r() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<pixel__bindgen_ty_1>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).r) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(pixel__bindgen_ty_1),
+                "::",
+                stringify!(r)
+            )
+        );
+    }
+    test_field_r();
+    fn test_field_g() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<pixel__bindgen_ty_1>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).g) as usize - ptr as usize
+            },
+            1usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(pixel__bindgen_ty_1),
+                "::",
+                stringify!(g)
+            )
+        );
+    }
+    test_field_g();
+    fn test_field_b() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<pixel__bindgen_ty_1>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+            },
+            2usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(pixel__bindgen_ty_1),
+                "::",
+                stringify!(b)
+            )
+        );
+    }
+    test_field_b();
+    fn test_field_a() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<pixel__bindgen_ty_1>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+            },
+            3usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(pixel__bindgen_ty_1),
+                "::",
+                stringify!(a)
+            )
+        );
+    }
+    test_field_a();
 }
 #[test]
 fn bindgen_test_layout_pixel() {
@@ -104,20 +116,23 @@ fn bindgen_test_layout_pixel() {
         4usize,
         concat!("Alignment of ", stringify!(pixel))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<pixel>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).rgba) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(pixel),
-            "::",
-            stringify!(rgba)
-        )
-    );
+    fn test_field_rgba() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<pixel>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).rgba) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(pixel),
+                "::",
+                stringify!(rgba)
+            )
+        );
+    }
+    test_field_rgba();
 }
 impl Default for pixel {
     fn default() -> Self {

@@ -25,20 +25,23 @@ fn bindgen_test_layout_WouldBeCopyButWeAreNotDerivingCopy() {
             stringify!(WouldBeCopyButWeAreNotDerivingCopy)
         )
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<
-                WouldBeCopyButWeAreNotDerivingCopy,
-            >::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WouldBeCopyButWeAreNotDerivingCopy),
-            "::",
-            stringify!(x)
-        )
-    );
+    fn test_field_x() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<
+                    WouldBeCopyButWeAreNotDerivingCopy,
+                >::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(WouldBeCopyButWeAreNotDerivingCopy),
+                "::",
+                stringify!(x)
+            )
+        );
+    }
+    test_field_x();
 }

@@ -24,21 +24,25 @@ fn bindgen_test_layout_ShouldManuallyImplDebug() {
         1usize,
         concat!("Alignment of ", stringify!(ShouldManuallyImplDebug))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<ShouldManuallyImplDebug>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldManuallyImplDebug),
-            "::",
-            stringify!(a)
-        )
-    );
+    fn test_field_a() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<ShouldManuallyImplDebug>::uninit(
+                    );
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(ShouldManuallyImplDebug),
+                "::",
+                stringify!(a)
+            )
+        );
+    }
+    test_field_a();
 }
 impl Default for ShouldManuallyImplDebug {
     fn default() -> Self {

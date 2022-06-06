@@ -53,20 +53,24 @@ fn bindgen_test_layout_ZeroSizedArray() {
         1usize,
         concat!("Alignment of ", stringify!(ZeroSizedArray))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<ZeroSizedArray>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).arr) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ZeroSizedArray),
-            "::",
-            stringify!(arr)
-        )
-    );
+    fn test_field_arr() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<ZeroSizedArray>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).arr) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(ZeroSizedArray),
+                "::",
+                stringify!(arr)
+            )
+        );
+    }
+    test_field_arr();
 }
 /// And nor should this get an `_address` field.
 #[repr(C)]
@@ -86,21 +90,24 @@ fn bindgen_test_layout_ContainsZeroSizedArray() {
         1usize,
         concat!("Alignment of ", stringify!(ContainsZeroSizedArray))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<ContainsZeroSizedArray>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).zsa) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ContainsZeroSizedArray),
-            "::",
-            stringify!(zsa)
-        )
-    );
+    fn test_field_zsa() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<ContainsZeroSizedArray>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).zsa) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(ContainsZeroSizedArray),
+                "::",
+                stringify!(zsa)
+            )
+        );
+    }
+    test_field_zsa();
 }
 /// Inheriting from ZeroSizedArray shouldn't cause an `_address` to be inserted
 /// either.
@@ -140,21 +147,24 @@ fn bindgen_test_layout_DynamicallySizedArray() {
         1usize,
         concat!("Alignment of ", stringify!(DynamicallySizedArray))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<DynamicallySizedArray>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).arr) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DynamicallySizedArray),
-            "::",
-            stringify!(arr)
-        )
-    );
+    fn test_field_arr() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<DynamicallySizedArray>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).arr) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(DynamicallySizedArray),
+                "::",
+                stringify!(arr)
+            )
+        );
+    }
+    test_field_arr();
 }
 /// No `_address` field here either.
 #[repr(C)]
@@ -174,18 +184,23 @@ fn bindgen_test_layout_ContainsDynamicallySizedArray() {
         1usize,
         concat!("Alignment of ", stringify!(ContainsDynamicallySizedArray))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = :: std :: mem :: MaybeUninit :: < ContainsDynamicallySizedArray > :: uninit () ;
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).dsa) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ContainsDynamicallySizedArray),
-            "::",
-            stringify!(dsa)
-        )
-    );
+    fn test_field_dsa() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<
+                    ContainsDynamicallySizedArray,
+                >::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).dsa) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(ContainsDynamicallySizedArray),
+                "::",
+                stringify!(dsa)
+            )
+        );
+    }
+    test_field_dsa();
 }

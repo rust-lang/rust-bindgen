@@ -24,20 +24,24 @@ fn bindgen_test_layout_ShouldImplClone() {
         4usize,
         concat!("Alignment of ", stringify!(ShouldImplClone))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<ShouldImplClone>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).large) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldImplClone),
-            "::",
-            stringify!(large)
-        )
-    );
+    fn test_field_large() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<ShouldImplClone>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).large) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(ShouldImplClone),
+                "::",
+                stringify!(large)
+            )
+        );
+    }
+    test_field_large();
 }
 impl Clone for ShouldImplClone {
     fn clone(&self) -> Self {

@@ -22,21 +22,24 @@ fn bindgen_test_layout_typedef_named_struct() {
         1usize,
         concat!("Alignment of ", stringify!(typedef_named_struct))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<typedef_named_struct>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).has_name) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(typedef_named_struct),
-            "::",
-            stringify!(has_name)
-        )
-    );
+    fn test_field_has_name() {
+        assert_eq!(
+            unsafe {
+                let uninit =
+                    ::std::mem::MaybeUninit::<typedef_named_struct>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).has_name) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(typedef_named_struct),
+                "::",
+                stringify!(has_name)
+            )
+        );
+    }
+    test_field_has_name();
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -55,20 +58,23 @@ fn bindgen_test_layout__bindgen_ty_1() {
         8usize,
         concat!("Alignment of ", stringify!(_bindgen_ty_1))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<_bindgen_ty_1>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).no_name) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(_bindgen_ty_1),
-            "::",
-            stringify!(no_name)
-        )
-    );
+    fn test_field_no_name() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<_bindgen_ty_1>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).no_name) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(_bindgen_ty_1),
+                "::",
+                stringify!(no_name)
+            )
+        );
+    }
+    test_field_no_name();
 }
 impl Default for _bindgen_ty_1 {
     fn default() -> Self {

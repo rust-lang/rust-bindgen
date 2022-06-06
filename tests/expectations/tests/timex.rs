@@ -110,20 +110,23 @@ fn bindgen_test_layout_timex() {
         4usize,
         concat!("Alignment of ", stringify!(timex))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<timex>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).tai) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(timex),
-            "::",
-            stringify!(tai)
-        )
-    );
+    fn test_field_tai() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<timex>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).tai) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(timex),
+                "::",
+                stringify!(tai)
+            )
+        );
+    }
+    test_field_tai();
 }
 impl Default for timex {
     fn default() -> Self {
@@ -153,20 +156,23 @@ fn bindgen_test_layout_timex_named() {
         4usize,
         concat!("Alignment of ", stringify!(timex_named))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<timex_named>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).tai) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(timex_named),
-            "::",
-            stringify!(tai)
-        )
-    );
+    fn test_field_tai() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<timex_named>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).tai) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(timex_named),
+                "::",
+                stringify!(tai)
+            )
+        );
+    }
+    test_field_tai();
 }
 impl Default for timex_named {
     fn default() -> Self {

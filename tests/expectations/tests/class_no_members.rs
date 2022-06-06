@@ -58,19 +58,23 @@ fn bindgen_test_layout_whatever_child_with_member() {
         4usize,
         concat!("Alignment of ", stringify!(whatever_child_with_member))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<whatever_child_with_member>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).m_member) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(whatever_child_with_member),
-            "::",
-            stringify!(m_member)
-        )
-    );
+    fn test_field_m_member() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<
+                    whatever_child_with_member,
+                >::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).m_member) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(whatever_child_with_member),
+                "::",
+                stringify!(m_member)
+            )
+        );
+    }
+    test_field_m_member();
 }

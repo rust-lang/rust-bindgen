@@ -25,20 +25,23 @@ fn bindgen_test_layout_NoDebug() {
         64usize,
         concat!("Alignment of ", stringify!(NoDebug))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<NoDebug>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(NoDebug),
-            "::",
-            stringify!(c)
-        )
-    );
+    fn test_field_c() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<NoDebug>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(NoDebug),
+                "::",
+                stringify!(c)
+            )
+        );
+    }
+    test_field_c();
 }
 impl Default for NoDebug {
     fn default() -> Self {
@@ -77,38 +80,44 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
         64usize,
         concat!("Alignment of ", stringify!(ShouldDeriveDebugButDoesNot))
     );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<ShouldDeriveDebugButDoesNot>::uninit(
-                );
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldDeriveDebugButDoesNot),
-            "::",
-            stringify!(c)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit =
-                ::std::mem::MaybeUninit::<ShouldDeriveDebugButDoesNot>::uninit(
-                );
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize
-        },
-        32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldDeriveDebugButDoesNot),
-            "::",
-            stringify!(d)
-        )
-    );
+    fn test_field_c() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<
+                    ShouldDeriveDebugButDoesNot,
+                >::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(ShouldDeriveDebugButDoesNot),
+                "::",
+                stringify!(c)
+            )
+        );
+    }
+    test_field_c();
+    fn test_field_d() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<
+                    ShouldDeriveDebugButDoesNot,
+                >::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize
+            },
+            32usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(ShouldDeriveDebugButDoesNot),
+                "::",
+                stringify!(d)
+            )
+        );
+    }
+    test_field_d();
 }
 impl Default for ShouldDeriveDebugButDoesNot {
     fn default() -> Self {

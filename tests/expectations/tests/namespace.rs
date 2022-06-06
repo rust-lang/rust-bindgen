@@ -43,20 +43,23 @@ pub mod root {
                 4usize,
                 concat!("Alignment of ", stringify!(A))
             );
-            assert_eq!(
-                unsafe {
-                    let uninit = ::std::mem::MaybeUninit::<A>::uninit();
-                    let ptr = uninit.as_ptr();
-                    ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(A),
-                    "::",
-                    stringify!(b)
-                )
-            );
+            fn test_field_b() {
+                assert_eq!(
+                    unsafe {
+                        let uninit = ::std::mem::MaybeUninit::<A>::uninit();
+                        let ptr = uninit.as_ptr();
+                        ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+                    },
+                    0usize,
+                    concat!(
+                        "Offset of field: ",
+                        stringify!(A),
+                        "::",
+                        stringify!(b)
+                    )
+                );
+            }
+            test_field_b();
         }
     }
     #[repr(C)]

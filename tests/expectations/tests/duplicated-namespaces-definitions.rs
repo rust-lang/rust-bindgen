@@ -30,34 +30,40 @@ pub mod root {
                 4usize,
                 concat!("Alignment of ", stringify!(Bar))
             );
-            assert_eq!(
-                unsafe {
-                    let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
-                    let ptr = uninit.as_ptr();
-                    ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(Bar),
-                    "::",
-                    stringify!(foo)
-                )
-            );
-            assert_eq!(
-                unsafe {
-                    let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
-                    let ptr = uninit.as_ptr();
-                    ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize
-                },
-                4usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(Bar),
-                    "::",
-                    stringify!(baz)
-                )
-            );
+            fn test_field_foo() {
+                assert_eq!(
+                    unsafe {
+                        let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
+                        let ptr = uninit.as_ptr();
+                        ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
+                    },
+                    0usize,
+                    concat!(
+                        "Offset of field: ",
+                        stringify!(Bar),
+                        "::",
+                        stringify!(foo)
+                    )
+                );
+            }
+            test_field_foo();
+            fn test_field_baz() {
+                assert_eq!(
+                    unsafe {
+                        let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
+                        let ptr = uninit.as_ptr();
+                        ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize
+                    },
+                    4usize,
+                    concat!(
+                        "Offset of field: ",
+                        stringify!(Bar),
+                        "::",
+                        stringify!(baz)
+                    )
+                );
+            }
+            test_field_baz();
         }
     }
     pub mod bar {
@@ -80,20 +86,23 @@ pub mod root {
                 8usize,
                 concat!("Alignment of ", stringify!(Foo))
             );
-            assert_eq!(
-                unsafe {
-                    let uninit = ::std::mem::MaybeUninit::<Foo>::uninit();
-                    let ptr = uninit.as_ptr();
-                    ::std::ptr::addr_of!((*ptr).ptr) as usize - ptr as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(Foo),
-                    "::",
-                    stringify!(ptr)
-                )
-            );
+            fn test_field_ptr() {
+                assert_eq!(
+                    unsafe {
+                        let uninit = ::std::mem::MaybeUninit::<Foo>::uninit();
+                        let ptr = uninit.as_ptr();
+                        ::std::ptr::addr_of!((*ptr).ptr) as usize - ptr as usize
+                    },
+                    0usize,
+                    concat!(
+                        "Offset of field: ",
+                        stringify!(Foo),
+                        "::",
+                        stringify!(ptr)
+                    )
+                );
+            }
+            test_field_ptr();
         }
         impl Default for Foo {
             fn default() -> Self {

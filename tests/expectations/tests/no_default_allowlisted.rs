@@ -22,18 +22,21 @@ fn bindgen_test_layout_NoDefault() {
         4usize,
         concat!("Alignment of ", stringify!(NoDefault))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<NoDefault>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(NoDefault),
-            "::",
-            stringify!(i)
-        )
-    );
+    fn test_field_i() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<NoDefault>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(NoDefault),
+                "::",
+                stringify!(i)
+            )
+        );
+    }
+    test_field_i();
 }

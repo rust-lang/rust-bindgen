@@ -38,21 +38,24 @@ fn bindgen_test_layout_WithoutDtor() {
         8usize,
         concat!("Alignment of ", stringify!(WithoutDtor))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<WithoutDtor>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).shouldBeWithDtor) as usize -
-                ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithoutDtor),
-            "::",
-            stringify!(shouldBeWithDtor)
-        )
-    );
+    fn test_field_shouldBeWithDtor() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<WithoutDtor>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).shouldBeWithDtor) as usize -
+                    ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(WithoutDtor),
+                "::",
+                stringify!(shouldBeWithDtor)
+            )
+        );
+    }
+    test_field_shouldBeWithDtor();
 }
 impl Default for WithoutDtor {
     fn default() -> Self {

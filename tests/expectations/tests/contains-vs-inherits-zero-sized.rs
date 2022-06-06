@@ -43,20 +43,23 @@ fn bindgen_test_layout_Inherits() {
         1usize,
         concat!("Alignment of ", stringify!(Inherits))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Inherits>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Inherits),
-            "::",
-            stringify!(b)
-        )
-    );
+    fn test_field_b() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Inherits>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Inherits),
+                "::",
+                stringify!(b)
+            )
+        );
+    }
+    test_field_b();
 }
 /// This should not get an `_address` byte, but contains `Empty` which *does* get
 /// one, so `sizeof(Contains)` should be `1 + 1`.
@@ -78,32 +81,38 @@ fn bindgen_test_layout_Contains() {
         1usize,
         concat!("Alignment of ", stringify!(Contains))
     );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Contains>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).empty) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Contains),
-            "::",
-            stringify!(empty)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            let uninit = ::std::mem::MaybeUninit::<Contains>::uninit();
-            let ptr = uninit.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-        },
-        1usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Contains),
-            "::",
-            stringify!(b)
-        )
-    );
+    fn test_field_empty() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Contains>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).empty) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Contains),
+                "::",
+                stringify!(empty)
+            )
+        );
+    }
+    test_field_empty();
+    fn test_field_b() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<Contains>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+            },
+            1usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(Contains),
+                "::",
+                stringify!(b)
+            )
+        );
+    }
+    test_field_b();
 }
