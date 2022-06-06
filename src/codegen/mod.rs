@@ -2176,19 +2176,23 @@ impl CodeGenerator for CompInfo {
                     {
                         vec![]
                     } else {
-                        let asserts = self.fields()
-                                .iter()
-                                .filter_map(|field| match *field {
-                                    Field::DataMember(ref f) if f.name().is_some() => Some(f),
-                                    _ => None,
-                                })
-                                .flat_map(|field| {
-                                    let name = field.name().unwrap();
-                                    field.offset().map(|offset| {
-                                        let field_offset = offset / 8;
-                                        let field_name = ctx.rust_ident(name);
-
-                                        quote! {
+                        self.fields()
+                            .iter()
+                            .filter_map(|field| match *field {
+                                Field::DataMember(ref f) if f.name().is_some() => Some(f),
+                                _ => None,
+                            })
+                            .flat_map(|field| {
+                                let name = field.name().unwrap();
+                                field.offset().map(|offset| {
+                                    let field_offset = offset / 8;
+                                    let field_name = ctx.rust_ident(name);
+                                    // Put each check in its own function, so
+                                    // that rustc with opt-level=0 doesn't take
+                                    // too much stack space, see #2218.
+                                    let test_fn = Ident::new(&format!("test_field_{}", name), Span::call_site());
+                                    quote! {
+                                        fn #test_fn() {
                                             assert_eq!(
                                                 unsafe {
                                                     let uninit = ::#prefix::mem::MaybeUninit::<#canonical_ident>::uninit();
@@ -2199,11 +2203,11 @@ impl CodeGenerator for CompInfo {
                                                 concat!("Offset of field: ", stringify!(#canonical_ident), "::", stringify!(#field_name))
                                             );
                                         }
-                                    })
+                                        #test_fn();
+                                    }
                                 })
-                                .collect::<Vec<proc_macro2::TokenStream>>();
-
-                        asserts
+                            })
+                            .collect::<Vec<proc_macro2::TokenStream>>()
                     };
 
                     let item = quote! {
