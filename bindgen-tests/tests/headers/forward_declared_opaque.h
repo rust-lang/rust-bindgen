@@ -1,4 +1,4 @@
-// bindgen-flags: --opaque-type "*"
+// bindgen-flags: --opaque-type ".*"
 
 union a;
 struct b;
