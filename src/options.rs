@@ -1,6 +1,6 @@
 use bindgen::{
     builder, AliasVariation, Builder, CodegenConfig, EnumVariation,
-    MacroTypeVariation, NonRustUnionStyle, RustTarget,
+    MacroTypeVariation, NonCopyUnionStyle, RustTarget,
     DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
 };
 use clap::{App, Arg};
@@ -132,8 +132,8 @@ where
                 .value_name("regex")
                 .multiple_occurrences(true)
                 .number_of_values(1),
-            Arg::new("default-non-rust-union-style")
-                .long("default-non-rust-union-style")
+            Arg::new("default-non-copy-union-style")
+                .long("default-non-copy-union-style")
                 .help(
                     "The default style of code used to generate unions with \
                      non-Copy members. Note that ManuallyDrop was first \
@@ -652,9 +652,9 @@ where
         }
     }
 
-    if let Some(variant) = matches.value_of("default-non-rust-union-style") {
-        builder = builder.default_non_rust_union_style(
-            NonRustUnionStyle::from_str(variant)?,
+    if let Some(variant) = matches.value_of("default-non-copy-union-style") {
+        builder = builder.default_non_copy_union_style(
+            NonCopyUnionStyle::from_str(variant)?,
         );
     }
 

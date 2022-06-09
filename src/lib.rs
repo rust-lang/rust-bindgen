@@ -67,7 +67,7 @@ doc_mod!(parse, parse_docs);
 doc_mod!(regex_set, regex_set_docs);
 
 pub use crate::codegen::{
-    AliasVariation, EnumVariation, MacroTypeVariation, NonRustUnionStyle,
+    AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle,
 };
 use crate::features::RustFeatures;
 pub use crate::features::{
@@ -305,10 +305,10 @@ impl Builder {
                 .push(self.options.default_alias_style.as_str().into());
         }
 
-        if self.options.default_non_rust_union_style != Default::default() {
-            output_vector.push("--default-non-rust-union-style".into());
+        if self.options.default_non_copy_union_style != Default::default() {
+            output_vector.push("--default-non-copy-union-style".into());
             output_vector.push(
-                self.options.default_non_rust_union_style.as_str().into(),
+                self.options.default_non_copy_union_style.as_str().into(),
             );
         }
 
@@ -1090,11 +1090,11 @@ impl Builder {
     }
 
     /// Set the default style of code to generate for unions with a non-Copy member.
-    pub fn default_non_rust_union_style(
+    pub fn default_non_copy_union_style(
         mut self,
-        arg: codegen::NonRustUnionStyle,
+        arg: codegen::NonCopyUnionStyle,
     ) -> Self {
-        self.options.default_non_rust_union_style = arg;
+        self.options.default_non_copy_union_style = arg;
         self
     }
 
@@ -1816,13 +1816,13 @@ struct BindgenOptions {
 
     /// The default style of code to generate for union containing non-Copy
     /// members.
-    default_non_rust_union_style: codegen::NonRustUnionStyle,
+    default_non_copy_union_style: codegen::NonCopyUnionStyle,
 
-    /// The union patterns to mark an non-Rust union as using the bindgen
+    /// The union patterns to mark an non-Copy union as using the bindgen
     /// generated wrapper.
     bindgen_wrapper_union: RegexSet,
 
-    /// The union patterns to mark an non-Rust union as using the
+    /// The union patterns to mark an non-Copy union as using the
     /// `::core::mem::ManuallyDrop` wrapper.
     manually_drop_union: RegexSet,
 
@@ -2144,7 +2144,7 @@ impl Default for BindgenOptions {
             type_alias: Default::default(),
             new_type_alias: Default::default(),
             new_type_alias_deref: Default::default(),
-            default_non_rust_union_style: Default::default(),
+            default_non_copy_union_style: Default::default(),
             bindgen_wrapper_union: Default::default(),
             manually_drop_union: Default::default(),
             builtins: false,
