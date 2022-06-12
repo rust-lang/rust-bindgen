@@ -1939,10 +1939,17 @@ static std::string getMangledStructor(std::unique_ptr<MangleContext> &M,
   std::string FrontendBuf;
   llvm::raw_string_ostream FOS(FrontendBuf);
 
+#if CLANG_VERSION_MAJOR >= 11
+  auto ctorMangler = [&](auto&& x){ M->mangleName(GlobalDecl(x, static_cast<CXXCtorType>(StructorType)), FOS); };
+  auto dtorMangler = [&](auto&& x){ M->mangleName(GlobalDecl(x, static_cast<CXXDtorType>(StructorType)), FOS); };
+#else
+  auto ctorMangler = [&](auto&& x){ M->mangleCXXCtor(x, static_cast<CXXCtorType>(StructorType), FOS); };
+  auto dtorMangler = [&](auto&& x){ M->mangleCXXDtor(x, static_cast<CXXDtorType>(StructorType), FOS); };
+  #endif
   if (const auto *CD = dyn_cast_or_null<CXXConstructorDecl>(ND))
-    M->mangleCXXCtor(CD, static_cast<CXXCtorType>(StructorType), FOS);
+    ctorMangler(CD);
   else if (const auto *DD = dyn_cast_or_null<CXXDestructorDecl>(ND))
-    M->mangleCXXDtor(DD, static_cast<CXXDtorType>(StructorType), FOS);
+    dtorMangler(DD);
 
   std::string BackendBuf;
   llvm::raw_string_ostream BOS(BackendBuf);
