@@ -64,18 +64,9 @@ impl Default for ClassC_ClassCInnerA {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct ClassC_ClassCInnerCRTP {
     pub _address: u8,
-}
-impl Default for ClassC_ClassCInnerCRTP {
-    fn default() -> Self {
-        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
-        unsafe {
-            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
-            s.assume_init()
-        }
-    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

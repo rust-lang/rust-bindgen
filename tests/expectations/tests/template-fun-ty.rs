@@ -22,6 +22,6 @@ pub struct RefPtr {
 pub struct RefPtr_Proxy {
     pub _address: u8,
 }
-pub type RefPtr_Proxy_member_function<R, Args> =
-    ::std::option::Option<unsafe extern "C" fn(arg1: Args) -> R>;
+pub type RefPtr_Proxy_member_function<T, Args> =
+    ::std::option::Option<unsafe extern "C" fn(arg1: Args) -> T>;
 pub type Returner<T> = ::std::option::Option<unsafe extern "C" fn() -> T>;
