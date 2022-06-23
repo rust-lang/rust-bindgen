@@ -1030,7 +1030,5 @@ where
         builder = builder.vtable_generation(true);
     }
 
-    let verbose = matches.is_present("verbose");
-
     Ok((builder, output, verbose))
 }
