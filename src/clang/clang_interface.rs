@@ -7838,6 +7838,9 @@ extern "C" {
     pub fn Decl_getSemanticParent(D: *const clang_Decl) -> *const clang_Decl;
 }
 extern "C" {
+    pub fn Decl_isDeleted(D: *const clang_Decl) -> bool;
+}
+extern "C" {
     pub fn Decl_getDefinition(
         D: *const clang_Decl,
         isReference: bool,

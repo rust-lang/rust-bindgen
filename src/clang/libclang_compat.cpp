@@ -1108,6 +1108,12 @@ CXDiagnosticSeverity Diagnostic_getSeverity(const StoredDiagnostic *D) {
   llvm_unreachable("Invalid diagnostic level");
 }
 
+// Adapted from getCursorAvailabilityForDecl in CIndex.cpp
+bool Decl_isDeleted(const Decl *D)
+{
+  return isa<FunctionDecl>(D) && cast<FunctionDecl>(D)->isDeleted();
+}
+
 // Adapted from clang_getCursorDefinition in CIndex.cpp
 const Decl *Decl_getDefinition(const Decl *D, bool isReference) {
   if (!D)

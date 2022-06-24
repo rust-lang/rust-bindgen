@@ -31,6 +31,10 @@ extern "C" {
     #[link_name = "\u{1}_ZN1A22out_of_line_definitionEv"]
     pub fn A_out_of_line_definition(this: *mut A);
 }
+extern "C" {
+    #[link_name = "\u{1}_ZN1A25inline_without_definitionEv"]
+    pub fn A_inline_without_definition(this: *mut A);
+}
 impl A {
     #[inline]
     pub unsafe fn inline_definition(&mut self) {
@@ -39,6 +43,10 @@ impl A {
     #[inline]
     pub unsafe fn out_of_line_definition(&mut self) {
         A_out_of_line_definition(self)
+    }
+    #[inline]
+    pub unsafe fn inline_without_definition(&mut self) {
+        A_inline_without_definition(self)
     }
 }
 #[repr(C)]

@@ -108,6 +108,7 @@ bool CursorKind_isInvalid(CXCursorKind kind);
 
 const Decl *Decl_getLexicalParent(const Decl *D);
 const Decl *Decl_getSemanticParent(const Decl *D);
+bool Decl_isDeleted(const Decl *D);
 const Decl *Decl_getDefinition(const Decl *D, bool isReference);
 const Decl *Decl_getReferenced(const Decl *D);
 const Decl *Decl_getCanonical(const Decl *D);
