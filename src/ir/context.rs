@@ -510,7 +510,8 @@ impl BindgenContext {
         // TODO(emilio): Use the CXTargetInfo here when available.
         //
         // see: https://reviews.llvm.org/D32389
-        let (effective_target, explicit_target) =
+        // TODO(kulp): Use results of find_effective_target or else drop this check.
+        let (_effective_target, _explicit_target) =
             crate::find_effective_target(&options.clang_args);
 
         let parse_options =
