@@ -264,6 +264,8 @@ CX_CXXAccessSpecifier CXXBaseSpecifier_getAccess(const CXXBaseSpecifier *);
 BindgenSourceRange Attr_getSourceRange(const Attr *);
 BindgenSourceRange PreprocessedEntity_getSourceRange(const PreprocessedEntity *);
 
+bool PreprocessedEntity_isFunctionMacroLike(ASTUnit *TU, const PreprocessedEntity *ppe);
+
 } // extern "C"
 
 #endif // BINDGEN_CLANG_AST_H

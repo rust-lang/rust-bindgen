@@ -417,7 +417,14 @@ impl Cursor {
 
     /// Is this Cursor pointing to a function-like macro definition?
     pub fn is_macro_function_like(&self) -> bool {
-        unsafe { clang_Cursor_isMacroFunctionLike(self.x) != 0 }
+        match self.node {
+            ASTNode::PreprocessedEntity(p) => unsafe {
+                clang_interface::PreprocessedEntity_isFunctionMacroLike(
+                    self.unit, p,
+                )
+            },
+            _ => false,
+        }
     }
 
     /// Get the kind of referent this cursor is pointing to.

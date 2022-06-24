@@ -1714,6 +1714,15 @@ void tokenize(ASTUnit *TU, BindgenSourceRange Range, CXToken **Tokens,
   *NumTokens = CXTokens.size();
 }
 
+// Adapted from CursorVisitor:visitPreprocessedEntities in CIndex.cpp
+bool PreprocessedEntity_isFunctionMacroLike(ASTUnit *TU,
+                                            const PreprocessedEntity *ppe) {
+  return isa<MacroDefinitionRecord>(ppe) &&
+         TU->getPreprocessor()
+             .getMacroInfo(cast<MacroDefinitionRecord>(ppe)->getName())
+             ->isFunctionLike();
+}
+
 // Originally clang_getTokenKind in CIndex.cpp
 CXTokenKind getTokenKind(CXToken token) {
   return static_cast<CXTokenKind>(token.int_data[0]);

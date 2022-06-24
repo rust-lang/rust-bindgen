@@ -8453,6 +8453,12 @@ extern "C" {
         arg1: *const clang_PreprocessedEntity,
     ) -> BindgenSourceRange;
 }
+extern "C" {
+    pub fn PreprocessedEntity_isFunctionMacroLike(
+        TU: *mut clang_ASTUnit,
+        ppe: *const clang_PreprocessedEntity,
+    ) -> bool;
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct __locale_data {
