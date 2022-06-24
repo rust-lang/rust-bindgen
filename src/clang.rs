@@ -50,7 +50,9 @@ impl clang_interface::BindgenSourceRange {
 
 impl Drop for clang_interface::BindgenSourceRange {
     fn drop(&mut self) {
-        unsafe { clang_interface::deleteSourceRange(self); }
+        unsafe {
+            clang_interface::deleteSourceRange(self);
+        }
     }
 }
 
@@ -77,13 +79,17 @@ impl fmt::Display for clang_interface::BindgenStringRef {
 
 impl Drop for clang_interface::BindgenStringRef {
     fn drop(&mut self) {
-        unsafe { clang_interface::deleteString(self); }
+        unsafe {
+            clang_interface::deleteString(self);
+        }
     }
 }
 
 impl Drop for clang_interface::BindgenStringRefSet {
     fn drop(&mut self) {
-        unsafe { clang_interface::deleteStringSet(self); }
+        unsafe {
+            clang_interface::deleteStringSet(self);
+        }
     }
 }
 
@@ -1228,10 +1234,7 @@ impl<'a> Iterator for ClangTokenIterator<'a> {
             let kind = clang_interface::getTokenKind(*raw);
             let spelling =
                 clang_interface::getTokenSpelling(self.tu, *raw).to_cstring();
-            Some(ClangToken {
-                kind,
-                spelling,
-            })
+            Some(ClangToken { kind, spelling })
         }
     }
 }
@@ -2387,7 +2390,9 @@ pub struct EvalResult {
 
 impl Drop for EvalResult {
     fn drop(&mut self) {
-        unsafe { clang_interface::deleteEvalResult(self.x); }
+        unsafe {
+            clang_interface::deleteEvalResult(self.x);
+        }
     }
 }
 
@@ -2439,8 +2444,11 @@ impl EvalResult {
     pub fn as_literal_string(&self) -> Option<Vec<u8>> {
         match self.kind() {
             CXEval_StrLiteral => {
-                let mut stringref = unsafe { clang_interface::EvalResult_getAsStr(self.x) };
-                let ret = unsafe { CStr::from_ptr(clang_interface::cString(&mut stringref)) };
+                let mut stringref =
+                    unsafe { clang_interface::EvalResult_getAsStr(self.x) };
+                let ret = unsafe {
+                    CStr::from_ptr(clang_interface::cString(&mut stringref))
+                };
                 Some(ret.to_bytes().to_vec())
             }
             _ => None,

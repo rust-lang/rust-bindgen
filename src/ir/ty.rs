@@ -710,7 +710,8 @@ impl Type {
         // Parse objc protocols as if they were interfaces
         let mut ty_kind = ty.kind();
         match location.kind() {
-            clang::CXCursor_ObjCProtocolDecl | clang::CXCursor_ObjCCategoryDecl => {
+            clang::CXCursor_ObjCProtocolDecl |
+            clang::CXCursor_ObjCCategoryDecl => {
                 ty_kind = clang::CXType_ObjCInterface
             }
             _ => {}
@@ -722,8 +723,8 @@ impl Type {
         //        We are rewriting them as id to suppress multiple conflicting
         //        typedefs at root level
         if ty_kind == clang::CXType_Typedef {
-            let is_template_type_param =
-                ty.declaration().kind() == clang::CXCursor_TemplateTypeParameter;
+            let is_template_type_param = ty.declaration().kind() ==
+                clang::CXCursor_TemplateTypeParameter;
             let is_canonical_objcpointer =
                 canonical_ty.kind() == clang::CXType_ObjCObjectPointer;
 
@@ -735,7 +736,8 @@ impl Type {
             }
         }
 
-        if location.kind() == clang::CXCursor_ClassTemplatePartialSpecialization {
+        if location.kind() == clang::CXCursor_ClassTemplatePartialSpecialization
+        {
             // Sorry! (Not sorry)
             warn!(
                 "Found a partial template specialization; bindgen does not \
@@ -749,7 +751,8 @@ impl Type {
         }
 
         let kind = if location.kind() == clang::CXCursor_TemplateRef ||
-            (ty.template_args().is_some() && ty_kind != clang::CXType_Typedef)
+            (ty.template_args().is_some() &&
+                ty_kind != clang::CXType_Typedef)
         {
             // This is a template instantiation.
             match TemplateInstantiation::from_ty(ty, ctx) {
@@ -813,7 +816,8 @@ impl Type {
                         match location.kind() {
                             clang::CXCursor_CXXBaseSpecifier |
                             clang::CXCursor_ClassTemplate => {
-                                if location.kind() == clang::CXCursor_CXXBaseSpecifier
+                                if location.kind() ==
+                                    clang::CXCursor_CXXBaseSpecifier
                                 {
                                     // In the case we're parsing a base specifier
                                     // inside an unexposed or invalid type, it means
@@ -1043,7 +1047,8 @@ impl Type {
                 }
                 // XXX: RValueReference is most likely wrong, but I don't think we
                 // can even add bindings for that, so huh.
-                clang::CXType_RValueReference | clang::CXType_LValueReference => {
+                clang::CXType_RValueReference |
+                clang::CXType_LValueReference => {
                     let inner = Item::from_ty_or_ref(
                         ty.pointee_type().unwrap(),
                         location,
@@ -1053,7 +1058,8 @@ impl Type {
                     TypeKind::Reference(inner)
                 }
                 // XXX DependentSizedArray is wrong
-                clang::CXType_VariableArray | clang::CXType_DependentSizedArray => {
+                clang::CXType_VariableArray |
+                clang::CXType_DependentSizedArray => {
                     let inner = Item::from_ty(
                         ty.elem_type().as_ref().unwrap(),
                         location,

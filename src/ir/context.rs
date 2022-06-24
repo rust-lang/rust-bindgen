@@ -778,10 +778,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             item.expect_type().is_type_param(),
             "Should directly be a named type, not a resolved reference or anything"
         );
-        assert_eq!(
-            definition.kind(),
-            clang::CXCursor_TemplateTypeParameter
-        );
+        assert_eq!(definition.kind(), clang::CXCursor_TemplateTypeParameter);
 
         self.add_item_to_module(&item);
 
@@ -804,10 +801,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Get the named type defined at the given cursor location, if we've
     /// already added one.
     pub fn get_type_param(&self, definition: &clang::Cursor) -> Option<TypeId> {
-        assert_eq!(
-            definition.kind(),
-            clang::CXCursor_TemplateTypeParameter
-        );
+        assert_eq!(definition.kind(), clang::CXCursor_TemplateTypeParameter);
         self.type_params.get(definition).cloned()
     }
 
@@ -1944,8 +1938,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             clang::CXType_Bool => TypeKind::Int(IntKind::Bool),
             clang::CXType_Int => TypeKind::Int(IntKind::Int),
             clang::CXType_UInt => TypeKind::Int(IntKind::UInt),
-            clang::CXType_Char_S => TypeKind::Int(IntKind::Char { is_signed: true }),
-            clang::CXType_Char_U => TypeKind::Int(IntKind::Char { is_signed: false }),
+            clang::CXType_Char_S => {
+                TypeKind::Int(IntKind::Char { is_signed: true })
+            }
+            clang::CXType_Char_U => {
+                TypeKind::Int(IntKind::Char { is_signed: false })
+            }
             clang::CXType_SChar => TypeKind::Int(IntKind::SChar),
             clang::CXType_UChar => TypeKind::Int(IntKind::UChar),
             clang::CXType_Short => TypeKind::Int(IntKind::Short),

@@ -400,8 +400,8 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
 
             let mut supports_link_mode = true;
             if let Some((major_version, minor_version)) = version {
-                if major_version < 3
-                    || (major_version == 3 && minor_version <= 8)
+                if major_version < 3 ||
+                    (major_version == 3 && minor_version <= 8)
                 {
                     supports_link_mode = false;
                 }

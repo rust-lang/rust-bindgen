@@ -6,7 +6,6 @@ use super::item::Item;
 use super::traversal::{Trace, Tracer};
 use super::ty::TypeKind;
 use crate::clang;
-use crate::parse::ClangItemParser;
 use crate::clang::CXChildVisit_Continue;
 use crate::clang::CXCursor_ObjCCategoryDecl;
 use crate::clang::CXCursor_ObjCClassMethodDecl;
@@ -16,6 +15,7 @@ use crate::clang::CXCursor_ObjCProtocolDecl;
 use crate::clang::CXCursor_ObjCProtocolRef;
 use crate::clang::CXCursor_ObjCSuperClassRef;
 use crate::clang::CXCursor_TemplateTypeParameter;
+use crate::parse::ClangItemParser;
 use proc_macro2::{Ident, Span, TokenStream};
 
 /// Objective C interface as used in TypeKind

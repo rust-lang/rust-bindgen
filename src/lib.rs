@@ -2620,7 +2620,9 @@ fn parse(context: &mut BindgenContext) -> Result<(), BindgenError> {
     let cursor = context.translation_unit().cursor();
 
     if context.options().emit_ast {
-        fn dump_if_not_builtin(cur: &clang::Cursor) -> clang::CXChildVisitResult {
+        fn dump_if_not_builtin(
+            cur: &clang::Cursor,
+        ) -> clang::CXChildVisitResult {
             if !cur.is_builtin() {
                 clang::ast_dump(cur, 0)
             } else {
