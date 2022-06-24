@@ -517,13 +517,7 @@ impl Cursor {
     ///
     /// Returns None if the cursor's referent is not an enum variant.
     pub fn enum_val_boolean(&self) -> Option<bool> {
-        unsafe {
-            if self.kind() == CXCursor_EnumConstantDecl {
-                Some(clang_getEnumConstantDeclValue(self.x) != 0)
-            } else {
-                None
-            }
-        }
+        self.enum_val_unsigned().map(|x| x != 0)
     }
 
     /// Get the signed constant value for this cursor's enum variant referent.
