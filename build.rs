@@ -156,7 +156,7 @@ mod clang_ast {
 
         let deps_filepath = out_dir.join("BindgenClangInterface.deps");
         println!("cargo:rustc-link-search=native={}", llvm_lib_dir);
-        if deps_filepath.is_file() {
+        if false && deps_filepath.is_file() {
             // Our CMake script was able to generate a list of dependencies for
             // us. This should be more accurate than what we build here.
             let deps_file = fs::read_to_string(deps_filepath)
