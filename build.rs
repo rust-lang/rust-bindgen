@@ -173,6 +173,8 @@ mod clang_ast {
             for lib in deps {
                 println!("cargo:rustc-link-lib={}", lib);
             }
+            // XXX KULP
+            println!("cargo:rustc-link-lib={}", "ncurses");
         } else {
             // Link against these Clang libs. The ordering here is important! Libraries
             // must be listed before their dependencies when statically linking.
