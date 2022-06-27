@@ -2172,9 +2172,9 @@ impl CodeGenerator for CompInfo {
                     let should_skip_field_offset_checks =
                         is_opaque || too_many_base_vtables;
 
-                    let check_field_offset = if should_skip_field_offset_checks
+                    let (check_field_offset_decls, check_field_offset_invocs) = if should_skip_field_offset_checks
                     {
-                        vec![]
+                        (vec![], vec![])
                     } else {
                         self.fields()
                             .iter()
@@ -2191,34 +2191,37 @@ impl CodeGenerator for CompInfo {
                                     // that rustc with opt-level=0 doesn't take
                                     // too much stack space, see #2218.
                                     let test_fn = Ident::new(&format!("test_field_{}", name), Span::call_site());
-                                    quote! {
-                                        fn #test_fn() {
-                                            assert_eq!(
-                                                unsafe {
-                                                    let uninit = ::#prefix::mem::MaybeUninit::<#canonical_ident>::uninit();
-                                                    let ptr = uninit.as_ptr();
-                                                    ::#prefix::ptr::addr_of!((*ptr).#field_name) as usize - ptr as usize
-                                                },
-                                                #field_offset,
-                                                concat!("Offset of field: ", stringify!(#canonical_ident), "::", stringify!(#field_name))
-                                            );
-                                        }
-                                        #test_fn();
-                                    }
+                                    (
+                                        quote! {
+                                            fn #test_fn() {
+                                                assert_eq!(
+                                                    unsafe {
+                                                        let uninit = ::#prefix::mem::MaybeUninit::<#canonical_ident>::uninit();
+                                                        let ptr = uninit.as_ptr();
+                                                        ::#prefix::ptr::addr_of!((*ptr).#field_name) as usize - ptr as usize
+                                                    },
+                                                    #field_offset,
+                                                    concat!("Offset of field: ", stringify!(#canonical_ident), "::", stringify!(#field_name))
+                                                );
+                                            }
+                                        },
+                                        quote! { #test_fn(); }
+                                    )
                                 })
                             })
-                            .collect::<Vec<proc_macro2::TokenStream>>()
+                            .unzip()
                     };
 
                     let item = quote! {
                         #[test]
                         fn #fn_name() {
+                            #( #check_field_offset_decls )*
                             assert_eq!(#size_of_expr,
                                        #size,
                                        concat!("Size of: ", stringify!(#canonical_ident)));
 
                             #check_struct_align
-                            #( #check_field_offset )*
+                            #( #check_field_offset_invocs )*
                         }
                     };
                     result.push(item);
