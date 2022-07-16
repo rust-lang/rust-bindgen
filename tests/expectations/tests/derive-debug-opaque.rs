@@ -43,6 +43,8 @@ pub struct OpaqueUser {
 }
 #[test]
 fn bindgen_test_layout_OpaqueUser() {
+    const UNINIT: ::std::mem::MaybeUninit<OpaqueUser> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<OpaqueUser>(),
         164usize,
@@ -53,23 +55,19 @@ fn bindgen_test_layout_OpaqueUser() {
         4usize,
         concat!("Alignment of ", stringify!(OpaqueUser))
     );
-    fn test_field_opaque() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<OpaqueUser>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).opaque) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(OpaqueUser),
-                "::",
-                stringify!(opaque)
-            )
-        );
-    }
-    test_field_opaque();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).opaque) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OpaqueUser),
+            "::",
+            stringify!(opaque)
+        )
+    );
 }
 impl Default for OpaqueUser {
     fn default() -> Self {

@@ -16,6 +16,8 @@ pub struct foo {
 }
 #[test]
 fn bindgen_test_layout_foo() {
+    const UNINIT: ::core::mem::MaybeUninit<foo> =
+        ::core::mem::MaybeUninit::uninit();
     assert_eq!(
         ::core::mem::size_of::<foo>(),
         16usize,
@@ -26,47 +28,30 @@ fn bindgen_test_layout_foo() {
         8usize,
         concat!("Alignment of ", stringify!(foo))
     );
-    fn test_field_a() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::core::mem::MaybeUninit::<foo>::uninit();
-                let ptr = uninit.as_ptr();
-                ::core::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!("Offset of field: ", stringify!(foo), "::", stringify!(a))
-        );
-    }
-    test_field_a();
-    fn test_field_b() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::core::mem::MaybeUninit::<foo>::uninit();
-                let ptr = uninit.as_ptr();
-                ::core::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-            },
-            4usize,
-            concat!("Offset of field: ", stringify!(foo), "::", stringify!(b))
-        );
-    }
-    test_field_b();
-    fn test_field_bar() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::core::mem::MaybeUninit::<foo>::uninit();
-                let ptr = uninit.as_ptr();
-                ::core::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
-            },
-            8usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(foo),
-                "::",
-                stringify!(bar)
-            )
-        );
-    }
-    test_field_bar();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::core::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+        },
+        0usize,
+        concat!("Offset of field: ", stringify!(foo), "::", stringify!(a))
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::core::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+        },
+        4usize,
+        concat!("Offset of field: ", stringify!(foo), "::", stringify!(b))
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::core::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
+        },
+        8usize,
+        concat!("Offset of field: ", stringify!(foo), "::", stringify!(bar))
+    );
 }
 impl Default for foo {
     fn default() -> Self {
@@ -85,6 +70,8 @@ pub union _bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout__bindgen_ty_1() {
+    const UNINIT: ::core::mem::MaybeUninit<_bindgen_ty_1> =
+        ::core::mem::MaybeUninit::uninit();
     assert_eq!(
         ::core::mem::size_of::<_bindgen_ty_1>(),
         8usize,
@@ -95,42 +82,32 @@ fn bindgen_test_layout__bindgen_ty_1() {
         8usize,
         concat!("Alignment of ", stringify!(_bindgen_ty_1))
     );
-    fn test_field_bar() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::core::mem::MaybeUninit::<_bindgen_ty_1>::uninit();
-                let ptr = uninit.as_ptr();
-                ::core::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(_bindgen_ty_1),
-                "::",
-                stringify!(bar)
-            )
-        );
-    }
-    test_field_bar();
-    fn test_field_baz() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::core::mem::MaybeUninit::<_bindgen_ty_1>::uninit();
-                let ptr = uninit.as_ptr();
-                ::core::ptr::addr_of!((*ptr).baz) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(_bindgen_ty_1),
-                "::",
-                stringify!(baz)
-            )
-        );
-    }
-    test_field_baz();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::core::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_bindgen_ty_1),
+            "::",
+            stringify!(bar)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::core::ptr::addr_of!((*ptr).baz) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_bindgen_ty_1),
+            "::",
+            stringify!(baz)
+        )
+    );
 }
 impl Default for _bindgen_ty_1 {
     fn default() -> Self {

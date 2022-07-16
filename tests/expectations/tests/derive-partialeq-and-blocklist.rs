@@ -15,6 +15,8 @@ pub struct ShouldNotDerivePartialEq {
 }
 #[test]
 fn bindgen_test_layout_ShouldNotDerivePartialEq() {
+    const UNINIT: ::std::mem::MaybeUninit<ShouldNotDerivePartialEq> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<ShouldNotDerivePartialEq>(),
         1usize,
@@ -25,25 +27,19 @@ fn bindgen_test_layout_ShouldNotDerivePartialEq() {
         1usize,
         concat!("Alignment of ", stringify!(ShouldNotDerivePartialEq))
     );
-    fn test_field_a() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<ShouldNotDerivePartialEq>::uninit(
-                    );
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(ShouldNotDerivePartialEq),
-                "::",
-                stringify!(a)
-            )
-        );
-    }
-    test_field_a();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ShouldNotDerivePartialEq),
+            "::",
+            stringify!(a)
+        )
+    );
 }
 impl Default for ShouldNotDerivePartialEq {
     fn default() -> Self {

@@ -14,6 +14,8 @@ pub struct AlignedToOne {
 }
 #[test]
 fn bindgen_test_layout_AlignedToOne() {
+    const UNINIT: ::std::mem::MaybeUninit<AlignedToOne> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<AlignedToOne>(),
         4usize,
@@ -24,23 +26,19 @@ fn bindgen_test_layout_AlignedToOne() {
         1usize,
         concat!("Alignment of ", stringify!(AlignedToOne))
     );
-    fn test_field_i() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<AlignedToOne>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(AlignedToOne),
-                "::",
-                stringify!(i)
-            )
-        );
-    }
-    test_field_i();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(AlignedToOne),
+            "::",
+            stringify!(i)
+        )
+    );
 }
 /// This should be opaque because although we can see the attributes, Rust before
 /// 1.33 doesn't have `#[repr(packed(N))]`.
@@ -51,6 +49,8 @@ pub struct AlignedToTwo {
 }
 #[test]
 fn bindgen_test_layout_AlignedToTwo() {
+    const UNINIT: ::std::mem::MaybeUninit<AlignedToTwo> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<AlignedToTwo>(),
         4usize,
@@ -61,23 +61,19 @@ fn bindgen_test_layout_AlignedToTwo() {
         2usize,
         concat!("Alignment of ", stringify!(AlignedToTwo))
     );
-    fn test_field_i() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<AlignedToTwo>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(AlignedToTwo),
-                "::",
-                stringify!(i)
-            )
-        );
-    }
-    test_field_i();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(AlignedToTwo),
+            "::",
+            stringify!(i)
+        )
+    );
 }
 /// This should not be opaque because although `libclang` doesn't give us the
 /// `#pragma pack(1)`, we can detect that alignment is 1 and add
@@ -90,6 +86,8 @@ pub struct PackedToOne {
 }
 #[test]
 fn bindgen_test_layout_PackedToOne() {
+    const UNINIT: ::std::mem::MaybeUninit<PackedToOne> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<PackedToOne>(),
         8usize,
@@ -100,40 +98,32 @@ fn bindgen_test_layout_PackedToOne() {
         1usize,
         concat!("Alignment of ", stringify!(PackedToOne))
     );
-    fn test_field_x() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<PackedToOne>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(PackedToOne),
-                "::",
-                stringify!(x)
-            )
-        );
-    }
-    test_field_x();
-    fn test_field_y() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<PackedToOne>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
-            },
-            4usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(PackedToOne),
-                "::",
-                stringify!(y)
-            )
-        );
-    }
-    test_field_y();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(PackedToOne),
+            "::",
+            stringify!(x)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(PackedToOne),
+            "::",
+            stringify!(y)
+        )
+    );
 }
 /// In this case, even if we can detect the weird alignment triggered by
 /// `#pragma pack(2)`, we can't do anything about it because Rust before 1.33
@@ -146,6 +136,8 @@ pub struct PackedToTwo {
 }
 #[test]
 fn bindgen_test_layout_PackedToTwo() {
+    const UNINIT: ::std::mem::MaybeUninit<PackedToTwo> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<PackedToTwo>(),
         8usize,
@@ -156,38 +148,30 @@ fn bindgen_test_layout_PackedToTwo() {
         2usize,
         concat!("Alignment of ", stringify!(PackedToTwo))
     );
-    fn test_field_x() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<PackedToTwo>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(PackedToTwo),
-                "::",
-                stringify!(x)
-            )
-        );
-    }
-    test_field_x();
-    fn test_field_y() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<PackedToTwo>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
-            },
-            4usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(PackedToTwo),
-                "::",
-                stringify!(y)
-            )
-        );
-    }
-    test_field_y();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(PackedToTwo),
+            "::",
+            stringify!(x)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(PackedToTwo),
+            "::",
+            stringify!(y)
+        )
+    );
 }

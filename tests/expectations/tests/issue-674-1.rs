@@ -26,6 +26,8 @@ pub mod root {
     }
     #[test]
     fn bindgen_test_layout_CapturingContentInfo() {
+        const UNINIT: ::std::mem::MaybeUninit<CapturingContentInfo> =
+            ::std::mem::MaybeUninit::uninit();
         assert_eq!(
             ::std::mem::size_of::<CapturingContentInfo>(),
             1usize,
@@ -36,24 +38,18 @@ pub mod root {
             1usize,
             concat!("Alignment of ", stringify!(CapturingContentInfo))
         );
-        fn test_field_a() {
-            assert_eq!(
-                unsafe {
-                    let uninit =
-                        ::std::mem::MaybeUninit::<CapturingContentInfo>::uninit(
-                        );
-                    let ptr = uninit.as_ptr();
-                    ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(CapturingContentInfo),
-                    "::",
-                    stringify!(a)
-                )
-            );
-        }
-        test_field_a();
+        assert_eq!(
+            unsafe {
+                let ptr = UNINIT.as_ptr();
+                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(CapturingContentInfo),
+                "::",
+                stringify!(a)
+            )
+        );
     }
 }

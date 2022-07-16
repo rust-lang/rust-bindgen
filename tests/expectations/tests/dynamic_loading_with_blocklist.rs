@@ -12,6 +12,8 @@ pub struct X {
 }
 #[test]
 fn bindgen_test_layout_X() {
+    const UNINIT: ::std::mem::MaybeUninit<X> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<X>(),
         4usize,
@@ -22,18 +24,14 @@ fn bindgen_test_layout_X() {
         4usize,
         concat!("Alignment of ", stringify!(X))
     );
-    fn test_field__x() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<X>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr)._x) as usize - ptr as usize
-            },
-            0usize,
-            concat!("Offset of field: ", stringify!(X), "::", stringify!(_x))
-        );
-    }
-    test_field__x();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr)._x) as usize - ptr as usize
+        },
+        0usize,
+        concat!("Offset of field: ", stringify!(X), "::", stringify!(_x))
+    );
 }
 extern "C" {
     #[link_name = "\u{1}_ZN1X13some_functionEv"]

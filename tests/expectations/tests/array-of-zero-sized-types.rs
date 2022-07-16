@@ -33,6 +33,8 @@ pub struct HasArrayOfEmpty {
 }
 #[test]
 fn bindgen_test_layout_HasArrayOfEmpty() {
+    const UNINIT: ::std::mem::MaybeUninit<HasArrayOfEmpty> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<HasArrayOfEmpty>(),
         10usize,
@@ -43,22 +45,17 @@ fn bindgen_test_layout_HasArrayOfEmpty() {
         1usize,
         concat!("Alignment of ", stringify!(HasArrayOfEmpty))
     );
-    fn test_field_empties() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<HasArrayOfEmpty>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).empties) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(HasArrayOfEmpty),
-                "::",
-                stringify!(empties)
-            )
-        );
-    }
-    test_field_empties();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).empties) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(HasArrayOfEmpty),
+            "::",
+            stringify!(empties)
+        )
+    );
 }

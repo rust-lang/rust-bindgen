@@ -18,6 +18,8 @@ pub struct JNINativeInterface_ {
 }
 #[test]
 fn bindgen_test_layout_JNINativeInterface_() {
+    const UNINIT: ::std::mem::MaybeUninit<JNINativeInterface_> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<JNINativeInterface_>(),
         16usize,
@@ -28,42 +30,32 @@ fn bindgen_test_layout_JNINativeInterface_() {
         8usize,
         concat!("Alignment of ", stringify!(JNINativeInterface_))
     );
-    fn test_field_GetVersion() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<JNINativeInterface_>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).GetVersion) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(JNINativeInterface_),
-                "::",
-                stringify!(GetVersion)
-            )
-        );
-    }
-    test_field_GetVersion();
-    fn test_field___hack() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<JNINativeInterface_>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).__hack) as usize - ptr as usize
-            },
-            8usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(JNINativeInterface_),
-                "::",
-                stringify!(__hack)
-            )
-        );
-    }
-    test_field___hack();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).GetVersion) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(JNINativeInterface_),
+            "::",
+            stringify!(GetVersion)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).__hack) as usize - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(JNINativeInterface_),
+            "::",
+            stringify!(__hack)
+        )
+    );
 }
 extern "stdcall" {
     pub fn bar();

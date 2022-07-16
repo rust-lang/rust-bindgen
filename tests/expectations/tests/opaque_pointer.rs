@@ -40,6 +40,8 @@ pub struct WithOpaquePtr {
 }
 #[test]
 fn bindgen_test_layout_WithOpaquePtr() {
+    const UNINIT: ::std::mem::MaybeUninit<WithOpaquePtr> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<WithOpaquePtr>(),
         16usize,
@@ -50,57 +52,45 @@ fn bindgen_test_layout_WithOpaquePtr() {
         8usize,
         concat!("Alignment of ", stringify!(WithOpaquePtr))
     );
-    fn test_field_whatever() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<WithOpaquePtr>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).whatever) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(WithOpaquePtr),
-                "::",
-                stringify!(whatever)
-            )
-        );
-    }
-    test_field_whatever();
-    fn test_field_other() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<WithOpaquePtr>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).other) as usize - ptr as usize
-            },
-            8usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(WithOpaquePtr),
-                "::",
-                stringify!(other)
-            )
-        );
-    }
-    test_field_other();
-    fn test_field_t() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<WithOpaquePtr>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).t) as usize - ptr as usize
-            },
-            12usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(WithOpaquePtr),
-                "::",
-                stringify!(t)
-            )
-        );
-    }
-    test_field_t();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).whatever) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(WithOpaquePtr),
+            "::",
+            stringify!(whatever)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).other) as usize - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(WithOpaquePtr),
+            "::",
+            stringify!(other)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).t) as usize - ptr as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(WithOpaquePtr),
+            "::",
+            stringify!(t)
+        )
+    );
 }
 impl Default for WithOpaquePtr {
     fn default() -> Self {

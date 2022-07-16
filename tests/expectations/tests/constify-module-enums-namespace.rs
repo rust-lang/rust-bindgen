@@ -32,6 +32,8 @@ pub mod root {
             }
             #[test]
             fn bindgen_test_layout_bar() {
+                const UNINIT: ::std::mem::MaybeUninit<bar> =
+                    ::std::mem::MaybeUninit::uninit();
                 assert_eq!(
                     ::std::mem::size_of::<bar>(),
                     4usize,
@@ -42,26 +44,20 @@ pub mod root {
                     4usize,
                     concat!("Alignment of ", stringify!(bar))
                 );
-                fn test_field_this_should_work() {
-                    assert_eq!(
-                        unsafe {
-                            let uninit =
-                                ::std::mem::MaybeUninit::<bar>::uninit();
-                            let ptr = uninit.as_ptr();
-                            ::std::ptr::addr_of!((*ptr).this_should_work)
-                                as usize -
-                                ptr as usize
-                        },
-                        0usize,
-                        concat!(
-                            "Offset of field: ",
-                            stringify!(bar),
-                            "::",
-                            stringify!(this_should_work)
-                        )
-                    );
-                }
-                test_field_this_should_work();
+                assert_eq!(
+                    unsafe {
+                        let ptr = UNINIT.as_ptr();
+                        ::std::ptr::addr_of!((*ptr).this_should_work) as usize -
+                            ptr as usize
+                    },
+                    0usize,
+                    concat!(
+                        "Offset of field: ",
+                        stringify!(bar),
+                        "::",
+                        stringify!(this_should_work)
+                    )
+                );
             }
             impl Default for bar {
                 fn default() -> Self {

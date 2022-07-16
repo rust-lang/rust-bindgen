@@ -29,6 +29,8 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout_sentry() {
+            const UNINIT: ::std::mem::MaybeUninit<sentry> =
+                ::std::mem::MaybeUninit::uninit();
             assert_eq!(
                 ::std::mem::size_of::<sentry>(),
                 1usize,
@@ -39,25 +41,20 @@ pub mod root {
                 1usize,
                 concat!("Alignment of ", stringify!(sentry))
             );
-            fn test_field_i_am_plain_sentry() {
-                assert_eq!(
-                    unsafe {
-                        let uninit =
-                            ::std::mem::MaybeUninit::<sentry>::uninit();
-                        let ptr = uninit.as_ptr();
-                        ::std::ptr::addr_of!((*ptr).i_am_plain_sentry) as usize -
-                            ptr as usize
-                    },
-                    0usize,
-                    concat!(
-                        "Offset of field: ",
-                        stringify!(sentry),
-                        "::",
-                        stringify!(i_am_plain_sentry)
-                    )
-                );
-            }
-            test_field_i_am_plain_sentry();
+            assert_eq!(
+                unsafe {
+                    let ptr = UNINIT.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).i_am_plain_sentry) as usize -
+                        ptr as usize
+                },
+                0usize,
+                concat!(
+                    "Offset of field: ",
+                    stringify!(sentry),
+                    "::",
+                    stringify!(i_am_plain_sentry)
+                )
+            );
         }
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
@@ -84,6 +81,8 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout_NotTemplateWrapper_sentry() {
+            const UNINIT: ::std::mem::MaybeUninit<NotTemplateWrapper_sentry> =
+                ::std::mem::MaybeUninit::uninit();
             assert_eq!(
                 ::std::mem::size_of::<NotTemplateWrapper_sentry>(),
                 1usize,
@@ -94,28 +93,22 @@ pub mod root {
                 1usize,
                 concat!("Alignment of ", stringify!(NotTemplateWrapper_sentry))
             );
-            fn test_field_i_am_not_template_wrapper_sentry() {
-                assert_eq!(
-                    unsafe {
-                        let uninit = ::std::mem::MaybeUninit::<
-                            NotTemplateWrapper_sentry,
-                        >::uninit();
-                        let ptr = uninit.as_ptr();
-                        ::std::ptr::addr_of!(
-                            (*ptr).i_am_not_template_wrapper_sentry
-                        ) as usize -
-                            ptr as usize
-                    },
-                    0usize,
-                    concat!(
-                        "Offset of field: ",
-                        stringify!(NotTemplateWrapper_sentry),
-                        "::",
-                        stringify!(i_am_not_template_wrapper_sentry)
-                    )
-                );
-            }
-            test_field_i_am_not_template_wrapper_sentry();
+            assert_eq!(
+                unsafe {
+                    let ptr = UNINIT.as_ptr();
+                    ::std::ptr::addr_of!(
+                        (*ptr).i_am_not_template_wrapper_sentry
+                    ) as usize -
+                        ptr as usize
+                },
+                0usize,
+                concat!(
+                    "Offset of field: ",
+                    stringify!(NotTemplateWrapper_sentry),
+                    "::",
+                    stringify!(i_am_not_template_wrapper_sentry)
+                )
+            );
         }
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
@@ -129,6 +122,9 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout_InlineNotTemplateWrapper_sentry() {
+            const UNINIT: ::std::mem::MaybeUninit<
+                InlineNotTemplateWrapper_sentry,
+            > = ::std::mem::MaybeUninit::uninit();
             assert_eq!(
                 ::std::mem::size_of::<InlineNotTemplateWrapper_sentry>(),
                 1usize,
@@ -145,28 +141,22 @@ pub mod root {
                     stringify!(InlineNotTemplateWrapper_sentry)
                 )
             );
-            fn test_field_i_am_inline_not_template_wrapper_sentry() {
-                assert_eq!(
-                    unsafe {
-                        let uninit = ::std::mem::MaybeUninit::<
-                            InlineNotTemplateWrapper_sentry,
-                        >::uninit();
-                        let ptr = uninit.as_ptr();
-                        ::std::ptr::addr_of!(
-                            (*ptr).i_am_inline_not_template_wrapper_sentry
-                        ) as usize -
-                            ptr as usize
-                    },
-                    0usize,
-                    concat!(
-                        "Offset of field: ",
-                        stringify!(InlineNotTemplateWrapper_sentry),
-                        "::",
-                        stringify!(i_am_inline_not_template_wrapper_sentry)
-                    )
-                );
-            }
-            test_field_i_am_inline_not_template_wrapper_sentry();
+            assert_eq!(
+                unsafe {
+                    let ptr = UNINIT.as_ptr();
+                    ::std::ptr::addr_of!(
+                        (*ptr).i_am_inline_not_template_wrapper_sentry
+                    ) as usize -
+                        ptr as usize
+                },
+                0usize,
+                concat!(
+                    "Offset of field: ",
+                    stringify!(InlineNotTemplateWrapper_sentry),
+                    "::",
+                    stringify!(i_am_inline_not_template_wrapper_sentry)
+                )
+            );
         }
         #[test]
         fn bindgen_test_layout_InlineNotTemplateWrapper() {
@@ -240,6 +230,9 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout_OuterDoubleWrapper_InnerDoubleWrapper_sentry() {
+            const UNINIT: ::std::mem::MaybeUninit<
+                OuterDoubleWrapper_InnerDoubleWrapper_sentry,
+            > = ::std::mem::MaybeUninit::uninit();
             assert_eq!(
                 ::std::mem::size_of::<
                     OuterDoubleWrapper_InnerDoubleWrapper_sentry,
@@ -260,29 +253,21 @@ pub mod root {
                     stringify!(OuterDoubleWrapper_InnerDoubleWrapper_sentry)
                 )
             );
-            fn test_field_i_am_double_wrapper_sentry() {
-                assert_eq!(
-                    unsafe {
-                        let uninit = ::std::mem::MaybeUninit::<
-                            OuterDoubleWrapper_InnerDoubleWrapper_sentry,
-                        >::uninit();
-                        let ptr = uninit.as_ptr();
-                        ::std::ptr::addr_of!((*ptr).i_am_double_wrapper_sentry)
-                            as usize -
-                            ptr as usize
-                    },
-                    0usize,
-                    concat!(
-                        "Offset of field: ",
-                        stringify!(
-                            OuterDoubleWrapper_InnerDoubleWrapper_sentry
-                        ),
-                        "::",
-                        stringify!(i_am_double_wrapper_sentry)
-                    )
-                );
-            }
-            test_field_i_am_double_wrapper_sentry();
+            assert_eq!(
+                unsafe {
+                    let ptr = UNINIT.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).i_am_double_wrapper_sentry)
+                        as usize -
+                        ptr as usize
+                },
+                0usize,
+                concat!(
+                    "Offset of field: ",
+                    stringify!(OuterDoubleWrapper_InnerDoubleWrapper_sentry),
+                    "::",
+                    stringify!(i_am_double_wrapper_sentry)
+                )
+            );
         }
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
@@ -302,12 +287,12 @@ pub mod root {
         #[test]
         fn bindgen_test_layout_OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry(
         ) {
+            const UNINIT: ::std::mem::MaybeUninit<
+                OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry,
+            > = ::std::mem::MaybeUninit::uninit();
             assert_eq ! (:: std :: mem :: size_of :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > () , 4usize , concat ! ("Size of: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry)));
             assert_eq ! (:: std :: mem :: align_of :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > () , 4usize , concat ! ("Alignment of " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry)));
-            fn test_field_i_am_double_wrapper_inline_sentry() {
-                assert_eq ! (unsafe { let uninit = :: std :: mem :: MaybeUninit :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > :: uninit () ; let ptr = uninit . as_ptr () ; :: std :: ptr :: addr_of ! ((* ptr) . i_am_double_wrapper_inline_sentry) as usize - ptr as usize } , 0usize , concat ! ("Offset of field: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry) , "::" , stringify ! (i_am_double_wrapper_inline_sentry)));
-            }
-            test_field_i_am_double_wrapper_inline_sentry();
+            assert_eq ! (unsafe { let ptr = UNINIT . as_ptr () ; :: std :: ptr :: addr_of ! ((* ptr) . i_am_double_wrapper_inline_sentry) as usize - ptr as usize } , 0usize , concat ! ("Offset of field: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry) , "::" , stringify ! (i_am_double_wrapper_inline_sentry)));
         }
         #[test]
         fn bindgen_test_layout_OuterDoubleInlineWrapper_InnerDoubleInlineWrapper(
@@ -368,6 +353,8 @@ pub mod root {
     }
     #[test]
     fn bindgen_test_layout_sentry() {
+        const UNINIT: ::std::mem::MaybeUninit<sentry> =
+            ::std::mem::MaybeUninit::uninit();
         assert_eq!(
             ::std::mem::size_of::<sentry>(),
             4usize,
@@ -378,24 +365,20 @@ pub mod root {
             4usize,
             concat!("Alignment of ", stringify!(sentry))
         );
-        fn test_field_i_am_outside_namespace_sentry() {
-            assert_eq!(
-                unsafe {
-                    let uninit = ::std::mem::MaybeUninit::<sentry>::uninit();
-                    let ptr = uninit.as_ptr();
-                    ::std::ptr::addr_of!((*ptr).i_am_outside_namespace_sentry)
-                        as usize -
-                        ptr as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(sentry),
-                    "::",
-                    stringify!(i_am_outside_namespace_sentry)
-                )
-            );
-        }
-        test_field_i_am_outside_namespace_sentry();
+        assert_eq!(
+            unsafe {
+                let ptr = UNINIT.as_ptr();
+                ::std::ptr::addr_of!((*ptr).i_am_outside_namespace_sentry)
+                    as usize -
+                    ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(sentry),
+                "::",
+                stringify!(i_am_outside_namespace_sentry)
+            )
+        );
     }
 }

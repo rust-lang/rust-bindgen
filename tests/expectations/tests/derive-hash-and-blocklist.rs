@@ -14,6 +14,8 @@ pub struct ShouldNotDeriveHash {
 }
 #[test]
 fn bindgen_test_layout_ShouldNotDeriveHash() {
+    const UNINIT: ::std::mem::MaybeUninit<ShouldNotDeriveHash> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<ShouldNotDeriveHash>(),
         1usize,
@@ -24,24 +26,19 @@ fn bindgen_test_layout_ShouldNotDeriveHash() {
         1usize,
         concat!("Alignment of ", stringify!(ShouldNotDeriveHash))
     );
-    fn test_field_a() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<ShouldNotDeriveHash>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(ShouldNotDeriveHash),
-                "::",
-                stringify!(a)
-            )
-        );
-    }
-    test_field_a();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ShouldNotDeriveHash),
+            "::",
+            stringify!(a)
+        )
+    );
 }
 impl Default for ShouldNotDeriveHash {
     fn default() -> Self {

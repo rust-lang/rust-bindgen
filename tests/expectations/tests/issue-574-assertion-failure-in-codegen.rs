@@ -17,6 +17,8 @@ pub struct _bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout__bindgen_ty_1() {
+    const UNINIT: ::std::mem::MaybeUninit<_bindgen_ty_1> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<_bindgen_ty_1>(),
         1usize,
@@ -27,23 +29,19 @@ fn bindgen_test_layout__bindgen_ty_1() {
         1usize,
         concat!("Alignment of ", stringify!(_bindgen_ty_1))
     );
-    fn test_field_ar() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<_bindgen_ty_1>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ar) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(_bindgen_ty_1),
-                "::",
-                stringify!(ar)
-            )
-        );
-    }
-    test_field_ar();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).ar) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_bindgen_ty_1),
+            "::",
+            stringify!(ar)
+        )
+    );
 }
 extern "C" {
     pub static mut AutoIdVector: _bindgen_ty_1;

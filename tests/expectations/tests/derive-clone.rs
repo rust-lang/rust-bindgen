@@ -13,6 +13,8 @@ pub struct ShouldDeriveClone {
 }
 #[test]
 fn bindgen_test_layout_ShouldDeriveClone() {
+    const UNINIT: ::std::mem::MaybeUninit<ShouldDeriveClone> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<ShouldDeriveClone>(),
         132usize,
@@ -23,24 +25,19 @@ fn bindgen_test_layout_ShouldDeriveClone() {
         4usize,
         concat!("Alignment of ", stringify!(ShouldDeriveClone))
     );
-    fn test_field_large() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<ShouldDeriveClone>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).large) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(ShouldDeriveClone),
-                "::",
-                stringify!(large)
-            )
-        );
-    }
-    test_field_large();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).large) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ShouldDeriveClone),
+            "::",
+            stringify!(large)
+        )
+    );
 }
 impl Default for ShouldDeriveClone {
     fn default() -> Self {

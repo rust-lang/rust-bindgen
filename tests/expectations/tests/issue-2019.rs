@@ -12,6 +12,8 @@ pub struct A {
 }
 #[test]
 fn bindgen_test_layout_A() {
+    const UNINIT: ::std::mem::MaybeUninit<A> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<A>(),
         4usize,
@@ -22,18 +24,14 @@ fn bindgen_test_layout_A() {
         4usize,
         concat!("Alignment of ", stringify!(A))
     );
-    fn test_field_a() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<A>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!("Offset of field: ", stringify!(A), "::", stringify!(a))
-        );
-    }
-    test_field_a();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+        },
+        0usize,
+        concat!("Offset of field: ", stringify!(A), "::", stringify!(a))
+    );
 }
 extern "C" {
     #[link_name = "\u{1}_ZN1A4makeEv"]
@@ -52,6 +50,8 @@ pub struct B {
 }
 #[test]
 fn bindgen_test_layout_B() {
+    const UNINIT: ::std::mem::MaybeUninit<B> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<B>(),
         4usize,
@@ -62,18 +62,14 @@ fn bindgen_test_layout_B() {
         4usize,
         concat!("Alignment of ", stringify!(B))
     );
-    fn test_field_b() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<B>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-            },
-            0usize,
-            concat!("Offset of field: ", stringify!(B), "::", stringify!(b))
-        );
-    }
-    test_field_b();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
+        },
+        0usize,
+        concat!("Offset of field: ", stringify!(B), "::", stringify!(b))
+    );
 }
 extern "C" {
     #[link_name = "\u{1}_ZN1B4makeEv"]
