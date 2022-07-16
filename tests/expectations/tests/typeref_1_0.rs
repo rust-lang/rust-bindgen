@@ -57,6 +57,7 @@ pub struct mozilla_FragmentOrURL {
 fn bindgen_test_layout_mozilla_FragmentOrURL() {
     const UNINIT: ::std::mem::MaybeUninit<mozilla_FragmentOrURL> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<mozilla_FragmentOrURL>(),
         1usize,
@@ -69,7 +70,6 @@ fn bindgen_test_layout_mozilla_FragmentOrURL() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mIsLocalRef) as usize - ptr as usize
         },
         0usize,
@@ -130,6 +130,7 @@ pub struct Bar {
 fn bindgen_test_layout_Bar() {
     const UNINIT: ::std::mem::MaybeUninit<Bar> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Bar>(),
         8usize,
@@ -141,10 +142,7 @@ fn bindgen_test_layout_Bar() {
         concat!("Alignment of ", stringify!(Bar))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mFoo) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).mFoo) as usize - ptr as usize },
         0usize,
         concat!("Offset of field: ", stringify!(Bar), "::", stringify!(mFoo))
     );
@@ -172,6 +170,7 @@ pub struct nsFoo {
 fn bindgen_test_layout_nsFoo() {
     const UNINIT: ::std::mem::MaybeUninit<nsFoo> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<nsFoo>(),
         8usize,
@@ -183,10 +182,7 @@ fn bindgen_test_layout_nsFoo() {
         concat!("Alignment of ", stringify!(nsFoo))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mBar) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).mBar) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

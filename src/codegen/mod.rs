@@ -2190,7 +2190,6 @@ impl CodeGenerator for CompInfo {
                                     quote! {
                                         assert_eq!(
                                             unsafe {
-                                                let ptr = UNINIT.as_ptr();
                                                 ::#prefix::ptr::addr_of!((*ptr).#field_name) as usize - ptr as usize
                                             },
                                             #field_offset,
@@ -2208,6 +2207,7 @@ impl CodeGenerator for CompInfo {
                             // opt-level=0 doesn't take too much stack space,
                             // see #2218.
                             const UNINIT: ::#prefix::mem::MaybeUninit<#canonical_ident> = ::#prefix::mem::MaybeUninit::uninit();
+                            let ptr = UNINIT.as_ptr();
                         })
                     } else {
                         None

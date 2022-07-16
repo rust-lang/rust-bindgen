@@ -20,6 +20,7 @@ pub struct JNINativeInterface_ {
 fn bindgen_test_layout_JNINativeInterface_() {
     const UNINIT: ::std::mem::MaybeUninit<JNINativeInterface_> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<JNINativeInterface_>(),
         16usize,
@@ -32,7 +33,6 @@ fn bindgen_test_layout_JNINativeInterface_() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).GetVersion) as usize - ptr as usize
         },
         0usize,
@@ -44,10 +44,7 @@ fn bindgen_test_layout_JNINativeInterface_() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).__hack) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).__hack) as usize - ptr as usize },
         8usize,
         concat!(
             "Offset of field: ",

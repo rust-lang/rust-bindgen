@@ -29,6 +29,7 @@ pub struct ContainsInstantiation {
 fn bindgen_test_layout_ContainsInstantiation() {
     const UNINIT: ::std::mem::MaybeUninit<ContainsInstantiation> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ContainsInstantiation>(),
         1usize,
@@ -41,7 +42,6 @@ fn bindgen_test_layout_ContainsInstantiation() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).not_opaque) as usize - ptr as usize
         },
         0usize,
@@ -71,6 +71,7 @@ pub struct ContainsOpaqueInstantiation {
 fn bindgen_test_layout_ContainsOpaqueInstantiation() {
     const UNINIT: ::std::mem::MaybeUninit<ContainsOpaqueInstantiation> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ContainsOpaqueInstantiation>(),
         4usize,
@@ -82,10 +83,7 @@ fn bindgen_test_layout_ContainsOpaqueInstantiation() {
         concat!("Alignment of ", stringify!(ContainsOpaqueInstantiation))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).opaque) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).opaque) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

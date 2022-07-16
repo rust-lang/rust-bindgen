@@ -162,6 +162,7 @@ pub struct rte_eth_rxmode {
 fn bindgen_test_layout_rte_eth_rxmode() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_rxmode> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_rxmode>(),
         12usize,
@@ -173,10 +174,7 @@ fn bindgen_test_layout_rte_eth_rxmode() {
         concat!("Alignment of ", stringify!(rte_eth_rxmode))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mq_mode) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).mq_mode) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -187,7 +185,6 @@ fn bindgen_test_layout_rte_eth_rxmode() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).max_rx_pkt_len) as usize - ptr as usize
         },
         4usize,
@@ -200,7 +197,6 @@ fn bindgen_test_layout_rte_eth_rxmode() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).split_hdr_size) as usize - ptr as usize
         },
         8usize,
@@ -429,6 +425,7 @@ pub struct rte_eth_txmode {
 fn bindgen_test_layout_rte_eth_txmode() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_txmode> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_txmode>(),
         8usize,
@@ -440,10 +437,7 @@ fn bindgen_test_layout_rte_eth_txmode() {
         concat!("Alignment of ", stringify!(rte_eth_txmode))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mq_mode) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).mq_mode) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -453,10 +447,7 @@ fn bindgen_test_layout_rte_eth_txmode() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).pvid) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).pvid) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -570,6 +561,7 @@ pub struct rte_eth_rss_conf {
 fn bindgen_test_layout_rte_eth_rss_conf() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_rss_conf> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_rss_conf>(),
         24usize,
@@ -581,10 +573,7 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
         concat!("Alignment of ", stringify!(rte_eth_rss_conf))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).rss_key) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).rss_key) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -595,7 +584,6 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).rss_key_len) as usize - ptr as usize
         },
         8usize,
@@ -607,10 +595,7 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).rss_hf) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).rss_hf) as usize - ptr as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -689,6 +674,7 @@ pub struct rte_eth_vmdq_dcb_conf__bindgen_ty_1 {
 fn bindgen_test_layout_rte_eth_vmdq_dcb_conf__bindgen_ty_1() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_vmdq_dcb_conf__bindgen_ty_1> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>(),
         16usize,
@@ -703,10 +689,7 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).vlan_id) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).vlan_id) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -716,10 +699,7 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).pools) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).pools) as usize - ptr as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -733,6 +713,7 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf__bindgen_ty_1() {
 fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_vmdq_dcb_conf> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_vmdq_dcb_conf>(),
         1040usize,
@@ -745,7 +726,6 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).nb_queue_pools) as usize - ptr as usize
         },
         0usize,
@@ -758,7 +738,6 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).enable_default_pool) as usize -
                 ptr as usize
         },
@@ -772,7 +751,6 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).default_pool) as usize - ptr as usize
         },
         5usize,
@@ -785,7 +763,6 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).nb_pool_maps) as usize - ptr as usize
         },
         6usize,
@@ -798,7 +775,6 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).pool_map) as usize - ptr as usize
         },
         8usize,
@@ -810,10 +786,7 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).dcb_tc) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).dcb_tc) as usize - ptr as usize },
         1032usize,
         concat!(
             "Offset of field: ",
@@ -844,6 +817,7 @@ pub struct rte_eth_dcb_rx_conf {
 fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_dcb_rx_conf> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_dcb_rx_conf>(),
         12usize,
@@ -855,10 +829,7 @@ fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
         concat!("Alignment of ", stringify!(rte_eth_dcb_rx_conf))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).nb_tcs) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).nb_tcs) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -868,10 +839,7 @@ fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).dcb_tc) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).dcb_tc) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -902,6 +870,7 @@ pub struct rte_eth_vmdq_dcb_tx_conf {
 fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_vmdq_dcb_tx_conf> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_vmdq_dcb_tx_conf>(),
         12usize,
@@ -914,7 +883,6 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).nb_queue_pools) as usize - ptr as usize
         },
         0usize,
@@ -926,10 +894,7 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).dcb_tc) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).dcb_tc) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -960,6 +925,7 @@ pub struct rte_eth_dcb_tx_conf {
 fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_dcb_tx_conf> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_dcb_tx_conf>(),
         12usize,
@@ -971,10 +937,7 @@ fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
         concat!("Alignment of ", stringify!(rte_eth_dcb_tx_conf))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).nb_tcs) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).nb_tcs) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -984,10 +947,7 @@ fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).dcb_tc) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).dcb_tc) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -1016,6 +976,7 @@ pub struct rte_eth_vmdq_tx_conf {
 fn bindgen_test_layout_rte_eth_vmdq_tx_conf() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_vmdq_tx_conf> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_vmdq_tx_conf>(),
         4usize,
@@ -1028,7 +989,6 @@ fn bindgen_test_layout_rte_eth_vmdq_tx_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).nb_queue_pools) as usize - ptr as usize
         },
         0usize,
@@ -1079,6 +1039,7 @@ pub struct rte_eth_vmdq_rx_conf__bindgen_ty_1 {
 fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_vmdq_rx_conf__bindgen_ty_1> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_vmdq_rx_conf__bindgen_ty_1>(),
         16usize,
@@ -1093,10 +1054,7 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).vlan_id) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).vlan_id) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1106,10 +1064,7 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).pools) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).pools) as usize - ptr as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -1123,6 +1078,7 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
 fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_vmdq_rx_conf> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_vmdq_rx_conf>(),
         1040usize,
@@ -1135,7 +1091,6 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).nb_queue_pools) as usize - ptr as usize
         },
         0usize,
@@ -1148,7 +1103,6 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).enable_default_pool) as usize -
                 ptr as usize
         },
@@ -1162,7 +1116,6 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).default_pool) as usize - ptr as usize
         },
         5usize,
@@ -1175,7 +1128,6 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).enable_loop_back) as usize -
                 ptr as usize
         },
@@ -1189,7 +1141,6 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).nb_pool_maps) as usize - ptr as usize
         },
         7usize,
@@ -1201,10 +1152,7 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).rx_mode) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).rx_mode) as usize - ptr as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -1215,7 +1163,6 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).pool_map) as usize - ptr as usize
         },
         16usize,
@@ -1293,6 +1240,7 @@ pub struct rte_eth_ipv4_flow {
 fn bindgen_test_layout_rte_eth_ipv4_flow() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_ipv4_flow> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_ipv4_flow>(),
         12usize,
@@ -1304,10 +1252,7 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
         concat!("Alignment of ", stringify!(rte_eth_ipv4_flow))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).src_ip) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).src_ip) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1317,10 +1262,7 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).dst_ip) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).dst_ip) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -1330,10 +1272,7 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).tos) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).tos) as usize - ptr as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -1343,10 +1282,7 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).ttl) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).ttl) as usize - ptr as usize },
         9usize,
         concat!(
             "Offset of field: ",
@@ -1356,10 +1292,7 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).proto) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).proto) as usize - ptr as usize },
         10usize,
         concat!(
             "Offset of field: ",
@@ -1388,6 +1321,7 @@ pub struct rte_eth_ipv6_flow {
 fn bindgen_test_layout_rte_eth_ipv6_flow() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_ipv6_flow> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_ipv6_flow>(),
         36usize,
@@ -1399,10 +1333,7 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
         concat!("Alignment of ", stringify!(rte_eth_ipv6_flow))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).src_ip) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).src_ip) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1412,10 +1343,7 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).dst_ip) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).dst_ip) as usize - ptr as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -1425,10 +1353,7 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).tc) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).tc) as usize - ptr as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -1438,10 +1363,7 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).proto) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).proto) as usize - ptr as usize },
         33usize,
         concat!(
             "Offset of field: ",
@@ -1452,7 +1374,6 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).hop_limits) as usize - ptr as usize
         },
         34usize,
@@ -1492,6 +1413,7 @@ pub struct rte_eth_fdir_masks {
 fn bindgen_test_layout_rte_eth_fdir_masks() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_fdir_masks> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_fdir_masks>(),
         68usize,
@@ -1504,7 +1426,6 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).vlan_tci_mask) as usize - ptr as usize
         },
         0usize,
@@ -1517,7 +1438,6 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).ipv4_mask) as usize - ptr as usize
         },
         4usize,
@@ -1530,7 +1450,6 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).ipv6_mask) as usize - ptr as usize
         },
         16usize,
@@ -1543,7 +1462,6 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).src_port_mask) as usize - ptr as usize
         },
         52usize,
@@ -1556,7 +1474,6 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).dst_port_mask) as usize - ptr as usize
         },
         54usize,
@@ -1569,7 +1486,6 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mac_addr_byte_mask) as usize -
                 ptr as usize
         },
@@ -1583,7 +1499,6 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).tunnel_id_mask) as usize - ptr as usize
         },
         60usize,
@@ -1596,7 +1511,6 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).tunnel_type_mask) as usize -
                 ptr as usize
         },
@@ -1633,6 +1547,7 @@ pub struct rte_eth_flex_payload_cfg {
 fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_flex_payload_cfg> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_flex_payload_cfg>(),
         36usize,
@@ -1644,10 +1559,7 @@ fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
         concat!("Alignment of ", stringify!(rte_eth_flex_payload_cfg))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).type_) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).type_) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1658,7 +1570,6 @@ fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).src_offset) as usize - ptr as usize
         },
         4usize,
@@ -1691,6 +1602,7 @@ pub struct rte_eth_fdir_flex_mask {
 fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_fdir_flex_mask> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_fdir_flex_mask>(),
         18usize,
@@ -1703,7 +1615,6 @@ fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).flow_type) as usize - ptr as usize
         },
         0usize,
@@ -1715,10 +1626,7 @@ fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mask) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).mask) as usize - ptr as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -1744,6 +1652,7 @@ pub struct rte_eth_fdir_flex_conf {
 fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_fdir_flex_conf> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_fdir_flex_conf>(),
         688usize,
@@ -1756,7 +1665,6 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).nb_payloads) as usize - ptr as usize
         },
         0usize,
@@ -1769,7 +1677,6 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).nb_flexmasks) as usize - ptr as usize
         },
         2usize,
@@ -1782,7 +1689,6 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).flex_set) as usize - ptr as usize
         },
         4usize,
@@ -1795,7 +1701,6 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).flex_mask) as usize - ptr as usize
         },
         292usize,
@@ -1838,6 +1743,7 @@ pub struct rte_fdir_conf {
 fn bindgen_test_layout_rte_fdir_conf() {
     const UNINIT: ::std::mem::MaybeUninit<rte_fdir_conf> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_fdir_conf>(),
         772usize,
@@ -1849,10 +1755,7 @@ fn bindgen_test_layout_rte_fdir_conf() {
         concat!("Alignment of ", stringify!(rte_fdir_conf))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mode) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).mode) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1862,10 +1765,7 @@ fn bindgen_test_layout_rte_fdir_conf() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).pballoc) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).pballoc) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -1875,10 +1775,7 @@ fn bindgen_test_layout_rte_fdir_conf() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).status) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).status) as usize - ptr as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -1889,7 +1786,6 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).drop_queue) as usize - ptr as usize
         },
         12usize,
@@ -1901,10 +1797,7 @@ fn bindgen_test_layout_rte_fdir_conf() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mask) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).mask) as usize - ptr as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -1915,7 +1808,6 @@ fn bindgen_test_layout_rte_fdir_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).flex_conf) as usize - ptr as usize
         },
         84usize,
@@ -1949,6 +1841,7 @@ pub struct rte_intr_conf {
 fn bindgen_test_layout_rte_intr_conf() {
     const UNINIT: ::std::mem::MaybeUninit<rte_intr_conf> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_intr_conf>(),
         4usize,
@@ -1960,10 +1853,7 @@ fn bindgen_test_layout_rte_intr_conf() {
         concat!("Alignment of ", stringify!(rte_intr_conf))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).lsc) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).lsc) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1973,10 +1863,7 @@ fn bindgen_test_layout_rte_intr_conf() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).rxq) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).rxq) as usize - ptr as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -2035,6 +1922,7 @@ pub struct rte_eth_conf__bindgen_ty_1 {
 fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_conf__bindgen_ty_1> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_conf__bindgen_ty_1>(),
         2120usize,
@@ -2047,7 +1935,6 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).rss_conf) as usize - ptr as usize
         },
         0usize,
@@ -2060,7 +1947,6 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).vmdq_dcb_conf) as usize - ptr as usize
         },
         24usize,
@@ -2073,7 +1959,6 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).dcb_rx_conf) as usize - ptr as usize
         },
         1064usize,
@@ -2086,7 +1971,6 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).vmdq_rx_conf) as usize - ptr as usize
         },
         1080usize,
@@ -2118,6 +2002,7 @@ pub union rte_eth_conf__bindgen_ty_2 {
 fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_conf__bindgen_ty_2> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_conf__bindgen_ty_2>(),
         12usize,
@@ -2130,7 +2015,6 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).vmdq_dcb_tx_conf) as usize -
                 ptr as usize
         },
@@ -2144,7 +2028,6 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).dcb_tx_conf) as usize - ptr as usize
         },
         0usize,
@@ -2157,7 +2040,6 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).vmdq_tx_conf) as usize - ptr as usize
         },
         0usize,
@@ -2182,6 +2064,7 @@ impl Default for rte_eth_conf__bindgen_ty_2 {
 fn bindgen_test_layout_rte_eth_conf() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_conf> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_conf>(),
         2944usize,
@@ -2194,7 +2077,6 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).link_speeds) as usize - ptr as usize
         },
         0usize,
@@ -2206,10 +2088,7 @@ fn bindgen_test_layout_rte_eth_conf() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).rxmode) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).rxmode) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -2219,10 +2098,7 @@ fn bindgen_test_layout_rte_eth_conf() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).txmode) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).txmode) as usize - ptr as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -2233,7 +2109,6 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).lpbk_mode) as usize - ptr as usize
         },
         24usize,
@@ -2246,7 +2121,6 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).rx_adv_conf) as usize - ptr as usize
         },
         32usize,
@@ -2259,7 +2133,6 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).tx_adv_conf) as usize - ptr as usize
         },
         2152usize,
@@ -2272,7 +2145,6 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).dcb_capability_en) as usize -
                 ptr as usize
         },
@@ -2286,7 +2158,6 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).fdir_conf) as usize - ptr as usize
         },
         2168usize,
@@ -2299,7 +2170,6 @@ fn bindgen_test_layout_rte_eth_conf() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).intr_conf) as usize - ptr as usize
         },
         2940usize,

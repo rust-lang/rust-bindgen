@@ -50,6 +50,7 @@ pub struct whatever_child_with_member {
 fn bindgen_test_layout_whatever_child_with_member() {
     const UNINIT: ::std::mem::MaybeUninit<whatever_child_with_member> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<whatever_child_with_member>(),
         4usize,
@@ -62,7 +63,6 @@ fn bindgen_test_layout_whatever_child_with_member() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).m_member) as usize - ptr as usize
         },
         0usize,

@@ -20,6 +20,7 @@ pub struct Bar {
 fn bindgen_test_layout_Bar() {
     const UNINIT: ::std::mem::MaybeUninit<Bar> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Bar>(),
         16usize,
@@ -31,18 +32,12 @@ fn bindgen_test_layout_Bar() {
         concat!("Alignment of ", stringify!(Bar))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize },
         0usize,
         concat!("Offset of field: ", stringify!(Bar), "::", stringify!(f))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).m) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).m) as usize - ptr as usize },
         8usize,
         concat!("Offset of field: ", stringify!(Bar), "::", stringify!(m))
     );
@@ -66,6 +61,7 @@ pub struct Baz {
 fn bindgen_test_layout_Baz() {
     const UNINIT: ::std::mem::MaybeUninit<Baz> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Baz>(),
         16usize,
@@ -77,18 +73,12 @@ fn bindgen_test_layout_Baz() {
         concat!("Alignment of ", stringify!(Baz))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize },
         0usize,
         concat!("Offset of field: ", stringify!(Baz), "::", stringify!(f))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).m) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).m) as usize - ptr as usize },
         8usize,
         concat!("Offset of field: ", stringify!(Baz), "::", stringify!(m))
     );
@@ -112,6 +102,7 @@ pub struct Tar {
 fn bindgen_test_layout_Tar() {
     const UNINIT: ::std::mem::MaybeUninit<Tar> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Tar>(),
         16usize,
@@ -123,18 +114,12 @@ fn bindgen_test_layout_Tar() {
         concat!("Alignment of ", stringify!(Tar))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize },
         0usize,
         concat!("Offset of field: ", stringify!(Tar), "::", stringify!(f))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).m) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).m) as usize - ptr as usize },
         8usize,
         concat!("Offset of field: ", stringify!(Tar), "::", stringify!(m))
     );
@@ -158,6 +143,7 @@ pub struct Taz {
 fn bindgen_test_layout_Taz() {
     const UNINIT: ::std::mem::MaybeUninit<Taz> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Taz>(),
         16usize,
@@ -169,18 +155,12 @@ fn bindgen_test_layout_Taz() {
         concat!("Alignment of ", stringify!(Taz))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize },
         0usize,
         concat!("Offset of field: ", stringify!(Taz), "::", stringify!(f))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).m) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).m) as usize - ptr as usize },
         8usize,
         concat!("Offset of field: ", stringify!(Taz), "::", stringify!(m))
     );

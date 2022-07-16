@@ -15,6 +15,7 @@ pub struct ConstPtrMutObj {
 fn bindgen_test_layout_ConstPtrMutObj() {
     const UNINIT: ::std::mem::MaybeUninit<ConstPtrMutObj> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ConstPtrMutObj>(),
         8usize,
@@ -26,10 +27,7 @@ fn bindgen_test_layout_ConstPtrMutObj() {
         concat!("Alignment of ", stringify!(ConstPtrMutObj))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -57,6 +55,7 @@ pub struct MutPtrMutObj {
 fn bindgen_test_layout_MutPtrMutObj() {
     const UNINIT: ::std::mem::MaybeUninit<MutPtrMutObj> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<MutPtrMutObj>(),
         8usize,
@@ -68,10 +67,7 @@ fn bindgen_test_layout_MutPtrMutObj() {
         concat!("Alignment of ", stringify!(MutPtrMutObj))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -99,6 +95,7 @@ pub struct MutPtrConstObj {
 fn bindgen_test_layout_MutPtrConstObj() {
     const UNINIT: ::std::mem::MaybeUninit<MutPtrConstObj> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<MutPtrConstObj>(),
         8usize,
@@ -110,10 +107,7 @@ fn bindgen_test_layout_MutPtrConstObj() {
         concat!("Alignment of ", stringify!(MutPtrConstObj))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -141,6 +135,7 @@ pub struct ConstPtrConstObj {
 fn bindgen_test_layout_ConstPtrConstObj() {
     const UNINIT: ::std::mem::MaybeUninit<ConstPtrConstObj> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ConstPtrConstObj>(),
         8usize,
@@ -152,10 +147,7 @@ fn bindgen_test_layout_ConstPtrConstObj() {
         concat!("Alignment of ", stringify!(ConstPtrConstObj))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

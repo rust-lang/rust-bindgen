@@ -18,6 +18,7 @@ pub struct UsesArray {
 fn bindgen_test_layout_UsesArray() {
     const UNINIT: ::std::mem::MaybeUninit<UsesArray> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<UsesArray>(),
         40usize,
@@ -30,7 +31,6 @@ fn bindgen_test_layout_UsesArray() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).array_char_16) as usize - ptr as usize
         },
         0usize,
@@ -43,7 +43,6 @@ fn bindgen_test_layout_UsesArray() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).array_bool_8) as usize - ptr as usize
         },
         16usize,
@@ -56,7 +55,6 @@ fn bindgen_test_layout_UsesArray() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).array_int_4) as usize - ptr as usize
         },
         24usize,

@@ -14,6 +14,7 @@ pub struct Doggo {
 fn bindgen_test_layout_Doggo() {
     const UNINIT: ::std::mem::MaybeUninit<Doggo> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Doggo>(),
         4usize,
@@ -25,10 +26,7 @@ fn bindgen_test_layout_Doggo() {
         concat!("Alignment of ", stringify!(Doggo))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
         0usize,
         concat!("Offset of field: ", stringify!(Doggo), "::", stringify!(x))
     );

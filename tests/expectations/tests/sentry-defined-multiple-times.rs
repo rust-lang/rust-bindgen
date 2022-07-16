@@ -31,6 +31,7 @@ pub mod root {
         fn bindgen_test_layout_sentry() {
             const UNINIT: ::std::mem::MaybeUninit<sentry> =
                 ::std::mem::MaybeUninit::uninit();
+            let ptr = UNINIT.as_ptr();
             assert_eq!(
                 ::std::mem::size_of::<sentry>(),
                 1usize,
@@ -43,7 +44,6 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    let ptr = UNINIT.as_ptr();
                     ::std::ptr::addr_of!((*ptr).i_am_plain_sentry) as usize -
                         ptr as usize
                 },
@@ -83,6 +83,7 @@ pub mod root {
         fn bindgen_test_layout_NotTemplateWrapper_sentry() {
             const UNINIT: ::std::mem::MaybeUninit<NotTemplateWrapper_sentry> =
                 ::std::mem::MaybeUninit::uninit();
+            let ptr = UNINIT.as_ptr();
             assert_eq!(
                 ::std::mem::size_of::<NotTemplateWrapper_sentry>(),
                 1usize,
@@ -95,7 +96,6 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    let ptr = UNINIT.as_ptr();
                     ::std::ptr::addr_of!(
                         (*ptr).i_am_not_template_wrapper_sentry
                     ) as usize -
@@ -125,6 +125,7 @@ pub mod root {
             const UNINIT: ::std::mem::MaybeUninit<
                 InlineNotTemplateWrapper_sentry,
             > = ::std::mem::MaybeUninit::uninit();
+            let ptr = UNINIT.as_ptr();
             assert_eq!(
                 ::std::mem::size_of::<InlineNotTemplateWrapper_sentry>(),
                 1usize,
@@ -143,7 +144,6 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    let ptr = UNINIT.as_ptr();
                     ::std::ptr::addr_of!(
                         (*ptr).i_am_inline_not_template_wrapper_sentry
                     ) as usize -
@@ -233,6 +233,7 @@ pub mod root {
             const UNINIT: ::std::mem::MaybeUninit<
                 OuterDoubleWrapper_InnerDoubleWrapper_sentry,
             > = ::std::mem::MaybeUninit::uninit();
+            let ptr = UNINIT.as_ptr();
             assert_eq!(
                 ::std::mem::size_of::<
                     OuterDoubleWrapper_InnerDoubleWrapper_sentry,
@@ -255,7 +256,6 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    let ptr = UNINIT.as_ptr();
                     ::std::ptr::addr_of!((*ptr).i_am_double_wrapper_sentry)
                         as usize -
                         ptr as usize
@@ -290,9 +290,10 @@ pub mod root {
             const UNINIT: ::std::mem::MaybeUninit<
                 OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry,
             > = ::std::mem::MaybeUninit::uninit();
+            let ptr = UNINIT.as_ptr();
             assert_eq ! (:: std :: mem :: size_of :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > () , 4usize , concat ! ("Size of: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry)));
             assert_eq ! (:: std :: mem :: align_of :: < OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry > () , 4usize , concat ! ("Alignment of " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry)));
-            assert_eq ! (unsafe { let ptr = UNINIT . as_ptr () ; :: std :: ptr :: addr_of ! ((* ptr) . i_am_double_wrapper_inline_sentry) as usize - ptr as usize } , 0usize , concat ! ("Offset of field: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry) , "::" , stringify ! (i_am_double_wrapper_inline_sentry)));
+            assert_eq ! (unsafe { :: std :: ptr :: addr_of ! ((* ptr) . i_am_double_wrapper_inline_sentry) as usize - ptr as usize } , 0usize , concat ! ("Offset of field: " , stringify ! (OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry) , "::" , stringify ! (i_am_double_wrapper_inline_sentry)));
         }
         #[test]
         fn bindgen_test_layout_OuterDoubleInlineWrapper_InnerDoubleInlineWrapper(
@@ -355,6 +356,7 @@ pub mod root {
     fn bindgen_test_layout_sentry() {
         const UNINIT: ::std::mem::MaybeUninit<sentry> =
             ::std::mem::MaybeUninit::uninit();
+        let ptr = UNINIT.as_ptr();
         assert_eq!(
             ::std::mem::size_of::<sentry>(),
             4usize,
@@ -367,7 +369,6 @@ pub mod root {
         );
         assert_eq!(
             unsafe {
-                let ptr = UNINIT.as_ptr();
                 ::std::ptr::addr_of!((*ptr).i_am_outside_namespace_sentry)
                     as usize -
                     ptr as usize

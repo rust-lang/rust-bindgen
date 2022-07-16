@@ -20,6 +20,7 @@ pub struct SomeAccessors {
 fn bindgen_test_layout_SomeAccessors() {
     const UNINIT: ::std::mem::MaybeUninit<SomeAccessors> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<SomeAccessors>(),
         16usize,
@@ -32,7 +33,6 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mNoAccessor) as usize - ptr as usize
         },
         0usize,
@@ -45,7 +45,6 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mBothAccessors) as usize - ptr as usize
         },
         4usize,
@@ -58,7 +57,6 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mUnsafeAccessors) as usize -
                 ptr as usize
         },
@@ -72,7 +70,6 @@ fn bindgen_test_layout_SomeAccessors() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mImmutableAccessor) as usize -
                 ptr as usize
         },
@@ -120,6 +117,7 @@ pub struct AllAccessors {
 fn bindgen_test_layout_AllAccessors() {
     const UNINIT: ::std::mem::MaybeUninit<AllAccessors> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<AllAccessors>(),
         8usize,
@@ -132,7 +130,6 @@ fn bindgen_test_layout_AllAccessors() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mBothAccessors) as usize - ptr as usize
         },
         0usize,
@@ -145,7 +142,6 @@ fn bindgen_test_layout_AllAccessors() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mAlsoBothAccessors) as usize -
                 ptr as usize
         },
@@ -187,6 +183,7 @@ pub struct AllUnsafeAccessors {
 fn bindgen_test_layout_AllUnsafeAccessors() {
     const UNINIT: ::std::mem::MaybeUninit<AllUnsafeAccessors> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<AllUnsafeAccessors>(),
         8usize,
@@ -199,7 +196,6 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mBothAccessors) as usize - ptr as usize
         },
         0usize,
@@ -212,7 +208,6 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mAlsoBothAccessors) as usize -
                 ptr as usize
         },
@@ -263,6 +258,7 @@ pub struct ContradictAccessors {
 fn bindgen_test_layout_ContradictAccessors() {
     const UNINIT: ::std::mem::MaybeUninit<ContradictAccessors> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ContradictAccessors>(),
         16usize,
@@ -275,7 +271,6 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mBothAccessors) as usize - ptr as usize
         },
         0usize,
@@ -288,7 +283,6 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mNoAccessors) as usize - ptr as usize
         },
         4usize,
@@ -301,7 +295,6 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mUnsafeAccessors) as usize -
                 ptr as usize
         },
@@ -315,7 +308,6 @@ fn bindgen_test_layout_ContradictAccessors() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mImmutableAccessor) as usize -
                 ptr as usize
         },
@@ -362,6 +354,7 @@ pub struct Replaced {
 fn bindgen_test_layout_Replaced() {
     const UNINIT: ::std::mem::MaybeUninit<Replaced> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Replaced>(),
         4usize,
@@ -374,7 +367,6 @@ fn bindgen_test_layout_Replaced() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mAccessor) as usize - ptr as usize
         },
         0usize,
@@ -406,6 +398,7 @@ pub struct Wrapper {
 fn bindgen_test_layout_Wrapper() {
     const UNINIT: ::std::mem::MaybeUninit<Wrapper> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Wrapper>(),
         4usize,
@@ -418,7 +411,6 @@ fn bindgen_test_layout_Wrapper() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mReplaced) as usize - ptr as usize
         },
         0usize,

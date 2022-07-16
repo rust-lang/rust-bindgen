@@ -111,6 +111,7 @@ pub struct Allowlisted {
 fn bindgen_test_layout_Allowlisted() {
     const UNINIT: ::std::mem::MaybeUninit<Allowlisted> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Allowlisted>(),
         1usize,
@@ -123,7 +124,6 @@ fn bindgen_test_layout_Allowlisted() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).some_member) as usize - ptr as usize
         },
         0usize,

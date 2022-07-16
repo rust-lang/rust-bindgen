@@ -71,6 +71,7 @@ pub struct rte_mempool_ops {
 fn bindgen_test_layout_rte_mempool_ops() {
     const UNINIT: ::std::mem::MaybeUninit<rte_mempool_ops> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_mempool_ops>(),
         128usize,
@@ -82,10 +83,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         concat!("Alignment of ", stringify!(rte_mempool_ops))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).name) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).name) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -95,10 +93,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).alloc) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).alloc) as usize - ptr as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -108,10 +103,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).free) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).free) as usize - ptr as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -121,10 +113,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).enqueue) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).enqueue) as usize - ptr as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -134,10 +123,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).dequeue) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).dequeue) as usize - ptr as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -148,7 +134,6 @@ fn bindgen_test_layout_rte_mempool_ops() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).get_count) as usize - ptr as usize
         },
         64usize,
@@ -190,6 +175,7 @@ pub struct rte_spinlock_t {
 fn bindgen_test_layout_rte_spinlock_t() {
     const UNINIT: ::std::mem::MaybeUninit<rte_spinlock_t> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_spinlock_t>(),
         4usize,
@@ -201,10 +187,7 @@ fn bindgen_test_layout_rte_spinlock_t() {
         concat!("Alignment of ", stringify!(rte_spinlock_t))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).locked) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).locked) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -237,6 +220,7 @@ pub struct rte_mempool_ops_table {
 fn bindgen_test_layout_rte_mempool_ops_table() {
     const UNINIT: ::std::mem::MaybeUninit<rte_mempool_ops_table> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_mempool_ops_table>(),
         2112usize,
@@ -248,10 +232,7 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         concat!("Alignment of ", stringify!(rte_mempool_ops_table))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).sl) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).sl) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -261,10 +242,7 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).num_ops) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).num_ops) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -274,10 +252,7 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).ops) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).ops) as usize - ptr as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -315,6 +290,7 @@ pub struct malloc_heap__bindgen_ty_1 {
 fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
     const UNINIT: ::std::mem::MaybeUninit<malloc_heap__bindgen_ty_1> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<malloc_heap__bindgen_ty_1>(),
         8usize,
@@ -327,7 +303,6 @@ fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).lh_first) as usize - ptr as usize
         },
         0usize,
@@ -352,6 +327,7 @@ impl Default for malloc_heap__bindgen_ty_1 {
 fn bindgen_test_layout_malloc_heap() {
     const UNINIT: ::std::mem::MaybeUninit<malloc_heap> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<malloc_heap>(),
         128usize,
@@ -363,10 +339,7 @@ fn bindgen_test_layout_malloc_heap() {
         concat!("Alignment of ", stringify!(malloc_heap))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).lock) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).lock) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -377,7 +350,6 @@ fn bindgen_test_layout_malloc_heap() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).free_head) as usize - ptr as usize
         },
         8usize,
@@ -390,7 +362,6 @@ fn bindgen_test_layout_malloc_heap() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).alloc_count) as usize - ptr as usize
         },
         112usize,
@@ -403,7 +374,6 @@ fn bindgen_test_layout_malloc_heap() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).total_size) as usize - ptr as usize
         },
         120usize,

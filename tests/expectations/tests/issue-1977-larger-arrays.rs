@@ -14,6 +14,7 @@ pub struct S {
 fn bindgen_test_layout_S() {
     const UNINIT: ::std::mem::MaybeUninit<S> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<S>(),
         33usize,
@@ -26,7 +27,6 @@ fn bindgen_test_layout_S() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize
         },
         0usize,

@@ -18,6 +18,7 @@ pub struct local_type {
 fn bindgen_test_layout_local_type() {
     const UNINIT: ::std::mem::MaybeUninit<local_type> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<local_type>(),
         0usize,
@@ -29,10 +30,7 @@ fn bindgen_test_layout_local_type() {
         concat!("Alignment of ", stringify!(local_type))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).inner) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).inner) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

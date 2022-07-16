@@ -104,6 +104,7 @@ pub struct bitfield {
 fn bindgen_test_layout_bitfield() {
     const UNINIT: ::std::mem::MaybeUninit<bitfield> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<bitfield>(),
         16usize,
@@ -115,10 +116,7 @@ fn bindgen_test_layout_bitfield() {
         concat!("Alignment of ", stringify!(bitfield))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).e) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).e) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",

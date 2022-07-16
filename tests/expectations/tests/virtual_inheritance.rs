@@ -14,6 +14,7 @@ pub struct A {
 fn bindgen_test_layout_A() {
     const UNINIT: ::std::mem::MaybeUninit<A> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<A>(),
         4usize,
@@ -25,10 +26,7 @@ fn bindgen_test_layout_A() {
         concat!("Alignment of ", stringify!(A))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
         0usize,
         concat!("Offset of field: ", stringify!(A), "::", stringify!(foo))
     );
@@ -45,6 +43,7 @@ pub struct B {
 fn bindgen_test_layout_B() {
     const UNINIT: ::std::mem::MaybeUninit<B> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<B>(),
         16usize,
@@ -56,10 +55,7 @@ fn bindgen_test_layout_B() {
         concat!("Alignment of ", stringify!(B))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
         8usize,
         concat!("Offset of field: ", stringify!(B), "::", stringify!(bar))
     );
@@ -85,6 +81,7 @@ pub struct C {
 fn bindgen_test_layout_C() {
     const UNINIT: ::std::mem::MaybeUninit<C> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<C>(),
         16usize,
@@ -96,10 +93,7 @@ fn bindgen_test_layout_C() {
         concat!("Alignment of ", stringify!(C))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize },
         8usize,
         concat!("Offset of field: ", stringify!(C), "::", stringify!(baz))
     );

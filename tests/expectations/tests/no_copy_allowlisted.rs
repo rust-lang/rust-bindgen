@@ -14,6 +14,7 @@ pub struct NoCopy {
 fn bindgen_test_layout_NoCopy() {
     const UNINIT: ::std::mem::MaybeUninit<NoCopy> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<NoCopy>(),
         4usize,
@@ -25,10 +26,7 @@ fn bindgen_test_layout_NoCopy() {
         concat!("Alignment of ", stringify!(NoCopy))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize },
         0usize,
         concat!("Offset of field: ", stringify!(NoCopy), "::", stringify!(i))
     );

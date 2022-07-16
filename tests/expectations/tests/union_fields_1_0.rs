@@ -60,6 +60,7 @@ pub struct nsStyleUnion {
 fn bindgen_test_layout_nsStyleUnion() {
     const UNINIT: ::std::mem::MaybeUninit<nsStyleUnion> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<nsStyleUnion>(),
         8usize,
@@ -71,10 +72,7 @@ fn bindgen_test_layout_nsStyleUnion() {
         concat!("Alignment of ", stringify!(nsStyleUnion))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mInt) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).mInt) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -84,10 +82,7 @@ fn bindgen_test_layout_nsStyleUnion() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mFloat) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).mFloat) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -98,7 +93,6 @@ fn bindgen_test_layout_nsStyleUnion() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mPointer) as usize - ptr as usize
         },
         0usize,

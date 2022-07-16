@@ -104,6 +104,7 @@ pub struct C {
 fn bindgen_test_layout_C() {
     const UNINIT: ::core::mem::MaybeUninit<C> =
         ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<C>(),
         204usize,
@@ -116,7 +117,6 @@ fn bindgen_test_layout_C() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::core::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize
         },
         4usize,

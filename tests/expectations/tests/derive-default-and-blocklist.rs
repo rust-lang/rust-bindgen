@@ -17,6 +17,7 @@ pub struct ShouldNotDeriveDefault {
 fn bindgen_test_layout_ShouldNotDeriveDefault() {
     const UNINIT: ::std::mem::MaybeUninit<ShouldNotDeriveDefault> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ShouldNotDeriveDefault>(),
         1usize,
@@ -28,10 +29,7 @@ fn bindgen_test_layout_ShouldNotDeriveDefault() {
         concat!("Alignment of ", stringify!(ShouldNotDeriveDefault))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

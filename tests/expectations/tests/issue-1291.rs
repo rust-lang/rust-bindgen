@@ -29,6 +29,7 @@ pub struct RTCRay {
 fn bindgen_test_layout_RTCRay() {
     const UNINIT: ::std::mem::MaybeUninit<RTCRay> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<RTCRay>(),
         96usize,
@@ -40,10 +41,7 @@ fn bindgen_test_layout_RTCRay() {
         concat!("Alignment of ", stringify!(RTCRay))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).org) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).org) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -53,10 +51,7 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).align0) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).align0) as usize - ptr as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -66,10 +61,7 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).dir) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).dir) as usize - ptr as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -79,10 +71,7 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).align1) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).align1) as usize - ptr as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -92,10 +81,7 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).tnear) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).tnear) as usize - ptr as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -105,10 +91,7 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).tfar) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).tfar) as usize - ptr as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -118,10 +101,7 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).time) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).time) as usize - ptr as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -131,10 +111,7 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mask) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).mask) as usize - ptr as usize },
         44usize,
         concat!(
             "Offset of field: ",
@@ -144,10 +121,7 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).Ng) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).Ng) as usize - ptr as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -157,10 +131,7 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).align2) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).align2) as usize - ptr as usize },
         60usize,
         concat!(
             "Offset of field: ",
@@ -170,26 +141,17 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).u) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).u) as usize - ptr as usize },
         64usize,
         concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(u))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).v) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).v) as usize - ptr as usize },
         68usize,
         concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(v))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).geomID) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).geomID) as usize - ptr as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -199,10 +161,7 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).primID) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).primID) as usize - ptr as usize },
         76usize,
         concat!(
             "Offset of field: ",
@@ -212,10 +171,7 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).instID) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).instID) as usize - ptr as usize },
         80usize,
         concat!(
             "Offset of field: ",

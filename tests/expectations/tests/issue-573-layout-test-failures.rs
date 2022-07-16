@@ -19,6 +19,7 @@ pub struct AutoIdVector {
 fn bindgen_test_layout_AutoIdVector() {
     const UNINIT: ::std::mem::MaybeUninit<AutoIdVector> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<AutoIdVector>(),
         1usize,
@@ -30,10 +31,7 @@ fn bindgen_test_layout_AutoIdVector() {
         concat!("Alignment of ", stringify!(AutoIdVector))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).ar) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).ar) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

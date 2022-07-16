@@ -37,6 +37,7 @@ pub mod root {
         fn bindgen_test_layout_Foo() {
             const UNINIT: ::std::mem::MaybeUninit<Foo> =
                 ::std::mem::MaybeUninit::uninit();
+            let ptr = UNINIT.as_ptr();
             assert_eq!(
                 ::std::mem::size_of::<Foo>(),
                 1usize,
@@ -49,7 +50,6 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    let ptr = UNINIT.as_ptr();
                     ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
                 },
                 0usize,
@@ -70,6 +70,7 @@ pub mod root {
         fn bindgen_test_layout_Bar() {
             const UNINIT: ::std::mem::MaybeUninit<Bar> =
                 ::std::mem::MaybeUninit::uninit();
+            let ptr = UNINIT.as_ptr();
             assert_eq!(
                 ::std::mem::size_of::<Bar>(),
                 4usize,
@@ -82,7 +83,6 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    let ptr = UNINIT.as_ptr();
                     ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
                 },
                 0usize,
@@ -103,6 +103,7 @@ pub mod root {
         fn bindgen_test_layout_ContainsInstantiation() {
             const UNINIT: ::std::mem::MaybeUninit<ContainsInstantiation> =
                 ::std::mem::MaybeUninit::uninit();
+            let ptr = UNINIT.as_ptr();
             assert_eq!(
                 ::std::mem::size_of::<ContainsInstantiation>(),
                 1usize,
@@ -115,7 +116,6 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    let ptr = UNINIT.as_ptr();
                     ::std::ptr::addr_of!((*ptr).not_opaque) as usize -
                         ptr as usize
                 },
@@ -146,6 +146,7 @@ pub mod root {
         fn bindgen_test_layout_ContainsOpaqueInstantiation() {
             const UNINIT: ::std::mem::MaybeUninit<ContainsOpaqueInstantiation> =
                 ::std::mem::MaybeUninit::uninit();
+            let ptr = UNINIT.as_ptr();
             assert_eq!(
                 ::std::mem::size_of::<ContainsOpaqueInstantiation>(),
                 4usize,
@@ -161,7 +162,6 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    let ptr = UNINIT.as_ptr();
                     ::std::ptr::addr_of!((*ptr).opaque) as usize - ptr as usize
                 },
                 0usize,

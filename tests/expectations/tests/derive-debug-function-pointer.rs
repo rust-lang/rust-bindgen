@@ -17,6 +17,7 @@ pub type Nice_Function =
 fn bindgen_test_layout_Nice() {
     const UNINIT: ::std::mem::MaybeUninit<Nice> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Nice>(),
         144usize,
@@ -28,10 +29,7 @@ fn bindgen_test_layout_Nice() {
         concat!("Alignment of ", stringify!(Nice))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).pointer) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).pointer) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -42,7 +40,6 @@ fn bindgen_test_layout_Nice() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize
         },
         8usize,

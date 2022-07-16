@@ -139,6 +139,7 @@ pub struct rte_kni_fifo {
 fn bindgen_test_layout_rte_kni_fifo() {
     const UNINIT: ::std::mem::MaybeUninit<rte_kni_fifo> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_kni_fifo>(),
         16usize,
@@ -150,10 +151,7 @@ fn bindgen_test_layout_rte_kni_fifo() {
         concat!("Alignment of ", stringify!(rte_kni_fifo))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).write) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).write) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -163,10 +161,7 @@ fn bindgen_test_layout_rte_kni_fifo() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).read) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).read) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -176,10 +171,7 @@ fn bindgen_test_layout_rte_kni_fifo() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -190,7 +182,6 @@ fn bindgen_test_layout_rte_kni_fifo() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).elem_size) as usize - ptr as usize
         },
         12usize,
@@ -202,10 +193,7 @@ fn bindgen_test_layout_rte_kni_fifo() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).buffer) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).buffer) as usize - ptr as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -238,6 +226,7 @@ pub struct rte_eth_link {
 fn bindgen_test_layout_rte_eth_link() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_link> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_eth_link>(),
         8usize,
@@ -250,7 +239,6 @@ fn bindgen_test_layout_rte_eth_link() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).link_speed) as usize - ptr as usize
         },
         0usize,

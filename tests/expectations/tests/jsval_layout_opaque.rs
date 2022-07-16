@@ -280,6 +280,7 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
     const UNINIT: ::std::mem::MaybeUninit<
         jsval_layout__bindgen_ty_2__bindgen_ty_1,
     > = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>(),
         4usize,
@@ -297,10 +298,7 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).i32_) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).i32_) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -310,10 +308,7 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).u32_) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).u32_) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -323,10 +318,7 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).why) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).why) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -349,6 +341,7 @@ impl Default for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
 fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
     const UNINIT: ::std::mem::MaybeUninit<jsval_layout__bindgen_ty_2> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<jsval_layout__bindgen_ty_2>(),
         4usize,
@@ -360,10 +353,7 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
         concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_2))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).payload) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).payload) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -386,6 +376,7 @@ impl Default for jsval_layout__bindgen_ty_2 {
 fn bindgen_test_layout_jsval_layout() {
     const UNINIT: ::std::mem::MaybeUninit<jsval_layout> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<jsval_layout>(),
         8usize,
@@ -397,10 +388,7 @@ fn bindgen_test_layout_jsval_layout() {
         concat!("Alignment of ", stringify!(jsval_layout))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).asBits) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).asBits) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -411,7 +399,6 @@ fn bindgen_test_layout_jsval_layout() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).debugView) as usize - ptr as usize
         },
         0usize,
@@ -423,10 +410,7 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).s) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).s) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -437,7 +421,6 @@ fn bindgen_test_layout_jsval_layout() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).asDouble) as usize - ptr as usize
         },
         0usize,
@@ -449,10 +432,7 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).asPtr) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).asPtr) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -462,10 +442,7 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).asWord) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).asWord) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -476,7 +453,6 @@ fn bindgen_test_layout_jsval_layout() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).asUIntPtr) as usize - ptr as usize
         },
         0usize,
@@ -506,6 +482,7 @@ pub struct Value {
 fn bindgen_test_layout_Value() {
     const UNINIT: ::std::mem::MaybeUninit<Value> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Value>(),
         8usize,
@@ -517,10 +494,7 @@ fn bindgen_test_layout_Value() {
         concat!("Alignment of ", stringify!(Value))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).data) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).data) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

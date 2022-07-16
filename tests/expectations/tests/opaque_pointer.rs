@@ -42,6 +42,7 @@ pub struct WithOpaquePtr {
 fn bindgen_test_layout_WithOpaquePtr() {
     const UNINIT: ::std::mem::MaybeUninit<WithOpaquePtr> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<WithOpaquePtr>(),
         16usize,
@@ -54,7 +55,6 @@ fn bindgen_test_layout_WithOpaquePtr() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).whatever) as usize - ptr as usize
         },
         0usize,
@@ -66,10 +66,7 @@ fn bindgen_test_layout_WithOpaquePtr() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).other) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).other) as usize - ptr as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -79,10 +76,7 @@ fn bindgen_test_layout_WithOpaquePtr() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).t) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).t) as usize - ptr as usize },
         12usize,
         concat!(
             "Offset of field: ",
