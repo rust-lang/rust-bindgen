@@ -2172,11 +2172,11 @@ impl CodeGenerator for CompInfo {
                     let should_skip_field_offset_checks =
                         is_opaque || too_many_base_vtables;
 
-                    let (uninit_decl, check_field_offset) = if should_skip_field_offset_checks
-                    {
-                        (None, vec![])
-                    } else {
-                        (
+                    let (uninit_decl, check_field_offset) =
+                        if should_skip_field_offset_checks {
+                            (None, vec![])
+                        } else {
+                            (
                             Some(quote! {
                                 // Use a shared MaybeUninit so that rustc with
                                 // opt-level=0 doesn't take too much stack
@@ -2207,8 +2207,8 @@ impl CodeGenerator for CompInfo {
                                     })
                                 })
                                 .collect()
-                        )
-                    };
+                            )
+                        };
 
                     let item = quote! {
                         #[test]
