@@ -17,6 +17,7 @@ pub struct max_align_t {
 fn bindgen_test_layout_max_align_t() {
     const UNINIT: ::std::mem::MaybeUninit<max_align_t> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<max_align_t>(),
         32usize,
@@ -29,7 +30,6 @@ fn bindgen_test_layout_max_align_t() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).__clang_max_align_nonce1) as usize -
                 ptr as usize
         },
@@ -43,7 +43,6 @@ fn bindgen_test_layout_max_align_t() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).__clang_max_align_nonce2) as usize -
                 ptr as usize
         },

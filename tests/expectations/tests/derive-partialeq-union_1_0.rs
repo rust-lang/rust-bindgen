@@ -60,6 +60,7 @@ pub struct ShouldDerivePartialEq {
 fn bindgen_test_layout_ShouldDerivePartialEq() {
     const UNINIT: ::std::mem::MaybeUninit<ShouldDerivePartialEq> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ShouldDerivePartialEq>(),
         152usize,
@@ -71,10 +72,7 @@ fn bindgen_test_layout_ShouldDerivePartialEq() {
         concat!("Alignment of ", stringify!(ShouldDerivePartialEq))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -84,10 +82,7 @@ fn bindgen_test_layout_ShouldDerivePartialEq() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

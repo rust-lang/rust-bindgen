@@ -45,6 +45,7 @@ pub struct ZeroSizedArray {
 fn bindgen_test_layout_ZeroSizedArray() {
     const UNINIT: ::std::mem::MaybeUninit<ZeroSizedArray> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ZeroSizedArray>(),
         0usize,
@@ -56,10 +57,7 @@ fn bindgen_test_layout_ZeroSizedArray() {
         concat!("Alignment of ", stringify!(ZeroSizedArray))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).arr) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).arr) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -79,6 +77,7 @@ pub struct ContainsZeroSizedArray {
 fn bindgen_test_layout_ContainsZeroSizedArray() {
     const UNINIT: ::std::mem::MaybeUninit<ContainsZeroSizedArray> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ContainsZeroSizedArray>(),
         0usize,
@@ -90,10 +89,7 @@ fn bindgen_test_layout_ContainsZeroSizedArray() {
         concat!("Alignment of ", stringify!(ContainsZeroSizedArray))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).zsa) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).zsa) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

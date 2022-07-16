@@ -25,6 +25,7 @@ pub struct foo {
 fn bindgen_test_layout_foo() {
     const UNINIT: ::std::mem::MaybeUninit<foo> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<foo>(),
         48usize,
@@ -36,34 +37,22 @@ fn bindgen_test_layout_foo() {
         concat!("Alignment of ", stringify!(foo))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
         0usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(bar))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize },
         4usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(baz))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).bazz) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).bazz) as usize - ptr as usize },
         8usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(bazz))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).bazzz) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).bazzz) as usize - ptr as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -74,7 +63,6 @@ fn bindgen_test_layout_foo() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).complexFloat) as usize - ptr as usize
         },
         24usize,
@@ -87,7 +75,6 @@ fn bindgen_test_layout_foo() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).complexDouble) as usize - ptr as usize
         },
         32usize,

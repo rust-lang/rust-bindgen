@@ -34,6 +34,7 @@ pub struct Foo {
 fn bindgen_test_layout_Foo() {
     const UNINIT: ::std::mem::MaybeUninit<Foo> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Foo>(),
         8usize,
@@ -46,7 +47,6 @@ fn bindgen_test_layout_Foo() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).callback) as usize - ptr as usize
         },
         0usize,
@@ -83,6 +83,7 @@ pub struct Bar {
 fn bindgen_test_layout_Bar() {
     const UNINIT: ::std::mem::MaybeUninit<Bar> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Bar>(),
         8usize,
@@ -95,7 +96,6 @@ fn bindgen_test_layout_Bar() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).callback) as usize - ptr as usize
         },
         0usize,

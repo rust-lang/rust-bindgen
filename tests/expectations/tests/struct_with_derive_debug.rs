@@ -14,6 +14,7 @@ pub struct LittleArray {
 fn bindgen_test_layout_LittleArray() {
     const UNINIT: ::std::mem::MaybeUninit<LittleArray> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<LittleArray>(),
         128usize,
@@ -25,10 +26,7 @@ fn bindgen_test_layout_LittleArray() {
         concat!("Alignment of ", stringify!(LittleArray))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -47,6 +45,7 @@ pub struct BigArray {
 fn bindgen_test_layout_BigArray() {
     const UNINIT: ::std::mem::MaybeUninit<BigArray> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<BigArray>(),
         132usize,
@@ -58,10 +57,7 @@ fn bindgen_test_layout_BigArray() {
         concat!("Alignment of ", stringify!(BigArray))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -89,6 +85,7 @@ pub struct WithLittleArray {
 fn bindgen_test_layout_WithLittleArray() {
     const UNINIT: ::std::mem::MaybeUninit<WithLittleArray> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<WithLittleArray>(),
         128usize,
@@ -100,10 +97,7 @@ fn bindgen_test_layout_WithLittleArray() {
         concat!("Alignment of ", stringify!(WithLittleArray))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -122,6 +116,7 @@ pub struct WithBigArray {
 fn bindgen_test_layout_WithBigArray() {
     const UNINIT: ::std::mem::MaybeUninit<WithBigArray> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<WithBigArray>(),
         132usize,
@@ -133,10 +128,7 @@ fn bindgen_test_layout_WithBigArray() {
         concat!("Alignment of ", stringify!(WithBigArray))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

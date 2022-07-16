@@ -23,6 +23,7 @@ pub struct foo {
 fn bindgen_test_layout_foo() {
     const UNINIT: ::core::mem::MaybeUninit<foo> =
         ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<foo>(),
         16usize,
@@ -34,26 +35,17 @@ fn bindgen_test_layout_foo() {
         concat!("Alignment of ", stringify!(foo))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::core::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
+        unsafe { ::core::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
         0usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(a))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::core::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-        },
+        unsafe { ::core::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
         4usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(b))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::core::ptr::addr_of!((*ptr).bar) as usize - ptr as usize
-        },
+        unsafe { ::core::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
         8usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(bar))
     );

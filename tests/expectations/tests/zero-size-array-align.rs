@@ -46,6 +46,7 @@ pub struct dm_deps {
 fn bindgen_test_layout_dm_deps() {
     const UNINIT: ::std::mem::MaybeUninit<dm_deps> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<dm_deps>(),
         8usize,
@@ -57,10 +58,7 @@ fn bindgen_test_layout_dm_deps() {
         concat!("Alignment of ", stringify!(dm_deps))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).count) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).count) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -70,10 +68,7 @@ fn bindgen_test_layout_dm_deps() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).filler) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).filler) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -83,10 +78,7 @@ fn bindgen_test_layout_dm_deps() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).device) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).device) as usize - ptr as usize },
         8usize,
         concat!(
             "Offset of field: ",

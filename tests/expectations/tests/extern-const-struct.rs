@@ -14,6 +14,7 @@ pub struct nsFoo {
 fn bindgen_test_layout_nsFoo() {
     const UNINIT: ::std::mem::MaybeUninit<nsFoo> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<nsFoo>(),
         1600usize,
@@ -25,10 +26,7 @@ fn bindgen_test_layout_nsFoo() {
         concat!("Alignment of ", stringify!(nsFoo))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).details) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).details) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

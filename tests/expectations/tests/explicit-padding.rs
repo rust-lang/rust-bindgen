@@ -18,6 +18,7 @@ pub struct pad_me {
 fn bindgen_test_layout_pad_me() {
     const UNINIT: ::std::mem::MaybeUninit<pad_me> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<pad_me>(),
         12usize,
@@ -29,10 +30,7 @@ fn bindgen_test_layout_pad_me() {
         concat!("Alignment of ", stringify!(pad_me))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).first) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).first) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -42,10 +40,7 @@ fn bindgen_test_layout_pad_me() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).second) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).second) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -55,10 +50,7 @@ fn bindgen_test_layout_pad_me() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).third) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).third) as usize - ptr as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -79,6 +71,7 @@ pub union dont_pad_me {
 fn bindgen_test_layout_dont_pad_me() {
     const UNINIT: ::std::mem::MaybeUninit<dont_pad_me> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<dont_pad_me>(),
         4usize,
@@ -90,10 +83,7 @@ fn bindgen_test_layout_dont_pad_me() {
         concat!("Alignment of ", stringify!(dont_pad_me))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).first) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).first) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -103,10 +93,7 @@ fn bindgen_test_layout_dont_pad_me() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).second) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).second) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -116,10 +103,7 @@ fn bindgen_test_layout_dont_pad_me() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).third) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).third) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

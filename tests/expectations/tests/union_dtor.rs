@@ -14,6 +14,7 @@ pub union UnionWithDtor {
 fn bindgen_test_layout_UnionWithDtor() {
     const UNINIT: ::std::mem::MaybeUninit<UnionWithDtor> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<UnionWithDtor>(),
         8usize,
@@ -25,10 +26,7 @@ fn bindgen_test_layout_UnionWithDtor() {
         concat!("Alignment of ", stringify!(UnionWithDtor))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mFoo) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).mFoo) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -38,10 +36,7 @@ fn bindgen_test_layout_UnionWithDtor() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).mBar) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).mBar) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

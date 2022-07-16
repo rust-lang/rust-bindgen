@@ -45,6 +45,7 @@ pub struct test {
 fn bindgen_test_layout_test() {
     const UNINIT: ::std::mem::MaybeUninit<test> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<test>(),
         4usize,
@@ -56,16 +57,12 @@ fn bindgen_test_layout_test() {
         concat!("Alignment of ", stringify!(test))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
         0usize,
         concat!("Offset of field: ", stringify!(test), "::", stringify!(a))
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).zero_length_array) as usize -
                 ptr as usize
         },

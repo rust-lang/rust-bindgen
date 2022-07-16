@@ -168,6 +168,7 @@ pub struct ClassAInner {
 fn bindgen_test_layout_ClassAInner() {
     const UNINIT: ::std::mem::MaybeUninit<ClassAInner> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ClassAInner>(),
         8usize,
@@ -179,10 +180,7 @@ fn bindgen_test_layout_ClassAInner() {
         concat!("Alignment of ", stringify!(ClassAInner))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -210,6 +208,7 @@ pub struct ClassCInnerA {
 fn bindgen_test_layout_ClassCInnerA() {
     const UNINIT: ::std::mem::MaybeUninit<ClassCInnerA> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ClassCInnerA>(),
         8usize,
@@ -221,10 +220,7 @@ fn bindgen_test_layout_ClassCInnerA() {
         concat!("Alignment of ", stringify!(ClassCInnerA))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -252,6 +248,7 @@ pub struct ClassCInnerB {
 fn bindgen_test_layout_ClassCInnerB() {
     const UNINIT: ::std::mem::MaybeUninit<ClassCInnerB> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ClassCInnerB>(),
         8usize,
@@ -263,10 +260,7 @@ fn bindgen_test_layout_ClassCInnerB() {
         concat!("Alignment of ", stringify!(ClassCInnerB))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).cache) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).cache) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

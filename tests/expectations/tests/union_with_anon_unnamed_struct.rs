@@ -23,6 +23,7 @@ pub struct pixel__bindgen_ty_1 {
 fn bindgen_test_layout_pixel__bindgen_ty_1() {
     const UNINIT: ::std::mem::MaybeUninit<pixel__bindgen_ty_1> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<pixel__bindgen_ty_1>(),
         4usize,
@@ -34,10 +35,7 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(pixel__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).r) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).r) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -47,10 +45,7 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).g) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).g) as usize - ptr as usize },
         1usize,
         concat!(
             "Offset of field: ",
@@ -60,10 +55,7 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -73,10 +65,7 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
         3usize,
         concat!(
             "Offset of field: ",
@@ -90,6 +79,7 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
 fn bindgen_test_layout_pixel() {
     const UNINIT: ::std::mem::MaybeUninit<pixel> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<pixel>(),
         4usize,
@@ -101,10 +91,7 @@ fn bindgen_test_layout_pixel() {
         concat!("Alignment of ", stringify!(pixel))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).rgba) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).rgba) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

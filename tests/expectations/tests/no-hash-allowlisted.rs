@@ -14,6 +14,7 @@ pub struct NoHash {
 fn bindgen_test_layout_NoHash() {
     const UNINIT: ::std::mem::MaybeUninit<NoHash> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<NoHash>(),
         4usize,
@@ -25,10 +26,7 @@ fn bindgen_test_layout_NoHash() {
         concat!("Alignment of ", stringify!(NoHash))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize },
         0usize,
         concat!("Offset of field: ", stringify!(NoHash), "::", stringify!(i))
     );

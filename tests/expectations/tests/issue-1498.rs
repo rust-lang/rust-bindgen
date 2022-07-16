@@ -35,6 +35,7 @@ pub union rte_memseg__bindgen_ty_1 {
 fn bindgen_test_layout_rte_memseg__bindgen_ty_1() {
     const UNINIT: ::std::mem::MaybeUninit<rte_memseg__bindgen_ty_1> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_memseg__bindgen_ty_1>(),
         8usize,
@@ -46,10 +47,7 @@ fn bindgen_test_layout_rte_memseg__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(rte_memseg__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).addr) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).addr) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -59,10 +57,7 @@ fn bindgen_test_layout_rte_memseg__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).addr_64) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).addr_64) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -85,6 +80,7 @@ impl Default for rte_memseg__bindgen_ty_1 {
 fn bindgen_test_layout_rte_memseg() {
     const UNINIT: ::std::mem::MaybeUninit<rte_memseg> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_memseg>(),
         44usize,
@@ -97,7 +93,6 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).phys_addr) as usize - ptr as usize
         },
         0usize,
@@ -109,10 +104,7 @@ fn bindgen_test_layout_rte_memseg() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -123,7 +115,6 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).hugepage_sz) as usize - ptr as usize
         },
         24usize,
@@ -136,7 +127,6 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).socket_id) as usize - ptr as usize
         },
         32usize,
@@ -149,7 +139,6 @@ fn bindgen_test_layout_rte_memseg() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).nchannel) as usize - ptr as usize
         },
         36usize,
@@ -161,10 +150,7 @@ fn bindgen_test_layout_rte_memseg() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).nrank) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).nrank) as usize - ptr as usize },
         40usize,
         concat!(
             "Offset of field: ",

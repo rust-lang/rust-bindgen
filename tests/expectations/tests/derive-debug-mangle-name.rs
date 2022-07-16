@@ -22,6 +22,7 @@ pub union perf_event_attr__bindgen_ty_1 {
 fn bindgen_test_layout_perf_event_attr__bindgen_ty_1() {
     const UNINIT: ::std::mem::MaybeUninit<perf_event_attr__bindgen_ty_1> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<perf_event_attr__bindgen_ty_1>(),
         4usize,
@@ -33,10 +34,7 @@ fn bindgen_test_layout_perf_event_attr__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(perf_event_attr__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -46,10 +44,7 @@ fn bindgen_test_layout_perf_event_attr__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -77,6 +72,7 @@ impl ::std::fmt::Debug for perf_event_attr__bindgen_ty_1 {
 fn bindgen_test_layout_perf_event_attr() {
     const UNINIT: ::std::mem::MaybeUninit<perf_event_attr> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<perf_event_attr>(),
         12usize,
@@ -88,10 +84,7 @@ fn bindgen_test_layout_perf_event_attr() {
         concat!("Alignment of ", stringify!(perf_event_attr))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).type_) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).type_) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -101,10 +94,7 @@ fn bindgen_test_layout_perf_event_attr() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",

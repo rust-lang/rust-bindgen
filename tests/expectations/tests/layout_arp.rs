@@ -32,6 +32,7 @@ pub struct ether_addr {
 fn bindgen_test_layout_ether_addr() {
     const UNINIT: ::std::mem::MaybeUninit<ether_addr> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ether_addr>(),
         6usize,
@@ -44,7 +45,6 @@ fn bindgen_test_layout_ether_addr() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).addr_bytes) as usize - ptr as usize
         },
         0usize,
@@ -73,6 +73,7 @@ pub struct arp_ipv4 {
 fn bindgen_test_layout_arp_ipv4() {
     const UNINIT: ::std::mem::MaybeUninit<arp_ipv4> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<arp_ipv4>(),
         20usize,
@@ -84,10 +85,7 @@ fn bindgen_test_layout_arp_ipv4() {
         concat!("Alignment of ", stringify!(arp_ipv4))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).arp_sha) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).arp_sha) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -97,10 +95,7 @@ fn bindgen_test_layout_arp_ipv4() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).arp_sip) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).arp_sip) as usize - ptr as usize },
         6usize,
         concat!(
             "Offset of field: ",
@@ -110,10 +105,7 @@ fn bindgen_test_layout_arp_ipv4() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).arp_tha) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).arp_tha) as usize - ptr as usize },
         10usize,
         concat!(
             "Offset of field: ",
@@ -123,10 +115,7 @@ fn bindgen_test_layout_arp_ipv4() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).arp_tip) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).arp_tip) as usize - ptr as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -151,6 +140,7 @@ pub struct arp_hdr {
 fn bindgen_test_layout_arp_hdr() {
     const UNINIT: ::std::mem::MaybeUninit<arp_hdr> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<arp_hdr>(),
         28usize,
@@ -162,10 +152,7 @@ fn bindgen_test_layout_arp_hdr() {
         concat!("Alignment of ", stringify!(arp_hdr))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).arp_hrd) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).arp_hrd) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -175,10 +162,7 @@ fn bindgen_test_layout_arp_hdr() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).arp_pro) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).arp_pro) as usize - ptr as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -188,10 +172,7 @@ fn bindgen_test_layout_arp_hdr() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).arp_hln) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).arp_hln) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -201,10 +182,7 @@ fn bindgen_test_layout_arp_hdr() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).arp_pln) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).arp_pln) as usize - ptr as usize },
         5usize,
         concat!(
             "Offset of field: ",
@@ -214,10 +192,7 @@ fn bindgen_test_layout_arp_hdr() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).arp_op) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).arp_op) as usize - ptr as usize },
         6usize,
         concat!(
             "Offset of field: ",
@@ -228,7 +203,6 @@ fn bindgen_test_layout_arp_hdr() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).arp_data) as usize - ptr as usize
         },
         8usize,

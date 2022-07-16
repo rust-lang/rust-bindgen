@@ -72,6 +72,7 @@ pub mod root {
         fn bindgen_test_layout_Baz() {
             const UNINIT: ::std::mem::MaybeUninit<Baz> =
                 ::std::mem::MaybeUninit::uninit();
+            let ptr = UNINIT.as_ptr();
             assert_eq!(
                 ::std::mem::size_of::<Baz>(),
                 4usize,
@@ -84,7 +85,6 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    let ptr = UNINIT.as_ptr();
                     ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize
                 },
                 0usize,

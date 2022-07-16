@@ -35,6 +35,7 @@ pub struct Inherits {
 fn bindgen_test_layout_Inherits() {
     const UNINIT: ::std::mem::MaybeUninit<Inherits> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Inherits>(),
         1usize,
@@ -46,10 +47,7 @@ fn bindgen_test_layout_Inherits() {
         concat!("Alignment of ", stringify!(Inherits))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -71,6 +69,7 @@ pub struct Contains {
 fn bindgen_test_layout_Contains() {
     const UNINIT: ::std::mem::MaybeUninit<Contains> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Contains>(),
         2usize,
@@ -82,10 +81,7 @@ fn bindgen_test_layout_Contains() {
         concat!("Alignment of ", stringify!(Contains))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).empty) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).empty) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -95,10 +91,7 @@ fn bindgen_test_layout_Contains() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
         1usize,
         concat!(
             "Offset of field: ",

@@ -24,6 +24,7 @@ pub mod root {
     fn bindgen_test_layout_a() {
         const UNINIT: ::std::mem::MaybeUninit<a> =
             ::std::mem::MaybeUninit::uninit();
+        let ptr = UNINIT.as_ptr();
         assert_eq!(
             ::std::mem::size_of::<a>(),
             1usize,
@@ -35,10 +36,7 @@ pub mod root {
             concat!("Alignment of ", stringify!(a))
         );
         assert_eq!(
-            unsafe {
-                let ptr = UNINIT.as_ptr();
-                ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-            },
+            unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
             0usize,
             concat!("Offset of field: ", stringify!(a), "::", stringify!(b))
         );
@@ -52,6 +50,7 @@ pub mod root {
     fn bindgen_test_layout_nsCSSValue() {
         const UNINIT: ::std::mem::MaybeUninit<nsCSSValue> =
             ::std::mem::MaybeUninit::uninit();
+        let ptr = UNINIT.as_ptr();
         assert_eq!(
             ::std::mem::size_of::<nsCSSValue>(),
             1usize,
@@ -63,10 +62,7 @@ pub mod root {
             concat!("Alignment of ", stringify!(nsCSSValue))
         );
         assert_eq!(
-            unsafe {
-                let ptr = UNINIT.as_ptr();
-                ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
-            },
+            unsafe { ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize },
             0usize,
             concat!(
                 "Offset of field: ",

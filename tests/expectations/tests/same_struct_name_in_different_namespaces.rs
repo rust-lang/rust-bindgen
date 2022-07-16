@@ -20,6 +20,7 @@ pub struct JS_shadow_Zone {
 fn bindgen_test_layout_JS_shadow_Zone() {
     const UNINIT: ::std::mem::MaybeUninit<JS_shadow_Zone> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<JS_shadow_Zone>(),
         8usize,
@@ -31,10 +32,7 @@ fn bindgen_test_layout_JS_shadow_Zone() {
         concat!("Alignment of ", stringify!(JS_shadow_Zone))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -44,10 +42,7 @@ fn bindgen_test_layout_JS_shadow_Zone() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",

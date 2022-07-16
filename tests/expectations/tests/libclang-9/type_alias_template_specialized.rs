@@ -14,6 +14,7 @@ pub struct Rooted {
 fn bindgen_test_layout_Rooted() {
     const UNINIT: ::std::mem::MaybeUninit<Rooted> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Rooted>(),
         4usize,
@@ -25,10 +26,7 @@ fn bindgen_test_layout_Rooted() {
         concat!("Alignment of ", stringify!(Rooted))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).ptr) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).ptr) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

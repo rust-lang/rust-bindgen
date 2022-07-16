@@ -17,6 +17,7 @@ pub struct AlignedToOne {
 fn bindgen_test_layout_AlignedToOne() {
     const UNINIT: ::std::mem::MaybeUninit<AlignedToOne> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<AlignedToOne>(),
         4usize,
@@ -28,10 +29,7 @@ fn bindgen_test_layout_AlignedToOne() {
         concat!("Alignment of ", stringify!(AlignedToOne))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -51,6 +49,7 @@ pub struct AlignedToTwo {
 fn bindgen_test_layout_AlignedToTwo() {
     const UNINIT: ::std::mem::MaybeUninit<AlignedToTwo> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<AlignedToTwo>(),
         4usize,
@@ -62,10 +61,7 @@ fn bindgen_test_layout_AlignedToTwo() {
         concat!("Alignment of ", stringify!(AlignedToTwo))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -88,6 +84,7 @@ pub struct PackedToOne {
 fn bindgen_test_layout_PackedToOne() {
     const UNINIT: ::std::mem::MaybeUninit<PackedToOne> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<PackedToOne>(),
         8usize,
@@ -99,10 +96,7 @@ fn bindgen_test_layout_PackedToOne() {
         concat!("Alignment of ", stringify!(PackedToOne))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -112,10 +106,7 @@ fn bindgen_test_layout_PackedToOne() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -136,6 +127,7 @@ pub struct PackedToTwo {
 fn bindgen_test_layout_PackedToTwo() {
     const UNINIT: ::std::mem::MaybeUninit<PackedToTwo> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<PackedToTwo>(),
         8usize,
@@ -147,10 +139,7 @@ fn bindgen_test_layout_PackedToTwo() {
         concat!("Alignment of ", stringify!(PackedToTwo))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -160,10 +149,7 @@ fn bindgen_test_layout_PackedToTwo() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",

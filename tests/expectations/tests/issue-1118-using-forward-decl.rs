@@ -15,6 +15,7 @@ pub struct nsTArray_base {
 fn bindgen_test_layout_nsTArray_base() {
     const UNINIT: ::std::mem::MaybeUninit<nsTArray_base> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<nsTArray_base>(),
         8usize,
@@ -26,10 +27,7 @@ fn bindgen_test_layout_nsTArray_base() {
         concat!("Alignment of ", stringify!(nsTArray_base))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -71,6 +69,7 @@ pub struct nsIContent {
 fn bindgen_test_layout_nsIContent() {
     const UNINIT: ::std::mem::MaybeUninit<nsIContent> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<nsIContent>(),
         8usize,
@@ -82,10 +81,7 @@ fn bindgen_test_layout_nsIContent() {
         concat!("Alignment of ", stringify!(nsIContent))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

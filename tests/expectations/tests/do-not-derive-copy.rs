@@ -14,6 +14,7 @@ pub struct WouldBeCopyButWeAreNotDerivingCopy {
 fn bindgen_test_layout_WouldBeCopyButWeAreNotDerivingCopy() {
     const UNINIT: ::std::mem::MaybeUninit<WouldBeCopyButWeAreNotDerivingCopy> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<WouldBeCopyButWeAreNotDerivingCopy>(),
         4usize,
@@ -28,10 +29,7 @@ fn bindgen_test_layout_WouldBeCopyButWeAreNotDerivingCopy() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",

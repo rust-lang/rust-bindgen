@@ -109,6 +109,7 @@ pub struct V56AMDY {
 fn bindgen_test_layout_V56AMDY() {
     const UNINIT: ::std::mem::MaybeUninit<V56AMDY> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<V56AMDY>(),
         8usize,
@@ -120,10 +121,7 @@ fn bindgen_test_layout_V56AMDY() {
         concat!("Alignment of ", stringify!(V56AMDY))
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).MADK) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).MADK) as usize - ptr as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -133,10 +131,7 @@ fn bindgen_test_layout_V56AMDY() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr).MABR) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).MABR) as usize - ptr as usize },
         3usize,
         concat!(
             "Offset of field: ",
@@ -146,10 +141,7 @@ fn bindgen_test_layout_V56AMDY() {
         )
     );
     assert_eq!(
-        unsafe {
-            let ptr = UNINIT.as_ptr();
-            ::std::ptr::addr_of!((*ptr)._rB_) as usize - ptr as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr)._rB_) as usize - ptr as usize },
         7usize,
         concat!(
             "Offset of field: ",

@@ -123,6 +123,7 @@ pub struct Weird {
 fn bindgen_test_layout_Weird() {
     const UNINIT: ::std::mem::MaybeUninit<Weird> =
         ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Weird>(),
         24usize,
@@ -135,7 +136,6 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mStrokeDasharrayLength) as usize -
                 ptr as usize
         },
@@ -149,7 +149,6 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mClipRule) as usize - ptr as usize
         },
         8usize,
@@ -162,7 +161,6 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mColorInterpolation) as usize -
                 ptr as usize
         },
@@ -176,7 +174,6 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mColorInterpolationFilters) as usize -
                 ptr as usize
         },
@@ -190,7 +187,6 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mFillRule) as usize - ptr as usize
         },
         11usize,
@@ -203,7 +199,6 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mImageRendering) as usize - ptr as usize
         },
         12usize,
@@ -216,7 +211,6 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mPaintOrder) as usize - ptr as usize
         },
         13usize,
@@ -229,7 +223,6 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mShapeRendering) as usize - ptr as usize
         },
         14usize,
@@ -242,7 +235,6 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mStrokeLinecap) as usize - ptr as usize
         },
         15usize,
@@ -255,7 +247,6 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mStrokeLinejoin) as usize - ptr as usize
         },
         16usize,
@@ -268,7 +259,6 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mTextAnchor) as usize - ptr as usize
         },
         17usize,
@@ -281,7 +271,6 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            let ptr = UNINIT.as_ptr();
             ::std::ptr::addr_of!((*ptr).mTextRendering) as usize - ptr as usize
         },
         18usize,
