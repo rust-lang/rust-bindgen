@@ -2202,6 +2202,8 @@ impl CodeGenerator for CompInfo {
                     };
 
                     let uninit_decl = if !check_field_offset.is_empty() {
+                        // FIXME: When MSRV >= 1.59.0, we can use
+                        // > const PTR: *const #canonical_ident = ::#prefix::mem::MaybeUninit::uninit().as_ptr();
                         Some(quote! {
                             // Use a shared MaybeUninit so that rustc with
                             // opt-level=0 doesn't take too much stack space,
