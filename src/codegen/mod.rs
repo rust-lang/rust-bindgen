@@ -2172,43 +2172,46 @@ impl CodeGenerator for CompInfo {
                     let should_skip_field_offset_checks =
                         is_opaque || too_many_base_vtables;
 
-                    let (uninit_decl, check_field_offset) =
-                        if should_skip_field_offset_checks {
-                            (None, vec![])
-                        } else {
-                            (
-                            Some(quote! {
-                                // Use a shared MaybeUninit so that rustc with
-                                // opt-level=0 doesn't take too much stack
-                                // space, see #2218.
-                                const UNINIT: ::#prefix::mem::MaybeUninit<#canonical_ident> = ::#prefix::mem::MaybeUninit::uninit();
-                            }),
-                            self.fields()
-                                .iter()
-                                .filter_map(|field| match *field {
-                                    Field::DataMember(ref f) if f.name().is_some() => Some(f),
-                                    _ => None,
+                    let check_field_offset = if should_skip_field_offset_checks
+                    {
+                        vec![]
+                    } else {
+                        self.fields()
+                            .iter()
+                            .filter_map(|field| match *field {
+                                Field::DataMember(ref f) if f.name().is_some() => Some(f),
+                                _ => None,
+                            })
+                            .flat_map(|field| {
+                                let name = field.name().unwrap();
+                                field.offset().map(|offset| {
+                                    let field_offset = offset / 8;
+                                    let field_name = ctx.rust_ident(name);
+                                    quote! {
+                                        assert_eq!(
+                                            unsafe {
+                                                let ptr = UNINIT.as_ptr();
+                                                ::#prefix::ptr::addr_of!((*ptr).#field_name) as usize - ptr as usize
+                                            },
+                                            #field_offset,
+                                            concat!("Offset of field: ", stringify!(#canonical_ident), "::", stringify!(#field_name))
+                                        );
+                                    }
                                 })
-                                .flat_map(|field| {
-                                    let name = field.name().unwrap();
-                                    field.offset().map(|offset| {
-                                        let field_offset = offset / 8;
-                                        let field_name = ctx.rust_ident(name);
-                                        quote! {
-                                            assert_eq!(
-                                                unsafe {
-                                                    let ptr = UNINIT.as_ptr();
-                                                    ::#prefix::ptr::addr_of!((*ptr).#field_name) as usize - ptr as usize
-                                                },
-                                                #field_offset,
-                                                concat!("Offset of field: ", stringify!(#canonical_ident), "::", stringify!(#field_name))
-                                            );
-                                        }
-                                    })
-                                })
-                                .collect()
-                            )
-                        };
+                            })
+                            .collect()
+                    };
+
+                    let uninit_decl = if !check_field_offset.is_empty() {
+                        Some(quote! {
+                            // Use a shared MaybeUninit so that rustc with
+                            // opt-level=0 doesn't take too much stack space,
+                            // see #2218.
+                            const UNINIT: ::#prefix::mem::MaybeUninit<#canonical_ident> = ::#prefix::mem::MaybeUninit::uninit();
+                        })
+                    } else {
+                        None
+                    };
 
                     let item = quote! {
                         #[test]
@@ -2217,7 +2220,6 @@ impl CodeGenerator for CompInfo {
                             assert_eq!(#size_of_expr,
                                        #size,
                                        concat!("Size of: ", stringify!(#canonical_ident)));
-
                             #check_struct_align
                             #( #check_field_offset )*
                         }
