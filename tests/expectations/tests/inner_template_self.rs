@@ -27,6 +27,8 @@ pub struct InstantiateIt {
 }
 #[test]
 fn bindgen_test_layout_InstantiateIt() {
+    const UNINIT: ::std::mem::MaybeUninit<InstantiateIt> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<InstantiateIt>(),
         16usize,
@@ -37,23 +39,19 @@ fn bindgen_test_layout_InstantiateIt() {
         8usize,
         concat!("Alignment of ", stringify!(InstantiateIt))
     );
-    fn test_field_m_list() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<InstantiateIt>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).m_list) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(InstantiateIt),
-                "::",
-                stringify!(m_list)
-            )
-        );
-    }
-    test_field_m_list();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).m_list) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(InstantiateIt),
+            "::",
+            stringify!(m_list)
+        )
+    );
 }
 impl Default for InstantiateIt {
     fn default() -> Self {

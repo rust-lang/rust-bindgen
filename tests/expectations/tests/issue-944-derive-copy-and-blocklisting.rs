@@ -14,6 +14,8 @@ pub struct ShouldNotBeCopy {
 }
 #[test]
 fn bindgen_test_layout_ShouldNotBeCopy() {
+    const UNINIT: ::std::mem::MaybeUninit<ShouldNotBeCopy> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<ShouldNotBeCopy>(),
         1usize,
@@ -24,24 +26,19 @@ fn bindgen_test_layout_ShouldNotBeCopy() {
         1usize,
         concat!("Alignment of ", stringify!(ShouldNotBeCopy))
     );
-    fn test_field_a() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<ShouldNotBeCopy>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(ShouldNotBeCopy),
-                "::",
-                stringify!(a)
-            )
-        );
-    }
-    test_field_a();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ShouldNotBeCopy),
+            "::",
+            stringify!(a)
+        )
+    );
 }
 impl Default for ShouldNotBeCopy {
     fn default() -> Self {

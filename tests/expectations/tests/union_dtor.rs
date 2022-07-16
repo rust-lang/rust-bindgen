@@ -12,6 +12,8 @@ pub union UnionWithDtor {
 }
 #[test]
 fn bindgen_test_layout_UnionWithDtor() {
+    const UNINIT: ::std::mem::MaybeUninit<UnionWithDtor> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<UnionWithDtor>(),
         8usize,
@@ -22,40 +24,32 @@ fn bindgen_test_layout_UnionWithDtor() {
         8usize,
         concat!("Alignment of ", stringify!(UnionWithDtor))
     );
-    fn test_field_mFoo() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<UnionWithDtor>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mFoo) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(UnionWithDtor),
-                "::",
-                stringify!(mFoo)
-            )
-        );
-    }
-    test_field_mFoo();
-    fn test_field_mBar() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<UnionWithDtor>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBar) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(UnionWithDtor),
-                "::",
-                stringify!(mBar)
-            )
-        );
-    }
-    test_field_mBar();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mFoo) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(UnionWithDtor),
+            "::",
+            stringify!(mFoo)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBar) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(UnionWithDtor),
+            "::",
+            stringify!(mBar)
+        )
+    );
 }
 extern "C" {
     #[link_name = "\u{1}_ZN13UnionWithDtorD1Ev"]

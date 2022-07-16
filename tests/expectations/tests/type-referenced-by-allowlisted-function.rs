@@ -12,6 +12,8 @@ pub struct dl_phdr_info {
 }
 #[test]
 fn bindgen_test_layout_dl_phdr_info() {
+    const UNINIT: ::std::mem::MaybeUninit<dl_phdr_info> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<dl_phdr_info>(),
         4usize,
@@ -22,23 +24,19 @@ fn bindgen_test_layout_dl_phdr_info() {
         4usize,
         concat!("Alignment of ", stringify!(dl_phdr_info))
     );
-    fn test_field_x() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<dl_phdr_info>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(dl_phdr_info),
-                "::",
-                stringify!(x)
-            )
-        );
-    }
-    test_field_x();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(dl_phdr_info),
+            "::",
+            stringify!(x)
+        )
+    );
 }
 extern "C" {
     pub fn dl_iterate_phdr(arg1: *mut dl_phdr_info) -> ::std::os::raw::c_int;

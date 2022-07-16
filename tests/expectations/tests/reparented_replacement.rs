@@ -20,6 +20,8 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout_Bar() {
+            const UNINIT: ::std::mem::MaybeUninit<Bar> =
+                ::std::mem::MaybeUninit::uninit();
             assert_eq!(
                 ::std::mem::size_of::<Bar>(),
                 4usize,
@@ -30,24 +32,19 @@ pub mod root {
                 4usize,
                 concat!("Alignment of ", stringify!(Bar))
             );
-            fn test_field_bazz() {
-                assert_eq!(
-                    unsafe {
-                        let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
-                        let ptr = uninit.as_ptr();
-                        ::std::ptr::addr_of!((*ptr).bazz) as usize -
-                            ptr as usize
-                    },
-                    0usize,
-                    concat!(
-                        "Offset of field: ",
-                        stringify!(Bar),
-                        "::",
-                        stringify!(bazz)
-                    )
-                );
-            }
-            test_field_bazz();
+            assert_eq!(
+                unsafe {
+                    let ptr = UNINIT.as_ptr();
+                    ::std::ptr::addr_of!((*ptr).bazz) as usize - ptr as usize
+                },
+                0usize,
+                concat!(
+                    "Offset of field: ",
+                    stringify!(Bar),
+                    "::",
+                    stringify!(bazz)
+                )
+            );
         }
     }
     pub type ReferencesBar = root::foo::Bar;

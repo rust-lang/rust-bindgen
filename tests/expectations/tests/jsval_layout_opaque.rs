@@ -277,6 +277,9 @@ pub union jsval_layout__bindgen_ty_2__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
+    const UNINIT: ::std::mem::MaybeUninit<
+        jsval_layout__bindgen_ty_2__bindgen_ty_1,
+    > = ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>(),
         4usize,
@@ -293,63 +296,45 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
             stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1)
         )
     );
-    fn test_field_i32() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<
-                    jsval_layout__bindgen_ty_2__bindgen_ty_1,
-                >::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).i32_) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
-                "::",
-                stringify!(i32_)
-            )
-        );
-    }
-    test_field_i32();
-    fn test_field_u32() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<
-                    jsval_layout__bindgen_ty_2__bindgen_ty_1,
-                >::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).u32_) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
-                "::",
-                stringify!(u32_)
-            )
-        );
-    }
-    test_field_u32();
-    fn test_field_why() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<
-                    jsval_layout__bindgen_ty_2__bindgen_ty_1,
-                >::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).why) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
-                "::",
-                stringify!(why)
-            )
-        );
-    }
-    test_field_why();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).i32_) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
+            "::",
+            stringify!(i32_)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).u32_) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
+            "::",
+            stringify!(u32_)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).why) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
+            "::",
+            stringify!(why)
+        )
+    );
 }
 impl Default for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     fn default() -> Self {
@@ -362,6 +347,8 @@ impl Default for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
+    const UNINIT: ::std::mem::MaybeUninit<jsval_layout__bindgen_ty_2> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<jsval_layout__bindgen_ty_2>(),
         4usize,
@@ -372,25 +359,19 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
         4usize,
         concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_2))
     );
-    fn test_field_payload() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<
-                    jsval_layout__bindgen_ty_2,
-                >::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).payload) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(jsval_layout__bindgen_ty_2),
-                "::",
-                stringify!(payload)
-            )
-        );
-    }
-    test_field_payload();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).payload) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(jsval_layout__bindgen_ty_2),
+            "::",
+            stringify!(payload)
+        )
+    );
 }
 impl Default for jsval_layout__bindgen_ty_2 {
     fn default() -> Self {
@@ -403,6 +384,8 @@ impl Default for jsval_layout__bindgen_ty_2 {
 }
 #[test]
 fn bindgen_test_layout_jsval_layout() {
+    const UNINIT: ::std::mem::MaybeUninit<jsval_layout> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<jsval_layout>(),
         8usize,
@@ -413,125 +396,97 @@ fn bindgen_test_layout_jsval_layout() {
         8usize,
         concat!("Alignment of ", stringify!(jsval_layout))
     );
-    fn test_field_asBits() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<jsval_layout>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).asBits) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(jsval_layout),
-                "::",
-                stringify!(asBits)
-            )
-        );
-    }
-    test_field_asBits();
-    fn test_field_debugView() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<jsval_layout>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).debugView) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(jsval_layout),
-                "::",
-                stringify!(debugView)
-            )
-        );
-    }
-    test_field_debugView();
-    fn test_field_s() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<jsval_layout>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).s) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(jsval_layout),
-                "::",
-                stringify!(s)
-            )
-        );
-    }
-    test_field_s();
-    fn test_field_asDouble() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<jsval_layout>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).asDouble) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(jsval_layout),
-                "::",
-                stringify!(asDouble)
-            )
-        );
-    }
-    test_field_asDouble();
-    fn test_field_asPtr() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<jsval_layout>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).asPtr) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(jsval_layout),
-                "::",
-                stringify!(asPtr)
-            )
-        );
-    }
-    test_field_asPtr();
-    fn test_field_asWord() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<jsval_layout>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).asWord) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(jsval_layout),
-                "::",
-                stringify!(asWord)
-            )
-        );
-    }
-    test_field_asWord();
-    fn test_field_asUIntPtr() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<jsval_layout>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).asUIntPtr) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(jsval_layout),
-                "::",
-                stringify!(asUIntPtr)
-            )
-        );
-    }
-    test_field_asUIntPtr();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).asBits) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(asBits)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).debugView) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(debugView)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).s) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(s)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).asDouble) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(asDouble)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).asPtr) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(asPtr)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).asWord) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(asWord)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).asUIntPtr) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(asUIntPtr)
+        )
+    );
 }
 impl Default for jsval_layout {
     fn default() -> Self {
@@ -549,6 +504,8 @@ pub struct Value {
 }
 #[test]
 fn bindgen_test_layout_Value() {
+    const UNINIT: ::std::mem::MaybeUninit<Value> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<Value>(),
         8usize,
@@ -559,23 +516,19 @@ fn bindgen_test_layout_Value() {
         8usize,
         concat!("Alignment of ", stringify!(Value))
     );
-    fn test_field_data() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<Value>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).data) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(Value),
-                "::",
-                stringify!(data)
-            )
-        );
-    }
-    test_field_data();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).data) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(Value),
+            "::",
+            stringify!(data)
+        )
+    );
 }
 impl Default for Value {
     fn default() -> Self {

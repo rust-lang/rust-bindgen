@@ -68,6 +68,8 @@ pub struct C {
 }
 #[test]
 fn bindgen_test_layout_C() {
+    const UNINIT: ::std::mem::MaybeUninit<C> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<C>(),
         104usize,
@@ -78,276 +80,206 @@ fn bindgen_test_layout_C() {
         8usize,
         concat!("Alignment of ", stringify!(C))
     );
-    fn test_field_mB() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mB) as usize - ptr as usize
-            },
-            0usize,
-            concat!("Offset of field: ", stringify!(C), "::", stringify!(mB))
-        );
-    }
-    test_field_mB();
-    fn test_field_mBConstPtr() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBConstPtr) as usize - ptr as usize
-            },
-            8usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mBConstPtr)
-            )
-        );
-    }
-    test_field_mBConstPtr();
-    fn test_field_mBConstStructPtr() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBConstStructPtr) as usize -
-                    ptr as usize
-            },
-            16usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mBConstStructPtr)
-            )
-        );
-    }
-    test_field_mBConstStructPtr();
-    fn test_field_mBConstStructPtrArray() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBConstStructPtrArray) as usize -
-                    ptr as usize
-            },
-            24usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mBConstStructPtrArray)
-            )
-        );
-    }
-    test_field_mBConstStructPtrArray();
-    fn test_field_mBConst() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBConst) as usize - ptr as usize
-            },
-            32usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mBConst)
-            )
-        );
-    }
-    test_field_mBConst();
-    fn test_field_mBVolatile() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBVolatile) as usize - ptr as usize
-            },
-            36usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mBVolatile)
-            )
-        );
-    }
-    test_field_mBVolatile();
-    fn test_field_mBConstBool() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBConstBool) as usize - ptr as usize
-            },
-            40usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mBConstBool)
-            )
-        );
-    }
-    test_field_mBConstBool();
-    fn test_field_mBConstChar() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBConstChar) as usize - ptr as usize
-            },
-            42usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mBConstChar)
-            )
-        );
-    }
-    test_field_mBConstChar();
-    fn test_field_mBArray() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBArray) as usize - ptr as usize
-            },
-            44usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mBArray)
-            )
-        );
-    }
-    test_field_mBArray();
-    fn test_field_mBPtrArray() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBPtrArray) as usize - ptr as usize
-            },
-            48usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mBPtrArray)
-            )
-        );
-    }
-    test_field_mBPtrArray();
-    fn test_field_mBArrayPtr() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBArrayPtr) as usize - ptr as usize
-            },
-            56usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mBArrayPtr)
-            )
-        );
-    }
-    test_field_mBArrayPtr();
-    fn test_field_mBRef() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBRef) as usize - ptr as usize
-            },
-            64usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mBRef)
-            )
-        );
-    }
-    test_field_mBRef();
-    fn test_field_mBConstRef() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBConstRef) as usize - ptr as usize
-            },
-            72usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mBConstRef)
-            )
-        );
-    }
-    test_field_mBConstRef();
-    fn test_field_mPtrRef() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mPtrRef) as usize - ptr as usize
-            },
-            80usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mPtrRef)
-            )
-        );
-    }
-    test_field_mPtrRef();
-    fn test_field_mArrayRef() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mArrayRef) as usize - ptr as usize
-            },
-            88usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mArrayRef)
-            )
-        );
-    }
-    test_field_mArrayRef();
-    fn test_field_mBConstArray() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBConstArray) as usize -
-                    ptr as usize
-            },
-            96usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(mBConstArray)
-            )
-        );
-    }
-    test_field_mBConstArray();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mB) as usize - ptr as usize
+        },
+        0usize,
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(mB))
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBConstPtr) as usize - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mBConstPtr)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBConstStructPtr) as usize -
+                ptr as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mBConstStructPtr)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBConstStructPtrArray) as usize -
+                ptr as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mBConstStructPtrArray)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBConst) as usize - ptr as usize
+        },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mBConst)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBVolatile) as usize - ptr as usize
+        },
+        36usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mBVolatile)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBConstBool) as usize - ptr as usize
+        },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mBConstBool)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBConstChar) as usize - ptr as usize
+        },
+        42usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mBConstChar)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBArray) as usize - ptr as usize
+        },
+        44usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mBArray)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBPtrArray) as usize - ptr as usize
+        },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mBPtrArray)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBArrayPtr) as usize - ptr as usize
+        },
+        56usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mBArrayPtr)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBRef) as usize - ptr as usize
+        },
+        64usize,
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBRef))
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBConstRef) as usize - ptr as usize
+        },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mBConstRef)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mPtrRef) as usize - ptr as usize
+        },
+        80usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mPtrRef)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mArrayRef) as usize - ptr as usize
+        },
+        88usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mArrayRef)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).mBConstArray) as usize - ptr as usize
+        },
+        96usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(mBConstArray)
+        )
+    );
 }
 impl Default for C {
     fn default() -> Self {
@@ -413,6 +345,8 @@ pub struct RootedContainer {
 }
 #[test]
 fn bindgen_test_layout_RootedContainer() {
+    const UNINIT: ::std::mem::MaybeUninit<RootedContainer> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<RootedContainer>(),
         24usize,
@@ -423,24 +357,19 @@ fn bindgen_test_layout_RootedContainer() {
         8usize,
         concat!("Alignment of ", stringify!(RootedContainer))
     );
-    fn test_field_root() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<RootedContainer>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).root) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(RootedContainer),
-                "::",
-                stringify!(root)
-            )
-        );
-    }
-    test_field_root();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).root) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(RootedContainer),
+            "::",
+            stringify!(root)
+        )
+    );
 }
 impl Default for RootedContainer {
     fn default() -> Self {
@@ -474,6 +403,8 @@ pub struct PODButContainsDtor {
 }
 #[test]
 fn bindgen_test_layout_PODButContainsDtor() {
+    const UNINIT: ::std::mem::MaybeUninit<PODButContainsDtor> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<PODButContainsDtor>(),
         4usize,
@@ -484,24 +415,19 @@ fn bindgen_test_layout_PODButContainsDtor() {
         4usize,
         concat!("Alignment of ", stringify!(PODButContainsDtor))
     );
-    fn test_field_member() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<PODButContainsDtor>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(PODButContainsDtor),
-                "::",
-                stringify!(member)
-            )
-        );
-    }
-    test_field_member();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(PODButContainsDtor),
+            "::",
+            stringify!(member)
+        )
+    );
 }
 impl Default for PODButContainsDtor {
     fn default() -> Self {
@@ -525,6 +451,8 @@ pub struct POD {
 }
 #[test]
 fn bindgen_test_layout_POD() {
+    const UNINIT: ::std::mem::MaybeUninit<POD> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<POD>(),
         4usize,
@@ -535,24 +463,19 @@ fn bindgen_test_layout_POD() {
         4usize,
         concat!("Alignment of ", stringify!(POD))
     );
-    fn test_field_opaque_member() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<POD>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).opaque_member) as usize -
-                    ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(POD),
-                "::",
-                stringify!(opaque_member)
-            )
-        );
-    }
-    test_field_opaque_member();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).opaque_member) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(POD),
+            "::",
+            stringify!(opaque_member)
+        )
+    );
 }
 /// <div rustbindgen replaces="NestedReplaced"></div>
 #[repr(C)]

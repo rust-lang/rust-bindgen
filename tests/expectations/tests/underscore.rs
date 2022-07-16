@@ -13,6 +13,8 @@ pub struct ptr_t {
 }
 #[test]
 fn bindgen_test_layout_ptr_t() {
+    const UNINIT: ::std::mem::MaybeUninit<ptr_t> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<ptr_t>(),
         8usize,
@@ -23,21 +25,12 @@ fn bindgen_test_layout_ptr_t() {
         1usize,
         concat!("Alignment of ", stringify!(ptr_t))
     );
-    fn test_field__() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<ptr_t>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).__) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(ptr_t),
-                "::",
-                stringify!(__)
-            )
-        );
-    }
-    test_field__();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).__) as usize - ptr as usize
+        },
+        0usize,
+        concat!("Offset of field: ", stringify!(ptr_t), "::", stringify!(__))
+    );
 }

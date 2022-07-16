@@ -71,6 +71,9 @@ pub struct rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1() {
+    const UNINIT: ::std::mem::MaybeUninit<
+        rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1,
+    > = ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1>(),
         4usize,
@@ -87,44 +90,32 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1() {
             stringify!(rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1)
         )
     );
-    fn test_field_dport() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<
-                    rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1,
-                >::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).dport) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1),
-                "::",
-                stringify!(dport)
-            )
-        );
-    }
-    test_field_dport();
-    fn test_field_sport() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<
-                    rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1,
-                >::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).sport) as usize - ptr as usize
-            },
-            2usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1),
-                "::",
-                stringify!(sport)
-            )
-        );
-    }
-    test_field_sport();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dport) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1),
+            "::",
+            stringify!(dport)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).sport) as usize - ptr as usize
+        },
+        2usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1),
+            "::",
+            stringify!(sport)
+        )
+    );
 }
 impl Clone for rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1 {
     fn clone(&self) -> Self {
@@ -133,6 +124,8 @@ impl Clone for rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1() {
+    const UNINIT: ::std::mem::MaybeUninit<rte_ipv4_tuple__bindgen_ty_1> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<rte_ipv4_tuple__bindgen_ty_1>(),
         4usize,
@@ -143,25 +136,19 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1() {
         4usize,
         concat!("Alignment of ", stringify!(rte_ipv4_tuple__bindgen_ty_1))
     );
-    fn test_field_sctp_tag() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<
-                    rte_ipv4_tuple__bindgen_ty_1,
-                >::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).sctp_tag) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_ipv4_tuple__bindgen_ty_1),
-                "::",
-                stringify!(sctp_tag)
-            )
-        );
-    }
-    test_field_sctp_tag();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).sctp_tag) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ipv4_tuple__bindgen_ty_1),
+            "::",
+            stringify!(sctp_tag)
+        )
+    );
 }
 impl Clone for rte_ipv4_tuple__bindgen_ty_1 {
     fn clone(&self) -> Self {
@@ -170,6 +157,8 @@ impl Clone for rte_ipv4_tuple__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_ipv4_tuple() {
+    const UNINIT: ::std::mem::MaybeUninit<rte_ipv4_tuple> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<rte_ipv4_tuple>(),
         12usize,
@@ -180,42 +169,32 @@ fn bindgen_test_layout_rte_ipv4_tuple() {
         4usize,
         concat!("Alignment of ", stringify!(rte_ipv4_tuple))
     );
-    fn test_field_src_addr() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<rte_ipv4_tuple>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).src_addr) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_ipv4_tuple),
-                "::",
-                stringify!(src_addr)
-            )
-        );
-    }
-    test_field_src_addr();
-    fn test_field_dst_addr() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<rte_ipv4_tuple>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).dst_addr) as usize - ptr as usize
-            },
-            4usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_ipv4_tuple),
-                "::",
-                stringify!(dst_addr)
-            )
-        );
-    }
-    test_field_dst_addr();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).src_addr) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ipv4_tuple),
+            "::",
+            stringify!(src_addr)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dst_addr) as usize - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ipv4_tuple),
+            "::",
+            stringify!(dst_addr)
+        )
+    );
 }
 impl Clone for rte_ipv4_tuple {
     fn clone(&self) -> Self {
@@ -245,6 +224,9 @@ pub struct rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1() {
+    const UNINIT: ::std::mem::MaybeUninit<
+        rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1,
+    > = ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1>(),
         4usize,
@@ -261,44 +243,32 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1() {
             stringify!(rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1)
         )
     );
-    fn test_field_dport() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<
-                    rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1,
-                >::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).dport) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1),
-                "::",
-                stringify!(dport)
-            )
-        );
-    }
-    test_field_dport();
-    fn test_field_sport() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<
-                    rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1,
-                >::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).sport) as usize - ptr as usize
-            },
-            2usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1),
-                "::",
-                stringify!(sport)
-            )
-        );
-    }
-    test_field_sport();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dport) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1),
+            "::",
+            stringify!(dport)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).sport) as usize - ptr as usize
+        },
+        2usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1),
+            "::",
+            stringify!(sport)
+        )
+    );
 }
 impl Clone for rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1 {
     fn clone(&self) -> Self {
@@ -307,6 +277,8 @@ impl Clone for rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1() {
+    const UNINIT: ::std::mem::MaybeUninit<rte_ipv6_tuple__bindgen_ty_1> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<rte_ipv6_tuple__bindgen_ty_1>(),
         4usize,
@@ -317,25 +289,19 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1() {
         4usize,
         concat!("Alignment of ", stringify!(rte_ipv6_tuple__bindgen_ty_1))
     );
-    fn test_field_sctp_tag() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<
-                    rte_ipv6_tuple__bindgen_ty_1,
-                >::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).sctp_tag) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_ipv6_tuple__bindgen_ty_1),
-                "::",
-                stringify!(sctp_tag)
-            )
-        );
-    }
-    test_field_sctp_tag();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).sctp_tag) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ipv6_tuple__bindgen_ty_1),
+            "::",
+            stringify!(sctp_tag)
+        )
+    );
 }
 impl Clone for rte_ipv6_tuple__bindgen_ty_1 {
     fn clone(&self) -> Self {
@@ -344,6 +310,8 @@ impl Clone for rte_ipv6_tuple__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_ipv6_tuple() {
+    const UNINIT: ::std::mem::MaybeUninit<rte_ipv6_tuple> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<rte_ipv6_tuple>(),
         36usize,
@@ -354,42 +322,32 @@ fn bindgen_test_layout_rte_ipv6_tuple() {
         4usize,
         concat!("Alignment of ", stringify!(rte_ipv6_tuple))
     );
-    fn test_field_src_addr() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<rte_ipv6_tuple>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).src_addr) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_ipv6_tuple),
-                "::",
-                stringify!(src_addr)
-            )
-        );
-    }
-    test_field_src_addr();
-    fn test_field_dst_addr() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<rte_ipv6_tuple>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).dst_addr) as usize - ptr as usize
-            },
-            16usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_ipv6_tuple),
-                "::",
-                stringify!(dst_addr)
-            )
-        );
-    }
-    test_field_dst_addr();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).src_addr) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ipv6_tuple),
+            "::",
+            stringify!(src_addr)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).dst_addr) as usize - ptr as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ipv6_tuple),
+            "::",
+            stringify!(dst_addr)
+        )
+    );
 }
 impl Clone for rte_ipv6_tuple {
     fn clone(&self) -> Self {
@@ -405,47 +363,39 @@ pub struct rte_thash_tuple {
 }
 #[test]
 fn bindgen_test_layout_rte_thash_tuple() {
+    const UNINIT: ::std::mem::MaybeUninit<rte_thash_tuple> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<rte_thash_tuple>(),
         48usize,
         concat!("Size of: ", stringify!(rte_thash_tuple))
     );
-    fn test_field_v4() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<rte_thash_tuple>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).v4) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_thash_tuple),
-                "::",
-                stringify!(v4)
-            )
-        );
-    }
-    test_field_v4();
-    fn test_field_v6() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<rte_thash_tuple>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).v6) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_thash_tuple),
-                "::",
-                stringify!(v6)
-            )
-        );
-    }
-    test_field_v6();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).v4) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_thash_tuple),
+            "::",
+            stringify!(v4)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).v6) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_thash_tuple),
+            "::",
+            stringify!(v6)
+        )
+    );
 }
 impl Clone for rte_thash_tuple {
     fn clone(&self) -> Self {

@@ -29,6 +29,8 @@ pub struct IntStr {
 }
 #[test]
 fn bindgen_test_layout_IntStr() {
+    const UNINIT: ::std::mem::MaybeUninit<IntStr> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<IntStr>(),
         4usize,
@@ -39,23 +41,14 @@ fn bindgen_test_layout_IntStr() {
         4usize,
         concat!("Alignment of ", stringify!(IntStr))
     );
-    fn test_field_a() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<IntStr>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(IntStr),
-                "::",
-                stringify!(a)
-            )
-        );
-    }
-    test_field_a();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+        },
+        0usize,
+        concat!("Offset of field: ", stringify!(IntStr), "::", stringify!(a))
+    );
 }
 impl Default for IntStr {
     fn default() -> Self {
@@ -74,6 +67,8 @@ pub struct FloatStr {
 }
 #[test]
 fn bindgen_test_layout_FloatStr() {
+    const UNINIT: ::std::mem::MaybeUninit<FloatStr> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<FloatStr>(),
         4usize,
@@ -84,23 +79,19 @@ fn bindgen_test_layout_FloatStr() {
         4usize,
         concat!("Alignment of ", stringify!(FloatStr))
     );
-    fn test_field_a() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<FloatStr>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(FloatStr),
-                "::",
-                stringify!(a)
-            )
-        );
-    }
-    test_field_a();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(FloatStr),
+            "::",
+            stringify!(a)
+        )
+    );
 }
 impl Default for FloatStr {
     fn default() -> Self {

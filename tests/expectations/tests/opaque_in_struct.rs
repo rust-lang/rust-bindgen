@@ -32,6 +32,8 @@ pub struct container {
 }
 #[test]
 fn bindgen_test_layout_container() {
+    const UNINIT: ::std::mem::MaybeUninit<container> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<container>(),
         4usize,
@@ -42,21 +44,17 @@ fn bindgen_test_layout_container() {
         4usize,
         concat!("Alignment of ", stringify!(container))
     );
-    fn test_field_contained() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<container>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).contained) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(container),
-                "::",
-                stringify!(contained)
-            )
-        );
-    }
-    test_field_contained();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).contained) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(container),
+            "::",
+            stringify!(contained)
+        )
+    );
 }

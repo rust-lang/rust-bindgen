@@ -17,6 +17,8 @@ pub mod foo__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_foo() {
+    const UNINIT: ::std::mem::MaybeUninit<foo> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<foo>(),
         4usize,
@@ -27,23 +29,19 @@ fn bindgen_test_layout_foo() {
         4usize,
         concat!("Alignment of ", stringify!(foo))
     );
-    fn test_field_member() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<foo>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(foo),
-                "::",
-                stringify!(member)
-            )
-        );
-    }
-    test_field_member();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(foo),
+            "::",
+            stringify!(member)
+        )
+    );
 }
 impl Default for foo {
     fn default() -> Self {

@@ -12,6 +12,8 @@ pub struct Base {
 }
 #[test]
 fn bindgen_test_layout_Base() {
+    const UNINIT: ::std::mem::MaybeUninit<Base> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<Base>(),
         132usize,
@@ -22,23 +24,19 @@ fn bindgen_test_layout_Base() {
         4usize,
         concat!("Alignment of ", stringify!(Base))
     );
-    fn test_field_large() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<Base>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).large) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(Base),
-                "::",
-                stringify!(large)
-            )
-        );
-    }
-    test_field_large();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).large) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(Base),
+            "::",
+            stringify!(large)
+        )
+    );
 }
 impl Default for Base {
     fn default() -> Self {

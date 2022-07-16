@@ -12,6 +12,8 @@ pub struct S {
 }
 #[test]
 fn bindgen_test_layout_S() {
+    const UNINIT: ::std::mem::MaybeUninit<S> =
+        ::std::mem::MaybeUninit::uninit();
     assert_eq!(
         ::std::mem::size_of::<S>(),
         33usize,
@@ -22,23 +24,19 @@ fn bindgen_test_layout_S() {
         1usize,
         concat!("Alignment of ", stringify!(S))
     );
-    fn test_field_large_array() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<S>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(S),
-                "::",
-                stringify!(large_array)
-            )
-        );
-    }
-    test_field_large_array();
+    assert_eq!(
+        unsafe {
+            let ptr = UNINIT.as_ptr();
+            ::std::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(S),
+            "::",
+            stringify!(large_array)
+        )
+    );
 }
 impl Default for S {
     fn default() -> Self {
