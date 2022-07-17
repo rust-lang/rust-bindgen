@@ -145,6 +145,8 @@
 
 ## Changed
 
+ * clap has been updated, new msrv is 1.57.
+
 ## Removed
 
 ## Fixed
