@@ -18,7 +18,7 @@ version = "0.60.1"
 edition = "2018"
 build = "build.rs"
 # If you change this, also update README.md and msrv in .github/workflows/bindgen.yml
-rust-version = "1.56.1"
+rust-version = "1.57.0"
 
 include = [
   "LICENSE",
