@@ -276,6 +276,56 @@ impl Cursor {
         true
     }
 
+    /// Is the referent any kind of template parameter?
+    pub fn is_template_parameter(&self) -> bool {
+        match self.kind() {
+            CXCursor_TemplateTemplateParameter |
+            CXCursor_TemplateTypeParameter |
+            CXCursor_NonTypeTemplateParameter => true,
+            _ => false,
+        }
+    }
+
+    /// Does the referent's type or value depend on a template parameter?
+    pub fn is_dependent_on_template_parameter(&self) -> bool {
+        fn visitor(
+            found_template_parameter: &mut bool,
+            cur: Cursor,
+        ) -> CXChildVisitResult {
+            // If we found a template parameter, it is dependent.
+            if cur.is_template_parameter() {
+                *found_template_parameter = true;
+                return CXChildVisit_Break;
+            }
+
+            // Get the referent and traverse it as well.
+            if let Some(referenced) = cur.referenced() {
+                if referenced.is_template_parameter() {
+                    *found_template_parameter = true;
+                    return CXChildVisit_Break;
+                }
+
+                referenced
+                    .visit(|next| visitor(found_template_parameter, next));
+                if *found_template_parameter {
+                    return CXChildVisit_Break;
+                }
+            }
+
+            // Continue traversing the AST at the original cursor.
+            CXChildVisit_Recurse
+        }
+
+        if self.is_template_parameter() {
+            return true;
+        }
+
+        let mut found_template_parameter = false;
+        self.visit(|next| visitor(&mut found_template_parameter, next));
+
+        found_template_parameter
+    }
+
     /// Is this cursor pointing a valid referent?
     pub fn is_valid(&self) -> bool {
         unsafe { clang_isInvalid(self.kind()) == 0 }
@@ -485,9 +535,45 @@ impl Cursor {
             !self.is_defaulted_function()
     }
 
+    /// Is the referent a bit field declaration?
+    pub fn is_bit_field(&self) -> bool {
+        unsafe { clang_Cursor_isBitField(self.x) != 0 }
+    }
+
+    /// Get a cursor to the bit field's width expression, or `None` if it's not
+    /// a bit field.
+    pub fn bit_width_expr(&self) -> Option<Cursor> {
+        if !self.is_bit_field() {
+            return None;
+        }
+
+        let mut result = None;
+        self.visit(|cur| {
+            // The first child may or may not be a TypeRef, depending on whether
+            // the field's type is builtin. Skip it.
+            if cur.kind() == CXCursor_TypeRef {
+                return CXChildVisit_Continue;
+            }
+
+            // The next expression or literal is the bit width.
+            result = Some(cur);
+
+            CXChildVisit_Break
+        });
+
+        result
+    }
+
     /// Get the width of this cursor's referent bit field, or `None` if the
-    /// referent is not a bit field.
+    /// referent is not a bit field or if the width could not be evaluated.
     pub fn bit_width(&self) -> Option<u32> {
+        // It is not safe to check the bit width without ensuring it doesn't
+        // depend on a template parameter. See
+        // https://github.com/rust-lang/rust-bindgen/issues/2239
+        if self.bit_width_expr()?.is_dependent_on_template_parameter() {
+            return None;
+        }
+
         unsafe {
             let w = clang_getFieldDeclBitWidth(self.x);
             if w == -1 {
@@ -1789,9 +1875,15 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                 format!(" {}number-of-template-args = {}", prefix, num),
             );
         }
-        if let Some(width) = c.bit_width() {
+
+        if c.is_bit_field() {
+            let width = match c.bit_width() {
+                Some(w) => w.to_string(),
+                None => "<unevaluable>".to_string(),
+            };
             print_indent(depth, format!(" {}bit-width = {}", prefix, width));
         }
+
         if let Some(ty) = c.enum_type() {
             print_indent(
                 depth,
