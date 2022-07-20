@@ -72,7 +72,7 @@ optional = true
 version = "0.4"
 
 [features]
-default = ["logging", "clap", "runtime", "which-rustfmt"]
+default = ["runtime", "which-rustfmt"]
 logging = ["env_logger", "log"]
 static = ["clang-sys/static"]
 runtime = ["clang-sys/runtime"]
