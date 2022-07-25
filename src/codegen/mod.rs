@@ -2025,7 +2025,9 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::repr("C"));
         }
 
-        if ctx.options().rust_features().repr_align {
+        if ctx.options().rust_features().repr_align && !packed {
+            // We can't specify both packed(N) and align(N), but the align()
+            // should be redundant in this case.
             if let Some(explicit) = explicit_align {
                 // Ensure that the struct has the correct alignment even in
                 // presence of alignas.
