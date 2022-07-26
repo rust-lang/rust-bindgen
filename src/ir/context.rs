@@ -821,7 +821,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             name.contains('$') ||
             matches!(
                 name,
-                "abstract" | "alignof" | "as" | "async" | "become" |
+                "abstract" | "alignof" | "as" | "async" | "await" | "become" |
                     "box" | "break" | "const" | "continue" | "crate" | "do" |
                     "dyn" | "else" | "enum" | "extern" | "false" | "final" |
                     "fn" | "for" | "if" | "impl" | "in" | "let" | "loop" |
