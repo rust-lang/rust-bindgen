@@ -365,7 +365,7 @@ impl<'a> StructLayoutTracker<'a> {
             return true;
         }
 
-        if self.max_field_align >= layout.align {
+        if !self.is_packed && self.max_field_align >= layout.align {
             return false;
         }
 

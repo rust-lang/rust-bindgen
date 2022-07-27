@@ -2009,13 +2009,22 @@ impl CodeGenerator for CompInfo {
         let mut needs_default_impl = false;
         let mut needs_debug_impl = false;
         let mut needs_partialeq_impl = false;
+        let mut needs_packed_wrapper = false;
         if let Some(comment) = item.comment(ctx) {
             attributes.push(attributes::doc(comment));
         }
+
+        // We can't specify both packed(N) and align(N), but the packed()
+        // should be redundant in this case.
         if packed && !is_opaque {
             let n = layout.map_or(1, |l| l.align);
             assert!(ctx.options().rust_features().repr_packed_n || n == 1);
-            let packed_repr = if n == 1 {
+            if ctx.options().rust_features().repr_align &&
+                explicit_align.is_some()
+            {
+                needs_packed_wrapper = true;
+            }
+            let packed_repr = if n == 1 || needs_packed_wrapper {
                 "packed".to_string()
             } else {
                 format!("packed({})", n)
@@ -2023,18 +2032,16 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::repr_list(&["C", &packed_repr]));
         } else {
             attributes.push(attributes::repr("C"));
-        }
 
-        if ctx.options().rust_features().repr_align && !packed {
-            // We can't specify both packed(N) and align(N), but the align()
-            // should be redundant in this case.
-            if let Some(explicit) = explicit_align {
-                // Ensure that the struct has the correct alignment even in
-                // presence of alignas.
-                let explicit = helpers::ast_ty::int_expr(explicit as i64);
-                attributes.push(quote! {
-                    #[repr(align(#explicit))]
-                });
+            if ctx.options().rust_features().repr_align {
+                if let Some(explicit) = explicit_align {
+                    // Ensure that the struct has the correct alignment even in
+                    // presence of alignas.
+                    let explicit = helpers::ast_ty::int_expr(explicit as i64);
+                    attributes.push(quote! {
+                        #[repr(align(#explicit))]
+                    });
+                }
             }
         }
 
@@ -2088,15 +2095,21 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::must_use());
         }
 
+        let layout_ident = if needs_packed_wrapper {
+            ctx.rust_ident(canonical_name.to_owned() + "__packed")
+        } else {
+            canonical_ident.clone()
+        };
+
         let mut tokens = if is_union && struct_layout.is_rust_union() {
             quote! {
                 #( #attributes )*
-                pub union #canonical_ident
+                pub union #layout_ident
             }
         } else {
             quote! {
                 #( #attributes )*
-                pub struct #canonical_ident
+                pub struct #layout_ident
             }
         };
 
@@ -2106,6 +2119,19 @@ impl CodeGenerator for CompInfo {
             }
         });
         result.push(tokens);
+
+        if needs_packed_wrapper {
+            let attributes = attributes::derives(&derives);
+            let align = proc_macro2::TokenStream::from_str(
+                &explicit_align.unwrap().to_string(),
+            )
+            .unwrap();
+            result.push(quote! {
+                #attributes
+                #[repr(C, align(#align))]
+                pub struct #canonical_ident(pub #layout_ident);
+            });
+        }
 
         // Generate the inner types and all that stuff.
         //
@@ -2206,12 +2232,17 @@ impl CodeGenerator for CompInfo {
                     let uninit_decl = if !check_field_offset.is_empty() {
                         // FIXME: When MSRV >= 1.59.0, we can use
                         // > const PTR: *const #canonical_ident = ::#prefix::mem::MaybeUninit::uninit().as_ptr();
+                        let layout_cast = if needs_packed_wrapper {
+                            Some(quote!(as *const #layout_ident))
+                        } else {
+                            None
+                        };
                         Some(quote! {
                             // Use a shared MaybeUninit so that rustc with
                             // opt-level=0 doesn't take too much stack space,
                             // see #2218.
                             const UNINIT: ::#prefix::mem::MaybeUninit<#canonical_ident> = ::#prefix::mem::MaybeUninit::uninit();
-                            let ptr = UNINIT.as_ptr();
+                            let ptr = UNINIT.as_ptr()#layout_cast;
                         })
                     } else {
                         None
