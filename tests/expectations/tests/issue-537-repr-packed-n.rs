@@ -40,19 +40,16 @@ fn bindgen_test_layout_AlignedToOne() {
     );
 }
 /// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
-#[repr(C, packed)]
+#[repr(C, packed(2))]
 #[derive(Debug, Default, Copy, Clone)]
-pub struct AlignedToTwo__packed {
+pub struct AlignedToTwo {
     pub i: ::std::os::raw::c_int,
 }
-#[derive(Debug, Default, Copy, Clone)]
-#[repr(C, align(2))]
-pub struct AlignedToTwo(pub AlignedToTwo__packed);
 #[test]
 fn bindgen_test_layout_AlignedToTwo() {
     const UNINIT: ::std::mem::MaybeUninit<AlignedToTwo> =
         ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr() as *const AlignedToTwo__packed;
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<AlignedToTwo>(),
         4usize,
@@ -120,20 +117,17 @@ fn bindgen_test_layout_PackedToOne() {
     );
 }
 /// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
-#[repr(C, packed)]
+#[repr(C, packed(2))]
 #[derive(Debug, Default, Copy, Clone)]
-pub struct PackedToTwo__packed {
+pub struct PackedToTwo {
     pub x: ::std::os::raw::c_int,
     pub y: ::std::os::raw::c_int,
 }
-#[derive(Debug, Default, Copy, Clone)]
-#[repr(C, align(2))]
-pub struct PackedToTwo(pub PackedToTwo__packed);
 #[test]
 fn bindgen_test_layout_PackedToTwo() {
     const UNINIT: ::std::mem::MaybeUninit<PackedToTwo> =
         ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr() as *const PackedToTwo__packed;
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<PackedToTwo>(),
         8usize,

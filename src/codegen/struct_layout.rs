@@ -24,6 +24,7 @@ pub struct StructLayoutTracker<'a> {
     padding_count: usize,
     latest_field_layout: Option<Layout>,
     max_field_align: usize,
+    has_bitfield: bool,
     last_field_was_bitfield: bool,
 }
 
@@ -103,6 +104,7 @@ impl<'a> StructLayoutTracker<'a> {
             padding_count: 0,
             latest_field_layout: None,
             max_field_align: 0,
+            has_bitfield: false,
             last_field_was_bitfield: false,
         }
     }
@@ -145,6 +147,7 @@ impl<'a> StructLayoutTracker<'a> {
         );
 
         self.latest_field_layout = Some(layout);
+        self.has_bitfield = true;
         self.last_field_was_bitfield = true;
         // NB: We intentionally don't update the max_field_align here, since our
         // bitfields code doesn't necessarily guarantee it, so we need to
@@ -365,8 +368,14 @@ impl<'a> StructLayoutTracker<'a> {
             return true;
         }
 
-        if !self.is_packed && self.max_field_align >= layout.align {
-            return false;
+        if self.is_packed && !self.has_bitfield {
+            if self.max_field_align > layout.align {
+                return false;
+            }
+        } else {
+            if self.max_field_align >= layout.align {
+                return false;
+            }
         }
 
         // We can only generate up-to a 8-bytes of alignment unless we support
