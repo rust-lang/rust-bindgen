@@ -1999,9 +1999,9 @@ impl CodeGenerator for CompInfo {
                 explicit_align = Some(layout.align);
             }
 
-            if !struct_layout.is_rust_union()
-                && union_style_from_ctx_and_name(ctx, &canonical_name)
-                    == NonCopyUnionStyle::BindgenWrapper
+            if !struct_layout.is_rust_union() &&
+                union_style_from_ctx_and_name(ctx, &canonical_name) ==
+                    NonCopyUnionStyle::BindgenWrapper
             {
                 let ty = helpers::blob(ctx, layout);
                 fields.push(quote! {
@@ -2129,10 +2129,10 @@ impl CodeGenerator for CompInfo {
                 #( #attributes )*
                 pub union #canonical_ident
             }
-        } else if is_union
-            && !struct_layout.is_rust_union()
-            && union_style_from_ctx_and_name(ctx, &canonical_name)
-                == NonCopyUnionStyle::ManuallyDrop
+        } else if is_union &&
+            !struct_layout.is_rust_union() &&
+            union_style_from_ctx_and_name(ctx, &canonical_name) ==
+                NonCopyUnionStyle::ManuallyDrop
         {
             quote! {
                 #( #attributes )*
