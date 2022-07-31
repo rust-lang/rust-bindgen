@@ -55,6 +55,9 @@ pub struct NonCopyType {
 }
 #[test]
 fn bindgen_test_layout_NonCopyType() {
+    const UNINIT: ::std::mem::MaybeUninit<NonCopyType> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<NonCopyType>(),
         4usize,
@@ -66,9 +69,7 @@ fn bindgen_test_layout_NonCopyType() {
         concat!("Alignment of ", stringify!(NonCopyType))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<NonCopyType>())).foo as *const _ as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -86,6 +87,9 @@ pub struct WithBindgenGeneratedWrapper {
 }
 #[test]
 fn bindgen_test_layout_WithBindgenGeneratedWrapper() {
+    const UNINIT: ::std::mem::MaybeUninit<WithBindgenGeneratedWrapper> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<WithBindgenGeneratedWrapper>(),
         4usize,
@@ -98,8 +102,7 @@ fn bindgen_test_layout_WithBindgenGeneratedWrapper() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithBindgenGeneratedWrapper>()))
-                .non_copy_type as *const _ as usize
+            ::std::ptr::addr_of!((*ptr).non_copy_type) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -110,10 +113,7 @@ fn bindgen_test_layout_WithBindgenGeneratedWrapper() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithBindgenGeneratedWrapper>())).bar
-                as *const _ as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -139,6 +139,9 @@ pub union WithManuallyDrop {
 }
 #[test]
 fn bindgen_test_layout_WithManuallyDrop() {
+    const UNINIT: ::std::mem::MaybeUninit<WithManuallyDrop> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<WithManuallyDrop>(),
         4usize,
@@ -151,8 +154,7 @@ fn bindgen_test_layout_WithManuallyDrop() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithManuallyDrop>())).non_copy_type
-                as *const _ as usize
+            ::std::ptr::addr_of!((*ptr).non_copy_type) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -163,10 +165,7 @@ fn bindgen_test_layout_WithManuallyDrop() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithManuallyDrop>())).bar as *const _
-                as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -193,6 +192,9 @@ pub struct WithDefaultWrapper {
 }
 #[test]
 fn bindgen_test_layout_WithDefaultWrapper() {
+    const UNINIT: ::std::mem::MaybeUninit<WithDefaultWrapper> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<WithDefaultWrapper>(),
         4usize,
@@ -205,8 +207,7 @@ fn bindgen_test_layout_WithDefaultWrapper() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<WithDefaultWrapper>())).non_copy_type
-                as *const _ as usize
+            ::std::ptr::addr_of!((*ptr).non_copy_type) as usize - ptr as usize
         },
         0usize,
         concat!(
@@ -217,10 +218,7 @@ fn bindgen_test_layout_WithDefaultWrapper() {
         )
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<WithDefaultWrapper>())).bar as *const _
-                as usize
-        },
+        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
         0usize,
         concat!(
             "Offset of field: ",
