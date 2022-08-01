@@ -70,6 +70,14 @@ extern "C" {
     pub static mut as_: ::std::os::raw::c_int;
 }
 extern "C" {
+    #[link_name = "\u{1}async"]
+    pub static mut async_: ::std::os::raw::c_int;
+}
+extern "C" {
+    #[link_name = "\u{1}await"]
+    pub static mut await_: ::std::os::raw::c_int;
+}
+extern "C" {
     #[link_name = "\u{1}box"]
     pub static mut box_: ::std::os::raw::c_int;
 }

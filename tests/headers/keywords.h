@@ -15,6 +15,8 @@ int str;
 int dyn;
 
 int as;
+int async;
+int await;
 int box;
 int crate;
 int false;
