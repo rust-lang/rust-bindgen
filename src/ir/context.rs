@@ -459,6 +459,9 @@ pub struct BindgenContext {
     /// Populated when we enter codegen by `compute_has_float`; always `None`
     /// before that and `Some` after.
     has_float: Option<HashSet<ItemId>>,
+
+    /// The set of warnings raised during binding generation.
+    warnings: Vec<String>,
 }
 
 /// A traversal of allowlisted items.
@@ -579,6 +582,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             have_destructor: None,
             has_type_param_in_array: None,
             has_float: None,
+            warnings: Vec::new(),
         }
     }
 
@@ -1134,7 +1138,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Enter the code generation phase, invoke the given callback `cb`, and
     /// leave the code generation phase.
-    pub(crate) fn gen<F, Out>(mut self, cb: F) -> (Out, BindgenOptions)
+    pub(crate) fn gen<F, Out>(
+        mut self,
+        cb: F,
+    ) -> (Out, BindgenOptions, Vec<String>)
     where
         F: FnOnce(&Self) -> Out,
     {
@@ -1171,7 +1178,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.compute_cannot_derive_partialord_partialeq_or_eq();
 
         let ret = cb(&self);
-        (ret, self.options)
+        (ret, self.options, self.warnings)
     }
 
     /// When the `testing_only_extra_assertions` feature is enabled, this
@@ -2430,17 +2437,27 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.allowlisted = Some(allowlisted);
         self.codegen_items = Some(codegen_items);
 
+        let mut warnings = Vec::new();
+
         for item in self.options().allowlisted_functions.unmatched_items() {
-            warn!("unused option: --allowlist-function {}", item);
+            let warn = format!("unused option: --allowlist-function {}", item);
+            warn!("{}", warn);
+            warnings.push(warn);
         }
 
         for item in self.options().allowlisted_vars.unmatched_items() {
-            warn!("unused option: --allowlist-var {}", item);
+            let warn = format!("unused option: --allowlist-var {}", item);
+            warn!("{}", warn);
+            warnings.push(warn);
         }
 
         for item in self.options().allowlisted_types.unmatched_items() {
-            warn!("unused option: --allowlist-type {}", item);
+            let warn = format!("unused option: --allowlist-type {}", item);
+            warn!("{}", warn);
+            warnings.push(warn);
         }
+
+        self.warnings.extend(warnings);
     }
 
     /// Convenient method for getting the prefix to use for most traits in
