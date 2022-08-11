@@ -2457,6 +2457,16 @@ impl Bindings {
         if options.sort_semantically {
             let module_wrapped_tokens =
                 quote!(mod wrapper_for_sorting_hack { #( #items )* });
+
+            // This semantically sorting business is a hack, for now. This means that we are
+            // re-parsing already generated code using `syn` (as opposed to `quote`) because
+            // `syn` provides us more control over the elements.
+            // One caveat is that some of the items coming from `quote`d output might have
+            // multiple items within them. Hence, we have to wrap the incoming in a `mod`.
+            // The two `unwrap`s here are deliberate because
+            //      The first one won't panic because we build the `mod` and know it is there
+            //      The scond one won't panic because we know original output has something in
+            //      it already.
             let mut syn_parsed_items =
                 syn::parse2::<syn::ItemMod>(module_wrapped_tokens)
                     .unwrap()
