@@ -515,7 +515,9 @@ where
             Arg::new("vtable-generation")
                 .long("vtable-generation")
                 .help("Enables generation of vtable functions."),
-            Arg::new("sort-semantically").long("sort-semantically").help("Enables sorting of code generation in a predefined manner"),
+            Arg::new("sort-semantically")
+                .long("sort-semantically")
+                .help("Enables sorting of code generation in a predefined manner"),
             Arg::new("V")
                 .long("version")
                 .help("Prints the version, and exits"),
@@ -999,6 +1001,10 @@ where
 
     if matches.is_present("vtable-generation") {
         builder = builder.vtable_generation(true);
+    }
+
+    if matches.is_present("sort-semantically") {
+        builder = builder.sort_semantically(true);
     }
 
     Ok((builder, output, verbose))

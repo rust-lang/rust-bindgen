@@ -2485,14 +2485,14 @@ impl Bindings {
                 _ => 18,
             });
 
-            let items = syn_parsed_items
+            let synful_items = syn_parsed_items
                 .into_iter()
                 .map(|item| item.into_token_stream());
 
             return Ok(Bindings {
                 options,
                 module: quote! {
-                    #( #items )*
+                    #( #synful_items )*
                 },
             });
         }
