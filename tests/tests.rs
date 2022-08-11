@@ -670,3 +670,26 @@ fn dump_preprocessed_input() {
         "cpp-empty-layout.hpp is in the preprocessed file"
     );
 }
+
+#[test]
+fn test_sort_semantically() {
+    let actual = builder()
+        .header(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/headers/sorted/sorted-items.h"
+        ))
+        .clang_arg("--target=x86_64-unknown-linux")
+        .sort_semantically(true)
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let (actual, _) = rustfmt(actual);
+    let expected = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/expectations/tests/sorted-items.rs"
+    ));
+    let (expected, _) = rustfmt(expected.into());
+
+    assert_eq!(actual, expected);
+}

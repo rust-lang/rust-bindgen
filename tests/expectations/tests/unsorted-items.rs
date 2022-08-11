@@ -1,17 +1,23 @@
+#![allow(
+    dead_code,
+    non_snake_case,
+    non_camel_case_types,
+    non_upper_case_globals
+)]
+
+extern "C" {
+    pub fn foo() -> ::std::os::raw::c_int;
+}
 pub type number = ::std::os::raw::c_int;
+extern "C" {
+    pub fn bar(x: number) -> ::std::os::raw::c_int;
+}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Point {
     pub x: number,
     pub y: number,
 }
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Angle {
-    pub a: number,
-    pub b: number,
-}
-pub const NUMBER: number = 42;
 #[test]
 fn bindgen_test_layout_Point() {
     const UNINIT: ::std::mem::MaybeUninit<Point> =
@@ -37,6 +43,12 @@ fn bindgen_test_layout_Point() {
         4usize,
         concat!("Offset of field: ", stringify!(Point), "::", stringify!(y))
     );
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Angle {
+    pub a: number,
+    pub b: number,
 }
 #[test]
 fn bindgen_test_layout_Angle() {
@@ -65,11 +77,6 @@ fn bindgen_test_layout_Angle() {
     );
 }
 extern "C" {
-    pub fn foo() -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn bar(x: number) -> ::std::os::raw::c_int;
-}
-extern "C" {
     pub fn baz(point: Point) -> ::std::os::raw::c_int;
 }
+pub const NUMBER: number = 42;
