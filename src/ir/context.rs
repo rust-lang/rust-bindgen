@@ -2440,24 +2440,21 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let mut warnings = Vec::new();
 
         for item in self.options().allowlisted_functions.unmatched_items() {
-            let warn = format!("unused option: --allowlist-function {}", item);
-            warn!("{}", warn);
-            warnings.push(warn);
+            warnings.push(format!("unused option: --allowlist-function {}", item));
         }
 
         for item in self.options().allowlisted_vars.unmatched_items() {
-            let warn = format!("unused option: --allowlist-var {}", item);
-            warn!("{}", warn);
-            warnings.push(warn);
+            warnings.push(format!("unused option: --allowlist-var {}", item));
         }
 
         for item in self.options().allowlisted_types.unmatched_items() {
-            let warn = format!("unused option: --allowlist-type {}", item);
-            warn!("{}", warn);
-            warnings.push(warn);
+            warnings.push(format!("unused option: --allowlist-type {}", item));
         }
 
-        self.warnings.extend(warnings);
+        for msg in warnings {
+            warn!("{}", msg);
+            self.warnings.push(msg);
+        }
     }
 
     /// Convenient method for getting the prefix to use for most traits in
