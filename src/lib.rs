@@ -33,19 +33,6 @@ mod log_stubs;
 #[macro_use]
 mod extra_assertions;
 
-/// Print all the warning messages raised while generating the bindings in a build script.
-///
-/// If you are using `bindgen` outside of a build script you should use [`Bindings::take_warnings`]
-/// directly instead.
-#[macro_export]
-macro_rules! print_warnings {
-    ($bindings:expr) => {
-        for message in $bindings.take_warnings() {
-            println!("cargo:warning={}", message);
-        }
-    };
-}
-
 // A macro to declare an internal module for which we *must* provide
 // documentation for. If we are building with the "testing_only_docs" feature,
 // then the module is declared public, and our `#![deny(missing_docs)]` pragma
@@ -2599,10 +2586,21 @@ impl Bindings {
         }
     }
 
-    /// Take all the warning messages.
+    /// Emit all the warning messages raised while generating the bindings in a build script.
+    ///
+    /// If you are using `bindgen` outside of a build script you should use [`Bindings::warnings`]
+    /// and handle the messages accordingly instead.
     #[inline]
-    pub fn take_warnings(&mut self) -> impl Iterator<Item = String> + '_ {
-        self.warnings.drain(..)
+    pub fn emit_warnings(&self) {
+        for message in &self.warnings {
+            println!("cargo:warning={}", message);
+        }
+    }
+
+    /// Return all the warning messages raised while generating the bindings.
+    #[inline]
+    pub fn warnings(&self) -> &[String] {
+        &self.warnings
     }
 }
 
