@@ -678,11 +678,11 @@ fn allowlist_warnings() {
         "/tests/headers/allowlist_warnings.h"
     );
 
-    let mut bindings = builder()
+    let bindings = builder()
         .header(header)
         .allowlist_function("doesnt_match_anything")
         .generate()
         .expect("unable to generate bindings");
 
-    assert_eq!(1, bindings.take_warnings().count());
+    assert_eq!(1, bindings.warnings().len());
 }
