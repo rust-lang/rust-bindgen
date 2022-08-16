@@ -2440,7 +2440,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let mut warnings = Vec::new();
 
         for item in self.options().allowlisted_functions.unmatched_items() {
-            warnings.push(format!("unused option: --allowlist-function {}", item));
+            warnings
+                .push(format!("unused option: --allowlist-function {}", item));
         }
 
         for item in self.options().allowlisted_vars.unmatched_items() {
