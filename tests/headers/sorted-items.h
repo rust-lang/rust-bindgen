@@ -1,3 +1,5 @@
+// bindgen-flags: --sort-semantically -- --target=x86_64-unknown-linux
+
 int foo();
 typedef int number;
 int bar(number x);
