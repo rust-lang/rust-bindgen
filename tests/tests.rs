@@ -670,3 +670,19 @@ fn dump_preprocessed_input() {
         "cpp-empty-layout.hpp is in the preprocessed file"
     );
 }
+
+#[test]
+fn allowlist_warnings() {
+    let header = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/headers/allowlist_warnings.h"
+    );
+
+    let bindings = builder()
+        .header(header)
+        .allowlist_function("doesnt_match_anything")
+        .generate()
+        .expect("unable to generate bindings");
+
+    assert_eq!(1, bindings.warnings().len());
+}

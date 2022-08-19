@@ -2239,6 +2239,7 @@ impl std::error::Error for BindgenError {}
 #[derive(Debug)]
 pub struct Bindings {
     options: BindgenOptions,
+    warnings: Vec<String>,
     module: proc_macro2::TokenStream,
 }
 
@@ -2452,7 +2453,7 @@ impl Bindings {
             parse(&mut context)?;
         }
 
-        let (items, options) = codegen::codegen(context);
+        let (items, options, warnings) = codegen::codegen(context);
 
         if options.sort_semantically {
             let module_wrapped_tokens =
@@ -2509,6 +2510,7 @@ impl Bindings {
 
         Ok(Bindings {
             options,
+            warnings,
             module: quote! {
                 #( #items )*
             },
@@ -2652,6 +2654,23 @@ impl Bindings {
             },
             _ => Ok(Cow::Owned(source)),
         }
+    }
+
+    /// Emit all the warning messages raised while generating the bindings in a build script.
+    ///
+    /// If you are using `bindgen` outside of a build script you should use [`Bindings::warnings`]
+    /// and handle the messages accordingly instead.
+    #[inline]
+    pub fn emit_warnings(&self) {
+        for message in &self.warnings {
+            println!("cargo:warning={}", message);
+        }
+    }
+
+    /// Return all the warning messages raised while generating the bindings.
+    #[inline]
+    pub fn warnings(&self) -> &[String] {
+        &self.warnings
     }
 }
 
