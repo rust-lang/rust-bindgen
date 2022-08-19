@@ -143,6 +143,8 @@
 
 ## Added
 
+ * new feature: `--sort-semantically` flag to sort the output in a predefined manner [(#1743)]
+
 ## Changed
 
  * clap has been updated, new msrv is 1.57.
@@ -152,6 +154,8 @@
 ## Fixed
 
 ## Security
+
+[(#1743)]: https://github.com/rust-lang/rust-bindgen/issues/1743
 
 # 0.60.1
 
