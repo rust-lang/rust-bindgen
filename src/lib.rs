@@ -2465,7 +2465,7 @@ impl Bindings {
             // multiple items within them. Hence, we have to wrap the incoming in a `mod`.
             // The two `unwrap`s here are deliberate because
             //      The first one won't panic because we build the `mod` and know it is there
-            //      The scond one won't panic because we know original output has something in
+            //      The second one won't panic because we know original output has something in
             //      it already.
             let mut syn_parsed_items =
                 syn::parse2::<syn::ItemMod>(module_wrapped_tokens)

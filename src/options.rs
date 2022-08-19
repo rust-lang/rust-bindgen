@@ -517,7 +517,7 @@ where
                 .help("Enables generation of vtable functions."),
             Arg::new("sort-semantically")
                 .long("sort-semantically")
-                .help("Enables sorting of code generation in a predefined manner"),
+                .help("Enables sorting of code generation in a predefined manner."),
             Arg::new("V")
                 .long("version")
                 .help("Prints the version, and exits"),
