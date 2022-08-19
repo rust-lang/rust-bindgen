@@ -2502,6 +2502,7 @@ impl Bindings {
 
             return Ok(Bindings {
                 options,
+                warnings,
                 module: quote! {
                     #( #synful_items )*
                 },
