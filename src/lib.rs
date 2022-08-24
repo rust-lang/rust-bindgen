@@ -86,6 +86,7 @@ use std::{env, iter};
 // Some convenient typedefs for a fast hash map and hash set.
 type HashMap<K, V> = ::rustc_hash::FxHashMap<K, V>;
 type HashSet<K> = ::rustc_hash::FxHashSet<K>;
+use quote::ToTokens;
 pub(crate) use std::collections::hash_map::Entry;
 
 /// Default prefix for the anon fields.
@@ -585,6 +586,10 @@ impl Builder {
 
         if self.options.vtable_generation {
             output_vector.push("--vtable-generation".into());
+        }
+
+        if self.options.sort_semantically {
+            output_vector.push("--sort-semantically".into());
         }
 
         // Add clang arguments
@@ -1476,6 +1481,14 @@ impl Builder {
         self
     }
 
+    /// If true, enables the sorting of the output in a predefined manner
+    ///
+    /// TODO: Perhaps move the sorting order out into a config
+    pub fn sort_semantically(mut self, doit: bool) -> Self {
+        self.options.sort_semantically = doit;
+        self
+    }
+
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate(mut self) -> Result<Bindings, BindgenError> {
         // Add any extra arguments from the environment to the clang command line.
@@ -2005,6 +2018,9 @@ struct BindgenOptions {
 
     /// Emit vtable functions.
     vtable_generation: bool,
+
+    /// Sort the code generation
+    sort_semantically: bool,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -2153,6 +2169,7 @@ impl Default for BindgenOptions {
             c_naming: false,
             force_explicit_padding: false,
             vtable_generation: false,
+            sort_semantically: false,
         }
     }
 }
@@ -2437,6 +2454,60 @@ impl Bindings {
         }
 
         let (items, options, warnings) = codegen::codegen(context);
+
+        if options.sort_semantically {
+            let module_wrapped_tokens =
+                quote!(mod wrapper_for_sorting_hack { #( #items )* });
+
+            // This semantically sorting business is a hack, for now. This means that we are
+            // re-parsing already generated code using `syn` (as opposed to `quote`) because
+            // `syn` provides us more control over the elements.
+            // One caveat is that some of the items coming from `quote`d output might have
+            // multiple items within them. Hence, we have to wrap the incoming in a `mod`.
+            // The two `unwrap`s here are deliberate because
+            //      The first one won't panic because we build the `mod` and know it is there
+            //      The second one won't panic because we know original output has something in
+            //      it already.
+            let mut syn_parsed_items =
+                syn::parse2::<syn::ItemMod>(module_wrapped_tokens)
+                    .unwrap()
+                    .content
+                    .unwrap()
+                    .1;
+
+            syn_parsed_items.sort_by_key(|item| match item {
+                syn::Item::Type(_) => 0,
+                syn::Item::Struct(_) => 1,
+                syn::Item::Const(_) => 2,
+                syn::Item::Fn(_) => 3,
+                syn::Item::Enum(_) => 4,
+                syn::Item::Union(_) => 5,
+                syn::Item::Static(_) => 6,
+                syn::Item::Trait(_) => 7,
+                syn::Item::TraitAlias(_) => 8,
+                syn::Item::Impl(_) => 9,
+                syn::Item::Mod(_) => 10,
+                syn::Item::Use(_) => 11,
+                syn::Item::Verbatim(_) => 12,
+                syn::Item::ExternCrate(_) => 13,
+                syn::Item::ForeignMod(_) => 14,
+                syn::Item::Macro(_) => 15,
+                syn::Item::Macro2(_) => 16,
+                _ => 18,
+            });
+
+            let synful_items = syn_parsed_items
+                .into_iter()
+                .map(|item| item.into_token_stream());
+
+            return Ok(Bindings {
+                options,
+                warnings,
+                module: quote! {
+                    #( #synful_items )*
+                },
+            });
+        }
 
         Ok(Bindings {
             options,
