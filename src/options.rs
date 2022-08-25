@@ -518,6 +518,9 @@ where
             Arg::new("sort-semantically")
                 .long("sort-semantically")
                 .help("Enables sorting of code generation in a predefined manner."),
+            Arg::new("deduplicate-extern-blocks")
+                .long("deduplicate-extern-blocks")
+                .help("Deduplicates extern blocks."),
             Arg::new("V")
                 .long("version")
                 .help("Prints the version, and exits"),
@@ -1005,6 +1008,10 @@ where
 
     if matches.is_present("sort-semantically") {
         builder = builder.sort_semantically(true);
+    }
+
+    if matches.is_present("deduplicate-extern-blocks") {
+        builder = builder.deduplicate_extern_blocks(true);
     }
 
     Ok((builder, output, verbose))

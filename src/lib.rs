@@ -592,6 +592,10 @@ impl Builder {
             output_vector.push("--sort-semantically".into());
         }
 
+        if self.options.deduplicate_extern_blocks {
+            output_vector.push("--deduplicate-extern-blocks".into());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -1481,11 +1485,17 @@ impl Builder {
         self
     }
 
-    /// If true, enables the sorting of the output in a predefined manner
+    /// If true, enables the sorting of the output in a predefined manner.
     ///
     /// TODO: Perhaps move the sorting order out into a config
     pub fn sort_semantically(mut self, doit: bool) -> Self {
         self.options.sort_semantically = doit;
+        self
+    }
+
+    /// If true, deduplicates extern blocks.
+    pub fn deduplicate_extern_blocks(mut self, doit: bool) -> Self {
+        self.options.deduplicate_extern_blocks = doit;
         self
     }
 
@@ -2019,8 +2029,11 @@ struct BindgenOptions {
     /// Emit vtable functions.
     vtable_generation: bool,
 
-    /// Sort the code generation
+    /// Sort the code generation.
     sort_semantically: bool,
+
+    /// Deduplicate `extern` blocks.
+    deduplicate_extern_blocks: bool,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -2031,7 +2044,7 @@ impl ::std::panic::UnwindSafe for BindgenOptions {}
 impl BindgenOptions {
     /// Whether any of the enabled options requires `syn`.
     fn require_syn(&self) -> bool {
-        self.sort_semantically
+        self.sort_semantically || self.deduplicate_extern_blocks
     }
 
     fn build(&mut self) {
@@ -2175,6 +2188,7 @@ impl Default for BindgenOptions {
             force_explicit_padding: false,
             vtable_generation: false,
             sort_semantically: false,
+            deduplicate_extern_blocks: false,
         }
     }
 }
@@ -2479,6 +2493,59 @@ impl Bindings {
                     .content
                     .unwrap()
                     .1;
+
+            if options.deduplicate_extern_blocks {
+                // Here we will store all the items after deduplication.
+                let mut items = Vec::new();
+
+                // Keep all the extern blocks in a different `Vec` for faster search.
+                let mut foreign_mods = Vec::<syn::ItemForeignMod>::new();
+                for item in syn_parsed_items {
+                    match item {
+                        syn::Item::ForeignMod(syn::ItemForeignMod {
+                            attrs,
+                            abi,
+                            brace_token,
+                            items: foreign_items,
+                        }) => {
+                            let mut exists = false;
+                            for foreign_mod in &mut foreign_mods {
+                                // Check if there is a extern block with the same ABI and
+                                // attributes.
+                                if foreign_mod.attrs == attrs &&
+                                    foreign_mod.abi == abi
+                                {
+                                    // Merge the items of the two blocks.
+                                    foreign_mod
+                                        .items
+                                        .extend_from_slice(&foreign_items);
+                                    exists = true;
+                                    break;
+                                }
+                            }
+                            // If no existing extern block had the same ABI and attributes, store
+                            // it.
+                            if !exists {
+                                foreign_mods.push(syn::ItemForeignMod {
+                                    attrs,
+                                    abi,
+                                    brace_token,
+                                    items: foreign_items,
+                                });
+                            }
+                        }
+                        // If the item is not an extern block, we don't have to do anything.
+                        _ => items.push(item),
+                    }
+                }
+
+                // Move all the extern blocks alongiside the rest of the items.
+                for foreign_mod in foreign_mods {
+                    items.push(syn::Item::ForeignMod(foreign_mod));
+                }
+
+                syn_parsed_items = items;
+            }
 
             if options.sort_semantically {
                 syn_parsed_items.sort_by_key(|item| match item {
