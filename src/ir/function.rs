@@ -228,6 +228,7 @@ pub struct FunctionSig {
 
     /// Whether this function is variadic.
     is_variadic: bool,
+    is_divergent: bool,
 
     /// Whether this function's return value must be used.
     must_use: bool,
@@ -358,6 +359,7 @@ impl FunctionSig {
         return_type: TypeId,
         argument_types: Vec<(Option<String>, TypeId)>,
         is_variadic: bool,
+        is_divergent: bool,
         must_use: bool,
         abi: Abi,
     ) -> Self {
@@ -365,6 +367,7 @@ impl FunctionSig {
             return_type,
             argument_types,
             is_variadic,
+            is_divergent,
             must_use,
             abi,
         }
@@ -528,7 +531,7 @@ impl FunctionSig {
             warn!("Unknown calling convention: {:?}", call_conv);
         }
 
-        Ok(Self::new(ret, args, ty.is_variadic(), must_use, abi))
+        Ok(Self::new(ret, args, ty.is_variadic(), false, must_use, abi))
     }
 
     /// Get this function signature's return type.
