@@ -381,6 +381,7 @@ impl FunctionSig {
     ) -> Result<Self, ParseError> {
         use clang_sys::*;
         debug!("FunctionSig::from_ty {:?} {:?}", ty, cursor);
+        let is_divergent = cursor.has_no_return_attr();
 
         // Skip function templates
         let kind = cursor.kind();
@@ -531,7 +532,14 @@ impl FunctionSig {
             warn!("Unknown calling convention: {:?}", call_conv);
         }
 
-        Ok(Self::new(ret, args, ty.is_variadic(), false, must_use, abi))
+        Ok(Self::new(
+            ret,
+            args,
+            ty.is_variadic(),
+            is_divergent,
+            must_use,
+            abi,
+        ))
     }
 
     /// Get this function signature's return type.
@@ -577,6 +585,10 @@ impl FunctionSig {
         }
 
         matches!(self.abi, Abi::C | Abi::Unknown(..))
+    }
+
+    pub(crate) fn is_divergent(&self) -> bool {
+        self.is_divergent
     }
 }
 

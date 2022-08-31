@@ -645,6 +645,24 @@ impl Cursor {
         self.has_attr("warn_unused_result", Some(CXCursor_WarnUnusedResultAttr))
     }
 
+    pub fn has_no_return_attr(&self) -> bool {
+        let mut found_attr = false;
+        self.visit(|cur| {
+            found_attr = cur.kind() == CXCursor_UnexposedAttr &&
+                cur.tokens().iter().any(|t| {
+                    t.kind == CXToken_Keyword && t.spelling() == b"_Noreturn"
+                });
+
+            if found_attr {
+                CXChildVisit_Break
+            } else {
+                CXChildVisit_Continue
+            }
+        });
+
+        found_attr
+    }
+
     /// Does this cursor have the given attribute?
     ///
     /// `name` is checked against unexposed attributes.
