@@ -4729,6 +4729,10 @@ pub mod utils {
         ctx: &BindgenContext,
         sig: &FunctionSig,
     ) -> proc_macro2::TokenStream {
+        if sig.is_divergent() {
+            return quote! { -> ! };
+        }
+
         let return_item = ctx.resolve_item(sig.return_type());
         if let TypeKind::Void = *return_item.kind().expect_type().kind() {
             quote! {}
