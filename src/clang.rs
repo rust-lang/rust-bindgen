@@ -12,6 +12,10 @@ use std::hash::Hasher;
 use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong, c_ulonglong};
 use std::{mem, ptr, slice};
 
+/// Type representing a clang attribute.
+///
+/// Values of this type can be used to check for different attributes using the `has_attrs`
+/// function.
 pub struct Attribute {
     name: &'static [u8],
     kind: CXCursorKind,
@@ -19,6 +23,7 @@ pub struct Attribute {
 }
 
 impl Attribute {
+    /// A `warn_unused_result` attribute.
     pub const MUST_USE: Self = Self {
         name: b"warn_unused_result",
         // FIXME(emilio): clang-sys doesn't expose `CXCursor_WarnUnusedResultAttr` (from clang 9).
@@ -26,6 +31,7 @@ impl Attribute {
         token_kind: CXToken_Identifier,
     };
 
+    /// A `_Noreturn` attribute.
     pub const NO_RETURN: Self = Self {
         name: b"_Noreturn",
         kind: CXCursor_UnexposedAttr,
