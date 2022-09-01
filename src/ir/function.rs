@@ -450,9 +450,14 @@ impl FunctionSig {
             }
         };
 
-        let [must_use, is_divergent] =
+        let (must_use, is_divergent) =
             if ctx.options().enable_function_attribute_detection {
-                cursor.has_attrs(&[Attribute::MUST_USE, Attribute::NO_RETURN])
+                let [must_use, no_return, no_return_cpp] = cursor.has_attrs(&[
+                    Attribute::MUST_USE,
+                    Attribute::NO_RETURN,
+                    Attribute::NO_RETURN_CPP,
+                ]);
+                (must_use, no_return || no_return_cpp)
             } else {
                 Default::default()
             };

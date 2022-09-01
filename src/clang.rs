@@ -37,6 +37,13 @@ impl Attribute {
         kind: None,
         token_kind: CXToken_Keyword,
     };
+
+    /// A `[[noreturn]]` attribute.
+    pub const NO_RETURN_CPP: Self = Self {
+        name: b"noreturn",
+        kind: None,
+        token_kind: CXToken_Identifier,
+    };
 }
 
 /// A cursor into the Clang AST, pointing to an AST node.

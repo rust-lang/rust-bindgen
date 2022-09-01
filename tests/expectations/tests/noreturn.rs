@@ -6,8 +6,14 @@
 )]
 
 extern "C" {
-    pub fn f() -> !;
+    #[link_name = "\u{1}_Z1fv"]
+     pub fn f() -> !;
 }
 extern "C" {
-    pub fn g();
+    #[link_name = "\u{1}_Z1gv"]
+     pub fn g();
+}
+extern "C" {
+    #[link_name = "\u{1}_Z1hv"]
+    pub fn h() -> !;
 }
