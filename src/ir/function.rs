@@ -381,7 +381,9 @@ impl FunctionSig {
     ) -> Result<Self, ParseError> {
         use clang_sys::*;
         debug!("FunctionSig::from_ty {:?} {:?}", ty, cursor);
-        let is_divergent = cursor.has_no_return_attr();
+
+        let is_divergent = ctx.options().enable_function_attribute_detection &&
+            cursor.has_no_return_attr();
 
         // Skip function templates
         let kind = cursor.kind();
