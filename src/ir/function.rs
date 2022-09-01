@@ -450,7 +450,7 @@ impl FunctionSig {
             }
         };
 
-        let (must_use, is_divergent) =
+        let (must_use, mut is_divergent) =
             if ctx.options().enable_function_attribute_detection {
                 let [must_use, no_return, no_return_cpp] = cursor.has_attrs(&[
                     Attribute::MUST_USE,
@@ -461,6 +461,11 @@ impl FunctionSig {
             } else {
                 Default::default()
             };
+
+        // This looks easy to break but the clang parser keeps the type spelling clean even if
+        // other attributes are added.
+        is_divergent =
+            is_divergent || ty.spelling().contains("__attribute__((noreturn))");
 
         let is_method = kind == CXCursor_CXXMethod;
         let is_constructor = kind == CXCursor_Constructor;
