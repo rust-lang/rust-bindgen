@@ -12,6 +12,27 @@ use std::hash::Hasher;
 use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong, c_ulonglong};
 use std::{mem, ptr, slice};
 
+pub struct Attribute {
+    name: &'static [u8],
+    kind: CXCursorKind,
+    token_kind: CXTokenKind,
+}
+
+impl Attribute {
+    pub const MUST_USE: Self = Self {
+        name: b"warn_unused_result",
+        // FIXME(emilio): clang-sys doesn't expose `CXCursor_WarnUnusedResultAttr` (from clang 9).
+        kind: 440,
+        token_kind: CXToken_Identifier,
+    };
+
+    pub const NO_RETURN: Self = Self {
+        name: b"_Noreturn",
+        kind: CXCursor_UnexposedAttr,
+        token_kind: CXToken_Keyword,
+    };
+}
+
 /// A cursor into the Clang AST, pointing to an AST node.
 ///
 /// We call the AST node pointed to by the cursor the cursor's "referent".
@@ -638,48 +659,38 @@ impl Cursor {
         }
     }
 
-    /// Whether this cursor has the `warn_unused_result` attribute.
-    pub fn has_warn_unused_result_attr(&self) -> bool {
-        // FIXME(emilio): clang-sys doesn't expose this (from clang 9).
-        const CXCursor_WarnUnusedResultAttr: CXCursorKind = 440;
-        self.has_attr(
-            "warn_unused_result",
-            Some(CXCursor_WarnUnusedResultAttr),
-            CXToken_Identifier,
-        )
-    }
-
-    /// Check wether this cursor has the `_Noreturn` attribute.
-    pub fn has_no_return_attr(&self) -> bool {
-        self.has_attr("_Noreturn", None, CXToken_Keyword)
-    }
-
-    /// Does this cursor have the given attribute?
-    ///
-    /// `name` is checked against unexposed attributes.
-    fn has_attr(
+    pub fn has_attrs<const N: usize>(
         &self,
-        name: &str,
-        clang_kind: Option<CXCursorKind>,
-        token_kind: CXTokenKind,
-    ) -> bool {
-        let mut found_attr = false;
+        attrs: &[Attribute; N],
+    ) -> [bool; N] {
+        let mut found_attrs = [false; N];
+        let mut found_count = 0;
+
         self.visit(|cur| {
             let kind = cur.kind();
-            found_attr = clang_kind.map_or(false, |k| k == kind) ||
-                (kind == CXCursor_UnexposedAttr &&
-                    cur.tokens().iter().any(|t| {
-                        t.kind == token_kind && t.spelling() == name.as_bytes()
-                    }));
+            for (idx, attr) in attrs.iter().enumerate() {
+                let found_attr = &mut found_attrs[idx];
+                if !*found_attr {
+                    if kind == attr.kind &&
+                        cur.tokens().iter().any(|t| {
+                            t.kind == attr.token_kind &&
+                                t.spelling() == attr.name
+                        })
+                    {
+                        *found_attr = true;
+                        found_count += 1;
 
-            if found_attr {
-                CXChildVisit_Break
-            } else {
-                CXChildVisit_Continue
+                        if found_count == N {
+                            return CXChildVisit_Break;
+                        }
+                    }
+                }
             }
+
+            CXChildVisit_Continue
         });
 
-        found_attr
+        found_attrs
     }
 
     /// Given that this cursor's referent is a `typedef`, get the `Type` that is

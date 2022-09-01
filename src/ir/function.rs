@@ -6,7 +6,7 @@ use super::dot::DotAttributes;
 use super::item::Item;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
-use crate::clang;
+use crate::clang::{self, Attribute};
 use crate::parse::{
     ClangItemParser, ClangSubItemParser, ParseError, ParseResult,
 };
@@ -382,9 +382,6 @@ impl FunctionSig {
         use clang_sys::*;
         debug!("FunctionSig::from_ty {:?} {:?}", ty, cursor);
 
-        let is_divergent = ctx.options().enable_function_attribute_detection &&
-            cursor.has_no_return_attr();
-
         // Skip function templates
         let kind = cursor.kind();
         if kind == CXCursor_FunctionTemplate {
@@ -453,8 +450,13 @@ impl FunctionSig {
             }
         };
 
-        let must_use = ctx.options().enable_function_attribute_detection &&
-            cursor.has_warn_unused_result_attr();
+        let [must_use, is_divergent] =
+            if ctx.options().enable_function_attribute_detection {
+                cursor.has_attrs(&[Attribute::MUST_USE, Attribute::NO_RETURN])
+            } else {
+                Default::default()
+            };
+
         let is_method = kind == CXCursor_CXXMethod;
         let is_constructor = kind == CXCursor_Constructor;
         let is_destructor = kind == CXCursor_Destructor;
