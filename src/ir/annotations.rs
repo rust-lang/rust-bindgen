@@ -7,7 +7,7 @@
 use crate::clang;
 
 /// What kind of accessor should we provide for a field?
-#[derive(Copy, PartialEq, Clone, Debug)]
+#[derive(Copy, PartialEq, Eq, Clone, Debug)]
 pub enum FieldAccessorKind {
     /// No accessor.
     None,

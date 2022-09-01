@@ -1212,6 +1212,7 @@ impl CodeGenerator for TemplateInstantiation {
 trait FieldCodegen<'a> {
     type Extra;
 
+    #[allow(clippy::too_many_arguments)]
     fn codegen<F, M>(
         &self,
         ctx: &BindgenContext,
@@ -2563,7 +2564,7 @@ impl MethodCodegen for Method {
 }
 
 /// A helper type that represents different enum variations.
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum EnumVariation {
     /// The code for this enum will use a Rust enum. Note that creating this in unsafe code
     /// (including FFI) with an invalid value will invoke undefined behaviour, whether or not
@@ -3213,7 +3214,7 @@ impl CodeGenerator for Enum {
                                 ctx,
                                 enum_ty,
                                 &ident,
-                                &Ident::new(&*mangled_name, Span::call_site()),
+                                &Ident::new(&mangled_name, Span::call_site()),
                                 existing_variant_name,
                                 enum_rust_ty.clone(),
                                 result,
@@ -3282,7 +3283,7 @@ impl CodeGenerator for Enum {
 }
 
 /// Enum for the default type of macro constants.
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum MacroTypeVariation {
     /// Use i32 or i64
     Signed,
@@ -3326,7 +3327,7 @@ impl std::str::FromStr for MacroTypeVariation {
 }
 
 /// Enum for how aliases should be translated.
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum AliasVariation {
     /// Convert to regular Rust alias
     TypeAlias,

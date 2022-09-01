@@ -564,7 +564,7 @@ impl TemplateParameters for TypeKind {
 }
 
 /// The kind of float this type represents.
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum FloatKind {
     /// A `float`.
     Float,
