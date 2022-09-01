@@ -18,7 +18,7 @@ use std::{mem, ptr, slice};
 /// function.
 pub struct Attribute {
     name: &'static [u8],
-    kind: CXCursorKind,
+    kind: Option<CXCursorKind>,
     token_kind: CXTokenKind,
 }
 
@@ -27,14 +27,14 @@ impl Attribute {
     pub const MUST_USE: Self = Self {
         name: b"warn_unused_result",
         // FIXME(emilio): clang-sys doesn't expose `CXCursor_WarnUnusedResultAttr` (from clang 9).
-        kind: 440,
+        kind: Some(440),
         token_kind: CXToken_Identifier,
     };
 
     /// A `_Noreturn` attribute.
     pub const NO_RETURN: Self = Self {
         name: b"_Noreturn",
-        kind: CXCursor_UnexposedAttr,
+        kind: None,
         token_kind: CXToken_Keyword,
     };
 }
@@ -678,11 +678,13 @@ impl Cursor {
             for (idx, attr) in attrs.iter().enumerate() {
                 let found_attr = &mut found_attrs[idx];
                 if !*found_attr {
-                    if kind == attr.kind &&
-                        cur.tokens().iter().any(|t| {
-                            t.kind == attr.token_kind &&
-                                t.spelling() == attr.name
-                        })
+                    // `attr.name` and` attr.token_kind` are checked against unexposed attributes only.
+                    if attr.kind.map_or(false, |k| k == kind) ||
+                        (kind == CXCursor_UnexposedAttr &&
+                            cur.tokens().iter().any(|t| {
+                                t.kind == attr.token_kind &&
+                                    t.spelling() == attr.name
+                            }))
                     {
                         *found_attr = true;
                         found_count += 1;
