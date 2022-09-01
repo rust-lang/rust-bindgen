@@ -642,39 +642,34 @@ impl Cursor {
     pub fn has_warn_unused_result_attr(&self) -> bool {
         // FIXME(emilio): clang-sys doesn't expose this (from clang 9).
         const CXCursor_WarnUnusedResultAttr: CXCursorKind = 440;
-        self.has_attr("warn_unused_result", Some(CXCursor_WarnUnusedResultAttr))
+        self.has_attr(
+            "warn_unused_result",
+            Some(CXCursor_WarnUnusedResultAttr),
+            CXToken_Identifier,
+        )
     }
 
+    /// Check wether this cursor has the `_Noreturn` attribute.
     pub fn has_no_return_attr(&self) -> bool {
-        let mut found_attr = false;
-        self.visit(|cur| {
-            found_attr = cur.kind() == CXCursor_UnexposedAttr &&
-                cur.tokens().iter().any(|t| {
-                    t.kind == CXToken_Keyword && t.spelling() == b"_Noreturn"
-                });
-
-            if found_attr {
-                CXChildVisit_Break
-            } else {
-                CXChildVisit_Continue
-            }
-        });
-
-        found_attr
+        self.has_attr("_Noreturn", None, CXToken_Keyword)
     }
 
     /// Does this cursor have the given attribute?
     ///
     /// `name` is checked against unexposed attributes.
-    fn has_attr(&self, name: &str, clang_kind: Option<CXCursorKind>) -> bool {
+    fn has_attr(
+        &self,
+        name: &str,
+        clang_kind: Option<CXCursorKind>,
+        token_kind: CXTokenKind,
+    ) -> bool {
         let mut found_attr = false;
         self.visit(|cur| {
             let kind = cur.kind();
             found_attr = clang_kind.map_or(false, |k| k == kind) ||
                 (kind == CXCursor_UnexposedAttr &&
                     cur.tokens().iter().any(|t| {
-                        t.kind == CXToken_Identifier &&
-                            t.spelling() == name.as_bytes()
+                        t.kind == token_kind && t.spelling() == name.as_bytes()
                     }));
 
             if found_attr {
