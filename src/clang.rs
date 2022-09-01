@@ -665,6 +665,7 @@ impl Cursor {
         }
     }
 
+    /// Does this cursor have the given attributes?
     pub fn has_attrs<const N: usize>(
         &self,
         attrs: &[Attribute; N],
