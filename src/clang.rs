@@ -278,12 +278,12 @@ impl Cursor {
 
     /// Is the referent any kind of template parameter?
     pub fn is_template_parameter(&self) -> bool {
-        match self.kind() {
+        matches!(
+            self.kind(),
             CXCursor_TemplateTemplateParameter |
-            CXCursor_TemplateTypeParameter |
-            CXCursor_NonTypeTemplateParameter => true,
-            _ => false,
-        }
+                CXCursor_TemplateTypeParameter |
+                CXCursor_NonTypeTemplateParameter
+        )
     }
 
     /// Does the referent's type or value depend on a template parameter?

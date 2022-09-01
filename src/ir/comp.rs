@@ -20,7 +20,7 @@ use std::io;
 use std::mem;
 
 /// The kind of compound type.
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum CompKind {
     /// A struct.
     Struct,
@@ -29,7 +29,7 @@ pub enum CompKind {
 }
 
 /// The kind of C++ method.
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum MethodKind {
     /// A constructor. We represent it as method for convenience, to avoid code
     /// duplication.
@@ -55,12 +55,10 @@ pub enum MethodKind {
 impl MethodKind {
     /// Is this a destructor method?
     pub fn is_destructor(&self) -> bool {
-        match *self {
-            MethodKind::Destructor | MethodKind::VirtualDestructor { .. } => {
-                true
-            }
-            _ => false,
-        }
+        matches!(
+            *self,
+            MethodKind::Destructor | MethodKind::VirtualDestructor { .. }
+        )
     }
 
     /// Is this a pure virtual method?

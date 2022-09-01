@@ -467,6 +467,7 @@ pub struct BindgenContext {
 /// A traversal of allowlisted items.
 struct AllowlistedItemsTraversal<'ctx> {
     ctx: &'ctx BindgenContext,
+    #[allow(clippy::type_complexity)]
     traversal: ItemTraversal<
         'ctx,
         ItemSet,
