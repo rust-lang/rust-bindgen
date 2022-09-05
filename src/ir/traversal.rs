@@ -204,7 +204,7 @@ pub fn only_inner_type_edges(_: &BindgenContext, edge: Edge) -> bool {
 /// are enabled for code generation. This lets us skip considering items for
 /// which are not reachable from code generation.
 pub fn codegen_edges(ctx: &BindgenContext, edge: Edge) -> bool {
-    let cc = &ctx.options().codegen_config;
+    let cc = &ctx.inputs().codegen_config;
     match edge.kind {
         EdgeKind::Generic => {
             ctx.resolve_item(edge.to).is_enabled_for_codegen(ctx)

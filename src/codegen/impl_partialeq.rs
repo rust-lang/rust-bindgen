@@ -18,7 +18,7 @@ pub fn gen_partialeq_impl(
             &self._bindgen_opaque_blob[..] == &other._bindgen_opaque_blob[..]
         });
     } else if comp_info.kind() == CompKind::Union {
-        assert!(!ctx.options().rust_features().untagged_union);
+        assert!(!ctx.inputs().rust_features().untagged_union);
         tokens.push(quote! {
             &self.bindgen_union_field[..] == &other.bindgen_union_field[..]
         });
@@ -114,7 +114,7 @@ fn gen_field(
 
         TypeKind::Array(_, len) => {
             if len <= RUST_DERIVE_IN_ARRAY_LIMIT ||
-                ctx.options().rust_features().larger_arrays
+                ctx.inputs().rust_features().larger_arrays
             {
                 quote_equals(name_ident)
             } else {

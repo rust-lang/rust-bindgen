@@ -119,12 +119,12 @@ impl DotAttributes for Var {
 
 fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
     if value < 0 ||
-        ctx.options().default_macro_constant_type ==
+        ctx.inputs().default_macro_constant_type ==
             MacroTypeVariation::Signed
     {
         if value < i32::min_value() as i64 || value > i32::max_value() as i64 {
             IntKind::I64
-        } else if !ctx.options().fit_macro_constants ||
+        } else if !ctx.inputs().fit_macro_constants ||
             value < i16::min_value() as i64 ||
             value > i16::max_value() as i64
         {
@@ -138,7 +138,7 @@ fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
         }
     } else if value > u32::max_value() as i64 {
         IntKind::U64
-    } else if !ctx.options().fit_macro_constants ||
+    } else if !ctx.inputs().fit_macro_constants ||
         value > u16::max_value() as i64
     {
         IntKind::U32

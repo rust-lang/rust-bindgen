@@ -39,7 +39,7 @@ impl Layout {
         size: usize,
     ) -> Option<&'static str> {
         Some(match size {
-            16 if ctx.options().rust_features.i128_and_u128 => "u128",
+            16 if ctx.inputs().rust_features().i128_and_u128 => "u128",
             8 => "u64",
             4 => "u32",
             2 => "u16",

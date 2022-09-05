@@ -181,11 +181,11 @@ impl<'a> ImplDebug<'a> for Item {
                         vec![],
                     ))
                 } else if len < RUST_DERIVE_IN_ARRAY_LIMIT ||
-                    ctx.options().rust_features().larger_arrays
+                    ctx.inputs().rust_features().larger_arrays
                 {
                     // The simple case
                     debug_print(name, quote! { #name_ident })
-                } else if ctx.options().use_core {
+                } else if ctx.inputs().use_core {
                     // There is no String in core; reducing field visibility to avoid breaking
                     // no_std setups.
                     Some((format!("{}: [...]", name), vec![]))
@@ -204,7 +204,7 @@ impl<'a> ImplDebug<'a> for Item {
                 }
             }
             TypeKind::Vector(_, len) => {
-                if ctx.options().use_core {
+                if ctx.inputs().use_core {
                     // There is no format! in core; reducing field visibility to avoid breaking
                     // no_std setups.
                     Some((format!("{}(...)", name), vec![]))

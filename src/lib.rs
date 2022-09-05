@@ -49,6 +49,7 @@ macro_rules! doc_mod {
     };
 }
 
+mod builder;
 mod clang;
 mod codegen;
 mod deps;
@@ -66,10 +67,11 @@ doc_mod!(ir, ir_docs);
 doc_mod!(parse, parse_docs);
 doc_mod!(regex_set, regex_set_docs);
 
+use crate::builder::BindgenInputs;
+pub use crate::builder::Builder;
 pub use crate::codegen::{
     AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle,
 };
-use crate::features::RustFeatures;
 pub use crate::features::{
     RustTarget, LATEST_STABLE_RUST, RUST_TARGET_STRINGS,
 };
@@ -79,15 +81,16 @@ use crate::parse::{ClangItemParser, ParseError};
 use crate::regex_set::RegexSet;
 
 use std::borrow::Cow;
-use std::fs::{File, OpenOptions};
+use std::env;
+use std::fs::OpenOptions;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::{env, iter};
 
 // Some convenient typedefs for a fast hash map and hash set.
 type HashMap<K, V> = ::rustc_hash::FxHashMap<K, V>;
 type HashSet<K> = ::rustc_hash::FxHashSet<K>;
+use builder::BindgenOptions;
 use quote::ToTokens;
 pub(crate) use std::collections::hash_map::Entry;
 
@@ -172,64 +175,6 @@ impl Default for CodegenConfig {
     }
 }
 
-/// Configure and generate Rust bindings for a C/C++ header.
-///
-/// This is the main entry point to the library.
-///
-/// ```ignore
-/// use bindgen::builder;
-///
-/// // Configure and generate bindings.
-/// let bindings = builder().header("path/to/input/header")
-///     .allowlist_type("SomeCoolClass")
-///     .allowlist_function("do_some_cool_thing")
-///     .generate()?;
-///
-/// // Write the generated bindings to an output file.
-/// bindings.write_to_file("path/to/output.rs")?;
-/// ```
-///
-/// # Enums
-///
-/// Bindgen can map C/C++ enums into Rust in different ways. The way bindgen maps enums depends on
-/// the pattern passed to several methods:
-///
-/// 1. [`constified_enum_module()`](#method.constified_enum_module)
-/// 2. [`bitfield_enum()`](#method.bitfield_enum)
-/// 3. [`newtype_enum()`](#method.newtype_enum)
-/// 4. [`rustified_enum()`](#method.rustified_enum)
-///
-/// For each C enum, bindgen tries to match the pattern in the following order:
-///
-/// 1. Constified enum module
-/// 2. Bitfield enum
-/// 3. Newtype enum
-/// 4. Rustified enum
-///
-/// If none of the above patterns match, then bindgen will generate a set of Rust constants.
-///
-/// # Clang arguments
-///
-/// Extra arguments can be passed to with clang:
-/// 1. [`clang_arg()`](#method.clang_arg): takes a single argument
-/// 2. [`clang_args()`](#method.clang_args): takes an iterator of arguments
-/// 3. `BINDGEN_EXTRA_CLANG_ARGS` environment variable: whitespace separate
-///    environment variable of arguments
-///
-/// Clang arguments specific to your crate should be added via the
-/// `clang_arg()`/`clang_args()` methods.
-///
-/// End-users of the crate may need to set the `BINDGEN_EXTRA_CLANG_ARGS` environment variable to
-/// add additional arguments. For example, to build against a different sysroot a user could set
-/// `BINDGEN_EXTRA_CLANG_ARGS` to `--sysroot=/path/to/sysroot`.
-#[derive(Debug, Default)]
-pub struct Builder {
-    options: BindgenOptions,
-    input_headers: Vec<String>,
-    // Tuples of unsaved file contents of the form (name, contents).
-    input_header_contents: Vec<(String, String)>,
-}
-
 /// Construct a new [`Builder`](./struct.Builder.html).
 pub fn builder() -> Builder {
     Default::default()
@@ -249,1534 +194,9 @@ fn get_extra_clang_args() -> Vec<String> {
     vec![extra_clang_args]
 }
 
-impl Builder {
-    /// Generates the command line flags use for creating `Builder`.
-    pub fn command_line_flags(&self) -> Vec<String> {
-        let mut output_vector: Vec<String> = Vec::new();
-
-        if let Some(header) = self.input_headers.last().cloned() {
-            // Positional argument 'header'
-            output_vector.push(header);
-        }
-
-        output_vector.push("--rust-target".into());
-        output_vector.push(self.options.rust_target.into());
-
-        // FIXME(emilio): This is a bit hacky, maybe we should stop re-using the
-        // RustFeatures to store the "disable_untagged_union" call, and make it
-        // a different flag that we check elsewhere / in generate().
-        if !self.options.rust_features.untagged_union &&
-            RustFeatures::from(self.options.rust_target).untagged_union
-        {
-            output_vector.push("--disable-untagged-union".into());
-        }
-
-        if self.options.default_enum_style != Default::default() {
-            output_vector.push("--default-enum-style".into());
-            output_vector.push(
-                match self.options.default_enum_style {
-                    codegen::EnumVariation::Rust {
-                        non_exhaustive: false,
-                    } => "rust",
-                    codegen::EnumVariation::Rust {
-                        non_exhaustive: true,
-                    } => "rust_non_exhaustive",
-                    codegen::EnumVariation::NewType {
-                        is_bitfield: true,
-                        ..
-                    } => "bitfield",
-                    codegen::EnumVariation::NewType {
-                        is_bitfield: false,
-                        is_global,
-                    } => {
-                        if is_global {
-                            "newtype_global"
-                        } else {
-                            "newtype"
-                        }
-                    }
-                    codegen::EnumVariation::Consts => "consts",
-                    codegen::EnumVariation::ModuleConsts => "moduleconsts",
-                }
-                .into(),
-            )
-        }
-
-        if self.options.default_macro_constant_type != Default::default() {
-            output_vector.push("--default-macro-constant-type".into());
-            output_vector
-                .push(self.options.default_macro_constant_type.as_str().into());
-        }
-
-        if self.options.default_alias_style != Default::default() {
-            output_vector.push("--default-alias-style".into());
-            output_vector
-                .push(self.options.default_alias_style.as_str().into());
-        }
-
-        if self.options.default_non_copy_union_style != Default::default() {
-            output_vector.push("--default-non-copy-union-style".into());
-            output_vector.push(
-                self.options.default_non_copy_union_style.as_str().into(),
-            );
-        }
-
-        let regex_sets = &[
-            (&self.options.bitfield_enums, "--bitfield-enum"),
-            (&self.options.newtype_enums, "--newtype-enum"),
-            (&self.options.newtype_global_enums, "--newtype-global-enum"),
-            (&self.options.rustified_enums, "--rustified-enum"),
-            (
-                &self.options.rustified_non_exhaustive_enums,
-                "--rustified-enum-non-exhaustive",
-            ),
-            (
-                &self.options.constified_enum_modules,
-                "--constified-enum-module",
-            ),
-            (&self.options.constified_enums, "--constified-enum"),
-            (&self.options.type_alias, "--type-alias"),
-            (&self.options.new_type_alias, "--new-type-alias"),
-            (&self.options.new_type_alias_deref, "--new-type-alias-deref"),
-            (
-                &self.options.bindgen_wrapper_union,
-                "--bindgen-wrapper-union",
-            ),
-            (&self.options.manually_drop_union, "--manually-drop-union"),
-            (&self.options.blocklisted_types, "--blocklist-type"),
-            (&self.options.blocklisted_functions, "--blocklist-function"),
-            (&self.options.blocklisted_items, "--blocklist-item"),
-            (&self.options.blocklisted_files, "--blocklist-file"),
-            (&self.options.opaque_types, "--opaque-type"),
-            (&self.options.allowlisted_functions, "--allowlist-function"),
-            (&self.options.allowlisted_types, "--allowlist-type"),
-            (&self.options.allowlisted_vars, "--allowlist-var"),
-            (&self.options.allowlisted_files, "--allowlist-file"),
-            (&self.options.no_partialeq_types, "--no-partialeq"),
-            (&self.options.no_copy_types, "--no-copy"),
-            (&self.options.no_debug_types, "--no-debug"),
-            (&self.options.no_default_types, "--no-default"),
-            (&self.options.no_hash_types, "--no-hash"),
-            (&self.options.must_use_types, "--must-use-type"),
-        ];
-
-        for (set, flag) in regex_sets {
-            for item in set.get_items() {
-                output_vector.push((*flag).to_owned());
-                output_vector.push(item.to_owned());
-            }
-        }
-
-        if !self.options.layout_tests {
-            output_vector.push("--no-layout-tests".into());
-        }
-
-        if self.options.impl_debug {
-            output_vector.push("--impl-debug".into());
-        }
-
-        if self.options.impl_partialeq {
-            output_vector.push("--impl-partialeq".into());
-        }
-
-        if !self.options.derive_copy {
-            output_vector.push("--no-derive-copy".into());
-        }
-
-        if !self.options.derive_debug {
-            output_vector.push("--no-derive-debug".into());
-        }
-
-        if !self.options.derive_default {
-            output_vector.push("--no-derive-default".into());
-        } else {
-            output_vector.push("--with-derive-default".into());
-        }
-
-        if self.options.derive_hash {
-            output_vector.push("--with-derive-hash".into());
-        }
-
-        if self.options.derive_partialord {
-            output_vector.push("--with-derive-partialord".into());
-        }
-
-        if self.options.derive_ord {
-            output_vector.push("--with-derive-ord".into());
-        }
-
-        if self.options.derive_partialeq {
-            output_vector.push("--with-derive-partialeq".into());
-        }
-
-        if self.options.derive_eq {
-            output_vector.push("--with-derive-eq".into());
-        }
-
-        if self.options.time_phases {
-            output_vector.push("--time-phases".into());
-        }
-
-        if !self.options.generate_comments {
-            output_vector.push("--no-doc-comments".into());
-        }
-
-        if !self.options.allowlist_recursively {
-            output_vector.push("--no-recursive-allowlist".into());
-        }
-
-        if self.options.objc_extern_crate {
-            output_vector.push("--objc-extern-crate".into());
-        }
-
-        if self.options.generate_block {
-            output_vector.push("--generate-block".into());
-        }
-
-        if self.options.block_extern_crate {
-            output_vector.push("--block-extern-crate".into());
-        }
-
-        if self.options.builtins {
-            output_vector.push("--builtins".into());
-        }
-
-        if let Some(ref prefix) = self.options.ctypes_prefix {
-            output_vector.push("--ctypes-prefix".into());
-            output_vector.push(prefix.clone());
-        }
-
-        if self.options.anon_fields_prefix != DEFAULT_ANON_FIELDS_PREFIX {
-            output_vector.push("--anon-fields-prefix".into());
-            output_vector.push(self.options.anon_fields_prefix.clone());
-        }
-
-        if self.options.emit_ast {
-            output_vector.push("--emit-clang-ast".into());
-        }
-
-        if self.options.emit_ir {
-            output_vector.push("--emit-ir".into());
-        }
-        if let Some(ref graph) = self.options.emit_ir_graphviz {
-            output_vector.push("--emit-ir-graphviz".into());
-            output_vector.push(graph.clone())
-        }
-        if self.options.enable_cxx_namespaces {
-            output_vector.push("--enable-cxx-namespaces".into());
-        }
-        if self.options.enable_function_attribute_detection {
-            output_vector.push("--enable-function-attribute-detection".into());
-        }
-        if self.options.disable_name_namespacing {
-            output_vector.push("--disable-name-namespacing".into());
-        }
-        if self.options.disable_nested_struct_naming {
-            output_vector.push("--disable-nested-struct-naming".into());
-        }
-
-        if self.options.disable_header_comment {
-            output_vector.push("--disable-header-comment".into());
-        }
-
-        if !self.options.codegen_config.functions() {
-            output_vector.push("--ignore-functions".into());
-        }
-
-        output_vector.push("--generate".into());
-
-        //Temporary placeholder for below 4 options
-        let mut options: Vec<String> = Vec::new();
-        if self.options.codegen_config.functions() {
-            options.push("functions".into());
-        }
-        if self.options.codegen_config.types() {
-            options.push("types".into());
-        }
-        if self.options.codegen_config.vars() {
-            options.push("vars".into());
-        }
-        if self.options.codegen_config.methods() {
-            options.push("methods".into());
-        }
-        if self.options.codegen_config.constructors() {
-            options.push("constructors".into());
-        }
-        if self.options.codegen_config.destructors() {
-            options.push("destructors".into());
-        }
-
-        output_vector.push(options.join(","));
-
-        if !self.options.codegen_config.methods() {
-            output_vector.push("--ignore-methods".into());
-        }
-
-        if !self.options.convert_floats {
-            output_vector.push("--no-convert-floats".into());
-        }
-
-        if !self.options.prepend_enum_name {
-            output_vector.push("--no-prepend-enum-name".into());
-        }
-
-        if self.options.fit_macro_constants {
-            output_vector.push("--fit-macro-constant-types".into());
-        }
-
-        if self.options.array_pointers_in_arguments {
-            output_vector.push("--use-array-pointers-in-arguments".into());
-        }
-
-        if let Some(ref wasm_import_module_name) =
-            self.options.wasm_import_module_name
-        {
-            output_vector.push("--wasm-import-module-name".into());
-            output_vector.push(wasm_import_module_name.clone());
-        }
-
-        for line in &self.options.raw_lines {
-            output_vector.push("--raw-line".into());
-            output_vector.push(line.clone());
-        }
-
-        for (module, lines) in &self.options.module_lines {
-            for line in lines.iter() {
-                output_vector.push("--module-raw-line".into());
-                output_vector.push(module.clone());
-                output_vector.push(line.clone());
-            }
-        }
-
-        if self.options.use_core {
-            output_vector.push("--use-core".into());
-        }
-
-        if self.options.conservative_inline_namespaces {
-            output_vector.push("--conservative-inline-namespaces".into());
-        }
-
-        if self.options.generate_inline_functions {
-            output_vector.push("--generate-inline-functions".into());
-        }
-
-        if !self.options.record_matches {
-            output_vector.push("--no-record-matches".into());
-        }
-
-        if self.options.size_t_is_usize {
-            output_vector.push("--size_t-is-usize".into());
-        }
-
-        if !self.options.rustfmt_bindings {
-            output_vector.push("--no-rustfmt-bindings".into());
-        }
-
-        if let Some(path) = self
-            .options
-            .rustfmt_configuration_file
-            .as_ref()
-            .and_then(|f| f.to_str())
-        {
-            output_vector.push("--rustfmt-configuration-file".into());
-            output_vector.push(path.into());
-        }
-
-        if let Some(ref name) = self.options.dynamic_library_name {
-            output_vector.push("--dynamic-loading".into());
-            output_vector.push(name.clone());
-        }
-
-        if self.options.dynamic_link_require_all {
-            output_vector.push("--dynamic-link-require-all".into());
-        }
-
-        if self.options.respect_cxx_access_specs {
-            output_vector.push("--respect-cxx-access-specs".into());
-        }
-
-        if self.options.translate_enum_integer_types {
-            output_vector.push("--translate-enum-integer-types".into());
-        }
-
-        if self.options.c_naming {
-            output_vector.push("--c-naming".into());
-        }
-
-        if self.options.force_explicit_padding {
-            output_vector.push("--explicit-padding".into());
-        }
-
-        if self.options.vtable_generation {
-            output_vector.push("--vtable-generation".into());
-        }
-
-        if self.options.sort_semantically {
-            output_vector.push("--sort-semantically".into());
-        }
-
-        if self.options.merge_extern_blocks {
-            output_vector.push("--merge-extern-blocks".into());
-        }
-
-        // Add clang arguments
-
-        output_vector.push("--".into());
-
-        if !self.options.clang_args.is_empty() {
-            output_vector.extend(self.options.clang_args.iter().cloned());
-        }
-
-        if self.input_headers.len() > 1 {
-            // To pass more than one header, we need to pass all but the last
-            // header via the `-include` clang arg
-            for header in &self.input_headers[..self.input_headers.len() - 1] {
-                output_vector.push("-include".to_string());
-                output_vector.push(header.clone());
-            }
-        }
-
-        output_vector
-    }
-
-    /// Add an input C/C++ header to generate bindings for.
-    ///
-    /// This can be used to generate bindings to a single header:
-    ///
-    /// ```ignore
-    /// let bindings = bindgen::Builder::default()
-    ///     .header("input.h")
-    ///     .generate()
-    ///     .unwrap();
-    /// ```
-    ///
-    /// Or you can invoke it multiple times to generate bindings to multiple
-    /// headers:
-    ///
-    /// ```ignore
-    /// let bindings = bindgen::Builder::default()
-    ///     .header("first.h")
-    ///     .header("second.h")
-    ///     .header("third.h")
-    ///     .generate()
-    ///     .unwrap();
-    /// ```
-    pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
-        self.input_headers.push(header.into());
-        self
-    }
-
-    /// Add a depfile output which will be written alongside the generated bindings.
-    pub fn depfile<H: Into<String>, D: Into<PathBuf>>(
-        mut self,
-        output_module: H,
-        depfile: D,
-    ) -> Builder {
-        self.options.depfile = Some(deps::DepfileSpec {
-            output_module: output_module.into(),
-            depfile_path: depfile.into(),
-        });
-        self
-    }
-
-    /// Add `contents` as an input C/C++ header named `name`.
-    ///
-    /// The file `name` will be added to the clang arguments.
-    pub fn header_contents(mut self, name: &str, contents: &str) -> Builder {
-        // Apparently clang relies on having virtual FS correspondent to
-        // the real one, so we need absolute paths here
-        let absolute_path = env::current_dir()
-            .expect("Cannot retrieve current directory")
-            .join(name)
-            .to_str()
-            .expect("Cannot convert current directory name to string")
-            .to_owned();
-        self.input_header_contents
-            .push((absolute_path, contents.into()));
-        self
-    }
-
-    /// Specify the rust target
-    ///
-    /// The default is the latest stable Rust version
-    pub fn rust_target(mut self, rust_target: RustTarget) -> Self {
-        self.options.set_rust_target(rust_target);
-        self
-    }
-
-    /// Disable support for native Rust unions, if supported.
-    pub fn disable_untagged_union(mut self) -> Self {
-        self.options.rust_features.untagged_union = false;
-        self
-    }
-
-    /// Disable insertion of bindgen's version identifier into generated
-    /// bindings.
-    pub fn disable_header_comment(mut self) -> Self {
-        self.options.disable_header_comment = true;
-        self
-    }
-
-    /// Set the output graphviz file.
-    pub fn emit_ir_graphviz<T: Into<String>>(mut self, path: T) -> Builder {
-        let path = path.into();
-        self.options.emit_ir_graphviz = Some(path);
-        self
-    }
-
-    /// Whether the generated bindings should contain documentation comments
-    /// (docstrings) or not. This is set to true by default.
-    ///
-    /// Note that clang by default excludes comments from system headers, pass
-    /// `-fretain-comments-from-system-headers` as
-    /// [`clang_arg`][Builder::clang_arg] to include them. It can also be told
-    /// to process all comments (not just documentation ones) using the
-    /// `-fparse-all-comments` flag. See [slides on clang comment parsing](
-    /// https://llvm.org/devmtg/2012-11/Gribenko_CommentParsing.pdf) for
-    /// background and examples.
-    pub fn generate_comments(mut self, doit: bool) -> Self {
-        self.options.generate_comments = doit;
-        self
-    }
-
-    /// Whether to allowlist recursively or not. Defaults to true.
-    ///
-    /// Given that we have explicitly allowlisted the "initiate_dance_party"
-    /// function in this C header:
-    ///
-    /// ```c
-    /// typedef struct MoonBoots {
-    ///     int bouncy_level;
-    /// } MoonBoots;
-    ///
-    /// void initiate_dance_party(MoonBoots* boots);
-    /// ```
-    ///
-    /// We would normally generate bindings to both the `initiate_dance_party`
-    /// function and the `MoonBoots` struct that it transitively references. By
-    /// configuring with `allowlist_recursively(false)`, `bindgen` will not emit
-    /// bindings for anything except the explicitly allowlisted items, and there
-    /// would be no emitted struct definition for `MoonBoots`. However, the
-    /// `initiate_dance_party` function would still reference `MoonBoots`!
-    ///
-    /// **Disabling this feature will almost certainly cause `bindgen` to emit
-    /// bindings that will not compile!** If you disable this feature, then it
-    /// is *your* responsibility to provide definitions for every type that is
-    /// referenced from an explicitly allowlisted item. One way to provide the
-    /// definitions is by using the [`Builder::raw_line`](#method.raw_line)
-    /// method, another would be to define them in Rust and then `include!(...)`
-    /// the bindings immediately afterwards.
-    pub fn allowlist_recursively(mut self, doit: bool) -> Self {
-        self.options.allowlist_recursively = doit;
-        self
-    }
-
-    /// Deprecated alias for allowlist_recursively.
-    #[deprecated(note = "Use allowlist_recursively instead")]
-    pub fn whitelist_recursively(self, doit: bool) -> Self {
-        self.allowlist_recursively(doit)
-    }
-
-    /// Generate `#[macro_use] extern crate objc;` instead of `use objc;`
-    /// in the prologue of the files generated from objective-c files
-    pub fn objc_extern_crate(mut self, doit: bool) -> Self {
-        self.options.objc_extern_crate = doit;
-        self
-    }
-
-    /// Generate proper block signatures instead of void pointers.
-    pub fn generate_block(mut self, doit: bool) -> Self {
-        self.options.generate_block = doit;
-        self
-    }
-
-    /// Generate `#[macro_use] extern crate block;` instead of `use block;`
-    /// in the prologue of the files generated from apple block files
-    pub fn block_extern_crate(mut self, doit: bool) -> Self {
-        self.options.block_extern_crate = doit;
-        self
-    }
-
-    /// Whether to use the clang-provided name mangling. This is true by default
-    /// and probably needed for C++ features.
-    ///
-    /// However, some old libclang versions seem to return incorrect results in
-    /// some cases for non-mangled functions, see [1], so we allow disabling it.
-    ///
-    /// [1]: https://github.com/rust-lang/rust-bindgen/issues/528
-    pub fn trust_clang_mangling(mut self, doit: bool) -> Self {
-        self.options.enable_mangling = doit;
-        self
-    }
-
-    /// Hide the given type from the generated bindings. Regular expressions are
-    /// supported.
-    #[deprecated(note = "Use blocklist_type instead")]
-    pub fn hide_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.blocklist_type(arg)
-    }
-
-    /// Hide the given type from the generated bindings. Regular expressions are
-    /// supported.
-    #[deprecated(note = "Use blocklist_type instead")]
-    pub fn blacklist_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.blocklist_type(arg)
-    }
-
-    /// Hide the given type from the generated bindings. Regular expressions are
-    /// supported.
-    ///
-    /// To blocklist types prefixed with "mylib" use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn blocklist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blocklisted_types.insert(arg);
-        self
-    }
-
-    /// Hide the given function from the generated bindings. Regular expressions
-    /// are supported.
-    #[deprecated(note = "Use blocklist_function instead")]
-    pub fn blacklist_function<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.blocklist_function(arg)
-    }
-
-    /// Hide the given function from the generated bindings. Regular expressions
-    /// are supported.
-    ///
-    /// To blocklist functions prefixed with "mylib" use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn blocklist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blocklisted_functions.insert(arg);
-        self
-    }
-
-    /// Hide the given item from the generated bindings, regardless of
-    /// whether it's a type, function, module, etc. Regular
-    /// expressions are supported.
-    #[deprecated(note = "Use blocklist_item instead")]
-    pub fn blacklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blocklisted_items.insert(arg);
-        self
-    }
-
-    /// Hide the given item from the generated bindings, regardless of
-    /// whether it's a type, function, module, etc. Regular
-    /// expressions are supported.
-    ///
-    /// To blocklist items prefixed with "mylib" use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn blocklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blocklisted_items.insert(arg);
-        self
-    }
-
-    /// Hide any contents of the given file from the generated bindings,
-    /// regardless of whether it's a type, function, module etc.
-    pub fn blocklist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blocklisted_files.insert(arg);
-        self
-    }
-
-    /// Treat the given type as opaque in the generated bindings. Regular
-    /// expressions are supported.
-    ///
-    /// To change types prefixed with "mylib" into opaque, use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn opaque_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.opaque_types.insert(arg);
-        self
-    }
-
-    /// Allowlist the given type so that it (and all types that it transitively
-    /// refers to) appears in the generated bindings. Regular expressions are
-    /// supported.
-    #[deprecated(note = "use allowlist_type instead")]
-    pub fn whitelisted_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_type(arg)
-    }
-
-    /// Allowlist the given type so that it (and all types that it transitively
-    /// refers to) appears in the generated bindings. Regular expressions are
-    /// supported.
-    #[deprecated(note = "use allowlist_type instead")]
-    pub fn whitelist_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_type(arg)
-    }
-
-    /// Allowlist the given type so that it (and all types that it transitively
-    /// refers to) appears in the generated bindings. Regular expressions are
-    /// supported.
-    ///
-    /// To allowlist types prefixed with "mylib" use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn allowlist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.allowlisted_types.insert(arg);
-        self
-    }
-
-    /// Allowlist the given function so that it (and all types that it
-    /// transitively refers to) appears in the generated bindings. Regular
-    /// expressions are supported.
-    ///
-    /// To allowlist functions prefixed with "mylib" use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn allowlist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.allowlisted_functions.insert(arg);
-        self
-    }
-
-    /// Allowlist the given function.
-    ///
-    /// Deprecated: use allowlist_function instead.
-    #[deprecated(note = "use allowlist_function instead")]
-    pub fn whitelist_function<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_function(arg)
-    }
-
-    /// Allowlist the given function.
-    ///
-    /// Deprecated: use allowlist_function instead.
-    #[deprecated(note = "use allowlist_function instead")]
-    pub fn whitelisted_function<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_function(arg)
-    }
-
-    /// Allowlist the given variable so that it (and all types that it
-    /// transitively refers to) appears in the generated bindings. Regular
-    /// expressions are supported.
-    ///
-    /// To allowlist variables prefixed with "mylib" use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn allowlist_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.allowlisted_vars.insert(arg);
-        self
-    }
-
-    /// Allowlist the given file so that its contents appear in the generated bindings.
-    pub fn allowlist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.allowlisted_files.insert(arg);
-        self
-    }
-
-    /// Deprecated: use allowlist_var instead.
-    #[deprecated(note = "use allowlist_var instead")]
-    pub fn whitelist_var<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_var(arg)
-    }
-
-    /// Allowlist the given variable.
-    ///
-    /// Deprecated: use allowlist_var instead.
-    #[deprecated(note = "use allowlist_var instead")]
-    pub fn whitelisted_var<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_var(arg)
-    }
-
-    /// Set the default style of code to generate for enums
-    pub fn default_enum_style(
-        mut self,
-        arg: codegen::EnumVariation,
-    ) -> Builder {
-        self.options.default_enum_style = arg;
-        self
-    }
-
-    /// Mark the given enum (or set of enums, if using a pattern) as being
-    /// bitfield-like. Regular expressions are supported.
-    ///
-    /// This makes bindgen generate a type that isn't a rust `enum`. Regular
-    /// expressions are supported.
-    ///
-    /// This is similar to the newtype enum style, but with the bitwise
-    /// operators implemented.
-    pub fn bitfield_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.bitfield_enums.insert(arg);
-        self
-    }
-
-    /// Mark the given enum (or set of enums, if using a pattern) as a newtype.
-    /// Regular expressions are supported.
-    ///
-    /// This makes bindgen generate a type that isn't a Rust `enum`. Regular
-    /// expressions are supported.
-    pub fn newtype_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.newtype_enums.insert(arg);
-        self
-    }
-
-    /// Mark the given enum (or set of enums, if using a pattern) as a newtype
-    /// whose variants are exposed as global constants.
-    ///
-    /// Regular expressions are supported.
-    ///
-    /// This makes bindgen generate a type that isn't a Rust `enum`. Regular
-    /// expressions are supported.
-    pub fn newtype_global_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.newtype_global_enums.insert(arg);
-        self
-    }
-
-    /// Mark the given enum (or set of enums, if using a pattern) as a Rust
-    /// enum.
-    ///
-    /// This makes bindgen generate enums instead of constants. Regular
-    /// expressions are supported.
-    ///
-    /// **Use this with caution**, creating this in unsafe code
-    /// (including FFI) with an invalid value will invoke undefined behaviour.
-    /// You may want to use the newtype enum style instead.
-    pub fn rustified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.rustified_enums.insert(arg);
-        self
-    }
-
-    /// Mark the given enum (or set of enums, if using a pattern) as a Rust
-    /// enum with the `#[non_exhaustive]` attribute.
-    ///
-    /// This makes bindgen generate enums instead of constants. Regular
-    /// expressions are supported.
-    ///
-    /// **Use this with caution**, creating this in unsafe code
-    /// (including FFI) with an invalid value will invoke undefined behaviour.
-    /// You may want to use the newtype enum style instead.
-    pub fn rustified_non_exhaustive_enum<T: AsRef<str>>(
-        mut self,
-        arg: T,
-    ) -> Builder {
-        self.options.rustified_non_exhaustive_enums.insert(arg);
-        self
-    }
-
-    /// Mark the given enum (or set of enums, if using a pattern) as a set of
-    /// constants that are not to be put into a module.
-    pub fn constified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.constified_enums.insert(arg);
-        self
-    }
-
-    /// Mark the given enum (or set of enums, if using a pattern) as a set of
-    /// constants that should be put into a module.
-    ///
-    /// This makes bindgen generate modules containing constants instead of
-    /// just constants. Regular expressions are supported.
-    pub fn constified_enum_module<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.constified_enum_modules.insert(arg);
-        self
-    }
-
-    /// Set the default type for macro constants
-    pub fn default_macro_constant_type(
-        mut self,
-        arg: codegen::MacroTypeVariation,
-    ) -> Builder {
-        self.options.default_macro_constant_type = arg;
-        self
-    }
-
-    /// Set the default style of code to generate for typedefs
-    pub fn default_alias_style(
-        mut self,
-        arg: codegen::AliasVariation,
-    ) -> Builder {
-        self.options.default_alias_style = arg;
-        self
-    }
-
-    /// Mark the given typedef alias (or set of aliases, if using a pattern) to
-    /// use regular Rust type aliasing.
-    ///
-    /// This is the default behavior and should be used if `default_alias_style`
-    /// was set to NewType or NewTypeDeref and you want to override it for a
-    /// set of typedefs.
-    pub fn type_alias<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.type_alias.insert(arg);
-        self
-    }
-
-    /// Mark the given typedef alias (or set of aliases, if using a pattern) to
-    /// be generated as a new type by having the aliased type be wrapped in a
-    /// #[repr(transparent)] struct.
-    ///
-    /// Used to enforce stricter type checking.
-    pub fn new_type_alias<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.new_type_alias.insert(arg);
-        self
-    }
-
-    /// Mark the given typedef alias (or set of aliases, if using a pattern) to
-    /// be generated as a new type by having the aliased type be wrapped in a
-    /// #[repr(transparent)] struct and also have an automatically generated
-    /// impl's of `Deref` and `DerefMut` to their aliased type.
-    pub fn new_type_alias_deref<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.new_type_alias_deref.insert(arg);
-        self
-    }
-
-    /// Set the default style of code to generate for unions with a non-Copy member.
-    pub fn default_non_copy_union_style(
-        mut self,
-        arg: codegen::NonCopyUnionStyle,
-    ) -> Self {
-        self.options.default_non_copy_union_style = arg;
-        self
-    }
-
-    /// Mark the given union (or set of union, if using a pattern) to use
-    /// a bindgen-generated wrapper for its members if at least one is non-Copy.
-    pub fn bindgen_wrapper_union<T: AsRef<str>>(mut self, arg: T) -> Self {
-        self.options.bindgen_wrapper_union.insert(arg);
-        self
-    }
-
-    /// Mark the given union (or set of union, if using a pattern) to use
-    /// [`::core::mem::ManuallyDrop`] for its members if at least one is non-Copy.
-    ///
-    /// Note: `ManuallyDrop` was stabilized in Rust 1.20.0, do not use it if your
-    /// MSRV is lower.
-    pub fn manually_drop_union<T: AsRef<str>>(mut self, arg: T) -> Self {
-        self.options.manually_drop_union.insert(arg);
-        self
-    }
-
-    /// Add a string to prepend to the generated bindings. The string is passed
-    /// through without any modification.
-    pub fn raw_line<T: Into<String>>(mut self, arg: T) -> Self {
-        self.options.raw_lines.push(arg.into());
-        self
-    }
-
-    /// Add a given line to the beginning of module `mod`.
-    pub fn module_raw_line<T, U>(mut self, mod_: T, line: U) -> Self
-    where
-        T: Into<String>,
-        U: Into<String>,
-    {
-        self.options
-            .module_lines
-            .entry(mod_.into())
-            .or_insert_with(Vec::new)
-            .push(line.into());
-        self
-    }
-
-    /// Add a given set of lines to the beginning of module `mod`.
-    pub fn module_raw_lines<T, I>(mut self, mod_: T, lines: I) -> Self
-    where
-        T: Into<String>,
-        I: IntoIterator,
-        I::Item: Into<String>,
-    {
-        self.options
-            .module_lines
-            .entry(mod_.into())
-            .or_insert_with(Vec::new)
-            .extend(lines.into_iter().map(Into::into));
-        self
-    }
-
-    /// Add an argument to be passed straight through to clang.
-    pub fn clang_arg<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.clang_args.push(arg.into());
-        self
-    }
-
-    /// Add arguments to be passed straight through to clang.
-    pub fn clang_args<I>(mut self, iter: I) -> Builder
-    where
-        I: IntoIterator,
-        I::Item: AsRef<str>,
-    {
-        for arg in iter {
-            self = self.clang_arg(arg.as_ref())
-        }
-        self
-    }
-
-    /// Emit bindings for builtin definitions (for example `__builtin_va_list`)
-    /// in the generated Rust.
-    pub fn emit_builtins(mut self) -> Builder {
-        self.options.builtins = true;
-        self
-    }
-
-    /// Avoid converting floats to `f32`/`f64` by default.
-    pub fn no_convert_floats(mut self) -> Self {
-        self.options.convert_floats = false;
-        self
-    }
-
-    /// Set whether layout tests should be generated.
-    pub fn layout_tests(mut self, doit: bool) -> Self {
-        self.options.layout_tests = doit;
-        self
-    }
-
-    /// Set whether `Debug` should be implemented, if it can not be derived automatically.
-    pub fn impl_debug(mut self, doit: bool) -> Self {
-        self.options.impl_debug = doit;
-        self
-    }
-
-    /// Set whether `PartialEq` should be implemented, if it can not be derived automatically.
-    pub fn impl_partialeq(mut self, doit: bool) -> Self {
-        self.options.impl_partialeq = doit;
-        self
-    }
-
-    /// Set whether `Copy` should be derived by default.
-    pub fn derive_copy(mut self, doit: bool) -> Self {
-        self.options.derive_copy = doit;
-        self
-    }
-
-    /// Set whether `Debug` should be derived by default.
-    pub fn derive_debug(mut self, doit: bool) -> Self {
-        self.options.derive_debug = doit;
-        self
-    }
-
-    /// Set whether `Default` should be derived by default.
-    pub fn derive_default(mut self, doit: bool) -> Self {
-        self.options.derive_default = doit;
-        self
-    }
-
-    /// Set whether `Hash` should be derived by default.
-    pub fn derive_hash(mut self, doit: bool) -> Self {
-        self.options.derive_hash = doit;
-        self
-    }
-
-    /// Set whether `PartialOrd` should be derived by default.
-    /// If we don't compute partialord, we also cannot compute
-    /// ord. Set the derive_ord to `false` when doit is `false`.
-    pub fn derive_partialord(mut self, doit: bool) -> Self {
-        self.options.derive_partialord = doit;
-        if !doit {
-            self.options.derive_ord = false;
-        }
-        self
-    }
-
-    /// Set whether `Ord` should be derived by default.
-    /// We can't compute `Ord` without computing `PartialOrd`,
-    /// so we set the same option to derive_partialord.
-    pub fn derive_ord(mut self, doit: bool) -> Self {
-        self.options.derive_ord = doit;
-        self.options.derive_partialord = doit;
-        self
-    }
-
-    /// Set whether `PartialEq` should be derived by default.
-    ///
-    /// If we don't derive `PartialEq`, we also cannot derive `Eq`, so deriving
-    /// `Eq` is also disabled when `doit` is `false`.
-    pub fn derive_partialeq(mut self, doit: bool) -> Self {
-        self.options.derive_partialeq = doit;
-        if !doit {
-            self.options.derive_eq = false;
-        }
-        self
-    }
-
-    /// Set whether `Eq` should be derived by default.
-    ///
-    /// We can't derive `Eq` without also deriving `PartialEq`, so we also
-    /// enable deriving `PartialEq` when `doit` is `true`.
-    pub fn derive_eq(mut self, doit: bool) -> Self {
-        self.options.derive_eq = doit;
-        if doit {
-            self.options.derive_partialeq = doit;
-        }
-        self
-    }
-
-    /// Set whether or not to time bindgen phases, and print information to
-    /// stderr.
-    pub fn time_phases(mut self, doit: bool) -> Self {
-        self.options.time_phases = doit;
-        self
-    }
-
-    /// Emit Clang AST.
-    pub fn emit_clang_ast(mut self) -> Builder {
-        self.options.emit_ast = true;
-        self
-    }
-
-    /// Emit IR.
-    pub fn emit_ir(mut self) -> Builder {
-        self.options.emit_ir = true;
-        self
-    }
-
-    /// Enable C++ namespaces.
-    pub fn enable_cxx_namespaces(mut self) -> Builder {
-        self.options.enable_cxx_namespaces = true;
-        self
-    }
-
-    /// Enable detecting must_use attributes on C functions.
-    ///
-    /// This is quite slow in some cases (see #1465), so it's disabled by
-    /// default.
-    ///
-    /// Note that for this to do something meaningful for now at least, the rust
-    /// target version has to have support for `#[must_use]`.
-    pub fn enable_function_attribute_detection(mut self) -> Self {
-        self.options.enable_function_attribute_detection = true;
-        self
-    }
-
-    /// Disable name auto-namespacing.
-    ///
-    /// By default, bindgen mangles names like `foo::bar::Baz` to look like
-    /// `foo_bar_Baz` instead of just `Baz`.
-    ///
-    /// This method disables that behavior.
-    ///
-    /// Note that this intentionally does not change the names used for
-    /// allowlisting and blocklisting, which should still be mangled with the
-    /// namespaces.
-    ///
-    /// Note, also, that this option may cause bindgen to generate duplicate
-    /// names.
-    pub fn disable_name_namespacing(mut self) -> Builder {
-        self.options.disable_name_namespacing = true;
-        self
-    }
-
-    /// Disable nested struct naming.
-    ///
-    /// The following structs have different names for C and C++. In case of C
-    /// they are visible as `foo` and `bar`. In case of C++ they are visible as
-    /// `foo` and `foo::bar`.
-    ///
-    /// ```c
-    /// struct foo {
-    ///     struct bar {
-    ///     } b;
-    /// };
-    /// ```
-    ///
-    /// Bindgen wants to avoid duplicate names by default so it follows C++ naming
-    /// and it generates `foo`/`foo_bar` instead of just `foo`/`bar`.
-    ///
-    /// This method disables this behavior and it is indented to be used only
-    /// for headers that were written for C.
-    pub fn disable_nested_struct_naming(mut self) -> Builder {
-        self.options.disable_nested_struct_naming = true;
-        self
-    }
-
-    /// Treat inline namespaces conservatively.
-    ///
-    /// This is tricky, because in C++ is technically legal to override an item
-    /// defined in an inline namespace:
-    ///
-    /// ```cpp
-    /// inline namespace foo {
-    ///     using Bar = int;
-    /// }
-    /// using Bar = long;
-    /// ```
-    ///
-    /// Even though referencing `Bar` is a compiler error.
-    ///
-    /// We want to support this (arguably esoteric) use case, but we don't want
-    /// to make the rest of bindgen users pay an usability penalty for that.
-    ///
-    /// To support this, we need to keep all the inline namespaces around, but
-    /// then bindgen usage is a bit more difficult, because you cannot
-    /// reference, e.g., `std::string` (you'd need to use the proper inline
-    /// namespace).
-    ///
-    /// We could complicate a lot of the logic to detect name collisions, and if
-    /// not detected generate a `pub use inline_ns::*` or something like that.
-    ///
-    /// That's probably something we can do if we see this option is needed in a
-    /// lot of cases, to improve it's usability, but my guess is that this is
-    /// not going to be too useful.
-    pub fn conservative_inline_namespaces(mut self) -> Builder {
-        self.options.conservative_inline_namespaces = true;
-        self
-    }
-
-    /// Whether inline functions should be generated or not.
-    ///
-    /// Note that they will usually not work. However you can use
-    /// `-fkeep-inline-functions` or `-fno-inline-functions` if you are
-    /// responsible of compiling the library to make them callable.
-    pub fn generate_inline_functions(mut self, doit: bool) -> Self {
-        self.options.generate_inline_functions = doit;
-        self
-    }
-
-    /// Ignore functions.
-    pub fn ignore_functions(mut self) -> Builder {
-        self.options.codegen_config.remove(CodegenConfig::FUNCTIONS);
-        self
-    }
-
-    /// Ignore methods.
-    pub fn ignore_methods(mut self) -> Builder {
-        self.options.codegen_config.remove(CodegenConfig::METHODS);
-        self
-    }
-
-    /// Avoid generating any unstable Rust, such as Rust unions, in the generated bindings.
-    #[deprecated(note = "please use `rust_target` instead")]
-    pub fn unstable_rust(self, doit: bool) -> Self {
-        let rust_target = if doit {
-            RustTarget::Nightly
-        } else {
-            LATEST_STABLE_RUST
-        };
-        self.rust_target(rust_target)
-    }
-
-    /// Use core instead of libstd in the generated bindings.
-    pub fn use_core(mut self) -> Builder {
-        self.options.use_core = true;
-        self
-    }
-
-    /// Use the given prefix for the raw types instead of `::std::os::raw`.
-    pub fn ctypes_prefix<T: Into<String>>(mut self, prefix: T) -> Builder {
-        self.options.ctypes_prefix = Some(prefix.into());
-        self
-    }
-
-    /// Use the given prefix for the anon fields.
-    pub fn anon_fields_prefix<T: Into<String>>(mut self, prefix: T) -> Builder {
-        self.options.anon_fields_prefix = prefix.into();
-        self
-    }
-
-    /// Allows configuring types in different situations, see the
-    /// [`ParseCallbacks`](./callbacks/trait.ParseCallbacks.html) documentation.
-    pub fn parse_callbacks(
-        mut self,
-        cb: Box<dyn callbacks::ParseCallbacks>,
-    ) -> Self {
-        self.options.parse_callbacks = Some(cb);
-        self
-    }
-
-    /// Choose what to generate using a
-    /// [`CodegenConfig`](./struct.CodegenConfig.html).
-    pub fn with_codegen_config(mut self, config: CodegenConfig) -> Self {
-        self.options.codegen_config = config;
-        self
-    }
-
-    /// Whether to detect include paths using clang_sys.
-    pub fn detect_include_paths(mut self, doit: bool) -> Self {
-        self.options.detect_include_paths = doit;
-        self
-    }
-
-    /// Whether to try to fit macro constants to types smaller than u32/i32
-    pub fn fit_macro_constants(mut self, doit: bool) -> Self {
-        self.options.fit_macro_constants = doit;
-        self
-    }
-
-    /// Prepend the enum name to constant or newtype variants.
-    pub fn prepend_enum_name(mut self, doit: bool) -> Self {
-        self.options.prepend_enum_name = doit;
-        self
-    }
-
-    /// Set whether `size_t` should be translated to `usize` automatically.
-    pub fn size_t_is_usize(mut self, is: bool) -> Self {
-        self.options.size_t_is_usize = is;
-        self
-    }
-
-    /// Set whether rustfmt should format the generated bindings.
-    pub fn rustfmt_bindings(mut self, doit: bool) -> Self {
-        self.options.rustfmt_bindings = doit;
-        self
-    }
-
-    /// Set whether we should record matched items in our regex sets.
-    pub fn record_matches(mut self, doit: bool) -> Self {
-        self.options.record_matches = doit;
-        self
-    }
-
-    /// Set the absolute path to the rustfmt configuration file, if None, the standard rustfmt
-    /// options are used.
-    pub fn rustfmt_configuration_file(mut self, path: Option<PathBuf>) -> Self {
-        self = self.rustfmt_bindings(true);
-        self.options.rustfmt_configuration_file = path;
-        self
-    }
-
-    /// Sets an explicit path to rustfmt, to be used when rustfmt is enabled.
-    pub fn with_rustfmt<P: Into<PathBuf>>(mut self, path: P) -> Self {
-        self.options.rustfmt_path = Some(path.into());
-        self
-    }
-
-    /// If true, always emit explicit padding fields.
-    ///
-    /// If a struct needs to be serialized in its native format (padding bytes
-    /// and all), for example writing it to a file or sending it on the network,
-    /// then this should be enabled, as anything reading the padding bytes of
-    /// a struct may lead to Undefined Behavior.
-    pub fn explicit_padding(mut self, doit: bool) -> Self {
-        self.options.force_explicit_padding = doit;
-        self
-    }
-
-    /// If true, enables experimental support to generate vtable functions.
-    ///
-    /// Should mostly work, though some edge cases are likely to be broken.
-    pub fn vtable_generation(mut self, doit: bool) -> Self {
-        self.options.vtable_generation = doit;
-        self
-    }
-
-    /// If true, enables the sorting of the output in a predefined manner.
-    ///
-    /// TODO: Perhaps move the sorting order out into a config
-    pub fn sort_semantically(mut self, doit: bool) -> Self {
-        self.options.sort_semantically = doit;
-        self
-    }
-
-    /// If true, merges extern blocks.
-    pub fn merge_extern_blocks(mut self, doit: bool) -> Self {
-        self.options.merge_extern_blocks = doit;
-        self
-    }
-
-    /// Generate the Rust bindings using the options built up thus far.
-    pub fn generate(mut self) -> Result<Bindings, BindgenError> {
-        // Add any extra arguments from the environment to the clang command line.
-        self.options.clang_args.extend(get_extra_clang_args());
-
-        // Transform input headers to arguments on the clang command line.
-        self.options.input_header = self.input_headers.pop();
-        self.options.extra_input_headers = self.input_headers;
-        self.options.clang_args.extend(
-            self.options.extra_input_headers.iter().flat_map(|header| {
-                iter::once("-include".into())
-                    .chain(iter::once(header.to_string()))
-            }),
-        );
-
-        self.options.input_unsaved_files.extend(
-            self.input_header_contents
-                .drain(..)
-                .map(|(name, contents)| {
-                    clang::UnsavedFile::new(&name, &contents)
-                }),
-        );
-
-        Bindings::generate(self.options)
-    }
-
-    /// Preprocess and dump the input header files to disk.
-    ///
-    /// This is useful when debugging bindgen, using C-Reduce, or when filing
-    /// issues. The resulting file will be named something like `__bindgen.i` or
-    /// `__bindgen.ii`
-    pub fn dump_preprocessed_input(&self) -> io::Result<()> {
-        let clang =
-            clang_sys::support::Clang::find(None, &[]).ok_or_else(|| {
-                io::Error::new(
-                    io::ErrorKind::Other,
-                    "Cannot find clang executable",
-                )
-            })?;
-
-        // The contents of a wrapper file that includes all the input header
-        // files.
-        let mut wrapper_contents = String::new();
-
-        // Whether we are working with C or C++ inputs.
-        let mut is_cpp = args_are_cpp(&self.options.clang_args);
-
-        // For each input header, add `#include "$header"`.
-        for header in &self.input_headers {
-            is_cpp |= file_is_cpp(header);
-
-            wrapper_contents.push_str("#include \"");
-            wrapper_contents.push_str(header);
-            wrapper_contents.push_str("\"\n");
-        }
-
-        // For each input header content, add a prefix line of `#line 0 "$name"`
-        // followed by the contents.
-        for &(ref name, ref contents) in &self.input_header_contents {
-            is_cpp |= file_is_cpp(name);
-
-            wrapper_contents.push_str("#line 0 \"");
-            wrapper_contents.push_str(name);
-            wrapper_contents.push_str("\"\n");
-            wrapper_contents.push_str(contents);
-        }
-
-        let wrapper_path = PathBuf::from(if is_cpp {
-            "__bindgen.cpp"
-        } else {
-            "__bindgen.c"
-        });
-
-        {
-            let mut wrapper_file = File::create(&wrapper_path)?;
-            wrapper_file.write_all(wrapper_contents.as_bytes())?;
-        }
-
-        let mut cmd = Command::new(&clang.path);
-        cmd.arg("-save-temps")
-            .arg("-E")
-            .arg("-C")
-            .arg("-c")
-            .arg(&wrapper_path)
-            .stdout(Stdio::piped());
-
-        for a in &self.options.clang_args {
-            cmd.arg(a);
-        }
-
-        for a in get_extra_clang_args() {
-            cmd.arg(a);
-        }
-
-        let mut child = cmd.spawn()?;
-
-        let mut preprocessed = child.stdout.take().unwrap();
-        let mut file = File::create(if is_cpp {
-            "__bindgen.ii"
-        } else {
-            "__bindgen.i"
-        })?;
-        io::copy(&mut preprocessed, &mut file)?;
-
-        if child.wait()?.success() {
-            Ok(())
-        } else {
-            Err(io::Error::new(
-                io::ErrorKind::Other,
-                "clang exited with non-zero status",
-            ))
-        }
-    }
-
-    /// Don't derive `PartialEq` for a given type. Regular
-    /// expressions are supported.
-    pub fn no_partialeq<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.no_partialeq_types.insert(arg.into());
-        self
-    }
-
-    /// Don't derive `Copy` for a given type. Regular
-    /// expressions are supported.
-    pub fn no_copy<T: Into<String>>(mut self, arg: T) -> Self {
-        self.options.no_copy_types.insert(arg.into());
-        self
-    }
-
-    /// Don't derive `Debug` for a given type. Regular
-    /// expressions are supported.
-    pub fn no_debug<T: Into<String>>(mut self, arg: T) -> Self {
-        self.options.no_debug_types.insert(arg.into());
-        self
-    }
-
-    /// Don't derive/impl `Default` for a given type. Regular
-    /// expressions are supported.
-    pub fn no_default<T: Into<String>>(mut self, arg: T) -> Self {
-        self.options.no_default_types.insert(arg.into());
-        self
-    }
-
-    /// Don't derive `Hash` for a given type. Regular
-    /// expressions are supported.
-    pub fn no_hash<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.no_hash_types.insert(arg.into());
-        self
-    }
-
-    /// Add `#[must_use]` for the given type. Regular
-    /// expressions are supported.
-    pub fn must_use_type<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.must_use_types.insert(arg.into());
-        self
-    }
-
-    /// Set whether `arr[size]` should be treated as `*mut T` or `*mut [T; size]` (same for mut)
-    pub fn array_pointers_in_arguments(mut self, doit: bool) -> Self {
-        self.options.array_pointers_in_arguments = doit;
-        self
-    }
-
-    /// Set the wasm import module name
-    pub fn wasm_import_module_name<T: Into<String>>(
-        mut self,
-        import_name: T,
-    ) -> Self {
-        self.options.wasm_import_module_name = Some(import_name.into());
-        self
-    }
-
-    /// Specify the dynamic library name if we are generating bindings for a shared library.
-    pub fn dynamic_library_name<T: Into<String>>(
-        mut self,
-        dynamic_library_name: T,
-    ) -> Self {
-        self.options.dynamic_library_name = Some(dynamic_library_name.into());
-        self
-    }
-
-    /// Require successful linkage for all routines in a shared library.
-    /// This allows us to optimize function calls by being able to safely assume function pointers
-    /// are valid.
-    pub fn dynamic_link_require_all(mut self, req: bool) -> Self {
-        self.options.dynamic_link_require_all = req;
-        self
-    }
-
-    /// Generate bindings as `pub` only if the bound item is publically accessible by C++.
-    pub fn respect_cxx_access_specs(mut self, doit: bool) -> Self {
-        self.options.respect_cxx_access_specs = doit;
-        self
-    }
-
-    /// Always translate enum integer types to native Rust integer types.
-    ///
-    /// This will result in enums having types such as `u32` and `i16` instead
-    /// of `c_uint` and `c_short`. Types for Rustified enums are always
-    /// translated.
-    pub fn translate_enum_integer_types(mut self, doit: bool) -> Self {
-        self.options.translate_enum_integer_types = doit;
-        self
-    }
-
-    /// Generate types with C style naming.
-    ///
-    /// This will add prefixes to the generated type names. For example instead of a struct `A` we
-    /// will generate struct `struct_A`. Currently applies to structs, unions, and enums.
-    pub fn c_naming(mut self, doit: bool) -> Self {
-        self.options.c_naming = doit;
-        self
-    }
-}
-
 /// Configuration options for generated bindings.
 #[derive(Debug)]
-struct BindgenOptions {
+struct BindgenState {
     /// The set of types that have been blocklisted and should not appear
     /// anywhere in the generated code.
     blocklisted_types: RegexSet,
@@ -1797,12 +217,6 @@ struct BindgenOptions {
     /// generated code.
     opaque_types: RegexSet,
 
-    /// The explicit rustfmt path.
-    rustfmt_path: Option<PathBuf>,
-
-    /// The path to which we should write a Makefile-syntax depfile (if any).
-    depfile: Option<deps::DepfileSpec>,
-
     /// The set of types that we should have bindings for in the generated
     /// code.
     ///
@@ -1819,9 +233,6 @@ struct BindgenOptions {
 
     /// The set of files whose contents should be allowlisted.
     allowlisted_files: RegexSet,
-
-    /// The default style of code to generate for enums
-    default_enum_style: codegen::EnumVariation,
 
     /// The enum patterns to mark an enum as a bitfield
     /// (newtype with bitwise operations).
@@ -1845,12 +256,6 @@ struct BindgenOptions {
     /// The enum patterns to mark an enum as a set of constants.
     constified_enums: RegexSet,
 
-    /// The default type for C macro constants.
-    default_macro_constant_type: codegen::MacroTypeVariation,
-
-    /// The default style of code to generate for typedefs.
-    default_alias_style: codegen::AliasVariation,
-
     /// Typedef patterns that will use regular type aliasing.
     type_alias: RegexSet,
 
@@ -1861,10 +266,6 @@ struct BindgenOptions {
     /// Deref and Deref to their aliased type.
     new_type_alias_deref: RegexSet,
 
-    /// The default style of code to generate for union containing non-Copy
-    /// members.
-    default_non_copy_union_style: codegen::NonCopyUnionStyle,
-
     /// The union patterns to mark an non-Copy union as using the bindgen
     /// generated wrapper.
     bindgen_wrapper_union: RegexSet,
@@ -1873,101 +274,8 @@ struct BindgenOptions {
     /// `::core::mem::ManuallyDrop` wrapper.
     manually_drop_union: RegexSet,
 
-    /// Whether we should generate builtins or not.
-    builtins: bool,
-
-    /// True if we should dump the Clang AST for debugging purposes.
-    emit_ast: bool,
-
-    /// True if we should dump our internal IR for debugging purposes.
-    emit_ir: bool,
-
-    /// Output graphviz dot file.
-    emit_ir_graphviz: Option<String>,
-
-    /// True if we should emulate C++ namespaces with Rust modules in the
-    /// generated bindings.
-    enable_cxx_namespaces: bool,
-
-    /// True if we should try to find unexposed attributes in functions, in
-    /// order to be able to generate #[must_use] attributes in Rust.
-    enable_function_attribute_detection: bool,
-
-    /// True if we should avoid mangling names with namespaces.
-    disable_name_namespacing: bool,
-
-    /// True if we should avoid generating nested struct names.
-    disable_nested_struct_naming: bool,
-
-    /// True if we should avoid embedding version identifiers into source code.
-    disable_header_comment: bool,
-
-    /// True if we should generate layout tests for generated structures.
-    layout_tests: bool,
-
-    /// True if we should implement the Debug trait for C/C++ structures and types
-    /// that do not support automatically deriving Debug.
-    impl_debug: bool,
-
-    /// True if we should implement the PartialEq trait for C/C++ structures and types
-    /// that do not support automatically deriving PartialEq.
-    impl_partialeq: bool,
-
-    /// True if we should derive Copy trait implementations for C/C++ structures
-    /// and types.
-    derive_copy: bool,
-
-    /// True if we should derive Debug trait implementations for C/C++ structures
-    /// and types.
-    derive_debug: bool,
-
-    /// True if we should derive Default trait implementations for C/C++ structures
-    /// and types.
-    derive_default: bool,
-
-    /// True if we should derive Hash trait implementations for C/C++ structures
-    /// and types.
-    derive_hash: bool,
-
-    /// True if we should derive PartialOrd trait implementations for C/C++ structures
-    /// and types.
-    derive_partialord: bool,
-
-    /// True if we should derive Ord trait implementations for C/C++ structures
-    /// and types.
-    derive_ord: bool,
-
-    /// True if we should derive PartialEq trait implementations for C/C++ structures
-    /// and types.
-    derive_partialeq: bool,
-
-    /// True if we should derive Eq trait implementations for C/C++ structures
-    /// and types.
-    derive_eq: bool,
-
-    /// True if we should avoid using libstd to use libcore instead.
-    use_core: bool,
-
-    /// An optional prefix for the "raw" types, like `c_int`, `c_void`...
-    ctypes_prefix: Option<String>,
-
-    /// The prefix for the anon fields.
-    anon_fields_prefix: String,
-
-    /// Whether to time the bindgen phases.
-    time_phases: bool,
-
-    /// Whether we should convert float types to f32/f64 types.
-    convert_floats: bool,
-
-    /// The set of raw lines to prepend to the top-level module of generated
-    /// Rust code.
-    raw_lines: Vec<String>,
-
-    /// The set of raw lines to prepend to each of the modules.
-    ///
-    /// This only makes sense if the `enable_cxx_namespaces` option is set.
-    module_lines: HashMap<String, Vec<String>>,
+    /// The set of types that we should not derive `PartialEq` for.
+    no_partialeq_types: RegexSet,
 
     /// The set of arguments to pass straight through to Clang.
     clang_args: Vec<String>,
@@ -1977,87 +285,6 @@ struct BindgenOptions {
 
     /// Any additional input header files.
     extra_input_headers: Vec<String>,
-
-    /// Unsaved files for input.
-    input_unsaved_files: Vec<clang::UnsavedFile>,
-
-    /// A user-provided visitor to allow customizing different kinds of
-    /// situations.
-    parse_callbacks: Option<Box<dyn callbacks::ParseCallbacks>>,
-
-    /// Which kind of items should we generate? By default, we'll generate all
-    /// of them.
-    codegen_config: CodegenConfig,
-
-    /// Whether to treat inline namespaces conservatively.
-    ///
-    /// See the builder method description for more details.
-    conservative_inline_namespaces: bool,
-
-    /// Whether to keep documentation comments in the generated output. See the
-    /// documentation for more details. Defaults to true.
-    generate_comments: bool,
-
-    /// Whether to generate inline functions. Defaults to false.
-    generate_inline_functions: bool,
-
-    /// Whether to allowlist types recursively. Defaults to true.
-    allowlist_recursively: bool,
-
-    /// Instead of emitting 'use objc;' to files generated from objective c files,
-    /// generate '#[macro_use] extern crate objc;'
-    objc_extern_crate: bool,
-
-    /// Instead of emitting 'use block;' to files generated from objective c files,
-    /// generate '#[macro_use] extern crate block;'
-    generate_block: bool,
-
-    /// Instead of emitting 'use block;' to files generated from objective c files,
-    /// generate '#[macro_use] extern crate block;'
-    block_extern_crate: bool,
-
-    /// Whether to use the clang-provided name mangling. This is true and
-    /// probably needed for C++ features.
-    ///
-    /// However, some old libclang versions seem to return incorrect results in
-    /// some cases for non-mangled functions, see [1], so we allow disabling it.
-    ///
-    /// [1]: https://github.com/rust-lang/rust-bindgen/issues/528
-    enable_mangling: bool,
-
-    /// Whether to detect include paths using clang_sys.
-    detect_include_paths: bool,
-
-    /// Whether to try to fit macro constants into types smaller than u32/i32
-    fit_macro_constants: bool,
-
-    /// Whether to prepend the enum name to constant or newtype variants.
-    prepend_enum_name: bool,
-
-    /// Version of the Rust compiler to target
-    rust_target: RustTarget,
-
-    /// Features to enable, derived from `rust_target`
-    rust_features: RustFeatures,
-
-    /// Whether we should record which items in the regex sets ever matched.
-    ///
-    /// This may be a bit slower, but will enable reporting of unused allowlist
-    /// items via the `error!` log.
-    record_matches: bool,
-
-    /// Whether `size_t` should be translated to `usize` automatically.
-    size_t_is_usize: bool,
-
-    /// Whether rustfmt should format the generated bindings.
-    rustfmt_bindings: bool,
-
-    /// The absolute path to the rustfmt configuration file, if None, the standard rustfmt
-    /// options are used.
-    rustfmt_configuration_file: Option<PathBuf>,
-
-    /// The set of types that we should not derive `PartialEq` for.
-    no_partialeq_types: RegexSet,
 
     /// The set of types that we should not derive `Copy` for.
     no_copy_types: RegexSet,
@@ -2074,207 +301,18 @@ struct BindgenOptions {
     /// The set of types that we should be annotated with `#[must_use]`.
     must_use_types: RegexSet,
 
-    /// Decide if C arrays should be regular pointers in rust or array pointers
-    array_pointers_in_arguments: bool,
+    /// Unsaved files for input.
+    input_unsaved_files: Vec<clang::UnsavedFile>,
 
-    /// Wasm import module name.
-    wasm_import_module_name: Option<String>,
-
-    /// The name of the dynamic library (if we are generating bindings for a shared library). If
-    /// this is None, no dynamic bindings are created.
-    dynamic_library_name: Option<String>,
-
-    /// Require successful linkage for all routines in a shared library.
-    /// This allows us to optimize function calls by being able to safely assume function pointers
-    /// are valid. No effect if `dynamic_library_name` is None.
-    dynamic_link_require_all: bool,
-
-    /// Only make generated bindings `pub` if the items would be publically accessible
-    /// by C++.
-    respect_cxx_access_specs: bool,
-
-    /// Always translate enum integer types to native Rust integer types.
-    translate_enum_integer_types: bool,
-
-    /// Generate types with C style naming.
-    c_naming: bool,
-
-    /// Always output explicit padding fields
-    force_explicit_padding: bool,
-
-    /// Emit vtable functions.
-    vtable_generation: bool,
-
-    /// Sort the code generation.
-    sort_semantically: bool,
-
-    /// Deduplicate `extern` blocks.
-    merge_extern_blocks: bool,
+    /// A user-provided visitor to allow customizing different kinds of
+    /// situations.
+    parse_callbacks: Option<Box<dyn callbacks::ParseCallbacks>>,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
 /// removing this), but since we don't share references across panic boundaries
 /// it's ok.
-impl ::std::panic::UnwindSafe for BindgenOptions {}
-
-impl BindgenOptions {
-    /// Whether any of the enabled options requires `syn`.
-    fn require_syn(&self) -> bool {
-        self.sort_semantically || self.merge_extern_blocks
-    }
-
-    fn build(&mut self) {
-        let mut regex_sets = [
-            &mut self.allowlisted_vars,
-            &mut self.allowlisted_types,
-            &mut self.allowlisted_functions,
-            &mut self.allowlisted_files,
-            &mut self.blocklisted_types,
-            &mut self.blocklisted_functions,
-            &mut self.blocklisted_items,
-            &mut self.blocklisted_files,
-            &mut self.opaque_types,
-            &mut self.bitfield_enums,
-            &mut self.constified_enums,
-            &mut self.constified_enum_modules,
-            &mut self.newtype_enums,
-            &mut self.newtype_global_enums,
-            &mut self.rustified_enums,
-            &mut self.rustified_non_exhaustive_enums,
-            &mut self.type_alias,
-            &mut self.new_type_alias,
-            &mut self.new_type_alias_deref,
-            &mut self.bindgen_wrapper_union,
-            &mut self.manually_drop_union,
-            &mut self.no_partialeq_types,
-            &mut self.no_copy_types,
-            &mut self.no_debug_types,
-            &mut self.no_default_types,
-            &mut self.no_hash_types,
-            &mut self.must_use_types,
-        ];
-        let record_matches = self.record_matches;
-        for regex_set in &mut regex_sets {
-            regex_set.build(record_matches);
-        }
-    }
-
-    /// Update rust target version
-    pub fn set_rust_target(&mut self, rust_target: RustTarget) {
-        self.rust_target = rust_target;
-
-        // Keep rust_features synced with rust_target
-        self.rust_features = rust_target.into();
-    }
-
-    /// Get features supported by target Rust version
-    pub fn rust_features(&self) -> RustFeatures {
-        self.rust_features
-    }
-}
-
-impl Default for BindgenOptions {
-    fn default() -> BindgenOptions {
-        let rust_target = RustTarget::default();
-
-        BindgenOptions {
-            rust_target,
-            rust_features: rust_target.into(),
-            blocklisted_types: Default::default(),
-            blocklisted_functions: Default::default(),
-            blocklisted_items: Default::default(),
-            blocklisted_files: Default::default(),
-            opaque_types: Default::default(),
-            rustfmt_path: Default::default(),
-            depfile: Default::default(),
-            allowlisted_types: Default::default(),
-            allowlisted_functions: Default::default(),
-            allowlisted_vars: Default::default(),
-            allowlisted_files: Default::default(),
-            default_enum_style: Default::default(),
-            bitfield_enums: Default::default(),
-            newtype_enums: Default::default(),
-            newtype_global_enums: Default::default(),
-            rustified_enums: Default::default(),
-            rustified_non_exhaustive_enums: Default::default(),
-            constified_enums: Default::default(),
-            constified_enum_modules: Default::default(),
-            default_macro_constant_type: Default::default(),
-            default_alias_style: Default::default(),
-            type_alias: Default::default(),
-            new_type_alias: Default::default(),
-            new_type_alias_deref: Default::default(),
-            default_non_copy_union_style: Default::default(),
-            bindgen_wrapper_union: Default::default(),
-            manually_drop_union: Default::default(),
-            builtins: false,
-            emit_ast: false,
-            emit_ir: false,
-            emit_ir_graphviz: None,
-            layout_tests: true,
-            impl_debug: false,
-            impl_partialeq: false,
-            derive_copy: true,
-            derive_debug: true,
-            derive_default: false,
-            derive_hash: false,
-            derive_partialord: false,
-            derive_ord: false,
-            derive_partialeq: false,
-            derive_eq: false,
-            enable_cxx_namespaces: false,
-            enable_function_attribute_detection: false,
-            disable_name_namespacing: false,
-            disable_nested_struct_naming: false,
-            disable_header_comment: false,
-            use_core: false,
-            ctypes_prefix: None,
-            anon_fields_prefix: DEFAULT_ANON_FIELDS_PREFIX.into(),
-            convert_floats: true,
-            raw_lines: vec![],
-            module_lines: HashMap::default(),
-            clang_args: vec![],
-            input_header: None,
-            extra_input_headers: vec![],
-            input_unsaved_files: vec![],
-            parse_callbacks: None,
-            codegen_config: CodegenConfig::all(),
-            conservative_inline_namespaces: false,
-            generate_comments: true,
-            generate_inline_functions: false,
-            allowlist_recursively: true,
-            generate_block: false,
-            objc_extern_crate: false,
-            block_extern_crate: false,
-            enable_mangling: true,
-            detect_include_paths: true,
-            fit_macro_constants: false,
-            prepend_enum_name: true,
-            time_phases: false,
-            record_matches: true,
-            rustfmt_bindings: true,
-            size_t_is_usize: false,
-            rustfmt_configuration_file: None,
-            no_partialeq_types: Default::default(),
-            no_copy_types: Default::default(),
-            no_debug_types: Default::default(),
-            no_default_types: Default::default(),
-            no_hash_types: Default::default(),
-            must_use_types: Default::default(),
-            array_pointers_in_arguments: false,
-            wasm_import_module_name: None,
-            dynamic_library_name: None,
-            dynamic_link_require_all: false,
-            respect_cxx_access_specs: false,
-            translate_enum_integer_types: false,
-            c_naming: false,
-            force_explicit_padding: false,
-            vtable_generation: false,
-            sort_semantically: false,
-            merge_extern_blocks: false,
-        }
-    }
-}
+impl ::std::panic::UnwindSafe for BindgenState {}
 
 #[cfg(feature = "runtime")]
 fn ensure_libclang_is_loaded() {
@@ -2394,7 +432,7 @@ impl Bindings {
     /// Generate bindings for the given options.
     pub(crate) fn generate(
         mut options: BindgenOptions,
-    ) -> Result<Bindings, BindgenError> {
+    ) -> Result<Self, BindgenError> {
         ensure_libclang_is_loaded();
 
         #[cfg(feature = "runtime")]
@@ -2405,10 +443,8 @@ impl Bindings {
         #[cfg(not(feature = "runtime"))]
         debug!("Generating bindings, libclang linked");
 
-        options.build();
-
         let (effective_target, explicit_target) =
-            find_effective_target(&options.clang_args);
+            find_effective_target(&options.state().clang_args);
 
         let is_host_build =
             rust_to_clang_target(HOST_TARGET) == effective_target;
@@ -2420,20 +456,23 @@ impl Bindings {
         // check is fine.
         if !explicit_target && !is_host_build {
             options
+                .state_mut()
                 .clang_args
                 .insert(0, format!("--target={}", effective_target));
         };
 
         fn detect_include_paths(options: &mut BindgenOptions) {
-            if !options.detect_include_paths {
+            if !options.inputs().detect_include_paths {
                 return;
             }
+
+            let state = options.state_mut();
 
             // Filter out include paths and similar stuff, so we don't incorrectly
             // promote them to `-isystem`.
             let clang_args_for_clang_sys = {
                 let mut last_was_include_prefix = false;
-                options
+                state
                     .clang_args
                     .iter()
                     .filter(|arg| {
@@ -2479,8 +518,8 @@ impl Bindings {
             debug!("Found clang: {:?}", clang);
 
             // Whether we are working with C or C++ inputs.
-            let is_cpp = args_are_cpp(&options.clang_args) ||
-                options.input_header.as_deref().map_or(false, file_is_cpp);
+            let is_cpp = args_are_cpp(&state.clang_args) ||
+                state.input_header.as_deref().map_or(false, file_is_cpp);
 
             let search_paths = if is_cpp {
                 clang.cpp_search_paths
@@ -2491,8 +530,8 @@ impl Bindings {
             if let Some(search_paths) = search_paths {
                 for path in search_paths.into_iter() {
                     if let Ok(path) = path.into_os_string().into_string() {
-                        options.clang_args.push("-isystem".to_owned());
-                        options.clang_args.push(path);
+                        state.clang_args.push("-isystem".to_owned());
+                        state.clang_args.push(path);
                     }
                 }
             }
@@ -2511,7 +550,9 @@ impl Bindings {
             true
         }
 
-        if let Some(h) = options.input_header.as_ref() {
+        let state = options.state_mut();
+
+        if let Some(h) = state.input_header.as_ref() {
             let path = Path::new(h);
             if let Ok(md) = std::fs::metadata(path) {
                 if md.is_dir() {
@@ -2522,22 +563,22 @@ impl Bindings {
                         path.into(),
                     ));
                 }
-                options.clang_args.push(h.clone())
+                state.clang_args.push(h.clone())
             } else {
                 return Err(BindgenError::NotExist(path.into()));
             }
         }
 
-        for (idx, f) in options.input_unsaved_files.iter().enumerate() {
-            if idx != 0 || options.input_header.is_some() {
-                options.clang_args.push("-include".to_owned());
+        for (idx, f) in state.input_unsaved_files.iter().enumerate() {
+            if idx != 0 || state.input_header.is_some() {
+                state.clang_args.push("-include".to_owned());
             }
-            options.clang_args.push(f.name.to_str().unwrap().to_owned())
+            state.clang_args.push(f.name.to_str().unwrap().to_owned())
         }
 
         debug!("Fixed-up options: {:?}", options);
 
-        let time_phases = options.time_phases;
+        let time_phases = options.inputs().time_phases;
         let mut context = BindgenContext::new(options);
 
         if is_host_build {
@@ -2557,7 +598,7 @@ impl Bindings {
 
         let (items, options, warnings) = codegen::codegen(context);
 
-        let module = if options.require_syn() {
+        let module = if options.inputs().require_syn() {
             let module_wrapped_tokens =
                 quote!(mod wrapper_for_sorting_hack { #( #items )* });
 
@@ -2577,7 +618,7 @@ impl Bindings {
                     .unwrap()
                     .1;
 
-            if options.merge_extern_blocks {
+            if options.inputs().merge_extern_blocks {
                 // Here we will store all the items after deduplication.
                 let mut items = Vec::new();
 
@@ -2630,7 +671,7 @@ impl Bindings {
                 syn_parsed_items = items;
             }
 
-            if options.sort_semantically {
+            if options.inputs().sort_semantically {
                 syn_parsed_items.sort_by_key(|item| match item {
                     syn::Item::Type(_) => 0,
                     syn::Item::Struct(_) => 1,
@@ -2682,7 +723,7 @@ impl Bindings {
 
     /// Write these bindings as source text to the given `Write`able.
     pub fn write<'a>(&self, mut writer: Box<dyn Write + 'a>) -> io::Result<()> {
-        if !self.options.disable_header_comment {
+        if self.options.inputs().enable_header_comment {
             let version = option_env!("CARGO_PKG_VERSION");
             let header = format!(
                 "/* automatically generated by rust-bindgen {} */\n\n",
@@ -2691,12 +732,12 @@ impl Bindings {
             writer.write_all(header.as_bytes())?;
         }
 
-        for line in self.options.raw_lines.iter() {
+        for line in self.options.inputs().raw_lines.iter() {
             writer.write_all(line.as_bytes())?;
             writer.write_all("\n".as_bytes())?;
         }
 
-        if !self.options.raw_lines.is_empty() {
+        if !self.options.inputs().raw_lines.is_empty() {
             writer.write_all("\n".as_bytes())?;
         }
 
@@ -2719,8 +760,8 @@ impl Bindings {
 
     /// Gets the rustfmt path to rustfmt the generated bindings.
     fn rustfmt_path(&self) -> io::Result<Cow<PathBuf>> {
-        debug_assert!(self.options.rustfmt_bindings);
-        if let Some(ref p) = self.options.rustfmt_path {
+        debug_assert!(self.options.inputs().rustfmt_bindings);
+        if let Some(ref p) = self.options.inputs().rustfmt_path {
             return Ok(Cow::Borrowed(p));
         }
         if let Ok(rustfmt) = env::var("RUSTFMT") {
@@ -2745,9 +786,9 @@ impl Bindings {
         source: &'a str,
     ) -> io::Result<Cow<'a, str>> {
         let _t = time::Timer::new("rustfmt_generated_string")
-            .with_output(self.options.time_phases);
+            .with_output(self.options.inputs().time_phases);
 
-        if !self.options.rustfmt_bindings {
+        if !self.options.inputs().rustfmt_bindings {
             return Ok(Cow::Borrowed(source));
         }
 
@@ -2758,6 +799,7 @@ impl Bindings {
 
         if let Some(path) = self
             .options
+            .inputs()
             .rustfmt_configuration_file
             .as_ref()
             .and_then(|f| f.to_str())
@@ -2841,7 +883,7 @@ impl std::fmt::Display for Bindings {
 /// Determines whether the given cursor is in any of the files matched by the
 /// options.
 fn filter_builtins(ctx: &BindgenContext, cursor: &clang::Cursor) -> bool {
-    ctx.options().builtins || !cursor.is_builtin()
+    ctx.inputs().builtins || !cursor.is_builtin()
 }
 
 /// Parse one `Item` from the Clang cursor.
@@ -2888,7 +930,7 @@ fn parse(context: &mut BindgenContext) -> Result<(), BindgenError> {
 
     let cursor = context.translation_unit().cursor();
 
-    if context.options().emit_ast {
+    if context.inputs().emit_ast {
         fn dump_if_not_builtin(cur: &clang::Cursor) -> CXChildVisitResult {
             if !cur.is_builtin() {
                 clang::ast_dump(cur, 0)

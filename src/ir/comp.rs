@@ -818,7 +818,7 @@ impl CompFields {
                     anon_field_counter += 1;
                     *name = Some(format!(
                         "{}{}",
-                        ctx.options().anon_fields_prefix,
+                        ctx.inputs().anon_fields_prefix,
                         anon_field_counter
                     ));
                 }
@@ -1696,7 +1696,7 @@ impl CompInfo {
             return (false, false);
         }
 
-        if !ctx.options().rust_features().untagged_union {
+        if !ctx.inputs().rust_features().untagged_union {
             return (false, false);
         }
 
@@ -1704,12 +1704,12 @@ impl CompInfo {
             return (false, false);
         }
 
-        let union_style = if ctx.options().bindgen_wrapper_union.matches(name) {
+        let union_style = if ctx.state().bindgen_wrapper_union.matches(name) {
             NonCopyUnionStyle::BindgenWrapper
-        } else if ctx.options().manually_drop_union.matches(name) {
+        } else if ctx.state().manually_drop_union.matches(name) {
             NonCopyUnionStyle::ManuallyDrop
         } else {
-            ctx.options().default_non_copy_union_style
+            ctx.inputs().default_non_copy_union_style
         };
 
         let all_can_copy = self.fields().iter().all(|f| match *f {
@@ -1818,7 +1818,7 @@ impl IsOpaque for CompInfo {
             return true;
         }
 
-        if !ctx.options().rust_features().repr_packed_n {
+        if !ctx.inputs().rust_features().repr_packed_n {
             // If we don't have `#[repr(packed(N)]`, the best we can
             // do is make this struct opaque.
             //

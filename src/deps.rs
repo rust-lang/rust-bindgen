@@ -1,7 +1,7 @@
 /// Generating build depfiles from parsed bindings.
 use std::{collections::BTreeSet, path::PathBuf};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct DepfileSpec {
     pub output_module: String,
     pub depfile_path: PathBuf,

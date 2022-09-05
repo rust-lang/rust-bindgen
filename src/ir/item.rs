@@ -493,7 +493,7 @@ impl Item {
     ///
     /// FIXME(emilio): This may need fixes for the enums within modules stuff.
     pub fn codegen_depth(&self, ctx: &BindgenContext) -> usize {
-        if !ctx.options().enable_cxx_namespaces {
+        if !ctx.inputs().enable_cxx_namespaces {
             return 0;
         }
 
@@ -501,7 +501,7 @@ impl Item {
             .filter(|id| {
                 ctx.resolve_item(*id).as_module().map_or(false, |module| {
                     !module.is_inline() ||
-                        ctx.options().conservative_inline_namespaces
+                        ctx.inputs().conservative_inline_namespaces
                 })
             })
             .count() +
@@ -511,7 +511,7 @@ impl Item {
     /// Get this `Item`'s comment, if it has any, already preprocessed and with
     /// the right indentation.
     pub fn comment(&self, ctx: &BindgenContext) -> Option<String> {
-        if !ctx.options().generate_comments {
+        if !ctx.inputs().generate_comments {
             return None;
         }
 
@@ -580,7 +580,7 @@ impl Item {
     pub fn is_toplevel(&self, ctx: &BindgenContext) -> bool {
         // FIXME: Workaround for some types falling behind when parsing weird
         // stl classes, for example.
-        if ctx.options().enable_cxx_namespaces &&
+        if ctx.inputs().enable_cxx_namespaces &&
             self.kind().is_module() &&
             self.id() != ctx.root_module()
         {
@@ -596,7 +596,7 @@ impl Item {
 
             if parent_item.id() == ctx.root_module() {
                 return true;
-            } else if ctx.options().enable_cxx_namespaces ||
+            } else if ctx.inputs().enable_cxx_namespaces ||
                 !parent_item.kind().is_module()
             {
                 return false;
@@ -646,11 +646,11 @@ impl Item {
             return true;
         }
 
-        if !ctx.options().blocklisted_files.is_empty() {
+        if !ctx.state().blocklisted_files.is_empty() {
             if let Some(location) = &self.location {
                 let (file, _, _, _) = location.location();
                 if let Some(filename) = file.name() {
-                    if ctx.options().blocklisted_files.matches(&filename) {
+                    if ctx.state().blocklisted_files.matches(&filename) {
                         return true;
                     }
                 }
@@ -659,14 +659,14 @@ impl Item {
 
         let path = self.path_for_allowlisting(ctx);
         let name = path[1..].join("::");
-        ctx.options().blocklisted_items.matches(&name) ||
+        ctx.state().blocklisted_items.matches(&name) ||
             match self.kind {
                 ItemKind::Type(..) => {
-                    ctx.options().blocklisted_types.matches(&name) ||
+                    ctx.state().blocklisted_types.matches(&name) ||
                         ctx.is_replaced_type(path, self.id)
                 }
                 ItemKind::Function(..) => {
-                    ctx.options().blocklisted_functions.matches(&name)
+                    ctx.state().blocklisted_functions.matches(&name)
                 }
                 // TODO: Add constant / namespace blocklisting?
                 ItemKind::Var(..) | ItemKind::Module(..) => false,
@@ -851,7 +851,7 @@ impl Item {
 
         // Short-circuit if the target has an override, and just use that.
         if let Some(path) = target.annotations.use_instead_of() {
-            if ctx.options().enable_cxx_namespaces {
+            if ctx.inputs().enable_cxx_namespaces {
                 return path.last().unwrap().clone();
             }
             return path.join("_");
@@ -876,7 +876,7 @@ impl Item {
                 !opt.within_namespaces || !ctx.resolve_item(*id).is_module()
             })
             .filter(|id| {
-                if !ctx.options().conservative_inline_namespaces {
+                if !ctx.inputs().conservative_inline_namespaces {
                     if let ItemKind::Module(ref module) =
                         *ctx.resolve_item(*id).kind()
                     {
@@ -887,7 +887,9 @@ impl Item {
                 true
             });
 
-        let ids: Vec<_> = if ctx.options().disable_nested_struct_naming {
+        let ids: Vec<_> = if ctx.inputs().enable_nested_struct_naming {
+            ids_iter.collect()
+        } else {
             let mut ids = Vec::new();
 
             // If target is anonymous we need find its first named ancestor.
@@ -902,8 +904,6 @@ impl Item {
             }
 
             ids
-        } else {
-            ids_iter.collect()
         };
 
         // Concatenate this item's ancestors' names together.
@@ -923,7 +923,7 @@ impl Item {
             names.push(base_name);
         }
 
-        if ctx.options().c_naming {
+        if ctx.inputs().c_naming {
             if let Some(prefix) = self.c_naming_prefix() {
                 names.insert(0, prefix.to_string());
             }
@@ -1014,7 +1014,7 @@ impl Item {
 
     /// Is this item of a kind that is enabled for code generation?
     pub fn is_enabled_for_codegen(&self, ctx: &BindgenContext) -> bool {
-        let cc = &ctx.options().codegen_config;
+        let cc = &ctx.inputs().codegen_config;
         match *self.kind() {
             ItemKind::Module(..) => true,
             ItemKind::Var(_) => cc.vars(),
@@ -1065,7 +1065,7 @@ impl Item {
                 item.id() == target.id() ||
                     item.as_module().map_or(false, |module| {
                         !module.is_inline() ||
-                            ctx.options().conservative_inline_namespaces
+                            ctx.inputs().conservative_inline_namespaces
                     })
             })
             .map(|item| {
@@ -1923,8 +1923,8 @@ impl ItemCanonicalName for Item {
         );
         self.canonical_name
             .borrow_with(|| {
-                let in_namespace = ctx.options().enable_cxx_namespaces ||
-                    ctx.options().disable_name_namespacing;
+                let in_namespace = ctx.inputs().enable_cxx_namespaces ||
+                    !ctx.inputs().enable_name_namespacing;
 
                 if in_namespace {
                     self.name(ctx).within_namespaces().get()
@@ -1946,11 +1946,11 @@ impl ItemCanonicalPath for Item {
         // ASSUMPTION: (disable_name_namespacing && cxx_namespaces)
         // is equivalent to
         // disable_name_namespacing
-        if ctx.options().disable_name_namespacing {
+        if !ctx.inputs().enable_name_namespacing {
             // Only keep the last item in path
             let split_idx = path.len() - 1;
             path = path.split_off(split_idx);
-        } else if !ctx.options().enable_cxx_namespaces {
+        } else if !ctx.inputs().enable_cxx_namespaces {
             // Ignore first item "root"
             path = vec![path[1..].join("_")];
         }

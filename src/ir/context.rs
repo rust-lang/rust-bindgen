@@ -19,10 +19,11 @@ use super::module::{Module, ModuleKind};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
+use crate::builder::BindgenOptions;
 use crate::callbacks::ParseCallbacks;
 use crate::clang::{self, Cursor};
 use crate::parse::ClangItemParser;
-use crate::BindgenOptions;
+use crate::{BindgenInputs, BindgenState};
 use crate::{Entry, HashMap, HashSet};
 use cexpr;
 use clang_sys;
@@ -214,7 +215,7 @@ where
     T: Copy + Into<ItemId>,
 {
     fn can_derive_debug(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_debug && ctx.lookup_can_derive_debug(*self)
+        ctx.inputs().derive_debug && ctx.lookup_can_derive_debug(*self)
     }
 }
 
@@ -223,7 +224,7 @@ where
     T: Copy + Into<ItemId>,
 {
     fn can_derive_default(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_default && ctx.lookup_can_derive_default(*self)
+        ctx.inputs().derive_default && ctx.lookup_can_derive_default(*self)
     }
 }
 
@@ -232,7 +233,7 @@ where
     T: Copy + Into<ItemId>,
 {
     fn can_derive_copy(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_copy && ctx.lookup_can_derive_copy(*self)
+        ctx.inputs().derive_copy && ctx.lookup_can_derive_copy(*self)
     }
 }
 
@@ -241,7 +242,7 @@ where
     T: Copy + Into<ItemId>,
 {
     fn can_derive_hash(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_hash && ctx.lookup_can_derive_hash(*self)
+        ctx.inputs().derive_hash && ctx.lookup_can_derive_hash(*self)
     }
 }
 
@@ -250,7 +251,7 @@ where
     T: Copy + Into<ItemId>,
 {
     fn can_derive_partialord(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_partialord &&
+        ctx.inputs().derive_partialord &&
             ctx.lookup_can_derive_partialeq_or_partialord(*self) ==
                 CanDerive::Yes
     }
@@ -261,7 +262,7 @@ where
     T: Copy + Into<ItemId>,
 {
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_partialeq &&
+        ctx.inputs().derive_partialeq &&
             ctx.lookup_can_derive_partialeq_or_partialord(*self) ==
                 CanDerive::Yes
     }
@@ -272,7 +273,7 @@ where
     T: Copy + Into<ItemId>,
 {
     fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_eq &&
+        ctx.inputs().derive_eq &&
             ctx.lookup_can_derive_partialeq_or_partialord(*self) ==
                 CanDerive::Yes &&
             !ctx.lookup_has_float(*self)
@@ -284,7 +285,7 @@ where
     T: Copy + Into<ItemId>,
 {
     fn can_derive_ord(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_ord &&
+        ctx.inputs().derive_ord &&
             ctx.lookup_can_derive_partialeq_or_partialord(*self) ==
                 CanDerive::Yes &&
             !ctx.lookup_has_float(*self)
@@ -506,6 +507,8 @@ impl<'ctx> AllowlistedItemsTraversal<'ctx> {
 impl BindgenContext {
     /// Construct the context for the given `options`.
     pub(crate) fn new(options: BindgenOptions) -> Self {
+        let state = options.state();
+
         // TODO(emilio): Use the CXTargetInfo here when available.
         //
         // see: https://reviews.llvm.org/D32389
@@ -515,14 +518,14 @@ impl BindgenContext {
             clang_sys::CXTranslationUnit_DetailedPreprocessingRecord;
 
         let translation_unit = {
-            let _t =
-                Timer::new("translation_unit").with_output(options.time_phases);
+            let _t = Timer::new("translation_unit")
+                .with_output(options.inputs().time_phases);
 
             clang::TranslationUnit::parse(
                 &index,
                 "",
-                &options.clang_args,
-                &options.input_unsaved_files,
+                &state.clang_args,
+                &state.input_unsaved_files,
                 parse_options,
             ).expect("libclang error; possible causes include:
 - Invalid flag syntax
@@ -539,10 +542,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         // depfiles need to include the explicitly listed headers too
         let mut deps = BTreeSet::default();
-        if let Some(filename) = &options.input_header {
+        if let Some(filename) = &state.input_header {
             deps.insert(filename.clone());
         }
-        deps.extend(options.extra_input_headers.iter().cloned());
+        deps.extend(state.extra_input_headers.iter().cloned());
 
         BindgenContext {
             items: vec![Some(root_module)],
@@ -590,7 +593,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// the timer will print to stderr when it is dropped, otherwise it will do
     /// nothing.
     pub fn timer<'a>(&self, name: &'a str) -> Timer<'a> {
-        Timer::new(name).with_output(self.options.time_phases)
+        Timer::new(name).with_output(self.inputs().time_phases)
     }
 
     /// Returns the pointer width to use for the target for the current
@@ -622,7 +625,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Get the user-provided callbacks by reference, if any.
     pub fn parse_callbacks(&self) -> Option<&dyn ParseCallbacks> {
-        self.options().parse_callbacks.as_deref()
+        self.state().parse_callbacks.as_deref()
     }
 
     /// Add another path to the set of included files.
@@ -1309,7 +1312,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     fn find_used_template_parameters(&mut self) {
         let _t = self.timer("find_used_template_parameters");
-        if self.options.allowlist_recursively {
+        if self.inputs().allowlist_recursively {
             let used_params = analyze::<UsedTemplateParameters>(self);
             self.used_template_parameters = Some(used_params);
         } else {
@@ -2077,12 +2080,16 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             self.in_codegen_phase(),
             "You're not supposed to call this yet"
         );
-        self.options.opaque_types.matches(&path[1..].join("::"))
+        self.state().opaque_types.matches(&path[1..].join("::"))
     }
 
     /// Get the options used to configure this bindgen context.
-    pub(crate) fn options(&self) -> &BindgenOptions {
-        &self.options
+    pub(crate) fn inputs(&self) -> &BindgenInputs {
+        self.options.inputs()
+    }
+
+    pub(crate) fn state(&self) -> &BindgenState {
+        self.options.state()
     }
 
     /// Tokenizes a namespace cursor in order to get the name and kind of the
@@ -2242,7 +2249,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             .or_insert_with(|| {
                 item.expect_type()
                     .name()
-                    .and_then(|name| match self.options.parse_callbacks {
+                    .and_then(|name| match self.state().parse_callbacks {
                         Some(ref cb) => cb.blocklisted_type_implements_trait(
                             name,
                             derive_trait,
@@ -2255,10 +2262,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                             "int32_t" | "uint32_t" | "int64_t" |
                             "uint64_t" | "uintptr_t" | "intptr_t" |
                             "ptrdiff_t" => Some(CanDerive::Yes),
-                            "size_t" if self.options.size_t_is_usize => {
+                            "size_t" if self.inputs().size_t_is_usize => {
                                 Some(CanDerive::Yes)
                             }
-                            "ssize_t" if self.options.size_t_is_usize => {
+                            "ssize_t" if self.inputs().size_t_is_usize => {
                                 Some(CanDerive::Yes)
                             }
                             _ => Some(CanDerive::No),
@@ -2290,10 +2297,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 .filter(|&(_, item)| {
                     // If nothing is explicitly allowlisted, then everything is fair
                     // game.
-                    if self.options().allowlisted_types.is_empty() &&
-                        self.options().allowlisted_functions.is_empty() &&
-                        self.options().allowlisted_vars.is_empty() &&
-                        self.options().allowlisted_files.is_empty()
+                    if self.state().allowlisted_types.is_empty() &&
+                        self.state().allowlisted_functions.is_empty() &&
+                        self.state().allowlisted_vars.is_empty() &&
+                        self.state().allowlisted_files.is_empty()
                     {
                         return true;
                     }
@@ -2306,12 +2313,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
                     // Items with a source location in an explicitly allowlisted file
                     // are always included.
-                    if !self.options().allowlisted_files.is_empty() {
+                    if !self.state().allowlisted_files.is_empty() {
                         if let Some(location) = item.location() {
                             let (file, _, _, _) = location.location();
                             if let Some(filename) = file.name() {
                                 if self
-                                    .options()
+                                    .state()
                                     .allowlisted_files
                                     .matches(&filename)
                                 {
@@ -2326,20 +2333,20 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     match *item.kind() {
                         ItemKind::Module(..) => true,
                         ItemKind::Function(_) => {
-                            self.options().allowlisted_functions.matches(&name)
+                            self.state().allowlisted_functions.matches(&name)
                         }
                         ItemKind::Var(_) => {
-                            self.options().allowlisted_vars.matches(&name)
+                            self.state().allowlisted_vars.matches(&name)
                         }
                         ItemKind::Type(ref ty) => {
-                            if self.options().allowlisted_types.matches(&name) {
+                            if self.state().allowlisted_types.matches(&name) {
                                 return true;
                             }
 
                             // Auto-allowlist types that don't need code
                             // generation if not allowlisting recursively, to
                             // make the #[derive] analysis not be lame.
-                            if !self.options().allowlist_recursively {
+                            if !self.inputs().allowlist_recursively {
                                 match *ty.kind() {
                                     TypeKind::Void |
                                     TypeKind::NullPtr |
@@ -2385,7 +2392,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                 );
                                 let name = prefix_path[1..].join("::");
                                 prefix_path.pop().unwrap();
-                                self.options().allowlisted_vars.matches(&name)
+                                self.state().allowlisted_vars.matches(&name)
                             })
                         }
                     }
@@ -2400,16 +2407,16 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             roots
         };
 
-        let allowlisted_items_predicate =
-            if self.options().allowlist_recursively {
-                traversal::all_edges
-            } else {
-                // Only follow InnerType edges from the allowlisted roots.
-                // Such inner types (e.g. anonymous structs/unions) are
-                // always emitted by codegen, and they need to be allowlisted
-                // to make sure they are processed by e.g. the derive analysis.
-                traversal::only_inner_type_edges
-            };
+        let allowlisted_items_predicate = if self.inputs().allowlist_recursively
+        {
+            traversal::all_edges
+        } else {
+            // Only follow InnerType edges from the allowlisted roots.
+            // Such inner types (e.g. anonymous structs/unions) are
+            // always emitted by codegen, and they need to be allowlisted
+            // to make sure they are processed by e.g. the derive analysis.
+            traversal::only_inner_type_edges
+        };
 
         let allowlisted = AllowlistedItemsTraversal::new(
             self,
@@ -2418,7 +2425,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         )
         .collect::<ItemSet>();
 
-        let codegen_items = if self.options().allowlist_recursively {
+        let codegen_items = if self.inputs().allowlist_recursively {
             AllowlistedItemsTraversal::new(
                 self,
                 roots,
@@ -2434,16 +2441,16 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         let mut warnings = Vec::new();
 
-        for item in self.options().allowlisted_functions.unmatched_items() {
+        for item in self.state().allowlisted_functions.unmatched_items() {
             warnings
                 .push(format!("unused option: --allowlist-function {}", item));
         }
 
-        for item in self.options().allowlisted_vars.unmatched_items() {
+        for item in self.state().allowlisted_vars.unmatched_items() {
             warnings.push(format!("unused option: --allowlist-var {}", item));
         }
 
-        for item in self.options().allowlisted_types.unmatched_items() {
+        for item in self.state().allowlisted_types.unmatched_items() {
             warnings.push(format!("unused option: --allowlist-type {}", item));
         }
 
@@ -2456,7 +2463,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Convenient method for getting the prefix to use for most traits in
     /// codegen depending on the `use_core` option.
     pub fn trait_prefix(&self) -> Ident {
-        if self.options().use_core {
+        if self.inputs().use_core {
             self.rust_ident_raw("core")
         } else {
             self.rust_ident_raw("std")
@@ -2477,7 +2484,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     fn compute_cannot_derive_debug(&mut self) {
         let _t = self.timer("compute_cannot_derive_debug");
         assert!(self.cannot_derive_debug.is_none());
-        if self.options.derive_debug {
+        if self.inputs().derive_debug {
             self.cannot_derive_debug =
                 Some(as_cannot_derive_set(analyze::<CannotDerive>((
                     self,
@@ -2504,7 +2511,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     fn compute_cannot_derive_default(&mut self) {
         let _t = self.timer("compute_cannot_derive_default");
         assert!(self.cannot_derive_default.is_none());
-        if self.options.derive_default {
+        if self.inputs().derive_default {
             self.cannot_derive_default =
                 Some(as_cannot_derive_set(analyze::<CannotDerive>((
                     self,
@@ -2542,7 +2549,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     fn compute_cannot_derive_hash(&mut self) {
         let _t = self.timer("compute_cannot_derive_hash");
         assert!(self.cannot_derive_hash.is_none());
-        if self.options.derive_hash {
+        if self.inputs().derive_hash {
             self.cannot_derive_hash =
                 Some(as_cannot_derive_set(analyze::<CannotDerive>((
                     self,
@@ -2569,9 +2576,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     fn compute_cannot_derive_partialord_partialeq_or_eq(&mut self) {
         let _t = self.timer("compute_cannot_derive_partialord_partialeq_or_eq");
         assert!(self.cannot_derive_partialeq_or_partialord.is_none());
-        if self.options.derive_partialord ||
-            self.options.derive_partialeq ||
-            self.options.derive_eq
+        if self.inputs().derive_partialord ||
+            self.inputs().derive_partialeq ||
+            self.inputs().derive_eq
         {
             self.cannot_derive_partialeq_or_partialord =
                 Some(analyze::<CannotDerive>((
@@ -2647,7 +2654,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     fn compute_has_float(&mut self) {
         let _t = self.timer("compute_has_float");
         assert!(self.has_float.is_none());
-        if self.options.derive_eq || self.options.derive_ord {
+        if self.inputs().derive_eq || self.inputs().derive_ord {
             self.has_float = Some(analyze::<HasFloat>(self));
         }
     }
@@ -2667,37 +2674,37 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Check if `--no-partialeq` flag is enabled for this item.
     pub fn no_partialeq_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_allowlisting(self)[1..].join("::");
-        self.options().no_partialeq_types.matches(&name)
+        self.state().no_partialeq_types.matches(&name)
     }
 
     /// Check if `--no-copy` flag is enabled for this item.
     pub fn no_copy_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_allowlisting(self)[1..].join("::");
-        self.options().no_copy_types.matches(&name)
+        self.state().no_copy_types.matches(&name)
     }
 
     /// Check if `--no-debug` flag is enabled for this item.
     pub fn no_debug_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_allowlisting(self)[1..].join("::");
-        self.options().no_debug_types.matches(&name)
+        self.state().no_debug_types.matches(&name)
     }
 
     /// Check if `--no-default` flag is enabled for this item.
     pub fn no_default_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_allowlisting(self)[1..].join("::");
-        self.options().no_default_types.matches(&name)
+        self.state().no_default_types.matches(&name)
     }
 
     /// Check if `--no-hash` flag is enabled for this item.
     pub fn no_hash_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_allowlisting(self)[1..].join("::");
-        self.options().no_hash_types.matches(&name)
+        self.state().no_hash_types.matches(&name)
     }
 
     /// Check if `--must-use-type` flag is enabled for this item.
     pub fn must_use_type_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_allowlisting(self)[1..].join("::");
-        self.options().must_use_types.matches(&name)
+        self.state().must_use_types.matches(&name)
     }
 }
 

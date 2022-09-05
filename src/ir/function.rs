@@ -257,7 +257,7 @@ pub fn cursor_mangling(
     ctx: &BindgenContext,
     cursor: &clang::Cursor,
 ) -> Option<String> {
-    if !ctx.options().enable_mangling {
+    if !ctx.inputs().enable_mangling {
         return None;
     }
 
@@ -451,7 +451,7 @@ impl FunctionSig {
         };
 
         let (must_use, mut is_divergent) =
-            if ctx.options().enable_function_attribute_detection {
+            if ctx.inputs().enable_function_attribute_detection {
                 let [must_use, no_return, no_return_cpp] = cursor.has_attrs(&[
                     Attribute::MUST_USE,
                     Attribute::NO_RETURN,
@@ -630,7 +630,7 @@ impl ClangSubItemParser for Function {
         }
 
         if cursor.is_inlined_function() {
-            if !context.options().generate_inline_functions {
+            if !context.inputs().generate_inline_functions {
                 return Err(ParseError::Continue);
             }
             if cursor.is_deleted_function() {

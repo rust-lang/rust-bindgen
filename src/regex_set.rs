@@ -3,8 +3,26 @@
 use regex::RegexSet as RxSet;
 use std::cell::Cell;
 
+/// A static list of regular expressions.
+#[derive(Debug, Default, Clone)]
+pub struct RegexItems {
+    inner: Vec<String>,
+}
+
+impl RegexItems {
+    /// Returns slice of String from its field 'items'
+    pub fn get_items(&self) -> &[String] {
+        &self.inner
+    }
+
+    /// Insert a new regex into this list.
+    pub fn insert(&mut self, item: impl AsRef<str>) {
+        self.inner.push(item.as_ref().to_owned());
+    }
+}
+
 /// A dynamic set of regular expressions.
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct RegexSet {
     items: Vec<String>,
     /// Whether any of the items in the set was ever matched. The length of this
@@ -16,24 +34,29 @@ pub struct RegexSet {
 }
 
 impl RegexSet {
+    /// Construct a RegexSet from the set of entries we've accumulated.
+    pub fn new(items: RegexItems, record_matches: bool) -> Self {
+        let set = match RxSet::new(
+            items.inner.iter().map(|item| format!("^{}$", item)),
+        ) {
+            Ok(x) => Some(x),
+            Err(e) => {
+                warn!("Invalid regex in {:?}: {:?}", items.inner, e);
+                None
+            }
+        };
+
+        Self {
+            matched: vec![Cell::new(false); items.inner.len()],
+            items: items.inner,
+            set,
+            record_matches,
+        }
+    }
+
     /// Is this set empty?
     pub fn is_empty(&self) -> bool {
         self.items.is_empty()
-    }
-
-    /// Insert a new regex into this set.
-    pub fn insert<S>(&mut self, string: S)
-    where
-        S: AsRef<str>,
-    {
-        self.items.push(string.as_ref().to_owned());
-        self.matched.push(Cell::new(false));
-        self.set = None;
-    }
-
-    /// Returns slice of String from its field 'items'
-    pub fn get_items(&self) -> &[String] {
-        &self.items[..]
     }
 
     /// Returns an iterator over regexes in the set which didn't match any
@@ -46,22 +69,6 @@ impl RegexSet {
 
             Some(item)
         })
-    }
-
-    /// Construct a RegexSet from the set of entries we've accumulated.
-    ///
-    /// Must be called before calling `matches()`, or it will always return
-    /// false.
-    pub fn build(&mut self, record_matches: bool) {
-        let items = self.items.iter().map(|item| format!("^{}$", item));
-        self.record_matches = record_matches;
-        self.set = match RxSet::new(items) {
-            Ok(x) => Some(x),
-            Err(e) => {
-                warn!("Invalid regex in {:?}: {:?}", self.items, e);
-                None
-            }
-        }
     }
 
     /// Does the given `string` match any of the regexes in this set?

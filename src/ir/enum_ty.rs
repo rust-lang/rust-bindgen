@@ -178,45 +178,38 @@ impl Enum {
         // problems with overlapping match patterns.
         if self.is_matching_enum(
             ctx,
-            &ctx.options().constified_enum_modules,
+            &ctx.state().constified_enum_modules,
             item,
         ) {
             EnumVariation::ModuleConsts
-        } else if self.is_matching_enum(
-            ctx,
-            &ctx.options().bitfield_enums,
-            item,
-        ) {
+        } else if self.is_matching_enum(ctx, &ctx.state().bitfield_enums, item)
+        {
             EnumVariation::NewType {
                 is_bitfield: true,
                 is_global: false,
             }
-        } else if self.is_matching_enum(ctx, &ctx.options().newtype_enums, item)
-        {
+        } else if self.is_matching_enum(ctx, &ctx.state().newtype_enums, item) {
             EnumVariation::NewType {
                 is_bitfield: false,
                 is_global: false,
             }
         } else if self.is_matching_enum(
             ctx,
-            &ctx.options().newtype_global_enums,
+            &ctx.state().newtype_global_enums,
             item,
         ) {
             EnumVariation::NewType {
                 is_bitfield: false,
                 is_global: true,
             }
-        } else if self.is_matching_enum(
-            ctx,
-            &ctx.options().rustified_enums,
-            item,
-        ) {
+        } else if self.is_matching_enum(ctx, &ctx.state().rustified_enums, item)
+        {
             EnumVariation::Rust {
                 non_exhaustive: false,
             }
         } else if self.is_matching_enum(
             ctx,
-            &ctx.options().rustified_non_exhaustive_enums,
+            &ctx.state().rustified_non_exhaustive_enums,
             item,
         ) {
             EnumVariation::Rust {
@@ -224,12 +217,12 @@ impl Enum {
             }
         } else if self.is_matching_enum(
             ctx,
-            &ctx.options().constified_enums,
+            &ctx.state().constified_enums,
             item,
         ) {
             EnumVariation::Consts
         } else {
-            ctx.options().default_enum_style
+            ctx.inputs().default_enum_style
         }
     }
 }

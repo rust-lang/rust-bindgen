@@ -223,7 +223,7 @@ impl<'a> StructLayoutTracker<'a> {
         let padding_layout = if self.is_packed || is_union {
             None
         } else {
-            let force_padding = self.ctx.options().force_explicit_padding;
+            let force_padding = self.ctx.inputs().force_explicit_padding;
 
             // Otherwise the padding is useless.
             let need_padding = force_padding ||
@@ -281,7 +281,7 @@ impl<'a> StructLayoutTracker<'a> {
     ) -> Option<proc_macro2::TokenStream> {
         // Only emit an padding field at the end of a struct if the
         // user configures explicit padding.
-        if !self.ctx.options().force_explicit_padding {
+        if !self.ctx.inputs().force_explicit_padding {
             return None;
         }
 
@@ -328,7 +328,7 @@ impl<'a> StructLayoutTracker<'a> {
             return None;
         }
 
-        let repr_align = self.ctx.options().rust_features().repr_align;
+        let repr_align = self.ctx.inputs().rust_features().repr_align;
 
         // We always pad to get to the correct size if the struct is one of
         // those we can't align properly.
@@ -361,7 +361,7 @@ impl<'a> StructLayoutTracker<'a> {
     }
 
     pub fn requires_explicit_align(&self, layout: Layout) -> bool {
-        let repr_align = self.ctx.options().rust_features().repr_align;
+        let repr_align = self.ctx.inputs().rust_features().repr_align;
 
         // Always force explicit repr(align) for stuff more than 16-byte aligned
         // to work-around https://github.com/rust-lang/rust/issues/54341.

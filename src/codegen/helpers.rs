@@ -116,7 +116,7 @@ pub fn integer_type(
 pub fn bitfield_unit(ctx: &BindgenContext, layout: Layout) -> TokenStream {
     let mut tokens = quote! {};
 
-    if ctx.options().enable_cxx_namespaces {
+    if ctx.inputs().enable_cxx_namespaces {
         tokens.append_all(quote! { root:: });
     }
 
@@ -138,7 +138,7 @@ pub mod ast_ty {
 
     pub fn c_void(ctx: &BindgenContext) -> TokenStream {
         // ctypes_prefix takes precedence
-        match ctx.options().ctypes_prefix {
+        match ctx.inputs().ctypes_prefix {
             Some(ref prefix) => {
                 let prefix = TokenStream::from_str(prefix.as_str()).unwrap();
                 quote! {
@@ -146,8 +146,8 @@ pub mod ast_ty {
                 }
             }
             None => {
-                if ctx.options().use_core &&
-                    ctx.options().rust_features.core_ffi_c_void
+                if ctx.inputs().use_core &&
+                    ctx.inputs().rust_features().core_ffi_c_void
                 {
                     quote! { ::core::ffi::c_void }
                 } else {
@@ -159,7 +159,7 @@ pub mod ast_ty {
 
     pub fn raw_type(ctx: &BindgenContext, name: &str) -> TokenStream {
         let ident = ctx.rust_ident_raw(name);
-        match ctx.options().ctypes_prefix {
+        match ctx.inputs().ctypes_prefix {
             Some(ref prefix) => {
                 let prefix = TokenStream::from_str(prefix.as_str()).unwrap();
                 quote! {
@@ -167,8 +167,8 @@ pub mod ast_ty {
                 }
             }
             None => {
-                if ctx.options().use_core &&
-                    ctx.options().rust_features().core_ffi_c
+                if ctx.inputs().use_core &&
+                    ctx.inputs().rust_features().core_ffi_c
                 {
                     quote! {
                         ::core::ffi::#ident
@@ -191,7 +191,7 @@ pub mod ast_ty {
         // often?
         //
         // Also, maybe this one shouldn't be the default?
-        match (fk, ctx.options().convert_floats) {
+        match (fk, ctx.inputs().convert_floats) {
             (FloatKind::Float, true) => quote! { f32 },
             (FloatKind::Double, true) => quote! { f64 },
             (FloatKind::Float, false) => raw_type(ctx, "c_float"),
@@ -218,7 +218,7 @@ pub mod ast_ty {
                 }
             }
             (FloatKind::Float128, _) => {
-                if ctx.options().rust_features.i128_and_u128 {
+                if ctx.inputs().rust_features().i128_and_u128 {
                     quote! { u128 }
                 } else {
                     quote! { [u64; 2] }
