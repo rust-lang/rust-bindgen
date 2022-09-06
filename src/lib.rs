@@ -2029,6 +2029,11 @@ struct BindgenOptions {
 impl ::std::panic::UnwindSafe for BindgenOptions {}
 
 impl BindgenOptions {
+    /// Whether any of the enabled options requires `syn`.
+    fn require_syn(&self) -> bool {
+        self.sort_semantically
+    }
+
     fn build(&mut self) {
         let mut regex_sets = [
             &mut self.allowlisted_vars,
@@ -2455,13 +2460,13 @@ impl Bindings {
 
         let (items, options, warnings) = codegen::codegen(context);
 
-        if options.sort_semantically {
+        let module = if options.require_syn() {
             let module_wrapped_tokens =
                 quote!(mod wrapper_for_sorting_hack { #( #items )* });
 
-            // This semantically sorting business is a hack, for now. This means that we are
-            // re-parsing already generated code using `syn` (as opposed to `quote`) because
-            // `syn` provides us more control over the elements.
+            // This syn business is a hack, for now. This means that we are re-parsing already
+            // generated code using `syn` (as opposed to `quote`) because `syn` provides us more
+            // control over the elements.
             // One caveat is that some of the items coming from `quote`d output might have
             // multiple items within them. Hence, we have to wrap the incoming in a `mod`.
             // The two `unwrap`s here are deliberate because
@@ -2475,46 +2480,42 @@ impl Bindings {
                     .unwrap()
                     .1;
 
-            syn_parsed_items.sort_by_key(|item| match item {
-                syn::Item::Type(_) => 0,
-                syn::Item::Struct(_) => 1,
-                syn::Item::Const(_) => 2,
-                syn::Item::Fn(_) => 3,
-                syn::Item::Enum(_) => 4,
-                syn::Item::Union(_) => 5,
-                syn::Item::Static(_) => 6,
-                syn::Item::Trait(_) => 7,
-                syn::Item::TraitAlias(_) => 8,
-                syn::Item::Impl(_) => 9,
-                syn::Item::Mod(_) => 10,
-                syn::Item::Use(_) => 11,
-                syn::Item::Verbatim(_) => 12,
-                syn::Item::ExternCrate(_) => 13,
-                syn::Item::ForeignMod(_) => 14,
-                syn::Item::Macro(_) => 15,
-                syn::Item::Macro2(_) => 16,
-                _ => 18,
-            });
+            if options.sort_semantically {
+                syn_parsed_items.sort_by_key(|item| match item {
+                    syn::Item::Type(_) => 0,
+                    syn::Item::Struct(_) => 1,
+                    syn::Item::Const(_) => 2,
+                    syn::Item::Fn(_) => 3,
+                    syn::Item::Enum(_) => 4,
+                    syn::Item::Union(_) => 5,
+                    syn::Item::Static(_) => 6,
+                    syn::Item::Trait(_) => 7,
+                    syn::Item::TraitAlias(_) => 8,
+                    syn::Item::Impl(_) => 9,
+                    syn::Item::Mod(_) => 10,
+                    syn::Item::Use(_) => 11,
+                    syn::Item::Verbatim(_) => 12,
+                    syn::Item::ExternCrate(_) => 13,
+                    syn::Item::ForeignMod(_) => 14,
+                    syn::Item::Macro(_) => 15,
+                    syn::Item::Macro2(_) => 16,
+                    _ => 18,
+                });
+            }
 
             let synful_items = syn_parsed_items
                 .into_iter()
                 .map(|item| item.into_token_stream());
 
-            return Ok(Bindings {
-                options,
-                warnings,
-                module: quote! {
-                    #( #synful_items )*
-                },
-            });
-        }
+            quote! { #( #synful_items )* }
+        } else {
+            quote! { #( #items )* }
+        };
 
         Ok(Bindings {
             options,
             warnings,
-            module: quote! {
-                #( #items )*
-            },
+            module,
         })
     }
 
