@@ -2577,6 +2577,8 @@ pub enum EnumVariation {
     NewType {
         /// Indicates whether the newtype will have bitwise operators
         is_bitfield: bool,
+        /// Indicates whether the variants will be represented as global constants
+        is_global: bool,
     },
     /// The code for this enum will use consts
     Consts,
@@ -2614,16 +2616,26 @@ impl std::str::FromStr for EnumVariation {
             "rust_non_exhaustive" => Ok(EnumVariation::Rust {
                 non_exhaustive: true,
             }),
-            "bitfield" => Ok(EnumVariation::NewType { is_bitfield: true }),
+            "bitfield" => Ok(EnumVariation::NewType {
+                is_bitfield: true,
+                is_global: false,
+            }),
             "consts" => Ok(EnumVariation::Consts),
             "moduleconsts" => Ok(EnumVariation::ModuleConsts),
-            "newtype" => Ok(EnumVariation::NewType { is_bitfield: false }),
+            "newtype" => Ok(EnumVariation::NewType {
+                is_bitfield: false,
+                is_global: false,
+            }),
+            "newtype_global" => Ok(EnumVariation::NewType {
+                is_bitfield: false,
+                is_global: true,
+            }),
             _ => Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidInput,
                 concat!(
                     "Got an invalid EnumVariation. Accepted values ",
                     "are 'rust', 'rust_non_exhaustive', 'bitfield', 'consts',",
-                    "'moduleconsts', and 'newtype'."
+                    "'moduleconsts', 'newtype' and 'newtype_global'."
                 ),
             )),
         }
@@ -2644,6 +2656,7 @@ enum EnumBuilder<'a> {
         canonical_name: &'a str,
         tokens: proc_macro2::TokenStream,
         is_bitfield: bool,
+        is_global: bool,
     },
     Consts {
         variants: Vec<proc_macro2::TokenStream>,
@@ -2684,7 +2697,10 @@ impl<'a> EnumBuilder<'a> {
         let ident = Ident::new(name, Span::call_site());
 
         match enum_variation {
-            EnumVariation::NewType { is_bitfield } => EnumBuilder::NewType {
+            EnumVariation::NewType {
+                is_bitfield,
+                is_global,
+            } => EnumBuilder::NewType {
                 codegen_depth: enum_codegen_depth,
                 canonical_name: name,
                 tokens: quote! {
@@ -2692,6 +2708,7 @@ impl<'a> EnumBuilder<'a> {
                     pub struct #ident (pub #repr);
                 },
                 is_bitfield,
+                is_global,
             },
 
             EnumVariation::Rust { .. } => {
@@ -2792,17 +2809,29 @@ impl<'a> EnumBuilder<'a> {
                 }
             }
 
-            EnumBuilder::NewType { canonical_name, .. } => {
+            EnumBuilder::NewType {
+                canonical_name,
+                is_global,
+                ..
+            } => {
                 if ctx.options().rust_features().associated_const && is_ty_named
                 {
                     let enum_ident = ctx.rust_ident(canonical_name);
                     let variant_ident = ctx.rust_ident(variant_name);
-                    result.push(quote! {
-                        impl #enum_ident {
-                            #doc
-                            pub const #variant_ident : #rust_ty = #rust_ty ( #expr );
-                        }
-                    });
+                    let tokens = quote! {
+                        #doc
+                        pub const #variant_ident : #rust_ty = #rust_ty ( #expr );
+                    };
+
+                    if is_global {
+                        result.push(tokens);
+                    } else {
+                        result.push(quote! {
+                            impl #enum_ident {
+                                #tokens
+                            }
+                        });
+                    }
                 } else {
                     let ident = ctx.rust_ident(match mangling_prefix {
                         Some(prefix) => {

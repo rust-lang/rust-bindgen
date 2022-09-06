@@ -63,6 +63,12 @@ where
                 .value_name("regex")
                 .multiple_occurrences(true)
                 .number_of_values(1),
+            Arg::new("newtype-global-enum")
+                .long("newtype-global-enum")
+                .help("Mark any enum whose name matches <regex> as a global newtype.")
+                .value_name("regex")
+                .multiple_occurrences(true)
+                .number_of_values(1),
             Arg::new("rustified-enum")
                 .long("rustified-enum")
                 .help("Mark any enum whose name matches <regex> as a Rust enum.")
@@ -570,6 +576,12 @@ where
     if let Some(newtypes) = matches.values_of("newtype-enum") {
         for regex in newtypes {
             builder = builder.newtype_enum(regex);
+        }
+    }
+
+    if let Some(newtypes) = matches.values_of("newtype-global-enum") {
+        for regex in newtypes {
+            builder = builder.newtype_global_enum(regex);
         }
     }
 
