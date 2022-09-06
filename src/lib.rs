@@ -279,11 +279,19 @@ impl Builder {
                     codegen::EnumVariation::Rust {
                         non_exhaustive: true,
                     } => "rust_non_exhaustive",
-                    codegen::EnumVariation::NewType { is_bitfield: true } => {
-                        "bitfield"
-                    }
-                    codegen::EnumVariation::NewType { is_bitfield: false } => {
-                        "newtype"
+                    codegen::EnumVariation::NewType {
+                        is_bitfield: true,
+                        ..
+                    } => "bitfield",
+                    codegen::EnumVariation::NewType {
+                        is_bitfield: false,
+                        is_global,
+                    } => {
+                        if is_global {
+                            "newtype_global"
+                        } else {
+                            "newtype"
+                        }
                     }
                     codegen::EnumVariation::Consts => "consts",
                     codegen::EnumVariation::ModuleConsts => "moduleconsts",
@@ -981,6 +989,18 @@ impl Builder {
     /// expressions are supported.
     pub fn newtype_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.newtype_enums.insert(arg);
+        self
+    }
+
+    /// Mark the given enum (or set of enums, if using a pattern) as a newtype
+    /// whose variants are exposed as global constants.
+    ///
+    /// Regular expressions are supported.
+    ///
+    /// This makes bindgen generate a type that isn't a Rust `enum`. Regular
+    /// expressions are supported.
+    pub fn newtype_global_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.newtype_global_enums.insert(arg);
         self
     }
 
@@ -1759,6 +1779,9 @@ struct BindgenOptions {
     /// The enum patterns to mark an enum as a newtype.
     newtype_enums: RegexSet,
 
+    /// The enum patterns to mark an enum as a global newtype.
+    newtype_global_enums: RegexSet,
+
     /// The enum patterns to mark an enum as a Rust enum.
     rustified_enums: RegexSet,
 
@@ -2097,6 +2120,7 @@ impl Default for BindgenOptions {
             default_enum_style: Default::default(),
             bitfield_enums: Default::default(),
             newtype_enums: Default::default(),
+            newtype_global_enums: Default::default(),
             rustified_enums: Default::default(),
             rustified_non_exhaustive_enums: Default::default(),
             constified_enums: Default::default(),

@@ -187,10 +187,25 @@ impl Enum {
             &ctx.options().bitfield_enums,
             item,
         ) {
-            EnumVariation::NewType { is_bitfield: true }
+            EnumVariation::NewType {
+                is_bitfield: true,
+                is_global: false,
+            }
         } else if self.is_matching_enum(ctx, &ctx.options().newtype_enums, item)
         {
-            EnumVariation::NewType { is_bitfield: false }
+            EnumVariation::NewType {
+                is_bitfield: false,
+                is_global: false,
+            }
+        } else if self.is_matching_enum(
+            ctx,
+            &ctx.options().newtype_global_enums,
+            item,
+        ) {
+            EnumVariation::NewType {
+                is_bitfield: false,
+                is_global: true,
+            }
         } else if self.is_matching_enum(
             ctx,
             &ctx.options().rustified_enums,
