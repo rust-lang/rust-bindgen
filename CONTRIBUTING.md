@@ -318,7 +318,19 @@ parameters a given type uses. The analyses are defined in
 
 The final phase is generating Rust source text from the analyzed IR, and it is
 defined in `src/codegen/*`. We use the `quote` crate, which provides the `quote!
-{ ... }` macro for quasi-quoting Rust forms.
+{ ... }` macro for quasi-quoting Rust forms. Some options that affect the
+generated Rust code are implemented using the [`syn`](https://docs.rs/syn) crate.
+
+### Implementing new options using `syn`
+
+Here is a list of recommendations to be followed if a new option can be
+implemented using the `syn` crate:
+
+- The `BindgenOptions::require_syn` method must be updated to reflect that this
+  new option requires parsing the generated Rust code with `syn`.
+
+- The implementation of the new option should be added at the end of
+  `Bindings::generate`, inside the `if options.require_syn() { ... }` block.
 
 ## Pull Requests and Code Reviews
 
