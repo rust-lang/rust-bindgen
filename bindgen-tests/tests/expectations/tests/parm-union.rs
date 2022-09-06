@@ -30,7 +30,7 @@ extern "C" {
 impl Struct {
     #[inline]
     pub unsafe fn Function(&mut self, arg1: *mut Union) {
-        Struct_Function(self, arg1)
+        unsafe { Struct_Function(self, arg1) }
     }
 }
 #[repr(C)]

@@ -30,12 +30,12 @@ pub trait IFoo: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, foo)
+        unsafe { msg_send!(*self, foo) }
     }
     unsafe fn class_foo()
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(class!(Foo), foo)
+        unsafe { msg_send!(class!(Foo), foo) }
     }
 }

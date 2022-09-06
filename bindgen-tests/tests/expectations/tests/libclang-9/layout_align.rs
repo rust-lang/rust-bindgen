@@ -109,11 +109,11 @@ impl<T> __IncompleteArrayField<T> {
     }
     #[inline]
     pub unsafe fn as_slice(&self, len: usize) -> &[T] {
-        ::std::slice::from_raw_parts(self.as_ptr(), len)
+        unsafe { ::std::slice::from_raw_parts(self.as_ptr(), len) }
     }
     #[inline]
     pub unsafe fn as_mut_slice(&mut self, len: usize) -> &mut [T] {
-        ::std::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
+        unsafe { ::std::slice::from_raw_parts_mut(self.as_mut_ptr(), len) }
     }
 }
 impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
@@ -151,56 +151,56 @@ fn bindgen_test_layout_rte_kni_fifo() {
         concat!("Alignment of ", stringify!(rte_kni_fifo))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).write) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_kni_fifo),
-            "::",
-            stringify!(write)
-        )
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).read) as usize - ptr as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_kni_fifo),
-            "::",
-            stringify!(read)
-        )
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_kni_fifo),
-            "::",
-            stringify!(len)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            ::std::ptr::addr_of!((*ptr).elem_size) as usize - ptr as usize
-        },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_kni_fifo),
-            "::",
-            stringify!(elem_size)
-        )
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).buffer) as usize - ptr as usize },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_kni_fifo),
-            "::",
-            stringify!(buffer)
-        )
+       unsafe { ::std::ptr::addr_of!((*ptr).write) as usize - ptr as usize },
+       0usize,
+       concat!(
+           "Offset of field: ",
+           stringify!(rte_kni_fifo),
+           "::",
+           stringify!(write)
+       )
+   );
+   assert_eq!(
+       unsafe { ::std::ptr::addr_of!((*ptr).read) as usize - ptr as usize },
+       4usize,
+       concat!(
+           "Offset of field: ",
+           stringify!(rte_kni_fifo),
+           "::",
+           stringify!(read)
+       )
+   );
+   assert_eq!(
+       unsafe { ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize },
+       8usize,
+       concat!(
+           "Offset of field: ",
+           stringify!(rte_kni_fifo),
+           "::",
+           stringify!(len)
+       )
+   );
+   assert_eq!(
+       unsafe {
+           ::std::ptr::addr_of!((*ptr).elem_size) as usize - ptr as usize
+       },
+       12usize,
+       concat!(
+           "Offset of field: ",
+           stringify!(rte_kni_fifo),
+           "::",
+           stringify!(elem_size)
+       )
+   );
+   assert_eq!(
+       unsafe { ::std::ptr::addr_of!((*ptr).buffer) as usize - ptr as usize },
+       16usize,
+       concat!(
+           "Offset of field: ",
+           stringify!(rte_kni_fifo),
+           "::",
+           stringify!(buffer)
+       )
     );
 }
 impl Default for rte_kni_fifo {

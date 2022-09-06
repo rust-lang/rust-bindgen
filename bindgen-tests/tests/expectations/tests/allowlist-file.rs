@@ -41,7 +41,7 @@ extern "C" {
 impl someClass {
     #[inline]
     pub unsafe fn somePublicMethod(&mut self, foo: ::std::os::raw::c_int) {
-        someClass_somePublicMethod(self, foo)
+        unsafe { someClass_somePublicMethod(self, foo) }
     }
 }
 extern "C" {

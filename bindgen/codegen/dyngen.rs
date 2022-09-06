@@ -92,7 +92,9 @@ impl DynamicItems {
                 ) -> Result<Self, ::libloading::Error>
                 where P: AsRef<::std::ffi::OsStr> {
                     let library = ::libloading::Library::new(path)?;
-                    Self::from_library(library)
+                    unsafe {
+                        Self::from_library(library)
+                    }
                 }
 
                 pub unsafe fn from_library<L>(
@@ -157,7 +159,9 @@ impl DynamicItems {
             self.struct_implementation.push(quote! {
                 #(#attributes)*
                 pub unsafe fn #ident ( &self, #( #args ),* ) -> #ret_ty {
-                    #call_body
+                    unsafe {
+                        #call_body
+                    }
                 }
             });
         }
@@ -166,11 +170,11 @@ impl DynamicItems {
         let ident_str = codegen::helpers::ast_ty::cstr_expr(ident.to_string());
         self.constructor_inits.push(if is_required {
             quote! {
-                let #ident = __library.get(#ident_str).map(|sym| *sym)?;
+                let #ident = unsafe { __library.get(#ident_str) }.map(|sym| *sym)?;
             }
         } else {
             quote! {
-                let #ident = __library.get(#ident_str).map(|sym| *sym);
+                let #ident = unsafe { __library.get(#ident_str) }.map(|sym| *sym);
             }
         });
 

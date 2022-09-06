@@ -89,6 +89,8 @@ jobs:
 
       - name: Test expectations
         run: cd bindgen-tests/tests/expectations && cargo test
+        env:
+          RUSTFLAGS: "-D unsafe_op_in_unsafe_fn"
 
   test:
     runs-on: ${{matrix.os}}

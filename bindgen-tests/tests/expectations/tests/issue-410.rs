@@ -37,7 +37,7 @@ pub mod root {
         impl Value {
             #[inline]
             pub unsafe fn a(&mut self, arg1: root::JSWhyMagic) {
-                Value_a(self, arg1)
+                unsafe { Value_a(self, arg1) }
             }
         }
     }

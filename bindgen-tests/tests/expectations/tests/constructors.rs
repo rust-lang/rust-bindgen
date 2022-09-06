@@ -37,15 +37,19 @@ extern "C" {
 impl TestOverload {
     #[inline]
     pub unsafe fn new(arg1: ::std::os::raw::c_int) -> Self {
-        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
-        TestOverload_TestOverload(__bindgen_tmp.as_mut_ptr(), arg1);
-        __bindgen_tmp.assume_init()
+        unsafe {
+            let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+            TestOverload_TestOverload(__bindgen_tmp.as_mut_ptr(), arg1);
+            __bindgen_tmp.assume_init()
+        }
     }
     #[inline]
     pub unsafe fn new1(arg1: f64) -> Self {
-        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
-        TestOverload_TestOverload1(__bindgen_tmp.as_mut_ptr(), arg1);
-        __bindgen_tmp.assume_init()
+        unsafe {
+            let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+            TestOverload_TestOverload1(__bindgen_tmp.as_mut_ptr(), arg1);
+            __bindgen_tmp.assume_init()
+        }
     }
 }
 #[repr(C)]
@@ -73,8 +77,10 @@ extern "C" {
 impl TestPublicNoArgs {
     #[inline]
     pub unsafe fn new() -> Self {
-        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
-        TestPublicNoArgs_TestPublicNoArgs(__bindgen_tmp.as_mut_ptr());
-        __bindgen_tmp.assume_init()
+        unsafe {
+            let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+            TestPublicNoArgs_TestPublicNoArgs(__bindgen_tmp.as_mut_ptr());
+            __bindgen_tmp.assume_init()
+        }
     }
 }

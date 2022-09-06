@@ -20,7 +20,7 @@ impl TestLib {
         P: AsRef<::std::ffi::OsStr>,
     {
         let library = ::libloading::Library::new(path)?;
-        Self::from_library(library)
+        unsafe { Self::from_library(library) }
     }
     pub unsafe fn from_library<L>(
         library: L,
@@ -29,8 +29,8 @@ impl TestLib {
         L: Into<::libloading::Library>,
     {
         let __library = library.into();
-        let foo = __library.get(b"foo\0").map(|sym| *sym);
-        let foo1 = __library.get(b"foo1\0").map(|sym| *sym);
+        let foo = unsafe { __library.get(b"foo\0") }.map(|sym| *sym);
+        let foo1 = unsafe { __library.get(b"foo1\0") }.map(|sym| *sym);
         Ok(TestLib {
             __library,
             foo,
@@ -41,9 +41,13 @@ impl TestLib {
         &self,
         x: ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_int {
-        (self.foo.as_ref().expect("Expected function, got error."))(x)
+        unsafe {
+            (self.foo.as_ref().expect("Expected function, got error."))(x)
+        }
     }
     pub unsafe fn foo1(&self, x: f32) -> f32 {
-        (self.foo1.as_ref().expect("Expected function, got error."))(x)
+        unsafe {
+            (self.foo1.as_ref().expect("Expected function, got error."))(x)
+        }
     }
 }

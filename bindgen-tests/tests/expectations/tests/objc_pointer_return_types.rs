@@ -47,12 +47,12 @@ pub trait IFoo: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, methodUsingBar: my_bar)
+        unsafe { msg_send!(*self, methodUsingBar: my_bar) }
     }
     unsafe fn methodReturningBar() -> Bar
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(class!(Foo), methodReturningBar)
+        unsafe { msg_send!(class!(Foo), methodReturningBar) }
     }
 }

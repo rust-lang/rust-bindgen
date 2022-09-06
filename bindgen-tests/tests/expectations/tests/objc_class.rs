@@ -33,6 +33,6 @@ pub trait IFoo: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, method)
+        unsafe { msg_send!(*self, method) }
     }
 }
