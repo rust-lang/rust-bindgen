@@ -139,7 +139,7 @@ fn error_diff_mismatch(
         println!("+++ generated from: {:?}", header);
     }
 
-    for diff in diff::lines(&expected, &actual) {
+    for diff in diff::lines(expected, actual) {
         match diff {
             diff::Result::Left(l) => println!("-{}", l),
             diff::Result::Both(l, _) => println!(" {}", l),
@@ -168,7 +168,7 @@ fn error_diff_mismatch(
             .output()?;
     }
 
-    return Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation or with BINDGEN_TESTS_DIFFTOOL=meld to do this manually."));
+    Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation or with BINDGEN_TESTS_DIFFTOOL=meld to do this manually."))
 }
 
 fn compare_generated_header(

@@ -93,7 +93,7 @@ impl Layout {
 }
 
 /// When we are treating a type as opaque, it is just a blob with a `Layout`.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Opaque(pub Layout);
 
 impl Opaque {
