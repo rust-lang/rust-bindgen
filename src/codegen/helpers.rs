@@ -166,9 +166,19 @@ pub mod ast_ty {
                     #prefix::#ident
                 }
             }
-            None => quote! {
-                ::std::os::raw::#ident
-            },
+            None => {
+                if ctx.options().use_core &&
+                    ctx.options().rust_features().core_ffi_c
+                {
+                    quote! {
+                        ::core::ffi::#ident
+                    }
+                } else {
+                    quote! {
+                        ::std::os::raw::#ident
+                    }
+                }
+            }
         }
     }
 

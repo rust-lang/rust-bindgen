@@ -130,6 +130,7 @@ macro_rules! rust_target_base {
             /// Nightly rust
             ///  * `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))
             ///  * `vectorcall` calling convention (no tracking issue)
+            ///  * `core_ffi_c` ([Tracking issue](https://github.com/rust-lang/rust/issues/94501))
             => Nightly => nightly;
         );
     }
@@ -236,6 +237,7 @@ rust_feature_def!(
     Nightly {
         => thiscall_abi;
         => vectorcall_abi;
+        => core_ffi_c;
     }
 );
 
