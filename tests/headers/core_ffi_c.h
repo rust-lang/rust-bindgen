@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target nightly --use-core --no-convert-floats
+// bindgen-flags: --rust-target nightly --raw-line '#![cfg(feature = "nightly")]' --use-core --no-convert-floats
 typedef char c_char;
 typedef double c_double;
 typedef float c_float;
