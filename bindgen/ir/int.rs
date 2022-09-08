@@ -121,7 +121,7 @@ impl IntKind {
     }
 
     /// Whether this type's signedness matches the value.
-    pub(crate) fn signedness_matches(&self, val: i64) -> bool {
+    pub(crate) fn signedness_matches(&self, val: i128) -> bool {
         val >= 0 || self.is_signed()
     }
 }

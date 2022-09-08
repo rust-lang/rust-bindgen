@@ -3,6 +3,7 @@
 use super::context::BindgenContext;
 use super::dot::DotAttributes;
 use super::function::Function;
+use super::macro_def::MacroDef;
 use super::module::Module;
 use super::ty::Type;
 use super::var::Var;
@@ -23,6 +24,9 @@ pub(crate) enum ItemKind {
 
     /// A variable declaration, most likely a static.
     Var(Var),
+
+    /// A macro definition.
+    MacroDef(MacroDef),
 }
 
 impl ItemKind {
@@ -42,6 +46,7 @@ impl ItemKind {
             ItemKind::Type(..) => "Type",
             ItemKind::Function(..) => "Function",
             ItemKind::Var(..) => "Var",
+            ItemKind::MacroDef(..) => "MacroDef",
         }
     }
 
@@ -130,6 +135,9 @@ impl DotAttributes for ItemKind {
             ItemKind::Type(ref ty) => ty.dot_attributes(ctx, out),
             ItemKind::Function(ref func) => func.dot_attributes(ctx, out),
             ItemKind::Var(ref var) => var.dot_attributes(ctx, out),
+            ItemKind::MacroDef(ref macro_def) => {
+                macro_def.dot_attributes(ctx, out)
+            }
         }
     }
 }

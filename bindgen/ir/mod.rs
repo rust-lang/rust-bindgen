@@ -17,6 +17,7 @@ pub(crate) mod int;
 pub(crate) mod item;
 pub(crate) mod item_kind;
 pub(crate) mod layout;
+pub(crate) mod macro_def;
 pub(crate) mod module;
 pub(crate) mod objc;
 pub(crate) mod template;

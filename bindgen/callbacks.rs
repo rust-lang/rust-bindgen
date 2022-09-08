@@ -68,10 +68,64 @@ pub trait ParseCallbacks: fmt::Debug {
     /// influence the further treatment of the macro, but may use the value to
     /// generate additional code or configuration.
     ///
-    /// The first parameter represents the name and argument list (including the
-    /// parentheses) of the function-like macro. The second parameter represents
-    /// the expansion of the macro as a sequence of tokens.
-    fn func_macro(&self, _name: &str, _value: &[&[u8]]) {}
+    /// Note that instead of using this callback to handle unsupported macros,
+    /// consider contributing an improvement to the parsing or code generation in
+    /// the `cmacro` crate.
+    #[allow(unused_variables)]
+    fn fn_macro(&self, info: &FnMacroInfo<'_>) {}
+
+    /// Specify the type of a macro argument.
+    ///
+    /// This is needed if you want to generate a function instead of a macro.
+    /// If all argument types and the return type of a macro can be inferred,
+    /// a function will be generated instead of a macro.
+    ///
+    /// # Examples
+    ///
+    /// A macro like
+    ///
+    /// ```c
+    /// #define times(x, y) (x * y)
+    /// ```
+    ///
+    /// will normally generate
+    ///
+    /// ```
+    /// macro_rules! times {
+    ///     ($x:expr, $y:expr) => {{ $x * $y }};
+    /// }
+    /// ```
+    ///
+    /// If you specify the types for each argument, i.e. implement
+    ///
+    /// ```
+    /// # use bindgen::callbacks::ParseCallbacks;
+    /// # #[derive(Debug)]
+    /// # struct Callbacks;
+    /// # impl ParseCallbacks for Callbacks {
+    /// fn fn_macro_arg_type(&self, name: &str, arg: &str) -> Option<syn::Type> {
+    ///     match (name, arg) {
+    ///        ("times", "x" | "y") => Some(syn::parse_quote! { ::core::ffi::c_int }),
+    ///         _ => None,
+    ///     }
+    /// }
+    /// # }
+    /// ```
+    ///
+    /// a function will be generated instead
+    ///
+    /// ```
+    /// pub fn times(x: ::core::ffi::c_int, y: ::core::ffi::c_int) -> ::core::ffi::c_int {
+    ///     x * y
+    /// }
+    /// ```
+    ///
+    /// since all types can be resolved.
+    #[cfg(feature = "experimental")]
+    #[allow(unused_variables)]
+    fn fn_macro_arg_type(&self, name: &str, arg: &str) -> Option<syn::Type> {
+        None
+    }
 
     /// This function should return whether, given an enum variant
     /// name, and value, this enum variant will forcibly be a constant.
@@ -210,4 +264,28 @@ pub struct FieldInfo<'a> {
     pub type_name: &'a str,
     /// The name of the field.
     pub field_name: &'a str,
+}
+
+/// A struct providing information about the funktion-like macro being passed to [`ParseCallbacks::fn_macro`].
+pub struct FnMacroInfo<'m> {
+    pub(crate) name: &'m str,
+    pub(crate) args: &'m [&'m str],
+    pub(crate) body: &'m [&'m str],
+}
+
+impl FnMacroInfo<'_> {
+    /// The macro name.
+    pub fn name(&self) -> &str {
+        self.name
+    }
+
+    /// The macro argument names.
+    pub fn args(&self) -> &[&str] {
+        self.args
+    }
+
+    /// The macro body as delimited `clang` tokens.
+    pub fn body(&self) -> &[&str] {
+        self.body
+    }
 }
