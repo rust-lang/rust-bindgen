@@ -5,7 +5,6 @@ use super::context::{BindgenContext, ItemId, TypeId};
 use super::dot::DotAttributes;
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
-use super::int::IntKind;
 use super::item::{IsOpaque, Item};
 use super::layout::{Layout, Opaque};
 use super::objc::ObjCInterface;
@@ -17,6 +16,8 @@ use crate::clang::{self, Cursor};
 use crate::parse::{ParseError, ParseResult};
 use std::borrow::Cow;
 use std::io;
+
+pub use super::int::IntKind;
 
 /// The base representation of a type in bindgen.
 ///
