@@ -354,6 +354,8 @@ pub struct BindgenContext {
     /// This needs to be an std::HashMap because the cexpr API requires it.
     parsed_macros: StdHashMap<Vec<u8>, cexpr::expr::EvalResult>,
 
+    wrapper_ids: StdHashMap<String, TypeId>,
+
     /// A set of all the included filenames.
     deps: BTreeSet<String>,
 
@@ -555,6 +557,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             semantic_parents: Default::default(),
             currently_parsed_types: vec![],
             parsed_macros: Default::default(),
+            wrapper_ids: Default::default(),
             replacements: Default::default(),
             collected_typerefs: false,
             in_codegen: false,
@@ -1919,7 +1922,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let layout = ty.fallible_layout(self).ok();
         let location = ty.declaration().location();
         let type_kind = TypeKind::ResolvedTypeRef(wrapped_id);
-        let ty = Type::new(Some(spelling), layout, type_kind, is_const);
+
+        eprintln!("Building wrapper type {:?} ({:?})", spelling, wrapped_id);
+
+        let ty = Type::new(Some(spelling.clone()), layout, type_kind, is_const);
         let item = Item::new(
             with_id,
             None,
@@ -1929,7 +1935,15 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             Some(location),
         );
         self.add_builtin_item(item);
-        with_id.as_type_id_unchecked()
+        let type_id = with_id.as_type_id_unchecked();
+
+        self.wrapper_ids.insert(spelling.clone(), type_id);
+
+        type_id
+    }
+
+    pub fn wrapper_id_by_name(&self, name: &str) -> Option<&TypeId> {
+        self.wrapper_ids.get(name)
     }
 
     /// Returns the next item id to be used for an item.
@@ -1988,6 +2002,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let is_const = ty.is_const();
         let layout = ty.fallible_layout(self).ok();
         let location = ty.declaration().location();
+
+        eprintln!("Building type {:?}", spelling);
+
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
         let id = self.next_item_id();
         let item = Item::new(

@@ -77,8 +77,23 @@ impl Var {
     }
 
     /// Get this variable's type.
-    pub fn ty(&self) -> TypeId {
-        self.ty
+    #[track_caller]
+    pub fn ty(&self, ctx: &BindgenContext) -> Option<TypeId> {
+        match self.ty {
+            VarTypeId::Concrete(type_id) => Some(type_id),
+            VarTypeId::Lazy(ref type_name) => {
+                let type_id = ctx.wrapper_id_by_name(type_name).or_else(|| {
+                    ctx.wrapper_id_by_name(&format!("const {}", type_name))
+                });
+
+                eprintln!(
+                    "Looking for type_name '{}': {:?}",
+                    type_name, type_id
+                );
+
+                type_id.cloned()
+            }
+        }
     }
 
     /// Get this variable's name.
@@ -115,6 +130,25 @@ impl DotAttributes for Var {
 
         Ok(())
     }
+}
+
+fn default_limit_constant_type(name: &str, value: i64) -> Option<IntKind> {
+    Some(match name {
+        "SCHAR_MIN" | "SCHAR_MAX" => IntKind::SChar,
+        "CHAR_MIN" | "CHAR_MAX" => IntKind::Char {
+            is_signed: value < 0,
+        },
+        "UCHAR_MIN" | "UCHAR_MAX" => IntKind::UChar,
+        "SHRT_MIN" | "SHRT_MAX" => IntKind::Short,
+        "USHRT_MIN" | "USHRT_MAX" => IntKind::UShort,
+        "INT_MIN" | "INT_MAX" => IntKind::Int,
+        "UINT_MIN" | "UINT_MAX" => IntKind::UInt,
+        "LONG_MIN" | "LONG_MAX" => IntKind::Long,
+        "ULONG_MIN" | "ULONG_MAX" => IntKind::ULong,
+        "LLONG_MIN" | "LLONG_MAX" => IntKind::LongLong,
+        "ULLONG_MIN" | "ULLONG_MAX" => IntKind::ULongLong,
+        _ => return None,
+    })
 }
 
 fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
@@ -258,11 +292,82 @@ impl ClangSubItemParser for Var {
                         let kind = ctx
                             .parse_callbacks()
                             .and_then(|c| c.int_macro(&name, value))
+                            .or_else(|| {
+                                default_limit_constant_type(&name, value)
+                            })
                             .unwrap_or_else(|| {
                                 default_macro_constant_type(ctx, value)
                             });
 
                         (TypeKind::Int(kind), VarType::Int(value))
+                    }
+                    EvalResult::Cast(c, v) => {
+                        let ty = c
+                            .iter()
+                            .map(|v| std::str::from_utf8(v).unwrap())
+                            .collect::<Vec<&str>>();
+
+                        if let EvalResult::Int(Wrapping(value)) = *v {
+                            let val = VarType::Int(value);
+
+                            let kind = match &ty[..] {
+                                ["bool"] => IntKind::Bool,
+                                ["char"] => IntKind::Char {
+                                    is_signed: value < 0,
+                                },
+                                ["signed", "char"] => IntKind::SChar,
+                                ["unsigned", "char"] => IntKind::UChar,
+                                ["short"] => IntKind::Short,
+                                ["unsigned", "short"] => IntKind::UShort,
+                                ["int"] => IntKind::Int,
+                                ["unsigned", "int"] => IntKind::UInt,
+                                ["long"] => IntKind::Long,
+                                ["unsigned", "long"] => IntKind::ULong,
+                                ["long", "long"] => IntKind::LongLong,
+                                ["unsigned", "long", "long"] => {
+                                    IntKind::ULongLong
+                                }
+                                ["int8_t"] => IntKind::I8,
+                                ["uint8_t"] => IntKind::U8,
+                                ["int16_t"] => IntKind::I16,
+                                ["uint16_t"] => IntKind::U16,
+                                ["int32_t"] => IntKind::I32,
+                                ["uint32_t"] => IntKind::U32,
+                                ["int64_t"] => IntKind::I64,
+                                ["uint64_t"] => IntKind::U64,
+                                [custom_type] => {
+                                    eprintln!(
+                                        "looking for type {:?}",
+                                        custom_type
+                                    );
+
+                                    // FIXME: Doesn't work since types are parsed after macros.
+                                    let type_id = ctx
+                                        .wrapper_id_by_name(custom_type)
+                                        .or_else(|| {
+                                            ctx.wrapper_id_by_name(&format!(
+                                                "const {}",
+                                                custom_type
+                                            ))
+                                        });
+
+                                    if let Some(type_id) = type_id {
+                                        todo!(
+                                            "type id for {:?} = {:?}",
+                                            custom_type,
+                                            type_id
+                                        );
+                                    }
+
+                                    return Err(ParseError::Continue);
+                                }
+                                _ => return Err(ParseError::Continue),
+                            };
+
+                            (TypeKind::Int(kind), val)
+                        } else {
+                            return Err(ParseError::Continue);
+                        }
                     }
                 };
 
