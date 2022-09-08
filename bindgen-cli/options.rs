@@ -210,6 +210,9 @@ struct BindgenCommand {
     /// Generate string constants as `&CStr` instead of `&[u8]`.
     #[arg(long)]
     generate_cstr: bool,
+    /// Generate code for function-like macros.
+    #[arg(long, requires = "experimental")]
+    generate_fn_macros: bool,
     /// Use extern crate instead of use for block.
     #[arg(long)]
     block_extern_crate: bool,
@@ -501,6 +504,7 @@ where
         objc_extern_crate,
         generate_block,
         generate_cstr,
+        generate_fn_macros,
         block_extern_crate,
         distrust_clang_mangling,
         builtins,
@@ -848,6 +852,10 @@ where
 
     if generate_cstr {
         builder = builder.generate_cstr(true);
+    }
+
+    if generate_fn_macros {
+        builder = builder.generate_fn_macros(true);
     }
 
     if block_extern_crate {

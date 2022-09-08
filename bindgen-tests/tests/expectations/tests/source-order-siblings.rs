@@ -4,7 +4,7 @@ pub const A: ::std::os::raw::c_char = 97;
 extern "C" {
     pub fn AA();
 }
-pub const B: u8 = 98u8;
+pub const B: ::std::os::raw::c_char = 'b' as ::std::os::raw::c_char;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct BB {}

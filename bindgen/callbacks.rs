@@ -67,8 +67,65 @@ pub trait ParseCallbacks: fmt::Debug {
     /// This will be run on every function-like macro. The callback cannot
     /// influence the further treatment of the macro, but may use the value to
     /// generate additional code or configuration.
+    ///
+    /// Note that instead of using this callback to handle unsupported macros,
+    /// consider contributing an improvement to the parsing or code generation in
+    /// the `cmacro` crate.
     #[allow(unused_variables)]
     fn fn_macro(&self, info: &FnMacroInfo<'_>) {}
+
+    /// Specify the type of a macro argument.
+    ///
+    /// This is needed if you want to generate a function instead of a macro.
+    /// If all argument types and the return type of a macro can be inferred,
+    /// a function will be generated instead of a macro.
+    ///
+    /// # Examples
+    ///
+    /// A macro like
+    ///
+    /// ```c
+    /// #define times(x, y) (x * y)
+    /// ```
+    ///
+    /// will normally generate
+    ///
+    /// ```
+    /// macro_rules! times {
+    ///     ($x:expr, $y:expr) => {{ $x * $y }};
+    /// }
+    /// ```
+    ///
+    /// If you specify the types for each argument, i.e. implement
+    ///
+    /// ```
+    /// # use bindgen::callbacks::ParseCallbacks;
+    /// # #[derive(Debug)]
+    /// # struct Callbacks;
+    /// # impl ParseCallbacks for Callbacks {
+    /// fn fn_macro_arg_type(&self, name: &str, arg: &str) -> Option<syn::Type> {
+    ///     match (name, arg) {
+    ///        ("times", "x" | "y") => Some(syn::parse_quote! { ::core::ffi::c_int }),
+    ///         _ => None,
+    ///     }
+    /// }
+    /// # }
+    /// ```
+    ///
+    /// a function will be generated instead
+    ///
+    /// ```
+    /// pub fn times(x: ::core::ffi::c_int, y: ::core::ffi::c_int) -> ::core::ffi::c_int {
+    ///     x * y
+    /// }
+    /// ```
+    ///
+    /// since all types can be resolved.
+    #[cfg(feature = "experimental")]
+    #[allow(unused_variables)]
+    fn fn_macro_arg_type(&self, name: &str, arg: &str) -> Option<syn::Type> {
+        None
+    }
 
     /// This function should return whether, given an enum variant
     /// name, and value, this enum variant will forcibly be a constant.

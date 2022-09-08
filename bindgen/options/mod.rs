@@ -171,7 +171,7 @@ options! {
     blocklisted_functions: RegexSet {
         methods: {
             regex_option! {
-                /// Do not generate any bindings for the given function.
+                /// Do not generate any bindings for the given function (or function-like macro).
                 ///
                 /// This option is not recursive, meaning that it will only block functions whose
                 /// names explicitly match the argument of this method.
@@ -312,7 +312,7 @@ options! {
     allowlisted_functions: RegexSet {
         methods: {
             regex_option! {
-                /// Generate bindings for the given function.
+                /// Generate bindings for the given function (or function-like macro).
                 ///
                 /// This option is transitive by default. Check the documentation of the
                 /// [`Builder::allowlist_recursively`] method for further information.
@@ -328,7 +328,7 @@ options! {
     allowlisted_vars: RegexSet {
         methods: {
             regex_option! {
-                /// Generate bindings for the given variable.
+                /// Generate bindings for the given variable (or variable-like macro).
                 ///
                 /// This option is transitive by default. Check the documentation of the
                 /// [`Builder::allowlist_recursively`] method for further information.
@@ -1513,6 +1513,18 @@ options! {
             }
         },
         as_args: "--generate-cstr",
+    },
+    /// Whether to generate code fore function-like macros.
+    generate_fn_macros: bool {
+        methods: {
+            #[cfg(feature = "experimental")]
+            /// Set whether code for function-like macros should be generated.
+            pub fn generate_fn_macros(mut self, doit: bool) -> Self {
+                self.options.generate_fn_macros = doit;
+                self
+            }
+        },
+        as_args: "--generate-fn-macros",
     },
     /// Whether to emit `#[macro_use] extern crate block;` instead of `use block;` in the prologue
     /// of the files generated from apple block files.

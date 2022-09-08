@@ -59,7 +59,7 @@ impl ParseCallbacks for MacroCallback {
         }
     }
 
-    fn fn_macro(&self, info: &FnMacroInfo<'_>) {
+    fn fn_macro(&self, info: &FnMacroInfo) {
         let args = info.args();
         let body = info.body();
 

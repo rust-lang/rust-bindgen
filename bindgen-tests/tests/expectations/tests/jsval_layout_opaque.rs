@@ -126,7 +126,7 @@ pub enum JSValueShiftedTag {
     JSVAL_SHIFTED_TAG_OBJECT = 18445618173802708992,
 }
 pub const JSVAL_PAYLOAD_MASK: u64 = 140737488355327;
-pub const JSVAL_TAG_MASK: i64 = -140737488355328;
+pub const JSVAL_TAG_MASK: u64 = 18446603336221196288;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSWhyMagic {

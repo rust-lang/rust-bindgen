@@ -27,8 +27,8 @@ version = "0.69.4"
 dependencies = [
  "annotate-snippets",
  "bitflags 2.2.1",
- "cexpr",
  "clang-sys",
+ "cmacro",
  "itertools",
  "log",
  "prettyplease",
@@ -100,15 +100,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a20104e2335ce8a659d6dd92a51a767a0c062599c73b343fd152cb401e828c3d"
 
 [[package]]
-name = "cexpr"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6fac387a98bb7c37292057cffc56d62ecb629900026402633ae9160df93a8766"
-dependencies = [
- "nom",
-]
-
-[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -169,6 +160,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "783fe232adfca04f90f56201b26d79682d4cd2625e0bc7290b95123afe558ade"
 dependencies = [
  "os_str_bytes",
+]
+
+[[package]]
+name = "cmacro"
+version = "0.2.2"
+source = "git+https://github.com/reitermarkus/cmacro-rs#2b93025ebc7ca6b343ab2a801271c96f0ebc9b04"
+dependencies = [
+ "nom",
+ "proc-macro2",
+ "quote",
+ "semver",
+ "syn 2.0.18",
+ "unicode-ident",
 ]
 
 [[package]]
@@ -549,6 +553,12 @@ dependencies = [
  "linux-raw-sys 0.3.8",
  "windows-sys 0.45.0",
 ]
+
+[[package]]
+name = "semver"
+version = "1.0.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "92d43fe69e652f3df9bdc2b85b2854a0825b86e4fb76bc44d945137d053639ca"
 
 [[package]]
 name = "shlex"
