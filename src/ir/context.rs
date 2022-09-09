@@ -1942,7 +1942,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         type_id
     }
 
-    pub fn wrapper_id_by_name(&self, name: &str) -> Option<&TypeId> {
+    pub(crate) fn wrapper_id_by_name(&self, name: &str) -> Option<&TypeId> {
         self.wrapper_ids.get(name)
     }
 

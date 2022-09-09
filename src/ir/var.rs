@@ -47,9 +47,12 @@ pub struct Var {
     is_const: bool,
 }
 
+/// Either a concrete `TypeId` or a type name which allows for lazy lookup later on.
 #[derive(Debug)]
 pub enum VarTypeId {
+    /// A known `TypeId`.
     Concrete(TypeId),
+    /// A name for a type whose `TypeId` is may not yet be available.
     Lazy(String),
 }
 
