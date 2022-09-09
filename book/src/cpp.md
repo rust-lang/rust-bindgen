@@ -7,9 +7,8 @@ be nowhere near as nice as using them in C++. You will have to manually call
 constructors, destructors, overloaded operators, etc yourself.
 
 When passing in header files, the file will automatically be treated as C++ if
-it ends in `.hpp`. If it doesn't, adding `-x c++` clang args can be used to
-force C++ mode. You probably also want to use `-std=c++14` or similar clang args
-as well.
+it ends in `.hpp`. If it doesn't, adding the `--cxx` flag will force C++ mode.
+You probably also want to use the clang arg `-std=c++14` or similar as well.
 
 You pretty much **must** use [allowlisting](./allowlisting.md) when working
 with C++ to avoid pulling in all of the `std::.*` types, many of which `bindgen`
@@ -71,8 +70,8 @@ cannot translate into Rust:
   generate undefined behaviour. See
   [the tracking issue for exceptions](https://github.com/rust-lang/rust-bindgen/issues/1208)
   for more details.
-  
+
 * Return value optimization. C++ compilers will in certain circumstances optimize functions
   returning a struct type value to instead take an extra hidden argument that refers
   to the return value struct. `bindgen` cannot necessarily know about this optimization and
-  thus at present `bindgen`-interfaces for these kinds of functions are invalid. 
+  thus at present `bindgen`-interfaces for these kinds of functions are invalid.

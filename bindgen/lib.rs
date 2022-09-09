@@ -1323,6 +1323,12 @@ impl Builder {
         self
     }
 
+    /// Tell `clang` that the input files are `c++` files.
+    #[inline]
+    pub fn cxx(self) -> Builder {
+        self.clang_args(["-x", "c++"])
+    }
+
     /// Enable detecting must_use attributes on C functions.
     ///
     /// This is quite slow in some cases (see #1465), so it's disabled by

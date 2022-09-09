@@ -1,4 +1,4 @@
-// bindgen-flags: --rustified-enum '.*Rustified.*' --constified-enum-module '.*Module.*' -- -x c++ --std=c++14
+// bindgen-flags: --rustified-enum '.*Rustified.*' --constified-enum-module '.*Module.*' --cxx -- --std=c++14
 
 // Constified is default, so no flag for that.
 

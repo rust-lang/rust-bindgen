@@ -568,6 +568,9 @@ where
             Arg::new("merge-extern-blocks")
                 .long("merge-extern-blocks")
                 .help("Deduplicates extern blocks."),
+            Arg::new("cxx")
+                .long("cxx")
+                .help("Enables parsing C++ headers."),
             Arg::new("V")
                 .long("version")
                 .help("Prints the version, and exits"),
@@ -1086,6 +1089,10 @@ where
 
     if matches.is_present("merge-extern-blocks") {
         builder = builder.merge_extern_blocks(true);
+    }
+
+    if matches.is_present("cxx") {
+        builder = builder.cxx();
     }
 
     Ok((builder, output, verbose))
