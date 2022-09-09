@@ -564,7 +564,7 @@ impl TemplateParameters for TypeKind {
 }
 
 /// The kind of float this type represents.
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum FloatKind {
     /// A `float`.
     Float,
@@ -1031,7 +1031,16 @@ impl Type {
                 CXType_ObjCObjectPointer |
                 CXType_MemberPointer |
                 CXType_Pointer => {
-                    let pointee = ty.pointee_type().unwrap();
+                    let mut pointee = ty.pointee_type().unwrap();
+                    if *ty != canonical_ty {
+                        let canonical_pointee =
+                            canonical_ty.pointee_type().unwrap();
+                        // clang sometimes loses pointee constness here, see
+                        // #2244.
+                        if canonical_pointee.is_const() != pointee.is_const() {
+                            pointee = canonical_pointee;
+                        }
+                    }
                     let inner =
                         Item::from_ty_or_ref(pointee, location, None, ctx);
                     TypeKind::Pointer(inner)

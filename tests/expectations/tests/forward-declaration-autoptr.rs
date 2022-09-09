@@ -32,6 +32,9 @@ pub struct Bar {
 }
 #[test]
 fn bindgen_test_layout_Bar() {
+    const UNINIT: ::std::mem::MaybeUninit<Bar> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Bar>(),
         8usize,
@@ -42,23 +45,18 @@ fn bindgen_test_layout_Bar() {
         8usize,
         concat!("Alignment of ", stringify!(Bar))
     );
-    fn test_field_m_member() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).m_member) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(Bar),
-                "::",
-                stringify!(m_member)
-            )
-        );
-    }
-    test_field_m_member();
+    assert_eq!(
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).m_member) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(Bar),
+            "::",
+            stringify!(m_member)
+        )
+    );
 }
 impl Default for Bar {
     fn default() -> Self {

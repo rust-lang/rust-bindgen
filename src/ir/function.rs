@@ -19,7 +19,7 @@ use std::io;
 const RUST_DERIVE_FUNPTR_LIMIT: usize = 12;
 
 /// What kind of a function are we looking at?
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum FunctionKind {
     /// A plain, free function.
     Function,

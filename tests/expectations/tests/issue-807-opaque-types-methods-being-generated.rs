@@ -109,6 +109,9 @@ pub struct Allowlisted {
 }
 #[test]
 fn bindgen_test_layout_Allowlisted() {
+    const UNINIT: ::std::mem::MaybeUninit<Allowlisted> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Allowlisted>(),
         1usize,
@@ -119,21 +122,16 @@ fn bindgen_test_layout_Allowlisted() {
         1usize,
         concat!("Alignment of ", stringify!(Allowlisted))
     );
-    fn test_field_some_member() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<Allowlisted>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).some_member) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(Allowlisted),
-                "::",
-                stringify!(some_member)
-            )
-        );
-    }
-    test_field_some_member();
+    assert_eq!(
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).some_member) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(Allowlisted),
+            "::",
+            stringify!(some_member)
+        )
+    );
 }

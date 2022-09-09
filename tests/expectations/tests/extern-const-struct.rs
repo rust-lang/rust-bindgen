@@ -12,6 +12,9 @@ pub struct nsFoo {
 }
 #[test]
 fn bindgen_test_layout_nsFoo() {
+    const UNINIT: ::std::mem::MaybeUninit<nsFoo> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<nsFoo>(),
         1600usize,
@@ -22,23 +25,16 @@ fn bindgen_test_layout_nsFoo() {
         4usize,
         concat!("Alignment of ", stringify!(nsFoo))
     );
-    fn test_field_details() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<nsFoo>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).details) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(nsFoo),
-                "::",
-                stringify!(details)
-            )
-        );
-    }
-    test_field_details();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).details) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(nsFoo),
+            "::",
+            stringify!(details)
+        )
+    );
 }
 impl Default for nsFoo {
     fn default() -> Self {

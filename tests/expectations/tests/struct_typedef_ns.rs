@@ -19,6 +19,9 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout_typedef_struct() {
+            const UNINIT: ::std::mem::MaybeUninit<typedef_struct> =
+                ::std::mem::MaybeUninit::uninit();
+            let ptr = UNINIT.as_ptr();
             assert_eq!(
                 ::std::mem::size_of::<typedef_struct>(),
                 4usize,
@@ -29,24 +32,18 @@ pub mod root {
                 4usize,
                 concat!("Alignment of ", stringify!(typedef_struct))
             );
-            fn test_field_foo() {
-                assert_eq!(
-                    unsafe {
-                        let uninit =
-                            ::std::mem::MaybeUninit::<typedef_struct>::uninit();
-                        let ptr = uninit.as_ptr();
-                        ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
-                    },
-                    0usize,
-                    concat!(
-                        "Offset of field: ",
-                        stringify!(typedef_struct),
-                        "::",
-                        stringify!(foo)
-                    )
-                );
-            }
-            test_field_foo();
+            assert_eq!(
+                unsafe {
+                    ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
+                },
+                0usize,
+                concat!(
+                    "Offset of field: ",
+                    stringify!(typedef_struct),
+                    "::",
+                    stringify!(foo)
+                )
+            );
         }
         #[repr(u32)]
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -64,6 +61,9 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout__bindgen_ty_1() {
+            const UNINIT: ::std::mem::MaybeUninit<_bindgen_ty_1> =
+                ::std::mem::MaybeUninit::uninit();
+            let ptr = UNINIT.as_ptr();
             assert_eq!(
                 ::std::mem::size_of::<_bindgen_ty_1>(),
                 4usize,
@@ -74,24 +74,18 @@ pub mod root {
                 4usize,
                 concat!("Alignment of ", stringify!(_bindgen_ty_1))
             );
-            fn test_field_foo() {
-                assert_eq!(
-                    unsafe {
-                        let uninit =
-                            ::std::mem::MaybeUninit::<_bindgen_ty_1>::uninit();
-                        let ptr = uninit.as_ptr();
-                        ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
-                    },
-                    0usize,
-                    concat!(
-                        "Offset of field: ",
-                        stringify!(_bindgen_ty_1),
-                        "::",
-                        stringify!(foo)
-                    )
-                );
-            }
-            test_field_foo();
+            assert_eq!(
+                unsafe {
+                    ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
+                },
+                0usize,
+                concat!(
+                    "Offset of field: ",
+                    stringify!(_bindgen_ty_1),
+                    "::",
+                    stringify!(foo)
+                )
+            );
         }
         pub type typedef_struct = root::_bindgen_mod_id_12::_bindgen_ty_1;
         pub const _bindgen_mod_id_12_BAR:

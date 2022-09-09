@@ -18,6 +18,9 @@ pub struct TestDouble {
 }
 #[test]
 fn bindgen_test_layout_TestDouble() {
+    const UNINIT: ::std::mem::MaybeUninit<TestDouble> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<TestDouble>(),
         16usize,
@@ -28,23 +31,16 @@ fn bindgen_test_layout_TestDouble() {
         8usize,
         concat!("Alignment of ", stringify!(TestDouble))
     );
-    fn test_field_mMember() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<TestDouble>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(TestDouble),
-                "::",
-                stringify!(mMember)
-            )
-        );
-    }
-    test_field_mMember();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(TestDouble),
+            "::",
+            stringify!(mMember)
+        )
+    );
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -53,6 +49,9 @@ pub struct TestDoublePtr {
 }
 #[test]
 fn bindgen_test_layout_TestDoublePtr() {
+    const UNINIT: ::std::mem::MaybeUninit<TestDoublePtr> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<TestDoublePtr>(),
         8usize,
@@ -63,23 +62,16 @@ fn bindgen_test_layout_TestDoublePtr() {
         8usize,
         concat!("Alignment of ", stringify!(TestDoublePtr))
     );
-    fn test_field_mMember() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<TestDoublePtr>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(TestDoublePtr),
-                "::",
-                stringify!(mMember)
-            )
-        );
-    }
-    test_field_mMember();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(TestDoublePtr),
+            "::",
+            stringify!(mMember)
+        )
+    );
 }
 impl Default for TestDoublePtr {
     fn default() -> Self {
@@ -97,6 +89,9 @@ pub struct TestFloat {
 }
 #[test]
 fn bindgen_test_layout_TestFloat() {
+    const UNINIT: ::std::mem::MaybeUninit<TestFloat> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<TestFloat>(),
         8usize,
@@ -107,23 +102,16 @@ fn bindgen_test_layout_TestFloat() {
         4usize,
         concat!("Alignment of ", stringify!(TestFloat))
     );
-    fn test_field_mMember() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<TestFloat>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(TestFloat),
-                "::",
-                stringify!(mMember)
-            )
-        );
-    }
-    test_field_mMember();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(TestFloat),
+            "::",
+            stringify!(mMember)
+        )
+    );
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -132,6 +120,9 @@ pub struct TestFloatPtr {
 }
 #[test]
 fn bindgen_test_layout_TestFloatPtr() {
+    const UNINIT: ::std::mem::MaybeUninit<TestFloatPtr> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<TestFloatPtr>(),
         8usize,
@@ -142,23 +133,16 @@ fn bindgen_test_layout_TestFloatPtr() {
         8usize,
         concat!("Alignment of ", stringify!(TestFloatPtr))
     );
-    fn test_field_mMember() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<TestFloatPtr>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(TestFloatPtr),
-                "::",
-                stringify!(mMember)
-            )
-        );
-    }
-    test_field_mMember();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(TestFloatPtr),
+            "::",
+            stringify!(mMember)
+        )
+    );
 }
 impl Default for TestFloatPtr {
     fn default() -> Self {

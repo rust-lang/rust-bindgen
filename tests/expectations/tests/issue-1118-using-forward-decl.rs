@@ -13,6 +13,9 @@ pub struct nsTArray_base {
 }
 #[test]
 fn bindgen_test_layout_nsTArray_base() {
+    const UNINIT: ::std::mem::MaybeUninit<nsTArray_base> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<nsTArray_base>(),
         8usize,
@@ -23,23 +26,16 @@ fn bindgen_test_layout_nsTArray_base() {
         8usize,
         concat!("Alignment of ", stringify!(nsTArray_base))
     );
-    fn test_field_d() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<nsTArray_base>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(nsTArray_base),
-                "::",
-                stringify!(d)
-            )
-        );
-    }
-    test_field_d();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(nsTArray_base),
+            "::",
+            stringify!(d)
+        )
+    );
 }
 impl Default for nsTArray_base {
     fn default() -> Self {
@@ -71,6 +67,9 @@ pub struct nsIContent {
 }
 #[test]
 fn bindgen_test_layout_nsIContent() {
+    const UNINIT: ::std::mem::MaybeUninit<nsIContent> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<nsIContent>(),
         8usize,
@@ -81,23 +80,16 @@ fn bindgen_test_layout_nsIContent() {
         8usize,
         concat!("Alignment of ", stringify!(nsIContent))
     );
-    fn test_field_foo() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<nsIContent>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(nsIContent),
-                "::",
-                stringify!(foo)
-            )
-        );
-    }
-    test_field_foo();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(nsIContent),
+            "::",
+            stringify!(foo)
+        )
+    );
 }
 impl Default for nsIContent {
     fn default() -> Self {

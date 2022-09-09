@@ -13,6 +13,9 @@ pub struct whatever {
 }
 #[test]
 fn bindgen_test_layout_whatever() {
+    const UNINIT: ::std::mem::MaybeUninit<whatever> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<whatever>(),
         4usize,
@@ -23,23 +26,18 @@ fn bindgen_test_layout_whatever() {
         4usize,
         concat!("Alignment of ", stringify!(whatever))
     );
-    fn test_field_replacement() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<whatever>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).replacement) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(whatever),
-                "::",
-                stringify!(replacement)
-            )
-        );
-    }
-    test_field_replacement();
+    assert_eq!(
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).replacement) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(whatever),
+            "::",
+            stringify!(replacement)
+        )
+    );
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -48,6 +46,9 @@ pub struct container {
 }
 #[test]
 fn bindgen_test_layout_container() {
+    const UNINIT: ::std::mem::MaybeUninit<container> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<container>(),
         4usize,
@@ -58,21 +59,14 @@ fn bindgen_test_layout_container() {
         4usize,
         concat!("Alignment of ", stringify!(container))
     );
-    fn test_field_c() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<container>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(container),
-                "::",
-                stringify!(c)
-            )
-        );
-    }
-    test_field_c();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(container),
+            "::",
+            stringify!(c)
+        )
+    );
 }

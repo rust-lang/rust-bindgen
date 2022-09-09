@@ -58,6 +58,9 @@ pub struct ShouldDerivePartialEq {
 }
 #[test]
 fn bindgen_test_layout_ShouldDerivePartialEq() {
+    const UNINIT: ::std::mem::MaybeUninit<ShouldDerivePartialEq> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ShouldDerivePartialEq>(),
         152usize,
@@ -68,42 +71,26 @@ fn bindgen_test_layout_ShouldDerivePartialEq() {
         4usize,
         concat!("Alignment of ", stringify!(ShouldDerivePartialEq))
     );
-    fn test_field_a() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<ShouldDerivePartialEq>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(ShouldDerivePartialEq),
-                "::",
-                stringify!(a)
-            )
-        );
-    }
-    test_field_a();
-    fn test_field_b() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<ShouldDerivePartialEq>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(ShouldDerivePartialEq),
-                "::",
-                stringify!(b)
-            )
-        );
-    }
-    test_field_b();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ShouldDerivePartialEq),
+            "::",
+            stringify!(a)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ShouldDerivePartialEq),
+            "::",
+            stringify!(b)
+        )
+    );
 }
 impl Clone for ShouldDerivePartialEq {
     fn clone(&self) -> Self {

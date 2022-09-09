@@ -19,6 +19,9 @@ pub struct ContainsOpaqueTemplate {
 }
 #[test]
 fn bindgen_test_layout_ContainsOpaqueTemplate() {
+    const UNINIT: ::std::mem::MaybeUninit<ContainsOpaqueTemplate> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<ContainsOpaqueTemplate>(),
         408usize,
@@ -29,42 +32,26 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
         4usize,
         concat!("Alignment of ", stringify!(ContainsOpaqueTemplate))
     );
-    fn test_field_mBlah() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<ContainsOpaqueTemplate>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBlah) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(ContainsOpaqueTemplate),
-                "::",
-                stringify!(mBlah)
-            )
-        );
-    }
-    test_field_mBlah();
-    fn test_field_mBaz() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<ContainsOpaqueTemplate>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBaz) as usize - ptr as usize
-            },
-            404usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(ContainsOpaqueTemplate),
-                "::",
-                stringify!(mBaz)
-            )
-        );
-    }
-    test_field_mBaz();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).mBlah) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ContainsOpaqueTemplate),
+            "::",
+            stringify!(mBlah)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).mBaz) as usize - ptr as usize },
+        404usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ContainsOpaqueTemplate),
+            "::",
+            stringify!(mBaz)
+        )
+    );
 }
 impl Default for ContainsOpaqueTemplate {
     fn default() -> Self {
@@ -89,6 +76,9 @@ pub struct InheritsOpaqueTemplate {
 }
 #[test]
 fn bindgen_test_layout_InheritsOpaqueTemplate() {
+    const UNINIT: ::std::mem::MaybeUninit<InheritsOpaqueTemplate> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<InheritsOpaqueTemplate>(),
         416usize,
@@ -99,24 +89,16 @@ fn bindgen_test_layout_InheritsOpaqueTemplate() {
         8usize,
         concat!("Alignment of ", stringify!(InheritsOpaqueTemplate))
     );
-    fn test_field_wow() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<InheritsOpaqueTemplate>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).wow) as usize - ptr as usize
-            },
-            408usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(InheritsOpaqueTemplate),
-                "::",
-                stringify!(wow)
-            )
-        );
-    }
-    test_field_wow();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).wow) as usize - ptr as usize },
+        408usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(InheritsOpaqueTemplate),
+            "::",
+            stringify!(wow)
+        )
+    );
 }
 impl Default for InheritsOpaqueTemplate {
     fn default() -> Self {

@@ -179,17 +179,10 @@ pub enum EdgeKind {
 
 /// A predicate to allow visiting only sub-sets of the whole IR graph by
 /// excluding certain edges from being followed by the traversal.
-pub trait TraversalPredicate {
-    /// Should the traversal follow this edge, and visit everything that is
-    /// reachable through it?
-    fn should_follow(&self, ctx: &BindgenContext, edge: Edge) -> bool;
-}
-
-impl TraversalPredicate for for<'a> fn(&'a BindgenContext, Edge) -> bool {
-    fn should_follow(&self, ctx: &BindgenContext, edge: Edge) -> bool {
-        (*self)(ctx, edge)
-    }
-}
+///
+/// The predicate must return true if the traversal should follow this edge
+/// and visit everything that is reachable through it.
+pub type TraversalPredicate = for<'a> fn(&'a BindgenContext, Edge) -> bool;
 
 /// A `TraversalPredicate` implementation that follows all edges, and therefore
 /// traversals using this predicate will see the whole IR graph reachable from
@@ -378,11 +371,10 @@ pub trait Trace {
 /// An graph traversal of the transitive closure of references between items.
 ///
 /// See `BindgenContext::allowlisted_items` for more information.
-pub struct ItemTraversal<'ctx, Storage, Queue, Predicate>
+pub struct ItemTraversal<'ctx, Storage, Queue>
 where
     Storage: TraversalStorage<'ctx>,
     Queue: TraversalQueue,
-    Predicate: TraversalPredicate,
 {
     ctx: &'ctx BindgenContext,
 
@@ -393,25 +385,23 @@ where
     queue: Queue,
 
     /// The predicate that determines which edges this traversal will follow.
-    predicate: Predicate,
+    predicate: TraversalPredicate,
 
     /// The item we are currently traversing.
     currently_traversing: Option<ItemId>,
 }
 
-impl<'ctx, Storage, Queue, Predicate>
-    ItemTraversal<'ctx, Storage, Queue, Predicate>
+impl<'ctx, Storage, Queue> ItemTraversal<'ctx, Storage, Queue>
 where
     Storage: TraversalStorage<'ctx>,
     Queue: TraversalQueue,
-    Predicate: TraversalPredicate,
 {
     /// Begin a new traversal, starting from the given roots.
     pub fn new<R>(
         ctx: &'ctx BindgenContext,
         roots: R,
-        predicate: Predicate,
-    ) -> ItemTraversal<'ctx, Storage, Queue, Predicate>
+        predicate: TraversalPredicate,
+    ) -> ItemTraversal<'ctx, Storage, Queue>
     where
         R: IntoIterator<Item = ItemId>,
     {
@@ -433,16 +423,14 @@ where
     }
 }
 
-impl<'ctx, Storage, Queue, Predicate> Tracer
-    for ItemTraversal<'ctx, Storage, Queue, Predicate>
+impl<'ctx, Storage, Queue> Tracer for ItemTraversal<'ctx, Storage, Queue>
 where
     Storage: TraversalStorage<'ctx>,
     Queue: TraversalQueue,
-    Predicate: TraversalPredicate,
 {
     fn visit_kind(&mut self, item: ItemId, kind: EdgeKind) {
         let edge = Edge::new(item, kind);
-        if !self.predicate.should_follow(self.ctx, edge) {
+        if !(self.predicate)(self.ctx, edge) {
             return;
         }
 
@@ -454,12 +442,10 @@ where
     }
 }
 
-impl<'ctx, Storage, Queue, Predicate> Iterator
-    for ItemTraversal<'ctx, Storage, Queue, Predicate>
+impl<'ctx, Storage, Queue> Iterator for ItemTraversal<'ctx, Storage, Queue>
 where
     Storage: TraversalStorage<'ctx>,
     Queue: TraversalQueue,
-    Predicate: TraversalPredicate,
 {
     type Item = ItemId;
 
@@ -488,21 +474,5 @@ where
 ///
 /// See `BindgenContext::assert_no_dangling_item_traversal` for more
 /// information.
-pub type AssertNoDanglingItemsTraversal<'ctx> = ItemTraversal<
-    'ctx,
-    Paths<'ctx>,
-    VecDeque<ItemId>,
-    for<'a> fn(&'a BindgenContext, Edge) -> bool,
->;
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    #[allow(dead_code)]
-    fn traversal_predicate_is_object_safe() {
-        // This should compile only if TraversalPredicate is object safe.
-        fn takes_by_trait_object(_: &dyn TraversalPredicate) {}
-    }
-}
+pub type AssertNoDanglingItemsTraversal<'ctx> =
+    ItemTraversal<'ctx, Paths<'ctx>, VecDeque<ItemId>>;

@@ -139,7 +139,7 @@ fn error_diff_mismatch(
         println!("+++ generated from: {:?}", header);
     }
 
-    for diff in diff::lines(&expected, &actual) {
+    for diff in diff::lines(expected, actual) {
         match diff {
             diff::Result::Left(l) => println!("-{}", l),
             diff::Result::Both(l, _) => println!(" {}", l),
@@ -168,7 +168,7 @@ fn error_diff_mismatch(
             .output()?;
     }
 
-    return Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation or with BINDGEN_TESTS_DIFFTOOL=meld to do this manually."));
+    Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation or with BINDGEN_TESTS_DIFFTOOL=meld to do this manually."))
 }
 
 fn compare_generated_header(
@@ -669,4 +669,20 @@ fn dump_preprocessed_input() {
         bindgen_ii.contains(&empty_layout),
         "cpp-empty-layout.hpp is in the preprocessed file"
     );
+}
+
+#[test]
+fn allowlist_warnings() {
+    let header = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/headers/allowlist_warnings.h"
+    );
+
+    let bindings = builder()
+        .header(header)
+        .allowlist_function("doesnt_match_anything")
+        .generate()
+        .expect("unable to generate bindings");
+
+    assert_eq!(1, bindings.warnings().len());
 }

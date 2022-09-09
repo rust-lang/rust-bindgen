@@ -12,6 +12,9 @@ pub struct struct_a {
 }
 #[test]
 fn bindgen_test_layout_struct_a() {
+    const UNINIT: ::std::mem::MaybeUninit<struct_a> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<struct_a>(),
         4usize,
@@ -22,23 +25,16 @@ fn bindgen_test_layout_struct_a() {
         4usize,
         concat!("Alignment of ", stringify!(struct_a))
     );
-    fn test_field_a() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<struct_a>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(struct_a),
-                "::",
-                stringify!(a)
-            )
-        );
-    }
-    test_field_a();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(struct_a),
+            "::",
+            stringify!(a)
+        )
+    );
 }
 pub type a = *const struct_a;
 #[repr(C)]
@@ -49,6 +45,9 @@ pub union union_b {
 }
 #[test]
 fn bindgen_test_layout_union_b() {
+    const UNINIT: ::std::mem::MaybeUninit<union_b> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<union_b>(),
         4usize,
@@ -59,40 +58,26 @@ fn bindgen_test_layout_union_b() {
         4usize,
         concat!("Alignment of ", stringify!(union_b))
     );
-    fn test_field_a() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<union_b>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(union_b),
-                "::",
-                stringify!(a)
-            )
-        );
-    }
-    test_field_a();
-    fn test_field_b() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<union_b>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(union_b),
-                "::",
-                stringify!(b)
-            )
-        );
-    }
-    test_field_b();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(union_b),
+            "::",
+            stringify!(a)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(union_b),
+            "::",
+            stringify!(b)
+        )
+    );
 }
 impl Default for union_b {
     fn default() -> Self {

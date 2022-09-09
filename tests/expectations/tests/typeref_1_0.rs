@@ -55,6 +55,9 @@ pub struct mozilla_FragmentOrURL {
 }
 #[test]
 fn bindgen_test_layout_mozilla_FragmentOrURL() {
+    const UNINIT: ::std::mem::MaybeUninit<mozilla_FragmentOrURL> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<mozilla_FragmentOrURL>(),
         1usize,
@@ -65,24 +68,18 @@ fn bindgen_test_layout_mozilla_FragmentOrURL() {
         1usize,
         concat!("Alignment of ", stringify!(mozilla_FragmentOrURL))
     );
-    fn test_field_mIsLocalRef() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<mozilla_FragmentOrURL>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mIsLocalRef) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(mozilla_FragmentOrURL),
-                "::",
-                stringify!(mIsLocalRef)
-            )
-        );
-    }
-    test_field_mIsLocalRef();
+    assert_eq!(
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).mIsLocalRef) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(mozilla_FragmentOrURL),
+            "::",
+            stringify!(mIsLocalRef)
+        )
+    );
 }
 impl Clone for mozilla_FragmentOrURL {
     fn clone(&self) -> Self {
@@ -131,6 +128,9 @@ pub struct Bar {
 }
 #[test]
 fn bindgen_test_layout_Bar() {
+    const UNINIT: ::std::mem::MaybeUninit<Bar> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Bar>(),
         8usize,
@@ -141,23 +141,11 @@ fn bindgen_test_layout_Bar() {
         8usize,
         concat!("Alignment of ", stringify!(Bar))
     );
-    fn test_field_mFoo() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<Bar>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mFoo) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(Bar),
-                "::",
-                stringify!(mFoo)
-            )
-        );
-    }
-    test_field_mFoo();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).mFoo) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(mFoo))
+    );
 }
 impl Clone for Bar {
     fn clone(&self) -> Self {
@@ -180,6 +168,9 @@ pub struct nsFoo {
 }
 #[test]
 fn bindgen_test_layout_nsFoo() {
+    const UNINIT: ::std::mem::MaybeUninit<nsFoo> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<nsFoo>(),
         8usize,
@@ -190,23 +181,16 @@ fn bindgen_test_layout_nsFoo() {
         8usize,
         concat!("Alignment of ", stringify!(nsFoo))
     );
-    fn test_field_mBar() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<nsFoo>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).mBar) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(nsFoo),
-                "::",
-                stringify!(mBar)
-            )
-        );
-    }
-    test_field_mBar();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).mBar) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(nsFoo),
+            "::",
+            stringify!(mBar)
+        )
+    );
 }
 impl Clone for nsFoo {
     fn clone(&self) -> Self {

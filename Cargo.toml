@@ -18,7 +18,7 @@ version = "0.60.1"
 edition = "2018"
 build = "build.rs"
 # If you change this, also update README.md and msrv in .github/workflows/bindgen.yml
-rust-version = "1.56.1"
+rust-version = "1.57.0"
 
 include = [
   "LICENSE",
@@ -57,7 +57,8 @@ lazycell = "1"
 lazy_static = "1"
 peeking_take_while = "0.1.2"
 quote = { version = "1", default-features = false }
-regex = { version = "1.5", default-features = false , features = [ "std", "unicode"]}
+syn = { version = "1.0.99", features = ["full", "extra-traits"]}
+regex = { version = "1.5", default-features = false , features = ["std", "unicode"] }
 which = { version = "4.2.1", optional = true, default-features = false }
 shlex = "1"
 rustc-hash = "1.0.1"

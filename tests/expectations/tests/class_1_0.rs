@@ -86,6 +86,9 @@ pub struct C {
 }
 #[test]
 fn bindgen_test_layout_C() {
+    const UNINIT: ::std::mem::MaybeUninit<C> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<C>(),
         40usize,
@@ -96,35 +99,23 @@ fn bindgen_test_layout_C() {
         4usize,
         concat!("Alignment of ", stringify!(C))
     );
-    fn test_field_a() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!("Offset of field: ", stringify!(C), "::", stringify!(a))
-        );
-    }
-    test_field_a();
-    fn test_field_big_array() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<C>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).big_array) as usize - ptr as usize
-            },
-            4usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C),
-                "::",
-                stringify!(big_array)
-            )
-        );
-    }
-    test_field_big_array();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(a))
+    );
+    assert_eq!(
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).big_array) as usize - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C),
+            "::",
+            stringify!(big_array)
+        )
+    );
 }
 impl Clone for C {
     fn clone(&self) -> Self {
@@ -153,6 +144,9 @@ pub struct C_with_zero_length_array {
 }
 #[test]
 fn bindgen_test_layout_C_with_zero_length_array() {
+    const UNINIT: ::std::mem::MaybeUninit<C_with_zero_length_array> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<C_with_zero_length_array>(),
         40usize,
@@ -163,64 +157,41 @@ fn bindgen_test_layout_C_with_zero_length_array() {
         4usize,
         concat!("Alignment of ", stringify!(C_with_zero_length_array))
     );
-    fn test_field_a() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<C_with_zero_length_array>::uninit(
-                    );
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C_with_zero_length_array),
-                "::",
-                stringify!(a)
-            )
-        );
-    }
-    test_field_a();
-    fn test_field_big_array() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<C_with_zero_length_array>::uninit(
-                    );
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).big_array) as usize - ptr as usize
-            },
-            4usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C_with_zero_length_array),
-                "::",
-                stringify!(big_array)
-            )
-        );
-    }
-    test_field_big_array();
-    fn test_field_zero_length_array() {
-        assert_eq!(
-            unsafe {
-                let uninit =
-                    ::std::mem::MaybeUninit::<C_with_zero_length_array>::uninit(
-                    );
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).zero_length_array) as usize -
-                    ptr as usize
-            },
-            37usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C_with_zero_length_array),
-                "::",
-                stringify!(zero_length_array)
-            )
-        );
-    }
-    test_field_zero_length_array();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_zero_length_array),
+            "::",
+            stringify!(a)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).big_array) as usize - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_zero_length_array),
+            "::",
+            stringify!(big_array)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).zero_length_array) as usize -
+                ptr as usize
+        },
+        37usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_zero_length_array),
+            "::",
+            stringify!(zero_length_array)
+        )
+    );
 }
 impl Default for C_with_zero_length_array {
     fn default() -> Self {
@@ -239,6 +210,9 @@ pub struct C_with_zero_length_array_2 {
 }
 #[test]
 fn bindgen_test_layout_C_with_zero_length_array_2() {
+    const UNINIT: ::std::mem::MaybeUninit<C_with_zero_length_array_2> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<C_with_zero_length_array_2>(),
         4usize,
@@ -249,45 +223,29 @@ fn bindgen_test_layout_C_with_zero_length_array_2() {
         4usize,
         concat!("Alignment of ", stringify!(C_with_zero_length_array_2))
     );
-    fn test_field_a() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<
-                    C_with_zero_length_array_2,
-                >::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C_with_zero_length_array_2),
-                "::",
-                stringify!(a)
-            )
-        );
-    }
-    test_field_a();
-    fn test_field_zero_length_array() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<
-                    C_with_zero_length_array_2,
-                >::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).zero_length_array) as usize -
-                    ptr as usize
-            },
-            4usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(C_with_zero_length_array_2),
-                "::",
-                stringify!(zero_length_array)
-            )
-        );
-    }
-    test_field_zero_length_array();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_zero_length_array_2),
+            "::",
+            stringify!(a)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).zero_length_array) as usize -
+                ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_zero_length_array_2),
+            "::",
+            stringify!(zero_length_array)
+        )
+    );
 }
 #[repr(C)]
 pub struct C_with_incomplete_array {
@@ -406,6 +364,9 @@ pub struct WithDtor {
 }
 #[test]
 fn bindgen_test_layout_WithDtor() {
+    const UNINIT: ::std::mem::MaybeUninit<WithDtor> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<WithDtor>(),
         4usize,
@@ -416,23 +377,16 @@ fn bindgen_test_layout_WithDtor() {
         4usize,
         concat!("Alignment of ", stringify!(WithDtor))
     );
-    fn test_field_b() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<WithDtor>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(WithDtor),
-                "::",
-                stringify!(b)
-            )
-        );
-    }
-    test_field_b();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(WithDtor),
+            "::",
+            stringify!(b)
+        )
+    );
 }
 #[repr(C)]
 pub struct IncompleteArrayNonCopiable {
@@ -470,6 +424,9 @@ pub struct Union {
 }
 #[test]
 fn bindgen_test_layout_Union() {
+    const UNINIT: ::std::mem::MaybeUninit<Union> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<Union>(),
         4usize,
@@ -480,40 +437,16 @@ fn bindgen_test_layout_Union() {
         4usize,
         concat!("Alignment of ", stringify!(Union))
     );
-    fn test_field_d() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<Union>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(Union),
-                "::",
-                stringify!(d)
-            )
-        );
-    }
-    test_field_d();
-    fn test_field_i() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<Union>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(Union),
-                "::",
-                stringify!(i)
-            )
-        );
-    }
-    test_field_i();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Union), "::", stringify!(d))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Union), "::", stringify!(i))
+    );
 }
 impl Clone for Union {
     fn clone(&self) -> Self {
@@ -527,6 +460,9 @@ pub struct WithUnion {
 }
 #[test]
 fn bindgen_test_layout_WithUnion() {
+    const UNINIT: ::std::mem::MaybeUninit<WithUnion> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<WithUnion>(),
         4usize,
@@ -537,23 +473,16 @@ fn bindgen_test_layout_WithUnion() {
         4usize,
         concat!("Alignment of ", stringify!(WithUnion))
     );
-    fn test_field_data() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<WithUnion>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).data) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(WithUnion),
-                "::",
-                stringify!(data)
-            )
-        );
-    }
-    test_field_data();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).data) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(WithUnion),
+            "::",
+            stringify!(data)
+        )
+    );
 }
 impl Clone for WithUnion {
     fn clone(&self) -> Self {

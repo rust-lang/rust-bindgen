@@ -7,7 +7,7 @@ use crate::ir::context::BindgenContext;
 use std::cmp;
 
 /// A type that represents the struct layout of a type.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Layout {
     /// The size (in bytes) of this layout.
     pub size: usize,
@@ -93,7 +93,7 @@ impl Layout {
 }
 
 /// When we are treating a type as opaque, it is just a blob with a `Layout`.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Opaque(pub Layout);
 
 impl Opaque {

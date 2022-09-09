@@ -100,6 +100,9 @@ pub struct timex {
 }
 #[test]
 fn bindgen_test_layout_timex() {
+    const UNINIT: ::std::mem::MaybeUninit<timex> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<timex>(),
         48usize,
@@ -110,23 +113,16 @@ fn bindgen_test_layout_timex() {
         4usize,
         concat!("Alignment of ", stringify!(timex))
     );
-    fn test_field_tai() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<timex>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).tai) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(timex),
-                "::",
-                stringify!(tai)
-            )
-        );
-    }
-    test_field_tai();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).tai) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(timex),
+            "::",
+            stringify!(tai)
+        )
+    );
 }
 impl Default for timex {
     fn default() -> Self {
@@ -146,6 +142,9 @@ pub struct timex_named {
 }
 #[test]
 fn bindgen_test_layout_timex_named() {
+    const UNINIT: ::std::mem::MaybeUninit<timex_named> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<timex_named>(),
         48usize,
@@ -156,23 +155,16 @@ fn bindgen_test_layout_timex_named() {
         4usize,
         concat!("Alignment of ", stringify!(timex_named))
     );
-    fn test_field_tai() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<timex_named>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).tai) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(timex_named),
-                "::",
-                stringify!(tai)
-            )
-        );
-    }
-    test_field_tai();
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).tai) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(timex_named),
+            "::",
+            stringify!(tai)
+        )
+    );
 }
 impl Default for timex_named {
     fn default() -> Self {

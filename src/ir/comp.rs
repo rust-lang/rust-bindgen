@@ -20,7 +20,7 @@ use std::io;
 use std::mem;
 
 /// The kind of compound type.
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum CompKind {
     /// A struct.
     Struct,
@@ -29,7 +29,7 @@ pub enum CompKind {
 }
 
 /// The kind of C++ method.
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum MethodKind {
     /// A constructor. We represent it as method for convenience, to avoid code
     /// duplication.
@@ -55,12 +55,10 @@ pub enum MethodKind {
 impl MethodKind {
     /// Is this a destructor method?
     pub fn is_destructor(&self) -> bool {
-        match *self {
-            MethodKind::Destructor | MethodKind::VirtualDestructor { .. } => {
-                true
-            }
-            _ => false,
-        }
+        matches!(
+            *self,
+            MethodKind::Destructor | MethodKind::VirtualDestructor { .. }
+        )
     }
 
     /// Is this a pure virtual method?
@@ -1045,6 +1043,11 @@ pub struct CompInfo {
     /// size_t)
     has_non_type_template_params: bool,
 
+    /// Whether this type has a bit field member whose width couldn't be
+    /// evaluated (e.g. if it depends on a template parameter). We generate an
+    /// opaque type in this case.
+    has_unevaluable_bit_field_width: bool,
+
     /// Whether we saw `__attribute__((packed))` on or within this type.
     packed_attr: bool,
 
@@ -1078,6 +1081,7 @@ impl CompInfo {
             has_destructor: false,
             has_nonempty_base: false,
             has_non_type_template_params: false,
+            has_unevaluable_bit_field_width: false,
             packed_attr: false,
             found_unknown_attr: false,
             is_forward_declaration: false,
@@ -1317,7 +1321,21 @@ impl CompInfo {
                         }
                     }
 
-                    let bit_width = cur.bit_width();
+                    let bit_width = if cur.is_bit_field() {
+                        let width = cur.bit_width();
+
+                        // Make opaque type if the bit width couldn't be
+                        // evaluated.
+                        if width.is_none() {
+                            ci.has_unevaluable_bit_field_width = true;
+                            return CXChildVisit_Break;
+                        }
+
+                        width
+                    } else {
+                        None
+                    };
+
                     let field_type = Item::from_ty_or_ref(
                         cur.cur_type(),
                         cur,
@@ -1753,7 +1771,9 @@ impl IsOpaque for CompInfo {
     type Extra = Option<Layout>;
 
     fn is_opaque(&self, ctx: &BindgenContext, layout: &Option<Layout>) -> bool {
-        if self.has_non_type_template_params {
+        if self.has_non_type_template_params ||
+            self.has_unevaluable_bit_field_width
+        {
             return true;
         }
 

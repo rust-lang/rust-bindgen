@@ -55,21 +55,18 @@ where
                      bitfield flags.",
                 )
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("newtype-enum")
                 .long("newtype-enum")
                 .help("Mark any enum whose name matches <regex> as a newtype.")
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("rustified-enum")
                 .long("rustified-enum")
                 .help("Mark any enum whose name matches <regex> as a Rust enum.")
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("constified-enum")
@@ -79,7 +76,6 @@ where
                      constants.",
                 )
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("constified-enum-module")
@@ -89,7 +85,6 @@ where
                      constants.",
                 )
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("default-macro-constant-type")
@@ -117,7 +112,6 @@ where
                      normal type aliasing.",
                 )
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
              Arg::new("new-type-alias")
@@ -127,7 +121,6 @@ where
                      a new type generated for it.",
                 )
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
              Arg::new("new-type-alias-deref")
@@ -137,7 +130,6 @@ where
                      a new type with Deref and DerefMut to the inner type.",
                 )
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("blocklist-type")
@@ -145,7 +137,6 @@ where
                 .long("blocklist-type")
                 .help("Mark <type> as hidden.")
                 .value_name("type")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("blocklist-function")
@@ -153,7 +144,6 @@ where
                 .long("blocklist-function")
                 .help("Mark <function> as hidden.")
                 .value_name("function")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("blocklist-item")
@@ -161,7 +151,6 @@ where
                 .long("blocklist-item")
                 .help("Mark <item> as hidden.")
                 .value_name("item")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("blocklist-file")
@@ -169,7 +158,6 @@ where
                 .long("blocklist-file")
                 .help("Mark all contents of <path> as hidden.")
                 .value_name("path")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("no-layout-tests")
@@ -256,14 +244,12 @@ where
                     "Use the given prefix before raw types instead of \
                      ::std::os::raw.",
                 )
-                .value_name("prefix")
-                .takes_value(true),
+                .value_name("prefix"),
             Arg::new("anon-fields-prefix")
                 .long("anon-fields-prefix")
                 .help("Use the given prefix for the anon fields.")
                 .value_name("prefix")
-                .default_value(DEFAULT_ANON_FIELDS_PREFIX)
-                .takes_value(true),
+                .default_value(DEFAULT_ANON_FIELDS_PREFIX),
             Arg::new("time-phases")
                 .long("time-phases")
                 .help("Time the different bindgen phases and print to stderr"),
@@ -278,8 +264,7 @@ where
             Arg::new("emit-ir-graphviz")
                 .long("emit-ir-graphviz")
                 .help("Dump graphviz dot file.")
-                .value_name("path")
-                .takes_value(true),
+                .value_name("path"),
             Arg::new("enable-cxx-namespaces")
                 .long("enable-cxx-namespaces")
                 .help("Enable support for C++ namespaces."),
@@ -343,7 +328,6 @@ where
                 .long("opaque-type")
                 .help("Mark <type> as opaque.")
                 .value_name("type")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("output")
@@ -354,13 +338,11 @@ where
             Arg::new("raw-line")
                 .long("raw-line")
                 .help("Add a raw line of Rust code at the beginning of output.")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("module-raw-line")
                 .long("module-raw-line")
                 .help("Add a raw line of Rust code to a given module.")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(2)
                 .value_names(&["module-name", "raw-line"]),
@@ -389,7 +371,6 @@ where
                      generated.",
                 )
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("generate-inline-functions")
@@ -403,7 +384,6 @@ where
                      not be generated.",
                 )
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("allowlist-var")
@@ -415,7 +395,6 @@ where
                      generated.",
                 )
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("allowlist-file")
@@ -423,7 +402,6 @@ where
                 .long("allowlist-file")
                 .help("Allowlist all contents of <path>.")
                 .value_name("path")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("verbose")
@@ -464,49 +442,42 @@ where
                      This parameter is incompatible with --no-rustfmt-bindings.",
                 )
                 .value_name("path")
-                .takes_value(true)
                 .multiple_occurrences(false)
                 .number_of_values(1),
             Arg::new("no-partialeq")
                 .long("no-partialeq")
                 .help("Avoid deriving PartialEq for types matching <regex>.")
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("no-copy")
                 .long("no-copy")
                 .help("Avoid deriving Copy for types matching <regex>.")
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("no-debug")
                 .long("no-debug")
                 .help("Avoid deriving Debug for types matching <regex>.")
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("no-default")
                 .long("no-default")
                 .help("Avoid deriving/implement Default for types matching <regex>.")
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("no-hash")
                 .long("no-hash")
                 .help("Avoid deriving Hash for types matching <regex>.")
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("must-use-type")
                 .long("must-use-type")
                 .help("Add #[must_use] annotation to types matching <regex>.")
                 .value_name("regex")
-                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("enable-function-attribute-detection")
@@ -521,7 +492,6 @@ where
             Arg::new("wasm-import-module-name")
                 .long("wasm-import-module-name")
                 .value_name("name")
-                .takes_value(true)
                 .help("The name to be used in a #[link(wasm_import_module = ...)] statement"),
             Arg::new("dynamic-loading")
                 .long("dynamic-loading")
@@ -545,6 +515,9 @@ where
             Arg::new("vtable-generation")
                 .long("vtable-generation")
                 .help("Enables generation of vtable functions."),
+            Arg::new("sort-semantically")
+                .long("sort-semantically")
+                .help("Enables sorting of code generation in a predefined manner."),
             Arg::new("V")
                 .long("version")
                 .help("Prints the version, and exits"),
@@ -1028,6 +1001,10 @@ where
 
     if matches.is_present("vtable-generation") {
         builder = builder.vtable_generation(true);
+    }
+
+    if matches.is_present("sort-semantically") {
+        builder = builder.sort_semantically(true);
     }
 
     Ok((builder, output, verbose))

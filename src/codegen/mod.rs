@@ -1212,6 +1212,7 @@ impl CodeGenerator for TemplateInstantiation {
 trait FieldCodegen<'a> {
     type Extra;
 
+    #[allow(clippy::too_many_arguments)]
     fn codegen<F, M>(
         &self,
         ctx: &BindgenContext,
@@ -2187,36 +2188,41 @@ impl CodeGenerator for CompInfo {
                                 field.offset().map(|offset| {
                                     let field_offset = offset / 8;
                                     let field_name = ctx.rust_ident(name);
-                                    // Put each check in its own function, so
-                                    // that rustc with opt-level=0 doesn't take
-                                    // too much stack space, see #2218.
-                                    let test_fn = Ident::new(&format!("test_field_{}", name), Span::call_site());
                                     quote! {
-                                        fn #test_fn() {
-                                            assert_eq!(
-                                                unsafe {
-                                                    let uninit = ::#prefix::mem::MaybeUninit::<#canonical_ident>::uninit();
-                                                    let ptr = uninit.as_ptr();
-                                                    ::#prefix::ptr::addr_of!((*ptr).#field_name) as usize - ptr as usize
-                                                },
-                                                #field_offset,
-                                                concat!("Offset of field: ", stringify!(#canonical_ident), "::", stringify!(#field_name))
-                                            );
-                                        }
-                                        #test_fn();
+                                        assert_eq!(
+                                            unsafe {
+                                                ::#prefix::ptr::addr_of!((*ptr).#field_name) as usize - ptr as usize
+                                            },
+                                            #field_offset,
+                                            concat!("Offset of field: ", stringify!(#canonical_ident), "::", stringify!(#field_name))
+                                        );
                                     }
                                 })
                             })
-                            .collect::<Vec<proc_macro2::TokenStream>>()
+                            .collect()
+                    };
+
+                    let uninit_decl = if !check_field_offset.is_empty() {
+                        // FIXME: When MSRV >= 1.59.0, we can use
+                        // > const PTR: *const #canonical_ident = ::#prefix::mem::MaybeUninit::uninit().as_ptr();
+                        Some(quote! {
+                            // Use a shared MaybeUninit so that rustc with
+                            // opt-level=0 doesn't take too much stack space,
+                            // see #2218.
+                            const UNINIT: ::#prefix::mem::MaybeUninit<#canonical_ident> = ::#prefix::mem::MaybeUninit::uninit();
+                            let ptr = UNINIT.as_ptr();
+                        })
+                    } else {
+                        None
                     };
 
                     let item = quote! {
                         #[test]
                         fn #fn_name() {
+                            #uninit_decl
                             assert_eq!(#size_of_expr,
                                        #size,
                                        concat!("Size of: ", stringify!(#canonical_ident)));
-
                             #check_struct_align
                             #( #check_field_offset )*
                         }
@@ -2558,7 +2564,7 @@ impl MethodCodegen for Method {
 }
 
 /// A helper type that represents different enum variations.
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum EnumVariation {
     /// The code for this enum will use a Rust enum. Note that creating this in unsafe code
     /// (including FFI) with an invalid value will invoke undefined behaviour, whether or not
@@ -3208,7 +3214,7 @@ impl CodeGenerator for Enum {
                                 ctx,
                                 enum_ty,
                                 &ident,
-                                &Ident::new(&*mangled_name, Span::call_site()),
+                                &Ident::new(&mangled_name, Span::call_site()),
                                 existing_variant_name,
                                 enum_rust_ty.clone(),
                                 result,
@@ -3277,7 +3283,7 @@ impl CodeGenerator for Enum {
 }
 
 /// Enum for the default type of macro constants.
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum MacroTypeVariation {
     /// Use i32 or i64
     Signed,
@@ -3321,7 +3327,7 @@ impl std::str::FromStr for MacroTypeVariation {
 }
 
 /// Enum for how aliases should be translated.
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum AliasVariation {
     /// Convert to regular Rust alias
     TypeAlias,
@@ -4324,7 +4330,7 @@ impl CodeGenerator for ObjCInterface {
 
 pub(crate) fn codegen(
     context: BindgenContext,
-) -> (Vec<proc_macro2::TokenStream>, BindgenOptions) {
+) -> (Vec<proc_macro2::TokenStream>, BindgenOptions, Vec<String>) {
     context.gen(|context| {
         let _t = context.timer("codegen");
         let counter = Cell::new(0);

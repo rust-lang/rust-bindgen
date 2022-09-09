@@ -50,6 +50,9 @@ pub struct rte_ring_prod {
 }
 #[test]
 fn bindgen_test_layout_rte_ring_prod() {
+    const UNINIT: ::std::mem::MaybeUninit<rte_ring_prod> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_ring_prod>(),
         4usize,
@@ -60,23 +63,18 @@ fn bindgen_test_layout_rte_ring_prod() {
         4usize,
         concat!("Alignment of ", stringify!(rte_ring_prod))
     );
-    fn test_field_watermark() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rte_ring_prod>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).watermark) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_ring_prod),
-                "::",
-                stringify!(watermark)
-            )
-        );
-    }
-    test_field_watermark();
+    assert_eq!(
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).watermark) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ring_prod),
+            "::",
+            stringify!(watermark)
+        )
+    );
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -85,6 +83,9 @@ pub struct rte_ring_cons {
 }
 #[test]
 fn bindgen_test_layout_rte_ring_cons() {
+    const UNINIT: ::std::mem::MaybeUninit<rte_ring_cons> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_ring_cons>(),
         4usize,
@@ -95,23 +96,18 @@ fn bindgen_test_layout_rte_ring_cons() {
         4usize,
         concat!("Alignment of ", stringify!(rte_ring_cons))
     );
-    fn test_field_sc_dequeue() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rte_ring_cons>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).sc_dequeue) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rte_ring_cons),
-                "::",
-                stringify!(sc_dequeue)
-            )
-        );
-    }
-    test_field_sc_dequeue();
+    assert_eq!(
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).sc_dequeue) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ring_cons),
+            "::",
+            stringify!(sc_dequeue)
+        )
+    );
 }
 #[test]
 fn bindgen_test_layout_rte_ring() {

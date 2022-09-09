@@ -485,11 +485,11 @@ impl DeriveTrait {
     fn consider_edge_tmpl_inst(&self) -> EdgePredicate {
         match self {
             DeriveTrait::PartialEqOrPartialOrd => consider_edge_default,
-            _ => |kind| match kind {
-                EdgeKind::TemplateArgument | EdgeKind::TemplateDeclaration => {
-                    true
-                }
-                _ => false,
+            _ => |kind| {
+                matches!(
+                    kind,
+                    EdgeKind::TemplateArgument | EdgeKind::TemplateDeclaration
+                )
             },
         }
     }
