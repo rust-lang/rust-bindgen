@@ -297,7 +297,9 @@ impl Trace for Item {
                 tracer.visit(fun.signature().into());
             }
             ItemKind::Var(ref var) => {
-                tracer.visit_kind(var.ty().into(), EdgeKind::VarType);
+                if let Some(ty) = var.ty(ctx) {
+                    tracer.visit_kind(ty.into(), EdgeKind::VarType);
+                }
             }
             ItemKind::Module(_) => {
                 // Module -> children edges are "weak", and we do not want to

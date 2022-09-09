@@ -630,7 +630,18 @@ impl CodeGenerator for Var {
             attrs.push(attributes::doc(comment));
         }
 
-        let ty = self.ty().to_rust_ty_or_opaque(ctx, &());
+        let var_ty = if let Some(var_ty) = self.ty(ctx) {
+            var_ty
+        } else {
+            // FIXME: Parse/output macro variables as the last step when all types are known.
+            warn!(
+                "Failed to determine type for macro variable {}.",
+                canonical_name
+            );
+            return;
+        };
+
+        let ty = var_ty.to_rust_ty_or_opaque(ctx, &());
 
         if let Some(val) = self.val() {
             match *val {
@@ -641,8 +652,7 @@ impl CodeGenerator for Var {
                     });
                 }
                 VarType::Int(val) => {
-                    let int_kind = self
-                        .ty()
+                    let int_kind = var_ty
                         .into_resolver()
                         .through_type_aliases()
                         .through_type_refs()

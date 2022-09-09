@@ -40,11 +40,23 @@ pub struct Var {
     /// The mangled name of the variable.
     mangled_name: Option<String>,
     /// The type of the variable.
-    ty: TypeId,
+    ty: VarTypeId,
     /// The value of the variable, that needs to be suitable for `ty`.
     val: Option<VarType>,
     /// Whether this variable is const.
     is_const: bool,
+}
+
+#[derive(Debug)]
+pub enum VarTypeId {
+    Concrete(TypeId),
+    Lazy(String),
+}
+
+impl From<TypeId> for VarTypeId {
+    fn from(type_id: TypeId) -> Self {
+        Self::Concrete(type_id)
+    }
 }
 
 impl Var {
@@ -52,15 +64,15 @@ impl Var {
     pub fn new(
         name: String,
         mangled_name: Option<String>,
-        ty: TypeId,
+        ty: impl Into<VarTypeId>,
         val: Option<VarType>,
         is_const: bool,
-    ) -> Var {
+    ) -> Self {
         assert!(!name.is_empty());
-        Var {
+        Self {
             name,
             mangled_name,
-            ty,
+            ty: ty.into(),
             val,
             is_const,
         }
@@ -336,30 +348,18 @@ impl ClangSubItemParser for Var {
                                 ["int64_t"] => IntKind::I64,
                                 ["uint64_t"] => IntKind::U64,
                                 [custom_type] => {
-                                    eprintln!(
-                                        "looking for type {:?}",
-                                        custom_type
-                                    );
-
-                                    // FIXME: Doesn't work since types are parsed after macros.
-                                    let type_id = ctx
-                                        .wrapper_id_by_name(custom_type)
-                                        .or_else(|| {
-                                            ctx.wrapper_id_by_name(&format!(
-                                                "const {}",
-                                                custom_type
-                                            ))
-                                        });
-
-                                    if let Some(type_id) = type_id {
-                                        todo!(
-                                            "type id for {:?} = {:?}",
-                                            custom_type,
-                                            type_id
-                                        );
-                                    }
-
-                                    return Err(ParseError::Continue);
+                                    return Ok(ParseResult::New(
+                                        Var::new(
+                                            name,
+                                            None,
+                                            VarTypeId::Lazy(
+                                                custom_type.to_string(),
+                                            ),
+                                            Some(val),
+                                            true,
+                                        ),
+                                        Some(cursor),
+                                    ));
                                 }
                                 _ => return Err(ParseError::Continue),
                             };
