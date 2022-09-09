@@ -518,8 +518,8 @@ where
             Arg::new("sort-semantically")
                 .long("sort-semantically")
                 .help("Enables sorting of code generation in a predefined manner."),
-            Arg::new("deduplicate-extern-blocks")
-                .long("deduplicate-extern-blocks")
+            Arg::new("merge-extern-blocks")
+                .long("merge-extern-blocks")
                 .help("Deduplicates extern blocks."),
             Arg::new("V")
                 .long("version")
@@ -1010,8 +1010,8 @@ where
         builder = builder.sort_semantically(true);
     }
 
-    if matches.is_present("deduplicate-extern-blocks") {
-        builder = builder.deduplicate_extern_blocks(true);
+    if matches.is_present("merge-extern-blocks") {
+        builder = builder.merge_extern_blocks(true);
     }
 
     Ok((builder, output, verbose))
