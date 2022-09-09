@@ -17,7 +17,7 @@ impl ParseCallbacks for RemoveFunctionPrefixParseCallback {
     fn generated_name_override(&self, function_name: &str) -> Option<String> {
         if let Some(prefix) = &self.remove_function_prefix {
             if let Some(name) = function_name.strip_prefix(prefix) {
-                return Some(name.to_string())
+                return Some(name.to_string());
             }
         }
         None
