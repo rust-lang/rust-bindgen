@@ -2814,24 +2814,19 @@ impl<'a> EnumBuilder<'a> {
                 is_global,
                 ..
             } => {
-                if ctx.options().rust_features().associated_const && is_ty_named
+                if ctx.options().rust_features().associated_const &&
+                    is_ty_named &&
+                    !is_global
                 {
                     let enum_ident = ctx.rust_ident(canonical_name);
                     let variant_ident = ctx.rust_ident(variant_name);
-                    let tokens = quote! {
-                        #doc
-                        pub const #variant_ident : #rust_ty = #rust_ty ( #expr );
-                    };
 
-                    if is_global {
-                        result.push(tokens);
-                    } else {
-                        result.push(quote! {
-                            impl #enum_ident {
-                                #tokens
-                            }
-                        });
-                    }
+                    result.push(quote! {
+                        impl #enum_ident {
+                            #doc
+                            pub const #variant_ident : #rust_ty = #rust_ty ( #expr );
+                        }
+                    });
                 } else {
                     let ident = ctx.rust_ident(match mangling_prefix {
                         Some(prefix) => {

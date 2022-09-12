@@ -315,6 +315,7 @@ impl Builder {
         let regex_sets = &[
             (&self.options.bitfield_enums, "--bitfield-enum"),
             (&self.options.newtype_enums, "--newtype-enum"),
+            (&self.options.newtype_global_enums, "--newtype-global-enum"),
             (&self.options.rustified_enums, "--rustified-enum"),
             (
                 &self.options.rustified_non_exhaustive_enums,
@@ -2072,6 +2073,7 @@ impl BindgenOptions {
             &mut self.constified_enums,
             &mut self.constified_enum_modules,
             &mut self.newtype_enums,
+            &mut self.newtype_global_enums,
             &mut self.rustified_enums,
             &mut self.rustified_non_exhaustive_enums,
             &mut self.type_alias,
