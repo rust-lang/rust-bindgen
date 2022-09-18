@@ -222,6 +222,8 @@ pub struct FunctionSig {
     /// The return type of the function.
     return_type: TypeId,
 
+    return_type_nullability: clang_sys::CXTypeNullabilityKind,
+
     /// The type of the arguments, optionally with the name of the argument when
     /// declared.
     argument_types: Vec<(Option<String>, TypeId)>,
@@ -356,6 +358,7 @@ impl FunctionSig {
     /// Construct a new function signature.
     pub fn new(
         return_type: TypeId,
+        return_type_nullability: clang_sys::CXTypeNullabilityKind,
         argument_types: Vec<(Option<String>, TypeId)>,
         is_variadic: bool,
         must_use: bool,
@@ -363,6 +366,7 @@ impl FunctionSig {
     ) -> Self {
         FunctionSig {
             return_type,
+            return_type_nullability,
             argument_types,
             is_variadic,
             must_use,
@@ -528,12 +532,15 @@ impl FunctionSig {
             warn!("Unknown calling convention: {:?}", call_conv);
         }
 
-        Ok(Self::new(ret, args, ty.is_variadic(), must_use, abi))
+        Ok(Self::new(ret, ty_ret_type.get_nullability(), args, ty.is_variadic(), must_use, abi))
     }
 
     /// Get this function signature's return type.
     pub fn return_type(&self) -> TypeId {
         self.return_type
+    }
+    pub fn return_type_nullability(&self) -> clang_sys::CXTypeNullabilityKind {
+        self.return_type_nullability
     }
 
     /// Get this function signature's argument (name, type) pairs.

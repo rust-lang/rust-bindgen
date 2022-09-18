@@ -512,7 +512,7 @@ impl BindgenContext {
         let index = clang::Index::new(false, true);
 
         let parse_options =
-            clang_sys::CXTranslationUnit_DetailedPreprocessingRecord;
+            clang_sys::CXTranslationUnit_DetailedPreprocessingRecord | clang_sys::CXTranslationUnit_IncludeAttributedTypes;
 
         let translation_unit = {
             let _t =
@@ -1822,7 +1822,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         use clang_sys::{CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
         debug!(
             "builtin_or_resolved_ty: {:?}, {:?}, {:?}, {:?}",
-            ty, location, with_id, parent_id
+            ty, location, with_id, parent_id,
         );
 
         if let Some(decl) = ty.canonical_declaration(location.as_ref()) {

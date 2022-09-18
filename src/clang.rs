@@ -1226,6 +1226,10 @@ impl Type {
         }
     }
 
+    pub fn get_nullability(&self) -> CXTypeNullabilityKind {
+        unsafe { clang_Type_getNullability(self.x) }
+    }
+
     /// If this type is a class template specialization, return its
     /// template arguments. Otherwise, return None.
     pub fn template_args(&self) -> Option<TypeTemplateArgIterator> {
