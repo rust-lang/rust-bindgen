@@ -51,6 +51,7 @@ use quote::TokenStreamExt;
 use crate::{Entry, HashMap, HashSet};
 use std::borrow::Cow;
 use std::cell::Cell;
+use std::collections::BTreeMap;
 use std::collections::VecDeque;
 use std::fmt::Write;
 use std::iter;
@@ -192,6 +193,12 @@ impl From<DerivableTraits> for Vec<&'static str> {
     }
 }
 
+struct VariadicMethodInfo {
+    args: Vec<proc_macro2::TokenStream>,
+    ret: proc_macro2::TokenStream,
+    exprs: Vec<proc_macro2::TokenStream>,
+}
+
 struct CodegenResult<'a> {
     items: Vec<proc_macro2::TokenStream>,
     dynamic_items: DynamicItems,
@@ -239,6 +246,8 @@ struct CodegenResult<'a> {
     /// function name to the number of overloads we have already codegen'd for
     /// that name. This lets us give each overload a unique suffix.
     overload_counters: HashMap<String, u32>,
+
+    variadic_methods: BTreeMap<Ident, VariadicMethodInfo>,
 }
 
 impl<'a> CodegenResult<'a> {
@@ -256,6 +265,7 @@ impl<'a> CodegenResult<'a> {
             functions_seen: Default::default(),
             vars_seen: Default::default(),
             overload_counters: Default::default(),
+            variadic_methods: Default::default(),
         }
     }
 
@@ -2485,12 +2495,6 @@ impl MethodCodegen for Method {
             return;
         }
 
-        // Do not generate variadic methods, since rust does not allow
-        // implementing them, and we don't do a good job at it anyway.
-        if signature.is_variadic() {
-            return;
-        }
-
         let count = {
             let count = method_names.entry(name.clone()).or_insert(0);
             *count += 1;
@@ -2508,13 +2512,10 @@ impl MethodCodegen for Method {
         let function_name = ctx.rust_ident(function_name);
         let mut args = utils::fnsig_arguments(ctx, signature);
         let mut ret = utils::fnsig_return_ty(ctx, signature);
+        let is_variadic = signature.is_variadic();
 
-        if !self.is_static() && !self.is_constructor() {
-            args[0] = if self.is_const() {
-                quote! { &self }
-            } else {
-                quote! { &mut self }
-            };
+        if is_variadic && ctx.options().tuple_varargs_len.is_none() {
+            return;
         }
 
         // If it's a constructor, we always return `Self`, and we inject the
@@ -2529,6 +2530,28 @@ impl MethodCodegen for Method {
 
         let mut exprs =
             helpers::ast_ty::arguments_from_signature(signature, ctx);
+
+        if is_variadic {
+            let (last_arg, args) = args.split_last_mut().unwrap();
+            // FIXME (pvdrz): what if this identifier is already being used?
+            *last_arg = quote!(var_args: impl VarArgs);
+            result.variadic_methods.insert(
+                function_name.clone(),
+                VariadicMethodInfo {
+                    args: args.to_owned(),
+                    ret: ret.clone(),
+                    exprs: exprs.clone(),
+                },
+            );
+        }
+
+        if !self.is_static() && !self.is_constructor() {
+            args[0] = if self.is_const() {
+                quote! { &self }
+            } else {
+                quote! { &mut self }
+            };
+        }
 
         let mut stmts = vec![];
 
@@ -2563,8 +2586,15 @@ impl MethodCodegen for Method {
             };
         };
 
-        let call = quote! {
-            #function_name (#( #exprs ),* )
+        let call = if is_variadic {
+            let function_name = quote::format_ident!("call_{}", function_name);
+            quote! {
+                var_args.#function_name(#( #exprs ),* )
+            }
+        } else {
+            quote! {
+                #function_name (#( #exprs ),* )
+            }
         };
 
         stmts.push(call);
@@ -4508,6 +4538,10 @@ pub(crate) fn codegen(
             result.push(dynamic_items_tokens);
         }
 
+        if let Some(max_len) = context.options().tuple_varargs_len {
+            utils::generate_varargs_trait(max_len, &mut result);
+        }
+
         postprocessing::postprocessing(result.items, context.options())
     })
 }
@@ -5046,5 +5080,78 @@ pub mod utils {
         }
 
         true
+    }
+
+    pub(super) fn generate_varargs_trait(
+        max_len: usize,
+        result: &mut super::CodegenResult,
+    ) {
+        // This will hold the identifiers to be used for the fields of the tuples `t0, ..., tn` as
+        // well as the identifiers of the type parameters for each field type of the tuples `T0, ..., TN`.
+        // FIXME (pvdrz): what if these identifiers are already in use?
+        let (fields, params): (Vec<_>, Vec<_>) = (0..max_len)
+            .map(|len| {
+                (
+                    quote::format_ident!("t{}", len),
+                    quote::format_ident!("T{}", len),
+                )
+            })
+            .unzip();
+
+        // This will hold the methods to be declared in the `VarArgs` trait as well as the
+        // bodies of the implementations of such methods for each tuple length.
+        let (trait_method_decls, trait_method_impl_fns): (Vec<_>, Vec<_>) =
+            std::mem::take(&mut result.variadic_methods)
+                .into_iter()
+                .map(|(name, info)| {
+                    let super::VariadicMethodInfo { args, ret, exprs } = info;
+
+                    // The name of the `VarArgs` trait method associated with this method.
+                    // FIXME (pvdrz): what these identifiers are already in use?
+                    let trait_method_name =
+                        quote::format_ident!("call_{}", name);
+
+                    // The declaration of the `VarArgs` trait method associated with this method.
+                    let trait_method_decl = quote! {
+                        unsafe fn #trait_method_name(self, #(#args),*) #ret
+                    };
+
+                    // The implementations of the `VarArgs` trait method associated with this
+                    // method for each tuple length.
+                    let trait_method_impls = (0..=fields.len())
+                        .map(|index| {
+                            let fields = &fields[..index];
+                            quote! {
+                                #trait_method_decl {
+                                    let (#(#fields,)*) = self;
+                                    #name(#(#exprs),*, #(#fields),*)
+                                }
+                            }
+                        })
+                        .collect::<Vec<_>>();
+
+                    (trait_method_decl, trait_method_impls)
+                })
+                .unzip();
+
+        // Push the trait with the method declarations.
+        result.items.push(quote! {
+            pub trait VarArgs {
+                #(#trait_method_decls;)*
+            }
+        });
+
+        for index in 0..=params.len() {
+            let params = &params[..index];
+            let methods =
+                trait_method_impl_fns.iter().map(|impls| &impls[index]);
+
+            // Push the implementation the trait for each tuple.
+            result.items.push(quote! {
+                impl<#(#params),*> VarArgs for (#(#params,)*) {
+                    #(#methods)*
+                }
+            });
+        }
     }
 }

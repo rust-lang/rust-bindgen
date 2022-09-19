@@ -568,6 +568,7 @@ where
             Arg::new("merge-extern-blocks")
                 .long("merge-extern-blocks")
                 .help("Deduplicates extern blocks."),
+            Arg::new("tuple-varargs-len").long("tuple-varargs-len").takes_value(true).help("Enables using tuples to emulate variadic arguments up to a certain tuple length"),
             Arg::new("V")
                 .long("version")
                 .help("Prints the version, and exits"),
@@ -1086,6 +1087,20 @@ where
 
     if matches.is_present("merge-extern-blocks") {
         builder = builder.merge_extern_blocks(true);
+    }
+
+    if let Some(len) = matches.value_of("tuple-varargs-len") {
+        let len = match len.parse() {
+            Ok(len) => len,
+            Err(err) => {
+                return Err(io::Error::new(
+                    io::ErrorKind::Other,
+                    format!("invalid length: {}", err),
+                ))
+            }
+        };
+
+        builder = builder.tuple_varargs_len(len);
     }
 
     Ok((builder, output, verbose))

@@ -619,6 +619,10 @@ impl Builder {
             output_vector.push("--merge-extern-blocks".into());
         }
 
+        if let Some(len) = self.options.tuple_varargs_len {
+            output_vector.push(format!("--tuple-varargs-len={}", len));
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -1560,6 +1564,12 @@ impl Builder {
         self
     }
 
+    /// Sets the maximum tuple length that can be used to emulate variadic arguments,
+    pub fn tuple_varargs_len(mut self, len: usize) -> Self {
+        self.options.tuple_varargs_len = Some(len);
+        self
+    }
+
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate(mut self) -> Result<Bindings, BindgenError> {
         // Add any extra arguments from the environment to the clang command line.
@@ -2105,6 +2115,9 @@ struct BindgenOptions {
 
     /// Deduplicate `extern` blocks.
     merge_extern_blocks: bool,
+
+    /// The maximum tuple length that can be used to emulate variadic arguments.
+    tuple_varargs_len: Option<usize>,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -2261,6 +2274,7 @@ impl Default for BindgenOptions {
             vtable_generation: false,
             sort_semantically: false,
             merge_extern_blocks: false,
+            tuple_varargs_len: Default::default(),
         }
     }
 }
