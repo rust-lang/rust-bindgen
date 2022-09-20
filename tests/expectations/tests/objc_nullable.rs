@@ -46,4 +46,40 @@ pub trait IFoo: Sized + std::ops::Deref {
     {
         msg_send!(*self, unspecifiedNullabilityReturnType)
     }
+    unsafe fn nullableParameter_(&self, foo: Foo)
+    where
+        <Self as std::ops::Deref>::Target: objc::Message + Sized,
+    {
+        msg_send!(*self, nullableParameter: foo)
+    }
+    unsafe fn nonnullableParameter_(&self, foo: Foo)
+    where
+        <Self as std::ops::Deref>::Target: objc::Message + Sized,
+    {
+        msg_send!(*self, nonnullableParameter: foo)
+    }
+    unsafe fn nonnullFoo(&self) -> Foo
+    where
+        <Self as std::ops::Deref>::Target: objc::Message + Sized,
+    {
+        msg_send!(*self, nonnullFoo)
+    }
+    unsafe fn setNonnullFoo_(&self, nonnullFoo: Foo)
+    where
+        <Self as std::ops::Deref>::Target: objc::Message + Sized,
+    {
+        msg_send!(*self, setNonnullFoo: nonnullFoo)
+    }
+    unsafe fn nullableFoo(&self) -> Option<Foo>
+    where
+        <Self as std::ops::Deref>::Target: objc::Message + Sized,
+    {
+        msg_send!(*self, nullableFoo)
+    }
+    unsafe fn setNullableFoo_(&self, nullableFoo: Foo)
+    where
+        <Self as std::ops::Deref>::Target: objc::Message + Sized,
+    {
+        msg_send!(*self, setNullableFoo: nullableFoo)
+    }
 }

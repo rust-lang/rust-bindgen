@@ -5,6 +5,9 @@
 - (nullable int*)nullableReturnType;
 - (nonnull int*)nonnullableReturnType;
 - (int *)unspecifiedNullabilityReturnType;
-//- (int *)unspecifiedNullabilityReturnType:(Foo*)foo;
+- (void)nullableParameter:(nullable Foo*)foo;
+- (void)nonnullableParameter:(nonnull Foo*)foo;
+@property (assign, nonnull) Foo *nonnullFoo;
+@property (assign, nullable) Foo *nullableFoo;
 @end
 
