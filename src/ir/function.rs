@@ -532,7 +532,14 @@ impl FunctionSig {
             warn!("Unknown calling convention: {:?}", call_conv);
         }
 
-        Ok(Self::new(ret, ty_ret_type.get_nullability(), args, ty.is_variadic(), must_use, abi))
+        Ok(Self::new(
+            ret,
+            ty_ret_type.get_nullability(),
+            args,
+            ty.is_variadic(),
+            must_use,
+            abi,
+        ))
     }
 
     /// Get this function signature's return type.

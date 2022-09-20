@@ -4710,7 +4710,9 @@ pub mod utils {
             quote! {}
         } else {
             let ret_ty = return_item.to_rust_ty_or_opaque(ctx, &());
-            if sig.return_type_nullability() == clang_sys::CXTypeNullability_Nullable {
+            if sig.return_type_nullability() ==
+                clang_sys::CXTypeNullability_Nullable
+            {
                 quote! {
                     -> Option<#ret_ty>
                 }
