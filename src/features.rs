@@ -127,10 +127,12 @@ macro_rules! rust_target_base {
             /// Rust stable 1.47
             /// * `larger_arrays` ([Tracking issue](https://github.com/rust-lang/rust/pull/74060))
             => Stable_1_47 => 1.47;
+            /// Rust stable 1.64
+            ///  * `core_ffi_c` ([Tracking issue](https://github.com/rust-lang/rust/issues/94501))
+            => Stable_1_64 => 1.64;
             /// Nightly rust
             ///  * `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))
             ///  * `vectorcall` calling convention (no tracking issue)
-            ///  * `core_ffi_c` ([Tracking issue](https://github.com/rust-lang/rust/issues/94501))
             => Nightly => nightly;
         );
     }
@@ -234,10 +236,12 @@ rust_feature_def!(
     Stable_1_47 {
         => larger_arrays;
     }
+    Stable_1_64 {
+        => core_ffi_c;
+    }
     Nightly {
         => thiscall_abi;
         => vectorcall_abi;
-        => core_ffi_c;
     }
 );
 
