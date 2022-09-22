@@ -658,8 +658,61 @@ impl Builder {
     ///     .generate()
     ///     .unwrap();
     /// ```
+    ///
+    /// Prefer to use the [Builder::headers] method.
+    #[doc(hidden)]
     pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
         self.options.input_headers.push(header.into());
+        self
+    }
+
+    /// Add input C/C++ headers to generate bindings for.
+    ///
+    /// This can be used to generate bindings to a single header:
+    ///
+    /// ```ignore
+    /// let bindings = bindgen::Builder::default()
+    ///     .headers(["input.h"])
+    ///     .generate()
+    ///     .unwrap();
+    /// ```
+    ///
+    /// Or to multiple headers:
+    /// ```
+    /// bindgen::Builder::default()
+    ///     .headers([
+    ///         "input1.h",
+    ///         "input2.h"
+    ///      ])
+    ///     // ...
+    /// # ;
+    /// ```
+    pub fn headers<T: Into<String>>(
+        mut self,
+        headers: impl IntoIterator<Item = T>,
+    ) -> Builder {
+        self.options
+            .input_headers
+            .extend(headers.into_iter().map(Into::into));
+        self
+    }
+
+    /// Include multiple folders for system header file resolution.
+    ///
+    /// To add only a single file, use an array of length 1
+    /// ```
+    /// bindgen::Builder::default()
+    ///     .include_directories(["/usr/lib/include/"])
+    ///     // ...
+    /// # ;
+    /// ```
+    pub fn include_directories<T: Into<String>>(
+        mut self,
+        paths: impl IntoIterator<Item = T>,
+    ) -> Builder {
+        for path in paths {
+            self = self.clang_arg(format!("-I{}", path.into()));
+        }
         self
     }
 
