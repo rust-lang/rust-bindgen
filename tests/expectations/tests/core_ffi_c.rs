@@ -4,7 +4,6 @@
     non_camel_case_types,
     non_upper_case_globals
 )]
-#![cfg(feature = "nightly")]
 
 pub type c_char = ::core::ffi::c_char;
 pub type c_double = ::core::ffi::c_double;
