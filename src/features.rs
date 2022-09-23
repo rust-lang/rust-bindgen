@@ -142,7 +142,7 @@ rust_target_base!(rust_target_def);
 rust_target_base!(rust_target_values_def);
 
 /// Latest stable release of Rust
-pub const LATEST_STABLE_RUST: RustTarget = RustTarget::Stable_1_47;
+pub const LATEST_STABLE_RUST: RustTarget = RustTarget::Stable_1_64;
 
 /// Create RustFeatures struct definition, new(), and a getter for each field
 macro_rules! rust_feature_def {
