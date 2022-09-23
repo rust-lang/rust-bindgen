@@ -66,7 +66,9 @@ doc_mod!(ir, ir_docs);
 doc_mod!(parse, parse_docs);
 doc_mod!(regex_set, regex_set_docs);
 
-pub use crate::codegen::{AliasVariation, EnumVariation, MacroTypeVariation};
+pub use crate::codegen::{
+    AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle,
+};
 use crate::features::RustFeatures;
 pub use crate::features::{
     RustTarget, LATEST_STABLE_RUST, RUST_TARGET_STRINGS,
@@ -312,6 +314,13 @@ impl Builder {
                 .push(self.options.default_alias_style.as_str().into());
         }
 
+        if self.options.default_non_copy_union_style != Default::default() {
+            output_vector.push("--default-non-copy-union-style".into());
+            output_vector.push(
+                self.options.default_non_copy_union_style.as_str().into(),
+            );
+        }
+
         let regex_sets = &[
             (&self.options.bitfield_enums, "--bitfield-enum"),
             (&self.options.newtype_enums, "--newtype-enum"),
@@ -329,6 +338,11 @@ impl Builder {
             (&self.options.type_alias, "--type-alias"),
             (&self.options.new_type_alias, "--new-type-alias"),
             (&self.options.new_type_alias_deref, "--new-type-alias-deref"),
+            (
+                &self.options.bindgen_wrapper_union,
+                "--bindgen-wrapper-union",
+            ),
+            (&self.options.manually_drop_union, "--manually-drop-union"),
             (&self.options.blocklisted_types, "--blocklist-type"),
             (&self.options.blocklisted_functions, "--blocklist-function"),
             (&self.options.blocklisted_items, "--blocklist-item"),
@@ -1101,6 +1115,32 @@ impl Builder {
         self
     }
 
+    /// Set the default style of code to generate for unions with a non-Copy member.
+    pub fn default_non_copy_union_style(
+        mut self,
+        arg: codegen::NonCopyUnionStyle,
+    ) -> Self {
+        self.options.default_non_copy_union_style = arg;
+        self
+    }
+
+    /// Mark the given union (or set of union, if using a pattern) to use
+    /// a bindgen-generated wrapper for its members if at least one is non-Copy.
+    pub fn bindgen_wrapper_union<T: AsRef<str>>(mut self, arg: T) -> Self {
+        self.options.bindgen_wrapper_union.insert(arg);
+        self
+    }
+
+    /// Mark the given union (or set of union, if using a pattern) to use
+    /// [`::core::mem::ManuallyDrop`] for its members if at least one is non-Copy.
+    ///
+    /// Note: `ManuallyDrop` was stabilized in Rust 1.20.0, do not use it if your
+    /// MSRV is lower.
+    pub fn manually_drop_union<T: AsRef<str>>(mut self, arg: T) -> Self {
+        self.options.manually_drop_union.insert(arg);
+        self
+    }
+
     /// Add a string to prepend to the generated bindings. The string is passed
     /// through without any modification.
     pub fn raw_line<T: Into<String>>(mut self, arg: T) -> Self {
@@ -1811,6 +1851,18 @@ struct BindgenOptions {
     /// Deref and Deref to their aliased type.
     new_type_alias_deref: RegexSet,
 
+    /// The default style of code to generate for union containing non-Copy
+    /// members.
+    default_non_copy_union_style: codegen::NonCopyUnionStyle,
+
+    /// The union patterns to mark an non-Copy union as using the bindgen
+    /// generated wrapper.
+    bindgen_wrapper_union: RegexSet,
+
+    /// The union patterns to mark an non-Copy union as using the
+    /// `::core::mem::ManuallyDrop` wrapper.
+    manually_drop_union: RegexSet,
+
     /// Whether we should generate builtins or not.
     builtins: bool,
 
@@ -2079,6 +2131,8 @@ impl BindgenOptions {
             &mut self.type_alias,
             &mut self.new_type_alias,
             &mut self.new_type_alias_deref,
+            &mut self.bindgen_wrapper_union,
+            &mut self.manually_drop_union,
             &mut self.no_partialeq_types,
             &mut self.no_copy_types,
             &mut self.no_debug_types,
@@ -2137,6 +2191,9 @@ impl Default for BindgenOptions {
             type_alias: Default::default(),
             new_type_alias: Default::default(),
             new_type_alias_deref: Default::default(),
+            default_non_copy_union_style: Default::default(),
+            bindgen_wrapper_union: Default::default(),
+            manually_drop_union: Default::default(),
             builtins: false,
             emit_ast: false,
             emit_ir: false,

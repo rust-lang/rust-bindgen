@@ -1,7 +1,7 @@
 use bindgen::{
     builder, AliasVariation, Builder, CodegenConfig, EnumVariation,
-    MacroTypeVariation, RustTarget, DEFAULT_ANON_FIELDS_PREFIX,
-    RUST_TARGET_STRINGS,
+    MacroTypeVariation, NonCopyUnionStyle, RustTarget,
+    DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
 };
 use clap::{App, Arg};
 use std::fs::File;
@@ -136,6 +136,42 @@ where
                      a new type with Deref and DerefMut to the inner type.",
                 )
                 .value_name("regex")
+                .multiple_occurrences(true)
+                .number_of_values(1),
+            Arg::new("default-non-copy-union-style")
+                .long("default-non-copy-union-style")
+                .help(
+                    "The default style of code used to generate unions with \
+                     non-Copy members. Note that ManuallyDrop was first \
+                     stabilized in Rust 1.20.0.",
+                )
+                .value_name("style")
+                .default_value("bindgen_wrapper")
+                .possible_values(&[
+                    "bindgen_wrapper",
+                    "manually_drop",
+                ])
+                .multiple_occurrences(false),
+            Arg::new("bindgen-wrapper-union")
+                .long("bindgen-wrapper-union")
+                .help(
+                    "Mark any union whose name matches <regex> and who has a \
+                     non-Copy member to use a bindgen-generated wrapper for \
+                     fields.",
+                )
+                .value_name("regex")
+                .takes_value(true)
+                .multiple_occurrences(true)
+                .number_of_values(1),
+            Arg::new("manually-drop-union")
+                .long("manually-drop-union")
+                .help(
+                    "Mark any union whose name matches <regex> and who has a \
+                     non-Copy member to use ManuallyDrop (stabilized in Rust \
+                     1.20.0) for fields.",
+                )
+                .value_name("regex")
+                .takes_value(true)
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("blocklist-type")
@@ -628,6 +664,27 @@ where
     if let Some(new_type_deref) = matches.values_of("new-type-alias-deref") {
         for regex in new_type_deref {
             builder = builder.new_type_alias_deref(regex);
+        }
+    }
+
+    if let Some(variant) = matches.value_of("default-non-copy-union-style") {
+        builder = builder.default_non_copy_union_style(
+            NonCopyUnionStyle::from_str(variant)?,
+        );
+    }
+
+    if let Some(bindgen_wrapper_union) =
+        matches.values_of("bindgen-wrapper-union")
+    {
+        for regex in bindgen_wrapper_union {
+            builder = builder.bindgen_wrapper_union(regex);
+        }
+    }
+
+    if let Some(manually_drop_union) = matches.values_of("manually-drop-union")
+    {
+        for regex in manually_drop_union {
+            builder = builder.manually_drop_union(regex);
         }
     }
 
