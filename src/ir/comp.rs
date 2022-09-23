@@ -14,6 +14,7 @@ use crate::codegen::struct_layout::{align_to, bytes_from_bits_pow2};
 use crate::ir::derive::CanDeriveCopy;
 use crate::parse::{ClangItemParser, ParseError};
 use crate::HashMap;
+use crate::NonCopyUnionStyle;
 use peeking_take_while::PeekableExt;
 use std::cmp;
 use std::io;
@@ -1680,20 +1681,36 @@ impl CompInfo {
     ///
     /// Requirements:
     ///     1. Current RustTarget allows for `untagged_union`
-    ///     2. Each field can derive `Copy`
+    ///     2. Each field can derive `Copy` or we use ManuallyDrop.
     ///     3. It's not zero-sized.
-    pub fn can_be_rust_union(
+    ///
+    /// Second boolean returns whether all fields can be copied (and thus
+    /// ManuallyDrop is not needed).
+    pub fn is_rust_union(
         &self,
         ctx: &BindgenContext,
         layout: Option<&Layout>,
-    ) -> bool {
+        name: &str,
+    ) -> (bool, bool) {
+        if !self.is_union() {
+            return (false, false);
+        }
+
         if !ctx.options().rust_features().untagged_union {
-            return false;
+            return (false, false);
         }
 
         if self.is_forward_declaration() {
-            return false;
+            return (false, false);
         }
+
+        let union_style = if ctx.options().bindgen_wrapper_union.matches(name) {
+            NonCopyUnionStyle::BindgenWrapper
+        } else if ctx.options().manually_drop_union.matches(name) {
+            NonCopyUnionStyle::ManuallyDrop
+        } else {
+            ctx.options().default_non_copy_union_style
+        };
 
         let all_can_copy = self.fields().iter().all(|f| match *f {
             Field::DataMember(ref field_data) => {
@@ -1702,15 +1719,15 @@ impl CompInfo {
             Field::Bitfields(_) => true,
         });
 
-        if !all_can_copy {
-            return false;
+        if !all_can_copy && union_style == NonCopyUnionStyle::BindgenWrapper {
+            return (false, false);
         }
 
         if layout.map_or(false, |l| l.size == 0) {
-            return false;
+            return (false, false);
         }
 
-        true
+        (true, all_can_copy)
     }
 }
 
