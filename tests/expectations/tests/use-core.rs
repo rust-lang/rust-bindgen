@@ -10,8 +10,8 @@ extern crate core;
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct foo {
-    pub a: ::std::os::raw::c_int,
-    pub b: ::std::os::raw::c_int,
+    pub a: ::core::ffi::c_int,
+    pub b: ::core::ffi::c_int,
     pub bar: *mut ::core::ffi::c_void,
 }
 #[test]
@@ -57,8 +57,8 @@ impl Default for foo {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union _bindgen_ty_1 {
-    pub bar: ::std::os::raw::c_int,
-    pub baz: ::std::os::raw::c_long,
+    pub bar: ::core::ffi::c_int,
+    pub baz: ::core::ffi::c_long,
 }
 #[test]
 fn bindgen_test_layout__bindgen_ty_1() {
@@ -109,4 +109,4 @@ extern "C" {
     pub static mut bazz: _bindgen_ty_1;
 }
 pub type fooFunction =
-    ::core::option::Option<unsafe extern "C" fn(bar: ::std::os::raw::c_int)>;
+    ::core::option::Option<unsafe extern "C" fn(bar: ::core::ffi::c_int)>;
