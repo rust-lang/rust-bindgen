@@ -20,6 +20,7 @@ pub struct StructLayoutTracker<'a> {
     is_packed: bool,
     known_type_layout: Option<Layout>,
     is_rust_union: bool,
+    can_copy_union_fields: bool,
     latest_offset: usize,
     padding_count: usize,
     latest_field_layout: Option<Layout>,
@@ -90,8 +91,8 @@ impl<'a> StructLayoutTracker<'a> {
     ) -> Self {
         let known_type_layout = ty.layout(ctx);
         let is_packed = comp.is_packed(ctx, known_type_layout.as_ref());
-        let is_rust_union = comp.is_union() &&
-            comp.can_be_rust_union(ctx, known_type_layout.as_ref());
+        let (is_rust_union, can_copy_union_fields) =
+            comp.is_rust_union(ctx, known_type_layout.as_ref(), name);
         StructLayoutTracker {
             name,
             ctx,
@@ -99,12 +100,17 @@ impl<'a> StructLayoutTracker<'a> {
             is_packed,
             known_type_layout,
             is_rust_union,
+            can_copy_union_fields,
             latest_offset: 0,
             padding_count: 0,
             latest_field_layout: None,
             max_field_align: 0,
             last_field_was_bitfield: false,
         }
+    }
+
+    pub fn can_copy_union_fields(&self) -> bool {
+        self.can_copy_union_fields
     }
 
     pub fn is_rust_union(&self) -> bool {
