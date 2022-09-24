@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 
 echo "Checking for #include directives of system headers..."
 
-grep -rn '#include\s*<.*>' tests/headers || {
+grep -rn '#include\s*<.*>' bindgen-tests/tests/headers || {
     echo "Found none; OK!"
     exit 0
 }

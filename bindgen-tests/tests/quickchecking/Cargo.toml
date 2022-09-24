@@ -24,8 +24,8 @@ tempdir = "0.3"
 default = []
 
 # Enable the generation of code that allows for zero sized arrays as struct
-# fields. Until issues #684 and #1153 are resolved this can result in failing tests. 
-zero-sized-arrays = [] 
+# fields. Until issues #684 and #1153 are resolved this can result in failing tests.
+zero-sized-arrays = []
 
 # Enable the generation of code that allows for long double types as struct
 # fields. Until issue #550 is resolved this can result in failing tests.

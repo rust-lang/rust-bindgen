@@ -1,18 +1,26 @@
 [package]
-name = "bindgen-integration"
-description = "A package to test various bindgen features"
+name = "bindgen-tests"
+edition = "2018"
 version = "0.1.0"
-authors = ["Emilio Cobos Álvarez <emilio@crisal.io>"]
 publish = false
-build = "build.rs"
 
-[build-dependencies]
+include = [
+  "Cargo.toml",
+  "build.rs",
+]
+
+[dev-dependencies]
 bindgen = { path = "../bindgen" }
-cc = "1.0"
+diff = "0.1"
+shlex = "1"
+clap = "3"
+tempfile = "3"
 
 [features]
+logging = ["bindgen/logging"]
 static = ["bindgen/static"]
 runtime = ["bindgen/runtime"]
+which-rustfmt = ["bindgen/which-rustfmt"]
 
 testing_only_docs = ["bindgen/testing_only_docs"]
 testing_only_extra_assertions = ["bindgen/testing_only_extra_assertions"]

@@ -7,11 +7,11 @@
 
 extern "C" {
     #[link_name = "\u{1}_Z1fv"]
-     pub fn f() -> !;
+    pub fn f() -> !;
 }
 extern "C" {
     #[link_name = "\u{1}_Z1gv"]
-     pub fn g() -> !;
+    pub fn g() -> !;
 }
 extern "C" {
     #[link_name = "\u{1}_Z1hv"]

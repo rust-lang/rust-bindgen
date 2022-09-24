@@ -68,7 +68,7 @@ jobs:
 
       # TODO: Actually run quickchecks once `bindgen` is reliable enough.
       - name: Build quickcheck tests
-        run: cd tests/quickchecking && cargo test
+        run: cd bindgen-tests/tests/quickchecking && cargo test
 
   test-expectations:
     runs-on: ${{matrix.os}}
@@ -88,7 +88,7 @@ jobs:
           override: true
 
       - name: Test expectations
-        run: cd tests/expectations && cargo test
+        run: cd bindgen-tests/tests/expectations && cargo test
 
   test:
     runs-on: ${{matrix.os}}

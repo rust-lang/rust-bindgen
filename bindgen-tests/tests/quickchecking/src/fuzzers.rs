@@ -1,6 +1,6 @@
 use quickcheck::{Arbitrary, Gen, StdGen};
-use std::fmt;
 use rand::thread_rng;
+use std::fmt;
 
 /// BaseTypeC is used in generation of C headers to represent the C language's
 /// primitive types as well as `void*`.
@@ -185,10 +185,14 @@ impl Arbitrary for DeclarationC {
     fn arbitrary<G: Gen>(g: &mut G) -> DeclarationC {
         match g.gen_range(0, 5) {
             0 => DeclarationC::FunctionDecl(FunctionPrototypeC::arbitrary(g)),
-            1 => DeclarationC::FunctionPtrDecl(FunctionPointerDeclarationC::arbitrary(g)),
+            1 => DeclarationC::FunctionPtrDecl(
+                FunctionPointerDeclarationC::arbitrary(g),
+            ),
             2 => DeclarationC::StructDecl(StructDeclarationC::arbitrary(g)),
             3 => DeclarationC::UnionDecl(UnionDeclarationC::arbitrary(g)),
-            4 => DeclarationC::VariableDecl(BasicTypeDeclarationC::arbitrary(g)),
+            4 => {
+                DeclarationC::VariableDecl(BasicTypeDeclarationC::arbitrary(g))
+            }
             _ => unreachable!(),
         }
     }
@@ -425,9 +429,7 @@ impl fmt::Display for StructDeclarationC {
         write!(
             f,
             "struct {{ {} }} struct_{}{};",
-            self.fields,
-            self.ident_id,
-            self.array_dimension
+            self.fields, self.ident_id, self.array_dimension
         )
     }
 }
@@ -475,9 +477,7 @@ impl fmt::Display for UnionDeclarationC {
         write!(
             f,
             "union {{ {} }} union_{}{};",
-            self.fields,
-            self.ident_id,
-            self.array_dimension
+            self.fields, self.ident_id, self.array_dimension
         )
     }
 }
@@ -574,9 +574,7 @@ impl fmt::Display for ParameterC {
         write!(
             f,
             "{} {} {}",
-            self.type_qualifier,
-            self.type_name,
-            self.pointer_level
+            self.type_qualifier, self.type_name, self.pointer_level
         )
     }
 }
