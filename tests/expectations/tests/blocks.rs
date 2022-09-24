@@ -6,7 +6,6 @@
 )]
 #![cfg(target_os = "macos")]
 
-pub type size_t = ::std::os::raw::c_ulonglong;
 extern "C" {
     #[link_name = "\u{1}_Z8atexit_bU13block_pointerFvvE"]
     pub fn atexit_b(arg1: *mut ::std::os::raw::c_void);

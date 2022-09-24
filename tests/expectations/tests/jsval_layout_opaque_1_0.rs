@@ -137,7 +137,6 @@ impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 pub const JSVAL_TAG_SHIFT: u32 = 47;
 pub const JSVAL_PAYLOAD_MASK: u64 = 140737488355327;
 pub const JSVAL_TAG_MASK: i64 = -140737488355328;
-pub type size_t = ::std::os::raw::c_ulonglong;
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSValueType {
@@ -229,7 +228,7 @@ pub struct jsval_layout {
     pub s: __BindgenUnionField<jsval_layout__bindgen_ty_2>,
     pub asDouble: __BindgenUnionField<f64>,
     pub asPtr: __BindgenUnionField<*mut ::std::os::raw::c_void>,
-    pub asWord: __BindgenUnionField<size_t>,
+    pub asWord: __BindgenUnionField<usize>,
     pub asUIntPtr: __BindgenUnionField<usize>,
     pub bindgen_union_field: u64,
 }
