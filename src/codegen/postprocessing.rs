@@ -20,8 +20,8 @@ macro_rules! pass {
     };
 }
 
-static PASSES: [PostProcessingPass; 2] =
-    [pass!(merge_extern_blocks), pass!(sort_semantically)];
+const PASSES: &'static [PostProcessingPass] =
+    &[pass!(merge_extern_blocks), pass!(sort_semantically)];
 
 pub(crate) fn postprocessing(
     items: Vec<TokenStream>,
@@ -43,13 +43,12 @@ pub(crate) fn postprocessing(
     //      The first one won't panic because we build the `mod` and know it is there
     //      The second one won't panic because we know original output has something in
     //      it already.
-    let mut items = syn::parse2::<syn::ItemMod>(module_wrapped_tokens)
+    let (_, mut items) = syn::parse2::<syn::ItemMod>(module_wrapped_tokens)
         .unwrap()
         .content
-        .unwrap()
-        .1;
+        .unwrap();
 
-    for pass in PASSES.iter() {
+    for pass in PASSES {
         if (pass.should_run)(options) {
             (pass.run)(&mut items);
         }
