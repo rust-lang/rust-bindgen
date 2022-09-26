@@ -326,9 +326,11 @@ generated Rust code are implemented using the [`syn`](https://docs.rs/syn) crate
 If a new option can be implemented using the `syn` crate it should be added to
 the `codegen::postprocessing` module by following these steps:
 
-- Introduce a new `struct` with no fields.
-- Implement the `PostProcessing` trait for the `struct`.
-- Add the `struct` to the `decl_postprocessing` macro invocation.
+- Introduce a new field to `BindgenOptions` for the option.
+- Write a free function inside `codegen::postprocessing` implementing the
+  option. This function with the same name of the `BindgenOptions` field.
+- Add a new value to the `codegen::postprocessing::PASSES` for the option using
+  the `pass!` macro.
 
 ## Pull Requests and Code Reviews
 
