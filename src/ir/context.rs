@@ -505,7 +505,10 @@ impl<'ctx> AllowlistedItemsTraversal<'ctx> {
 
 impl BindgenContext {
     /// Construct the context for the given `options`.
-    pub(crate) fn new(options: BindgenOptions) -> Self {
+    pub(crate) fn new(
+        options: BindgenOptions,
+        input_unsaved_files: &[clang::UnsavedFile],
+    ) -> Self {
         // TODO(emilio): Use the CXTargetInfo here when available.
         //
         // see: https://reviews.llvm.org/D32389
@@ -522,7 +525,7 @@ impl BindgenContext {
                 &index,
                 "",
                 &options.clang_args,
-                &options.input_unsaved_files,
+                &input_unsaved_files,
                 parse_options,
             ).expect("libclang error; possible causes include:
 - Invalid flag syntax

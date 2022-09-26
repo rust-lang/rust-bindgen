@@ -83,6 +83,7 @@ use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
+use std::rc::Rc;
 use std::{env, iter};
 
 // Some convenient typedefs for a fast hash map and hash set.
@@ -1466,7 +1467,7 @@ impl Builder {
         mut self,
         cb: Box<dyn callbacks::ParseCallbacks>,
     ) -> Self {
-        self.options.parse_callbacks = Some(cb);
+        self.options.parse_callbacks = Some(Rc::from(cb));
         self
     }
 
@@ -1575,15 +1576,13 @@ impl Builder {
             }),
         );
 
-        self.options.input_unsaved_files.extend(
-            self.input_header_contents
-                .drain(..)
-                .map(|(name, contents)| {
-                    clang::UnsavedFile::new(&name, &contents)
-                }),
-        );
+        let input_unsaved_files = self
+            .input_header_contents
+            .into_iter()
+            .map(|(name, contents)| clang::UnsavedFile::new(&name, &contents))
+            .collect::<Vec<_>>();
 
-        Bindings::generate(self.options)
+        Bindings::generate(self.options, input_unsaved_files)
     }
 
     /// Preprocess and dump the input header files to disk.
@@ -1775,7 +1774,7 @@ impl Builder {
 }
 
 /// Configuration options for generated bindings.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct BindgenOptions {
     /// The set of types that have been blocklisted and should not appear
     /// anywhere in the generated code.
@@ -1978,12 +1977,9 @@ struct BindgenOptions {
     /// Any additional input header files.
     extra_input_headers: Vec<String>,
 
-    /// Unsaved files for input.
-    input_unsaved_files: Vec<clang::UnsavedFile>,
-
     /// A user-provided visitor to allow customizing different kinds of
     /// situations.
-    parse_callbacks: Option<Box<dyn callbacks::ParseCallbacks>>,
+    parse_callbacks: Option<Rc<dyn callbacks::ParseCallbacks>>,
 
     /// Which kind of items should we generate? By default, we'll generate all
     /// of them.
@@ -2236,7 +2232,6 @@ impl Default for BindgenOptions {
             clang_args: vec![],
             input_header: None,
             extra_input_headers: vec![],
-            input_unsaved_files: vec![],
             parse_callbacks: None,
             codegen_config: CodegenConfig::all(),
             conservative_inline_namespaces: false,
@@ -2394,6 +2389,7 @@ impl Bindings {
     /// Generate bindings for the given options.
     pub(crate) fn generate(
         mut options: BindgenOptions,
+        input_unsaved_files: Vec<clang::UnsavedFile>,
     ) -> Result<Bindings, BindgenError> {
         ensure_libclang_is_loaded();
 
@@ -2528,7 +2524,7 @@ impl Bindings {
             }
         }
 
-        for (idx, f) in options.input_unsaved_files.iter().enumerate() {
+        for (idx, f) in input_unsaved_files.iter().enumerate() {
             if idx != 0 || options.input_header.is_some() {
                 options.clang_args.push("-include".to_owned());
             }
@@ -2538,7 +2534,7 @@ impl Bindings {
         debug!("Fixed-up options: {:?}", options);
 
         let time_phases = options.time_phases;
-        let mut context = BindgenContext::new(options);
+        let mut context = BindgenContext::new(options, &input_unsaved_files);
 
         if is_host_build {
             debug_assert_eq!(
