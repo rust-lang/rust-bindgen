@@ -563,8 +563,8 @@ impl Builder {
             output_vector.push("--no-record-matches".into());
         }
 
-        if self.options.size_t_is_usize {
-            output_vector.push("--size_t-is-usize".into());
+        if !self.options.size_t_is_usize {
+            output_vector.push("--no-size_t-is-usize".into());
         }
 
         if !self.options.rustfmt_bindings {
@@ -2247,7 +2247,7 @@ impl Default for BindgenOptions {
             time_phases: false,
             record_matches: true,
             rustfmt_bindings: true,
-            size_t_is_usize: false,
+            size_t_is_usize: true,
             rustfmt_configuration_file: None,
             no_partialeq_types: Default::default(),
             no_copy_types: Default::default(),

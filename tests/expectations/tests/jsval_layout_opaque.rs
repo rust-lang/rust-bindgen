@@ -94,7 +94,6 @@ where
 pub const JSVAL_TAG_SHIFT: u32 = 47;
 pub const JSVAL_PAYLOAD_MASK: u64 = 140737488355327;
 pub const JSVAL_TAG_MASK: i64 = -140737488355328;
-pub type size_t = ::std::os::raw::c_ulonglong;
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSValueType {
@@ -186,7 +185,7 @@ pub union jsval_layout {
     pub s: jsval_layout__bindgen_ty_2,
     pub asDouble: f64,
     pub asPtr: *mut ::std::os::raw::c_void,
-    pub asWord: size_t,
+    pub asWord: usize,
     pub asUIntPtr: usize,
 }
 #[repr(C)]
