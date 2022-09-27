@@ -9,8 +9,8 @@
 #[derive(Debug, Default, Copy, Clone)]
 pub struct foo {
     pub type_: ::std::os::raw::c_int,
-    pub type_: ::std::os::raw::c_long,
-    pub type__: ::std::os::raw::c_longlong,
+    pub type__: ::std::os::raw::c_long,
+    pub type___: ::std::os::raw::c_longlong,
 }
 #[test]
 fn bindgen_test_layout_foo() {
@@ -38,7 +38,7 @@ fn bindgen_test_layout_foo() {
         )
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).type_) as usize - ptr as usize },
+        unsafe { ::std::ptr::addr_of!((*ptr).type__) as usize - ptr as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -48,7 +48,7 @@ fn bindgen_test_layout_foo() {
         )
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).type__) as usize - ptr as usize },
+        unsafe { ::std::ptr::addr_of!((*ptr).type___) as usize - ptr as usize },
         16usize,
         concat!(
             "Offset of field: ",
