@@ -1,5 +1,5 @@
 typedef struct foo {
   int type;
-  int type_;
-  int type__;
+  long type_;
+  long long type__;
 };
