@@ -3,6 +3,7 @@ mod error;
 mod helpers;
 mod impl_debug;
 mod impl_partialeq;
+mod postprocessing;
 pub mod struct_layout;
 
 #[cfg(test)]
@@ -4439,7 +4440,7 @@ impl CodeGenerator for ObjCInterface {
 
 pub(crate) fn codegen(
     context: BindgenContext,
-) -> (Vec<proc_macro2::TokenStream>, BindgenOptions, Vec<String>) {
+) -> (proc_macro2::TokenStream, BindgenOptions, Vec<String>) {
     context.gen(|context| {
         let _t = context.timer("codegen");
         let counter = Cell::new(0);
@@ -4489,7 +4490,7 @@ pub(crate) fn codegen(
             result.push(dynamic_items_tokens);
         }
 
-        result.items
+        postprocessing::postprocessing(result.items, context.options())
     })
 }
 

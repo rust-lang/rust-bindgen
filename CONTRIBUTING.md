@@ -323,14 +323,14 @@ generated Rust code are implemented using the [`syn`](https://docs.rs/syn) crate
 
 ### Implementing new options using `syn`
 
-Here is a list of recommendations to be followed if a new option can be
-implemented using the `syn` crate:
+If a new option can be implemented using the `syn` crate it should be added to
+the `codegen::postprocessing` module by following these steps:
 
-- The `BindgenOptions::require_syn` method must be updated to reflect that this
-  new option requires parsing the generated Rust code with `syn`.
-
-- The implementation of the new option should be added at the end of
-  `Bindings::generate`, inside the `if options.require_syn() { ... }` block.
+- Introduce a new field to `BindgenOptions` for the option.
+- Write a free function inside `codegen::postprocessing` implementing the
+  option. This function with the same name of the `BindgenOptions` field.
+- Add a new value to the `codegen::postprocessing::PASSES` for the option using
+  the `pass!` macro.
 
 ## Pull Requests and Code Reviews
 

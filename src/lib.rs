@@ -88,7 +88,6 @@ use std::{env, iter};
 // Some convenient typedefs for a fast hash map and hash set.
 type HashMap<K, V> = ::rustc_hash::FxHashMap<K, V>;
 type HashSet<K> = ::rustc_hash::FxHashSet<K>;
-use quote::ToTokens;
 pub(crate) use std::collections::hash_map::Entry;
 
 /// Default prefix for the anon fields.
@@ -2118,11 +2117,6 @@ struct BindgenOptions {
 impl ::std::panic::UnwindSafe for BindgenOptions {}
 
 impl BindgenOptions {
-    /// Whether any of the enabled options requires `syn`.
-    fn require_syn(&self) -> bool {
-        self.sort_semantically || self.merge_extern_blocks
-    }
-
     fn build(&mut self) {
         let mut regex_sets = [
             &mut self.allowlisted_vars,
@@ -2555,112 +2549,7 @@ impl Bindings {
             parse(&mut context)?;
         }
 
-        let (items, options, warnings) = codegen::codegen(context);
-
-        let module = if options.require_syn() {
-            let module_wrapped_tokens =
-                quote!(mod wrapper_for_sorting_hack { #( #items )* });
-
-            // This syn business is a hack, for now. This means that we are re-parsing already
-            // generated code using `syn` (as opposed to `quote`) because `syn` provides us more
-            // control over the elements.
-            // One caveat is that some of the items coming from `quote`d output might have
-            // multiple items within them. Hence, we have to wrap the incoming in a `mod`.
-            // The two `unwrap`s here are deliberate because
-            //      The first one won't panic because we build the `mod` and know it is there
-            //      The second one won't panic because we know original output has something in
-            //      it already.
-            let mut syn_parsed_items =
-                syn::parse2::<syn::ItemMod>(module_wrapped_tokens)
-                    .unwrap()
-                    .content
-                    .unwrap()
-                    .1;
-
-            if options.merge_extern_blocks {
-                // Here we will store all the items after deduplication.
-                let mut items = Vec::new();
-
-                // Keep all the extern blocks in a different `Vec` for faster search.
-                let mut foreign_mods = Vec::<syn::ItemForeignMod>::new();
-                for item in syn_parsed_items {
-                    match item {
-                        syn::Item::ForeignMod(syn::ItemForeignMod {
-                            attrs,
-                            abi,
-                            brace_token,
-                            items: foreign_items,
-                        }) => {
-                            let mut exists = false;
-                            for foreign_mod in &mut foreign_mods {
-                                // Check if there is a extern block with the same ABI and
-                                // attributes.
-                                if foreign_mod.attrs == attrs &&
-                                    foreign_mod.abi == abi
-                                {
-                                    // Merge the items of the two blocks.
-                                    foreign_mod
-                                        .items
-                                        .extend_from_slice(&foreign_items);
-                                    exists = true;
-                                    break;
-                                }
-                            }
-                            // If no existing extern block had the same ABI and attributes, store
-                            // it.
-                            if !exists {
-                                foreign_mods.push(syn::ItemForeignMod {
-                                    attrs,
-                                    abi,
-                                    brace_token,
-                                    items: foreign_items,
-                                });
-                            }
-                        }
-                        // If the item is not an extern block, we don't have to do anything.
-                        _ => items.push(item),
-                    }
-                }
-
-                // Move all the extern blocks alongiside the rest of the items.
-                for foreign_mod in foreign_mods {
-                    items.push(syn::Item::ForeignMod(foreign_mod));
-                }
-
-                syn_parsed_items = items;
-            }
-
-            if options.sort_semantically {
-                syn_parsed_items.sort_by_key(|item| match item {
-                    syn::Item::Type(_) => 0,
-                    syn::Item::Struct(_) => 1,
-                    syn::Item::Const(_) => 2,
-                    syn::Item::Fn(_) => 3,
-                    syn::Item::Enum(_) => 4,
-                    syn::Item::Union(_) => 5,
-                    syn::Item::Static(_) => 6,
-                    syn::Item::Trait(_) => 7,
-                    syn::Item::TraitAlias(_) => 8,
-                    syn::Item::Impl(_) => 9,
-                    syn::Item::Mod(_) => 10,
-                    syn::Item::Use(_) => 11,
-                    syn::Item::Verbatim(_) => 12,
-                    syn::Item::ExternCrate(_) => 13,
-                    syn::Item::ForeignMod(_) => 14,
-                    syn::Item::Macro(_) => 15,
-                    syn::Item::Macro2(_) => 16,
-                    _ => 18,
-                });
-            }
-
-            let synful_items = syn_parsed_items
-                .into_iter()
-                .map(|item| item.into_token_stream());
-
-            quote! { #( #synful_items )* }
-        } else {
-            quote! { #( #items )* }
-        };
+        let (module, options, warnings) = codegen::codegen(context);
 
         Ok(Bindings {
             options,
