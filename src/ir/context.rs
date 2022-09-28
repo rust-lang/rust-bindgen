@@ -813,26 +813,33 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     // TODO: Move all this syntax crap to other part of the code.
 
     /// Mangles a name so it doesn't conflict with any keyword.
-    #[rustfmt::skip]
     pub fn rust_mangle<'a>(&self, name: &'a str) -> Cow<'a, str> {
+        #[rustfmt::skip]
+        const KEYWORDS: &[&'static str] = &[
+            "abstract", "alignof", "as", "async", "await", "become", "box",
+            "break", "const", "continue", "crate", "do", "dyn", "else", "enum",
+            "extern", "false", "final", "fn", "for", "if", "impl", "in", "let",
+            "loop", "macro", "match", "mod", "move", "mut", "offsetof",
+            "override", "priv", "proc", "pub", "pure", "ref", "return", "Self",
+            "self", "sizeof", "static", "struct", "super", "trait", "true",
+            "try", "type", "typeof", "unsafe", "unsized", "use", "virtual",
+            "where", "while", "yield", "str", "bool", "f32", "f64", "usize",
+            "isize", "u128", "i128", "u64", "i64", "u32", "i32", "u16", "i16",
+            "u8", "i8", "_",
+        ];
+        let mut is_keyword_or_mangled_keyword = false;
+        for keyword in KEYWORDS {
+            if let Some(remaining) = name.strip_prefix(keyword) {
+                if remaining.is_empty() || remaining.chars().all(|c| c == '_') {
+                    is_keyword_or_mangled_keyword = true;
+                    break;
+                }
+            }
+        }
         if name.contains('@') ||
             name.contains('?') ||
             name.contains('$') ||
-            matches!(
-                name,
-                "abstract" | "alignof" | "as" | "async" | "await" | "become" |
-                    "box" | "break" | "const" | "continue" | "crate" | "do" |
-                    "dyn" | "else" | "enum" | "extern" | "false" | "final" |
-                    "fn" | "for" | "if" | "impl" | "in" | "let" | "loop" |
-                    "macro" | "match" | "mod" | "move" | "mut" | "offsetof" |
-                    "override" | "priv" | "proc" | "pub" | "pure" | "ref" |
-                    "return" | "Self" | "self" | "sizeof" | "static" |
-                    "struct" | "super" | "trait" | "true" | "try" | "type" | "typeof" |
-                    "unsafe" | "unsized" | "use" | "virtual" | "where" |
-                    "while" | "yield" | "str" | "bool" | "f32" | "f64" |
-                    "usize" | "isize" | "u128" | "i128" | "u64" | "i64" |
-                    "u32" | "i32" | "u16" | "i16" | "u8" | "i8" | "_"
-            )
+            is_keyword_or_mangled_keyword
         {
             let mut s = name.to_owned();
             s = s.replace('@', "_");

@@ -5,14 +5,14 @@
     non_upper_case_globals
 )]
 
-pub type i8_ = i8;
-pub type u8_ = u8;
-pub type i16_ = i16;
-pub type u16_ = u16;
-pub type i32_ = i32;
-pub type u32_ = u32;
-pub type i64_ = i64;
-pub type u64_ = u64;
+pub type i8__ = i8;
+pub type u8__ = u8;
+pub type i16__ = i16;
+pub type u16__ = u16;
+pub type i32__ = i32;
+pub type u32__ = u32;
+pub type i64__ = i64;
+pub type u64__ = u64;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Foo {

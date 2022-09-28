@@ -163,19 +163,18 @@ impl ::std::fmt::Debug for Foo {
                     v
                 ))
                 .collect::<String>(),
-            self.type__bindgen_bitfield()
+            self.type__()
         )
     }
 }
 impl ::std::cmp::PartialEq for Foo {
     fn eq(&self, other: &Foo) -> bool {
-        &self.large[..] == &other.large[..] &&
-            self.type__bindgen_bitfield() == other.type__bindgen_bitfield()
+        &self.large[..] == &other.large[..] && self.type__() == other.type__()
     }
 }
 impl Foo {
     #[inline]
-    pub fn type__bindgen_bitfield(&self) -> ::std::os::raw::c_char {
+    pub fn type__(&self) -> ::std::os::raw::c_char {
         unsafe {
             ::std::mem::transmute(self._bitfield_1.get(0usize, 3u8) as u8)
         }
@@ -189,14 +188,13 @@ impl Foo {
     }
     #[inline]
     pub fn new_bitfield_1(
-        type__bindgen_bitfield: ::std::os::raw::c_char,
+        type__: ::std::os::raw::c_char,
     ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> =
             Default::default();
         __bindgen_bitfield_unit.set(0usize, 3u8, {
-            let type__bindgen_bitfield: u8 =
-                unsafe { ::std::mem::transmute(type__bindgen_bitfield) };
-            type__bindgen_bitfield as u64
+            let type__: u8 = unsafe { ::std::mem::transmute(type__) };
+            type__ as u64
         });
         __bindgen_bitfield_unit
     }

@@ -5,12 +5,12 @@
     non_upper_case_globals
 )]
 
-pub const match_: _bindgen_ty_1 = _bindgen_ty_1::match_;
+pub const match__: _bindgen_ty_1 = _bindgen_ty_1::match_;
 pub const whatever_else: _bindgen_ty_1 = _bindgen_ty_1::whatever_else;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum _bindgen_ty_1 {
-    match_ = 0,
+    match__ = 0,
     whatever_else = 1,
 }
 #[repr(C)]

@@ -5,7 +5,7 @@
     non_upper_case_globals
 )]
 
-pub const __: ::std::os::raw::c_int = 10;
+pub const ___: ::std::os::raw::c_int = 10;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct ptr_t {

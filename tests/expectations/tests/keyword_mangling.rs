@@ -44,7 +44,7 @@ fn bindgen_test_layout_foo() {
             "Offset of field: ",
             stringify!(foo),
             "::",
-            stringify!(type_)
+            stringify!(type__)
         )
     );
     assert_eq!(
@@ -54,7 +54,15 @@ fn bindgen_test_layout_foo() {
             "Offset of field: ",
             stringify!(foo),
             "::",
-            stringify!(type__)
+            stringify!(type___)
         )
     );
+}
+pub const Type_let_: Type = 0;
+pub const Type_match_: Type = 1;
+pub const Type_match__: Type = 2;
+pub type Type = ::std::os::raw::c_uint;
+extern "C" {
+    #[link_name = "\u{1}type"]
+    pub fn type__(type___: Type, type__: Type) -> ::std::os::raw::c_int;
 }
