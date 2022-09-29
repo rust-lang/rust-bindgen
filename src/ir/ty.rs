@@ -1206,6 +1206,13 @@ impl Trace for Type {
     where
         T: Tracer,
     {
+        if self
+            .name()
+            .map_or(false, |name| context.is_stdint_type(name))
+        {
+            // These types are special-cased in codegen and don't need to be traversed.
+            return;
+        }
         match *self.kind() {
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) |

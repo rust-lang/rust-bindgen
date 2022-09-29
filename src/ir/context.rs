@@ -2250,22 +2250,25 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                         // Sized integer types from <stdint.h> get mapped to Rust primitive
                         // types regardless of whether they are blocklisted, so ensure that
                         // standard traits are considered derivable for them too.
-                        None => match name {
-                            "int8_t" | "uint8_t" | "int16_t" | "uint16_t" |
-                            "int32_t" | "uint32_t" | "int64_t" |
-                            "uint64_t" | "uintptr_t" | "intptr_t" |
-                            "ptrdiff_t" => Some(CanDerive::Yes),
-                            "size_t" if self.options.size_t_is_usize => {
-                                Some(CanDerive::Yes)
-                            }
-                            "ssize_t" if self.options.size_t_is_usize => {
-                                Some(CanDerive::Yes)
-                            }
-                            _ => Some(CanDerive::No),
-                        },
+                        None => Some(if self.is_stdint_type(name) {
+                            CanDerive::Yes
+                        } else {
+                            CanDerive::No
+                        }),
                     })
                     .unwrap_or(CanDerive::No)
             })
+    }
+
+    /// Is the given type a type from <stdint.h> that corresponds to a Rust primitive type?
+    pub fn is_stdint_type(&self, name: &str) -> bool {
+        match name {
+            "int8_t" | "uint8_t" | "int16_t" | "uint16_t" | "int32_t" |
+            "uint32_t" | "int64_t" | "uint64_t" | "uintptr_t" |
+            "intptr_t" | "ptrdiff_t" => true,
+            "size_t" | "ssize_t" => self.options.size_t_is_usize,
+            _ => false,
+        }
     }
 
     /// Get a reference to the set of items we should generate.
@@ -2355,7 +2358,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                     TypeKind::Opaque |
                                     TypeKind::TypeParam => return true,
                                     _ => {}
-                                };
+                                }
+                                if self.is_stdint_type(&name) {
+                                    return true;
+                                }
                             }
 
                             // Unnamed top-level enums are special and we
