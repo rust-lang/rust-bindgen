@@ -187,6 +187,8 @@ you will need to convert the <code>UILabel</code> to a <code>UIView</code> via <
 <p>Each class (struct) has an <code>alloc</code> and a <code>dealloc</code> to match that of some of the alloc
 methods found in <code>NSObject</code>.</p>
 <p>In order to initialize a class <code>Foo</code>, you will have to do something like <code>let foo = Foo(Foo::alloc().initWithStuff())</code>.</p>
+<p>To blocklist an Objective-C method, you should add the bindgen generated method
+path (e.g. <code>IFoo::method</code> or <code>IFoo::class_method</code>) as a blocklist item.</p>
 <h2><a class="header" href="#supported-features" id="supported-features">Supported Features</a></h2>
 <ul>
 <li>Inheritance matched to rust traits with prefixes of <code>I</code> which
