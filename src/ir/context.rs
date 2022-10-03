@@ -525,7 +525,7 @@ impl BindgenContext {
                 &index,
                 "",
                 &options.clang_args,
-                &input_unsaved_files,
+                input_unsaved_files,
                 parse_options,
             ).expect("libclang error; possible causes include:
 - Invalid flag syntax
