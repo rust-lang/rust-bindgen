@@ -39,7 +39,7 @@ where
                 .help("The default style of code used to generate enums.")
                 .value_name("variant")
                 .default_value("consts")
-                .possible_values(&[
+                .possible_values([
                     "consts",
                     "moduleconsts",
                     "bitfield",
@@ -98,14 +98,14 @@ where
                 .help("The default signed/unsigned type for C macro constants.")
                 .value_name("variant")
                 .default_value("unsigned")
-                .possible_values(&["signed", "unsigned"])
+                .possible_values(["signed", "unsigned"])
                 .multiple_occurrences(false),
             Arg::new("default-alias-style")
                 .long("default-alias-style")
                 .help("The default style of code used to generate typedefs.")
                 .value_name("variant")
                 .default_value("type_alias")
-                .possible_values(&[
+                .possible_values([
                     "type_alias",
                     "new_type",
                     "new_type_deref",
@@ -147,7 +147,7 @@ where
                 )
                 .value_name("style")
                 .default_value("bindgen_wrapper")
-                .possible_values(&[
+                .possible_values([
                     "bindgen_wrapper",
                     "manually_drop",
                 ])

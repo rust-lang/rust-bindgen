@@ -31,7 +31,7 @@ fn rustfmt(source: String) -> (String, String) {
 
         let mut rustfmt = {
             let mut p = process::Command::new("rustup");
-            p.args(&["run", "nightly", "rustfmt", "--version"]);
+            p.args(["run", "nightly", "rustfmt", "--version"]);
             p
         };
 
@@ -59,13 +59,13 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
         Some(r) => process::Command::new(r),
         None => {
             let mut p = process::Command::new("rustup");
-            p.args(&["run", "nightly", "rustfmt"]);
+            p.args(["run", "nightly", "rustfmt"]);
             p
         }
     };
 
     let mut child = child
-        .args(&[
+        .args([
             "--config-path",
             concat!(env!("CARGO_MANIFEST_DIR"), "/tests/rustfmt.toml"),
         ])
@@ -164,7 +164,7 @@ fn error_diff_mismatch(
         let mut actual_result_file = fs::File::create(&actual_result_path)?;
         actual_result_file.write_all(actual.as_bytes())?;
         std::process::Command::new(var)
-            .args(&[filename, &actual_result_path])
+            .args([filename, &actual_result_path])
             .output()?;
     }
 

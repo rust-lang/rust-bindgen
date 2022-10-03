@@ -325,8 +325,7 @@ impl ClangSubItemParser for Var {
 
                     let mut val = cursor.evaluate().and_then(|v| v.as_int());
                     if val.is_none() || !kind.signedness_matches(val.unwrap()) {
-                        let tu = ctx.translation_unit();
-                        val = get_integer_literal_from_cursor(&cursor, tu);
+                        val = get_integer_literal_from_cursor(&cursor);
                     }
 
                     val.map(|val| {
@@ -391,10 +390,7 @@ fn parse_int_literal_tokens(cursor: &clang::Cursor) -> Option<i64> {
     }
 }
 
-fn get_integer_literal_from_cursor(
-    cursor: &clang::Cursor,
-    unit: &clang::TranslationUnit,
-) -> Option<i64> {
+fn get_integer_literal_from_cursor(cursor: &clang::Cursor) -> Option<i64> {
     use clang_sys::*;
     let mut value = None;
     cursor.visit(|c| {
@@ -403,7 +399,7 @@ fn get_integer_literal_from_cursor(
                 value = parse_int_literal_tokens(&c);
             }
             CXCursor_UnexposedExpr => {
-                value = get_integer_literal_from_cursor(&c, unit);
+                value = get_integer_literal_from_cursor(&c);
             }
             _ => (),
         }
