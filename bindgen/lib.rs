@@ -79,12 +79,12 @@ use crate::parse::{ClangItemParser, ParseError};
 use crate::regex_set::RegexSet;
 
 use std::borrow::Cow;
+use std::env;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::rc::Rc;
-use std::{env, iter};
 
 // Some convenient typedefs for a fast hash map and hash set.
 type HashMap<K, V> = ::rustc_hash::FxHashMap<K, V>;
@@ -222,12 +222,9 @@ impl Default for CodegenConfig {
 /// End-users of the crate may need to set the `BINDGEN_EXTRA_CLANG_ARGS` environment variable to
 /// add additional arguments. For example, to build against a different sysroot a user could set
 /// `BINDGEN_EXTRA_CLANG_ARGS` to `--sysroot=/path/to/sysroot`.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Builder {
     options: BindgenOptions,
-    input_headers: Vec<String>,
-    // Tuples of unsaved file contents of the form (name, contents).
-    input_header_contents: Vec<(String, String)>,
 }
 
 /// Construct a new [`Builder`](./struct.Builder.html).
@@ -254,7 +251,7 @@ impl Builder {
     pub fn command_line_flags(&self) -> Vec<String> {
         let mut output_vector: Vec<String> = Vec::new();
 
-        if let Some(header) = self.input_headers.last().cloned() {
+        if let Some(header) = self.options.input_headers.last().cloned() {
             // Positional argument 'header'
             output_vector.push(header);
         }
@@ -627,13 +624,13 @@ impl Builder {
             output_vector.extend(self.options.clang_args.iter().cloned());
         }
 
-        if self.input_headers.len() > 1 {
-            // To pass more than one header, we need to pass all but the last
-            // header via the `-include` clang arg
-            for header in &self.input_headers[..self.input_headers.len() - 1] {
-                output_vector.push("-include".to_string());
-                output_vector.push(header.clone());
-            }
+        // To pass more than one header, we need to pass all but the last
+        // header via the `-include` clang arg
+        for header in &self.options.input_headers
+            [..self.options.input_headers.len().saturating_sub(1)]
+        {
+            output_vector.push("-include".to_string());
+            output_vector.push(header.clone());
         }
 
         output_vector
@@ -662,7 +659,7 @@ impl Builder {
     ///     .unwrap();
     /// ```
     pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
-        self.input_headers.push(header.into());
+        self.options.input_headers.push(header.into());
         self
     }
 
@@ -691,7 +688,8 @@ impl Builder {
             .to_str()
             .expect("Cannot convert current directory name to string")
             .to_owned();
-        self.input_header_contents
+        self.options
+            .input_header_contents
             .push((absolute_path, contents.into()));
         self
     }
@@ -1566,20 +1564,18 @@ impl Builder {
         self.options.clang_args.extend(get_extra_clang_args());
 
         // Transform input headers to arguments on the clang command line.
-        self.options.input_header = self.input_headers.pop();
-        self.options.extra_input_headers = self.input_headers;
         self.options.clang_args.extend(
-            self.options.extra_input_headers.iter().flat_map(|header| {
-                iter::once("-include".into())
-                    .chain(iter::once(header.to_string()))
-            }),
+            self.options.input_headers
+                [..self.options.input_headers.len().saturating_sub(1)]
+                .iter()
+                .flat_map(|header| ["-include".into(), header.to_string()]),
         );
 
-        let input_unsaved_files = self
-            .input_header_contents
-            .into_iter()
-            .map(|(name, contents)| clang::UnsavedFile::new(&name, &contents))
-            .collect::<Vec<_>>();
+        let input_unsaved_files =
+            std::mem::take(&mut self.options.input_header_contents)
+                .into_iter()
+                .map(|(name, contents)| clang::UnsavedFile::new(name, contents))
+                .collect::<Vec<_>>();
 
         Bindings::generate(self.options, input_unsaved_files)
     }
@@ -1606,7 +1602,7 @@ impl Builder {
         let mut is_cpp = args_are_cpp(&self.options.clang_args);
 
         // For each input header, add `#include "$header"`.
-        for header in &self.input_headers {
+        for header in &self.options.input_headers {
             is_cpp |= file_is_cpp(header);
 
             wrapper_contents.push_str("#include \"");
@@ -1616,7 +1612,7 @@ impl Builder {
 
         // For each input header content, add a prefix line of `#line 0 "$name"`
         // followed by the contents.
-        for &(ref name, ref contents) in &self.input_header_contents {
+        for &(ref name, ref contents) in &self.options.input_header_contents {
             is_cpp |= file_is_cpp(name);
 
             wrapper_contents.push_str("#line 0 \"");
@@ -1970,11 +1966,11 @@ struct BindgenOptions {
     /// The set of arguments to pass straight through to Clang.
     clang_args: Vec<String>,
 
-    /// The input header file.
-    input_header: Option<String>,
+    /// The input header files.
+    input_headers: Vec<String>,
 
-    /// Any additional input header files.
-    extra_input_headers: Vec<String>,
+    /// Tuples of unsaved file contents of the form (name, contents).
+    input_header_contents: Vec<(String, String)>,
 
     /// A user-provided visitor to allow customizing different kinds of
     /// situations.
@@ -2224,8 +2220,8 @@ impl Default for BindgenOptions {
             raw_lines: vec![],
             module_lines: HashMap::default(),
             clang_args: vec![],
-            input_header: None,
-            extra_input_headers: vec![],
+            input_headers: vec![],
+            input_header_contents: Default::default(),
             parse_callbacks: None,
             codegen_config: CodegenConfig::all(),
             conservative_inline_namespaces: false,
@@ -2470,7 +2466,7 @@ impl Bindings {
 
             // Whether we are working with C or C++ inputs.
             let is_cpp = args_are_cpp(&options.clang_args) ||
-                options.input_header.as_deref().map_or(false, file_is_cpp);
+                options.input_headers.iter().any(|h| file_is_cpp(h));
 
             let search_paths = if is_cpp {
                 clang.cpp_search_paths
@@ -2501,7 +2497,7 @@ impl Bindings {
             true
         }
 
-        if let Some(h) = options.input_header.as_ref() {
+        if let Some(h) = options.input_headers.last() {
             let path = Path::new(h);
             if let Ok(md) = std::fs::metadata(path) {
                 if md.is_dir() {
@@ -2512,14 +2508,15 @@ impl Bindings {
                         path.into(),
                     ));
                 }
-                options.clang_args.push(h.clone())
+                let h = h.clone();
+                options.clang_args.push(h);
             } else {
                 return Err(BindgenError::NotExist(path.into()));
             }
         }
 
         for (idx, f) in input_unsaved_files.iter().enumerate() {
-            if idx != 0 || options.input_header.is_some() {
+            if idx != 0 || !options.input_headers.is_empty() {
                 options.clang_args.push("-include".to_owned());
             }
             options.clang_args.push(f.name.to_str().unwrap().to_owned())

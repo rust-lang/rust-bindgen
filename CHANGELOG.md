@@ -159,6 +159,7 @@
  * new feature: `--merge-extern-blocks` flag to merge several `extern` blocks
    that have the same ABI.
  * new feature: `--no-size_t-is-usize` flag to not bind `size_t` as `usize`.
+ * new feature: `Builder` implements `Clone`.
 
 ## Changed
 

@@ -541,11 +541,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let root_module_id = root_module.id().as_module_id_unchecked();
 
         // depfiles need to include the explicitly listed headers too
-        let mut deps = BTreeSet::default();
-        if let Some(filename) = &options.input_header {
-            deps.insert(filename.clone());
-        }
-        deps.extend(options.extra_input_headers.iter().cloned());
+        let deps = options.input_headers.iter().cloned().collect();
 
         BindgenContext {
             items: vec![Some(root_module)],
