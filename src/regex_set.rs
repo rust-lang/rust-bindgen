@@ -4,7 +4,7 @@ use regex::RegexSet as RxSet;
 use std::cell::Cell;
 
 /// A dynamic set of regular expressions.
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct RegexSet {
     items: Vec<String>,
     /// Whether any of the items in the set was ever matched. The length of this
