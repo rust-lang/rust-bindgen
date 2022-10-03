@@ -2647,7 +2647,7 @@ impl Bindings {
             .as_ref()
             .and_then(|f| f.to_str())
         {
-            cmd.args(&["--config-path", path]);
+            cmd.args(["--config-path", path]);
         }
 
         let mut child = cmd.spawn()?;

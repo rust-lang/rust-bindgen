@@ -165,7 +165,7 @@ impl Enum {
             return false;
         }
 
-        self.variants().iter().any(|v| enums.matches(&v.name()))
+        self.variants().iter().any(|v| enums.matches(v.name()))
     }
 
     /// Returns the final representation of the enum.
