@@ -1,6 +1,6 @@
 use crate::codegen;
 use crate::ir::function::Abi;
-use proc_macro2::Ident;
+use proc_macro2::{Ident, TokenStream};
 
 /// Used to build the output tokens for dynamic bindings.
 #[derive(Default)]
@@ -113,7 +113,7 @@ impl DynamicItems {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn push(
+    pub fn push_func(
         &mut self,
         ident: Ident,
         abi: Abi,
@@ -171,6 +171,51 @@ impl DynamicItems {
         } else {
             quote! {
                 let #ident = __library.get(#ident_str).map(|sym| *sym);
+            }
+        });
+
+        self.init_fields.push(quote! {
+            #ident
+        });
+    }
+
+    pub fn push_var(
+        &mut self,
+        ident: Ident,
+        ty: TokenStream,
+        is_required: bool,
+    ) {
+        let member = if is_required {
+            quote! { *mut #ty }
+        } else {
+            quote! { Result<*mut #ty, ::libloading::Error> }
+        };
+
+        self.struct_members.push(quote! {
+            pub #ident: #member,
+        });
+
+        let concatenated = format!("get_var_{}", ident);
+        let function_ident = Ident::new(&concatenated, ident.span());
+        let deref = if is_required {
+            quote! { self.#ident }
+        } else {
+            quote! { *self.#ident.as_ref().expect("Expected variable, got error.") }
+        };
+        self.struct_implementation.push(quote! {
+            pub unsafe fn #function_ident (&self) -> *mut #ty {
+                #deref
+            }
+        });
+
+        let ident_str = codegen::helpers::ast_ty::cstr_expr(ident.to_string());
+        self.constructor_inits.push(if is_required {
+            quote! {
+                let #ident = __library.get::<*mut #ty>(#ident_str).map(|sym| *sym)?;
+            }
+        } else {
+            quote! {
+                let #ident = __library.get::<*mut #ty>(#ident_str).map(|sym| *sym);
             }
         });
 

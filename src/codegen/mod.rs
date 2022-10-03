@@ -738,7 +738,15 @@ impl CodeGenerator for Var {
                 }
             );
 
-            result.push(tokens);
+            if ctx.options().dynamic_library_name.is_some() {
+                result.dynamic_items().push_var(
+                    canonical_ident,
+                    self.ty().to_rust_ty_or_opaque(ctx, &()),
+                    ctx.options().dynamic_link_require_all,
+                );
+            } else {
+                result.push(tokens);
+            }
         }
     }
 }
@@ -4170,7 +4178,7 @@ impl CodeGenerator for Function {
                 TypeKind::Void => quote! {()},
                 _ => return_item.to_rust_ty_or_opaque(ctx, &()),
             };
-            result.dynamic_items().push(
+            result.dynamic_items().push_func(
                 ident,
                 abi,
                 signature.is_variadic(),
