@@ -568,6 +568,12 @@ where
             Arg::new("merge-extern-blocks")
                 .long("merge-extern-blocks")
                 .help("Deduplicates extern blocks."),
+            Arg::new("remove-alias")
+                .long("remove-alias")
+                .help("Remove type aliases matching <regex>.")
+                .value_name("regex")
+                .multiple_occurrences(true)
+                .number_of_values(1),
             Arg::new("V")
                 .long("version")
                 .help("Prints the version, and exits"),
@@ -1086,6 +1092,12 @@ where
 
     if matches.is_present("merge-extern-blocks") {
         builder = builder.merge_extern_blocks(true);
+    }
+
+    if let Some(remove_alias) = matches.values_of("remove-alias") {
+        for regex in remove_alias {
+            builder = builder.remove_alias(regex);
+        }
     }
 
     Ok((builder, output, verbose))

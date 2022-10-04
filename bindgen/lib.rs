@@ -358,6 +358,7 @@ impl Builder {
             (&self.options.no_default_types, "--no-default"),
             (&self.options.no_hash_types, "--no-hash"),
             (&self.options.must_use_types, "--must-use-type"),
+            (&self.options.remove_alias, "--remove-alias"),
         ];
 
         for (set, flag) in regex_sets {
@@ -1770,6 +1771,13 @@ impl Builder {
         self.options.c_naming = doit;
         self
     }
+
+    /// Remove a type alias that matches the provided argument. Regular
+    /// expressions are supported.
+    pub fn remove_alias<T: Into<String>>(mut self, arg: T) -> Self {
+        self.options.remove_alias.insert(arg.into());
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -2105,6 +2113,9 @@ struct BindgenOptions {
 
     /// Deduplicate `extern` blocks.
     merge_extern_blocks: bool,
+
+    /// The set of type aliases that should be removed.
+    remove_alias: RegexSet,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -2142,6 +2153,7 @@ impl BindgenOptions {
             &mut self.no_default_types,
             &mut self.no_hash_types,
             &mut self.must_use_types,
+            &mut self.remove_alias,
         ];
         let record_matches = self.record_matches;
         for regex_set in &mut regex_sets {
@@ -2261,6 +2273,7 @@ impl Default for BindgenOptions {
             vtable_generation: false,
             sort_semantically: false,
             merge_extern_blocks: false,
+            remove_alias: Default::default(),
         }
     }
 }

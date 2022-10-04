@@ -3,7 +3,13 @@ use syn::{
     Item, ItemForeignMod, ItemMod,
 };
 
-pub(super) fn merge_extern_blocks(item_mod: &mut ItemMod) {
+use crate::BindgenOptions;
+
+#[inline]
+pub(super) fn merge_extern_blocks(
+    item_mod: &mut ItemMod,
+    _options: &BindgenOptions,
+) {
     Visitor.visit_item_mod_mut(item_mod)
 }
 

@@ -5,29 +5,37 @@ use syn::{parse2, ItemMod};
 use crate::BindgenOptions;
 
 mod merge_extern_blocks;
+mod remove_alias;
 mod sort_semantically;
 
 use merge_extern_blocks::merge_extern_blocks;
+use remove_alias::remove_alias;
 use sort_semantically::sort_semantically;
 
 struct PostProcessingPass {
     should_run: fn(&BindgenOptions) -> bool,
-    run: fn(&mut ItemMod),
+    run: fn(&mut ItemMod, &BindgenOptions),
 }
 
 // TODO: This can be a const fn when mutable references are allowed in const
 // context.
 macro_rules! pass {
     ($pass:ident) => {
+        pass!($pass, |options| options.$pass)
+    };
+    ($pass:ident, $should_run:expr) => {
         PostProcessingPass {
-            should_run: |options| options.$pass,
-            run: |item_mod| $pass(item_mod),
+            should_run: $should_run,
+            run: |item_mod, options| $pass(item_mod, options),
         }
     };
 }
 
-const PASSES: &[PostProcessingPass] =
-    &[pass!(merge_extern_blocks), pass!(sort_semantically)];
+const PASSES: &[PostProcessingPass] = &[
+    pass!(merge_extern_blocks),
+    pass!(sort_semantically),
+    pass!(remove_alias, |options| !options.remove_alias.is_empty()),
+];
 
 pub(crate) fn postprocessing(
     items: Vec<TokenStream>,
@@ -51,7 +59,7 @@ pub(crate) fn postprocessing(
 
     for pass in PASSES {
         if (pass.should_run)(options) {
-            (pass.run)(&mut item_mod);
+            (pass.run)(&mut item_mod, options);
         }
     }
 
