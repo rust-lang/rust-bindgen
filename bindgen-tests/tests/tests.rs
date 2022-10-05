@@ -252,7 +252,7 @@ fn compare_generated_header(
             let actual = bindings.to_string();
             rustfmt(actual)
         }
-        Err(_) => ("<error generating bindings>".to_string(), "".to_string()),
+        Err(_) => ("/* error generating bindings */\n".into(), "".to_string()),
     };
     println!("{}", rustfmt_stderr);
 

@@ -2107,13 +2107,18 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         }
 
         let mut kind = ModuleKind::Normal;
-        let mut found_namespace_keyword = false;
+        let mut looking_for_name = false;
         for token in cursor.tokens().iter() {
             match token.spelling() {
                 b"inline" => {
-                    assert!(!found_namespace_keyword);
-                    assert!(kind != ModuleKind::Inline);
+                    debug_assert!(
+                        kind != ModuleKind::Inline,
+                        "Multiple inline keywords?"
+                    );
                     kind = ModuleKind::Inline;
+                    // When hitting a nested inline namespace we get a spelling
+                    // that looks like ["inline", "foo"]. Deal with it properly.
+                    looking_for_name = true;
                 }
                 // The double colon allows us to handle nested namespaces like
                 // namespace foo::bar { }
@@ -2122,45 +2127,39 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 // but the tokenization of the second begins with the double
                 // colon. That's ok, so we only need to handle the weird
                 // tokenization here.
-                //
-                // Fortunately enough, inline nested namespace specifiers aren't
-                // a thing, and are invalid C++ :)
                 b"namespace" | b"::" => {
-                    found_namespace_keyword = true;
+                    looking_for_name = true;
                 }
                 b"{" => {
-                    assert!(found_namespace_keyword);
+                    // This should be an anonymous namespace.
+                    assert!(looking_for_name);
                     break;
                 }
-                name if found_namespace_keyword => {
-                    if module_name.is_none() {
-                        module_name =
-                            Some(String::from_utf8_lossy(name).into_owned());
+                name => {
+                    if looking_for_name {
+                        if module_name.is_none() {
+                            module_name = Some(
+                                String::from_utf8_lossy(name).into_owned(),
+                            );
+                        }
+                        break;
+                    } else {
+                        // This is _likely_, but not certainly, a macro that's
+                        // been placed just before the namespace keyword.
+                        // Unfortunately, clang tokens don't let us easily see
+                        // through the ifdef tokens, so we don't know what this
+                        // token should really be. Instead of panicking though,
+                        // we warn the user that we assumed the token was blank,
+                        // and then move on.
+                        //
+                        // See also https://github.com/rust-lang/rust-bindgen/issues/1676.
+                        warn!(
+                            "Ignored unknown namespace prefix '{}' at {:?} in {:?}",
+                            String::from_utf8_lossy(name),
+                            token,
+                            cursor
+                        );
                     }
-                    break;
-                }
-                spelling if !found_namespace_keyword => {
-                    // This is _likely_, but not certainly, a macro that's been placed just before
-                    // the namespace keyword. Unfortunately, clang tokens don't let us easily see
-                    // through the ifdef tokens, so we don't know what this token should really be.
-                    // Instead of panicking though, we warn the user that we assumed the token was
-                    // blank, and then move on.
-                    //
-                    // See also https://github.com/rust-lang/rust-bindgen/issues/1676.
-                    warn!(
-                        "Ignored unknown namespace prefix '{}' at {:?} in {:?}",
-                        String::from_utf8_lossy(spelling),
-                        token,
-                        cursor
-                    );
-                }
-                spelling => {
-                    panic!(
-                        "Unknown token '{}' while processing namespace at {:?} in {:?}",
-                        String::from_utf8_lossy(spelling),
-                        token,
-                        cursor
-                    );
                 }
             }
         }
