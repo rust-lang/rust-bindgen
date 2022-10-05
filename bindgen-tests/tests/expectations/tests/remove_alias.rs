@@ -38,14 +38,23 @@ fn bindgen_test_layout_int32_() {
     );
 }
 extern "C" {
-    pub fn foo() -> ::std::os::raw::c_longlong;
+    #[link_name = "\u{1}_Z13returns_int64v"]
+    pub fn returns_int64() -> ::std::os::raw::c_longlong;
 }
 extern "C" {
-    pub fn bar() -> ::std::os::raw::c_int;
+    #[link_name = "\u{1}_Z13returns_int32v"]
+    pub fn returns_int32() -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn baz() -> i32_;
+    #[link_name = "\u{1}_Z11returns_i32v"]
+    pub fn returns_i32() -> i32_;
 }
 extern "C" {
-    pub fn qux() -> int32_;
+    #[link_name = "\u{1}_Z14returns_int32_v"]
+    pub fn returns_int32_() -> int32_;
 }
+extern "C" {
+    #[link_name = "\u{1}_Z17returns_int32_ptrv"]
+    pub fn returns_int32_ptr() -> *mut ::std::os::raw::c_int;
+}
+pub type integer<T> = T;
