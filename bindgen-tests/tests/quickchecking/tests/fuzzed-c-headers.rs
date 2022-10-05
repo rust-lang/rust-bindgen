@@ -1,13 +1,14 @@
-
 extern crate quickcheck;
 extern crate quickchecking;
 extern crate rand;
 
-use quickchecking::fuzzers::{ArrayDimensionC, BaseTypeC, BasicTypeDeclarationC, DeclarationC,
-                             DeclarationListC, FunctionPointerDeclarationC, FunctionPrototypeC,
-                             HeaderC, ParameterC, ParameterListC, PointerLevelC,
-                             StructDeclarationC, TypeQualifierC, UnionDeclarationC};
 use quickcheck::{Arbitrary, StdGen};
+use quickchecking::fuzzers::{
+    ArrayDimensionC, BaseTypeC, BasicTypeDeclarationC, DeclarationC,
+    DeclarationListC, FunctionPointerDeclarationC, FunctionPrototypeC, HeaderC,
+    ParameterC, ParameterListC, PointerLevelC, StructDeclarationC,
+    TypeQualifierC, UnionDeclarationC,
+};
 use rand::thread_rng;
 
 #[test]

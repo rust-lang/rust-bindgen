@@ -126,11 +126,11 @@ fi
 CARGO_ARGS=`get_cargo_args`
 
 # Ensure we build without warnings
-cargo rustc --lib $CARGO_ARGS -- -Dwarnings
+RUSTFLAGS="-Dwarnings" cargo check $CARGO_ARGS
 
 if [ "$BINDGEN_MAIN_TESTS" == "1" ]; then
   # Run the tests
-  cargo test $CARGO_ARGS
+  (cd bindgen-tests && cargo test $CARGO_ARGS)
 fi
 
 assert_no_diff

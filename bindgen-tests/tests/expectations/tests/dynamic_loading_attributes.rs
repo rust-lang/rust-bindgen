@@ -38,11 +38,11 @@ impl TestLib {
         })
     }
     #[must_use]
-    #[doc = " @brief A function"]
-    #[doc = ""]
-    #[doc = " @param x"]
-    #[doc = " @param y"]
-    #[doc = " @return int"]
+    /// @brief A function
+    ///
+    /// @param x
+    /// @param y
+    /// @return int
     pub unsafe fn foo(
         &self,
         x: ::std::os::raw::c_int,

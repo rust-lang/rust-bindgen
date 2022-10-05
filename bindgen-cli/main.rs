@@ -1,24 +1,19 @@
 extern crate bindgen;
+extern crate clap;
 #[cfg(feature = "logging")]
 extern crate env_logger;
-#[macro_use]
 #[cfg(feature = "logging")]
 extern crate log;
-extern crate clap;
 
-use bindgen::clang_version;
 use std::env;
 use std::panic;
-
-#[macro_use]
-#[cfg(not(feature = "logging"))]
-mod log_stubs;
 
 mod options;
 use crate::options::builder_from_flags;
 
+#[cfg(feature = "logging")]
 fn clang_version_check() {
-    let version = clang_version();
+    let version = bindgen::clang_version();
     let expected_version = if cfg!(feature = "testing_only_libclang_9") {
         Some((9, 0))
     } else if cfg!(feature = "testing_only_libclang_5") {
@@ -27,9 +22,10 @@ fn clang_version_check() {
         None
     };
 
-    info!(
+    log::info!(
         "Clang Version: {}, parsed: {:?}",
-        version.full, version.parsed
+        version.full,
+        version.parsed
     );
 
     if expected_version.is_some() {
@@ -43,6 +39,7 @@ pub fn main() {
 
     match builder_from_flags(env::args()) {
         Ok((builder, output, verbose)) => {
+            #[cfg(feature = "logging")]
             clang_version_check();
             let builder_result = panic::catch_unwind(|| {
                 builder.generate().expect("Unable to generate bindings")
@@ -77,33 +74,4 @@ fn print_verbose_err() {
         "Otherwise, please file an issue at \
          https://github.com/rust-lang/rust-bindgen/issues/new"
     );
-}
-
-#[cfg(test)]
-mod test {
-    fn build_flags_output_helper(builder: &bindgen::Builder) {
-        let mut command_line_flags = builder.command_line_flags();
-        command_line_flags.insert(0, "bindgen".to_string());
-
-        let flags_quoted: Vec<String> = command_line_flags
-            .iter()
-            .map(|x| format!("{}", shlex::quote(x)))
-            .collect();
-        let flags_str = flags_quoted.join(" ");
-        println!("{}", flags_str);
-
-        let (builder, _output, _verbose) =
-            crate::options::builder_from_flags(command_line_flags.into_iter())
-                .unwrap();
-        builder.generate().expect("failed to generate bindings");
-    }
-
-    #[test]
-    fn commandline_multiple_headers() {
-        let bindings = bindgen::Builder::default()
-            .header("tests/headers/char.h")
-            .header("tests/headers/func_ptr.h")
-            .header("tests/headers/16-byte-alignment.h");
-        build_flags_output_helper(&bindings);
-    }
 }

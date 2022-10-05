@@ -13,9 +13,10 @@ use std::path::{Path, PathBuf};
 use std::process;
 use std::sync::Once;
 
-#[path = "../src/options.rs"]
-mod options;
 use crate::options::builder_from_flags;
+
+#[path = "../../bindgen-cli/options.rs"]
+mod options;
 
 mod parse_callbacks;
 
@@ -600,12 +601,12 @@ fn test_mixed_header_and_header_contents() {
 #[cfg(not(target_os = "windows"))]
 fn no_system_header_includes() {
     use std::process::Command;
-    assert!(Command::new("./ci/no-includes.sh")
+    assert!(Command::new("../ci/no-includes.sh")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .spawn()
-        .expect("should spawn ./ci/no-includes.sh OK")
+        .expect("should spawn ../ci/no-includes.sh OK")
         .wait()
-        .expect("should wait for ./ci/no-includes OK")
+        .expect("should wait for ../ci/no-includes OK")
         .success());
 }
 
@@ -685,4 +686,30 @@ fn allowlist_warnings() {
         .expect("unable to generate bindings");
 
     assert_eq!(1, bindings.warnings().len());
+}
+
+fn build_flags_output_helper(builder: &bindgen::Builder) {
+    let mut command_line_flags = builder.command_line_flags();
+    command_line_flags.insert(0, "bindgen".to_string());
+
+    let flags_quoted: Vec<String> = command_line_flags
+        .iter()
+        .map(|x| format!("{}", shlex::quote(x)))
+        .collect();
+    let flags_str = flags_quoted.join(" ");
+    println!("{}", flags_str);
+
+    let (builder, _output, _verbose) =
+        crate::options::builder_from_flags(command_line_flags.into_iter())
+            .unwrap();
+    builder.generate().expect("failed to generate bindings");
+}
+
+#[test]
+fn commandline_multiple_headers() {
+    let bindings = bindgen::Builder::default()
+        .header("tests/headers/char.h")
+        .header("tests/headers/func_ptr.h")
+        .header("tests/headers/16-byte-alignment.h");
+    build_flags_output_helper(&bindings);
 }

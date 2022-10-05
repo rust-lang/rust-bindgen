@@ -123,13 +123,9 @@ impl ParseCallbacks for MacroCallback {
     // Test the "custom derives" capability by adding `PartialEq` to the `Test` struct.
     fn add_derives(&self, name: &str) -> Vec<String> {
         if name == "Test" {
-            vec![
-                "PartialEq".into(),
-            ]
+            vec!["PartialEq".into()]
         } else if name == "MyOrderedEnum" {
-            vec![
-                "std::cmp::PartialOrd".into(),
-            ]
+            vec!["std::cmp::PartialOrd".into()]
         } else {
             vec![]
         }
@@ -162,7 +158,9 @@ fn main() {
 
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     let out_rust_file = out_path.join("test.rs");
-    let out_rust_file_relative = out_rust_file.strip_prefix(std::env::current_dir().unwrap()).unwrap();
+    let out_rust_file_relative = out_rust_file
+        .strip_prefix(std::env::current_dir().unwrap().parent().unwrap())
+        .unwrap();
     let out_dep_file = out_path.join("test.d");
 
     let bindings = Builder::default()
@@ -189,13 +187,18 @@ fn main() {
         .expect("Unable to generate bindings");
 
     assert!(macros.read().unwrap().contains("TESTMACRO"));
-    bindings.write_to_file(&out_rust_file).expect("Couldn't write bindings!");
+    bindings
+        .write_to_file(&out_rust_file)
+        .expect("Couldn't write bindings!");
 
-    let observed_deps = std::fs::read_to_string(out_dep_file).expect("Couldn't read depfile!");
-    let expected_deps = format!("{}: cpp/Test.h include/stub.h", out_rust_file_relative.display());
+    let observed_deps =
+        std::fs::read_to_string(out_dep_file).expect("Couldn't read depfile!");
+    let expected_deps = format!(
+        "{}: cpp/Test.h include/stub.h",
+        out_rust_file_relative.display()
+    );
     assert_eq!(
-        observed_deps,
-        expected_deps,
+        observed_deps, expected_deps,
         "including stub via include dir must produce correct dep path",
     );
 }
