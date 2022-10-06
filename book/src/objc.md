@@ -32,6 +32,8 @@ methods found in `NSObject`.
 In order to initialize a class `Foo`, you will have to do something like `let
 foo = Foo(Foo::alloc().initWithStuff())`.
 
+To blocklist an Objective-C method, you should add the bindgen generated method
+path (e.g. `IFoo::method` or `IFoo::class_method`) as a blocklist item.
 
 ## Supported Features
 

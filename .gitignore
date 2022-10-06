@@ -2,7 +2,8 @@
 target/
 *~
 bindgen-integration/Cargo.lock
-tests/expectations/Cargo.lock
+bindgen-tests/tests/expectations/Cargo.lock
+bindgen-tests/tests/quickchecking/Cargo.lock
 #*#
 
 # Test script output
