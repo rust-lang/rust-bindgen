@@ -143,11 +143,38 @@
 
 ## Added
 
- * new feature: `--sort-semantically` flag to sort the output in a predefined manner [(#1743)]
+ * new feature: `--sort-semantically` flag to sort the output in a predefined
+   manner [(#1743)].
+ * new feature: `Bindgen::emit_warnings` method to emit warnings to stderr in
+   build scripts.
+ * new feature: `--newtype-global-enum` flag to generate enum variants as
+   global constants.
+ * new feature: `--default-non-copy-union-style` flag to set the default style
+   of code used to generate unions with non-`Copy` members.
+ * new feature: `--bindgen-wrapper-union` flag to mark any union that matches a
+   regex and has a non-Copy member to use a bindgen-generated wrapper for its
+   fields.
+ * new feature: `--manually-drop-union` flag to mark any union that matches a
+   regex and has a non-`Copy` member to use `ManuallyDrop`.
+ * new feature: `--merge-extern-blocks` flag to merge several `extern` blocks
+   that have the same ABI.
+ * new feature: `--no-size_t-is-usize` flag to not bind `size_t` as `usize`.
 
 ## Changed
 
- * clap has been updated, new msrv is 1.57.
+ * clap and regex have been updated, new msrv is 1.57.
+ * The `--enable-function-attribute-detection` flag is also used to detect
+   diverging functions so the generated bindings use `!` as the return type.
+ * The `--size_t-is-usize` flag is enabled by default.
+ * Unused type aliases for `<stdint.h>` types are no longer emitted.
+ * The `blocklist` options now can be used to block objective-C methods.
+ * The `core::ffi` module is used the sized raw integer types
+   instead of `std::os::raw` if the Rust target version is `1.64` or higher and
+   the `--use-core` flag is enabled.
+ * The `bindgen` CLI utility must be installed using `cargo install
+   bindgen-cli` now.
+ * Using `bindgen` as a library no longer pulls clap and any other CLI
+   related dependencies.
 
 ## Removed
 
