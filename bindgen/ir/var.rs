@@ -285,7 +285,8 @@ impl ClangSubItemParser for Var {
                 // TODO(emilio): do we have to special-case constant arrays in
                 // some other places?
                 let is_const = ty.is_const() ||
-                    (ty.kind() == CXType_ConstantArray &&
+                    ([CXType_ConstantArray, CXType_IncompleteArray]
+                        .contains(&ty.kind()) &&
                         ty.elem_type()
                             .map_or(false, |element| element.is_const()));
 
