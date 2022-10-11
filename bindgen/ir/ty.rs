@@ -1094,9 +1094,9 @@ impl Type {
                 }
                 CXType_Typedef => {
                     let inner = cursor.typedef_type().expect("Not valid Type?");
-                    let inner =
+                    let inner_id =
                         Item::from_ty_or_ref(inner, location, None, ctx);
-                    if inner == potential_id {
+                    if inner_id == potential_id {
                         warn!(
                             "Generating oqaque type instead of self-referential \
                             typedef");
@@ -1104,7 +1104,30 @@ impl Type {
                         // within the clang parsing.
                         TypeKind::Opaque
                     } else {
-                        TypeKind::Alias(inner)
+                        // Check if this type definition is an alias to a pointer of a `const
+                        // struct` with the same name and add the `_ptr` suffix to it to avoid name
+                        // collisions.
+                        if !ctx.options().c_naming {
+                            if let Some(pointee_spelling) =
+                                inner.pointee_type().map(|ty| ty.spelling())
+                            {
+                                if let (Some(pointee_name), Some(name)) = (
+                                    pointee_spelling
+                                        .strip_prefix("const struct ")
+                                        .or_else(|| {
+                                            pointee_spelling
+                                                .strip_prefix("struct ")
+                                        }),
+                                    name.as_mut(),
+                                ) {
+                                    if pointee_name == name {
+                                        *name += "_ptr";
+                                    }
+                                }
+                            }
+                        }
+
+                        TypeKind::Alias(inner_id)
                     }
                 }
                 CXType_Enum => {
