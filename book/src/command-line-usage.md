@@ -3,7 +3,7 @@
 Install the `bindgen` executable with `cargo`:
 
 ```bash
-$ cargo install bindgen-cli
+$ cargo install bindgen
 ```
 
 The `bindgen` executable is installed to `~/.cargo/bin`. You have to add that
