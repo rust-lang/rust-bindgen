@@ -1823,7 +1823,7 @@ pub struct UnsavedFile {
 
 impl UnsavedFile {
     /// Construct a new unsaved file with the given `name` and `contents`.
-    pub fn new(name: &str, contents: &str) -> UnsavedFile {
+    pub fn new(name: String, contents: String) -> UnsavedFile {
         let name = CString::new(name).unwrap();
         let contents = CString::new(contents).unwrap();
         let x = CXUnsavedFile {
