@@ -26,7 +26,11 @@ impl RegexSet {
     where
         S: AsRef<str>,
     {
-        self.items.push(string.as_ref().to_owned());
+        let string = string.as_ref().to_owned();
+        if string == "*" {
+            warn!("using wildcard patterns (`*`) is no longer considered valid. Use `.*` instead");
+        }
+        self.items.push(string);
         self.matched.push(Cell::new(false));
         self.set = None;
     }
