@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  rustfmt:
+  rustfmt-clippy:
     runs-on: ubuntu-latest
 
     steps:
