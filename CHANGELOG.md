@@ -181,6 +181,9 @@
 
 ## Fixed
 
+ * Const correctness of incomplete arrays has been fixed. (#2301)
+ * C++ inline namespaces don't panic. (#2294)
+
 ## Security
 
 [(#1743)]: https://github.com/rust-lang/rust-bindgen/issues/1743
