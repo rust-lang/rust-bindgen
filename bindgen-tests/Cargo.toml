@@ -4,11 +4,6 @@ edition = "2018"
 version = "0.1.0"
 publish = false
 
-include = [
-  "Cargo.toml",
-  "build.rs",
-]
-
 [dev-dependencies]
 bindgen = { path = "../bindgen" }
 diff = "0.1"
