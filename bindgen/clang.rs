@@ -652,6 +652,7 @@ impl Cursor {
     pub fn enum_val_signed(&self) -> Option<i64> {
         unsafe {
             if self.kind() == CXCursor_EnumConstantDecl {
+                #[allow(clippy::unnecessary_cast)]
                 Some(clang_getEnumConstantDeclValue(self.x) as i64)
             } else {
                 None
@@ -665,6 +666,7 @@ impl Cursor {
     pub fn enum_val_unsigned(&self) -> Option<u64> {
         unsafe {
             if self.kind() == CXCursor_EnumConstantDecl {
+                #[allow(clippy::unnecessary_cast)]
                 Some(clang_getEnumConstantDeclUnsignedValue(self.x) as u64)
             } else {
                 None
@@ -2134,7 +2136,7 @@ impl EvalResult {
     pub fn as_double(&self) -> Option<f64> {
         match self.kind() {
             CXEval_Float => {
-                Some(unsafe { clang_EvalResult_getAsDouble(self.x) } as f64)
+                Some(unsafe { clang_EvalResult_getAsDouble(self.x) })
             }
             _ => None,
         }
@@ -2162,6 +2164,7 @@ impl EvalResult {
         if value < i64::min_value() as c_longlong {
             return None;
         }
+        #[allow(clippy::unnecessary_cast)]
         Some(value as i64)
     }
 
