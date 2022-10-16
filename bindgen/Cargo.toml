@@ -20,16 +20,6 @@ build = "build.rs"
 # If you change this, also update README.md and msrv in .github/workflows/bindgen.yml
 rust-version = "1.57.0"
 
-include = [
-  "LICENSE",
-  "README.md",
-  "Cargo.toml",
-  "build.rs",
-  "src/*.rs",
-  "src/**/*.rs",
-]
-
-
 [lib]
 name = "bindgen"
 path = "./lib.rs"
