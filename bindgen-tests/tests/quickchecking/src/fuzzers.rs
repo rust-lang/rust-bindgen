@@ -327,12 +327,7 @@ impl Arbitrary for ArrayDimensionC {
         let dimensions = g.gen_range(0, 5);
         let mut def = String::new();
 
-        let lower_bound;
-        if cfg!(feature = "zero-sized-arrays") {
-            lower_bound = 0;
-        } else {
-            lower_bound = 1;
-        }
+        let lower_bound = i32::from(cfg!(feature = "zero-sized-arrays"));
 
         for _ in 1..dimensions {
             // 16 is an arbitrary "not too big" number for capping array size.
@@ -400,7 +395,7 @@ impl Arbitrary for StructDeclarationC {
     fn arbitrary<G: Gen>(g: &mut G) -> StructDeclarationC {
         // Reduce generator size as a method of putting a bound on recursion.
         // When size < 1 the empty list is generated.
-        let reduced_size: usize = (g.size() / 2) as usize + 1;
+        let reduced_size: usize = (g.size() / 2) + 1;
         let mut decl_list: DeclarationListC =
             Arbitrary::arbitrary(&mut StdGen::new(thread_rng(), reduced_size));
         let mut fields: DeclarationListC = DeclarationListC { decls: vec![] };
@@ -448,7 +443,7 @@ impl Arbitrary for UnionDeclarationC {
     fn arbitrary<G: Gen>(g: &mut G) -> UnionDeclarationC {
         // Reduce generator size as a method of putting a bound on recursion.
         // When size < 1 the empty list is generated.
-        let reduced_size: usize = (g.size() / 2) as usize + 1;
+        let reduced_size: usize = (g.size() / 2) + 1;
         let mut decl_list: DeclarationListC =
             Arbitrary::arbitrary(&mut StdGen::new(thread_rng(), reduced_size));
         let mut fields: DeclarationListC = DeclarationListC { decls: vec![] };

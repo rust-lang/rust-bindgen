@@ -63,32 +63,27 @@ fn run_predicate_script(
     header_file.write_all(header.to_string().as_bytes())?;
     header_file.sync_all()?;
 
-    let header_path_string;
-    match header_path.into_os_string().into_string() {
-        Ok(s) => header_path_string = s,
-        Err(_) => return Err(From::from("error converting path into String")),
-    }
+    let header_path_string = header_path
+        .into_os_string()
+        .into_string()
+        .map_err(|_| "error converting path into String")?;
 
     let mut predicate_script_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     predicate_script_path.push("../../csmith-fuzzing/predicate.py");
 
-    let predicate_script_path_string;
-    match predicate_script_path.into_os_string().into_string() {
-        Ok(s) => predicate_script_path_string = s,
-        Err(_) => return Err(From::from("error converting path into String")),
-    }
+    let predicate_script_path_string = predicate_script_path
+        .into_os_string()
+        .into_string()
+        .map_err(|_| "error converting path into String")?;
 
     // Copy generated temp files to output_path directory for inspection.
     // If `None`, output path not specified, don't copy.
-    match CONTEXT.lock().unwrap().output_path {
-        Some(ref path) => {
-            Command::new("cp")
-                .arg("-a")
-                .arg(&dir.path().to_str().unwrap())
-                .arg(&path)
-                .output()?;
-        }
-        None => {}
+    if let Some(ref path) = CONTEXT.lock().unwrap().output_path {
+        Command::new("cp")
+            .arg("-a")
+            .arg(dir.path().to_str().unwrap())
+            .arg(path)
+            .output()?;
     }
 
     Ok(Command::new(&predicate_script_path_string)
@@ -101,10 +96,10 @@ fn run_predicate_script(
 // status of that command.
 fn bindgen_prop(header: fuzzers::HeaderC) -> TestResult {
     match run_predicate_script(header) {
-        Ok(o) => return TestResult::from_bool(o.status.success()),
+        Ok(o) => TestResult::from_bool(o.status.success()),
         Err(e) => {
             println!("{:?}", e);
-            return TestResult::from_bool(false);
+            TestResult::from_bool(false)
         }
     }
 }
@@ -118,12 +113,9 @@ pub fn test_bindgen(
     tests: usize,
     output_path: Option<&str>,
 ) {
-    match output_path {
-        Some(path) => {
-            CONTEXT.lock().unwrap().output_path =
-                Some(String::from(PathBuf::from(path).to_str().unwrap()));
-        }
-        None => {} // Path not specified, don't provide output.
+    if let Some(path) = output_path {
+        CONTEXT.lock().unwrap().output_path =
+            Some(String::from(PathBuf::from(path).to_str().unwrap()));
     }
 
     QuickCheck::new()
