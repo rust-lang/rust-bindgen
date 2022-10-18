@@ -1422,8 +1422,7 @@ impl CompInfo {
 
                         // A declaration of an union or a struct without name
                         // could also be an unnamed field, unfortunately.
-                        if cur.spelling().is_empty() &&
-                            cur.kind() != CXCursor_EnumDecl
+                        if cur.is_anonymous() && cur.kind() != CXCursor_EnumDecl
                         {
                             let ty = cur.cur_type();
                             let public = cur.public_accessible();
