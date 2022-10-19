@@ -299,7 +299,7 @@ impl jsval_layout__bindgen_ty_1 {
         tag: JSValueTag,
     ) -> __BindgenBitfieldUnit<[u8; 8usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> =
-            Default::default();
+            __BindgenBitfieldUnit::new([0; 8usize]);
         __bindgen_bitfield_unit.set(0usize, 47u8, {
             let payload47: u64 = unsafe { ::std::mem::transmute(payload47) };
             payload47 as u64

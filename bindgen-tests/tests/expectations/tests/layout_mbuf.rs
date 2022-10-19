@@ -91,6 +91,53 @@ where
         }
     }
 }
+impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
+    #[inline]
+    #[must_use]
+    pub const fn set_bit_const(mut self, index: usize, val: bool) -> Self {
+        debug_assert!(index / 8 < self.storage.len());
+        let byte_index = index / 8;
+        let bit_index = if cfg!(target_endian = "big") {
+            7 - (index % 8)
+        } else {
+            index % 8
+        };
+        let mask = 1 << bit_index;
+        if val {
+            self.storage[byte_index] |= mask;
+        } else {
+            self.storage[byte_index] &= !mask;
+        }
+        self
+    }
+    #[inline]
+    #[must_use]
+    pub const fn set_const(
+        mut self,
+        bit_offset: usize,
+        bit_width: u8,
+        val: u64,
+    ) -> Self {
+        debug_assert!(bit_width <= 64);
+        debug_assert!(bit_offset / 8 < self.storage.len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.len()
+        );
+        let mut i = 0;
+        while i < bit_width as usize {
+            let mask = 1 << i;
+            let val_bit_is_set = val & mask == mask;
+            let index = if cfg!(target_endian = "big") {
+                bit_width as usize - 1 - i
+            } else {
+                i
+            };
+            self = self.set_bit_const(index + bit_offset, val_bit_is_set);
+            i += 1;
+        }
+        self
+    }
+}
 pub const RTE_CACHE_LINE_MIN_SIZE: u32 = 64;
 pub const RTE_CACHE_LINE_SIZE: u32 = 64;
 pub type phys_addr_t = u64;
@@ -364,7 +411,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         }
     }
     #[inline]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         l2_type: u32,
         l3_type: u32,
         l4_type: u32,
@@ -374,38 +421,45 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         inner_l4_type: u32,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> =
-            Default::default();
-        __bindgen_bitfield_unit.set(0usize, 4u8, {
-            let l2_type: u32 = unsafe { ::std::mem::transmute(l2_type) };
-            l2_type as u64
-        });
-        __bindgen_bitfield_unit.set(4usize, 4u8, {
-            let l3_type: u32 = unsafe { ::std::mem::transmute(l3_type) };
-            l3_type as u64
-        });
-        __bindgen_bitfield_unit.set(8usize, 4u8, {
-            let l4_type: u32 = unsafe { ::std::mem::transmute(l4_type) };
-            l4_type as u64
-        });
-        __bindgen_bitfield_unit.set(12usize, 4u8, {
-            let tun_type: u32 = unsafe { ::std::mem::transmute(tun_type) };
-            tun_type as u64
-        });
-        __bindgen_bitfield_unit.set(16usize, 4u8, {
-            let inner_l2_type: u32 =
-                unsafe { ::std::mem::transmute(inner_l2_type) };
-            inner_l2_type as u64
-        });
-        __bindgen_bitfield_unit.set(20usize, 4u8, {
-            let inner_l3_type: u32 =
-                unsafe { ::std::mem::transmute(inner_l3_type) };
-            inner_l3_type as u64
-        });
-        __bindgen_bitfield_unit.set(24usize, 4u8, {
-            let inner_l4_type: u32 =
-                unsafe { ::std::mem::transmute(inner_l4_type) };
-            inner_l4_type as u64
-        });
+            __BindgenBitfieldUnit::new([0; 4usize]);
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(0usize, 4u8, {
+                let l2_type: u32 = unsafe { ::std::mem::transmute(l2_type) };
+                l2_type as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(4usize, 4u8, {
+                let l3_type: u32 = unsafe { ::std::mem::transmute(l3_type) };
+                l3_type as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(8usize, 4u8, {
+                let l4_type: u32 = unsafe { ::std::mem::transmute(l4_type) };
+                l4_type as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(12usize, 4u8, {
+                let tun_type: u32 = unsafe { ::std::mem::transmute(tun_type) };
+                tun_type as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(16usize, 4u8, {
+                let inner_l2_type: u32 =
+                    unsafe { ::std::mem::transmute(inner_l2_type) };
+                inner_l2_type as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(20usize, 4u8, {
+                let inner_l3_type: u32 =
+                    unsafe { ::std::mem::transmute(inner_l3_type) };
+                inner_l3_type as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(24usize, 4u8, {
+                let inner_l4_type: u32 =
+                    unsafe { ::std::mem::transmute(inner_l4_type) };
+                inner_l4_type as u64
+            });
         __bindgen_bitfield_unit
     }
 }
@@ -858,7 +912,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         }
     }
     #[inline]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         l2_len: u64,
         l3_len: u64,
         l4_len: u64,
@@ -867,33 +921,40 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         outer_l2_len: u64,
     ) -> __BindgenBitfieldUnit<[u8; 7usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 7usize]> =
-            Default::default();
-        __bindgen_bitfield_unit.set(0usize, 7u8, {
-            let l2_len: u64 = unsafe { ::std::mem::transmute(l2_len) };
-            l2_len as u64
-        });
-        __bindgen_bitfield_unit.set(7usize, 9u8, {
-            let l3_len: u64 = unsafe { ::std::mem::transmute(l3_len) };
-            l3_len as u64
-        });
-        __bindgen_bitfield_unit.set(16usize, 8u8, {
-            let l4_len: u64 = unsafe { ::std::mem::transmute(l4_len) };
-            l4_len as u64
-        });
-        __bindgen_bitfield_unit.set(24usize, 16u8, {
-            let tso_segsz: u64 = unsafe { ::std::mem::transmute(tso_segsz) };
-            tso_segsz as u64
-        });
-        __bindgen_bitfield_unit.set(40usize, 9u8, {
-            let outer_l3_len: u64 =
-                unsafe { ::std::mem::transmute(outer_l3_len) };
-            outer_l3_len as u64
-        });
-        __bindgen_bitfield_unit.set(49usize, 7u8, {
-            let outer_l2_len: u64 =
-                unsafe { ::std::mem::transmute(outer_l2_len) };
-            outer_l2_len as u64
-        });
+            __BindgenBitfieldUnit::new([0; 7usize]);
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(0usize, 7u8, {
+                let l2_len: u64 = unsafe { ::std::mem::transmute(l2_len) };
+                l2_len as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(7usize, 9u8, {
+                let l3_len: u64 = unsafe { ::std::mem::transmute(l3_len) };
+                l3_len as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(16usize, 8u8, {
+                let l4_len: u64 = unsafe { ::std::mem::transmute(l4_len) };
+                l4_len as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(24usize, 16u8, {
+                let tso_segsz: u64 =
+                    unsafe { ::std::mem::transmute(tso_segsz) };
+                tso_segsz as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(40usize, 9u8, {
+                let outer_l3_len: u64 =
+                    unsafe { ::std::mem::transmute(outer_l3_len) };
+                outer_l3_len as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(49usize, 7u8, {
+                let outer_l2_len: u64 =
+                    unsafe { ::std::mem::transmute(outer_l2_len) };
+                outer_l2_len as u64
+            });
         __bindgen_bitfield_unit
     }
 }

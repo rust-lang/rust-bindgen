@@ -91,6 +91,53 @@ where
         }
     }
 }
+impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
+    #[inline]
+    #[must_use]
+    pub const fn set_bit_const(mut self, index: usize, val: bool) -> Self {
+        debug_assert!(index / 8 < self.storage.len());
+        let byte_index = index / 8;
+        let bit_index = if cfg!(target_endian = "big") {
+            7 - (index % 8)
+        } else {
+            index % 8
+        };
+        let mask = 1 << bit_index;
+        if val {
+            self.storage[byte_index] |= mask;
+        } else {
+            self.storage[byte_index] &= !mask;
+        }
+        self
+    }
+    #[inline]
+    #[must_use]
+    pub const fn set_const(
+        mut self,
+        bit_offset: usize,
+        bit_width: u8,
+        val: u64,
+    ) -> Self {
+        debug_assert!(bit_width <= 64);
+        debug_assert!(bit_offset / 8 < self.storage.len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.len()
+        );
+        let mut i = 0;
+        while i < bit_width as usize {
+            let mask = 1 << i;
+            let val_bit_is_set = val & mask == mask;
+            let index = if cfg!(target_endian = "big") {
+                bit_width as usize - 1 - i
+            } else {
+                i
+            };
+            self = self.set_bit_const(index + bit_offset, val_bit_is_set);
+            i += 1;
+        }
+        self
+    }
+}
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum nsStyleSVGOpacitySource {
@@ -319,20 +366,22 @@ impl Weird {
         }
     }
     #[inline]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         bitTest: ::std::os::raw::c_uint,
         bitTest2: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> =
-            Default::default();
-        __bindgen_bitfield_unit.set(0usize, 16u8, {
-            let bitTest: u32 = unsafe { ::std::mem::transmute(bitTest) };
-            bitTest as u64
-        });
-        __bindgen_bitfield_unit.set(16usize, 15u8, {
-            let bitTest2: u32 = unsafe { ::std::mem::transmute(bitTest2) };
-            bitTest2 as u64
-        });
+            __BindgenBitfieldUnit::new([0; 4usize]);
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(0usize, 16u8, {
+                let bitTest: u32 = unsafe { ::std::mem::transmute(bitTest) };
+                bitTest as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(16usize, 15u8, {
+                let bitTest2: u32 = unsafe { ::std::mem::transmute(bitTest2) };
+                bitTest2 as u64
+            });
         __bindgen_bitfield_unit
     }
     #[inline]
@@ -401,7 +450,7 @@ impl Weird {
         }
     }
     #[inline]
-    pub fn new_bitfield_2(
+    pub const fn new_bitfield_2(
         mFillOpacitySource: nsStyleSVGOpacitySource,
         mStrokeOpacitySource: nsStyleSVGOpacitySource,
         mStrokeDasharrayFromObject: bool,
@@ -409,32 +458,39 @@ impl Weird {
         mStrokeWidthFromObject: bool,
     ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> =
-            Default::default();
-        __bindgen_bitfield_unit.set(0usize, 3u8, {
-            let mFillOpacitySource: u32 =
-                unsafe { ::std::mem::transmute(mFillOpacitySource) };
-            mFillOpacitySource as u64
-        });
-        __bindgen_bitfield_unit.set(3usize, 3u8, {
-            let mStrokeOpacitySource: u32 =
-                unsafe { ::std::mem::transmute(mStrokeOpacitySource) };
-            mStrokeOpacitySource as u64
-        });
-        __bindgen_bitfield_unit.set(6usize, 1u8, {
-            let mStrokeDasharrayFromObject: u8 =
-                unsafe { ::std::mem::transmute(mStrokeDasharrayFromObject) };
-            mStrokeDasharrayFromObject as u64
-        });
-        __bindgen_bitfield_unit.set(7usize, 1u8, {
-            let mStrokeDashoffsetFromObject: u8 =
-                unsafe { ::std::mem::transmute(mStrokeDashoffsetFromObject) };
-            mStrokeDashoffsetFromObject as u64
-        });
-        __bindgen_bitfield_unit.set(8usize, 1u8, {
-            let mStrokeWidthFromObject: u8 =
-                unsafe { ::std::mem::transmute(mStrokeWidthFromObject) };
-            mStrokeWidthFromObject as u64
-        });
+            __BindgenBitfieldUnit::new([0; 2usize]);
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(0usize, 3u8, {
+                let mFillOpacitySource: u32 =
+                    unsafe { ::std::mem::transmute(mFillOpacitySource) };
+                mFillOpacitySource as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(3usize, 3u8, {
+                let mStrokeOpacitySource: u32 =
+                    unsafe { ::std::mem::transmute(mStrokeOpacitySource) };
+                mStrokeOpacitySource as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(6usize, 1u8, {
+                let mStrokeDasharrayFromObject: u8 = unsafe {
+                    ::std::mem::transmute(mStrokeDasharrayFromObject)
+                };
+                mStrokeDasharrayFromObject as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(7usize, 1u8, {
+                let mStrokeDashoffsetFromObject: u8 = unsafe {
+                    ::std::mem::transmute(mStrokeDashoffsetFromObject)
+                };
+                mStrokeDashoffsetFromObject as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(8usize, 1u8, {
+                let mStrokeWidthFromObject: u8 =
+                    unsafe { ::std::mem::transmute(mStrokeWidthFromObject) };
+                mStrokeWidthFromObject as u64
+            });
         __bindgen_bitfield_unit
     }
 }

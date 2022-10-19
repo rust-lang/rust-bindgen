@@ -180,7 +180,7 @@ impl U4 {
         derp: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> =
-            Default::default();
+            __BindgenBitfieldUnit::new([0; 1usize]);
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let derp: u32 = unsafe { ::std::mem::transmute(derp) };
             derp as u64
@@ -250,7 +250,7 @@ impl B {
         bar: ::std::os::raw::c_uchar,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> =
-            Default::default();
+            __BindgenBitfieldUnit::new([0; 4usize]);
         __bindgen_bitfield_unit.set(0usize, 31u8, {
             let foo: u32 = unsafe { ::std::mem::transmute(foo) };
             foo as u64

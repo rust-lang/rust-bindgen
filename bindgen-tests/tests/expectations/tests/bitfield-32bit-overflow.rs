@@ -91,6 +91,53 @@ where
         }
     }
 }
+impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
+    #[inline]
+    #[must_use]
+    pub const fn set_bit_const(mut self, index: usize, val: bool) -> Self {
+        debug_assert!(index / 8 < self.storage.len());
+        let byte_index = index / 8;
+        let bit_index = if cfg!(target_endian = "big") {
+            7 - (index % 8)
+        } else {
+            index % 8
+        };
+        let mask = 1 << bit_index;
+        if val {
+            self.storage[byte_index] |= mask;
+        } else {
+            self.storage[byte_index] &= !mask;
+        }
+        self
+    }
+    #[inline]
+    #[must_use]
+    pub const fn set_const(
+        mut self,
+        bit_offset: usize,
+        bit_width: u8,
+        val: u64,
+    ) -> Self {
+        debug_assert!(bit_width <= 64);
+        debug_assert!(bit_offset / 8 < self.storage.len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.len()
+        );
+        let mut i = 0;
+        while i < bit_width as usize {
+            let mask = 1 << i;
+            let val_bit_is_set = val & mask == mask;
+            let index = if cfg!(target_endian = "big") {
+                bit_width as usize - 1 - i
+            } else {
+                i
+            };
+            self = self.set_bit_const(index + bit_offset, val_bit_is_set);
+            i += 1;
+        }
+        self
+    }
+}
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct MuchBitfield {
@@ -541,7 +588,7 @@ impl MuchBitfield {
         }
     }
     #[inline]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         m0: ::std::os::raw::c_char,
         m1: ::std::os::raw::c_char,
         m2: ::std::os::raw::c_char,
@@ -577,139 +624,172 @@ impl MuchBitfield {
         m32: ::std::os::raw::c_char,
     ) -> __BindgenBitfieldUnit<[u8; 5usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 5usize]> =
-            Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let m0: u8 = unsafe { ::std::mem::transmute(m0) };
-            m0 as u64
-        });
-        __bindgen_bitfield_unit.set(1usize, 1u8, {
-            let m1: u8 = unsafe { ::std::mem::transmute(m1) };
-            m1 as u64
-        });
-        __bindgen_bitfield_unit.set(2usize, 1u8, {
-            let m2: u8 = unsafe { ::std::mem::transmute(m2) };
-            m2 as u64
-        });
-        __bindgen_bitfield_unit.set(3usize, 1u8, {
-            let m3: u8 = unsafe { ::std::mem::transmute(m3) };
-            m3 as u64
-        });
-        __bindgen_bitfield_unit.set(4usize, 1u8, {
-            let m4: u8 = unsafe { ::std::mem::transmute(m4) };
-            m4 as u64
-        });
-        __bindgen_bitfield_unit.set(5usize, 1u8, {
-            let m5: u8 = unsafe { ::std::mem::transmute(m5) };
-            m5 as u64
-        });
-        __bindgen_bitfield_unit.set(6usize, 1u8, {
-            let m6: u8 = unsafe { ::std::mem::transmute(m6) };
-            m6 as u64
-        });
-        __bindgen_bitfield_unit.set(7usize, 1u8, {
-            let m7: u8 = unsafe { ::std::mem::transmute(m7) };
-            m7 as u64
-        });
-        __bindgen_bitfield_unit.set(8usize, 1u8, {
-            let m8: u8 = unsafe { ::std::mem::transmute(m8) };
-            m8 as u64
-        });
-        __bindgen_bitfield_unit.set(9usize, 1u8, {
-            let m9: u8 = unsafe { ::std::mem::transmute(m9) };
-            m9 as u64
-        });
-        __bindgen_bitfield_unit.set(10usize, 1u8, {
-            let m10: u8 = unsafe { ::std::mem::transmute(m10) };
-            m10 as u64
-        });
-        __bindgen_bitfield_unit.set(11usize, 1u8, {
-            let m11: u8 = unsafe { ::std::mem::transmute(m11) };
-            m11 as u64
-        });
-        __bindgen_bitfield_unit.set(12usize, 1u8, {
-            let m12: u8 = unsafe { ::std::mem::transmute(m12) };
-            m12 as u64
-        });
-        __bindgen_bitfield_unit.set(13usize, 1u8, {
-            let m13: u8 = unsafe { ::std::mem::transmute(m13) };
-            m13 as u64
-        });
-        __bindgen_bitfield_unit.set(14usize, 1u8, {
-            let m14: u8 = unsafe { ::std::mem::transmute(m14) };
-            m14 as u64
-        });
-        __bindgen_bitfield_unit.set(15usize, 1u8, {
-            let m15: u8 = unsafe { ::std::mem::transmute(m15) };
-            m15 as u64
-        });
-        __bindgen_bitfield_unit.set(16usize, 1u8, {
-            let m16: u8 = unsafe { ::std::mem::transmute(m16) };
-            m16 as u64
-        });
-        __bindgen_bitfield_unit.set(17usize, 1u8, {
-            let m17: u8 = unsafe { ::std::mem::transmute(m17) };
-            m17 as u64
-        });
-        __bindgen_bitfield_unit.set(18usize, 1u8, {
-            let m18: u8 = unsafe { ::std::mem::transmute(m18) };
-            m18 as u64
-        });
-        __bindgen_bitfield_unit.set(19usize, 1u8, {
-            let m19: u8 = unsafe { ::std::mem::transmute(m19) };
-            m19 as u64
-        });
-        __bindgen_bitfield_unit.set(20usize, 1u8, {
-            let m20: u8 = unsafe { ::std::mem::transmute(m20) };
-            m20 as u64
-        });
-        __bindgen_bitfield_unit.set(21usize, 1u8, {
-            let m21: u8 = unsafe { ::std::mem::transmute(m21) };
-            m21 as u64
-        });
-        __bindgen_bitfield_unit.set(22usize, 1u8, {
-            let m22: u8 = unsafe { ::std::mem::transmute(m22) };
-            m22 as u64
-        });
-        __bindgen_bitfield_unit.set(23usize, 1u8, {
-            let m23: u8 = unsafe { ::std::mem::transmute(m23) };
-            m23 as u64
-        });
-        __bindgen_bitfield_unit.set(24usize, 1u8, {
-            let m24: u8 = unsafe { ::std::mem::transmute(m24) };
-            m24 as u64
-        });
-        __bindgen_bitfield_unit.set(25usize, 1u8, {
-            let m25: u8 = unsafe { ::std::mem::transmute(m25) };
-            m25 as u64
-        });
-        __bindgen_bitfield_unit.set(26usize, 1u8, {
-            let m26: u8 = unsafe { ::std::mem::transmute(m26) };
-            m26 as u64
-        });
-        __bindgen_bitfield_unit.set(27usize, 1u8, {
-            let m27: u8 = unsafe { ::std::mem::transmute(m27) };
-            m27 as u64
-        });
-        __bindgen_bitfield_unit.set(28usize, 1u8, {
-            let m28: u8 = unsafe { ::std::mem::transmute(m28) };
-            m28 as u64
-        });
-        __bindgen_bitfield_unit.set(29usize, 1u8, {
-            let m29: u8 = unsafe { ::std::mem::transmute(m29) };
-            m29 as u64
-        });
-        __bindgen_bitfield_unit.set(30usize, 1u8, {
-            let m30: u8 = unsafe { ::std::mem::transmute(m30) };
-            m30 as u64
-        });
-        __bindgen_bitfield_unit.set(31usize, 1u8, {
-            let m31: u8 = unsafe { ::std::mem::transmute(m31) };
-            m31 as u64
-        });
-        __bindgen_bitfield_unit.set(32usize, 1u8, {
-            let m32: u8 = unsafe { ::std::mem::transmute(m32) };
-            m32 as u64
-        });
+            __BindgenBitfieldUnit::new([0; 5usize]);
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(0usize, 1u8, {
+                let m0: u8 = unsafe { ::std::mem::transmute(m0) };
+                m0 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(1usize, 1u8, {
+                let m1: u8 = unsafe { ::std::mem::transmute(m1) };
+                m1 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(2usize, 1u8, {
+                let m2: u8 = unsafe { ::std::mem::transmute(m2) };
+                m2 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(3usize, 1u8, {
+                let m3: u8 = unsafe { ::std::mem::transmute(m3) };
+                m3 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(4usize, 1u8, {
+                let m4: u8 = unsafe { ::std::mem::transmute(m4) };
+                m4 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(5usize, 1u8, {
+                let m5: u8 = unsafe { ::std::mem::transmute(m5) };
+                m5 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(6usize, 1u8, {
+                let m6: u8 = unsafe { ::std::mem::transmute(m6) };
+                m6 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(7usize, 1u8, {
+                let m7: u8 = unsafe { ::std::mem::transmute(m7) };
+                m7 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(8usize, 1u8, {
+                let m8: u8 = unsafe { ::std::mem::transmute(m8) };
+                m8 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(9usize, 1u8, {
+                let m9: u8 = unsafe { ::std::mem::transmute(m9) };
+                m9 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(10usize, 1u8, {
+                let m10: u8 = unsafe { ::std::mem::transmute(m10) };
+                m10 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(11usize, 1u8, {
+                let m11: u8 = unsafe { ::std::mem::transmute(m11) };
+                m11 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(12usize, 1u8, {
+                let m12: u8 = unsafe { ::std::mem::transmute(m12) };
+                m12 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(13usize, 1u8, {
+                let m13: u8 = unsafe { ::std::mem::transmute(m13) };
+                m13 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(14usize, 1u8, {
+                let m14: u8 = unsafe { ::std::mem::transmute(m14) };
+                m14 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(15usize, 1u8, {
+                let m15: u8 = unsafe { ::std::mem::transmute(m15) };
+                m15 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(16usize, 1u8, {
+                let m16: u8 = unsafe { ::std::mem::transmute(m16) };
+                m16 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(17usize, 1u8, {
+                let m17: u8 = unsafe { ::std::mem::transmute(m17) };
+                m17 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(18usize, 1u8, {
+                let m18: u8 = unsafe { ::std::mem::transmute(m18) };
+                m18 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(19usize, 1u8, {
+                let m19: u8 = unsafe { ::std::mem::transmute(m19) };
+                m19 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(20usize, 1u8, {
+                let m20: u8 = unsafe { ::std::mem::transmute(m20) };
+                m20 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(21usize, 1u8, {
+                let m21: u8 = unsafe { ::std::mem::transmute(m21) };
+                m21 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(22usize, 1u8, {
+                let m22: u8 = unsafe { ::std::mem::transmute(m22) };
+                m22 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(23usize, 1u8, {
+                let m23: u8 = unsafe { ::std::mem::transmute(m23) };
+                m23 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(24usize, 1u8, {
+                let m24: u8 = unsafe { ::std::mem::transmute(m24) };
+                m24 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(25usize, 1u8, {
+                let m25: u8 = unsafe { ::std::mem::transmute(m25) };
+                m25 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(26usize, 1u8, {
+                let m26: u8 = unsafe { ::std::mem::transmute(m26) };
+                m26 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(27usize, 1u8, {
+                let m27: u8 = unsafe { ::std::mem::transmute(m27) };
+                m27 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(28usize, 1u8, {
+                let m28: u8 = unsafe { ::std::mem::transmute(m28) };
+                m28 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(29usize, 1u8, {
+                let m29: u8 = unsafe { ::std::mem::transmute(m29) };
+                m29 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(30usize, 1u8, {
+                let m30: u8 = unsafe { ::std::mem::transmute(m30) };
+                m30 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(31usize, 1u8, {
+                let m31: u8 = unsafe { ::std::mem::transmute(m31) };
+                m31 as u64
+            });
+        let __bindgen_bitfield_unit =
+            __bindgen_bitfield_unit.set_const(32usize, 1u8, {
+                let m32: u8 = unsafe { ::std::mem::transmute(m32) };
+                m32 as u64
+            });
         __bindgen_bitfield_unit
     }
 }

@@ -1516,17 +1516,25 @@ impl Bitfield {
         let width = self.width() as u8;
         let prefix = ctx.trait_prefix();
 
-        ctor_impl.append_all(quote! {
-            __bindgen_bitfield_unit.set(
-                #offset,
-                #width,
-                {
-                    let #param_name: #bitfield_int_ty = unsafe {
-                        ::#prefix::mem::transmute(#param_name)
-                    };
-                    #param_name as u64
-                }
-            );
+        let bifield_set_params = quote! {
+            #offset,
+            #width,
+            {
+                let #param_name: #bitfield_int_ty = unsafe {
+                    ::#prefix::mem::transmute(#param_name)
+                };
+                #param_name as u64
+            }
+        };
+
+        ctor_impl.append_all(if ctx.options().rust_features().const_panic {
+            quote! {
+                let __bindgen_bitfield_unit = __bindgen_bitfield_unit.set_const(#bifield_set_params);
+            }
+        } else {
+            quote! {
+                __bindgen_bitfield_unit.set(#bifield_set_params);
+            }
         });
 
         ctor_impl
@@ -1569,6 +1577,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
 
         let layout = self.layout();
         let unit_field_ty = helpers::bitfield_unit(ctx, layout);
+        let unit_field_init = helpers::bitfield_init_value(ctx, layout);
         let field_ty = if parent.is_union() {
             wrap_union_field_if_needed(
                 ctx,
@@ -1657,6 +1666,11 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         }
 
         let access_spec = access_specifier(ctx, access_spec);
+        let const_mod = if ctx.options().rust_features().const_panic {
+            quote! { const }
+        } else {
+            quote! {}
+        };
 
         let field = quote! {
             #access_spec #unit_field_ident : #field_ty ,
@@ -1666,8 +1680,8 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         if generate_ctor {
             methods.extend(Some(quote! {
                 #[inline]
-                #access_spec fn #ctor_name ( #( #ctor_params ),* ) -> #unit_field_ty {
-                    let mut __bindgen_bitfield_unit: #unit_field_ty = Default::default();
+                #access_spec #const_mod fn #ctor_name ( #( #ctor_params ),* ) -> #unit_field_ty {
+                    let mut __bindgen_bitfield_unit: #unit_field_ty = #unit_field_init;
                     #ctor_impl
                     __bindgen_bitfield_unit
                 }
@@ -4539,6 +4553,18 @@ pub mod utils {
 
         let items = vec![bitfield_unit_type];
         let old_items = mem::replace(result, items);
+
+        if ctx.options().rust_features().const_panic {
+            let bitfield_unit_const_src =
+                include_str!("./bitfield_unit_const.rs");
+
+            let bitfield_unit_const_impl =
+                proc_macro2::TokenStream::from_str(bitfield_unit_const_src)
+                    .unwrap();
+            let bitfield_unit_const_impl = quote!(#bitfield_unit_const_impl);
+            result.push(bitfield_unit_const_impl);
+        }
+
         result.extend(old_items);
     }
 

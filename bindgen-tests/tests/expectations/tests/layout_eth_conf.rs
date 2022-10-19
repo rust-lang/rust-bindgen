@@ -348,7 +348,7 @@ impl rte_eth_rxmode {
         enable_lro: u16,
     ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> =
-            Default::default();
+            __BindgenBitfieldUnit::new([0; 2usize]);
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let header_split: u16 =
                 unsafe { ::std::mem::transmute(header_split) };
@@ -513,7 +513,7 @@ impl rte_eth_txmode {
         hw_vlan_insert_pvid: u8,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> =
-            Default::default();
+            __BindgenBitfieldUnit::new([0; 1usize]);
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let hw_vlan_reject_tagged: u8 =
                 unsafe { ::std::mem::transmute(hw_vlan_reject_tagged) };

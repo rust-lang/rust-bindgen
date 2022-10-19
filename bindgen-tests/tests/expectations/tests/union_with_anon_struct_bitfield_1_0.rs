@@ -199,7 +199,7 @@ impl foo__bindgen_ty_1 {
         c: ::std::os::raw::c_int,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> =
-            Default::default();
+            __BindgenBitfieldUnit::new([0; 4usize]);
         __bindgen_bitfield_unit.set(0usize, 7u8, {
             let b: u32 = unsafe { ::std::mem::transmute(b) };
             b as u64

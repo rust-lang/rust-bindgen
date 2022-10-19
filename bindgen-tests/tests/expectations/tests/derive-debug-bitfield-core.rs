@@ -180,7 +180,7 @@ impl C {
         b: bool,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> =
-            Default::default();
+            __BindgenBitfieldUnit::new([0; 1usize]);
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let a: u8 = unsafe { ::core::mem::transmute(a) };
             a as u64

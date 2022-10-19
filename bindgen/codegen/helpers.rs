@@ -128,6 +128,25 @@ pub fn bitfield_unit(ctx: &BindgenContext, layout: Layout) -> TokenStream {
     tokens
 }
 
+/// Generates default initialization value for a bitfield allocation unit type for a type with the given `Layout`.
+pub fn bitfield_init_value(
+    ctx: &BindgenContext,
+    layout: Layout,
+) -> TokenStream {
+    let mut tokens = quote! {};
+
+    if ctx.options().enable_cxx_namespaces {
+        tokens.append_all(quote! { root:: });
+    }
+
+    let size = layout.size;
+    tokens.append_all(quote! {
+        __BindgenBitfieldUnit::new([0; #size])
+    });
+
+    tokens
+}
+
 pub mod ast_ty {
     use crate::ir::context::BindgenContext;
     use crate::ir::function::FunctionSig;

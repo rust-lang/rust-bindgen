@@ -426,7 +426,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         inner_l4_type: u32,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> =
-            Default::default();
+            __BindgenBitfieldUnit::new([0; 4usize]);
         __bindgen_bitfield_unit.set(0usize, 4u8, {
             let l2_type: u32 = unsafe { ::std::mem::transmute(l2_type) };
             l2_type as u64
@@ -922,7 +922,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         outer_l2_len: u64,
     ) -> __BindgenBitfieldUnit<[u8; 7usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 7usize]> =
-            Default::default();
+            __BindgenBitfieldUnit::new([0; 7usize]);
         __bindgen_bitfield_unit.set(0usize, 7u8, {
             let l2_len: u64 = unsafe { ::std::mem::transmute(l2_len) };
             l2_len as u64

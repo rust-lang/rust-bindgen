@@ -199,6 +199,37 @@ fn test_bitfield_constructors() {
     });
 }
 
+#[test]
+fn test_bitfield_const_constructors() {
+    use std::mem;
+    const FIRST: bindings::bitfields::First = bindings::bitfields::First {
+        _bitfield_align_1: [],
+        _bitfield_1: bindings::bitfields::First::new_bitfield_1(1, 2, 3),
+    };
+    let mut first = FIRST;
+    assert!(unsafe { first.assert(1, 2, 3) });
+
+    const SECOND: bindings::bitfields::Second = bindings::bitfields::Second {
+        _bitfield_align_1: [],
+        _bitfield_1: bindings::bitfields::Second::new_bitfield_1(1337, true),
+    };
+    let mut second = SECOND;
+    assert!(unsafe { second.assert(1337, true) });
+
+    const THIRD: bindings::bitfields::Third = bindings::bitfields::Third {
+        _bitfield_align_1: [],
+        _bitfield_1: bindings::bitfields::Third::new_bitfield_1(
+            42,
+            false,
+            bindings::bitfields::ItemKind::ITEM_KIND_TRES,
+        ),
+    };
+    let mut third = THIRD;
+    assert!(unsafe {
+        third.assert(42, false, bindings::bitfields::ItemKind::ITEM_KIND_TRES)
+    });
+}
+
 impl Drop for bindings::AutoRestoreBool {
     fn drop(&mut self) {
         unsafe { bindings::AutoRestoreBool::destruct(self) }
