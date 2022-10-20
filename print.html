@@ -1192,6 +1192,7 @@ StructWithBitfields: a:1, b:1, c:0
 <li><a href="faq.html#why-isnt-bindgen-generating-bindings-to-inline-functions">Why isn't <code>bindgen</code> generating bindings to inline functions?</a></li>
 <li><a href="faq.html#does-bindgen-support-the-c-standard-template-library-stl">Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</a></li>
 <li><a href="faq.html#how-to-deal-with-bindgen-generated-padding-fields">How to deal with bindgen generated padding fields?</a></li>
+<li><a href="faq.html#how-to-generate-bindings-for-a-custom-target">How to generate bindings for a custom target?</a></li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <h3><a class="header" href="#why-isnt-bindgen-generating-methods-for-this-allowlisted-class" id="why-isnt-bindgen-generating-methods-for-this-allowlisted-class">Why isn't <code>bindgen</code> generating methods for this allowlisted class?</a></h3>
@@ -1237,7 +1238,7 @@ opaque, and then allowlisting only the specific things you need from the library
 you're binding to that is pulling in STL headers.</p>
 <h3><a class="header" href="#how-to-deal-with-bindgen-generated-padding-fields" id="how-to-deal-with-bindgen-generated-padding-fields">How to deal with bindgen generated padding fields?</a></h3>
 <p>Depending the architecture, toolchain versions and source struct, it is
-possible that bindgen will generate padding fields named <code>__bindgen_padding_N</code>. 
+possible that bindgen will generate padding fields named <code>__bindgen_padding_N</code>.
 As these fields might be present when compiling for one architecture but not
 for an other, you should not initialize these fields manually when initializing
 the struct. Instead, use the <code>Default</code> trait. You can either enable this when
@@ -1258,6 +1259,15 @@ implement this per struct using:</p>
 </code></pre>
 <p>In the case bindgen generates a padding field, then this field will
 be automatically initialized by <code>..Default::default()</code>.</p>
+<h3><a class="header" href="#how-to-generate-bindings-for-a-custom-target" id="how-to-generate-bindings-for-a-custom-target">How to generate bindings for a custom target?</a></h3>
+<p>To generate bindings for a custom target you only need to pass the <code>--target</code>
+argument to <code>libclang</code>. For example, if you want to generate bindings for the
+<code>armv7a-none-eabi</code> target using the command line, you need to invoke <code>bindgen</code>
+like so:</p>
+<pre><code class="language-bash">$ bindgen &lt;input_headers&gt; -- --target=armv7a-none-eabi
+</code></pre>
+<p>If you are using <code>bindgen</code> as a library, you should call
+<code>builder.clang_arg(&quot;--target=armv7a-none-eabi&quot;)</code> on your <code>builder</code>.</p>
 
                     </main>
 
