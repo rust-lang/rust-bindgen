@@ -2016,3 +2016,16 @@ impl<'a> NameOptions<'a> {
         self.item.real_canonical_name(self.ctx, self)
     }
 }
+
+/// Normalizes names so that we can handle them identically in Clang 16 and earlier versions.
+///
+/// In Clang 16, anonymous names have names like `(anonymous union at foo.c:16)`, whereas in earlier
+/// versions of Clang they were the empty string. This function normalizes all such names to the
+/// empty string so that we can handle them identically.
+pub fn normalize_name_for_clang_16(name: &mut String) {
+    // This may seem fragile, but ")" is not a valid character in C identifiers, so it should
+    // actually be a reasonably robust check.
+    if name.ends_with(")") {
+        name.truncate(0);
+    }
+}

@@ -12,6 +12,7 @@ use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 use crate::clang;
 use crate::codegen::struct_layout::{align_to, bytes_from_bits_pow2};
 use crate::ir::derive::CanDeriveCopy;
+use crate::ir::item;
 use crate::parse::{ClangItemParser, ParseError};
 use crate::HashMap;
 use crate::NonCopyUnionStyle;
@@ -1422,7 +1423,9 @@ impl CompInfo {
 
                         // A declaration of an union or a struct without name
                         // could also be an unnamed field, unfortunately.
-                        if cur.spelling().is_empty() &&
+                        let mut spelling = cur.spelling();
+                        item::normalize_name_for_clang_16(&mut spelling);
+                        if spelling.is_empty() &&
                             cur.kind() != CXCursor_EnumDecl
                         {
                             let ty = cur.cur_type();

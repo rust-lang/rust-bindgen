@@ -14,6 +14,7 @@ use super::template::{
 };
 use super::traversal::{EdgeKind, Trace, Tracer};
 use crate::clang::{self, Cursor};
+use crate::ir::item;
 use crate::parse::{ClangItemParser, ParseError, ParseResult};
 use std::borrow::Cow;
 use std::io;
@@ -1112,6 +1113,8 @@ impl Type {
                         }
                     }
 
+                    item::normalize_name_for_clang_16(&mut name);
+
                     TypeKind::Enum(enum_)
                 }
                 CXType_Record => {
@@ -1131,6 +1134,8 @@ impl Type {
                             name = pretty_name;
                         }
                     }
+
+                    item::normalize_name_for_clang_16(&mut name);
 
                     TypeKind::Comp(complex)
                 }
