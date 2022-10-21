@@ -2103,11 +2103,6 @@ struct BindgenOptions {
     merge_extern_blocks: bool,
 }
 
-/// TODO(emilio): This is sort of a lie (see the error message that results from
-/// removing this), but since we don't share references across panic boundaries
-/// it's ok.
-impl ::std::panic::UnwindSafe for BindgenOptions {}
-
 impl BindgenOptions {
     fn build(&mut self) {
         let mut regex_sets = [
