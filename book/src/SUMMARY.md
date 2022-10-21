@@ -10,6 +10,7 @@
         - [Include the Generated Bindings in `src/lib.rs`](./tutorial-4.md)
         - [Write a Sanity Test](./tutorial-5.md)
         - [Publish Your Crate!](./tutorial-6.md)
+    - [Bindings for non-system libraries](./non-system-libraries.md)
 - [Command Line Usage](./command-line-usage.md)
 - [Customizing the Generated Bindings](./customizing-generated-bindings.md)
     - [Allowlisting](./allowlisting.md)
