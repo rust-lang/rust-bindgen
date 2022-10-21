@@ -6,7 +6,6 @@ extern crate env_logger;
 extern crate log;
 
 use std::env;
-use std::panic;
 
 mod options;
 use crate::options::builder_from_flags;
@@ -41,18 +40,18 @@ pub fn main() {
         Ok((builder, output, verbose)) => {
             #[cfg(feature = "logging")]
             clang_version_check();
-            let builder_result = panic::catch_unwind(|| {
-                builder.generate().expect("Unable to generate bindings")
-            });
 
-            if builder_result.is_err() {
+            std::panic::set_hook(Box::new(move |_info| {
                 if verbose {
-                    print_verbose_err();
+                    print_verbose_err()
                 }
-                std::process::exit(1);
-            }
+            }));
 
-            let bindings = builder_result.unwrap();
+            let bindings =
+                builder.generate().expect("Unable to generate bindings");
+
+            let _ = std::panic::take_hook();
+
             bindings.write(output).expect("Unable to write output");
         }
         Err(error) => {
