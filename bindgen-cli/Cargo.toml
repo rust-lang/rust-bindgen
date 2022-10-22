@@ -20,9 +20,6 @@ rust-version = "1.57.0"
 path = "main.rs"
 name = "bindgen"
 
-[badges]
-travis-ci = { repository = "rust-lang/rust-bindgen" }
-
 [dependencies]
 bindgen = { path = "../bindgen" }
 shlex = "1"
