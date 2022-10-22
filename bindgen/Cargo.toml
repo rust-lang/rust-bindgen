@@ -24,9 +24,6 @@ rust-version = "1.57.0"
 name = "bindgen"
 path = "./lib.rs"
 
-[badges]
-travis-ci = { repository = "rust-lang/rust-bindgen" }
-
 [dependencies]
 bitflags = "1.0.3"
 cexpr = "0.6"
