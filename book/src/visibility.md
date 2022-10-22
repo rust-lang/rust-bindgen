@@ -23,8 +23,14 @@ struct MostFieldsPrivate {
 Then in Rust:
 
 ```rust
+# #[repr(C)]
+# pub struct OneFieldPrivate {
+#     s: *const ::std::os::raw::c_char,
+#     pub b: bool,
+# }
+
 impl OneFieldPrivate {
-    pub fn new(s: &'static core::ffi::CStr, b: bool) -> Self {
+    pub fn new(s: &'static std::ffi::CStr, b: bool) -> Self {
         OneFieldPrivate { s: s.as_ptr(), b }
     }
 }
