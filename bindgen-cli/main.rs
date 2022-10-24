@@ -41,10 +41,11 @@ pub fn main() {
             #[cfg(feature = "logging")]
             clang_version_check();
 
-            std::panic::set_hook(Box::new(move |_info| {
+            std::panic::set_hook(Box::new(move |info| {
                 if verbose {
                     print_verbose_err()
                 }
+                println!("{}", info);
             }));
 
             let bindings =
