@@ -153,6 +153,7 @@
 
  * Regex inputs are sanitized so alternation (`a|b`) is handled correctly but
    wildcard patterns (`*`) are now considered invalid.
+ * the `ParseCallbacks`trait does not require to implement `UnwindSafe`.
 
 ## Removed
 
