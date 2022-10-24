@@ -1,4 +1,4 @@
-// bindgen-flags: --rustified-enum * --with-derive-ord
+// bindgen-flags: --rustified-enum ".*" --with-derive-ord
 
 enum A {
 	A0 = 0,

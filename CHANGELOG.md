@@ -151,6 +151,9 @@
 
 ## Changed
 
+ * Regex inputs are sanitized so alternation (`a|b`) is handled correctly but
+   wildcard patterns (`*`) are now considered invalid.
+
 ## Removed
 
 ## Fixed

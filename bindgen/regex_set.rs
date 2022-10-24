@@ -26,7 +26,11 @@ impl RegexSet {
     where
         S: AsRef<str>,
     {
-        self.items.push(string.as_ref().to_owned());
+        let string = string.as_ref().to_owned();
+        if string == "*" {
+            warn!("using wildcard patterns (`*`) is no longer considered valid. Use `.*` instead");
+        }
+        self.items.push(string);
         self.matched.push(Cell::new(false));
         self.set = None;
     }
@@ -53,7 +57,7 @@ impl RegexSet {
     /// Must be called before calling `matches()`, or it will always return
     /// false.
     pub fn build(&mut self, record_matches: bool) {
-        let items = self.items.iter().map(|item| format!("^{}$", item));
+        let items = self.items.iter().map(|item| format!("^({})$", item));
         self.record_matches = record_matches;
         self.set = match RxSet::new(items) {
             Ok(x) => Some(x),
