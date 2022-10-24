@@ -44,7 +44,7 @@ fn main() {
     println!("cargo:rustc-link-search={}", libdir_path.to_str().unwrap());
 
     // Tell cargo to tell rustc to link our `hello` library. Cargo will
-    automatically know it must look for a `libhello.a` file.
+    // automatically know it must look for a `libhello.a` file.
     println!("cargo:rustc-link-lib=hello");
 
     // Tell cargo to invalidate the built crate whenever the header changes.
