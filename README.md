@@ -43,6 +43,8 @@ The minimum supported Rust version is **1.57.0**.
 
 No MSRV bump policy has been established yet, so MSRV may increase in any release.
 
+The MSRV is the minimum Rust version that can be used to *compile* `bindgen`. However, `bindgen` can generate bindings that are compatible with Rust versions below the current MSRV.
+
 ## API Reference
 
 [API reference documentation is on docs.rs](https://docs.rs/bindgen)
