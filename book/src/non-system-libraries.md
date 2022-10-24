@@ -15,7 +15,7 @@ given that the library has not been compiled yet, we need to modify the
 `build.rs` build script to compile the `hello.c` source file into a static
 libary:
 
-```rust
+```rust,ignore
 extern crate bindgen;
 
 use std::env;
