@@ -95,6 +95,11 @@ impl Type {
         matches!(self.kind, TypeKind::BlockPointer(..))
     }
 
+    /// Is this an integer type, including `bool` or `char`?
+    pub fn is_int(&self) -> bool {
+        matches!(self.kind, TypeKind::Int(_))
+    }
+
     /// Is this a compound type?
     pub fn is_comp(&self) -> bool {
         matches!(self.kind, TypeKind::Comp(..))
