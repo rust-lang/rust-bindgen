@@ -72,7 +72,10 @@ cannot translate into Rust:
   [the tracking issue for exceptions](https://github.com/rust-lang/rust-bindgen/issues/1208)
   for more details.
   
-* Return value optimization. C++ compilers will in certain circumstances optimize functions
-  returning a struct type value to instead take an extra hidden argument that refers
-  to the return value struct. `bindgen` cannot necessarily know about this optimization and
-  thus at present `bindgen`-interfaces for these kinds of functions are invalid. 
+* Many C++ specific aspects of calling conventions. For example in the Itanium abi types that are 
+  "[non trivial for the purposes of calls](https://itanium-cxx-abi.github.io/cxx-abi/abi.html#non-trivial)" 
+  should be passed by pointer, even if they are otherwise eligable to be passed in a register.
+  Similarly in both the Itanium and MSVC ABIs such types are returned by "hidden parameter", much like
+  large structs in C that would not fit into a register. This also applies to types with any base classes
+  in the MSVC ABI (see [x64 calling convention](https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention?view=msvc-170#return-values)).
+  Because bindgen does not know about these rules generated interfaces using such types are currently invalid.
