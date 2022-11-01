@@ -8,7 +8,7 @@
 extern "fastcall" {
     pub fn foo();
 }
-extern "aapcs" {
+extern "stdcall" {
     pub fn bar();
 }
 extern "C" {
