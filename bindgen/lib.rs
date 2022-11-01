@@ -1579,12 +1579,12 @@ impl Builder {
                 .collect::<Vec<_>>();
 
         match Bindings::generate(options, input_unsaved_files) {
-            Ok(bindings) => Ok(bindings),
-            Err(GenerateError::ShouldRestart { header }) => self
+            GenerateResult::Ok(bindings) => Ok(bindings),
+            GenerateResult::ShouldRestart { header } => self
                 .header(header)
                 .generate_inline_functions(false)
                 .generate(),
-            Err(GenerateError::Bindgen(err)) => Err(err),
+            GenerateResult::Err(err) => Err(err),
         }
     }
 
@@ -2295,21 +2295,16 @@ fn ensure_libclang_is_loaded() {
 #[cfg(not(feature = "runtime"))]
 fn ensure_libclang_is_loaded() {}
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-enum GenerateError {
+#[derive(Debug)]
+enum GenerateResult {
+    Ok(Bindings),
     /// Error variant raised when bindgen requires to run again with a newly generated header
     /// input.
     #[allow(dead_code)]
     ShouldRestart {
         header: String,
     },
-    Bindgen(BindgenError),
-}
-
-impl From<BindgenError> for GenerateError {
-    fn from(err: BindgenError) -> Self {
-        Self::Bindgen(err)
-    }
+    Err(BindgenError),
 }
 
 /// Error type for rust-bindgen.
@@ -2405,7 +2400,7 @@ impl Bindings {
     pub(crate) fn generate(
         mut options: BindgenOptions,
         input_unsaved_files: Vec<clang::UnsavedFile>,
-    ) -> Result<Bindings, GenerateError> {
+    ) -> GenerateResult {
         ensure_libclang_is_loaded();
 
         #[cfg(feature = "runtime")]
@@ -2526,20 +2521,22 @@ impl Bindings {
             let path = Path::new(h);
             if let Ok(md) = std::fs::metadata(path) {
                 if md.is_dir() {
-                    return Err(
-                        BindgenError::FolderAsHeader(path.into()).into()
+                    return GenerateResult::Err(
+                        BindgenError::FolderAsHeader(path.into()).into(),
                     );
                 }
                 if !can_read(&md.permissions()) {
-                    return Err(BindgenError::InsufficientPermissions(
-                        path.into(),
-                    )
-                    .into());
+                    return GenerateResult::Err(
+                        BindgenError::InsufficientPermissions(path.into())
+                            .into(),
+                    );
                 }
                 let h = h.clone();
                 options.clang_args.push(h);
             } else {
-                return Err(BindgenError::NotExist(path.into()).into());
+                return GenerateResult::Err(
+                    BindgenError::NotExist(path.into()).into(),
+                );
             }
         }
 
@@ -2567,12 +2564,14 @@ impl Bindings {
 
         {
             let _t = time::Timer::new("parse").with_output(time_phases);
-            parse(&mut context)?;
+            if let Err(err) = parse(&mut context) {
+                return GenerateResult::Err(err);
+            }
         }
 
         let (module, options, warnings) = codegen::codegen(context);
 
-        Ok(Bindings {
+        GenerateResult::Ok(Bindings {
             options,
             warnings,
             module,
