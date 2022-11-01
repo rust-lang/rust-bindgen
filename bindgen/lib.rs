@@ -1559,25 +1559,33 @@ impl Builder {
     }
 
     /// Generate the Rust bindings using the options built up thus far.
-    pub fn generate(mut self) -> Result<Bindings, BindgenError> {
+    pub fn generate(self) -> Result<Bindings, BindgenError> {
+        let mut options = self.options.clone();
         // Add any extra arguments from the environment to the clang command line.
-        self.options.clang_args.extend(get_extra_clang_args());
+        options.clang_args.extend(get_extra_clang_args());
 
         // Transform input headers to arguments on the clang command line.
-        self.options.clang_args.extend(
-            self.options.input_headers
-                [..self.options.input_headers.len().saturating_sub(1)]
+        options.clang_args.extend(
+            options.input_headers
+                [..options.input_headers.len().saturating_sub(1)]
                 .iter()
                 .flat_map(|header| ["-include".into(), header.to_string()]),
         );
 
         let input_unsaved_files =
-            std::mem::take(&mut self.options.input_header_contents)
+            std::mem::take(&mut options.input_header_contents)
                 .into_iter()
                 .map(|(name, contents)| clang::UnsavedFile::new(name, contents))
                 .collect::<Vec<_>>();
 
-        Bindings::generate(self.options, input_unsaved_files)
+        match Bindings::generate(options, input_unsaved_files) {
+            GenerateResult::Ok(bindings) => Ok(bindings),
+            GenerateResult::ShouldRestart { header } => self
+                .header(header)
+                .generate_inline_functions(false)
+                .generate(),
+            GenerateResult::Err(err) => Err(err),
+        }
     }
 
     /// Preprocess and dump the input header files to disk.
@@ -2282,6 +2290,18 @@ fn ensure_libclang_is_loaded() {
 #[cfg(not(feature = "runtime"))]
 fn ensure_libclang_is_loaded() {}
 
+#[derive(Debug)]
+enum GenerateResult {
+    Ok(Bindings),
+    /// Error variant raised when bindgen requires to run again with a newly generated header
+    /// input.
+    #[allow(dead_code)]
+    ShouldRestart {
+        header: String,
+    },
+    Err(BindgenError),
+}
+
 /// Error type for rust-bindgen.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 #[non_exhaustive]
@@ -2375,7 +2395,7 @@ impl Bindings {
     pub(crate) fn generate(
         mut options: BindgenOptions,
         input_unsaved_files: Vec<clang::UnsavedFile>,
-    ) -> Result<Bindings, BindgenError> {
+    ) -> GenerateResult {
         ensure_libclang_is_loaded();
 
         #[cfg(feature = "runtime")]
@@ -2496,17 +2516,22 @@ impl Bindings {
             let path = Path::new(h);
             if let Ok(md) = std::fs::metadata(path) {
                 if md.is_dir() {
-                    return Err(BindgenError::FolderAsHeader(path.into()));
+                    return GenerateResult::Err(
+                        BindgenError::FolderAsHeader(path.into()).into(),
+                    );
                 }
                 if !can_read(&md.permissions()) {
-                    return Err(BindgenError::InsufficientPermissions(
-                        path.into(),
-                    ));
+                    return GenerateResult::Err(
+                        BindgenError::InsufficientPermissions(path.into())
+                            .into(),
+                    );
                 }
                 let h = h.clone();
                 options.clang_args.push(h);
             } else {
-                return Err(BindgenError::NotExist(path.into()));
+                return GenerateResult::Err(
+                    BindgenError::NotExist(path.into()).into(),
+                );
             }
         }
 
@@ -2534,12 +2559,14 @@ impl Bindings {
 
         {
             let _t = time::Timer::new("parse").with_output(time_phases);
-            parse(&mut context)?;
+            if let Err(err) = parse(&mut context) {
+                return GenerateResult::Err(err);
+            }
         }
 
         let (module, options, warnings) = codegen::codegen(context);
 
-        Ok(Bindings {
+        GenerateResult::Ok(Bindings {
             options,
             warnings,
             module,
