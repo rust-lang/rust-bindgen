@@ -32,7 +32,9 @@ use crate::ir::derive::{
 };
 use crate::ir::dot;
 use crate::ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
-use crate::ir::function::{Abi, Function, FunctionKind, FunctionSig, Linkage};
+use crate::ir::function::{
+    Abi, ClangAbi, Function, FunctionKind, FunctionSig, Linkage,
+};
 use crate::ir::int::IntKind;
 use crate::ir::item::{IsOpaque, Item, ItemCanonicalName, ItemCanonicalPath};
 use crate::ir::item_kind::ItemKind;
@@ -2475,9 +2477,13 @@ impl MethodCodegen for Method {
             _ => panic!("How in the world?"),
         };
 
-        let supported_abi = match signature.abi() {
-            Abi::ThisCall => ctx.options().rust_features().thiscall_abi,
-            Abi::Vectorcall => ctx.options().rust_features().vectorcall_abi,
+        let supported_abi = match signature.abi(ctx, Some(&*name)) {
+            ClangAbi::Known(Abi::ThisCall) => {
+                ctx.options().rust_features().thiscall_abi
+            }
+            ClangAbi::Known(Abi::Vectorcall) => {
+                ctx.options().rust_features().vectorcall_abi
+            }
             _ => true,
         };
 
@@ -3791,7 +3797,8 @@ impl TryToRustTy for Type {
                 // sizeof(NonZero<_>) optimization with opaque blobs (because
                 // they aren't NonZero), so don't *ever* use an or_opaque
                 // variant here.
-                let ty = fs.try_to_rust_ty(ctx, &())?;
+                let ty = fs
+                    .try_to_rust_ty(ctx, &self.name().map(|x| x.to_string()))?;
 
                 let prefix = ctx.trait_prefix();
                 Ok(quote! {
@@ -3981,24 +3988,26 @@ impl TryToRustTy for TemplateInstantiation {
 }
 
 impl TryToRustTy for FunctionSig {
-    type Extra = ();
+    type Extra = Option<String>;
 
     fn try_to_rust_ty(
         &self,
         ctx: &BindgenContext,
-        _: &(),
+        name: &Option<String>,
     ) -> error::Result<proc_macro2::TokenStream> {
         // TODO: we might want to consider ignoring the reference return value.
         let ret = utils::fnsig_return_ty(ctx, self);
         let arguments = utils::fnsig_arguments(ctx, self);
-        let abi = self.abi();
+        let abi = self.abi(ctx, name.as_deref());
 
         match abi {
-            Abi::ThisCall if !ctx.options().rust_features().thiscall_abi => {
+            ClangAbi::Known(Abi::ThisCall)
+                if !ctx.options().rust_features().thiscall_abi =>
+            {
                 warn!("Skipping function with thiscall ABI that isn't supported by the configured Rust target");
                 Ok(proc_macro2::TokenStream::new())
             }
-            Abi::Vectorcall
+            ClangAbi::Known(Abi::Vectorcall)
                 if !ctx.options().rust_features().vectorcall_abi =>
             {
                 warn!("Skipping function with vectorcall ABI that isn't supported by the configured Rust target");
@@ -4102,22 +4111,24 @@ impl CodeGenerator for Function {
             attributes.push(attributes::doc(comment));
         }
 
-        let abi = match signature.abi() {
-            Abi::ThisCall if !ctx.options().rust_features().thiscall_abi => {
+        let abi = match signature.abi(ctx, Some(name)) {
+            ClangAbi::Known(Abi::ThisCall)
+                if !ctx.options().rust_features().thiscall_abi =>
+            {
                 warn!("Skipping function with thiscall ABI that isn't supported by the configured Rust target");
                 return None;
             }
-            Abi::Vectorcall
+            ClangAbi::Known(Abi::Vectorcall)
                 if !ctx.options().rust_features().vectorcall_abi =>
             {
                 warn!("Skipping function with vectorcall ABI that isn't supported by the configured Rust target");
                 return None;
             }
-            Abi::Win64 if signature.is_variadic() => {
+            ClangAbi::Known(Abi::Win64) if signature.is_variadic() => {
                 warn!("Skipping variadic function with Win64 ABI that isn't supported");
                 return None;
             }
-            Abi::Unknown(unknown_abi) => {
+            ClangAbi::Unknown(unknown_abi) => {
                 panic!(
                     "Invalid or unknown abi {:?} for function {:?} ({:?})",
                     unknown_abi, canonical_name, self
@@ -4515,7 +4526,7 @@ pub(crate) fn codegen(
 pub mod utils {
     use super::{error, ToRustTyOrOpaque};
     use crate::ir::context::BindgenContext;
-    use crate::ir::function::{Abi, FunctionSig};
+    use crate::ir::function::{Abi, ClangAbi, FunctionSig};
     use crate::ir::item::{Item, ItemCanonicalPath};
     use crate::ir::ty::TypeKind;
     use proc_macro2;
@@ -4976,10 +4987,10 @@ pub mod utils {
     // Returns true if `canonical_name` will end up as `mangled_name` at the
     // machine code level, i.e. after LLVM has applied any target specific
     // mangling.
-    pub fn names_will_be_identical_after_mangling(
+    pub(crate) fn names_will_be_identical_after_mangling(
         canonical_name: &str,
         mangled_name: &str,
-        call_conv: Option<Abi>,
+        call_conv: Option<ClangAbi>,
     ) -> bool {
         // If the mangled name and the canonical name are the same then no
         // mangling can have happened between the two versions.
@@ -4992,13 +5003,13 @@ pub mod utils {
         let mangled_name = mangled_name.as_bytes();
 
         let (mangling_prefix, expect_suffix) = match call_conv {
-            Some(Abi::C) |
+            Some(ClangAbi::Known(Abi::C)) |
             // None is the case for global variables
             None => {
                 (b'_', false)
             }
-            Some(Abi::Stdcall) => (b'_', true),
-            Some(Abi::Fastcall) => (b'@', true),
+            Some(ClangAbi::Known(Abi::Stdcall)) => (b'_', true),
+            Some(ClangAbi::Known(Abi::Fastcall)) => (b'@', true),
 
             // This is something we don't recognize, stay on the safe side
             // by emitting the `#[link_name]` attribute

@@ -568,6 +568,12 @@ where
             Arg::new("merge-extern-blocks")
                 .long("merge-extern-blocks")
                 .help("Deduplicates extern blocks."),
+            Arg::new("override-abi")
+                .long("override-abi")
+                .help("Overrides the ABI of functions matching <regex>. The <override> value must be of the shape <abi>:<regex> where <abi> can be one of C, stdcall, fastcall, thiscall, aapcs or win64.")
+                .value_name("override")
+                .multiple_occurrences(true)
+                .number_of_values(1),
             Arg::new("V")
                 .long("version")
                 .help("Prints the version, and exits"),
@@ -1086,6 +1092,15 @@ where
 
     if matches.is_present("merge-extern-blocks") {
         builder = builder.merge_extern_blocks(true);
+    }
+
+    if let Some(abi_overrides) = matches.values_of("override-abi") {
+        for abi_override in abi_overrides {
+            let (abi_str, regex) =
+                abi_override.split_once(":").expect("Invalid ABI override");
+            let abi = abi_str.parse().unwrap();
+            builder = builder.override_abi(abi, regex);
+        }
     }
 
     Ok((builder, output, verbose))

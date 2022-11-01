@@ -1,5 +1,5 @@
 use crate::codegen;
-use crate::ir::function::Abi;
+use crate::ir::function::ClangAbi;
 use proc_macro2::Ident;
 
 /// Used to build the output tokens for dynamic bindings.
@@ -113,10 +113,10 @@ impl DynamicItems {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn push(
+    pub(crate) fn push(
         &mut self,
         ident: Ident,
-        abi: Abi,
+        abi: ClangAbi,
         is_variadic: bool,
         is_required: bool,
         args: Vec<proc_macro2::TokenStream>,

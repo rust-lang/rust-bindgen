@@ -15,6 +15,7 @@ use proc_macro2;
 use quote;
 use quote::TokenStreamExt;
 use std::io;
+use std::str::FromStr;
 
 const RUST_DERIVE_FUNPTR_LIMIT: usize = 12;
 
@@ -170,8 +171,8 @@ impl DotAttributes for Function {
     }
 }
 
-/// An ABI extracted from a clang cursor.
-#[derive(Debug, Copy, Clone)]
+/// A valid rust ABI.
+#[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
 pub enum Abi {
     /// The default C ABI.
     C,
@@ -187,32 +188,72 @@ pub enum Abi {
     Aapcs,
     /// The "win64" ABI.
     Win64,
-    /// An unknown or invalid ABI.
-    Unknown(CXCallingConv),
 }
 
-impl Abi {
-    /// Returns whether this Abi is known or not.
-    fn is_unknown(&self) -> bool {
-        matches!(*self, Abi::Unknown(..))
+impl FromStr for Abi {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "C" => Ok(Self::C),
+            "stdcall" => Ok(Self::Stdcall),
+            "fastcall" => Ok(Self::Fastcall),
+            "thiscall" => Ok(Self::ThisCall),
+            "vectorcall" => Ok(Self::Vectorcall),
+            "aapcs" => Ok(Self::Aapcs),
+            "win64" => Ok(Self::Win64),
+            _ => Err(format!("Invalid ABI {:?}", s)),
+        }
+    }
+}
+
+impl std::fmt::Display for Abi {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match *self {
+            Self::C => "C",
+            Self::Stdcall => "stdcall",
+            Self::Fastcall => "fastcall",
+            Self::ThisCall => "thiscall",
+            Self::Vectorcall => "vectorcall",
+            Self::Aapcs => "aapcs",
+            Self::Win64 => "win64",
+        };
+
+        s.fmt(f)
     }
 }
 
 impl quote::ToTokens for Abi {
     fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
-        tokens.append_all(match *self {
-            Abi::C => quote! { "C" },
-            Abi::Stdcall => quote! { "stdcall" },
-            Abi::Fastcall => quote! { "fastcall" },
-            Abi::ThisCall => quote! { "thiscall" },
-            Abi::Vectorcall => quote! { "vectorcall" },
-            Abi::Aapcs => quote! { "aapcs" },
-            Abi::Win64 => quote! { "win64" },
-            Abi::Unknown(cc) => panic!(
+        let abi = self.to_string();
+        tokens.append_all(quote! { #abi });
+    }
+}
+
+/// An ABI extracted from a clang cursor.
+#[derive(Debug, Copy, Clone)]
+pub(crate) enum ClangAbi {
+    Known(Abi),
+    /// An unknown or invalid ABI.
+    Unknown(CXCallingConv),
+}
+
+impl ClangAbi {
+    /// Returns whether this Abi is known or not.
+    fn is_unknown(&self) -> bool {
+        matches!(*self, ClangAbi::Unknown(..))
+    }
+}
+
+impl quote::ToTokens for ClangAbi {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+        match *self {
+            Self::Known(abi) => abi.to_tokens(tokens),
+            Self::Unknown(cc) => panic!(
                 "Cannot turn unknown calling convention to tokens: {:?}",
                 cc
             ),
-        });
+        }
     }
 }
 
@@ -234,21 +275,21 @@ pub struct FunctionSig {
     must_use: bool,
 
     /// The ABI of this function.
-    abi: Abi,
+    abi: ClangAbi,
 }
 
-fn get_abi(cc: CXCallingConv) -> Abi {
+fn get_abi(cc: CXCallingConv) -> ClangAbi {
     use clang_sys::*;
     match cc {
-        CXCallingConv_Default => Abi::C,
-        CXCallingConv_C => Abi::C,
-        CXCallingConv_X86StdCall => Abi::Stdcall,
-        CXCallingConv_X86FastCall => Abi::Fastcall,
-        CXCallingConv_X86ThisCall => Abi::ThisCall,
-        CXCallingConv_X86VectorCall => Abi::Vectorcall,
-        CXCallingConv_AAPCS => Abi::Aapcs,
-        CXCallingConv_X86_64Win64 => Abi::Win64,
-        other => Abi::Unknown(other),
+        CXCallingConv_Default => ClangAbi::Known(Abi::C),
+        CXCallingConv_C => ClangAbi::Known(Abi::C),
+        CXCallingConv_X86StdCall => ClangAbi::Known(Abi::Stdcall),
+        CXCallingConv_X86FastCall => ClangAbi::Known(Abi::Fastcall),
+        CXCallingConv_X86ThisCall => ClangAbi::Known(Abi::ThisCall),
+        CXCallingConv_X86VectorCall => ClangAbi::Known(Abi::Vectorcall),
+        CXCallingConv_AAPCS => ClangAbi::Known(Abi::Aapcs),
+        CXCallingConv_X86_64Win64 => ClangAbi::Known(Abi::Win64),
+        other => ClangAbi::Unknown(other),
     }
 }
 
@@ -354,25 +395,6 @@ fn args_from_ty_and_cursor(
 }
 
 impl FunctionSig {
-    /// Construct a new function signature.
-    pub fn new(
-        return_type: TypeId,
-        argument_types: Vec<(Option<String>, TypeId)>,
-        is_variadic: bool,
-        is_divergent: bool,
-        must_use: bool,
-        abi: Abi,
-    ) -> Self {
-        FunctionSig {
-            return_type,
-            argument_types,
-            is_variadic,
-            is_divergent,
-            must_use,
-            abi,
-        }
-    }
-
     /// Construct a new function signature from the given Clang type.
     pub fn from_ty(
         ty: &clang::Type,
@@ -540,20 +562,21 @@ impl FunctionSig {
                 call_conv = cursor_call_conv;
             }
         }
+
         let abi = get_abi(call_conv);
 
         if abi.is_unknown() {
             warn!("Unknown calling convention: {:?}", call_conv);
         }
 
-        Ok(Self::new(
-            ret,
-            args,
-            ty.is_variadic(),
+        Ok(FunctionSig {
+            return_type: ret,
+            argument_types: args,
+            is_variadic: ty.is_variadic(),
             is_divergent,
             must_use,
             abi,
-        ))
+        })
     }
 
     /// Get this function signature's return type.
@@ -567,8 +590,27 @@ impl FunctionSig {
     }
 
     /// Get this function signature's ABI.
-    pub fn abi(&self) -> Abi {
-        self.abi
+    pub(crate) fn abi(
+        &self,
+        ctx: &BindgenContext,
+        name: Option<&str>,
+    ) -> ClangAbi {
+        // FIXME (pvdrz): Try to do this check lazily instead. Maybe store the ABI inside `ctx`
+        // instead?.
+        if let Some(name) = name {
+            if let Some((abi, _)) = ctx
+                .options()
+                .abi_overrides
+                .iter()
+                .find(|(_, regex_set)| regex_set.matches(name))
+            {
+                ClangAbi::Known(*abi)
+            } else {
+                self.abi
+            }
+        } else {
+            self.abi
+        }
     }
 
     /// Is this function signature variadic?
@@ -598,7 +640,7 @@ impl FunctionSig {
             return false;
         }
 
-        matches!(self.abi, Abi::C | Abi::Unknown(..))
+        matches!(self.abi, ClangAbi::Known(Abi::C) | ClangAbi::Unknown(..))
     }
 
     pub(crate) fn is_divergent(&self) -> bool {

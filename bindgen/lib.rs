@@ -74,6 +74,7 @@ pub use crate::features::{
     RustTarget, LATEST_STABLE_RUST, RUST_TARGET_STRINGS,
 };
 use crate::ir::context::{BindgenContext, ItemId};
+pub use crate::ir::function::Abi;
 use crate::ir::item::Item;
 use crate::parse::{ClangItemParser, ParseError};
 use crate::regex_set::RegexSet;
@@ -361,6 +362,13 @@ impl Builder {
             for item in set.get_items() {
                 output_vector.push((*flag).to_owned());
                 output_vector.push(item.to_owned());
+            }
+        }
+
+        for (abi, set) in &self.options.abi_overrides {
+            for item in set.get_items() {
+                output_vector.push("--override-abi".to_owned());
+                output_vector.push(format!("{}:{}", abi, item));
             }
         }
 
@@ -1774,6 +1782,16 @@ impl Builder {
         self.options.c_naming = doit;
         self
     }
+
+    /// Override the ABI of a given function. Regular expressions are supported.
+    pub fn override_abi<T: Into<String>>(mut self, abi: Abi, arg: T) -> Self {
+        self.options
+            .abi_overrides
+            .entry(abi)
+            .or_default()
+            .insert(arg.into());
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -2109,11 +2127,13 @@ struct BindgenOptions {
 
     /// Deduplicate `extern` blocks.
     merge_extern_blocks: bool,
+
+    abi_overrides: HashMap<Abi, RegexSet>,
 }
 
 impl BindgenOptions {
     fn build(&mut self) {
-        let mut regex_sets = [
+        let regex_sets = [
             &mut self.allowlisted_vars,
             &mut self.allowlisted_types,
             &mut self.allowlisted_functions,
@@ -2143,7 +2163,7 @@ impl BindgenOptions {
             &mut self.must_use_types,
         ];
         let record_matches = self.record_matches;
-        for regex_set in &mut regex_sets {
+        for regex_set in self.abi_overrides.values_mut().chain(regex_sets) {
             regex_set.build(record_matches);
         }
     }
@@ -2260,6 +2280,7 @@ impl Default for BindgenOptions {
             vtable_generation: false,
             sort_semantically: false,
             merge_extern_blocks: false,
+            abi_overrides: Default::default(),
         }
     }
 }
