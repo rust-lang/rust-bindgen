@@ -85,7 +85,7 @@ fn root_import(
     let mut path = top_level_path(ctx, module);
 
     let root = ctx.root_module().canonical_name(ctx);
-    let root_ident = ctx.rust_ident(&root);
+    let root_ident = ctx.rust_ident(root);
     path.push(quote! { #root_ident });
 
     let mut tokens = quote! {};
@@ -797,7 +797,7 @@ impl CodeGenerator for Type {
                     }
                 };
 
-                let rust_name = ctx.rust_ident(&name);
+                let rust_name = ctx.rust_ident(name);
 
                 let mut tokens = if let Some(comment) = item.comment(ctx) {
                     attributes::doc(comment)
@@ -1076,7 +1076,7 @@ impl<'a> CodeGenerator for Vtable<'a> {
     ) {
         assert_eq!(item.id(), self.item_id);
         debug_assert!(item.is_enabled_for_codegen(ctx));
-        let name = ctx.rust_ident(&self.canonical_name(ctx));
+        let name = ctx.rust_ident(self.canonical_name(ctx));
 
         // For now, we will only generate vtables for classes that:
         // - do not inherit from others (compilers merge VTable from primary parent class).
@@ -1582,7 +1582,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
 
         {
             let align_field_name = format!("_bitfield_align_{}", self.nth());
-            let align_field_ident = ctx.rust_ident(&align_field_name);
+            let align_field_ident = ctx.rust_ident(align_field_name);
             let align_ty = match self.layout().align {
                 n if n >= 8 => quote! { u64 },
                 4 => quote! { u32 },
@@ -3875,7 +3875,7 @@ impl TryToRustTy for Type {
             }
             TypeKind::TypeParam => {
                 let name = item.canonical_name(ctx);
-                let ident = ctx.rust_ident(&name);
+                let ident = ctx.rust_ident(name);
                 Ok(quote! {
                     #ident
                 })

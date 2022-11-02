@@ -156,7 +156,7 @@ impl Enum {
         let path = item.path_for_allowlisting(ctx);
         let enum_ty = item.expect_type();
 
-        if enums.matches(&path[1..].join("::")) {
+        if enums.matches(path[1..].join("::")) {
             return true;
         }
 
