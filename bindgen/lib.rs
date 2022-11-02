@@ -2163,7 +2163,7 @@ impl BindgenOptions {
 
     fn last_callback<T>(
         &self,
-        f: impl Fn(&dyn crate::callbacks::ParseCallbacks) -> Option<T>,
+        f: impl Fn(&dyn callbacks::ParseCallbacks) -> Option<T>,
     ) -> Option<T> {
         self.parse_callbacks
             .iter()
@@ -2173,7 +2173,7 @@ impl BindgenOptions {
 
     fn all_callbacks<T>(
         &self,
-        f: impl Fn(&dyn crate::callbacks::ParseCallbacks) -> Vec<T>,
+        f: impl Fn(&dyn callbacks::ParseCallbacks) -> Vec<T>,
     ) -> Vec<T> {
         self.parse_callbacks
             .iter()
