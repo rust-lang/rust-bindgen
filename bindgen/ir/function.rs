@@ -202,7 +202,7 @@ impl FromStr for Abi {
             "vectorcall" => Ok(Self::Vectorcall),
             "aapcs" => Ok(Self::Aapcs),
             "win64" => Ok(Self::Win64),
-            _ => Err(format!("Invalid ABI {:?}", s)),
+            _ => Err(format!("Invalid or unknown ABI {:?}", s)),
         }
     }
 }
