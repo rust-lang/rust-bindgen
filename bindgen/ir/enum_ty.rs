@@ -102,8 +102,8 @@ impl Enum {
                     let name = cursor.spelling();
                     let annotations = Annotations::new(&cursor);
                     let custom_behavior = ctx
-                        .parse_callbacks()
-                        .find_map(|callbacks| {
+                        .options()
+                        .last_callback(|callbacks| {
                             callbacks
                                 .enum_variant_behavior(type_name, &name, val)
                         })
@@ -119,8 +119,8 @@ impl Enum {
                         });
 
                     let new_name = ctx
-                        .parse_callbacks()
-                        .find_map(|callbacks| {
+                        .options()
+                        .last_callback(|callbacks| {
                             callbacks.enum_variant_name(type_name, &name, val)
                         })
                         .or_else(|| {

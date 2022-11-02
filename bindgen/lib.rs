@@ -2146,9 +2146,6 @@ impl BindgenOptions {
         for regex_set in &mut regex_sets {
             regex_set.build(record_matches);
         }
-
-        // Reverse parse callbacks to have a last-to-first priority.
-        self.parse_callbacks.reverse();
     }
 
     /// Update rust target version
@@ -2162,6 +2159,26 @@ impl BindgenOptions {
     /// Get features supported by target Rust version
     pub fn rust_features(&self) -> RustFeatures {
         self.rust_features
+    }
+
+    fn last_callback<T>(
+        &self,
+        f: impl Fn(&dyn crate::callbacks::ParseCallbacks) -> Option<T>,
+    ) -> Option<T> {
+        self.parse_callbacks
+            .iter()
+            .filter_map(|cb| f(cb.as_ref()))
+            .last()
+    }
+
+    fn all_callbacks<T>(
+        &self,
+        f: impl Fn(&dyn crate::callbacks::ParseCallbacks) -> Vec<T>,
+    ) -> Vec<T> {
+        self.parse_callbacks
+            .iter()
+            .flat_map(|cb| f(cb.as_ref()))
+            .collect()
     }
 }
 

@@ -19,7 +19,6 @@ use super::module::{Module, ModuleKind};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
-use crate::callbacks::ParseCallbacks;
 use crate::clang::{self, Cursor};
 use crate::parse::ClangItemParser;
 use crate::BindgenOptions;
@@ -619,14 +618,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         )
     }
 
-    /// Get the user-provided callbacks by reference, if any.
-    pub fn parse_callbacks(&self) -> impl Iterator<Item = &dyn ParseCallbacks> {
-        self.options().parse_callbacks.iter().map(|cb| cb.as_ref())
-    }
-
     /// Add another path to the set of included files.
     pub fn include_file(&mut self, filename: String) {
-        for cb in self.parse_callbacks() {
+        for cb in &self.options().parse_callbacks {
             cb.include_file(&filename);
         }
         self.deps.insert(filename);
@@ -2251,7 +2245,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                 Some(CanDerive::No)
                             }
                         } else {
-                            self.options.parse_callbacks.iter().find_map(|cb| {
+                            self.options.last_callback(|cb| {
                                 cb.blocklisted_type_implements_trait(
                                     name,
                                     derive_trait,

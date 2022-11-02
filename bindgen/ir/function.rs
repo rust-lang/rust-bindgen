@@ -665,8 +665,8 @@ impl ClangSubItemParser for Function {
             name.push_str("_destructor");
         }
         if let Some(nm) = context
-            .parse_callbacks()
-            .find_map(|callbacks| callbacks.generated_name_override(&name))
+            .options()
+            .last_callback(|callbacks| callbacks.generated_name_override(&name))
         {
             name = nm;
         }

@@ -2112,7 +2112,9 @@ impl CodeGenerator for CompInfo {
 
         // The custom derives callback may return a list of derive attributes;
         // add them to the end of the list.
-        let custom_derives = ctx.options().parse_callbacks.iter().flat_map(|cb| cb.add_derives(&canonical_name)).collect::<Vec<String>>();
+        let custom_derives = ctx
+            .options()
+            .all_callbacks(|cb| cb.add_derives(&canonical_name));
         // In most cases this will be a no-op, since custom_derives will be empty.
         derives.extend(custom_derives.iter().map(|s| s.as_str()));
 
@@ -3149,7 +3151,8 @@ impl CodeGenerator for Enum {
 
             // The custom derives callback may return a list of derive attributes;
             // add them to the end of the list.
-            let custom_derives = ctx.options().parse_callbacks.iter().flat_map(|cb| cb.add_derives(&name)).collect::<Vec<String>>();
+            let custom_derives =
+                ctx.options().all_callbacks(|cb| cb.add_derives(&name));
             // In most cases this will be a no-op, since custom_derives will be empty.
             derives.extend(custom_derives.iter().map(|s| s.as_str()));
 
