@@ -1640,7 +1640,7 @@ impl Builder {
             wrapper_file.write_all(wrapper_contents.as_bytes())?;
         }
 
-        let mut cmd = Command::new(&clang.path);
+        let mut cmd = Command::new(clang.path);
         cmd.arg("-save-temps")
             .arg("-E")
             .arg("-C")
@@ -2516,22 +2516,21 @@ impl Bindings {
             let path = Path::new(h);
             if let Ok(md) = std::fs::metadata(path) {
                 if md.is_dir() {
-                    return GenerateResult::Err(
-                        BindgenError::FolderAsHeader(path.into()).into(),
-                    );
+                    return GenerateResult::Err(BindgenError::FolderAsHeader(
+                        path.into(),
+                    ));
                 }
                 if !can_read(&md.permissions()) {
                     return GenerateResult::Err(
-                        BindgenError::InsufficientPermissions(path.into())
-                            .into(),
+                        BindgenError::InsufficientPermissions(path.into()),
                     );
                 }
                 let h = h.clone();
                 options.clang_args.push(h);
             } else {
-                return GenerateResult::Err(
-                    BindgenError::NotExist(path.into()).into(),
-                );
+                return GenerateResult::Err(BindgenError::NotExist(
+                    path.into(),
+                ));
             }
         }
 
@@ -2855,11 +2854,10 @@ pub fn clang_version() -> ClangVersion {
 /// Looks for the env var `var_${TARGET}`, and falls back to just `var` when it is not found.
 fn get_target_dependent_env_var(var: &str) -> Option<String> {
     if let Ok(target) = env::var("TARGET") {
-        if let Ok(v) = env::var(&format!("{}_{}", var, target)) {
+        if let Ok(v) = env::var(format!("{}_{}", var, target)) {
             return Some(v);
         }
-        if let Ok(v) =
-            env::var(&format!("{}_{}", var, target.replace('-', "_")))
+        if let Ok(v) = env::var(format!("{}_{}", var, target.replace('-', "_")))
         {
             return Some(v);
         }

@@ -650,7 +650,7 @@ impl Item {
             if let Some(location) = &self.location {
                 let (file, _, _, _) = location.location();
                 if let Some(filename) = file.name() {
-                    if ctx.options().blocklisted_files.matches(&filename) {
+                    if ctx.options().blocklisted_files.matches(filename) {
                         return true;
                     }
                 }

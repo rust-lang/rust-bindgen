@@ -2076,7 +2076,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             self.in_codegen_phase(),
             "You're not supposed to call this yet"
         );
-        self.options.opaque_types.matches(&path[1..].join("::"))
+        self.options.opaque_types.matches(path[1..].join("::"))
     }
 
     /// Get the options used to configure this bindgen context.
@@ -2314,7 +2314,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                 if self
                                     .options()
                                     .allowlisted_files
-                                    .matches(&filename)
+                                    .matches(filename)
                                 {
                                     return true;
                                 }
@@ -2389,7 +2389,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                 );
                                 let name = prefix_path[1..].join("::");
                                 prefix_path.pop().unwrap();
-                                self.options().allowlisted_vars.matches(&name)
+                                self.options().allowlisted_vars.matches(name)
                             })
                         }
                     }
@@ -2671,37 +2671,37 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Check if `--no-partialeq` flag is enabled for this item.
     pub fn no_partialeq_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_allowlisting(self)[1..].join("::");
-        self.options().no_partialeq_types.matches(&name)
+        self.options().no_partialeq_types.matches(name)
     }
 
     /// Check if `--no-copy` flag is enabled for this item.
     pub fn no_copy_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_allowlisting(self)[1..].join("::");
-        self.options().no_copy_types.matches(&name)
+        self.options().no_copy_types.matches(name)
     }
 
     /// Check if `--no-debug` flag is enabled for this item.
     pub fn no_debug_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_allowlisting(self)[1..].join("::");
-        self.options().no_debug_types.matches(&name)
+        self.options().no_debug_types.matches(name)
     }
 
     /// Check if `--no-default` flag is enabled for this item.
     pub fn no_default_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_allowlisting(self)[1..].join("::");
-        self.options().no_default_types.matches(&name)
+        self.options().no_default_types.matches(name)
     }
 
     /// Check if `--no-hash` flag is enabled for this item.
     pub fn no_hash_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_allowlisting(self)[1..].join("::");
-        self.options().no_hash_types.matches(&name)
+        self.options().no_hash_types.matches(name)
     }
 
     /// Check if `--must-use-type` flag is enabled for this item.
     pub fn must_use_type_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_allowlisting(self)[1..].join("::");
-        self.options().must_use_types.matches(&name)
+        self.options().must_use_types.matches(name)
     }
 }
 
