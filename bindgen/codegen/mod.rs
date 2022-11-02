@@ -3797,8 +3797,7 @@ impl TryToRustTy for Type {
                 // sizeof(NonZero<_>) optimization with opaque blobs (because
                 // they aren't NonZero), so don't *ever* use an or_opaque
                 // variant here.
-                let ty = fs
-                    .try_to_rust_ty(ctx, &self.name().map(|x| x.to_string()))?;
+                let ty = fs.try_to_rust_ty(ctx, &())?;
 
                 let prefix = ctx.trait_prefix();
                 Ok(quote! {
@@ -3988,17 +3987,17 @@ impl TryToRustTy for TemplateInstantiation {
 }
 
 impl TryToRustTy for FunctionSig {
-    type Extra = Option<String>;
+    type Extra = ();
 
     fn try_to_rust_ty(
         &self,
         ctx: &BindgenContext,
-        name: &Option<String>,
+        _: &(),
     ) -> error::Result<proc_macro2::TokenStream> {
         // TODO: we might want to consider ignoring the reference return value.
         let ret = utils::fnsig_return_ty(ctx, self);
         let arguments = utils::fnsig_arguments(ctx, self);
-        let abi = self.abi(ctx, name.as_deref());
+        let abi = self.abi(ctx, None);
 
         match abi {
             ClangAbi::Known(Abi::ThisCall)
