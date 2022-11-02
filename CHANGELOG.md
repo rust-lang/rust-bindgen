@@ -148,6 +148,8 @@
 # Unreleased
 
 ## Added
+ * new feature: `--override-abi` flag to override the ABI used by functions
+   matching a regular expression.
 
 ## Changed
 
