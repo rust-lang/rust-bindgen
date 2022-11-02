@@ -368,7 +368,7 @@ impl Builder {
         for (abi, set) in &self.options.abi_overrides {
             for item in set.get_items() {
                 output_vector.push("--override-abi".to_owned());
-                output_vector.push(format!("[{}]{}", abi, item));
+                output_vector.push(format!("{}={}", item, abi));
             }
         }
 

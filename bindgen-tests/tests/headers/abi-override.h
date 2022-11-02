@@ -1,4 +1,4 @@
-// bindgen-flags: --override-abi=[fastcall]foo --override-abi=[stdcall]bar
+// bindgen-flags: --override-abi=foo=fastcall --override-abi=bar=stdcall
 
 void foo();
 void bar();
