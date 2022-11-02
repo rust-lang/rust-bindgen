@@ -1464,7 +1464,7 @@ impl Builder {
         mut self,
         cb: Box<dyn callbacks::ParseCallbacks>,
     ) -> Self {
-        self.options.parse_callbacks = Some(Rc::from(cb));
+        self.options.parse_callbacks.push(Rc::from(cb));
         self
     }
 
@@ -1982,7 +1982,7 @@ struct BindgenOptions {
 
     /// A user-provided visitor to allow customizing different kinds of
     /// situations.
-    parse_callbacks: Option<Rc<dyn callbacks::ParseCallbacks>>,
+    parse_callbacks: Vec<Rc<dyn callbacks::ParseCallbacks>>,
 
     /// Which kind of items should we generate? By default, we'll generate all
     /// of them.
@@ -2160,6 +2160,26 @@ impl BindgenOptions {
     pub fn rust_features(&self) -> RustFeatures {
         self.rust_features
     }
+
+    fn last_callback<T>(
+        &self,
+        f: impl Fn(&dyn callbacks::ParseCallbacks) -> Option<T>,
+    ) -> Option<T> {
+        self.parse_callbacks
+            .iter()
+            .filter_map(|cb| f(cb.as_ref()))
+            .last()
+    }
+
+    fn all_callbacks<T>(
+        &self,
+        f: impl Fn(&dyn callbacks::ParseCallbacks) -> Vec<T>,
+    ) -> Vec<T> {
+        self.parse_callbacks
+            .iter()
+            .flat_map(|cb| f(cb.as_ref()))
+            .collect()
+    }
 }
 
 impl Default for BindgenOptions {
@@ -2225,7 +2245,7 @@ impl Default for BindgenOptions {
             clang_args: vec![],
             input_headers: vec![],
             input_header_contents: Default::default(),
-            parse_callbacks: None,
+            parse_callbacks: Default::default(),
             codegen_config: CodegenConfig::all(),
             conservative_inline_namespaces: false,
             generate_comments: true,

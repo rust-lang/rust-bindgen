@@ -932,8 +932,8 @@ impl Item {
         let name = names.join("_");
 
         let name = if opt.user_mangled == UserMangled::Yes {
-            ctx.parse_callbacks()
-                .and_then(|callbacks| callbacks.item_name(&name))
+            ctx.options()
+                .last_callback(|callbacks| callbacks.item_name(&name))
                 .unwrap_or(name)
         } else {
             name

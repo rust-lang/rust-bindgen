@@ -2112,12 +2112,11 @@ impl CodeGenerator for CompInfo {
 
         // The custom derives callback may return a list of derive attributes;
         // add them to the end of the list.
-        let custom_derives;
-        if let Some(cb) = &ctx.options().parse_callbacks {
-            custom_derives = cb.add_derives(&canonical_name);
-            // In most cases this will be a no-op, since custom_derives will be empty.
-            derives.extend(custom_derives.iter().map(|s| s.as_str()));
-        };
+        let custom_derives = ctx
+            .options()
+            .all_callbacks(|cb| cb.add_derives(&canonical_name));
+        // In most cases this will be a no-op, since custom_derives will be empty.
+        derives.extend(custom_derives.iter().map(|s| s.as_str()));
 
         if !derives.is_empty() {
             attributes.push(attributes::derives(&derives))
@@ -3152,12 +3151,10 @@ impl CodeGenerator for Enum {
 
             // The custom derives callback may return a list of derive attributes;
             // add them to the end of the list.
-            let custom_derives;
-            if let Some(cb) = &ctx.options().parse_callbacks {
-                custom_derives = cb.add_derives(&name);
-                // In most cases this will be a no-op, since custom_derives will be empty.
-                derives.extend(custom_derives.iter().map(|s| s.as_str()));
-            };
+            let custom_derives =
+                ctx.options().all_callbacks(|cb| cb.add_derives(&name));
+            // In most cases this will be a no-op, since custom_derives will be empty.
+            derives.extend(custom_derives.iter().map(|s| s.as_str()));
 
             attrs.push(attributes::derives(&derives));
         }

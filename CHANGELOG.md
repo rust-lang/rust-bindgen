@@ -154,6 +154,8 @@
  * Regex inputs are sanitized so alternation (`a|b`) is handled correctly but
    wildcard patterns (`*`) are now considered invalid.
  * the `ParseCallbacks`trait does not require to implement `UnwindSafe`.
+ * the `Builder::parse_callbacks` method no longer overwrites previously added
+   callbacks and composes them in a last-to-first manner.
 
 ## Removed
 
