@@ -1096,9 +1096,10 @@ where
 
     if let Some(abi_overrides) = matches.values_of("override-abi") {
         for abi_override in abi_overrides {
+            let abi_override = abi_override.strip_prefix('[').expect("Invalid ABI override: Missing `[`");
             let (abi_str, regex) =
-                abi_override.split_once(":").expect("Invalid ABI override");
-            let abi = abi_str.parse().unwrap();
+                abi_override.split_once("]").expect("Invalid ABI override: Missing `]`");
+            let abi = abi_str.parse().unwrap_or_else(|err| panic!("Invalid ABI override: {}", err));
             builder = builder.override_abi(abi, regex);
         }
     }
