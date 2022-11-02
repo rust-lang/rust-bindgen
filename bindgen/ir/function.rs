@@ -664,10 +664,11 @@ impl ClangSubItemParser for Function {
             // but seems easy enough to handle it here.
             name.push_str("_destructor");
         }
-        if let Some(callbacks) = context.parse_callbacks() {
-            if let Some(nm) = callbacks.generated_name_override(&name) {
-                name = nm;
-            }
+        if let Some(nm) = context
+            .parse_callbacks()
+            .find_map(|callbacks| callbacks.generated_name_override(&name))
+        {
+            name = nm;
         }
         assert!(!name.is_empty(), "Empty function name.");
 

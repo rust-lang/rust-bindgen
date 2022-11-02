@@ -933,7 +933,7 @@ impl Item {
 
         let name = if opt.user_mangled == UserMangled::Yes {
             ctx.parse_callbacks()
-                .and_then(|callbacks| callbacks.item_name(&name))
+                .find_map(|callbacks| callbacks.item_name(&name))
                 .unwrap_or(name)
         } else {
             name

@@ -1464,7 +1464,7 @@ impl Builder {
         mut self,
         cb: Box<dyn callbacks::ParseCallbacks>,
     ) -> Self {
-        self.options.parse_callbacks = Some(Rc::from(cb));
+        self.options.parse_callbacks.push(Rc::from(cb));
         self
     }
 
@@ -1982,7 +1982,7 @@ struct BindgenOptions {
 
     /// A user-provided visitor to allow customizing different kinds of
     /// situations.
-    parse_callbacks: Option<Rc<dyn callbacks::ParseCallbacks>>,
+    parse_callbacks: Vec<Rc<dyn callbacks::ParseCallbacks>>,
 
     /// Which kind of items should we generate? By default, we'll generate all
     /// of them.
@@ -2146,6 +2146,9 @@ impl BindgenOptions {
         for regex_set in &mut regex_sets {
             regex_set.build(record_matches);
         }
+
+        // Reverse parse callbacks to have a last-to-first priority.
+        self.parse_callbacks.reverse();
     }
 
     /// Update rust target version
@@ -2225,7 +2228,7 @@ impl Default for BindgenOptions {
             clang_args: vec![],
             input_headers: vec![],
             input_header_contents: Default::default(),
-            parse_callbacks: None,
+            parse_callbacks: Default::default(),
             codegen_config: CodegenConfig::all(),
             conservative_inline_namespaces: false,
             generate_comments: true,

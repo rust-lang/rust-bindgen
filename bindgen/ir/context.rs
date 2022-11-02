@@ -620,14 +620,14 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Get the user-provided callbacks by reference, if any.
-    pub fn parse_callbacks(&self) -> Option<&dyn ParseCallbacks> {
-        self.options().parse_callbacks.as_deref()
+    pub fn parse_callbacks(&self) -> impl Iterator<Item = &dyn ParseCallbacks> {
+        self.options().parse_callbacks.iter().map(|cb| cb.as_ref())
     }
 
     /// Add another path to the set of included files.
     pub fn include_file(&mut self, filename: String) {
-        if let Some(cbs) = self.parse_callbacks() {
-            cbs.include_file(&filename);
+        for cb in self.parse_callbacks() {
+            cb.include_file(&filename);
         }
         self.deps.insert(filename);
     }
@@ -2240,19 +2240,24 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             .or_insert_with(|| {
                 item.expect_type()
                     .name()
-                    .and_then(|name| match self.options.parse_callbacks {
-                        Some(ref cb) => cb.blocklisted_type_implements_trait(
-                            name,
-                            derive_trait,
-                        ),
-                        // Sized integer types from <stdint.h> get mapped to Rust primitive
-                        // types regardless of whether they are blocklisted, so ensure that
-                        // standard traits are considered derivable for them too.
-                        None => Some(if self.is_stdint_type(name) {
-                            CanDerive::Yes
+                    .and_then(|name| {
+                        if self.options.parse_callbacks.is_empty() {
+                            // Sized integer types from <stdint.h> get mapped to Rust primitive
+                            // types regardless of whether they are blocklisted, so ensure that
+                            // standard traits are considered derivable for them too.
+                            if self.is_stdint_type(name) {
+                                Some(CanDerive::Yes)
+                            } else {
+                                Some(CanDerive::No)
+                            }
                         } else {
-                            CanDerive::No
-                        }),
+                            self.options.parse_callbacks.iter().find_map(|cb| {
+                                cb.blocklisted_type_implements_trait(
+                                    name,
+                                    derive_trait,
+                                )
+                            })
+                        }
                     })
                     .unwrap_or(CanDerive::No)
             })

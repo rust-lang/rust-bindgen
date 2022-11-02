@@ -182,7 +182,7 @@ impl ClangSubItemParser for Var {
         use clang_sys::*;
         match cursor.kind() {
             CXCursor_MacroDefinition => {
-                if let Some(callbacks) = ctx.parse_callbacks() {
+                for callbacks in ctx.parse_callbacks() {
                     match callbacks.will_parse_macro(&cursor.spelling()) {
                         MacroParsingBehavior::Ignore => {
                             return Err(ParseError::Continue);
@@ -249,7 +249,7 @@ impl ClangSubItemParser for Var {
                             true,
                             ctx,
                         );
-                        if let Some(callbacks) = ctx.parse_callbacks() {
+                        for callbacks in ctx.parse_callbacks() {
                             callbacks.str_macro(&name, &val);
                         }
                         (TypeKind::Pointer(char_ty), VarType::String(val))
@@ -257,7 +257,7 @@ impl ClangSubItemParser for Var {
                     EvalResult::Int(Wrapping(value)) => {
                         let kind = ctx
                             .parse_callbacks()
-                            .and_then(|c| c.int_macro(&name, value))
+                            .find_map(|c| c.int_macro(&name, value))
                             .unwrap_or_else(|| {
                                 default_macro_constant_type(ctx, value)
                             });
