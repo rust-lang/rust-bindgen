@@ -188,6 +188,8 @@ pub enum Abi {
     Aapcs,
     /// The "win64" ABI.
     Win64,
+    /// The "C-unwind" ABI.
+    CUnwind,
 }
 
 impl FromStr for Abi {
@@ -202,6 +204,7 @@ impl FromStr for Abi {
             "vectorcall" => Ok(Self::Vectorcall),
             "aapcs" => Ok(Self::Aapcs),
             "win64" => Ok(Self::Win64),
+            "C-unwind" => Ok(Self::CUnwind),
             _ => Err(format!("Invalid or unknown ABI {:?}", s)),
         }
     }
@@ -217,6 +220,7 @@ impl std::fmt::Display for Abi {
             Self::Vectorcall => "vectorcall",
             Self::Aapcs => "aapcs",
             Self::Win64 => "win64",
+            Self::CUnwind => "C-unwind",
         };
 
         s.fmt(f)

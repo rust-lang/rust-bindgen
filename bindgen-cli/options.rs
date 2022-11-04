@@ -570,7 +570,7 @@ where
                 .help("Deduplicates extern blocks."),
             Arg::new("override-abi")
                 .long("override-abi")
-                .help("Overrides the ABI of functions matching <regex>. The <override> value must be of the shape <abi>:<regex> where <abi> can be one of C, stdcall, fastcall, thiscall, aapcs or win64.")
+                .help("Overrides the ABI of functions matching <regex>. The <override> value must be of the shape <abi>:<regex> where <abi> can be one of C, stdcall, fastcall, thiscall, aapcs, win64 or C-unwind.")
                 .value_name("override")
                 .multiple_occurrences(true)
                 .number_of_values(1),
