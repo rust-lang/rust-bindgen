@@ -2205,9 +2205,9 @@ impl BindgenOptions {
 impl Default for BindgenOptions {
     fn default() -> BindgenOptions {
         macro_rules! options {
-            ($($field:ident : $value:expr,)* --default-fields-- $($default_field:ident,)*) => {
+            ($($field:ident $(: $value:expr)?,)* --default-fields-- $($default_field:ident,)*) => {
                 BindgenOptions {
-                    $($field: $value,)*
+                    $($field $(: $value)*,)*
                     $($default_field: Default::default(),)*
                 }
             };
@@ -2216,7 +2216,7 @@ impl Default for BindgenOptions {
         let rust_target = RustTarget::default();
 
         options! {
-            rust_target: rust_target,
+            rust_target,
             rust_features: rust_target.into(),
             layout_tests: true,
             derive_copy: true,
