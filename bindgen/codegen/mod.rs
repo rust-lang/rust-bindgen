@@ -2483,6 +2483,9 @@ impl MethodCodegen for Method {
             ClangAbi::Known(Abi::Vectorcall) => {
                 ctx.options().rust_features().vectorcall_abi
             }
+            ClangAbi::Known(Abi::CUnwind) => {
+                ctx.options().rust_features().c_unwind_abi
+            }
             _ => true,
         };
 
@@ -4009,6 +4012,12 @@ impl TryToRustTy for FunctionSig {
                 warn!("Skipping function with vectorcall ABI that isn't supported by the configured Rust target");
                 Ok(proc_macro2::TokenStream::new())
             }
+            ClangAbi::Known(Abi::CUnwind)
+                if !ctx.options().rust_features().c_unwind_abi =>
+            {
+                warn!("Skipping function with C-unwind ABI that isn't supported by the configured Rust target");
+                Ok(proc_macro2::TokenStream::new())
+            }
             _ => Ok(quote! {
                 unsafe extern #abi fn ( #( #arguments ),* ) #ret
             }),
@@ -4118,6 +4127,12 @@ impl CodeGenerator for Function {
                 if !ctx.options().rust_features().vectorcall_abi =>
             {
                 warn!("Skipping function with vectorcall ABI that isn't supported by the configured Rust target");
+                return None;
+            }
+            ClangAbi::Known(Abi::CUnwind)
+                if !ctx.options().rust_features().c_unwind_abi =>
+            {
+                warn!("Skipping function with C-unwind ABI that isn't supported by the configured Rust target");
                 return None;
             }
             ClangAbi::Known(Abi::Win64) if signature.is_variadic() => {

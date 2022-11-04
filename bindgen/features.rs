@@ -133,6 +133,7 @@ macro_rules! rust_target_base {
             /// Nightly rust
             ///  * `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))
             ///  * `vectorcall` calling convention (no tracking issue)
+            ///  * `c_unwind` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/74990))
             => Nightly => nightly;
         );
     }
@@ -242,6 +243,7 @@ rust_feature_def!(
     Nightly {
         => thiscall_abi;
         => vectorcall_abi;
+        => c_unwind_abi;
     }
 );
 
@@ -291,7 +293,8 @@ mod test {
                 f_nightly.maybe_uninit &&
                 f_nightly.repr_align &&
                 f_nightly.thiscall_abi &&
-                f_nightly.vectorcall_abi
+                f_nightly.vectorcall_abi &&
+                f_nightly.c_unwind_abi
         );
     }
 
