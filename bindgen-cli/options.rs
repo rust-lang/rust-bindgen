@@ -1097,7 +1097,7 @@ where
     if let Some(abi_overrides) = matches.values_of("override-abi") {
         for abi_override in abi_overrides {
             let (regex, abi_str) = abi_override
-                .rsplit_once("=")
+                .rsplit_once('=')
                 .expect("Invalid ABI override: Missing `=`");
             let abi = abi_str
                 .parse()
