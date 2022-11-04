@@ -108,6 +108,7 @@ pub(crate) use std::collections::hash_map::Entry;
 
 /// Default prefix for the anon fields.
 pub const DEFAULT_ANON_FIELDS_PREFIX: &str = "__bindgen_anon_";
+const DEFAULT_EXTERN_FUNCTION_SUFFIX: &str = "__extern";
 
 fn file_is_cpp(name_file: &str) -> bool {
     name_file.ends_with(".hpp") ||
@@ -656,6 +657,24 @@ impl Builder {
         #[cfg(feature = "cli")]
         for callbacks in &self.options.parse_callbacks {
             output_vector.extend(callbacks.cli_args());
+        }
+        if self.options.generate_extern_functions.is_true() {
+            output_vector.push("--generate-extern-functions".into())
+        }
+
+        if let Some(ref file_name) = self.options.extern_functions_file_name {
+            output_vector.push("--extern-functions-file-name".into());
+            output_vector.push(file_name.clone());
+        }
+
+        if let Some(ref directory) = self.options.extern_functions_directory {
+            output_vector.push("--extern-functions-directory".into());
+            output_vector.push(directory.display().to_string());
+        }
+
+        if let Some(ref suffix) = self.options.extern_function_suffix {
+            output_vector.push("--extern-function-suffix".into());
+            output_vector.push(suffix.clone());
         }
 
         // Add clang arguments
@@ -1574,10 +1593,9 @@ impl Builder {
 
         match Bindings::generate(options, input_unsaved_files) {
             GenerateResult::Ok(bindings) => Ok(*bindings),
-            GenerateResult::ShouldRestart { header } => self
-                .header(header)
-                .generate_inline_functions(false)
-                .generate(),
+            GenerateResult::ShouldRestart { header } => {
+                self.second_run(header).generate()
+            }
             GenerateResult::Err(err) => Err(err),
         }
     }
@@ -1795,6 +1813,73 @@ impl Builder {
     pub fn wrap_unsafe_ops(mut self, doit: bool) -> Self {
         self.options.wrap_unsafe_ops = doit;
         self
+    }
+
+    /// Whether to generate extern wrappers for inline functions. Defaults to false.
+    pub fn generate_extern_functions(mut self, doit: bool) -> Self {
+        self.options.generate_extern_functions = if doit {
+            GenerateExternFunctions::True
+        } else {
+            GenerateExternFunctions::False
+        };
+        self
+    }
+
+    /// Set the name of the header and source code files that would be created if any extern
+    /// wrapper functions must be generated due to the presence of inlined functions.
+    pub fn extern_functions_file_name<T: AsRef<str>>(
+        mut self,
+        file_name: T,
+    ) -> Self {
+        self.options.extern_functions_file_name =
+            Some(file_name.as_ref().to_owned());
+        self
+    }
+
+    /// Set the directory path where any extra files must be created due to the presence of inlined
+    /// functions.
+    pub fn extern_functions_directory<T: AsRef<str>>(
+        mut self,
+        directory: T,
+    ) -> Self {
+        self.options.extern_functions_directory =
+            Some(directory.as_ref().to_owned().into());
+        self
+    }
+
+    /// Set the suffix added to the extern wrapper functions generated for inlined functions.
+    pub fn extern_function_suffix<T: AsRef<str>>(mut self, suffix: T) -> Self {
+        self.options.extern_function_suffix = Some(suffix.as_ref().to_owned());
+        self
+    }
+
+    fn second_run(mut self, extra_header: String) -> Self {
+        self.options.generate_extern_functions =
+            GenerateExternFunctions::SecondRun;
+        self.header(extra_header)
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+enum GenerateExternFunctions {
+    True,
+    False,
+    SecondRun,
+}
+
+impl GenerateExternFunctions {
+    fn is_true(self) -> bool {
+        matches!(self, Self::True)
+    }
+
+    fn is_second_run(self) -> bool {
+        matches!(self, Self::SecondRun)
+    }
+}
+
+impl Default for GenerateExternFunctions {
+    fn default() -> Self {
+        Self::False
     }
 }
 
@@ -2136,6 +2221,14 @@ struct BindgenOptions {
 
     /// Whether to wrap unsafe operations in unsafe blocks or not.
     wrap_unsafe_ops: bool,
+
+    generate_extern_functions: GenerateExternFunctions,
+
+    extern_function_suffix: Option<String>,
+
+    extern_functions_directory: Option<PathBuf>,
+
+    extern_functions_file_name: Option<String>,
 }
 
 impl BindgenOptions {
@@ -2328,6 +2421,10 @@ impl Default for BindgenOptions {
             merge_extern_blocks,
             abi_overrides,
             wrap_unsafe_ops,
+            generate_extern_functions,
+            extern_function_suffix,
+            extern_functions_directory,
+            extern_functions_file_name,
         }
     }
 }
@@ -2363,7 +2460,6 @@ enum GenerateResult {
     Ok(Box<Bindings>),
     /// Error variant raised when bindgen requires to run again with a newly generated header
     /// input.
-    #[allow(dead_code)]
     ShouldRestart {
         header: String,
     },
@@ -2628,6 +2724,61 @@ impl Bindings {
             let _t = time::Timer::new("parse").with_output(time_phases);
             if let Err(err) = parse(&mut context) {
                 return GenerateResult::Err(err);
+            }
+        }
+
+        fn serialize_c_items(
+            context: &BindgenContext,
+        ) -> Result<PathBuf, std::io::Error> {
+            let dir = context
+                .options()
+                .extern_functions_directory
+                .clone()
+                .unwrap_or_else(|| std::env::temp_dir().join("bindgen"));
+
+            if !dir.exists() {
+                std::fs::create_dir_all(&dir)?;
+            }
+
+            let path = std::fs::canonicalize(dir)?.join(
+                context
+                    .options()
+                    .extern_functions_file_name
+                    .as_deref()
+                    .unwrap_or("extern"),
+            );
+
+            let is_cpp = args_are_cpp(&context.options().clang_args) ||
+                context
+                    .options()
+                    .input_headers
+                    .iter()
+                    .any(|h| file_is_cpp(h));
+
+            let headers_path =
+                path.with_extension(if is_cpp { "hpp" } else { "h" });
+            let source_path =
+                path.with_extension(if is_cpp { "cpp" } else { "c" });
+
+            let mut headers_file = File::create(&headers_path)?;
+            let mut source_file = File::create(source_path)?;
+
+            for item in &context.c_items {
+                writeln!(headers_file, "{}", item.header())?;
+                writeln!(source_file, "{}", item.code())?;
+            }
+
+            Ok(headers_path)
+        }
+
+        if !context.c_items.is_empty() {
+            match serialize_c_items(&context) {
+                Ok(headers) => {
+                    return GenerateResult::ShouldRestart {
+                        header: headers.display().to_string(),
+                    }
+                }
+                Err(err) => warn!("Could not serialize C items: {}", err),
             }
         }
 

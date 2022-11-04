@@ -8,6 +8,7 @@ use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
 use crate::callbacks::{ItemInfo, ItemKind};
 use crate::clang::{self, Attribute};
+use crate::ir::serialize::CItem;
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 use clang_sys::{self, CXCallingConv};
 use proc_macro2;
@@ -679,9 +680,12 @@ impl ClangSubItemParser for Function {
                 .definition()
                 .map_or(false, |x| x.is_inlined_function())
         {
-            if !context.options().generate_inline_functions {
+            if !(context.options().generate_inline_functions ||
+                context.options().generate_extern_functions.is_true())
+            {
                 return Err(ParseError::Continue);
             }
+
             if cursor.is_deleted_function() {
                 return Err(ParseError::Continue);
             }
@@ -728,6 +732,16 @@ impl ClangSubItemParser for Function {
 
         let function =
             Self::new(name, mangled_name, sig, comment, kind, linkage);
+
+        if matches!(linkage, Linkage::Internal) &&
+            context.options().generate_extern_functions.is_true()
+        {
+            match CItem::from_function(&function, context) {
+                Ok(c_item) => context.c_items.push(c_item),
+                Err(err) => warn!("Serialization failed: {:?}", err),
+            }
+        }
+
         Ok(ParseResult::New(function, Some(cursor)))
     }
 }

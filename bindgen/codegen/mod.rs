@@ -4002,9 +4002,8 @@ impl CodeGenerator for Function {
 
         // We can't currently do anything with Internal functions so just
         // avoid generating anything for them.
-        match self.linkage() {
-            Linkage::Internal => return None,
-            Linkage::External => {}
+        if matches!(self.linkage(), Linkage::Internal) {
+            return None;
         }
 
         // Pure virtual methods have no actual symbol, so we can't generate
@@ -4114,6 +4113,7 @@ impl CodeGenerator for Function {
             write!(&mut canonical_name, "{}", times_seen).unwrap();
         }
 
+        let mut has_link_name_attr = false;
         let link_name = mangled_name.unwrap_or(name);
         if !is_dynamic_function &&
             !utils::names_will_be_identical_after_mangling(
@@ -4123,6 +4123,7 @@ impl CodeGenerator for Function {
             )
         {
             attributes.push(attributes::link_name(link_name));
+            has_link_name_attr = true;
         }
 
         // Unfortunately this can't piggyback on the `attributes` list because
@@ -4132,6 +4133,20 @@ impl CodeGenerator for Function {
             ctx.options().wasm_import_module_name.as_ref().map(|name| {
                 quote! { #[link(wasm_import_module = #name)] }
             });
+
+        if ctx.options().generate_extern_functions.is_second_run() {
+            if let Some(name) = canonical_name.strip_suffix(
+                ctx.options()
+                    .extern_function_suffix
+                    .as_deref()
+                    .unwrap_or(crate::DEFAULT_EXTERN_FUNCTION_SUFFIX),
+            ) {
+                if !has_link_name_attr {
+                    attributes.push(attributes::link_name(&canonical_name));
+                }
+                canonical_name = name.to_owned();
+            }
+        }
 
         let ident = ctx.rust_ident(canonical_name);
         let tokens = quote! {

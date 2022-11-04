@@ -16,6 +16,7 @@ use super::int::IntKind;
 use super::item::{IsOpaque, Item, ItemAncestors, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
+use super::serialize::CItem;
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
@@ -477,6 +478,9 @@ pub struct BindgenContext {
 
     /// The set of warnings raised during binding generation.
     warnings: Vec<String>,
+
+    /// C items that need to be serialized to an extra header file.
+    pub(crate) c_items: Vec<CItem>,
 }
 
 /// A traversal of allowlisted items.
@@ -593,6 +597,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             has_type_param_in_array: None,
             has_float: None,
             warnings: Vec::new(),
+            c_items: Vec::new(),
         }
     }
 

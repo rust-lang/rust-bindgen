@@ -353,6 +353,18 @@ struct BindgenCommand {
     /// Derive custom traits on a `union`. The <CUSTOM> value must be of the shape <REGEX>=<DERIVE> where <DERIVE> is a coma-separated list of derive macros.
     #[arg(long, value_name = "CUSTOM")]
     with_derive_custom_union: Vec<String>,
+    /// Generate extern wrappers for inlined functions
+    #[arg(long)]
+    generate_extern_functions: bool,
+    /// Sets the name of the header and source code files that would be created if any extern wrapper functions must be generated due to the presence of inlined functions.
+    #[arg(long, value_name = "FILENAME")]
+    extern_functions_file_name: Option<String>,
+    #[arg(long, value_name = "DIRECTORY")]
+    /// Sets the directory path where any extra files must be created due to the presence of inlined functions.
+    extern_functions_directory: Option<String>,
+    /// Sets the suffix added to the extern wrapper functions generated for inlined functions.
+    #[arg(long, value_name = "SUFFIX")]
+    extern_function_suffix: Option<String>,
     /// Prints the version, and exits
     #[arg(short = 'V', long)]
     version: bool,
@@ -473,6 +485,10 @@ where
         with_derive_custom_struct,
         with_derive_custom_enum,
         with_derive_custom_union,
+        generate_extern_functions,
+        extern_functions_file_name,
+        extern_functions_directory,
+        extern_function_suffix,
         version,
         clang_args,
     } = command;
@@ -976,6 +992,22 @@ where
                 regex_set,
             }));
         }
+    }
+
+    if generate_extern_functions {
+        builder = builder.generate_extern_functions(true);
+    }
+
+    if let Some(file_name) = extern_functions_file_name {
+        builder = builder.extern_functions_file_name(file_name);
+    }
+
+    if let Some(directory) = extern_functions_directory {
+        builder = builder.extern_functions_directory(directory);
+    }
+
+    if let Some(suffix) = extern_function_suffix {
+        builder = builder.extern_function_suffix(suffix);
     }
 
     Ok((builder, output, verbose))

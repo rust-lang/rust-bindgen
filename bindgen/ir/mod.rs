@@ -18,6 +18,7 @@ pub mod item_kind;
 pub mod layout;
 pub mod module;
 pub mod objc;
+pub(crate) mod serialize;
 pub mod template;
 pub mod traversal;
 pub mod ty;
