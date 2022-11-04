@@ -14,11 +14,11 @@ impl<T> __BindgenUnionField<T> {
     }
     #[inline]
     pub unsafe fn as_ref(&self) -> &T {
-        ::std::mem::transmute(self)
+        unsafe { ::std::mem::transmute(self) }
     }
     #[inline]
     pub unsafe fn as_mut(&mut self) -> &mut T {
-        ::std::mem::transmute(self)
+        unsafe { ::std::mem::transmute(self) }
     }
 }
 impl<T> ::std::default::Default for __BindgenUnionField<T> {
@@ -98,6 +98,6 @@ extern "C" {
 impl UnionWithDtor {
     #[inline]
     pub unsafe fn destruct(&mut self) {
-        UnionWithDtor_UnionWithDtor_destructor(self)
+        unsafe { UnionWithDtor_UnionWithDtor_destructor(self) }
     }
 }

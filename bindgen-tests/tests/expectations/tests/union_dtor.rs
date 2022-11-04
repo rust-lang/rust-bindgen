@@ -62,6 +62,6 @@ impl Default for UnionWithDtor {
 impl UnionWithDtor {
     #[inline]
     pub unsafe fn destruct(&mut self) {
-        UnionWithDtor_UnionWithDtor_destructor(self)
+        unsafe { UnionWithDtor_UnionWithDtor_destructor(self) }
     }
 }

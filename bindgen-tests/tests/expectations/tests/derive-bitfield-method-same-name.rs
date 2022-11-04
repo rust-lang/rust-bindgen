@@ -202,14 +202,14 @@ impl Foo {
     }
     #[inline]
     pub unsafe fn type_(&mut self) -> ::std::os::raw::c_char {
-        Foo_type(self)
+        unsafe { Foo_type(self) }
     }
     #[inline]
     pub unsafe fn set_type_(&mut self, c: ::std::os::raw::c_char) {
-        Foo_set_type_(self, c)
+        unsafe { Foo_set_type_(self, c) }
     }
     #[inline]
     pub unsafe fn set_type(&mut self, c: ::std::os::raw::c_char) {
-        Foo_set_type(self, c)
+        unsafe { Foo_set_type(self, c) }
     }
 }

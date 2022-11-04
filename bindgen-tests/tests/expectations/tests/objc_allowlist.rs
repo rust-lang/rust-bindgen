@@ -14,13 +14,13 @@ pub trait PSomeProtocol: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, protocolMethod)
+        unsafe { msg_send!(*self, protocolMethod) }
     }
     unsafe fn protocolClassMethod()
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(class!(SomeProtocol), protocolClassMethod)
+        unsafe { msg_send!(class!(SomeProtocol), protocolClassMethod) }
     }
 }
 #[repr(transparent)]
@@ -45,13 +45,13 @@ pub trait IAllowlistMe: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, method)
+        unsafe { msg_send!(*self, method) }
     }
     unsafe fn classMethod()
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(class!(AllowlistMe), classMethod)
+        unsafe { msg_send!(class!(AllowlistMe), classMethod) }
     }
 }
 impl AllowlistMe_InterestingCategory for AllowlistMe {}

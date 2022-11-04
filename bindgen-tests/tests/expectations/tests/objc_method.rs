@@ -30,31 +30,31 @@ pub trait IFoo: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, method)
+        unsafe { msg_send!(*self, method) }
     }
     unsafe fn methodWithInt_(&self, foo: ::std::os::raw::c_int)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, methodWithInt: foo)
+        unsafe { msg_send!(*self, methodWithInt: foo) }
     }
     unsafe fn methodWithFoo_(&self, foo: Foo)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, methodWithFoo: foo)
+        unsafe { msg_send!(*self, methodWithFoo: foo) }
     }
     unsafe fn methodReturningInt(&self) -> ::std::os::raw::c_int
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, methodReturningInt)
+        unsafe { msg_send!(*self, methodReturningInt) }
     }
     unsafe fn methodReturningFoo(&self) -> Foo
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, methodReturningFoo)
+        unsafe { msg_send!(*self, methodReturningFoo) }
     }
     unsafe fn methodWithArg1_andArg2_andArg3_(
         &self,
@@ -64,7 +64,9 @@ pub trait IFoo: Sized + std::ops::Deref {
     ) where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send ! (* self , methodWithArg1 : intvalue andArg2 : ptr andArg3 : floatvalue)
+        unsafe {
+            msg_send ! (* self , methodWithArg1 : intvalue andArg2 : ptr andArg3 : floatvalue)
+        }
     }
     unsafe fn methodWithAndWithoutKeywords_arg2Name__arg4Name_(
         &self,
@@ -76,7 +78,9 @@ pub trait IFoo: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send ! (* self , methodWithAndWithoutKeywords : arg1 arg2Name : arg2 arg3 : arg3 arg4Name : arg4)
+        unsafe {
+            msg_send ! (* self , methodWithAndWithoutKeywords : arg1 arg2Name : arg2 arg3 : arg3 arg4Name : arg4)
+        }
     }
 }
 pub type instancetype = id;

@@ -46,17 +46,19 @@ extern "C" {
 impl X {
     #[inline]
     pub unsafe fn some_function(&mut self) {
-        X_some_function(self)
+        unsafe { X_some_function(self) }
     }
     #[inline]
     pub unsafe fn some_other_function(&mut self) {
-        X_some_other_function(self)
+        unsafe { X_some_other_function(self) }
     }
     #[inline]
     pub unsafe fn new(x: ::std::os::raw::c_int) -> Self {
-        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
-        X_X(__bindgen_tmp.as_mut_ptr(), x);
-        __bindgen_tmp.assume_init()
+        unsafe {
+            let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+            X_X(__bindgen_tmp.as_mut_ptr(), x);
+            __bindgen_tmp.assume_init()
+        }
     }
 }
 extern crate libloading;
@@ -81,7 +83,7 @@ impl TestLib {
         P: AsRef<::std::ffi::OsStr>,
     {
         let library = ::libloading::Library::new(path)?;
-        Self::from_library(library)
+        unsafe { Self::from_library(library) }
     }
     pub unsafe fn from_library<L>(
         library: L,
@@ -90,8 +92,8 @@ impl TestLib {
         L: Into<::libloading::Library>,
     {
         let __library = library.into();
-        let foo = __library.get(b"foo\0").map(|sym| *sym);
-        let bar = __library.get(b"bar\0").map(|sym| *sym);
+        let foo = unsafe { __library.get(b"foo\0") }.map(|sym| *sym);
+        let bar = unsafe { __library.get(b"bar\0") }.map(|sym| *sym);
         Ok(TestLib {
             __library,
             foo,
@@ -102,12 +104,16 @@ impl TestLib {
         &self,
         x: *mut ::std::os::raw::c_void,
     ) -> ::std::os::raw::c_int {
-        (self.foo.as_ref().expect("Expected function, got error."))(x)
+        unsafe {
+            (self.foo.as_ref().expect("Expected function, got error."))(x)
+        }
     }
     pub unsafe fn bar(
         &self,
         x: *mut ::std::os::raw::c_void,
     ) -> ::std::os::raw::c_int {
-        (self.bar.as_ref().expect("Expected function, got error."))(x)
+        unsafe {
+            (self.bar.as_ref().expect("Expected function, got error."))(x)
+        }
     }
 }

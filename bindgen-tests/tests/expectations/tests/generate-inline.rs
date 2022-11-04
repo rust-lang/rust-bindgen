@@ -30,7 +30,7 @@ extern "C" {
 impl Foo {
     #[inline]
     pub unsafe fn bar() -> ::std::os::raw::c_int {
-        Foo_bar()
+        unsafe { Foo_bar() }
     }
 }
 extern "C" {

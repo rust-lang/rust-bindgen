@@ -30,6 +30,6 @@ extern "C" {
 impl cv_String {
     #[inline]
     pub unsafe fn destruct(&mut self) {
-        cv_String_String_destructor(self)
+        unsafe { cv_String_String_destructor(self) }
     }
 }

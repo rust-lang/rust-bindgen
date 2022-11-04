@@ -89,13 +89,15 @@ extern "C" {
 impl Opaque {
     #[inline]
     pub unsafe fn eleven_out_of_ten(&mut self) -> SuchWow {
-        Opaque_eleven_out_of_ten(self)
+        unsafe { Opaque_eleven_out_of_ten(self) }
     }
     #[inline]
     pub unsafe fn new(pup: Pupper) -> Self {
-        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
-        Opaque_Opaque(__bindgen_tmp.as_mut_ptr(), pup);
-        __bindgen_tmp.assume_init()
+        unsafe {
+            let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+            Opaque_Opaque(__bindgen_tmp.as_mut_ptr(), pup);
+            __bindgen_tmp.assume_init()
+        }
     }
 }
 extern "C" {

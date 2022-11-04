@@ -30,7 +30,7 @@ pub trait IFoo<ObjectType: 'static>: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, get)
+        unsafe { msg_send!(*self, get) }
     }
 }
 #[repr(transparent)]
@@ -59,6 +59,6 @@ pub trait IFooMultiGeneric<KeyType: 'static, ObjectType: 'static>:
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, objectForKey: key)
+        unsafe { msg_send!(*self, objectForKey: key) }
     }
 }

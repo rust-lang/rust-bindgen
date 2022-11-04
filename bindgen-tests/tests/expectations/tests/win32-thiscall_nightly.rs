@@ -39,13 +39,13 @@ extern "thiscall" {
 impl Foo {
     #[inline]
     pub unsafe fn test(&mut self) {
-        Foo_test(self)
+        unsafe { Foo_test(self) }
     }
     #[inline]
     pub unsafe fn test2(
         &mut self,
         var: ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_int {
-        Foo_test2(self, var)
+        unsafe { Foo_test2(self, var) }
     }
 }

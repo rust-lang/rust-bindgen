@@ -34,11 +34,11 @@ extern "C" {
 impl A {
     #[inline]
     pub unsafe fn inline_definition(&mut self) {
-        A_inline_definition(self)
+        unsafe { A_inline_definition(self) }
     }
     #[inline]
     pub unsafe fn out_of_line_definition(&mut self) {
-        A_out_of_line_definition(self)
+        unsafe { A_out_of_line_definition(self) }
     }
 }
 #[repr(C)]
@@ -84,8 +84,10 @@ extern "C" {
 impl C {
     #[inline]
     pub unsafe fn new(arg1: *mut C) -> Self {
-        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
-        C_C(__bindgen_tmp.as_mut_ptr(), arg1);
-        __bindgen_tmp.assume_init()
+        unsafe {
+            let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+            C_C(__bindgen_tmp.as_mut_ptr(), arg1);
+            __bindgen_tmp.assume_init()
+        }
     }
 }

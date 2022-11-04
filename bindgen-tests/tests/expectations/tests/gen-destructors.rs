@@ -38,6 +38,6 @@ extern "C" {
 impl Foo {
     #[inline]
     pub unsafe fn destruct(&mut self) {
-        Foo_Foo_destructor(self)
+        unsafe { Foo_Foo_destructor(self) }
     }
 }

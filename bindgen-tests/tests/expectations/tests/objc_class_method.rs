@@ -30,31 +30,31 @@ pub trait IFoo: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(class!(Foo), method)
+        unsafe { msg_send!(class!(Foo), method) }
     }
     unsafe fn methodWithInt_(foo: ::std::os::raw::c_int)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(class!(Foo), methodWithInt: foo)
+        unsafe { msg_send!(class!(Foo), methodWithInt: foo) }
     }
     unsafe fn methodWithFoo_(foo: Foo)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(class!(Foo), methodWithFoo: foo)
+        unsafe { msg_send!(class!(Foo), methodWithFoo: foo) }
     }
     unsafe fn methodReturningInt() -> ::std::os::raw::c_int
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(class!(Foo), methodReturningInt)
+        unsafe { msg_send!(class!(Foo), methodReturningInt) }
     }
     unsafe fn methodReturningFoo() -> Foo
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(class!(Foo), methodReturningFoo)
+        unsafe { msg_send!(class!(Foo), methodReturningFoo) }
     }
     unsafe fn methodWithArg1_andArg2_andArg3_(
         intvalue: ::std::os::raw::c_int,
@@ -63,6 +63,8 @@ pub trait IFoo: Sized + std::ops::Deref {
     ) where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send ! (class ! (Foo) , methodWithArg1 : intvalue andArg2 : ptr andArg3 : floatvalue)
+        unsafe {
+            msg_send ! (class ! (Foo) , methodWithArg1 : intvalue andArg2 : ptr andArg3 : floatvalue)
+        }
     }
 }

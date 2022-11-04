@@ -160,6 +160,8 @@
  * the `ParseCallbacks`trait does not require to implement `UnwindSafe`.
  * the `Builder::parse_callbacks` method no longer overwrites previously added
    callbacks and composes them in a last-to-first manner.
+ * any generated rust code containing unsafe operations inside unsafe functions
+   is wrapped in unsafe blocks now.
 
 ## Removed
 
