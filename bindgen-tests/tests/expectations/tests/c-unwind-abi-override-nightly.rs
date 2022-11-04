@@ -4,6 +4,8 @@
     non_camel_case_types,
     non_upper_case_globals
 )]
+#![cfg(feature = "nightly")]
+#![feature(abi_thiscall)]
 
 extern "C-unwind" {
     pub fn foo();
