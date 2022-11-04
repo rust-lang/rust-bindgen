@@ -150,6 +150,8 @@
 ## Added
  * new feature: `--override-abi` flag to override the ABI used by functions
    matching a regular expression.
+ * new feature: allow using the `C-unwind` ABI in `--override-abi` on nightly
+   rust.
 
 ## Changed
 
