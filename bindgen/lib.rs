@@ -61,6 +61,8 @@ mod regex_set;
 use codegen::CodegenError;
 use ir::comment;
 
+pub use ir::annotations::FieldVisibilityKind;
+
 pub use crate::codegen::{
     AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle,
 };
@@ -1813,6 +1815,15 @@ impl Builder {
         self.options.wrap_static_fns_suffix = Some(suffix.as_ref().to_owned());
         self
     }
+
+    /// Mark struct fields as private by default.
+    pub fn default_visibility(
+        mut self,
+        visibility: FieldVisibilityKind,
+    ) -> Self {
+        self.options.default_visibility = visibility;
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -2159,6 +2170,9 @@ struct BindgenOptions {
     wrap_static_fns_suffix: Option<String>,
 
     wrap_static_fns_path: Option<PathBuf>,
+
+    /// Default visibility of structs and their fields.
+    default_visibility: FieldVisibilityKind,
 }
 
 impl BindgenOptions {
@@ -2354,6 +2368,7 @@ impl Default for BindgenOptions {
             wrap_static_fns,
             wrap_static_fns_suffix,
             wrap_static_fns_path,
+            default_visibility,
         }
     }
 }
