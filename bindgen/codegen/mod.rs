@@ -1040,13 +1040,15 @@ impl CodeGenerator for Type {
                     });
                 }
 
+                let access_spec =
+                    access_specifier(ctx.options().default_visibility);
                 tokens.append_all(match alias_style {
                     AliasVariation::TypeAlias => quote! {
                         = #inner_rust_type ;
                     },
                     AliasVariation::NewType | AliasVariation::NewTypeDeref => {
                         quote! {
-                            (pub #inner_rust_type) ;
+                            (#access_spec #inner_rust_type) ;
                         }
                     }
                 });
