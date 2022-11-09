@@ -57,7 +57,7 @@ impl RegexSet {
         let f = if whole_symbol_regex {
             (|item| {
                 if item == "*" {
-                    warn!("using wildcard patterns (`*`) with the `--whole-symbol-regex` option enabled is not considered valid. Use `.*` instead");
+                    warn!("using wildcard patterns (`*`) without the `--disable-whole-symbol-regex` flag is not considered valid. Use `.*` instead");
                 }
                 format!("^({})$", item)
             }) as fn(&String) -> String
