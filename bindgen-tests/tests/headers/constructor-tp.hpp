@@ -8,7 +8,7 @@ public:
 };
 
 template<typename T>
-inline void
+void
 Foo<T>::doBaz() {
 }
 
@@ -21,6 +21,5 @@ template<typename T>
 Foo<T>::Foo() {
 }
 
-inline
 Bar::Bar() {
 }

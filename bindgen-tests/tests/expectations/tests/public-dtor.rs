@@ -7,29 +7,47 @@
 
 #[repr(C)]
 #[derive(Debug, Default)]
-pub struct cv_String {
+pub struct cv_Foo {
     pub _address: u8,
 }
 #[test]
-fn bindgen_test_layout_cv_String() {
+fn bindgen_test_layout_cv_Foo() {
     assert_eq!(
-        ::std::mem::size_of::<cv_String>(),
+        ::std::mem::size_of::<cv_Foo>(),
         1usize,
-        concat!("Size of: ", stringify!(cv_String))
+        concat!("Size of: ", stringify!(cv_Foo))
     );
     assert_eq!(
-        ::std::mem::align_of::<cv_String>(),
+        ::std::mem::align_of::<cv_Foo>(),
         1usize,
-        concat!("Alignment of ", stringify!(cv_String))
+        concat!("Alignment of ", stringify!(cv_Foo))
     );
 }
 extern "C" {
-    #[link_name = "\u{1}_ZN2cv6StringD1Ev"]
-    pub fn cv_String_String_destructor(this: *mut cv_String);
+    #[link_name = "\u{1}_ZN2cv3FooD1Ev"]
+    pub fn cv_Foo_Foo_destructor(this: *mut cv_Foo);
 }
-impl cv_String {
+impl cv_Foo {
     #[inline]
     pub unsafe fn destruct(&mut self) {
-        unsafe { cv_String_String_destructor(self) }
+        unsafe { cv_Foo_Foo_destructor(self) }
     }
+}
+#[repr(C)]
+#[derive(Debug, Default)]
+pub struct cv_Bar {
+    pub _address: u8,
+}
+#[test]
+fn bindgen_test_layout_cv_Bar() {
+    assert_eq!(
+        ::std::mem::size_of::<cv_Bar>(),
+        1usize,
+        concat!("Size of: ", stringify!(cv_Bar))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cv_Bar>(),
+        1usize,
+        concat!("Alignment of ", stringify!(cv_Bar))
+    );
 }

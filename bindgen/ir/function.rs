@@ -675,7 +675,11 @@ impl ClangSubItemParser for Function {
             return Err(ParseError::Continue);
         }
 
-        if cursor.is_inlined_function() {
+        if cursor.is_inlined_function() ||
+            cursor
+                .definition()
+                .map_or(false, |x| x.is_inlined_function())
+        {
             if !context.options().generate_inline_functions {
                 return Err(ParseError::Continue);
             }

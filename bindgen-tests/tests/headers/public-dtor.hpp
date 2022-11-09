@@ -1,15 +1,18 @@
 
-
 namespace cv {
-class String {
-public:
-  ~String();
-};
+  class Foo {
+  public:
+      ~Foo();
+  };
 
+  Foo::~Foo() {}
 
-inline
-String::~String()
-{
-}
+  class Bar {
+  public:
+      ~Bar();
+  };
+
+  inline
+  Bar::~Bar() {}
 
 }
