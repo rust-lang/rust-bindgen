@@ -152,6 +152,8 @@
    matching a regular expression.
  * new feature: allow using the `C-unwind` ABI in `--override-abi` on nightly
    rust.
+ * new feature: `--disable-whole-symbol-regex` flag to avoid parentesizing and
+   wrapping any regex argument with `^` and `$`.
 
 ## Changed
 

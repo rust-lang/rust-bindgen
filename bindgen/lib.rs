@@ -624,6 +624,10 @@ impl Builder {
             output_vector.push("--merge-extern-blocks".into());
         }
 
+        if !self.options.whole_symbol_regex {
+            output_vector.push("--disable-whole-symbol-regex".into());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -1792,6 +1796,14 @@ impl Builder {
             .insert(arg.into());
         self
     }
+
+    /// If true, parenthesize and surround any regex argument with `^` and `$`.
+    ///
+    /// This option is enabled by default.
+    pub fn whole_symbol_regex(mut self, doit: bool) -> Self {
+        self.options.whole_symbol_regex = doit;
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -2129,6 +2141,8 @@ struct BindgenOptions {
     merge_extern_blocks: bool,
 
     abi_overrides: HashMap<Abi, RegexSet>,
+
+    whole_symbol_regex: bool,
 }
 
 impl BindgenOptions {
@@ -2163,8 +2177,9 @@ impl BindgenOptions {
             &mut self.must_use_types,
         ];
         let record_matches = self.record_matches;
+        let whole_symbol_regex = self.whole_symbol_regex;
         for regex_set in self.abi_overrides.values_mut().chain(regex_sets) {
-            regex_set.build(record_matches);
+            regex_set.build(record_matches, whole_symbol_regex);
         }
     }
 
@@ -2232,6 +2247,7 @@ impl Default for BindgenOptions {
             record_matches: true,
             rustfmt_bindings: true,
             size_t_is_usize: true,
+            whole_symbol_regex: true,
 
             --default-fields--
             blocklisted_types,

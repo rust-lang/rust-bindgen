@@ -574,6 +574,9 @@ where
                 .value_name("override")
                 .multiple_occurrences(true)
                 .number_of_values(1),
+            Arg::new("disable-whole-symbol-regex")
+                .long("disable-whole-symbol-regex")
+                .help("Avoids parentesizing and surrounding any regex arguments with ^ and $."),
             Arg::new("V")
                 .long("version")
                 .help("Prints the version, and exits"),
@@ -1104,6 +1107,10 @@ where
                 .unwrap_or_else(|err| panic!("Invalid ABI override: {}", err));
             builder = builder.override_abi(abi, regex);
         }
+    }
+
+    if matches.is_present("disable-whole-symbol-regex") {
+        builder = builder.whole_symbol_regex(false);
     }
 
     Ok((builder, output, verbose))
