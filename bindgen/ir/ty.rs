@@ -1104,29 +1104,21 @@ impl Type {
                         // within the clang parsing.
                         TypeKind::Opaque
                     } else {
-                        // Check if this type definition is an alias to a pointer of a `const
-                        // struct` with the same name and add the `_ptr` suffix to it to avoid name
-                        // collisions.
-                        if !ctx.options().c_naming {
-                            if let Some(pointee_spelling) =
-                                inner.pointee_type().map(|ty| ty.spelling())
+                        // Check if this type definition is an alias to a pointer of a `struct` /
+                        // `union` / `enum` with the same name and add the `_ptr` suffix to it to
+                        // avoid name collisions.
+                        if let Some(ref mut name) = name {
+                            if inner.kind() == CXType_Pointer &&
+                                !ctx.options().c_naming
                             {
-                                if let (Some(pointee_name), Some(name)) = (
-                                    pointee_spelling
-                                        .strip_prefix("const struct ")
-                                        .or_else(|| {
-                                            pointee_spelling
-                                                .strip_prefix("struct ")
-                                        }),
-                                    name.as_mut(),
-                                ) {
-                                    if pointee_name == name {
-                                        *name += "_ptr";
-                                    }
+                                let pointee = inner.pointee_type().unwrap();
+                                if pointee.kind() == CXType_Elaborated &&
+                                    pointee.declaration().spelling() == *name
+                                {
+                                    *name += "_ptr";
                                 }
                             }
                         }
-
                         TypeKind::Alias(inner_id)
                     }
                 }
