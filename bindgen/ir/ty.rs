@@ -1094,9 +1094,9 @@ impl Type {
                 }
                 CXType_Typedef => {
                     let inner = cursor.typedef_type().expect("Not valid Type?");
-                    let inner =
+                    let inner_id =
                         Item::from_ty_or_ref(inner, location, None, ctx);
-                    if inner == potential_id {
+                    if inner_id == potential_id {
                         warn!(
                             "Generating oqaque type instead of self-referential \
                             typedef");
@@ -1104,7 +1104,22 @@ impl Type {
                         // within the clang parsing.
                         TypeKind::Opaque
                     } else {
-                        TypeKind::Alias(inner)
+                        // Check if this type definition is an alias to a pointer of a `struct` /
+                        // `union` / `enum` with the same name and add the `_ptr` suffix to it to
+                        // avoid name collisions.
+                        if let Some(ref mut name) = name {
+                            if inner.kind() == CXType_Pointer &&
+                                !ctx.options().c_naming
+                            {
+                                let pointee = inner.pointee_type().unwrap();
+                                if pointee.kind() == CXType_Elaborated &&
+                                    pointee.declaration().spelling() == *name
+                                {
+                                    *name += "_ptr";
+                                }
+                            }
+                        }
+                        TypeKind::Alias(inner_id)
                     }
                 }
                 CXType_Enum => {
