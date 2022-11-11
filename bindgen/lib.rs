@@ -850,6 +850,10 @@ impl Builder {
     /// Hide the given function from the generated bindings. Regular expressions
     /// are supported.
     ///
+    /// Methods can be blocklisted by prefixing the name of the type implementing
+    /// them followed by an underscore. So if `Foo` has a method `bar`, it can
+    /// be blocklisted as `Foo_bar`.
+    ///
     /// To blocklist functions prefixed with "mylib" use `"mylib_.*"`.
     /// For more complicated expressions check
     /// [regex](https://docs.rs/regex/*/regex/) docs
@@ -928,6 +932,10 @@ impl Builder {
     /// Allowlist the given function so that it (and all types that it
     /// transitively refers to) appears in the generated bindings. Regular
     /// expressions are supported.
+    ///
+    /// Methods can be allowlisted by prefixing the name of the type
+    /// implementing them followed by an underscore. So if `Foo` has a method
+    /// `bar`, it can be allowlisted as `Foo_bar`.
     ///
     /// To allowlist functions prefixed with "mylib" use `"mylib_.*"`.
     /// For more complicated expressions check
