@@ -2421,7 +2421,7 @@ trait MethodCodegen {
         &self,
         ctx: &BindgenContext,
         methods: &mut Vec<proc_macro2::TokenStream>,
-        method_names: &mut HashMap<String, usize>,
+        method_names: &mut HashSet<String>,
         result: &mut CodegenResult<'a>,
         parent: &CompInfo,
     );
@@ -2432,7 +2432,7 @@ impl MethodCodegen for Method {
         &self,
         ctx: &BindgenContext,
         methods: &mut Vec<proc_macro2::TokenStream>,
-        method_names: &mut HashMap<String, usize>,
+        method_names: &mut HashSet<String>,
         result: &mut CodegenResult<'a>,
         _parent: &CompInfo,
     ) {
@@ -2499,15 +2499,21 @@ impl MethodCodegen for Method {
             return;
         }
 
-        let count = {
-            let count = method_names.entry(name.clone()).or_insert(0);
-            *count += 1;
-            *count - 1
-        };
+        if method_names.contains(&name) {
+            let mut count = 1;
+            let mut new_name;
 
-        if count != 0 {
-            name.push_str(&count.to_string());
+            while {
+                new_name = format!("{}{}", name, count);
+                method_names.contains(&new_name)
+            } {
+                count += 1;
+            }
+
+            name = new_name;
         }
+
+        method_names.insert(name.clone());
 
         let mut function_name = function_item.canonical_name(ctx);
         if times_seen > 0 {
