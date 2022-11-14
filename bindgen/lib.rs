@@ -49,6 +49,18 @@ macro_rules! doc_mod {
     };
 }
 
+macro_rules! fn_with_regex_arg {
+    ($(#[$attrs:meta])* pub fn $($tokens:tt)*) => {
+        $(#[$attrs])*
+        /// Check the [regular expression arguments] section and the [regex] crate
+        /// documentation for further information.
+        ///
+        /// [regular expression arguments]: ./struct.Builder.html#regular-expression-arguments
+        /// [regex]: <https://docs.rs/regex>
+        pub fn $($tokens)*
+    };
+}
+
 mod clang;
 mod codegen;
 mod deps;
@@ -223,6 +235,13 @@ impl Default for CodegenConfig {
 /// End-users of the crate may need to set the `BINDGEN_EXTRA_CLANG_ARGS` environment variable to
 /// add additional arguments. For example, to build against a different sysroot a user could set
 /// `BINDGEN_EXTRA_CLANG_ARGS` to `--sysroot=/path/to/sysroot`.
+///
+/// # Regular expression arguments
+///
+/// Some [`Builder`] methods like the `allowlist_*` and `blocklist_*` family of methods allow
+/// regular expressions as arguments. These regular expressions will be parenthesized and wrapped
+/// in `^` and `$`. So if `<regex>` is passed as argument, the regular expression to be stored will
+/// be `^(<regex>)$`.
 #[derive(Debug, Default, Clone)]
 pub struct Builder {
     options: BindgenOptions,
@@ -829,37 +848,39 @@ impl Builder {
         self.blocklist_type(arg)
     }
 
-    /// Hide the given type from the generated bindings. Regular expressions are
-    /// supported.
-    ///
-    /// To blocklist types prefixed with "mylib" use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn blocklist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blocklisted_types.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Hide the given type from the generated bindings. Regular expressions are
+        /// supported.
+        ///
+        /// To blocklist types prefixed with "mylib" use `"mylib_.*"`.
+        pub fn blocklist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.blocklisted_types.insert(arg);
+            self
+        }
     }
 
-    /// Hide the given function from the generated bindings. Regular expressions
-    /// are supported.
-    #[deprecated(note = "Use blocklist_function instead")]
-    pub fn blacklist_function<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.blocklist_function(arg)
+    fn_with_regex_arg! {
+        /// Hide the given function from the generated bindings. Regular expressions
+        /// are supported.
+        #[deprecated(note = "Use blocklist_function instead")]
+        pub fn blacklist_function<T: AsRef<str>>(self, arg: T) -> Builder {
+            self.blocklist_function(arg)
+        }
     }
 
-    /// Hide the given function from the generated bindings. Regular expressions
-    /// are supported.
-    ///
-    /// Methods can be blocklisted by prefixing the name of the type implementing
-    /// them followed by an underscore. So if `Foo` has a method `bar`, it can
-    /// be blocklisted as `Foo_bar`.
-    ///
-    /// To blocklist functions prefixed with "mylib" use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn blocklist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blocklisted_functions.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Hide the given function from the generated bindings. Regular expressions
+        /// are supported.
+        ///
+        /// Methods can be blocklisted by prefixing the name of the type implementing
+        /// them followed by an underscore. So if `Foo` has a method `bar`, it can
+        /// be blocklisted as `Foo_bar`.
+        ///
+        /// To blocklist functions prefixed with "mylib" use `"mylib_.*"`.
+        pub fn blocklist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.blocklisted_functions.insert(arg);
+            self
+        }
     }
 
     /// Hide the given item from the generated bindings, regardless of
@@ -871,34 +892,36 @@ impl Builder {
         self
     }
 
-    /// Hide the given item from the generated bindings, regardless of
-    /// whether it's a type, function, module, etc. Regular
-    /// expressions are supported.
-    ///
-    /// To blocklist items prefixed with "mylib" use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn blocklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blocklisted_items.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Hide the given item from the generated bindings, regardless of
+        /// whether it's a type, function, module, etc. Regular
+        /// expressions are supported.
+        ///
+        /// To blocklist items prefixed with "mylib" use `"mylib_.*"`.
+        pub fn blocklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.blocklisted_items.insert(arg);
+            self
+        }
     }
 
-    /// Hide any contents of the given file from the generated bindings,
-    /// regardless of whether it's a type, function, module etc.
-    pub fn blocklist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blocklisted_files.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Hide any contents of the given file from the generated bindings,
+        /// regardless of whether it's a type, function, module etc.
+        pub fn blocklist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.blocklisted_files.insert(arg);
+            self
+        }
     }
 
-    /// Treat the given type as opaque in the generated bindings. Regular
-    /// expressions are supported.
-    ///
-    /// To change types prefixed with "mylib" into opaque, use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn opaque_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.opaque_types.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Treat the given type as opaque in the generated bindings. Regular
+        /// expressions are supported.
+        ///
+        /// To change types prefixed with "mylib" into opaque, use `"mylib_.*"`.
+        pub fn opaque_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.opaque_types.insert(arg);
+            self
+        }
     }
 
     /// Allowlist the given type so that it (and all types that it transitively
@@ -917,32 +940,32 @@ impl Builder {
         self.allowlist_type(arg)
     }
 
-    /// Allowlist the given type so that it (and all types that it transitively
-    /// refers to) appears in the generated bindings. Regular expressions are
-    /// supported.
-    ///
-    /// To allowlist types prefixed with "mylib" use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn allowlist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.allowlisted_types.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Allowlist the given type so that it (and all types that it transitively
+        /// refers to) appears in the generated bindings. Regular expressions are
+        /// supported.
+        ///
+        /// To allowlist types prefixed with "mylib" use `"mylib_.*"`.
+        pub fn allowlist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.allowlisted_types.insert(arg);
+            self
+        }
     }
 
-    /// Allowlist the given function so that it (and all types that it
-    /// transitively refers to) appears in the generated bindings. Regular
-    /// expressions are supported.
-    ///
-    /// Methods can be allowlisted by prefixing the name of the type
-    /// implementing them followed by an underscore. So if `Foo` has a method
-    /// `bar`, it can be allowlisted as `Foo_bar`.
-    ///
-    /// To allowlist functions prefixed with "mylib" use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn allowlist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.allowlisted_functions.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Allowlist the given function so that it (and all types that it
+        /// transitively refers to) appears in the generated bindings. Regular
+        /// expressions are supported.
+        ///
+        /// Methods can be allowlisted by prefixing the name of the type
+        /// implementing them followed by an underscore. So if `Foo` has a method
+        /// `bar`, it can be allowlisted as `Foo_bar`.
+        ///
+        /// To allowlist functions prefixed with "mylib" use `"mylib_.*"`.
+        pub fn allowlist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.allowlisted_functions.insert(arg);
+            self
+        }
     }
 
     /// Allowlist the given function.
@@ -961,22 +984,24 @@ impl Builder {
         self.allowlist_function(arg)
     }
 
-    /// Allowlist the given variable so that it (and all types that it
-    /// transitively refers to) appears in the generated bindings. Regular
-    /// expressions are supported.
-    ///
-    /// To allowlist variables prefixed with "mylib" use `"mylib_.*"`.
-    /// For more complicated expressions check
-    /// [regex](https://docs.rs/regex/*/regex/) docs
-    pub fn allowlist_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.allowlisted_vars.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Allowlist the given variable so that it (and all types that it
+        /// transitively refers to) appears in the generated bindings. Regular
+        /// expressions are supported.
+        ///
+        /// To allowlist variables prefixed with "mylib" use `"mylib_.*"`.
+        pub fn allowlist_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.allowlisted_vars.insert(arg);
+            self
+        }
     }
 
-    /// Allowlist the given file so that its contents appear in the generated bindings.
-    pub fn allowlist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.allowlisted_files.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Allowlist the given file so that its contents appear in the generated bindings.
+        pub fn allowlist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.allowlisted_files.insert(arg);
+            self
+        }
     }
 
     /// Deprecated: use allowlist_var instead.
@@ -1002,87 +1027,101 @@ impl Builder {
         self
     }
 
-    /// Mark the given enum (or set of enums, if using a pattern) as being
-    /// bitfield-like. Regular expressions are supported.
-    ///
-    /// This makes bindgen generate a type that isn't a rust `enum`. Regular
-    /// expressions are supported.
-    ///
-    /// This is similar to the newtype enum style, but with the bitwise
-    /// operators implemented.
-    pub fn bitfield_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.bitfield_enums.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Mark the given enum (or set of enums, if using a pattern) as being
+        /// bitfield-like. Regular expressions are supported.
+        ///
+        /// This makes bindgen generate a type that isn't a rust `enum`. Regular
+        /// expressions are supported.
+        ///
+        /// This is similar to the newtype enum style, but with the bitwise
+        /// operators implemented.
+        pub fn bitfield_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.bitfield_enums.insert(arg);
+            self
+        }
     }
 
-    /// Mark the given enum (or set of enums, if using a pattern) as a newtype.
-    /// Regular expressions are supported.
-    ///
-    /// This makes bindgen generate a type that isn't a Rust `enum`. Regular
-    /// expressions are supported.
-    pub fn newtype_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.newtype_enums.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Mark the given enum (or set of enums, if using a pattern) as a newtype.
+        /// Regular expressions are supported.
+        ///
+        /// This makes bindgen generate a type that isn't a Rust `enum`. Regular
+        /// expressions are supported.
+        pub fn newtype_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.newtype_enums.insert(arg);
+            self
+        }
     }
 
-    /// Mark the given enum (or set of enums, if using a pattern) as a newtype
-    /// whose variants are exposed as global constants.
-    ///
-    /// Regular expressions are supported.
-    ///
-    /// This makes bindgen generate a type that isn't a Rust `enum`. Regular
-    /// expressions are supported.
-    pub fn newtype_global_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.newtype_global_enums.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Mark the given enum (or set of enums, if using a pattern) as a newtype
+        /// whose variants are exposed as global constants.
+        ///
+        /// Regular expressions are supported.
+        ///
+        /// This makes bindgen generate a type that isn't a Rust `enum`. Regular
+        /// expressions are supported.
+        pub fn newtype_global_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.newtype_global_enums.insert(arg);
+            self
+        }
     }
 
-    /// Mark the given enum (or set of enums, if using a pattern) as a Rust
-    /// enum.
-    ///
-    /// This makes bindgen generate enums instead of constants. Regular
-    /// expressions are supported.
-    ///
-    /// **Use this with caution**, creating this in unsafe code
-    /// (including FFI) with an invalid value will invoke undefined behaviour.
-    /// You may want to use the newtype enum style instead.
-    pub fn rustified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.rustified_enums.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Mark the given enum (or set of enums, if using a pattern) as a Rust
+        /// enum.
+        ///
+        /// This makes bindgen generate enums instead of constants. Regular
+        /// expressions are supported.
+        ///
+        /// **Use this with caution**, creating this in unsafe code
+        /// (including FFI) with an invalid value will invoke undefined behaviour.
+        /// You may want to use the newtype enum style instead.
+        pub fn rustified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.rustified_enums.insert(arg);
+            self
+        }
     }
 
-    /// Mark the given enum (or set of enums, if using a pattern) as a Rust
-    /// enum with the `#[non_exhaustive]` attribute.
-    ///
-    /// This makes bindgen generate enums instead of constants. Regular
-    /// expressions are supported.
-    ///
-    /// **Use this with caution**, creating this in unsafe code
-    /// (including FFI) with an invalid value will invoke undefined behaviour.
-    /// You may want to use the newtype enum style instead.
-    pub fn rustified_non_exhaustive_enum<T: AsRef<str>>(
-        mut self,
-        arg: T,
-    ) -> Builder {
-        self.options.rustified_non_exhaustive_enums.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Mark the given enum (or set of enums, if using a pattern) as a Rust
+        /// enum with the `#[non_exhaustive]` attribute.
+        ///
+        /// This makes bindgen generate enums instead of constants. Regular
+        /// expressions are supported.
+        ///
+        /// **Use this with caution**, creating this in unsafe code
+        /// (including FFI) with an invalid value will invoke undefined behaviour.
+        /// You may want to use the newtype enum style instead.
+        pub fn rustified_non_exhaustive_enum<T: AsRef<str>>(
+            mut self,
+            arg: T,
+        ) -> Builder {
+            self.options.rustified_non_exhaustive_enums.insert(arg);
+            self
+        }
     }
 
-    /// Mark the given enum (or set of enums, if using a pattern) as a set of
-    /// constants that are not to be put into a module.
-    pub fn constified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.constified_enums.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Mark the given enum (or set of enums, if using a pattern) as a set of
+        /// constants that are not to be put into a module.
+        pub fn constified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.constified_enums.insert(arg);
+            self
+        }
     }
 
-    /// Mark the given enum (or set of enums, if using a pattern) as a set of
-    /// constants that should be put into a module.
-    ///
-    /// This makes bindgen generate modules containing constants instead of
-    /// just constants. Regular expressions are supported.
-    pub fn constified_enum_module<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.constified_enum_modules.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Mark the given enum (or set of enums, if using a pattern) as a set of
+        /// constants that should be put into a module.
+        ///
+        /// This makes bindgen generate modules containing constants instead of
+        /// just constants. Regular expressions are supported.
+        pub fn constified_enum_module<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.constified_enum_modules.insert(arg);
+            self
+        }
     }
 
     /// Set the default type for macro constants
@@ -1103,34 +1142,40 @@ impl Builder {
         self
     }
 
-    /// Mark the given typedef alias (or set of aliases, if using a pattern) to
-    /// use regular Rust type aliasing.
-    ///
-    /// This is the default behavior and should be used if `default_alias_style`
-    /// was set to NewType or NewTypeDeref and you want to override it for a
-    /// set of typedefs.
-    pub fn type_alias<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.type_alias.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Mark the given typedef alias (or set of aliases, if using a pattern) to
+        /// use regular Rust type aliasing.
+        ///
+        /// This is the default behavior and should be used if `default_alias_style`
+        /// was set to NewType or NewTypeDeref and you want to override it for a
+        /// set of typedefs.
+        pub fn type_alias<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.type_alias.insert(arg);
+            self
+        }
     }
 
-    /// Mark the given typedef alias (or set of aliases, if using a pattern) to
-    /// be generated as a new type by having the aliased type be wrapped in a
-    /// #[repr(transparent)] struct.
-    ///
-    /// Used to enforce stricter type checking.
-    pub fn new_type_alias<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.new_type_alias.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Mark the given typedef alias (or set of aliases, if using a pattern) to
+        /// be generated as a new type by having the aliased type be wrapped in a
+        /// #[repr(transparent)] struct.
+        ///
+        /// Used to enforce stricter type checking.
+        pub fn new_type_alias<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.new_type_alias.insert(arg);
+            self
+        }
     }
 
-    /// Mark the given typedef alias (or set of aliases, if using a pattern) to
-    /// be generated as a new type by having the aliased type be wrapped in a
-    /// #[repr(transparent)] struct and also have an automatically generated
-    /// impl's of `Deref` and `DerefMut` to their aliased type.
-    pub fn new_type_alias_deref<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.new_type_alias_deref.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Mark the given typedef alias (or set of aliases, if using a pattern) to
+        /// be generated as a new type by having the aliased type be wrapped in a
+        /// #[repr(transparent)] struct and also have an automatically generated
+        /// impl's of `Deref` and `DerefMut` to their aliased type.
+        pub fn new_type_alias_deref<T: AsRef<str>>(mut self, arg: T) -> Builder {
+            self.options.new_type_alias_deref.insert(arg);
+            self
+        }
     }
 
     /// Set the default style of code to generate for unions with a non-Copy member.
@@ -1142,28 +1187,34 @@ impl Builder {
         self
     }
 
-    /// Mark the given union (or set of union, if using a pattern) to use
-    /// a bindgen-generated wrapper for its members if at least one is non-Copy.
-    pub fn bindgen_wrapper_union<T: AsRef<str>>(mut self, arg: T) -> Self {
-        self.options.bindgen_wrapper_union.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Mark the given union (or set of union, if using a pattern) to use
+        /// a bindgen-generated wrapper for its members if at least one is non-Copy.
+        pub fn bindgen_wrapper_union<T: AsRef<str>>(mut self, arg: T) -> Self {
+            self.options.bindgen_wrapper_union.insert(arg);
+            self
+        }
     }
 
-    /// Mark the given union (or set of union, if using a pattern) to use
-    /// [`::core::mem::ManuallyDrop`] for its members if at least one is non-Copy.
-    ///
-    /// Note: `ManuallyDrop` was stabilized in Rust 1.20.0, do not use it if your
-    /// MSRV is lower.
-    pub fn manually_drop_union<T: AsRef<str>>(mut self, arg: T) -> Self {
-        self.options.manually_drop_union.insert(arg);
-        self
+    fn_with_regex_arg! {
+        /// Mark the given union (or set of union, if using a pattern) to use
+        /// [`::core::mem::ManuallyDrop`] for its members if at least one is non-Copy.
+        ///
+        /// Note: `ManuallyDrop` was stabilized in Rust 1.20.0, do not use it if your
+        /// MSRV is lower.
+        pub fn manually_drop_union<T: AsRef<str>>(mut self, arg: T) -> Self {
+            self.options.manually_drop_union.insert(arg);
+            self
+        }
     }
 
-    /// Add a string to prepend to the generated bindings. The string is passed
-    /// through without any modification.
-    pub fn raw_line<T: Into<String>>(mut self, arg: T) -> Self {
-        self.options.raw_lines.push(arg.into());
-        self
+    fn_with_regex_arg! {
+        /// Add a string to prepend to the generated bindings. The string is passed
+        /// through without any modification.
+        pub fn raw_line<T: Into<String>>(mut self, arg: T) -> Self {
+            self.options.raw_lines.push(arg.into());
+            self
+        }
     }
 
     /// Add a given line to the beginning of module `mod`.
@@ -1692,46 +1743,58 @@ impl Builder {
         }
     }
 
-    /// Don't derive `PartialEq` for a given type. Regular
-    /// expressions are supported.
-    pub fn no_partialeq<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.no_partialeq_types.insert(arg.into());
-        self
+    fn_with_regex_arg! {
+        /// Don't derive `PartialEq` for a given type. Regular
+        /// expressions are supported.
+        pub fn no_partialeq<T: Into<String>>(mut self, arg: T) -> Builder {
+            self.options.no_partialeq_types.insert(arg.into());
+            self
+        }
     }
 
-    /// Don't derive `Copy` for a given type. Regular
-    /// expressions are supported.
-    pub fn no_copy<T: Into<String>>(mut self, arg: T) -> Self {
-        self.options.no_copy_types.insert(arg.into());
-        self
+    fn_with_regex_arg! {
+        /// Don't derive `Copy` for a given type. Regular
+        /// expressions are supported.
+        pub fn no_copy<T: Into<String>>(mut self, arg: T) -> Self {
+            self.options.no_copy_types.insert(arg.into());
+            self
+        }
     }
 
-    /// Don't derive `Debug` for a given type. Regular
-    /// expressions are supported.
-    pub fn no_debug<T: Into<String>>(mut self, arg: T) -> Self {
-        self.options.no_debug_types.insert(arg.into());
-        self
+    fn_with_regex_arg! {
+        /// Don't derive `Debug` for a given type. Regular
+        /// expressions are supported.
+        pub fn no_debug<T: Into<String>>(mut self, arg: T) -> Self {
+            self.options.no_debug_types.insert(arg.into());
+            self
+        }
     }
 
-    /// Don't derive/impl `Default` for a given type. Regular
-    /// expressions are supported.
-    pub fn no_default<T: Into<String>>(mut self, arg: T) -> Self {
-        self.options.no_default_types.insert(arg.into());
-        self
+    fn_with_regex_arg! {
+        /// Don't derive/impl `Default` for a given type. Regular
+        /// expressions are supported.
+        pub fn no_default<T: Into<String>>(mut self, arg: T) -> Self {
+            self.options.no_default_types.insert(arg.into());
+            self
+        }
     }
 
-    /// Don't derive `Hash` for a given type. Regular
-    /// expressions are supported.
-    pub fn no_hash<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.no_hash_types.insert(arg.into());
-        self
+    fn_with_regex_arg! {
+        /// Don't derive `Hash` for a given type. Regular
+        /// expressions are supported.
+        pub fn no_hash<T: Into<String>>(mut self, arg: T) -> Builder {
+            self.options.no_hash_types.insert(arg.into());
+            self
+        }
     }
 
-    /// Add `#[must_use]` for the given type. Regular
-    /// expressions are supported.
-    pub fn must_use_type<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.must_use_types.insert(arg.into());
-        self
+    fn_with_regex_arg! {
+        /// Add `#[must_use]` for the given type. Regular
+        /// expressions are supported.
+        pub fn must_use_type<T: Into<String>>(mut self, arg: T) -> Builder {
+            self.options.must_use_types.insert(arg.into());
+            self
+        }
     }
 
     /// Set whether `arr[size]` should be treated as `*mut T` or `*mut [T; size]` (same for mut)
