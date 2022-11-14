@@ -157,6 +157,12 @@
 
 ## Removed
 
+ * The following deprecated methods and their equivalent CLI arguments were
+   removed: `whitelist_recursively`, `hide_type`, `blacklist_type`,
+   `blacklist_function`, `blacklist_item`, `whitelisted_type`,
+   `whitelist_type`, `whitelist_function`, `whitelisted_function`,
+   `whitelist_var`, `whitelisted_var`, `unstable_rust`.
+
 ## Fixed
 
 ## Security

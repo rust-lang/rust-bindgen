@@ -796,12 +796,6 @@ impl Builder {
         self
     }
 
-    /// Deprecated alias for allowlist_recursively.
-    #[deprecated(note = "Use allowlist_recursively instead")]
-    pub fn whitelist_recursively(self, doit: bool) -> Self {
-        self.allowlist_recursively(doit)
-    }
-
     /// Generate `#[macro_use] extern crate objc;` instead of `use objc;`
     /// in the prologue of the files generated from objective-c files
     pub fn objc_extern_crate(mut self, doit: bool) -> Self {
@@ -834,20 +828,6 @@ impl Builder {
         self
     }
 
-    /// Hide the given type from the generated bindings. Regular expressions are
-    /// supported.
-    #[deprecated(note = "Use blocklist_type instead")]
-    pub fn hide_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.blocklist_type(arg)
-    }
-
-    /// Hide the given type from the generated bindings. Regular expressions are
-    /// supported.
-    #[deprecated(note = "Use blocklist_type instead")]
-    pub fn blacklist_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.blocklist_type(arg)
-    }
-
     fn_with_regex_arg! {
         /// Hide the given type from the generated bindings. Regular expressions are
         /// supported.
@@ -856,15 +836,6 @@ impl Builder {
         pub fn blocklist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
             self.options.blocklisted_types.insert(arg);
             self
-        }
-    }
-
-    fn_with_regex_arg! {
-        /// Hide the given function from the generated bindings. Regular expressions
-        /// are supported.
-        #[deprecated(note = "Use blocklist_function instead")]
-        pub fn blacklist_function<T: AsRef<str>>(self, arg: T) -> Builder {
-            self.blocklist_function(arg)
         }
     }
 
@@ -881,15 +852,6 @@ impl Builder {
             self.options.blocklisted_functions.insert(arg);
             self
         }
-    }
-
-    /// Hide the given item from the generated bindings, regardless of
-    /// whether it's a type, function, module, etc. Regular
-    /// expressions are supported.
-    #[deprecated(note = "Use blocklist_item instead")]
-    pub fn blacklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blocklisted_items.insert(arg);
-        self
     }
 
     fn_with_regex_arg! {
@@ -924,22 +886,6 @@ impl Builder {
         }
     }
 
-    /// Allowlist the given type so that it (and all types that it transitively
-    /// refers to) appears in the generated bindings. Regular expressions are
-    /// supported.
-    #[deprecated(note = "use allowlist_type instead")]
-    pub fn whitelisted_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_type(arg)
-    }
-
-    /// Allowlist the given type so that it (and all types that it transitively
-    /// refers to) appears in the generated bindings. Regular expressions are
-    /// supported.
-    #[deprecated(note = "use allowlist_type instead")]
-    pub fn whitelist_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_type(arg)
-    }
-
     fn_with_regex_arg! {
         /// Allowlist the given type so that it (and all types that it transitively
         /// refers to) appears in the generated bindings. Regular expressions are
@@ -968,22 +914,6 @@ impl Builder {
         }
     }
 
-    /// Allowlist the given function.
-    ///
-    /// Deprecated: use allowlist_function instead.
-    #[deprecated(note = "use allowlist_function instead")]
-    pub fn whitelist_function<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_function(arg)
-    }
-
-    /// Allowlist the given function.
-    ///
-    /// Deprecated: use allowlist_function instead.
-    #[deprecated(note = "use allowlist_function instead")]
-    pub fn whitelisted_function<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_function(arg)
-    }
-
     fn_with_regex_arg! {
         /// Allowlist the given variable so that it (and all types that it
         /// transitively refers to) appears in the generated bindings. Regular
@@ -1002,20 +932,6 @@ impl Builder {
             self.options.allowlisted_files.insert(arg);
             self
         }
-    }
-
-    /// Deprecated: use allowlist_var instead.
-    #[deprecated(note = "use allowlist_var instead")]
-    pub fn whitelist_var<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_var(arg)
-    }
-
-    /// Allowlist the given variable.
-    ///
-    /// Deprecated: use allowlist_var instead.
-    #[deprecated(note = "use allowlist_var instead")]
-    pub fn whitelisted_var<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_var(arg)
     }
 
     /// Set the default style of code to generate for enums
@@ -1494,17 +1410,6 @@ impl Builder {
     pub fn ignore_methods(mut self) -> Builder {
         self.options.codegen_config.remove(CodegenConfig::METHODS);
         self
-    }
-
-    /// Avoid generating any unstable Rust, such as Rust unions, in the generated bindings.
-    #[deprecated(note = "please use `rust_target` instead")]
-    pub fn unstable_rust(self, doit: bool) -> Self {
-        let rust_target = if doit {
-            RustTarget::Nightly
-        } else {
-            LATEST_STABLE_RUST
-        };
-        self.rust_target(rust_target)
     }
 
     /// Use core instead of libstd in the generated bindings.
