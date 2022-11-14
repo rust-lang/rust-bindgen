@@ -78,6 +78,8 @@ doc_mod!(ir, ir_docs);
 doc_mod!(parse, parse_docs);
 doc_mod!(regex_set, regex_set_docs);
 
+use ir::comment;
+
 pub use crate::codegen::{
     AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle,
 };
@@ -2270,6 +2272,13 @@ impl BindgenOptions {
             .iter()
             .flat_map(|cb| f(cb.as_ref()))
             .collect()
+    }
+
+    fn process_comment(&self, comment: &str, indent: usize) -> String {
+        self.parse_callbacks
+            .last()
+            .and_then(|cb| cb.process_comment(comment, indent))
+            .unwrap_or_else(|| comment::preprocess(comment, indent))
     }
 }
 

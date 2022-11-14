@@ -3,7 +3,6 @@
 use super::super::codegen::{EnumVariation, CONSTIFIED_ENUM_MODULE_REPR_NAME};
 use super::analysis::{HasVtable, HasVtableResult, Sizedness, SizednessResult};
 use super::annotations::Annotations;
-use super::comment;
 use super::comp::{CompKind, MethodKind};
 use super::context::{BindgenContext, ItemId, PartialType, TypeId};
 use super::derive::{
@@ -516,7 +515,8 @@ impl Item {
         }
 
         self.comment.as_ref().map(|comment| {
-            comment::preprocess(comment, self.codegen_depth(ctx))
+            ctx.options()
+                .process_comment(comment, self.codegen_depth(ctx))
         })
     }
 

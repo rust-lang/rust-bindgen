@@ -20,7 +20,6 @@ use super::BindgenOptions;
 
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::FieldAccessorKind;
-use crate::ir::comment;
 use crate::ir::comp::{
     Bitfield, BitfieldUnit, CompInfo, CompKind, Field, FieldData, FieldMethods,
     Method, MethodKind,
@@ -1392,8 +1391,9 @@ impl<'a> FieldCodegen<'a> for FieldData {
         let mut field = quote! {};
         if ctx.options().generate_comments {
             if let Some(raw_comment) = self.comment() {
-                let comment =
-                    comment::preprocess(raw_comment, codegen_depth + 1);
+                let comment = ctx
+                    .options()
+                    .process_comment(raw_comment, codegen_depth + 1);
                 field = attributes::doc(comment);
             }
         }
@@ -2837,8 +2837,9 @@ impl<'a> EnumBuilder<'a> {
         let mut doc = quote! {};
         if ctx.options().generate_comments {
             if let Some(raw_comment) = variant.comment() {
-                let comment =
-                    comment::preprocess(raw_comment, self.codegen_depth());
+                let comment = ctx
+                    .options()
+                    .process_comment(raw_comment, self.codegen_depth());
                 doc = attributes::doc(comment);
             }
         }

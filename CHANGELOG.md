@@ -152,6 +152,8 @@
    matching a regular expression.
  * new feature: allow using the `C-unwind` ABI in `--override-abi` on nightly
    rust.
+ * new feature: `process_comments` method to the `ParseCallbacks` trait to
+   handle source code comments.
 
 ## Changed
 
