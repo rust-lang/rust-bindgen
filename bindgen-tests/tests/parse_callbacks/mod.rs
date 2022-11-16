@@ -80,8 +80,7 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
                     .split("remove-function-prefix-")
                     .last()
                     .to_owned();
-                let lnopc =
-                    RemovePrefixParseCallback::new(prefix.unwrap());
+                let lnopc = RemovePrefixParseCallback::new(prefix.unwrap());
                 Box::new(lnopc)
             } else {
                 panic!("Couldn't find name ParseCallbacks: {}", cb)
