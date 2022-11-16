@@ -196,6 +196,7 @@ impl Type {
         matches!(self.kind, TypeKind::UnresolvedTypeRef(_, _, _))
     }
 
+    /// Is this a qualified type?
     pub fn is_qualified(&self) -> bool {
         matches!(self.kind, TypeKind::Qualified { .. })
     }
@@ -666,8 +667,11 @@ pub enum TypeKind {
     /// Objective C selector type
     ObjCSel,
 
+    /// A qualified type.
     Qualified {
+        /// The type being qualified.
         inner: TypeId,
+        /// Wether this type is qualified as `const` or not.
         is_const: bool,
     },
 }
