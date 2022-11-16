@@ -22,17 +22,17 @@ extern "C" {
 }
 extern "C" {
     #[link_name = "\u{1}_Z3fooU13block_pointerFvyE"]
-    pub fn foo(arg1: _bindgen_ty_id_50) -> bool;
+    pub fn foo(arg1: _bindgen_ty_id_51) -> bool;
 }
 extern "C" {
     #[link_name = "\u{1}_Z7foo_ptrPU13block_pointerFvyE"]
-    pub fn foo_ptr(arg1: *mut _bindgen_ty_id_56) -> bool;
+    pub fn foo_ptr(arg1: *mut _bindgen_ty_id_57) -> bool;
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct contains_block_pointers {
-    pub val: contains_block_pointers__bindgen_ty_id_61,
-    pub ptr_val: *mut _bindgen_ty_id_68,
+    pub val: contains_block_pointers__bindgen_ty_id_62,
+    pub ptr_val: *mut _bindgen_ty_id_69,
 }
 #[test]
 fn bindgen_test_layout_contains_block_pointers() {
@@ -84,9 +84,9 @@ pub type _bindgen_ty_id_40 = *const ::block::Block<
     (dispatch_data_t, usize, *const ::std::os::raw::c_void, usize),
     bool,
 >;
-pub type _bindgen_ty_id_50 = *const ::block::Block<(usize,), ()>;
-pub type _bindgen_ty_id_56 = *const ::block::Block<(usize,), ()>;
-pub type contains_block_pointers__bindgen_ty_id_61 =
+pub type _bindgen_ty_id_51 = *const ::block::Block<(usize,), ()>;
+pub type _bindgen_ty_id_57 = *const ::block::Block<(usize,), ()>;
+pub type contains_block_pointers__bindgen_ty_id_62 =
     *const ::block::Block<(::std::os::raw::c_int,), ()>;
-pub type _bindgen_ty_id_68 =
+pub type _bindgen_ty_id_69 =
     *const ::block::Block<(::std::os::raw::c_int,), ()>;
