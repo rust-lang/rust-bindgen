@@ -6,8 +6,12 @@
 )]
 
 extern "C" {
-    #[link_name = "\u{1}my_custom_prefix_const_name"]
-    pub static const_name: ::std::os::raw::c_int;
+    #[link_name = "\u{1}my_custom_prefix_var_const_name"]
+    pub static var_const_name: ::std::os::raw::c_int;
+}
+extern "C" {
+    #[link_name = "\u{1}my_custom_prefix_var_mut_name"]
+    pub static mut var_mut_name: ::std::os::raw::c_int;
 }
 extern "C" {
     #[link_name = "\u{1}my_custom_prefix_function_name"]

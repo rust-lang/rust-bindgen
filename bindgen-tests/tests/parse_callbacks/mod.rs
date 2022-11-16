@@ -17,10 +17,19 @@ impl ParseCallbacks for RemoveFunctionPrefixParseCallback {
     fn generated_name_override(
         &self,
         item_name: &str,
-        _item_kind: CallbackItemKind,
+        item_kind: CallbackItemKind,
     ) -> Option<String> {
         if let Some(prefix) = &self.remove_prefix {
             if let Some(name) = item_name.strip_prefix(prefix) {
+                match item_kind {
+                    CallbackItemKind::Function => {
+                        assert!(name.starts_with("function_"));
+                    }
+                    CallbackItemKind::Var => {
+                        assert!(name.starts_with("var_"));
+                    }
+                }
+                assert!(name.ends_with("_name"));
                 return Some(name.to_string());
             }
         }

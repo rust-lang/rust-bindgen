@@ -6,7 +6,7 @@ pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
 pub use crate::ir::int::IntKind;
 use std::fmt;
 
-/// An enum to identify the type of item being passed to `ParseCallbacks::generated_name_override`.
+/// An enum to identify the kind of item being passed to `ParseCallbacks::generated_name_override`.
 pub enum CallbackItemKind {
     /// A Function
     Function,
