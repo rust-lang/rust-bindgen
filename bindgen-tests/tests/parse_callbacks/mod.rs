@@ -1,19 +1,19 @@
 use bindgen::callbacks::*;
 
 #[derive(Debug)]
-pub struct RemoveFunctionPrefixParseCallback {
+pub struct RemovePrefixParseCallback {
     pub remove_prefix: Option<String>,
 }
 
-impl RemoveFunctionPrefixParseCallback {
+impl RemovePrefixParseCallback {
     pub fn new(prefix: &str) -> Self {
-        RemoveFunctionPrefixParseCallback {
+        RemovePrefixParseCallback {
             remove_prefix: Some(prefix.to_string()),
         }
     }
 }
 
-impl ParseCallbacks for RemoveFunctionPrefixParseCallback {
+impl ParseCallbacks for RemovePrefixParseCallback {
     fn generated_name_override(
         &self,
         item_name: &str,
@@ -81,7 +81,7 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
                     .last()
                     .to_owned();
                 let lnopc =
-                    RemoveFunctionPrefixParseCallback::new(prefix.unwrap());
+                    RemovePrefixParseCallback::new(prefix.unwrap());
                 Box::new(lnopc)
             } else {
                 panic!("Couldn't find name ParseCallbacks: {}", cb)
