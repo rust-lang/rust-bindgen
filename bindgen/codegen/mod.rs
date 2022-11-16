@@ -3053,7 +3053,7 @@ impl CodeGenerator for Enum {
                 };
 
                 repr_translated =
-                    Type::new(None, None, TypeKind::Int(translated), false);
+                    Type::new(None, None, TypeKind::Int(translated));
                 &repr_translated
             }
         };

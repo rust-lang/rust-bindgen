@@ -31,8 +31,6 @@ pub struct Type {
     layout: Option<Layout>,
     /// The inner kind of the type
     kind: TypeKind,
-    /// Whether this type is const-qualified.
-    is_const: bool,
 }
 
 /// The maximum number of items in an array for which Rust implements common
@@ -65,14 +63,8 @@ impl Type {
         name: Option<String>,
         layout: Option<Layout>,
         kind: TypeKind,
-        is_const: bool,
     ) -> Self {
-        Type {
-            name,
-            layout,
-            kind,
-            is_const,
-        }
+        Type { name, layout, kind }
     }
 
     /// Which kind of type is this?
@@ -157,7 +149,7 @@ impl Type {
     /// Creates a new named type, with name `name`.
     pub fn named(name: String) -> Self {
         let name = if name.is_empty() { None } else { Some(name) };
-        Self::new(name, None, TypeKind::TypeParam, false)
+        Self::new(name, None, TypeKind::TypeParam)
     }
 
     /// Is this a floating point type?
@@ -186,20 +178,26 @@ impl Type {
 
     /// Is this a `const` qualified type?
     pub fn is_const(&self) -> bool {
-        self.is_const
+        matches!(self.kind(), TypeKind::Qualified { is_const: true, .. })
     }
 
     /// Is this a reference to another type?
     pub fn is_type_ref(&self) -> bool {
         matches!(
             self.kind,
-            TypeKind::ResolvedTypeRef(_) | TypeKind::UnresolvedTypeRef(_, _, _)
+            TypeKind::ResolvedTypeRef(_) |
+                TypeKind::UnresolvedTypeRef(_, _, _) |
+                TypeKind::Qualified { .. }
         )
     }
 
     /// Is this an unresolved reference?
     pub fn is_unresolved_ref(&self) -> bool {
         matches!(self.kind, TypeKind::UnresolvedTypeRef(_, _, _))
+    }
+
+    pub fn is_qualified(&self) -> bool {
+        matches!(self.kind, TypeKind::Qualified { .. })
     }
 
     /// Is this a incomplete array type?
@@ -421,10 +419,6 @@ impl DotAttributes for Type {
             }
         }
 
-        if self.is_const {
-            writeln!(out, "<tr><td>const</td><td>true</td></tr>")?;
-        }
-
         self.kind.dot_attributes(ctx, out)
     }
 }
@@ -485,49 +479,45 @@ impl TypeKind {
 
 #[test]
 fn is_invalid_type_param_valid() {
-    let ty = Type::new(Some("foo".into()), None, TypeKind::TypeParam, false);
+    let ty = Type::new(Some("foo".into()), None, TypeKind::TypeParam);
     assert!(!ty.is_invalid_type_param())
 }
 
 #[test]
 fn is_invalid_type_param_valid_underscore_and_numbers() {
-    let ty = Type::new(
-        Some("_foo123456789_".into()),
-        None,
-        TypeKind::TypeParam,
-        false,
-    );
+    let ty =
+        Type::new(Some("_foo123456789_".into()), None, TypeKind::TypeParam);
     assert!(!ty.is_invalid_type_param())
 }
 
 #[test]
 fn is_invalid_type_param_valid_unnamed_kind() {
-    let ty = Type::new(Some("foo".into()), None, TypeKind::Void, false);
+    let ty = Type::new(Some("foo".into()), None, TypeKind::Void);
     assert!(!ty.is_invalid_type_param())
 }
 
 #[test]
 fn is_invalid_type_param_invalid_start() {
-    let ty = Type::new(Some("1foo".into()), None, TypeKind::TypeParam, false);
+    let ty = Type::new(Some("1foo".into()), None, TypeKind::TypeParam);
     assert!(ty.is_invalid_type_param())
 }
 
 #[test]
 fn is_invalid_type_param_invalid_remaing() {
-    let ty = Type::new(Some("foo-".into()), None, TypeKind::TypeParam, false);
+    let ty = Type::new(Some("foo-".into()), None, TypeKind::TypeParam);
     assert!(ty.is_invalid_type_param())
 }
 
 #[test]
 #[should_panic]
 fn is_invalid_type_param_unnamed() {
-    let ty = Type::new(None, None, TypeKind::TypeParam, false);
+    let ty = Type::new(None, None, TypeKind::TypeParam);
     assert!(ty.is_invalid_type_param())
 }
 
 #[test]
 fn is_invalid_type_param_empty_name() {
-    let ty = Type::new(Some("".into()), None, TypeKind::TypeParam, false);
+    let ty = Type::new(Some("".into()), None, TypeKind::TypeParam);
     assert!(ty.is_invalid_type_param())
 }
 
@@ -1227,7 +1217,32 @@ impl Type {
                 ty.elem_type()
                     .map_or(false, |element| element.is_const()));
 
-        let ty = Type::new(name, layout, kind, is_const);
+        let mut ty = Type::new(name.clone(), layout.clone(), kind);
+
+        if is_const {
+            let id = ctx.next_item_id();
+            ctx.add_item(
+                Item::new(
+                    id,
+                    None,
+                    None,
+                    parent_id.unwrap_or_else(|| ctx.current_module().into()),
+                    crate::ir::item_kind::ItemKind::Type(ty),
+                    None,
+                ),
+                None,
+                None,
+            );
+            ty = Type::new(
+                name,
+                layout,
+                TypeKind::Qualified {
+                    inner: id.as_type_id_unchecked(),
+                    is_const: true,
+                },
+            );
+        }
+
         // TODO: maybe declaration.canonical()?
         Ok(ParseResult::New(ty, Some(cursor.canonical())))
     }

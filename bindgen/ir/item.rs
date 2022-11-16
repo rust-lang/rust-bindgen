@@ -1320,14 +1320,30 @@ impl Item {
             _ => panic!("Unsupported builtin type"),
         }
 
-        let ty = Type::new(None, None, kind, is_const);
-        let id = ctx.next_item_id();
+        let ty = Type::new(None, None, kind);
+        let mut id = ctx.next_item_id();
         let module = ctx.root_module().into();
         ctx.add_item(
             Item::new(id, None, None, module, ItemKind::Type(ty), None),
             None,
             None,
         );
+        if is_const {
+            let ty = Type::new(
+                None,
+                None,
+                TypeKind::Qualified {
+                    inner: id.as_type_id_unchecked(),
+                    is_const: true,
+                },
+            );
+            id = ctx.next_item_id();
+            ctx.add_item(
+                Item::new(id, None, None, module, ItemKind::Type(ty), None),
+                None,
+                None,
+            );
+        }
         id.as_type_id_unchecked()
     }
 
@@ -1543,13 +1559,40 @@ impl Item {
                 None,
                 None,
                 parent_id.unwrap_or_else(|| current_module.into()),
-                ItemKind::Type(Type::new(None, None, kind, is_const)),
+                ItemKind::Type(Type::new(None, None, kind)),
                 Some(location.location()),
             ),
             None,
             None,
         );
-        potential_id.as_type_id_unchecked()
+
+        let id = if is_const {
+            let id = ctx.next_item_id();
+            ctx.add_item(
+                Item::new(
+                    id,
+                    None,
+                    None,
+                    parent_id.unwrap_or_else(|| current_module.into()),
+                    ItemKind::Type(Type::new(
+                        None,
+                        None,
+                        TypeKind::Qualified {
+                            inner: potential_id.as_type_id_unchecked(),
+                            is_const: true,
+                        },
+                    )),
+                    None,
+                ),
+                None,
+                None,
+            );
+            id
+        } else {
+            potential_id
+        };
+
+        id.as_type_id_unchecked()
     }
 
     pub(crate) fn from_ty(

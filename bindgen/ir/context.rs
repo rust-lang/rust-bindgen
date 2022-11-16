@@ -667,7 +667,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 !item.kind().is_type() ||
                 item.kind().expect_type().is_builtin_or_type_param() ||
                 item.kind().expect_type().is_opaque(self, &item) ||
-                item.kind().expect_type().is_unresolved_ref(),
+                item.kind().expect_type().is_unresolved_ref() ||
+                item.kind().expect_type().is_qualified(),
             "Adding a type without declaration?"
         );
 
@@ -1720,7 +1721,6 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                 .fallible_layout(self)
                                 .ok(),
                             sub_kind,
-                            false,
                         );
                         let sub_id = self.next_item_id();
                         let sub_item = Item::new(
@@ -1782,12 +1782,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         );
         let name = ty.spelling();
         let name = if name.is_empty() { None } else { Some(name) };
-        let ty = Type::new(
-            name,
-            ty.fallible_layout(self).ok(),
-            type_kind,
-            ty.is_const(),
-        );
+        let is_const = ty.is_const();
+        let layout = ty.fallible_layout(self).ok();
+        let ty = Type::new(name.clone(), layout.clone(), type_kind);
         let item = Item::new(
             with_id,
             None,
@@ -1802,7 +1799,34 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.add_item_to_module(&item);
         debug_assert_eq!(with_id, item.id());
         self.items[with_id.0] = Some(item);
-        Some(with_id.as_type_id_unchecked())
+
+        let id = if is_const {
+            let ty = Type::new(
+                name,
+                layout,
+                TypeKind::Qualified {
+                    inner: with_id.as_type_id_unchecked(),
+                    is_const: true,
+                },
+            );
+            let id = self.next_item_id();
+            let item = Item::new(
+                id,
+                None,
+                None,
+                self.current_module.into(),
+                ItemKind::Type(ty),
+                None,
+            );
+            self.add_item_to_module(&item);
+            debug_assert_eq!(id, item.id());
+            self.items[id.0] = Some(item);
+            id
+        } else {
+            with_id
+        };
+
+        Some(id.as_type_id_unchecked())
     }
 
     /// If we have already resolved the type for the given type declaration,
@@ -1930,7 +1954,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let layout = ty.fallible_layout(self).ok();
         let location = ty.declaration().location();
         let type_kind = TypeKind::ResolvedTypeRef(wrapped_id);
-        let ty = Type::new(Some(spelling), layout, type_kind, is_const);
+        let ty = Type::new(Some(spelling.clone()), layout.clone(), type_kind);
         let item = Item::new(
             with_id,
             None,
@@ -1940,7 +1964,32 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             Some(location),
         );
         self.add_builtin_item(item);
-        with_id.as_type_id_unchecked()
+
+        let id = if is_const {
+            let id = self.next_item_id();
+            let ty = Type::new(
+                Some(spelling),
+                layout,
+                TypeKind::Qualified {
+                    inner: with_id.as_type_id_unchecked(),
+                    is_const: true,
+                },
+            );
+            let item = Item::new(
+                id,
+                None,
+                None,
+                parent_id.unwrap_or_else(|| self.current_module.into()),
+                ItemKind::Type(ty),
+                None,
+            );
+            self.add_builtin_item(item);
+            id
+        } else {
+            with_id
+        };
+
+        id.as_type_id_unchecked()
     }
 
     /// Returns the next item id to be used for an item.
@@ -1999,8 +2048,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let is_const = ty.is_const();
         let layout = ty.fallible_layout(self).ok();
         let location = ty.declaration().location();
-        let ty = Type::new(Some(spelling), layout, type_kind, is_const);
-        let id = self.next_item_id();
+        let ty = Type::new(Some(spelling.clone()), layout.clone(), type_kind);
+        let mut id = self.next_item_id();
         let item = Item::new(
             id,
             None,
@@ -2010,6 +2059,28 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             Some(location),
         );
         self.add_builtin_item(item);
+
+        if is_const {
+            let ty = Type::new(
+                Some(spelling),
+                layout,
+                TypeKind::Qualified {
+                    inner: id.as_type_id_unchecked(),
+                    is_const: true,
+                },
+            );
+            id = self.next_item_id();
+            let item = Item::new(
+                id,
+                None,
+                None,
+                self.root_module.into(),
+                ItemKind::Type(ty),
+                None,
+            );
+            self.add_builtin_item(item);
+        }
+
         Some(id.as_type_id_unchecked())
     }
 
@@ -2858,7 +2929,8 @@ impl ItemResolver {
 
             let ty_kind = item.as_type().map(|t| t.kind());
             match ty_kind {
-                Some(&TypeKind::ResolvedTypeRef(next_id))
+                Some(&TypeKind::ResolvedTypeRef(next_id)) |
+                Some(&TypeKind::Qualified { inner: next_id, .. })
                     if self.through_type_refs =>
                 {
                     id = next_id.into();
