@@ -328,7 +328,8 @@ impl Type {
 
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
-            TypeKind::TemplateAlias(inner, _) => {
+            TypeKind::TemplateAlias(inner, _) |
+            TypeKind::Qualified { inner, .. } => {
                 ctx.resolve_type(inner).safe_canonical_type(ctx)
             }
             TypeKind::TemplateInstantiation(ref inst) => ctx
@@ -477,6 +478,7 @@ impl TypeKind {
             TypeKind::ObjCInterface(..) => "ObjCInterface",
             TypeKind::ObjCId => "ObjCId",
             TypeKind::ObjCSel => "ObjCSel",
+            TypeKind::Qualified { .. } => "Qualified",
         }
     }
 }
@@ -538,7 +540,8 @@ impl TemplateParameters for Type {
 impl TemplateParameters for TypeKind {
     fn self_template_params(&self, ctx: &BindgenContext) -> Vec<TypeId> {
         match *self {
-            TypeKind::ResolvedTypeRef(id) => {
+            TypeKind::ResolvedTypeRef(id) |
+            TypeKind::Qualified { inner: id, .. } => {
                 ctx.resolve_type(id).self_template_params(ctx)
             }
             TypeKind::Comp(ref comp) => comp.self_template_params(ctx),
@@ -672,6 +675,11 @@ pub enum TypeKind {
 
     /// Objective C selector type
     ObjCSel,
+
+    Qualified {
+        inner: TypeId,
+        is_const: bool,
+    },
 }
 
 impl Type {
@@ -1246,7 +1254,8 @@ impl Trace for Type {
             TypeKind::Vector(inner, _) |
             TypeKind::BlockPointer(inner) |
             TypeKind::Alias(inner) |
-            TypeKind::ResolvedTypeRef(inner) => {
+            TypeKind::ResolvedTypeRef(inner) |
+            TypeKind::Qualified { inner, .. } => {
                 tracer.visit_kind(inner.into(), EdgeKind::TypeReference);
             }
             TypeKind::TemplateAlias(inner, ref template_params) => {

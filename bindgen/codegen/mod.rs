@@ -770,7 +770,8 @@ impl CodeGenerator for Type {
             TypeKind::Function(..) |
             TypeKind::ResolvedTypeRef(..) |
             TypeKind::Opaque |
-            TypeKind::TypeParam => {
+            TypeKind::TypeParam |
+            TypeKind::Qualified { .. } => {
                 // These items don't need code generation, they only need to be
                 // converted to rust types in fields, arguments, and such.
                 // NOTE(emilio): If you add to this list, make sure to also add
@@ -3767,7 +3768,8 @@ impl TryToRustTy for Type {
             TypeKind::TemplateInstantiation(ref inst) => {
                 inst.try_to_rust_ty(ctx, item)
             }
-            TypeKind::ResolvedTypeRef(inner) => inner.try_to_rust_ty(ctx, &()),
+            TypeKind::ResolvedTypeRef(inner) |
+            TypeKind::Qualified { inner, .. } => inner.try_to_rust_ty(ctx, &()),
             TypeKind::TemplateAlias(..) |
             TypeKind::Alias(..) |
             TypeKind::BlockPointer(..) => {

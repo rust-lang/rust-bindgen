@@ -222,7 +222,8 @@ impl<'a> ImplDebug<'a> for Item {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) |
-            TypeKind::BlockPointer(t) => {
+            TypeKind::BlockPointer(t) |
+            TypeKind::Qualified { inner: t, .. } => {
                 // We follow the aliases
                 ctx.resolve_item(t).impl_debug(ctx, name)
             }

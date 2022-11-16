@@ -134,7 +134,8 @@ fn gen_field(
         TypeKind::ResolvedTypeRef(t) |
         TypeKind::TemplateAlias(t, _) |
         TypeKind::Alias(t) |
-        TypeKind::BlockPointer(t) => {
+        TypeKind::BlockPointer(t) |
+        TypeKind::Qualified { inner: t, .. } => {
             let inner_item = ctx.resolve_item(t);
             gen_field(ctx, inner_item, name)
         }

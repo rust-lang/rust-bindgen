@@ -163,7 +163,8 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) |
-            TypeKind::BlockPointer(t) => {
+            TypeKind::BlockPointer(t) |
+            TypeKind::Qualified { inner: t, .. } => {
                 if self.has_type_parameter_in_array.contains(&t.into()) {
                     trace!(
                         "    aliases and type refs to T which have array \
