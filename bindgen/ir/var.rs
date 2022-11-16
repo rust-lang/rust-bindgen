@@ -7,7 +7,7 @@ use super::function::cursor_mangling;
 use super::int::IntKind;
 use super::item::Item;
 use super::ty::{FloatKind, TypeKind};
-use crate::callbacks::MacroParsingBehavior;
+use crate::callbacks::{CallbackItemKind, MacroParsingBehavior};
 use crate::clang;
 use crate::clang::ClangToken;
 use crate::parse::{
@@ -274,11 +274,25 @@ impl ClangSubItemParser for Var {
                 ))
             }
             CXCursor_VarDecl => {
-                let name = cursor.spelling();
+                let mut name = cursor.spelling();
                 if name.is_empty() {
                     warn!("Empty constant name?");
                     return Err(ParseError::Continue);
                 }
+
+                if cursor.linkage() == CXLinkage_External {
+                    if let Some(nm) = ctx.options().last_callback(|callbacks| {
+                        callbacks.generated_name_override(
+                            &name,
+                            CallbackItemKind::Var,
+                        )
+                    }) {
+                        name = nm;
+                    }
+                }
+                assert!(!name.is_empty(), "Empty constant name.");
+                // The name should not change again
+                let name = name;
 
                 let ty = cursor.cur_type();
 

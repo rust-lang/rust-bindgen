@@ -6,6 +6,10 @@
 )]
 
 extern "C" {
+    #[link_name = "\u{1}my_custom_prefix_const_name"]
+    pub static const_name: ::std::os::raw::c_int;
+}
+extern "C" {
     #[link_name = "\u{1}my_custom_prefix_function_name"]
     pub fn function_name(x: ::std::os::raw::c_int);
 }

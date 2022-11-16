@@ -6,6 +6,14 @@ pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
 pub use crate::ir::int::IntKind;
 use std::fmt;
 
+/// An enum to identify the type of item being passed to `ParseCallbacks::generated_name_override`.
+pub enum CallbackItemKind {
+    /// A Function
+    Function,
+    /// A Variable
+    Var,
+}
+
 /// An enum to allow ignoring parsing of macros.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum MacroParsingBehavior {
@@ -32,7 +40,11 @@ pub trait ParseCallbacks: fmt::Debug {
 
     /// This function will run for every function. The returned value determines the name visible
     /// in the bindings.
-    fn generated_name_override(&self, _function_name: &str) -> Option<String> {
+    fn generated_name_override(
+        &self,
+        _item_name: &str,
+        _item_kind: CallbackItemKind,
+    ) -> Option<String> {
         None
     }
 

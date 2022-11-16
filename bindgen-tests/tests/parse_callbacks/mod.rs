@@ -2,21 +2,25 @@ use bindgen::callbacks::*;
 
 #[derive(Debug)]
 pub struct RemoveFunctionPrefixParseCallback {
-    pub remove_function_prefix: Option<String>,
+    pub remove_prefix: Option<String>,
 }
 
 impl RemoveFunctionPrefixParseCallback {
     pub fn new(prefix: &str) -> Self {
         RemoveFunctionPrefixParseCallback {
-            remove_function_prefix: Some(prefix.to_string()),
+            remove_prefix: Some(prefix.to_string()),
         }
     }
 }
 
 impl ParseCallbacks for RemoveFunctionPrefixParseCallback {
-    fn generated_name_override(&self, function_name: &str) -> Option<String> {
-        if let Some(prefix) = &self.remove_function_prefix {
-            if let Some(name) = function_name.strip_prefix(prefix) {
+    fn generated_name_override(
+        &self,
+        item_name: &str,
+        _item_kind: CallbackItemKind,
+    ) -> Option<String> {
+        if let Some(prefix) = &self.remove_prefix {
+            if let Some(name) = item_name.strip_prefix(prefix) {
                 return Some(name.to_string());
             }
         }
