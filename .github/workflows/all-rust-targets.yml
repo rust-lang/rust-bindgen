@@ -28,6 +28,6 @@ jobs:
           override: true
 
       - name: Test expectations
-        run: cd bindgen-tests/tests/expectations && cargo test
+        run: rm Cargo.lock; cd bindgen-tests/tests/expectations && cargo test
         env:
           RUSTFLAGS: "-D unsafe_op_in_unsafe_fn -D unused_unsafe"
