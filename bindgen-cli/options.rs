@@ -5,7 +5,7 @@ use bindgen::{
 };
 use clap::{App, Arg};
 use std::fs::File;
-use std::io::{self, stderr, Error, ErrorKind, Write};
+use std::io::{self, Error, ErrorKind};
 use std::path::PathBuf;
 use std::str::FromStr;
 
@@ -175,28 +175,24 @@ where
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("blocklist-type")
-                .alias("blacklist-type")
                 .long("blocklist-type")
                 .help("Mark <type> as hidden.")
                 .value_name("type")
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("blocklist-function")
-                .alias("blacklist-function")
                 .long("blocklist-function")
                 .help("Mark <function> as hidden.")
                 .value_name("function")
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("blocklist-item")
-                .alias("blacklist-item")
                 .long("blocklist-item")
                 .help("Mark <item> as hidden.")
                 .value_name("item")
                 .multiple_occurrences(true)
                 .number_of_values(1),
             Arg::new("blocklist-file")
-                .alias("blacklist-file")
                 .long("blocklist-file")
                 .help("Mark all contents of <path> as hidden.")
                 .value_name("path")
@@ -257,7 +253,6 @@ where
                 ),
             Arg::new("no-recursive-allowlist")
                 .long("no-recursive-allowlist")
-                .alias("no-recursive-whitelist")
                 .help(
                     "Disable allowlisting types recursively. This will cause \
                      bindgen to emit Rust code that won't compile! See the \
@@ -362,10 +357,6 @@ where
             Arg::new("fit-macro-constant-types")
                 .long("fit-macro-constant-types")
                 .help("Try to fit macro constants into types smaller than u32/i32"),
-            Arg::new("unstable-rust")
-                .long("unstable-rust")
-                .help("Generate unstable Rust code (deprecated; use --rust-target instead).")
-                .multiple_occurrences(true), // FIXME: Pass legacy test suite
             Arg::new("opaque-type")
                 .long("opaque-type")
                 .help("Mark <type> as opaque.")
@@ -406,7 +397,6 @@ where
                 .help("MSVC C++ ABI mangling. DEPRECATED: Has no effect."),
             Arg::new("allowlist-function")
                 .long("allowlist-function")
-                .alias("whitelist-function")
                 .help(
                     "Allowlist all the free-standing functions matching \
                      <regex>. Other non-allowlisted functions will not be \
@@ -420,7 +410,6 @@ where
                 .help("Generate inline functions."),
             Arg::new("allowlist-type")
                 .long("allowlist-type")
-                .alias("whitelist-type")
                 .help(
                     "Only generate types matching <regex>. Other non-allowlisted types will \
                      not be generated.",
@@ -430,7 +419,6 @@ where
                 .number_of_values(1),
             Arg::new("allowlist-var")
                 .long("allowlist-var")
-                .alias("whitelist-var")
                 .help(
                     "Allowlist all the free-standing variables matching \
                      <regex>. Other non-allowlisted variables will not be \
@@ -598,15 +586,6 @@ where
         builder = builder.header(header);
     } else {
         return Err(Error::new(ErrorKind::Other, "Header not found"));
-    }
-
-    if matches.is_present("unstable-rust") {
-        builder = builder.rust_target(RustTarget::Nightly);
-        writeln!(
-            &mut stderr(),
-            "warning: the `--unstable-rust` option is deprecated"
-        )
-        .expect("Unable to write error message");
     }
 
     if let Some(rust_target) = matches.value_of("rust-target") {
