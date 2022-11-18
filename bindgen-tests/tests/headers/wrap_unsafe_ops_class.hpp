@@ -1,5 +1,5 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq --with-derive-partialord --with-derive-ord --rust-target 1.40 --wrap-unsafe-ops
-//
+// bindgen-flags: --wrap-unsafe-ops --no-layout-tests
+
 class C {
     int a;
     // More than rust limits (32)

@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.0 --with-derive-hash --with-derive-partialeq --with-derive-eq --rustified-enum ".*" --wrap-unsafe-ops
+// bindgen-flags: --rust-target 1.0 --wrap-unsafe-ops --no-layout-tests
 
 template<typename T>
 struct TErrorResult {
