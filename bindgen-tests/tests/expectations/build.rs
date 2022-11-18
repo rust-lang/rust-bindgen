@@ -117,23 +117,27 @@ fn main() {
                             break;
                         }
                     }
-                    let target_version = target_version.unwrap_or_else(|| rustc_version.clone());
+                    let target_version =
+                        target_version.unwrap_or_else(|| rustc_version.clone());
                     if rustc_version.is_compatible_with(&target_version) {
-                        let module_name: String = stem
-                            .join(dir)
-                            .display()
-                            .to_string()
-                            .chars()
-                            .map(|c| match c {
-                                'a'..='z' | 'A'..='Z' | '0'..='9' => c,
-                                _ => '_',
-                            })
-                            .collect();
+                        let mut module_name = headers_path
+                            .file_stem()
+                            .unwrap()
+                            .to_string_lossy()
+                            .to_string();
+                        module_name.push_str(dir);
+                        module_name = module_name.replace(
+                            |c| match c {
+                                'a'..='z' | 'A'..='Z' | '0'..='9' => false,
+                                _ => true,
+                            },
+                            "_",
+                        );
 
                         test_string.push_str(&format!(
                             r###"
 #[path = "{}"]
-mod {};
+mod header_{};
 "###,
                             path.display().to_string().replace('\\', "\\\\"),
                             module_name.trim_matches('_'),
