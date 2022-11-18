@@ -5,24 +5,71 @@
 
 use std::env;
 use std::fs;
+use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
+use std::process::Command;
 
-const LIBCLANG_VERSION_DIRS: &[&str] = &["libclang-5", "libclang-9"];
+const LIBCLANG_VERSION_DIRS: &[&str] = &["libclang-5", "libclang-9", ""];
+
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
+enum Version {
+    Nightly,
+    Stable([u8; 3]),
+}
+
+impl Version {
+    fn new(s: &str) -> Self {
+        if s == "nightly" {
+            Self::Nightly
+        } else {
+            let mut version = [0; 3];
+
+            let mut parts = s.split('.').map(|s| s.parse::<u8>().unwrap());
+
+            for i in 0..3 {
+                version[i] = parts.next().unwrap_or_default();
+            }
+
+            Self::Stable(version)
+        }
+    }
+}
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
 
+    let rustc_version = {
+        let rustc =
+            env::var("RUSTC").expect("`RUSTC` environment variable is not set");
+        let cmd_output = Command::new(rustc)
+            .arg("--version")
+            .output()
+            .expect("Couldn't run `rustc --version`")
+            .stdout;
+        Version::new(
+            &String::from_utf8(
+                cmd_output
+                    .split(|b| b.is_ascii_whitespace())
+                    .skip(1)
+                    .next()
+                    .unwrap()
+                    .to_owned(),
+            )
+            .unwrap(),
+        )
+    };
+
     let mut test_string = String::new();
 
     for dir in LIBCLANG_VERSION_DIRS {
-        let dir = Path::new(&env::var_os("CARGO_MANIFEST_DIR").unwrap())
-            .join("tests")
+        let dir_path = Path::new(&env::var_os("CARGO_MANIFEST_DIR").unwrap())
+            .join("bindings")
             .join(dir);
 
-        println!("cargo:rerun-if-changed={}", dir.display());
+        println!("cargo:rerun-if-changed={}", dir_path.display());
 
-        for entry in fs::read_dir(dir).unwrap() {
+        for entry in fs::read_dir(dir_path).unwrap() {
             let entry = entry.unwrap();
             let path = entry.path();
             let path = path.canonicalize().unwrap_or(path);
@@ -34,24 +81,53 @@ fn main() {
 
             println!("cargo:rerun-if-changed={}", path.display());
 
-            let module_name: String = path
-                .display()
-                .to_string()
-                .chars()
-                .map(|c| match c {
-                    'a'..='z' | 'A'..='Z' | '0'..='9' => c,
-                    _ => '_',
-                })
-                .collect();
+            let stem = path.file_stem();
 
-            test_string.push_str(&format!(
-                r###"
+            for entry in fs::read_dir("../headers/").unwrap() {
+                let entry = entry.unwrap();
+                let headers_path = entry.path();
+                let headers_path = headers_path.canonicalize().unwrap_or(headers_path);
+                if headers_path.file_stem() == stem && headers_path.is_file() {
+                    let file = std::io::BufReader::new(
+                        std::fs::File::open(&headers_path).unwrap(),
+                    );
+                    if let Some(flags) = file.lines().find_map(|line| {
+                        line.unwrap()
+                            .strip_prefix("// bindgen-flags: ")
+                            .map(|s| s.to_owned())
+                    }) {
+                        if let Some(target_version) = flags
+                            .split_once("--rust-target")
+                            .and_then(|(_, s)| s[1..].split(' ').next())
+                            .map(Version::new)
+                        {
+                            if target_version <= rustc_version {
+                                eprintln!("Including {}", path.display());
+                                let module_name: String = headers_path.join(dir)
+                                    .display()
+                                    .to_string()
+                                    .chars()
+                                    .map(|c| match c {
+                                        'a'..='z' | 'A'..='Z' | '0'..='9' => c,
+                                        _ => '_',
+                                    })
+                                    .collect();
+
+                                test_string.push_str(&format!(
+                                    r###"
 #[path = "{}"]
 mod {};
 "###,
-                path.display().to_string().replace('\\', "\\\\"),
-                module_name,
-            ));
+                                    path.display()
+                                        .to_string()
+                                        .replace('\\', "\\\\"),
+                                    module_name.trim_matches('_'),
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

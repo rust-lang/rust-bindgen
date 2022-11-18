@@ -7,6 +7,7 @@ authors = [
   "Emilio Cobos Álvarez <emilio@crisal.io>",
   "The Servo project developers",
 ]
+edition = "2018"
 
 [dependencies]
 objc = "0.2"
