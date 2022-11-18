@@ -5,7 +5,9 @@
 
 use std::env;
 use std::fs;
+use std::fs::File;
 use std::io::BufRead;
+use std::io::BufReader;
 use std::io::Write;
 use std::path::Path;
 use std::process::Command;
@@ -21,7 +23,7 @@ enum Version {
 impl Version {
     fn new(s: &str) -> Self {
         if s == "nightly" {
-            Self::Nightly
+            Version::Nightly
         } else {
             let mut version = [0; 3];
 
@@ -31,7 +33,7 @@ impl Version {
                 version[i] = parts.next().unwrap_or_default();
             }
 
-            Self::Stable(version)
+            Version::Stable(version)
         }
     }
 }
@@ -86,44 +88,49 @@ fn main() {
             for entry in fs::read_dir("../headers/").unwrap() {
                 let entry = entry.unwrap();
                 let headers_path = entry.path();
-                let headers_path = headers_path.canonicalize().unwrap_or(headers_path);
+                let headers_path =
+                    headers_path.canonicalize().unwrap_or(headers_path);
                 if headers_path.file_stem() == stem && headers_path.is_file() {
-                    let file = std::io::BufReader::new(
-                        std::fs::File::open(&headers_path).unwrap(),
-                    );
-                    if let Some(flags) = file.lines().find_map(|line| {
-                        line.unwrap()
-                            .strip_prefix("// bindgen-flags: ")
-                            .map(|s| s.to_owned())
-                    }) {
-                        if let Some(target_version) = flags
-                            .split_once("--rust-target")
-                            .and_then(|(_, s)| s[1..].split(' ').next())
-                            .map(Version::new)
-                        {
-                            if target_version <= rustc_version {
-                                eprintln!("Including {}", path.display());
-                                let module_name: String = headers_path.join(dir)
-                                    .display()
-                                    .to_string()
-                                    .chars()
-                                    .map(|c| match c {
-                                        'a'..='z' | 'A'..='Z' | '0'..='9' => c,
-                                        _ => '_',
-                                    })
-                                    .collect();
+                    let file =
+                        BufReader::new(File::open(&headers_path).unwrap());
+                    for line in file.lines() {
+                        let line = line.unwrap();
+                        if line.starts_with("// bindgen-flags: ") {
+                            if let Some(target_version) = line
+                                .split("--rust-target")
+                                .skip(1)
+                                .next()
+                                .and_then(|s| s[1..].split(' ').next())
+                                .map(Version::new)
+                            {
+                                if target_version <= rustc_version {
+                                    let module_name: String = headers_path
+                                        .join(dir)
+                                        .display()
+                                        .to_string()
+                                        .chars()
+                                        .map(|c| match c {
+                                            'a'..='z' |
+                                            'A'..='Z' |
+                                            '0'..='9' => c,
+                                            _ => '_',
+                                        })
+                                        .collect();
 
-                                test_string.push_str(&format!(
-                                    r###"
+                                    test_string.push_str(&format!(
+                                        r###"
 #[path = "{}"]
 mod {};
 "###,
-                                    path.display()
-                                        .to_string()
-                                        .replace('\\', "\\\\"),
-                                    module_name.trim_matches('_'),
-                                ));
+                                        path.display()
+                                            .to_string()
+                                            .replace('\\', "\\\\"),
+                                        module_name.trim_matches('_'),
+                                    ));
+                                }
                             }
+
+                            break;
                         }
                     }
                 }
