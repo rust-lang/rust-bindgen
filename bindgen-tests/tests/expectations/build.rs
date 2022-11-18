@@ -27,7 +27,7 @@ impl Version {
         } else {
             let mut version = [0; 3];
 
-            let mut parts = s.split('.').map(|s| s.parse::<u8>().unwrap());
+            let mut parts = s.split('.').map(|s| s.parse::<u8>().unwrap_or_else(|_| panic!("{}", s)));
 
             for i in 0..3 {
                 version[i] = parts.next().unwrap_or_default();
@@ -55,21 +55,21 @@ fn main() {
     let rustc_version = {
         let rustc =
             env::var("RUSTC").expect("`RUSTC` environment variable is not set");
-        let cmd_output = Command::new(rustc)
+        let cmd_output = String::from_utf8(Command::new(rustc)
             .arg("--version")
             .output()
             .expect("Couldn't run `rustc --version`")
-            .stdout;
+            .stdout).unwrap();
         Version::new(
-            &String::from_utf8(
+            if cmd_output.contains("nightly") {
+                "nightly"
+            } else {
                 cmd_output
-                    .split(|b| b.is_ascii_whitespace())
+                    .split(' ')
                     .skip(1)
                     .next()
                     .unwrap()
-                    .to_owned(),
-            )
-            .unwrap(),
+            }
         )
     };
 
@@ -125,6 +125,7 @@ fn main() {
                             .unwrap()
                             .to_string_lossy()
                             .to_string();
+                        module_name.push('_');
                         module_name.push_str(dir);
                         module_name = module_name.replace(
                             |c| match c {
