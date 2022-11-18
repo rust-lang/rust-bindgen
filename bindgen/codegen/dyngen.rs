@@ -159,8 +159,10 @@ impl DynamicItems {
         } else {
             quote! { self.#ident.as_ref().expect("Expected function, got error.") }
         };
-        let call_body = quote! {
-            (#fn_)(#( #args_identifiers ),*)
+        let call_body = if ctx.options().wrap_unsafe_ops {
+            quote!(unsafe { (#fn_)(#( #args_identifiers ),*) })
+        } else {
+            quote!((#fn_)(#( #args_identifiers ),*) )
         };
 
         // We can't implement variadic functions from C easily, so we allow to

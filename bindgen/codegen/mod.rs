@@ -4260,17 +4260,22 @@ fn objc_method_codegen(
 
     let methods_and_args = method.format_method_call(&fn_args);
 
-    let body = if method.is_class_method() {
-        let class_name = ctx.rust_ident(
-            class_name.expect("Generating a class method without class name?"),
-        );
-        quote! {
-            msg_send!(class!(#class_name), #methods_and_args)
+    let body = {
+        let mut body = if method.is_class_method() {
+            let class_name = ctx.rust_ident(
+                class_name
+                    .expect("Generating a class method without class name?"),
+            );
+            quote!(msg_send!(class!(#class_name), #methods_and_args))
+        } else {
+            quote!(msg_send!(*self, #methods_and_args))
+        };
+
+        if ctx.options().wrap_unsafe_ops {
+            body = quote!(unsafe { #body });
         }
-    } else {
-        quote! {
-            msg_send!(*self, #methods_and_args)
-        }
+
+        body
     };
 
     let method_name =
