@@ -30,7 +30,7 @@ pub trait IFoo: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        unsafe { msg_send!(*self, method) }
+        msg_send!(*self, method)
     }
 }
 impl Foo_BarCategory for Foo {}
@@ -39,6 +39,6 @@ pub trait Foo_BarCategory: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        unsafe { msg_send!(*self, categoryMethod) }
+        msg_send!(*self, categoryMethod)
     }
 }

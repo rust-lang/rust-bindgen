@@ -2611,9 +2611,7 @@ impl MethodCodegen for Method {
         methods.push(quote! {
             #(#attrs)*
             pub unsafe fn #name ( #( #args ),* ) #ret {
-                unsafe {
-                    #block
-                }
+                #block
             }
         });
     }
@@ -4271,9 +4269,7 @@ fn objc_method_codegen(
 
     methods.push(quote! {
         unsafe fn #method_name #sig where <Self as std::ops::Deref>::Target: objc::Message + Sized {
-            unsafe {
-                #body
-            }
+            #body
         }
     });
 }
@@ -4648,16 +4644,12 @@ pub mod utils {
 
                 #[inline]
                 pub unsafe fn as_ref(&self) -> &T {
-                    unsafe {
-                        ::#prefix::mem::transmute(self)
-                    }
+                    ::#prefix::mem::transmute(self)
                 }
 
                 #[inline]
                 pub unsafe fn as_mut(&mut self) -> &mut T {
-                    unsafe {
-                        ::#prefix::mem::transmute(self)
-                    }
+                    ::#prefix::mem::transmute(self)
                 }
             }
         };
@@ -4771,16 +4763,12 @@ pub mod utils {
 
                 #[inline]
                 pub unsafe fn as_slice(&self, len: usize) -> &[T] {
-                    unsafe {
-                        ::#prefix::slice::from_raw_parts(self.as_ptr(), len)
-                    }
+                    ::#prefix::slice::from_raw_parts(self.as_ptr(), len)
                 }
 
                 #[inline]
                 pub unsafe fn as_mut_slice(&mut self, len: usize) -> &mut [T] {
-                    unsafe {
-                        ::#prefix::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
-                    }
+                    ::#prefix::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
                 }
             }
         };

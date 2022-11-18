@@ -36,7 +36,7 @@ impl Foo {
         &mut self,
         arg1: ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_int {
-        unsafe { Foo_foo(self, arg1) }
+        Foo_foo(self, arg1)
     }
 }
 extern "C" {

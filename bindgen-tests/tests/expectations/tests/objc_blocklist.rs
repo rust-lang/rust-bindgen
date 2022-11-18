@@ -31,12 +31,12 @@ pub trait ISomeClass: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        unsafe { msg_send!(*self, ambiguouslyBlockedMethod) }
+        msg_send!(*self, ambiguouslyBlockedMethod)
     }
     unsafe fn instanceMethod(&self)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        unsafe { msg_send!(*self, instanceMethod) }
+        msg_send!(*self, instanceMethod)
     }
 }

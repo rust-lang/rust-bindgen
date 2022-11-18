@@ -16,11 +16,11 @@ impl<T> __BindgenUnionField<T> {
     }
     #[inline]
     pub unsafe fn as_ref(&self) -> &T {
-        unsafe { ::core::mem::transmute(self) }
+        ::core::mem::transmute(self)
     }
     #[inline]
     pub unsafe fn as_mut(&mut self) -> &mut T {
-        unsafe { ::core::mem::transmute(self) }
+        ::core::mem::transmute(self)
     }
 }
 impl<T> ::core::default::Default for __BindgenUnionField<T> {

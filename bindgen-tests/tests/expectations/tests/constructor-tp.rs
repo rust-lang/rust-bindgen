@@ -35,10 +35,8 @@ extern "C" {
 impl Bar {
     #[inline]
     pub unsafe fn new() -> Self {
-        unsafe {
-            let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
-            Bar_Bar(__bindgen_tmp.as_mut_ptr());
-            __bindgen_tmp.assume_init()
-        }
+        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+        Bar_Bar(__bindgen_tmp.as_mut_ptr());
+        __bindgen_tmp.assume_init()
     }
 }

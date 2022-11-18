@@ -23,11 +23,11 @@ impl<T> __IncompleteArrayField<T> {
     }
     #[inline]
     pub unsafe fn as_slice(&self, len: usize) -> &[T] {
-        unsafe { ::std::slice::from_raw_parts(self.as_ptr(), len) }
+        ::std::slice::from_raw_parts(self.as_ptr(), len)
     }
     #[inline]
     pub unsafe fn as_mut_slice(&mut self, len: usize) -> &mut [T] {
-        unsafe { ::std::slice::from_raw_parts_mut(self.as_mut_ptr(), len) }
+        ::std::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
     }
 }
 impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
@@ -44,11 +44,11 @@ impl<T> __BindgenUnionField<T> {
     }
     #[inline]
     pub unsafe fn as_ref(&self) -> &T {
-        unsafe { ::std::mem::transmute(self) }
+        ::std::mem::transmute(self)
     }
     #[inline]
     pub unsafe fn as_mut(&mut self) -> &mut T {
-        unsafe { ::std::mem::transmute(self) }
+        ::std::mem::transmute(self)
     }
 }
 impl<T> ::std::default::Default for __BindgenUnionField<T> {
@@ -541,18 +541,18 @@ impl Clone for RealAbstractionWithTonsOfMethods {
 impl RealAbstractionWithTonsOfMethods {
     #[inline]
     pub unsafe fn bar(&self) {
-        unsafe { RealAbstractionWithTonsOfMethods_bar(self) }
+        RealAbstractionWithTonsOfMethods_bar(self)
     }
     #[inline]
     pub unsafe fn bar1(&mut self) {
-        unsafe { RealAbstractionWithTonsOfMethods_bar1(self) }
+        RealAbstractionWithTonsOfMethods_bar1(self)
     }
     #[inline]
     pub unsafe fn bar2(&mut self, foo: ::std::os::raw::c_int) {
-        unsafe { RealAbstractionWithTonsOfMethods_bar2(self, foo) }
+        RealAbstractionWithTonsOfMethods_bar2(self, foo)
     }
     #[inline]
     pub unsafe fn sta() {
-        unsafe { RealAbstractionWithTonsOfMethods_sta() }
+        RealAbstractionWithTonsOfMethods_sta()
     }
 }
