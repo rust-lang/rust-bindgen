@@ -643,6 +643,10 @@ impl Builder {
             output_vector.push("--merge-extern-blocks".into());
         }
 
+        if self.options.wrap_unsafe_ops {
+            output_vector.push("--wrap-unsafe-ops".into());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -1768,6 +1772,12 @@ impl Builder {
             .insert(arg.into());
         self
     }
+
+    /// If true, wraps unsafe operations in unsafe blocks.
+    pub fn wrap_unsafe_ops(mut self, doit: bool) -> Self {
+        self.options.wrap_unsafe_ops = doit;
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -2105,6 +2115,9 @@ struct BindgenOptions {
     merge_extern_blocks: bool,
 
     abi_overrides: HashMap<Abi, RegexSet>,
+
+    /// Wether to wrap unsafe operations in unsafe blocks or not.
+    wrap_unsafe_ops: bool,
 }
 
 impl BindgenOptions {
@@ -2288,6 +2301,7 @@ impl Default for BindgenOptions {
             sort_semantically,
             merge_extern_blocks,
             abi_overrides,
+            wrap_unsafe_ops,
         }
     }
 }

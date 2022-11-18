@@ -154,6 +154,8 @@
 ## Added
 
 ## Changed
+ * Only wrap unsafe operations in unsafe blocks if the `--wrap_unsafe_ops`
+   option is enabled.
 
 ## Removed
 

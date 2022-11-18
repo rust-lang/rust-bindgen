@@ -2595,8 +2595,16 @@ impl MethodCodegen for Method {
             })
         }
 
-        let block = quote! {
-            #( #stmts );*
+        let block = if ctx.options().wrap_unsafe_ops {
+            quote! {
+                unsafe {
+                    #( #stmts );*
+                }
+            }
+        } else {
+            quote! {
+                #( #stmts );*
+            }
         };
 
         let mut attrs = vec![attributes::inline()];
@@ -4208,6 +4216,7 @@ impl CodeGenerator for Function {
                 ret,
                 ret_ty,
                 attributes,
+                ctx,
             );
         } else {
             result.push(tokens);
@@ -4532,7 +4541,7 @@ pub(crate) fn codegen(
         if let Some(ref lib_name) = context.options().dynamic_library_name {
             let lib_ident = context.rust_ident(lib_name);
             let dynamic_items_tokens =
-                result.dynamic_items().get_tokens(lib_ident);
+                result.dynamic_items().get_tokens(lib_ident, context);
             result.push(dynamic_items_tokens);
         }
 
@@ -4635,6 +4644,12 @@ pub mod utils {
             pub struct __BindgenUnionField<T>(::#prefix::marker::PhantomData<T>);
         };
 
+        let transmute = if ctx.options().wrap_unsafe_ops {
+            quote!(unsafe { ::#prefix::mem::transmute(self) })
+        } else {
+            quote!(::#prefix::mem::transmute(self))
+        };
+
         let union_field_impl = quote! {
             impl<T> __BindgenUnionField<T> {
                 #[inline]
@@ -4644,12 +4659,12 @@ pub mod utils {
 
                 #[inline]
                 pub unsafe fn as_ref(&self) -> &T {
-                    ::#prefix::mem::transmute(self)
+                    #transmute
                 }
 
                 #[inline]
                 pub unsafe fn as_mut(&mut self) -> &mut T {
-                    ::#prefix::mem::transmute(self)
+                    #transmute
                 }
             }
         };
@@ -4744,6 +4759,25 @@ pub mod utils {
                 ::#prefix::marker::PhantomData<T>, [T; 0]);
         };
 
+        let from_raw_parts = if ctx.options().wrap_unsafe_ops {
+            quote! {
+                unsafe { ::#prefix::slice::from_raw_parts(self.as_ptr(), len) }
+            }
+        } else {
+            quote! {
+                ::#prefix::slice::from_raw_parts(self.as_ptr(), len)
+            }
+        };
+        let from_raw_parts_mut = if ctx.options().wrap_unsafe_ops {
+            quote! {
+                unsafe { ::#prefix::slice::from_raw_parts_mut(self.as_mut_ptr(), len) }
+            }
+        } else {
+            quote! {
+                ::#prefix::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
+            }
+        };
+
         let incomplete_array_impl = quote! {
             impl<T> __IncompleteArrayField<T> {
                 #[inline]
@@ -4763,12 +4797,12 @@ pub mod utils {
 
                 #[inline]
                 pub unsafe fn as_slice(&self, len: usize) -> &[T] {
-                    ::#prefix::slice::from_raw_parts(self.as_ptr(), len)
+                    #from_raw_parts
                 }
 
                 #[inline]
                 pub unsafe fn as_mut_slice(&mut self, len: usize) -> &mut [T] {
-                    ::#prefix::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
+                    #from_raw_parts_mut
                 }
             }
         };
