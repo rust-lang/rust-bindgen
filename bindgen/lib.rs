@@ -2116,7 +2116,7 @@ struct BindgenOptions {
 
     abi_overrides: HashMap<Abi, RegexSet>,
 
-    /// Wether to wrap unsafe operations in unsafe blocks or not.
+    /// Whether to wrap unsafe operations in unsafe blocks or not.
     wrap_unsafe_ops: bool,
 }
 
