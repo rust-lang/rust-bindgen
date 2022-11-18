@@ -11,6 +11,7 @@ on:
 jobs:
   test-expectations:
     runs-on: ${{matrix.os}}
+    continue-on-error: true
     strategy:
       matrix:
         # TODO(#1954): These should be run on mac too, but turns out they're
