@@ -14,7 +14,7 @@ use std::process::Command;
 
 const LIBCLANG_VERSION_DIRS: &[&str] = &["libclang-5", "libclang-9", ""];
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
+#[derive(Clone)]
 enum Version {
     Nightly,
     Stable([u8; 3]),
@@ -34,6 +34,17 @@ impl Version {
             }
 
             Version::Stable(version)
+        }
+    }
+
+    fn is_compatible_with(&self, other: &Version) -> bool {
+        match (self, other) {
+            (Version::Nightly, Version::Nightly) => true,
+            (Version::Nightly, Version::Stable(_)) => true,
+            (Version::Stable(_), Version::Nightly) => false,
+            (Version::Stable(v_self), Version::Stable(v_other)) => {
+                v_other <= v_self
+            }
         }
     }
 }
@@ -91,48 +102,45 @@ fn main() {
                 let headers_path =
                     headers_path.canonicalize().unwrap_or(headers_path);
                 if headers_path.file_stem() == stem && headers_path.is_file() {
+                    let mut target_version = None;
                     let file =
                         BufReader::new(File::open(&headers_path).unwrap());
                     for line in file.lines() {
                         let line = line.unwrap();
                         if line.starts_with("// bindgen-flags: ") {
-                            if let Some(target_version) = line
+                            target_version = line
                                 .split("--rust-target")
                                 .skip(1)
                                 .next()
                                 .and_then(|s| s[1..].split(' ').next())
-                                .map(Version::new)
-                            {
-                                if target_version <= rustc_version {
-                                    let module_name: String = headers_path
-                                        .join(dir)
-                                        .display()
-                                        .to_string()
-                                        .chars()
-                                        .map(|c| match c {
-                                            'a'..='z' |
-                                            'A'..='Z' |
-                                            '0'..='9' => c,
-                                            _ => '_',
-                                        })
-                                        .collect();
-
-                                    test_string.push_str(&format!(
-                                        r###"
-#[path = "{}"]
-mod {};
-"###,
-                                        path.display()
-                                            .to_string()
-                                            .replace('\\', "\\\\"),
-                                        module_name.trim_matches('_'),
-                                    ));
-                                }
-                            }
-
+                                .map(Version::new);
                             break;
                         }
                     }
+                    let target_version = target_version.unwrap_or_else(|| rustc_version.clone());
+                    if rustc_version.is_compatible_with(&target_version) {
+                        let module_name: String = stem
+                            .join(dir)
+                            .display()
+                            .to_string()
+                            .chars()
+                            .map(|c| match c {
+                                'a'..='z' | 'A'..='Z' | '0'..='9' => c,
+                                _ => '_',
+                            })
+                            .collect();
+
+                        test_string.push_str(&format!(
+                            r###"
+#[path = "{}"]
+mod {};
+"###,
+                            path.display().to_string().replace('\\', "\\\\"),
+                            module_name.trim_matches('_'),
+                        ));
+                    }
+
+                    break;
                 }
             }
         }
