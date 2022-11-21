@@ -1,7 +1,9 @@
 extern crate bindgen;
 extern crate cc;
 
-use bindgen::callbacks::{IntKind, MacroParsingBehavior, ParseCallbacks};
+use bindgen::callbacks::{
+    DeriveInfo, IntKind, MacroParsingBehavior, ParseCallbacks,
+};
 use bindgen::{Builder, EnumVariation};
 use std::collections::HashSet;
 use std::env;
@@ -121,10 +123,10 @@ impl ParseCallbacks for MacroCallback {
     }
 
     // Test the "custom derives" capability by adding `PartialEq` to the `Test` struct.
-    fn add_derives(&self, name: &str) -> Vec<String> {
-        if name == "Test" {
+    fn add_derives(&self, info: &DeriveInfo<'_>) -> Vec<String> {
+        if info.name == "Test" {
             vec!["PartialEq".into()]
-        } else if name == "MyOrderedEnum" {
+        } else if info.name == "MyOrderedEnum" {
             vec!["std::cmp::PartialOrd".into()]
         } else {
             vec![]

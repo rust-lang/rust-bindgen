@@ -155,6 +155,9 @@
 
 ## Changed
 
+ * Replace the `name: &str` argument for `ParseCallbacks::add_derives` by
+   `info: DeriveInfo`.
+
 ## Removed
 
  * The following deprecated methods and their equivalent CLI arguments were
