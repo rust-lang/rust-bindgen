@@ -105,7 +105,7 @@ pub trait ParseCallbacks: fmt::Debug {
     ///
     /// If no additional attributes are wanted, this function should return an
     /// empty `Vec`.
-    fn add_derives(&self, _info: DeriveInfo<'_>) -> Vec<String> {
+    fn add_derives(&self, _info: &DeriveInfo<'_>) -> Vec<String> {
         vec![]
     }
 }
