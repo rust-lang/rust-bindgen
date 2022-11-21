@@ -123,7 +123,7 @@ impl ParseCallbacks for MacroCallback {
     }
 
     // Test the "custom derives" capability by adding `PartialEq` to the `Test` struct.
-    fn add_derives(&self, info: DeriveInfo<'_>) -> Vec<String> {
+    fn add_derives(&self, info: &DeriveInfo<'_>) -> Vec<String> {
         if info.name == "Test" {
             vec!["PartialEq".into()]
         } else if info.name == "MyOrderedEnum" {
