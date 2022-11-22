@@ -159,6 +159,9 @@
 
  * Replace the `name: &str` argument for `ParseCallbacks::add_derives` by
    `info: DeriveInfo`.
+ * All the rust targets equal or lower than `1.30` are being deprecated and
+   will be removed in the future. If you have a good reason to use any of these
+   targets, please report it in the issue tracker.
 
 ## Removed
 
