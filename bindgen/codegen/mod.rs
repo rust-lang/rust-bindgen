@@ -2585,9 +2585,7 @@ impl MethodCodegen for Method {
             })
         }
 
-        let block = quote! {
-            #( #stmts );*
-        };
+        let block = ctx.wrap_unsafe_ops(quote! ( #( #stmts );*));
 
         let mut attrs = vec![attributes::inline()];
 
@@ -2601,9 +2599,7 @@ impl MethodCodegen for Method {
         methods.push(quote! {
             #(#attrs)*
             pub unsafe fn #name ( #( #args ),* ) #ret {
-                unsafe {
-                    #block
-                }
+                #block
             }
         });
     }
@@ -4169,6 +4165,7 @@ impl CodeGenerator for Function {
                 ret,
                 ret_ty,
                 attributes,
+                ctx,
             );
         } else {
             result.push(tokens);
@@ -4212,17 +4209,18 @@ fn objc_method_codegen(
 
     let methods_and_args = method.format_method_call(&fn_args);
 
-    let body = if method.is_class_method() {
-        let class_name = ctx.rust_ident(
-            class_name.expect("Generating a class method without class name?"),
-        );
-        quote! {
-            msg_send!(class!(#class_name), #methods_and_args)
-        }
-    } else {
-        quote! {
-            msg_send!(*self, #methods_and_args)
-        }
+    let body = {
+        let body = if method.is_class_method() {
+            let class_name = ctx.rust_ident(
+                class_name
+                    .expect("Generating a class method without class name?"),
+            );
+            quote!(msg_send!(class!(#class_name), #methods_and_args))
+        } else {
+            quote!(msg_send!(*self, #methods_and_args))
+        };
+
+        ctx.wrap_unsafe_ops(body)
     };
 
     let method_name =
@@ -4230,9 +4228,7 @@ fn objc_method_codegen(
 
     methods.push(quote! {
         unsafe fn #method_name #sig where <Self as std::ops::Deref>::Target: objc::Message + Sized {
-            unsafe {
-                #body
-            }
+            #body
         }
     });
 }
@@ -4495,7 +4491,7 @@ pub(crate) fn codegen(
         if let Some(ref lib_name) = context.options().dynamic_library_name {
             let lib_ident = context.rust_ident(lib_name);
             let dynamic_items_tokens =
-                result.dynamic_items().get_tokens(lib_ident);
+                result.dynamic_items().get_tokens(lib_ident, context);
             result.push(dynamic_items_tokens);
         }
 
@@ -4598,6 +4594,9 @@ pub mod utils {
             pub struct __BindgenUnionField<T>(::#prefix::marker::PhantomData<T>);
         };
 
+        let transmute =
+            ctx.wrap_unsafe_ops(quote!(::#prefix::mem::transmute(self)));
+
         let union_field_impl = quote! {
             impl<T> __BindgenUnionField<T> {
                 #[inline]
@@ -4607,16 +4606,12 @@ pub mod utils {
 
                 #[inline]
                 pub unsafe fn as_ref(&self) -> &T {
-                    unsafe {
-                        ::#prefix::mem::transmute(self)
-                    }
+                    #transmute
                 }
 
                 #[inline]
                 pub unsafe fn as_mut(&mut self) -> &mut T {
-                    unsafe {
-                        ::#prefix::mem::transmute(self)
-                    }
+                    #transmute
                 }
             }
         };
@@ -4711,6 +4706,13 @@ pub mod utils {
                 ::#prefix::marker::PhantomData<T>, [T; 0]);
         };
 
+        let from_raw_parts = ctx.wrap_unsafe_ops(quote! (
+            ::#prefix::slice::from_raw_parts(self.as_ptr(), len)
+        ));
+        let from_raw_parts_mut = ctx.wrap_unsafe_ops(quote! (
+            ::#prefix::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
+        ));
+
         let incomplete_array_impl = quote! {
             impl<T> __IncompleteArrayField<T> {
                 #[inline]
@@ -4730,16 +4732,12 @@ pub mod utils {
 
                 #[inline]
                 pub unsafe fn as_slice(&self, len: usize) -> &[T] {
-                    unsafe {
-                        ::#prefix::slice::from_raw_parts(self.as_ptr(), len)
-                    }
+                    #from_raw_parts
                 }
 
                 #[inline]
                 pub unsafe fn as_mut_slice(&mut self, len: usize) -> &mut [T] {
-                    unsafe {
-                        ::#prefix::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
-                    }
+                    #from_raw_parts_mut
                 }
             }
         };

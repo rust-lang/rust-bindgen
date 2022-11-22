@@ -46,19 +46,17 @@ extern "C" {
 impl A {
     #[inline]
     pub unsafe fn some_function(&mut self) {
-        unsafe { A_some_function(self) }
+        A_some_function(self)
     }
     #[inline]
     pub unsafe fn some_other_function(&mut self) {
-        unsafe { A_some_other_function(self) }
+        A_some_other_function(self)
     }
     #[inline]
     pub unsafe fn new(x: ::std::os::raw::c_int) -> Self {
-        unsafe {
-            let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
-            A_A(__bindgen_tmp.as_mut_ptr(), x);
-            __bindgen_tmp.assume_init()
-        }
+        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+        A_A(__bindgen_tmp.as_mut_ptr(), x);
+        __bindgen_tmp.assume_init()
     }
 }
 extern crate libloading;
@@ -78,7 +76,7 @@ impl TestLib {
         P: AsRef<::std::ffi::OsStr>,
     {
         let library = ::libloading::Library::new(path)?;
-        unsafe { Self::from_library(library) }
+        Self::from_library(library)
     }
     pub unsafe fn from_library<L>(
         library: L,
@@ -87,8 +85,8 @@ impl TestLib {
         L: Into<::libloading::Library>,
     {
         let __library = library.into();
-        let foo = unsafe { __library.get(b"foo\0") }.map(|sym| *sym);
-        let bar = unsafe { __library.get(b"bar\0") }.map(|sym| *sym);
+        let foo = __library.get(b"foo\0").map(|sym| *sym);
+        let bar = __library.get(b"bar\0").map(|sym| *sym);
         Ok(TestLib {
             __library,
             foo,
@@ -99,11 +97,9 @@ impl TestLib {
         &self,
         x: *mut ::std::os::raw::c_void,
     ) -> ::std::os::raw::c_int {
-        unsafe {
-            (self.foo.as_ref().expect("Expected function, got error."))(x)
-        }
+        (self.foo.as_ref().expect("Expected function, got error."))(x)
     }
     pub unsafe fn bar(&self) -> () {
-        unsafe { (self.bar.as_ref().expect("Expected function, got error."))() }
+        (self.bar.as_ref().expect("Expected function, got error."))()
     }
 }

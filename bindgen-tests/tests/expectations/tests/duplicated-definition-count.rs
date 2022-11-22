@@ -50,7 +50,7 @@ impl BitStream {
         inputByteArray: *const ::std::os::raw::c_char,
         numberOfBytes: ::std::os::raw::c_uint,
     ) {
-        unsafe { BitStream_Write(self, inputByteArray, numberOfBytes) }
+        BitStream_Write(self, inputByteArray, numberOfBytes)
     }
     #[inline]
     pub unsafe fn Write1(
@@ -58,10 +58,10 @@ impl BitStream {
         bitStream: *mut BitStream,
         numberOfBits: ::std::os::raw::c_uint,
     ) {
-        unsafe { BitStream_Write1(self, bitStream, numberOfBits) }
+        BitStream_Write1(self, bitStream, numberOfBits)
     }
     #[inline]
     pub unsafe fn Write11(&mut self) {
-        unsafe { BitStream_Write11(self) }
+        BitStream_Write11(self)
     }
 }

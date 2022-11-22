@@ -25,7 +25,8 @@ use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 use cexpr;
 use clang_sys;
-use proc_macro2::{Ident, Span};
+use proc_macro2::{Ident, Span, TokenStream};
+use quote::ToTokens;
 use std::borrow::Cow;
 use std::cell::{Cell, RefCell};
 use std::collections::{BTreeSet, HashMap as StdHashMap};
@@ -2701,6 +2702,14 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     pub fn must_use_type_by_name(&self, item: &Item) -> bool {
         let name = item.path_for_allowlisting(self)[1..].join("::");
         self.options().must_use_types.matches(name)
+    }
+
+    pub(crate) fn wrap_unsafe_ops(&self, tokens: impl ToTokens) -> TokenStream {
+        if self.options.wrap_unsafe_ops {
+            quote!(unsafe { #tokens })
+        } else {
+            tokens.into_token_stream()
+        }
     }
 }
 

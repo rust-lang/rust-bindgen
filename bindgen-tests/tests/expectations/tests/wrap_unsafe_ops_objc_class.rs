@@ -9,23 +9,9 @@
 use objc::{self, class, msg_send, sel, sel_impl};
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone)]
-pub struct Bar(pub id);
-impl std::ops::Deref for Bar {
-    type Target = objc::runtime::Object;
-    fn deref(&self) -> &Self::Target {
-        unsafe { &*self.0 }
-    }
+extern "C" {
+    pub static mut fooVar: Foo;
 }
-unsafe impl objc::Message for Bar {}
-impl Bar {
-    pub fn alloc() -> Self {
-        Self(unsafe { msg_send!(class!(Bar), alloc) })
-    }
-}
-impl IBar for Bar {}
-pub trait IBar: Sized + std::ops::Deref {}
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone)]
 pub struct Foo(pub id);
@@ -43,16 +29,10 @@ impl Foo {
 }
 impl IFoo for Foo {}
 pub trait IFoo: Sized + std::ops::Deref {
-    unsafe fn methodUsingBar_(&self, my_bar: Bar)
+    unsafe fn method(&self)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, methodUsingBar: my_bar)
-    }
-    unsafe fn methodReturningBar() -> Bar
-    where
-        <Self as std::ops::Deref>::Target: objc::Message + Sized,
-    {
-        msg_send!(class!(Foo), methodReturningBar)
+        unsafe { msg_send!(*self, method) }
     }
 }

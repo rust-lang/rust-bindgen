@@ -39,19 +39,15 @@ extern "C" {
 impl TestOverload {
     #[inline]
     pub unsafe fn new(arg1: ::std::os::raw::c_int) -> Self {
-        unsafe {
-            let mut __bindgen_tmp = ::std::mem::uninitialized();
-            TestOverload_TestOverload(&mut __bindgen_tmp, arg1);
-            __bindgen_tmp
-        }
+        let mut __bindgen_tmp = ::std::mem::uninitialized();
+        TestOverload_TestOverload(&mut __bindgen_tmp, arg1);
+        __bindgen_tmp
     }
     #[inline]
     pub unsafe fn new1(arg1: f64) -> Self {
-        unsafe {
-            let mut __bindgen_tmp = ::std::mem::uninitialized();
-            TestOverload_TestOverload1(&mut __bindgen_tmp, arg1);
-            __bindgen_tmp
-        }
+        let mut __bindgen_tmp = ::std::mem::uninitialized();
+        TestOverload_TestOverload1(&mut __bindgen_tmp, arg1);
+        __bindgen_tmp
     }
 }
 #[repr(C)]
@@ -79,10 +75,8 @@ extern "C" {
 impl TestPublicNoArgs {
     #[inline]
     pub unsafe fn new() -> Self {
-        unsafe {
-            let mut __bindgen_tmp = ::std::mem::uninitialized();
-            TestPublicNoArgs_TestPublicNoArgs(&mut __bindgen_tmp);
-            __bindgen_tmp
-        }
+        let mut __bindgen_tmp = ::std::mem::uninitialized();
+        TestPublicNoArgs_TestPublicNoArgs(&mut __bindgen_tmp);
+        __bindgen_tmp
     }
 }

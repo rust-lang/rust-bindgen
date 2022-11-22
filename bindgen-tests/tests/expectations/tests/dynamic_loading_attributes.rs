@@ -20,7 +20,7 @@ impl TestLib {
         P: AsRef<::std::ffi::OsStr>,
     {
         let library = ::libloading::Library::new(path)?;
-        unsafe { Self::from_library(library) }
+        Self::from_library(library)
     }
     pub unsafe fn from_library<L>(
         library: L,
@@ -29,8 +29,8 @@ impl TestLib {
         L: Into<::libloading::Library>,
     {
         let __library = library.into();
-        let foo = unsafe { __library.get(b"foo\0") }.map(|sym| *sym)?;
-        let baz = unsafe { __library.get(b"baz\0") }.map(|sym| *sym)?;
+        let foo = __library.get(b"foo\0").map(|sym| *sym)?;
+        let baz = __library.get(b"baz\0").map(|sym| *sym)?;
         Ok(TestLib {
             __library,
             foo,
@@ -48,9 +48,9 @@ impl TestLib {
         x: ::std::os::raw::c_int,
         y: ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_int {
-        unsafe { (self.foo)(x, y) }
+        (self.foo)(x, y)
     }
     pub unsafe fn baz(&self) -> ::std::os::raw::c_int {
-        unsafe { (self.baz)() }
+        (self.baz)()
     }
 }

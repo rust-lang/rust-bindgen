@@ -38,7 +38,7 @@ extern "C" {
 impl A {
     #[inline]
     pub unsafe fn make() -> A {
-        unsafe { make() }
+        make()
     }
 }
 #[repr(C)]
@@ -74,6 +74,6 @@ extern "C" {
 impl B {
     #[inline]
     pub unsafe fn make() -> B {
-        unsafe { make1() }
+        make1()
     }
 }

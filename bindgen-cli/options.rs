@@ -562,6 +562,9 @@ where
                 .value_name("override")
                 .multiple_occurrences(true)
                 .number_of_values(1),
+            Arg::new("wrap-unsafe-ops")
+                .long("wrap-unsafe-ops")
+                .help("Wrap unsafe operations in unsafe blocks."),
             Arg::new("V")
                 .long("version")
                 .help("Prints the version, and exits"),
@@ -1083,6 +1086,10 @@ where
                 .unwrap_or_else(|err| panic!("Invalid ABI override: {}", err));
             builder = builder.override_abi(abi, regex);
         }
+    }
+
+    if matches.is_present("wrap-unsafe-ops") {
+        builder = builder.wrap_unsafe_ops(true);
     }
 
     Ok((builder, output, verbose))

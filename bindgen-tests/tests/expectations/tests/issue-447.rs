@@ -65,14 +65,12 @@ pub mod root {
         pub unsafe fn new(
             arg1: root::mozilla::detail::GuardObjectNotifier,
         ) -> Self {
-            unsafe {
-                let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
-                JSAutoCompartment_JSAutoCompartment(
-                    __bindgen_tmp.as_mut_ptr(),
-                    arg1,
-                );
-                __bindgen_tmp.assume_init()
-            }
+            let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+            JSAutoCompartment_JSAutoCompartment(
+                __bindgen_tmp.as_mut_ptr(),
+                arg1,
+            );
+            __bindgen_tmp.assume_init()
         }
     }
 }
