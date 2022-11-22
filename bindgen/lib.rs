@@ -2274,11 +2274,12 @@ impl BindgenOptions {
             .collect()
     }
 
-    fn process_comment(&self, comment: &str, indent: usize) -> String {
+    fn process_comment(&self, comment: &str) -> String {
+        let comment = comment::preprocess(comment);
         self.parse_callbacks
             .last()
-            .and_then(|cb| cb.process_comment(comment, indent))
-            .unwrap_or_else(|| comment::preprocess(comment, indent))
+            .and_then(|cb| cb.process_comment(&comment))
+            .unwrap_or(comment)
     }
 }
 

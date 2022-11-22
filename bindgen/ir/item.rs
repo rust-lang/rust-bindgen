@@ -514,10 +514,9 @@ impl Item {
             return None;
         }
 
-        self.comment.as_ref().map(|comment| {
-            ctx.options()
-                .process_comment(comment, self.codegen_depth(ctx))
-        })
+        self.comment
+            .as_ref()
+            .map(|comment| ctx.options().process_comment(comment))
     }
 
     /// What kind of item is this?

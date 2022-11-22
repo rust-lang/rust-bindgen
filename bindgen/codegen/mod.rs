@@ -1244,7 +1244,6 @@ trait FieldCodegen<'a> {
         &self,
         ctx: &BindgenContext,
         fields_should_be_private: bool,
-        codegen_depth: usize,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         result: &mut CodegenResult,
@@ -1264,7 +1263,6 @@ impl<'a> FieldCodegen<'a> for Field {
         &self,
         ctx: &BindgenContext,
         fields_should_be_private: bool,
-        codegen_depth: usize,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         result: &mut CodegenResult,
@@ -1281,7 +1279,6 @@ impl<'a> FieldCodegen<'a> for Field {
                 data.codegen(
                     ctx,
                     fields_should_be_private,
-                    codegen_depth,
                     accessor_kind,
                     parent,
                     result,
@@ -1295,7 +1292,6 @@ impl<'a> FieldCodegen<'a> for Field {
                 unit.codegen(
                     ctx,
                     fields_should_be_private,
-                    codegen_depth,
                     accessor_kind,
                     parent,
                     result,
@@ -1345,7 +1341,6 @@ impl<'a> FieldCodegen<'a> for FieldData {
         &self,
         ctx: &BindgenContext,
         fields_should_be_private: bool,
-        codegen_depth: usize,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         result: &mut CodegenResult,
@@ -1391,9 +1386,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
         let mut field = quote! {};
         if ctx.options().generate_comments {
             if let Some(raw_comment) = self.comment() {
-                let comment = ctx
-                    .options()
-                    .process_comment(raw_comment, codegen_depth + 1);
+                let comment = ctx.options().process_comment(raw_comment);
                 field = attributes::doc(comment);
             }
         }
@@ -1553,7 +1546,6 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         &self,
         ctx: &BindgenContext,
         fields_should_be_private: bool,
-        codegen_depth: usize,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         result: &mut CodegenResult,
@@ -1630,7 +1622,6 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
             bf.codegen(
                 ctx,
                 fields_should_be_private,
-                codegen_depth,
                 accessor_kind,
                 parent,
                 result,
@@ -1705,7 +1696,6 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         &self,
         ctx: &BindgenContext,
         fields_should_be_private: bool,
-        _codegen_depth: usize,
         _accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         _result: &mut CodegenResult,
@@ -1883,7 +1873,6 @@ impl CodeGenerator for CompInfo {
 
         let mut methods = vec![];
         if !is_opaque {
-            let codegen_depth = item.codegen_depth(ctx);
             let fields_should_be_private =
                 item.annotations().private_fields().unwrap_or(false);
             let struct_accessor_kind = item
@@ -1894,7 +1883,6 @@ impl CodeGenerator for CompInfo {
                 field.codegen(
                     ctx,
                     fields_should_be_private,
-                    codegen_depth,
                     struct_accessor_kind,
                     self,
                     result,
@@ -2701,14 +2689,12 @@ impl std::str::FromStr for EnumVariation {
 /// A helper type to construct different enum variations.
 enum EnumBuilder<'a> {
     Rust {
-        codegen_depth: usize,
         attrs: Vec<proc_macro2::TokenStream>,
         ident: Ident,
         tokens: proc_macro2::TokenStream,
         emitted_any_variants: bool,
     },
     NewType {
-        codegen_depth: usize,
         canonical_name: &'a str,
         tokens: proc_macro2::TokenStream,
         is_bitfield: bool,
@@ -2716,26 +2702,14 @@ enum EnumBuilder<'a> {
     },
     Consts {
         variants: Vec<proc_macro2::TokenStream>,
-        codegen_depth: usize,
     },
     ModuleConsts {
-        codegen_depth: usize,
         module_name: &'a str,
         module_items: Vec<proc_macro2::TokenStream>,
     },
 }
 
 impl<'a> EnumBuilder<'a> {
-    /// Returns the depth of the code generation for a variant of this enum.
-    fn codegen_depth(&self) -> usize {
-        match *self {
-            EnumBuilder::Rust { codegen_depth, .. } |
-            EnumBuilder::NewType { codegen_depth, .. } |
-            EnumBuilder::ModuleConsts { codegen_depth, .. } |
-            EnumBuilder::Consts { codegen_depth, .. } => codegen_depth,
-        }
-    }
-
     /// Returns true if the builder is for a rustified enum.
     fn is_rust_enum(&self) -> bool {
         matches!(*self, EnumBuilder::Rust { .. })
@@ -2748,7 +2722,6 @@ impl<'a> EnumBuilder<'a> {
         mut attrs: Vec<proc_macro2::TokenStream>,
         repr: proc_macro2::TokenStream,
         enum_variation: EnumVariation,
-        enum_codegen_depth: usize,
     ) -> Self {
         let ident = Ident::new(name, Span::call_site());
 
@@ -2757,7 +2730,6 @@ impl<'a> EnumBuilder<'a> {
                 is_bitfield,
                 is_global,
             } => EnumBuilder::NewType {
-                codegen_depth: enum_codegen_depth,
                 canonical_name: name,
                 tokens: quote! {
                     #( #attrs )*
@@ -2772,7 +2744,6 @@ impl<'a> EnumBuilder<'a> {
                 attrs.insert(0, quote! { #[repr( #repr )] });
                 let tokens = quote!();
                 EnumBuilder::Rust {
-                    codegen_depth: enum_codegen_depth + 1,
                     attrs,
                     ident,
                     tokens,
@@ -2788,10 +2759,7 @@ impl<'a> EnumBuilder<'a> {
                     pub type #ident = #repr;
                 });
 
-                EnumBuilder::Consts {
-                    variants,
-                    codegen_depth: enum_codegen_depth,
-                }
+                EnumBuilder::Consts { variants }
             }
 
             EnumVariation::ModuleConsts => {
@@ -2805,7 +2773,6 @@ impl<'a> EnumBuilder<'a> {
                 };
 
                 EnumBuilder::ModuleConsts {
-                    codegen_depth: enum_codegen_depth + 1,
                     module_name: name,
                     module_items: vec![type_definition],
                 }
@@ -2837,9 +2804,7 @@ impl<'a> EnumBuilder<'a> {
         let mut doc = quote! {};
         if ctx.options().generate_comments {
             if let Some(raw_comment) = variant.comment() {
-                let comment = ctx
-                    .options()
-                    .process_comment(raw_comment, self.codegen_depth());
+                let comment = ctx.options().process_comment(raw_comment);
                 doc = attributes::doc(comment);
             }
         }
@@ -2850,13 +2815,11 @@ impl<'a> EnumBuilder<'a> {
                 ident,
                 tokens,
                 emitted_any_variants: _,
-                codegen_depth,
             } => {
                 let name = ctx.rust_ident(variant_name);
                 EnumBuilder::Rust {
                     attrs,
                     ident,
-                    codegen_depth,
                     tokens: quote! {
                         #tokens
                         #doc
@@ -2917,7 +2880,6 @@ impl<'a> EnumBuilder<'a> {
                 self
             }
             EnumBuilder::ModuleConsts {
-                codegen_depth,
                 module_name,
                 mut module_items,
             } => {
@@ -2931,7 +2893,6 @@ impl<'a> EnumBuilder<'a> {
                 EnumBuilder::ModuleConsts {
                     module_name,
                     module_items,
-                    codegen_depth,
                 }
             }
         }
@@ -3209,13 +3170,7 @@ impl CodeGenerator for Enum {
 
         let repr = repr.to_rust_ty_or_opaque(ctx, item);
 
-        let mut builder = EnumBuilder::new(
-            &name,
-            attrs,
-            repr,
-            variation,
-            item.codegen_depth(ctx),
-        );
+        let mut builder = EnumBuilder::new(&name, attrs, repr, variation);
 
         // A map where we keep a value -> variant relation.
         let mut seen_values = HashMap::<_, Ident>::default();

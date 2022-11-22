@@ -110,11 +110,7 @@ pub trait ParseCallbacks: fmt::Debug {
     }
 
     /// Process a source code comment.
-    fn process_comment(
-        &self,
-        _comment: &str,
-        _indentation_level: usize,
-    ) -> Option<String> {
+    fn process_comment(&self, _comment: &str) -> Option<String> {
         None
     }
 }
