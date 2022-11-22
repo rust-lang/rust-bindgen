@@ -154,9 +154,20 @@
 ## Added
 
 ## Changed
+
+## Removed
+
+## Fixed
+
+## Security
+
+# 0.63.0
+
+## Added
+
+## Changed
  * Only wrap unsafe operations in unsafe blocks if the `--wrap_unsafe_ops`
    option is enabled.
-
  * Replace the `name: &str` argument for `ParseCallbacks::add_derives` by
    `info: DeriveInfo`.
  * All the rust targets equal or lower than `1.30` are being deprecated and
@@ -170,10 +181,6 @@
    `blacklist_function`, `blacklist_item`, `whitelisted_type`,
    `whitelist_type`, `whitelist_function`, `whitelisted_function`,
    `whitelist_var`, `whitelisted_var`, `unstable_rust`.
-
-## Fixed
-
-## Security
 
 # 0.62.0
 
