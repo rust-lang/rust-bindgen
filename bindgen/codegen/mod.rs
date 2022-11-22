@@ -2595,17 +2595,7 @@ impl MethodCodegen for Method {
             })
         }
 
-        let block = if ctx.options().wrap_unsafe_ops {
-            quote! {
-                unsafe {
-                    #( #stmts );*
-                }
-            }
-        } else {
-            quote! {
-                #( #stmts );*
-            }
-        };
+        let block = ctx.wrap_unsafe_ops(quote! ( #( #stmts );*));
 
         let mut attrs = vec![attributes::inline()];
 
@@ -4261,7 +4251,7 @@ fn objc_method_codegen(
     let methods_and_args = method.format_method_call(&fn_args);
 
     let body = {
-        let mut body = if method.is_class_method() {
+        let body = if method.is_class_method() {
             let class_name = ctx.rust_ident(
                 class_name
                     .expect("Generating a class method without class name?"),
@@ -4271,11 +4261,7 @@ fn objc_method_codegen(
             quote!(msg_send!(*self, #methods_and_args))
         };
 
-        if ctx.options().wrap_unsafe_ops {
-            body = quote!(unsafe { #body });
-        }
-
-        body
+        ctx.wrap_unsafe_ops(body)
     };
 
     let method_name =
@@ -4649,11 +4635,8 @@ pub mod utils {
             pub struct __BindgenUnionField<T>(::#prefix::marker::PhantomData<T>);
         };
 
-        let transmute = if ctx.options().wrap_unsafe_ops {
-            quote!(unsafe { ::#prefix::mem::transmute(self) })
-        } else {
-            quote!(::#prefix::mem::transmute(self))
-        };
+        let transmute =
+            ctx.wrap_unsafe_ops(quote!(::#prefix::mem::transmute(self)));
 
         let union_field_impl = quote! {
             impl<T> __BindgenUnionField<T> {
@@ -4764,24 +4747,12 @@ pub mod utils {
                 ::#prefix::marker::PhantomData<T>, [T; 0]);
         };
 
-        let from_raw_parts = if ctx.options().wrap_unsafe_ops {
-            quote! {
-                unsafe { ::#prefix::slice::from_raw_parts(self.as_ptr(), len) }
-            }
-        } else {
-            quote! {
-                ::#prefix::slice::from_raw_parts(self.as_ptr(), len)
-            }
-        };
-        let from_raw_parts_mut = if ctx.options().wrap_unsafe_ops {
-            quote! {
-                unsafe { ::#prefix::slice::from_raw_parts_mut(self.as_mut_ptr(), len) }
-            }
-        } else {
-            quote! {
-                ::#prefix::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
-            }
-        };
+        let from_raw_parts = ctx.wrap_unsafe_ops(quote! (
+            ::#prefix::slice::from_raw_parts(self.as_ptr(), len)
+        ));
+        let from_raw_parts_mut = ctx.wrap_unsafe_ops(quote! (
+            ::#prefix::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
+        ));
 
         let incomplete_array_impl = quote! {
             impl<T> __IncompleteArrayField<T> {
