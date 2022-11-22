@@ -730,7 +730,7 @@ impl Builder {
         #[allow(deprecated)]
         if rust_target <= RustTarget::Stable_1_30 {
             warn!(
-                "The {} rust target is deprecated. If you have a good reason to use this target please submit an issue: https://github.com/rust-lang/rust-bindgen/issues",
+                "The {} rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues",
                 String::from(rust_target)
             );
         }

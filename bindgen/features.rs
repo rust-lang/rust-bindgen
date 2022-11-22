@@ -82,40 +82,46 @@ macro_rules! rust_target_values_def {
     }
 }
 
+macro_rules! deprecated {
+    () => {
+        #[deprecated = ""]
+    };
+}
+
 /// Defines macro which takes a macro
 macro_rules! rust_target_base {
     ( $x_macro:ident ) => {
         $x_macro!(
             /// Rust stable 1.0
-            #[deprecated] => Stable_1_0 => 1.0;
+            #[deprecated = "This rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues"] => Stable_1_0 => 1.0;
             /// Rust stable 1.17
             ///  * Static lifetime elision ([RFC 1623](https://github.com/rust-lang/rfcs/blob/master/text/1623-static.md))
-            #[deprecated] => Stable_1_17 => 1.17;
+            #[deprecated = "This rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues"] => Stable_1_17 => 1.17;
             /// Rust stable 1.19
             ///  * Untagged unions ([RFC 1444](https://github.com/rust-lang/rfcs/blob/master/text/1444-union.md))
-            #[deprecated] => Stable_1_19 => 1.19;
+            #[deprecated = "This rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues"] => Stable_1_19 => 1.19;
             /// Rust stable 1.20
             ///  * Associated constants ([PR](https://github.com/rust-lang/rust/pull/42809))
-            #[deprecated] => Stable_1_20 => 1.20;
+            #[deprecated = "This rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues"] => Stable_1_20 => 1.20;
             /// Rust stable 1.21
             ///  * Builtin impls for `Clone` ([PR](https://github.com/rust-lang/rust/pull/43690))
-            #[deprecated] => Stable_1_21 => 1.21;
+            #[deprecated = "This rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues"] => Stable_1_21 => 1.21;
             /// Rust stable 1.25
             ///  * `repr(align)` ([PR](https://github.com/rust-lang/rust/pull/47006))
-            #[deprecated] => Stable_1_25 => 1.25;
+            #[deprecated = "This rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues"] => Stable_1_25 => 1.25;
             /// Rust stable 1.26
             ///  * [i128 / u128 support](https://doc.rust-lang.org/std/primitive.i128.html)
-            #[deprecated] => Stable_1_26 => 1.26;
+            #[deprecated = "This rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues"] => Stable_1_26 => 1.26;
             /// Rust stable 1.27
             ///  * `must_use` attribute on functions ([PR](https://github.com/rust-lang/rust/pull/48925))
-            #[deprecated] => Stable_1_27 => 1.27;
+            #[deprecated = "This rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues"] => Stable_1_27 => 1.27;
             /// Rust stable 1.28
             ///  * `repr(transparent)` ([PR](https://github.com/rust-lang/rust/pull/51562))
-            #[deprecated] => Stable_1_28 => 1.28;
+            #[deprecated = "This rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues"] => Stable_1_28 => 1.28;
             /// Rust stable 1.30
             ///  * `const fn` support for limited cases ([PR](https://github.com/rust-lang/rust/pull/54835/)
             /// *  [c_void available in core](https://doc.rust-lang.org/core/ffi/enum.c_void.html)
-            #[deprecated] => Stable_1_30 => 1.30;
+            #[deprecated = "This rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues"] => Stable_1_30 => 1.30;
             /// Rust stable 1.33
             ///  * repr(packed(N)) ([PR](https://github.com/rust-lang/rust/pull/57049))
             => Stable_1_33 => 1.33;
