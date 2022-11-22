@@ -3,7 +3,6 @@
 use super::super::codegen::{EnumVariation, CONSTIFIED_ENUM_MODULE_REPR_NAME};
 use super::analysis::{HasVtable, HasVtableResult, Sizedness, SizednessResult};
 use super::annotations::Annotations;
-use super::comment;
 use super::comp::{CompKind, MethodKind};
 use super::context::{BindgenContext, ItemId, PartialType, TypeId};
 use super::derive::{
@@ -515,9 +514,9 @@ impl Item {
             return None;
         }
 
-        self.comment.as_ref().map(|comment| {
-            comment::preprocess(comment, self.codegen_depth(ctx))
-        })
+        self.comment
+            .as_ref()
+            .map(|comment| ctx.options().process_comment(comment))
     }
 
     /// What kind of item is this?

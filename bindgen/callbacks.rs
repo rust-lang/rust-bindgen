@@ -108,6 +108,11 @@ pub trait ParseCallbacks: fmt::Debug {
     fn add_derives(&self, _info: &DeriveInfo<'_>) -> Vec<String> {
         vec![]
     }
+
+    /// Process a source code comment.
+    fn process_comment(&self, _comment: &str) -> Option<String> {
+        None
+    }
 }
 
 /// Relevant information about a type to which new derive attributes will be added using
