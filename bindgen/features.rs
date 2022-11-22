@@ -82,12 +82,6 @@ macro_rules! rust_target_values_def {
     }
 }
 
-macro_rules! deprecated {
-    () => {
-        #[deprecated = ""]
-    };
-}
-
 /// Defines macro which takes a macro
 macro_rules! rust_target_base {
     ( $x_macro:ident ) => {
