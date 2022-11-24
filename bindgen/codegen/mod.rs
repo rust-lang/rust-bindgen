@@ -434,10 +434,10 @@ trait CodeGenerator {
     /// Extra information returned to the caller.
     type Return;
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         extra: &Self::Extra,
     ) -> Self::Return;
 }
@@ -477,10 +477,10 @@ impl CodeGenerator for Item {
     type Extra = ();
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         _extra: &(),
     ) {
         debug!("<Item as CodeGenerator>::codegen: self = {:?}", self);
@@ -509,10 +509,10 @@ impl CodeGenerator for Module {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         debug!("<Module as CodeGenerator>::codegen: item = {:?}", item);
@@ -601,10 +601,10 @@ impl CodeGenerator for Var {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         use crate::ir::var::VarType;
@@ -748,10 +748,10 @@ impl CodeGenerator for Type {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         debug!("<Type as CodeGenerator>::codegen: item = {:?}", item);
@@ -1069,10 +1069,10 @@ impl<'a> CodeGenerator for Vtable<'a> {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'b>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'b>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         assert_eq!(item.id(), self.item_id);
@@ -1168,10 +1168,10 @@ impl CodeGenerator for TemplateInstantiation {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         debug_assert!(item.is_enabled_for_codegen(ctx));
@@ -1796,10 +1796,10 @@ impl CodeGenerator for CompInfo {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         debug!("<CompInfo as CodeGenerator>::codegen: item = {:?}", item);
@@ -2407,23 +2407,23 @@ impl CodeGenerator for CompInfo {
 }
 
 trait MethodCodegen {
-    fn codegen_method<'a>(
+    fn codegen_method(
         &self,
         ctx: &BindgenContext,
         methods: &mut Vec<proc_macro2::TokenStream>,
         method_names: &mut HashSet<String>,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         parent: &CompInfo,
     );
 }
 
 impl MethodCodegen for Method {
-    fn codegen_method<'a>(
+    fn codegen_method(
         &self,
         ctx: &BindgenContext,
         methods: &mut Vec<proc_macro2::TokenStream>,
         method_names: &mut HashSet<String>,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         _parent: &CompInfo,
     ) {
         assert!({
@@ -2779,13 +2779,13 @@ impl<'a> EnumBuilder<'a> {
     }
 
     /// Add a variant to this enum.
-    fn with_variant<'b>(
+    fn with_variant(
         self,
         ctx: &BindgenContext,
         variant: &EnumVariant,
         mangling_prefix: Option<&str>,
         rust_ty: proc_macro2::TokenStream,
-        result: &mut CodegenResult<'b>,
+        result: &mut CodegenResult<'_>,
         is_ty_named: bool,
     ) -> Self {
         let variant_name = ctx.rust_mangle(variant.name());
@@ -2896,11 +2896,11 @@ impl<'a> EnumBuilder<'a> {
         }
     }
 
-    fn build<'b>(
+    fn build(
         self,
         ctx: &BindgenContext,
         rust_ty: proc_macro2::TokenStream,
-        result: &mut CodegenResult<'b>,
+        result: &mut CodegenResult<'_>,
     ) -> proc_macro2::TokenStream {
         match self {
             EnumBuilder::Rust {
@@ -2999,10 +2999,10 @@ impl CodeGenerator for Enum {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         debug!("<Enum as CodeGenerator>::codegen: item = {:?}", item);
@@ -3137,7 +3137,7 @@ impl CodeGenerator for Enum {
             attrs.push(attributes::derives(&derives));
         }
 
-        fn add_constant<'a>(
+        fn add_constant(
             ctx: &BindgenContext,
             enum_: &Type,
             // Only to avoid recomputing every time.
@@ -3148,7 +3148,7 @@ impl CodeGenerator for Enum {
             variant_name: &Ident,
             referenced_name: &Ident,
             enum_rust_ty: proc_macro2::TokenStream,
-            result: &mut CodegenResult<'a>,
+            result: &mut CodegenResult<'_>,
         ) {
             let constant_name = if enum_.name().is_some() {
                 if ctx.options().prepend_enum_name {
@@ -3995,10 +3995,10 @@ impl CodeGenerator for Function {
     /// it.
     type Return = Option<u32>;
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) -> Self::Return {
         debug!("<Function as CodeGenerator>::codegen: item = {:?}", item);
@@ -4237,10 +4237,10 @@ impl CodeGenerator for ObjCInterface {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         debug_assert!(item.is_enabled_for_codegen(ctx));
