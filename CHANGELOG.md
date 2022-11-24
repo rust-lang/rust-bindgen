@@ -152,6 +152,8 @@
 # Unreleased
 
 ## Added
+ * Do not wrap function pointer fields in `Option` if the new
+   `--dont-wrap-fn-ptr-fields` option is enabled.
 
 ## Changed
 

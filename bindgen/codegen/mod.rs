@@ -3762,10 +3762,12 @@ impl TryToRustTy for Type {
                 // variant here.
                 let ty = fs.try_to_rust_ty(ctx, &())?;
 
-                let prefix = ctx.trait_prefix();
-                Ok(quote! {
-                    ::#prefix::option::Option<#ty>
-                })
+                if ctx.options().wrap_fn_ptr_fields {
+                    let prefix = ctx.trait_prefix();
+                    Ok(quote!(::#prefix::option::Option<#ty>))
+                } else {
+                    Ok(quote!(#ty))
+                }
             }
             TypeKind::Array(item, len) | TypeKind::Vector(item, len) => {
                 let ty = item.try_to_rust_ty(ctx, &())?;

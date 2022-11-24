@@ -649,6 +649,10 @@ impl Builder {
             output_vector.push("--wrap-unsafe-ops".into());
         }
 
+        if !self.options.wrap_fn_ptr_fields {
+            output_vector.push("--dont-wrap-fn-ptr-fields".into());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -1787,6 +1791,12 @@ impl Builder {
         self.options.wrap_unsafe_ops = doit;
         self
     }
+
+    /// If true, wraps function pointer fields in `Option`.
+    pub fn wrap_fn_ptr_fields(mut self, doit: bool) -> Self {
+        self.options.wrap_fn_ptr_fields = doit;
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -2127,6 +2137,9 @@ struct BindgenOptions {
 
     /// Whether to wrap unsafe operations in unsafe blocks or not.
     wrap_unsafe_ops: bool,
+
+    /// Whether to wrap function pointer fields in `Option` or not.
+    wrap_fn_ptr_fields: bool,
 }
 
 impl BindgenOptions {
@@ -2238,6 +2251,7 @@ impl Default for BindgenOptions {
             record_matches: true,
             rustfmt_bindings: true,
             size_t_is_usize: true,
+            wrap_fn_ptr_fields: true,
 
             --default-fields--
             blocklisted_types,

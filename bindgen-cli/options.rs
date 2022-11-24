@@ -565,6 +565,9 @@ where
             Arg::new("wrap-unsafe-ops")
                 .long("wrap-unsafe-ops")
                 .help("Wrap unsafe operations in unsafe blocks."),
+            Arg::new("dont-wrap-fn-ptr-fields")
+                .long("dont-wrap-fn-ptr-fields")
+                .help("Do not wrap function pointer fields in `Option`."),
             Arg::new("V")
                 .long("version")
                 .help("Prints the version, and exits"),
@@ -1090,6 +1093,10 @@ where
 
     if matches.is_present("wrap-unsafe-ops") {
         builder = builder.wrap_unsafe_ops(true);
+    }
+
+    if matches.is_present("dont-wrap-fn-ptr-fields") {
+        builder = builder.wrap_fn_ptr_fields(false);
     }
 
     Ok((builder, output, verbose))
