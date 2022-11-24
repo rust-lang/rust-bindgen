@@ -5,14 +5,16 @@ use syn::{parse2, ItemMod};
 use crate::BindgenOptions;
 
 mod merge_extern_blocks;
+mod non_null_fn_ptr;
 mod sort_semantically;
 
 use merge_extern_blocks::merge_extern_blocks;
+use non_null_fn_ptr::non_null_fn_ptr;
 use sort_semantically::sort_semantically;
 
 struct PostProcessingPass {
     should_run: fn(&BindgenOptions) -> bool,
-    run: fn(&mut ItemMod),
+    run: fn(&mut ItemMod, &BindgenOptions),
 }
 
 // TODO: This can be a const fn when mutable references are allowed in const
@@ -21,13 +23,19 @@ macro_rules! pass {
     ($pass:ident) => {
         PostProcessingPass {
             should_run: |options| options.$pass,
-            run: |item_mod| $pass(item_mod),
+            run: |item_mod, options| $pass(item_mod, options),
         }
     };
 }
 
-const PASSES: &[PostProcessingPass] =
-    &[pass!(merge_extern_blocks), pass!(sort_semantically)];
+const PASSES: &[PostProcessingPass] = &[
+    pass!(merge_extern_blocks),
+    pass!(sort_semantically),
+    PostProcessingPass {
+        should_run: |options| !options.non_null_fn_ptr.is_empty(),
+        run: non_null_fn_ptr,
+    },
+];
 
 pub(crate) fn postprocessing(
     items: Vec<TokenStream>,
@@ -51,7 +59,7 @@ pub(crate) fn postprocessing(
 
     for pass in PASSES {
         if (pass.should_run)(options) {
-            (pass.run)(&mut item_mod);
+            (pass.run)(&mut item_mod, options);
         }
     }
 

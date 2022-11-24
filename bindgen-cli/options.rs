@@ -355,6 +355,10 @@ struct BindgenCommand {
     /// inline` functions.
     #[arg(long, requires = "experimental", value_name = "SUFFIX")]
     wrap_static_fns_suffix: Option<String>,
+    /// Do not wrap function pointers in `Option` if they are used as fields/arguments whose path
+    /// matches <PATH>.
+    #[arg(long, value_name = "PATH")]
+    non_null_fn_ptr: Vec<String>,
     /// Enables experimental features.
     #[arg(long)]
     experimental: bool,
@@ -478,6 +482,7 @@ where
         wrap_static_fns,
         wrap_static_fns_path,
         wrap_static_fns_suffix,
+        non_null_fn_ptr,
         experimental: _,
         version,
         clang_args,
@@ -987,6 +992,10 @@ where
 
     if let Some(suffix) = wrap_static_fns_suffix {
         builder = builder.wrap_static_fns_suffix(suffix);
+    }
+
+    for path in non_null_fn_ptr {
+        builder = builder.non_null_fn_ptr(path);
     }
 
     Ok((builder, output, verbose))

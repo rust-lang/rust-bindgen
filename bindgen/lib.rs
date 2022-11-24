@@ -384,6 +384,7 @@ impl Builder {
             (&self.options.no_default_types, "--no-default"),
             (&self.options.no_hash_types, "--no-hash"),
             (&self.options.must_use_types, "--must-use-type"),
+            (&self.options.non_null_fn_ptr, "--non-null-fn-ptr"),
         ];
 
         for (set, flag) in regex_sets {
@@ -1834,6 +1835,15 @@ impl Builder {
         self.options.wrap_static_fns_suffix = Some(suffix.as_ref().to_owned());
         self
     }
+
+    fn_with_regex_arg! {
+        /// Avoid wrapping a function pointer argument/field in `Option`. Regular expressions are
+        /// supported.
+        pub fn non_null_fn_ptr<T: Into<String>>(mut self, arg: T) -> Self {
+            self.options.non_null_fn_ptr.insert(arg.into());
+            self
+        }
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -2180,6 +2190,9 @@ struct BindgenOptions {
     wrap_static_fns_suffix: Option<String>,
 
     wrap_static_fns_path: Option<PathBuf>,
+
+    /// The set of function pointer fields/arguments that should not be wrapped in `Option`.
+    non_null_fn_ptr: RegexSet,
 }
 
 impl BindgenOptions {
@@ -2212,6 +2225,7 @@ impl BindgenOptions {
             &mut self.no_default_types,
             &mut self.no_hash_types,
             &mut self.must_use_types,
+            &mut self.non_null_fn_ptr,
         ];
         let record_matches = self.record_matches;
         for regex_set in self.abi_overrides.values_mut().chain(regex_sets) {
@@ -2375,6 +2389,7 @@ impl Default for BindgenOptions {
             wrap_static_fns,
             wrap_static_fns_suffix,
             wrap_static_fns_path,
+            non_null_fn_ptr,
         }
     }
 }

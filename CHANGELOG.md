@@ -162,6 +162,9 @@
 # Unreleased
 
 ## Added
+ * Added the `--non-null-fn-ptr=<PATH>` flag and its equivalent builder
+   method to avoid wrapping function pointer arguments or fields in `Option` if
+   their path matches `<PATH>`.
 
 ## Changed
 

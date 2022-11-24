@@ -3,7 +3,12 @@ use syn::{
     Item, ItemMod,
 };
 
-pub(super) fn sort_semantically(item_mod: &mut ItemMod) {
+use crate::BindgenOptions;
+
+pub(super) fn sort_semantically(
+    item_mod: &mut ItemMod,
+    _options: &BindgenOptions,
+) {
     Visitor.visit_item_mod_mut(item_mod)
 }
 

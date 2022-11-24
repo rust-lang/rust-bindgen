@@ -3784,11 +3784,8 @@ impl TryToRustTy for Type {
                 // they aren't NonZero), so don't *ever* use an or_opaque
                 // variant here.
                 let ty = fs.try_to_rust_ty(ctx, &())?;
-
                 let prefix = ctx.trait_prefix();
-                Ok(quote! {
-                    ::#prefix::option::Option<#ty>
-                })
+                Ok(quote!(::#prefix::option::Option<#ty>))
             }
             TypeKind::Array(item, len) | TypeKind::Vector(item, len) => {
                 let ty = item.try_to_rust_ty(ctx, &())?;
