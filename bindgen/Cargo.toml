@@ -27,7 +27,7 @@ path = "./lib.rs"
 [dependencies]
 bitflags = "1.0.3"
 cexpr = "0.6"
-clang-sys = { version = "1", features = ["clang_6_0"] }
+clang-sys = "1.4"
 lazycell = "1"
 lazy_static = "1"
 peeking_take_while = "0.1.2"
@@ -41,12 +41,17 @@ proc-macro2 = { version = "1", default-features = false }
 log = { version = "0.4", optional = true }
 
 [features]
-default = ["logging", "runtime", "which-rustfmt"]
+default = ["logging", "runtime", "which-rustfmt", "clang_6"]
 logging = ["log"]
 static = ["clang-sys/static"]
 runtime = ["clang-sys/runtime"]
 # Dynamically discover a `rustfmt` binary using the `which` crate
 which-rustfmt = ["which"]
+
+# By default, accept clang versions between 6 and 14
+clang_6 = ["clang-sys/clang_6_0"]
+# To use clang >= 15, this feature must be specified
+clang_15 = ["clang-sys/clang_15_0"]
 
 # These features only exist for CI testing -- don't use them if you're not hacking
 # on bindgen!
