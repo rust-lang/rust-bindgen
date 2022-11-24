@@ -6,7 +6,6 @@ use super::item::Item;
 use super::traversal::{Trace, Tracer};
 use super::ty::TypeKind;
 use crate::clang;
-use crate::parse::ClangItemParser;
 use clang_sys::CXChildVisit_Continue;
 use clang_sys::CXCursor_ObjCCategoryDecl;
 use clang_sys::CXCursor_ObjCClassMethodDecl;

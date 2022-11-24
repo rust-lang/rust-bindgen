@@ -20,7 +20,6 @@ use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
 use crate::clang::{self, Cursor};
-use crate::parse::ClangItemParser;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 use cexpr;

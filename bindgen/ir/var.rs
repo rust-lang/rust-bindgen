@@ -10,9 +10,7 @@ use super::ty::{FloatKind, TypeKind};
 use crate::callbacks::MacroParsingBehavior;
 use crate::clang;
 use crate::clang::ClangToken;
-use crate::parse::{
-    ClangItemParser, ClangSubItemParser, ParseError, ParseResult,
-};
+use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 use cexpr;
 use std::io;
 use std::num::Wrapping;
