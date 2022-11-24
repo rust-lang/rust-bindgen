@@ -6,7 +6,7 @@
 )]
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct foo {
     pub bar: unsafe extern "C" fn() -> ::std::os::raw::c_int,
 }
