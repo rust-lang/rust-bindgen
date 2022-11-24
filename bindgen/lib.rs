@@ -90,7 +90,7 @@ pub use crate::features::{
 use crate::ir::context::{BindgenContext, ItemId};
 pub use crate::ir::function::Abi;
 use crate::ir::item::Item;
-use crate::parse::{ClangItemParser, ParseError};
+use crate::parse::ParseError;
 use crate::regex_set::RegexSet;
 
 use std::borrow::Cow;

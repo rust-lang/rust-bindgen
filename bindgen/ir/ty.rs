@@ -14,7 +14,7 @@ use super::template::{
 };
 use super::traversal::{EdgeKind, Trace, Tracer};
 use crate::clang::{self, Cursor};
-use crate::parse::{ClangItemParser, ParseError, ParseResult};
+use crate::parse::{ParseError, ParseResult};
 use std::borrow::Cow;
 use std::io;
 

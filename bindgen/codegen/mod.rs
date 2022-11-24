@@ -2406,18 +2406,7 @@ impl CodeGenerator for CompInfo {
     }
 }
 
-trait MethodCodegen {
-    fn codegen_method(
-        &self,
-        ctx: &BindgenContext,
-        methods: &mut Vec<proc_macro2::TokenStream>,
-        method_names: &mut HashSet<String>,
-        result: &mut CodegenResult<'_>,
-        parent: &CompInfo,
-    );
-}
-
-impl MethodCodegen for Method {
+impl Method {
     fn codegen_method(
         &self,
         ctx: &BindgenContext,
