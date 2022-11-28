@@ -38,7 +38,7 @@ pub trait IFoo: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        unsafe { msg_send!(*self, func) }
+        msg_send!(*self, func)
     }
     unsafe fn setFunc_(
         &self,
@@ -52,6 +52,6 @@ pub trait IFoo: Sized + std::ops::Deref {
     ) where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        unsafe { msg_send!(*self, setFunc: func) }
+        msg_send!(*self, setFunc: func)
     }
 }

@@ -48,7 +48,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "bindgen"
-version = "0.62.0"
+version = "0.63.0"
 dependencies = [
  "bitflags",
  "cexpr",
@@ -68,7 +68,7 @@ dependencies = [
 
 [[package]]
 name = "bindgen-cli"
-version = "0.62.0"
+version = "0.63.0"
 dependencies = [
  "bindgen",
  "clap 3.2.12",

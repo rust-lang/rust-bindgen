@@ -117,7 +117,20 @@ pub trait ParseCallbacks: fmt::Debug {
     ///
     /// If no additional attributes are wanted, this function should return an
     /// empty `Vec`.
-    fn add_derives(&self, _name: &str) -> Vec<String> {
+    fn add_derives(&self, _info: &DeriveInfo<'_>) -> Vec<String> {
         vec![]
     }
+
+    /// Process a source code comment.
+    fn process_comment(&self, _comment: &str) -> Option<String> {
+        None
+    }
+}
+
+/// Relevant information about a type to which new derive attributes will be added using
+/// [`ParseCallbacks::add_derives`].
+#[non_exhaustive]
+pub struct DeriveInfo<'a> {
+    /// The name of the type.
+    pub name: &'a str,
 }

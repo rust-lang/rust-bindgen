@@ -78,6 +78,8 @@ doc_mod!(ir, ir_docs);
 doc_mod!(parse, parse_docs);
 doc_mod!(regex_set, regex_set_docs);
 
+use ir::comment;
+
 pub use crate::codegen::{
     AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle,
 };
@@ -88,7 +90,7 @@ pub use crate::features::{
 use crate::ir::context::{BindgenContext, ItemId};
 pub use crate::ir::function::Abi;
 use crate::ir::item::Item;
-use crate::parse::{ClangItemParser, ParseError};
+use crate::parse::ParseError;
 use crate::regex_set::RegexSet;
 
 use std::borrow::Cow;
@@ -643,6 +645,10 @@ impl Builder {
             output_vector.push("--merge-extern-blocks".into());
         }
 
+        if self.options.wrap_unsafe_ops {
+            output_vector.push("--wrap-unsafe-ops".into());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -725,6 +731,13 @@ impl Builder {
     ///
     /// The default is the latest stable Rust version
     pub fn rust_target(mut self, rust_target: RustTarget) -> Self {
+        #[allow(deprecated)]
+        if rust_target <= RustTarget::Stable_1_30 {
+            warn!(
+                "The {} rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues",
+                String::from(rust_target)
+            );
+        }
         self.options.set_rust_target(rust_target);
         self
     }
@@ -796,12 +809,6 @@ impl Builder {
         self
     }
 
-    /// Deprecated alias for allowlist_recursively.
-    #[deprecated(note = "Use allowlist_recursively instead")]
-    pub fn whitelist_recursively(self, doit: bool) -> Self {
-        self.allowlist_recursively(doit)
-    }
-
     /// Generate `#[macro_use] extern crate objc;` instead of `use objc;`
     /// in the prologue of the files generated from objective-c files
     pub fn objc_extern_crate(mut self, doit: bool) -> Self {
@@ -834,20 +841,6 @@ impl Builder {
         self
     }
 
-    /// Hide the given type from the generated bindings. Regular expressions are
-    /// supported.
-    #[deprecated(note = "Use blocklist_type instead")]
-    pub fn hide_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.blocklist_type(arg)
-    }
-
-    /// Hide the given type from the generated bindings. Regular expressions are
-    /// supported.
-    #[deprecated(note = "Use blocklist_type instead")]
-    pub fn blacklist_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.blocklist_type(arg)
-    }
-
     fn_with_regex_arg! {
         /// Hide the given type from the generated bindings. Regular expressions are
         /// supported.
@@ -856,15 +849,6 @@ impl Builder {
         pub fn blocklist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
             self.options.blocklisted_types.insert(arg);
             self
-        }
-    }
-
-    fn_with_regex_arg! {
-        /// Hide the given function from the generated bindings. Regular expressions
-        /// are supported.
-        #[deprecated(note = "Use blocklist_function instead")]
-        pub fn blacklist_function<T: AsRef<str>>(self, arg: T) -> Builder {
-            self.blocklist_function(arg)
         }
     }
 
@@ -881,15 +865,6 @@ impl Builder {
             self.options.blocklisted_functions.insert(arg);
             self
         }
-    }
-
-    /// Hide the given item from the generated bindings, regardless of
-    /// whether it's a type, function, module, etc. Regular
-    /// expressions are supported.
-    #[deprecated(note = "Use blocklist_item instead")]
-    pub fn blacklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.blocklisted_items.insert(arg);
-        self
     }
 
     fn_with_regex_arg! {
@@ -924,22 +899,6 @@ impl Builder {
         }
     }
 
-    /// Allowlist the given type so that it (and all types that it transitively
-    /// refers to) appears in the generated bindings. Regular expressions are
-    /// supported.
-    #[deprecated(note = "use allowlist_type instead")]
-    pub fn whitelisted_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_type(arg)
-    }
-
-    /// Allowlist the given type so that it (and all types that it transitively
-    /// refers to) appears in the generated bindings. Regular expressions are
-    /// supported.
-    #[deprecated(note = "use allowlist_type instead")]
-    pub fn whitelist_type<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_type(arg)
-    }
-
     fn_with_regex_arg! {
         /// Allowlist the given type so that it (and all types that it transitively
         /// refers to) appears in the generated bindings. Regular expressions are
@@ -968,22 +927,6 @@ impl Builder {
         }
     }
 
-    /// Allowlist the given function.
-    ///
-    /// Deprecated: use allowlist_function instead.
-    #[deprecated(note = "use allowlist_function instead")]
-    pub fn whitelist_function<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_function(arg)
-    }
-
-    /// Allowlist the given function.
-    ///
-    /// Deprecated: use allowlist_function instead.
-    #[deprecated(note = "use allowlist_function instead")]
-    pub fn whitelisted_function<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_function(arg)
-    }
-
     fn_with_regex_arg! {
         /// Allowlist the given variable so that it (and all types that it
         /// transitively refers to) appears in the generated bindings. Regular
@@ -1002,20 +945,6 @@ impl Builder {
             self.options.allowlisted_files.insert(arg);
             self
         }
-    }
-
-    /// Deprecated: use allowlist_var instead.
-    #[deprecated(note = "use allowlist_var instead")]
-    pub fn whitelist_var<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_var(arg)
-    }
-
-    /// Allowlist the given variable.
-    ///
-    /// Deprecated: use allowlist_var instead.
-    #[deprecated(note = "use allowlist_var instead")]
-    pub fn whitelisted_var<T: AsRef<str>>(self, arg: T) -> Builder {
-        self.allowlist_var(arg)
     }
 
     /// Set the default style of code to generate for enums
@@ -1496,17 +1425,6 @@ impl Builder {
         self
     }
 
-    /// Avoid generating any unstable Rust, such as Rust unions, in the generated bindings.
-    #[deprecated(note = "please use `rust_target` instead")]
-    pub fn unstable_rust(self, doit: bool) -> Self {
-        let rust_target = if doit {
-            RustTarget::Nightly
-        } else {
-            LATEST_STABLE_RUST
-        };
-        self.rust_target(rust_target)
-    }
-
     /// Use core instead of libstd in the generated bindings.
     pub fn use_core(mut self) -> Builder {
         self.options.use_core = true;
@@ -1687,7 +1605,7 @@ impl Builder {
 
         // For each input header content, add a prefix line of `#line 0 "$name"`
         // followed by the contents.
-        for &(ref name, ref contents) in &self.options.input_header_contents {
+        for (name, contents) in &self.options.input_header_contents {
             is_cpp |= file_is_cpp(name);
 
             wrapper_contents.push_str("#line 0 \"");
@@ -1861,6 +1779,12 @@ impl Builder {
             .entry(abi)
             .or_default()
             .insert(arg.into());
+        self
+    }
+
+    /// If true, wraps unsafe operations in unsafe blocks.
+    pub fn wrap_unsafe_ops(mut self, doit: bool) -> Self {
+        self.options.wrap_unsafe_ops = doit;
         self
     }
 }
@@ -2200,6 +2124,9 @@ struct BindgenOptions {
     merge_extern_blocks: bool,
 
     abi_overrides: HashMap<Abi, RegexSet>,
+
+    /// Whether to wrap unsafe operations in unsafe blocks or not.
+    wrap_unsafe_ops: bool,
 }
 
 impl BindgenOptions {
@@ -2270,6 +2197,14 @@ impl BindgenOptions {
             .iter()
             .flat_map(|cb| f(cb.as_ref()))
             .collect()
+    }
+
+    fn process_comment(&self, comment: &str) -> String {
+        let comment = comment::preprocess(comment);
+        self.parse_callbacks
+            .last()
+            .and_then(|cb| cb.process_comment(&comment))
+            .unwrap_or(comment)
     }
 }
 
@@ -2383,6 +2318,7 @@ impl Default for BindgenOptions {
             sort_semantically,
             merge_extern_blocks,
             abi_overrides,
+            wrap_unsafe_ops,
         }
     }
 }

@@ -3,7 +3,6 @@
 use super::super::codegen::{EnumVariation, CONSTIFIED_ENUM_MODULE_REPR_NAME};
 use super::analysis::{HasVtable, HasVtableResult, Sizedness, SizednessResult};
 use super::annotations::Annotations;
-use super::comment;
 use super::comp::{CompKind, MethodKind};
 use super::context::{BindgenContext, ItemId, PartialType, TypeId};
 use super::derive::{
@@ -19,9 +18,7 @@ use super::template::{AsTemplateParam, TemplateParameters};
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{Type, TypeKind};
 use crate::clang;
-use crate::parse::{
-    ClangItemParser, ClangSubItemParser, ParseError, ParseResult,
-};
+use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 use clang_sys;
 use lazycell::LazyCell;
 use regex;
@@ -515,9 +512,9 @@ impl Item {
             return None;
         }
 
-        self.comment.as_ref().map(|comment| {
-            comment::preprocess(comment, self.codegen_depth(ctx))
-        })
+        self.comment
+            .as_ref()
+            .map(|comment| ctx.options().process_comment(comment))
     }
 
     /// What kind of item is this?
@@ -1308,8 +1305,8 @@ fn visit_child(
     }
 }
 
-impl ClangItemParser for Item {
-    fn builtin_type(
+impl Item {
+    pub(crate) fn builtin_type(
         kind: TypeKind,
         is_const: bool,
         ctx: &mut BindgenContext,
@@ -1334,7 +1331,7 @@ impl ClangItemParser for Item {
         id.as_type_id_unchecked()
     }
 
-    fn parse(
+    pub(crate) fn parse(
         cursor: clang::Cursor,
         parent_id: Option<ItemId>,
         ctx: &mut BindgenContext,
@@ -1480,7 +1477,7 @@ impl ClangItemParser for Item {
         }
     }
 
-    fn from_ty_or_ref(
+    pub(crate) fn from_ty_or_ref(
         ty: clang::Type,
         location: clang::Cursor,
         parent_id: Option<ItemId>,
@@ -1500,7 +1497,7 @@ impl ClangItemParser for Item {
     ///
     /// Typerefs are resolved once parsing is completely done, see
     /// `BindgenContext::resolve_typerefs`.
-    fn from_ty_or_ref_with_id(
+    pub(crate) fn from_ty_or_ref_with_id(
         potential_id: ItemId,
         ty: clang::Type,
         location: clang::Cursor,
@@ -1555,7 +1552,7 @@ impl ClangItemParser for Item {
         potential_id.as_type_id_unchecked()
     }
 
-    fn from_ty(
+    pub(crate) fn from_ty(
         ty: &clang::Type,
         location: clang::Cursor,
         parent_id: Option<ItemId>,
@@ -1573,7 +1570,7 @@ impl ClangItemParser for Item {
     /// critical some times to obtain information, an optional parent item id,
     /// that will, if it's `None`, become the current module id, and the
     /// context.
-    fn from_ty_with_id(
+    pub(crate) fn from_ty_with_id(
         id: ItemId,
         ty: &clang::Type,
         location: clang::Cursor,
@@ -1743,7 +1740,7 @@ impl ClangItemParser for Item {
     /// A named type is a template parameter, e.g., the "T" in Foo<T>. They're
     /// always local so it's the only exception when there's no declaration for
     /// a type.
-    fn type_param(
+    pub(crate) fn type_param(
         with_id: Option<ItemId>,
         location: clang::Cursor,
         ctx: &mut BindgenContext,

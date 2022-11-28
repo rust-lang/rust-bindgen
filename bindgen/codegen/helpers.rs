@@ -55,9 +55,11 @@ pub mod attributes {
     }
 
     pub fn doc(comment: String) -> TokenStream {
-        // NOTE(emilio): By this point comments are already preprocessed and in
-        // `///` form. Quote turns them into `#[doc]` comments, but oh well.
-        TokenStream::from_str(&comment).unwrap()
+        if comment.is_empty() {
+            quote!()
+        } else {
+            quote!(#[doc = #comment])
+        }
     }
 
     pub fn link_name(name: &str) -> TokenStream {

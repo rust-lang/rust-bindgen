@@ -30,7 +30,7 @@ extern "C" {
 impl cv_Foo {
     #[inline]
     pub unsafe fn destruct(&mut self) {
-        unsafe { cv_Foo_Foo_destructor(self) }
+        cv_Foo_Foo_destructor(self)
     }
 }
 #[repr(C)]

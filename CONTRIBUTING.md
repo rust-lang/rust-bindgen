@@ -518,3 +518,49 @@ case down to 5 lines.
 Happy bug hunting and test case reducing!
 
 [More information on using `creduce`.](https://embed.cs.utah.edu/creduce/using/)
+
+## Cutting a new bindgen release
+
+To cut a release, the following needs to happen:
+
+### Updating the changelog
+
+Update the CHANGELOG.md file with the changes from the last release. Something
+like the following is a useful way to check what has landed:
+
+ ```
+ $ git log --oneline v0.62.0..HEAD
+ ```
+
+Also worth checking the [next-release tag](https://github.com/rust-lang/rust-bindgen/pulls?q=is%3Apr+label%3Anext-release).
+
+Once that's done and the changelog is up-to-date, run `doctoc` on it.
+
+If needed, install it locally by running:
+
+```
+$ npm install doctoc
+$ ./node_modules/doctoc/doctoc.js CHANGELOG.md
+```
+
+### Bumping the version numbers.
+
+Bump version numbers as needed. Run tests just to ensure everything is working
+as expected.
+
+### Merge to `master`
+
+For regular releases, the changes above should end up in `master` before
+publishing. For dot-releases of an old version (e.g., cherry-picking an
+important fix) you can skip this.
+
+### Publish and add a git tag for the right commit
+
+Once you're in the right commit, do:
+
+```
+$ git tag -a v0.62.1 # With the right version of course
+$ pushd bindgen && cargo publish && popd
+$ pushd bindgen-cli && cargo publish && popd
+$ git push --tags upstream # To publish the tag
+```

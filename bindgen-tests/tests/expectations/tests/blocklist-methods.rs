@@ -30,6 +30,6 @@ extern "C" {
 impl Foo {
     #[inline]
     pub unsafe fn foo(&mut self) -> ::std::os::raw::c_int {
-        unsafe { Foo_foo(self) }
+        Foo_foo(self)
     }
 }

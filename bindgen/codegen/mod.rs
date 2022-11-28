@@ -20,7 +20,6 @@ use super::BindgenOptions;
 
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::FieldAccessorKind;
-use crate::ir::comment;
 use crate::ir::comp::{
     Bitfield, BitfieldUnit, CompInfo, CompKind, Field, FieldData, FieldMethods,
     Method, MethodKind,
@@ -435,10 +434,10 @@ trait CodeGenerator {
     /// Extra information returned to the caller.
     type Return;
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         extra: &Self::Extra,
     ) -> Self::Return;
 }
@@ -478,10 +477,10 @@ impl CodeGenerator for Item {
     type Extra = ();
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         _extra: &(),
     ) {
         debug!("<Item as CodeGenerator>::codegen: self = {:?}", self);
@@ -510,10 +509,10 @@ impl CodeGenerator for Module {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         debug!("<Module as CodeGenerator>::codegen: item = {:?}", item);
@@ -602,10 +601,10 @@ impl CodeGenerator for Var {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         use crate::ir::var::VarType;
@@ -749,10 +748,10 @@ impl CodeGenerator for Type {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         debug!("<Type as CodeGenerator>::codegen: item = {:?}", item);
@@ -1070,10 +1069,10 @@ impl<'a> CodeGenerator for Vtable<'a> {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'b>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'b>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         assert_eq!(item.id(), self.item_id);
@@ -1169,10 +1168,10 @@ impl CodeGenerator for TemplateInstantiation {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         debug_assert!(item.is_enabled_for_codegen(ctx));
@@ -1245,7 +1244,6 @@ trait FieldCodegen<'a> {
         &self,
         ctx: &BindgenContext,
         fields_should_be_private: bool,
-        codegen_depth: usize,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         result: &mut CodegenResult,
@@ -1265,7 +1263,6 @@ impl<'a> FieldCodegen<'a> for Field {
         &self,
         ctx: &BindgenContext,
         fields_should_be_private: bool,
-        codegen_depth: usize,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         result: &mut CodegenResult,
@@ -1282,7 +1279,6 @@ impl<'a> FieldCodegen<'a> for Field {
                 data.codegen(
                     ctx,
                     fields_should_be_private,
-                    codegen_depth,
                     accessor_kind,
                     parent,
                     result,
@@ -1296,7 +1292,6 @@ impl<'a> FieldCodegen<'a> for Field {
                 unit.codegen(
                     ctx,
                     fields_should_be_private,
-                    codegen_depth,
                     accessor_kind,
                     parent,
                     result,
@@ -1346,7 +1341,6 @@ impl<'a> FieldCodegen<'a> for FieldData {
         &self,
         ctx: &BindgenContext,
         fields_should_be_private: bool,
-        codegen_depth: usize,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         result: &mut CodegenResult,
@@ -1392,8 +1386,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
         let mut field = quote! {};
         if ctx.options().generate_comments {
             if let Some(raw_comment) = self.comment() {
-                let comment =
-                    comment::preprocess(raw_comment, codegen_depth + 1);
+                let comment = ctx.options().process_comment(raw_comment);
                 field = attributes::doc(comment);
             }
         }
@@ -1553,7 +1546,6 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         &self,
         ctx: &BindgenContext,
         fields_should_be_private: bool,
-        codegen_depth: usize,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         result: &mut CodegenResult,
@@ -1630,7 +1622,6 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
             bf.codegen(
                 ctx,
                 fields_should_be_private,
-                codegen_depth,
                 accessor_kind,
                 parent,
                 result,
@@ -1705,7 +1696,6 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         &self,
         ctx: &BindgenContext,
         fields_should_be_private: bool,
-        _codegen_depth: usize,
         _accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         _result: &mut CodegenResult,
@@ -1806,10 +1796,10 @@ impl CodeGenerator for CompInfo {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         debug!("<CompInfo as CodeGenerator>::codegen: item = {:?}", item);
@@ -1883,7 +1873,6 @@ impl CodeGenerator for CompInfo {
 
         let mut methods = vec![];
         if !is_opaque {
-            let codegen_depth = item.codegen_depth(ctx);
             let fields_should_be_private =
                 item.annotations().private_fields().unwrap_or(false);
             let struct_accessor_kind = item
@@ -1894,7 +1883,6 @@ impl CodeGenerator for CompInfo {
                 field.codegen(
                     ctx,
                     fields_should_be_private,
-                    codegen_depth,
                     struct_accessor_kind,
                     self,
                     result,
@@ -2114,9 +2102,11 @@ impl CodeGenerator for CompInfo {
 
         // The custom derives callback may return a list of derive attributes;
         // add them to the end of the list.
-        let custom_derives = ctx
-            .options()
-            .all_callbacks(|cb| cb.add_derives(&canonical_name));
+        let custom_derives = ctx.options().all_callbacks(|cb| {
+            cb.add_derives(&crate::callbacks::DeriveInfo {
+                name: &canonical_name,
+            })
+        });
         // In most cases this will be a no-op, since custom_derives will be empty.
         derives.extend(custom_derives.iter().map(|s| s.as_str()));
 
@@ -2416,24 +2406,13 @@ impl CodeGenerator for CompInfo {
     }
 }
 
-trait MethodCodegen {
-    fn codegen_method<'a>(
+impl Method {
+    fn codegen_method(
         &self,
         ctx: &BindgenContext,
         methods: &mut Vec<proc_macro2::TokenStream>,
         method_names: &mut HashSet<String>,
-        result: &mut CodegenResult<'a>,
-        parent: &CompInfo,
-    );
-}
-
-impl MethodCodegen for Method {
-    fn codegen_method<'a>(
-        &self,
-        ctx: &BindgenContext,
-        methods: &mut Vec<proc_macro2::TokenStream>,
-        method_names: &mut HashSet<String>,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         _parent: &CompInfo,
     ) {
         assert!({
@@ -2595,9 +2574,7 @@ impl MethodCodegen for Method {
             })
         }
 
-        let block = quote! {
-            #( #stmts );*
-        };
+        let block = ctx.wrap_unsafe_ops(quote! ( #( #stmts );*));
 
         let mut attrs = vec![attributes::inline()];
 
@@ -2611,9 +2588,7 @@ impl MethodCodegen for Method {
         methods.push(quote! {
             #(#attrs)*
             pub unsafe fn #name ( #( #args ),* ) #ret {
-                unsafe {
-                    #block
-                }
+                #block
             }
         });
     }
@@ -2701,14 +2676,12 @@ impl std::str::FromStr for EnumVariation {
 /// A helper type to construct different enum variations.
 enum EnumBuilder<'a> {
     Rust {
-        codegen_depth: usize,
         attrs: Vec<proc_macro2::TokenStream>,
         ident: Ident,
         tokens: proc_macro2::TokenStream,
         emitted_any_variants: bool,
     },
     NewType {
-        codegen_depth: usize,
         canonical_name: &'a str,
         tokens: proc_macro2::TokenStream,
         is_bitfield: bool,
@@ -2716,26 +2689,14 @@ enum EnumBuilder<'a> {
     },
     Consts {
         variants: Vec<proc_macro2::TokenStream>,
-        codegen_depth: usize,
     },
     ModuleConsts {
-        codegen_depth: usize,
         module_name: &'a str,
         module_items: Vec<proc_macro2::TokenStream>,
     },
 }
 
 impl<'a> EnumBuilder<'a> {
-    /// Returns the depth of the code generation for a variant of this enum.
-    fn codegen_depth(&self) -> usize {
-        match *self {
-            EnumBuilder::Rust { codegen_depth, .. } |
-            EnumBuilder::NewType { codegen_depth, .. } |
-            EnumBuilder::ModuleConsts { codegen_depth, .. } |
-            EnumBuilder::Consts { codegen_depth, .. } => codegen_depth,
-        }
-    }
-
     /// Returns true if the builder is for a rustified enum.
     fn is_rust_enum(&self) -> bool {
         matches!(*self, EnumBuilder::Rust { .. })
@@ -2748,7 +2709,7 @@ impl<'a> EnumBuilder<'a> {
         mut attrs: Vec<proc_macro2::TokenStream>,
         repr: proc_macro2::TokenStream,
         enum_variation: EnumVariation,
-        enum_codegen_depth: usize,
+        has_typedef: bool,
     ) -> Self {
         let ident = Ident::new(name, Span::call_site());
 
@@ -2757,7 +2718,6 @@ impl<'a> EnumBuilder<'a> {
                 is_bitfield,
                 is_global,
             } => EnumBuilder::NewType {
-                codegen_depth: enum_codegen_depth,
                 canonical_name: name,
                 tokens: quote! {
                     #( #attrs )*
@@ -2772,7 +2732,6 @@ impl<'a> EnumBuilder<'a> {
                 attrs.insert(0, quote! { #[repr( #repr )] });
                 let tokens = quote!();
                 EnumBuilder::Rust {
-                    codegen_depth: enum_codegen_depth + 1,
                     attrs,
                     ident,
                     tokens,
@@ -2783,15 +2742,14 @@ impl<'a> EnumBuilder<'a> {
             EnumVariation::Consts => {
                 let mut variants = Vec::new();
 
-                variants.push(quote! {
-                    #( #attrs )*
-                    pub type #ident = #repr;
-                });
-
-                EnumBuilder::Consts {
-                    variants,
-                    codegen_depth: enum_codegen_depth,
+                if !has_typedef {
+                    variants.push(quote! {
+                        #( #attrs )*
+                        pub type #ident = #repr;
+                    });
                 }
+
+                EnumBuilder::Consts { variants }
             }
 
             EnumVariation::ModuleConsts => {
@@ -2805,7 +2763,6 @@ impl<'a> EnumBuilder<'a> {
                 };
 
                 EnumBuilder::ModuleConsts {
-                    codegen_depth: enum_codegen_depth + 1,
                     module_name: name,
                     module_items: vec![type_definition],
                 }
@@ -2814,13 +2771,13 @@ impl<'a> EnumBuilder<'a> {
     }
 
     /// Add a variant to this enum.
-    fn with_variant<'b>(
+    fn with_variant(
         self,
         ctx: &BindgenContext,
         variant: &EnumVariant,
         mangling_prefix: Option<&str>,
         rust_ty: proc_macro2::TokenStream,
-        result: &mut CodegenResult<'b>,
+        result: &mut CodegenResult<'_>,
         is_ty_named: bool,
     ) -> Self {
         let variant_name = ctx.rust_mangle(variant.name());
@@ -2837,8 +2794,7 @@ impl<'a> EnumBuilder<'a> {
         let mut doc = quote! {};
         if ctx.options().generate_comments {
             if let Some(raw_comment) = variant.comment() {
-                let comment =
-                    comment::preprocess(raw_comment, self.codegen_depth());
+                let comment = ctx.options().process_comment(raw_comment);
                 doc = attributes::doc(comment);
             }
         }
@@ -2849,13 +2805,11 @@ impl<'a> EnumBuilder<'a> {
                 ident,
                 tokens,
                 emitted_any_variants: _,
-                codegen_depth,
             } => {
                 let name = ctx.rust_ident(variant_name);
                 EnumBuilder::Rust {
                     attrs,
                     ident,
-                    codegen_depth,
                     tokens: quote! {
                         #tokens
                         #doc
@@ -2916,7 +2870,6 @@ impl<'a> EnumBuilder<'a> {
                 self
             }
             EnumBuilder::ModuleConsts {
-                codegen_depth,
                 module_name,
                 mut module_items,
             } => {
@@ -2930,17 +2883,16 @@ impl<'a> EnumBuilder<'a> {
                 EnumBuilder::ModuleConsts {
                     module_name,
                     module_items,
-                    codegen_depth,
                 }
             }
         }
     }
 
-    fn build<'b>(
+    fn build(
         self,
         ctx: &BindgenContext,
         rust_ty: proc_macro2::TokenStream,
-        result: &mut CodegenResult<'b>,
+        result: &mut CodegenResult<'_>,
     ) -> proc_macro2::TokenStream {
         match self {
             EnumBuilder::Rust {
@@ -3039,10 +2991,10 @@ impl CodeGenerator for Enum {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         debug!("<Enum as CodeGenerator>::codegen: item = {:?}", item);
@@ -3168,15 +3120,16 @@ impl CodeGenerator for Enum {
 
             // The custom derives callback may return a list of derive attributes;
             // add them to the end of the list.
-            let custom_derives =
-                ctx.options().all_callbacks(|cb| cb.add_derives(&name));
+            let custom_derives = ctx.options().all_callbacks(|cb| {
+                cb.add_derives(&crate::callbacks::DeriveInfo { name: &name })
+            });
             // In most cases this will be a no-op, since custom_derives will be empty.
             derives.extend(custom_derives.iter().map(|s| s.as_str()));
 
             attrs.push(attributes::derives(&derives));
         }
 
-        fn add_constant<'a>(
+        fn add_constant(
             ctx: &BindgenContext,
             enum_: &Type,
             // Only to avoid recomputing every time.
@@ -3187,7 +3140,7 @@ impl CodeGenerator for Enum {
             variant_name: &Ident,
             referenced_name: &Ident,
             enum_rust_ty: proc_macro2::TokenStream,
-            result: &mut CodegenResult<'a>,
+            result: &mut CodegenResult<'_>,
         ) {
             let constant_name = if enum_.name().is_some() {
                 if ctx.options().prepend_enum_name {
@@ -3207,14 +3160,10 @@ impl CodeGenerator for Enum {
         }
 
         let repr = repr.to_rust_ty_or_opaque(ctx, item);
+        let has_typedef = ctx.is_enum_typedef_combo(item.id());
 
-        let mut builder = EnumBuilder::new(
-            &name,
-            attrs,
-            repr,
-            variation,
-            item.codegen_depth(ctx),
-        );
+        let mut builder =
+            EnumBuilder::new(&name, attrs, repr, variation, has_typedef);
 
         // A map where we keep a value -> variant relation.
         let mut seen_values = HashMap::<_, Ident>::default();
@@ -4040,10 +3989,10 @@ impl CodeGenerator for Function {
     /// it.
     type Return = Option<u32>;
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) -> Self::Return {
         debug!("<Function as CodeGenerator>::codegen: item = {:?}", item);
@@ -4210,6 +4159,7 @@ impl CodeGenerator for Function {
                 ret,
                 ret_ty,
                 attributes,
+                ctx,
             );
         } else {
             result.push(tokens);
@@ -4253,17 +4203,18 @@ fn objc_method_codegen(
 
     let methods_and_args = method.format_method_call(&fn_args);
 
-    let body = if method.is_class_method() {
-        let class_name = ctx.rust_ident(
-            class_name.expect("Generating a class method without class name?"),
-        );
-        quote! {
-            msg_send!(class!(#class_name), #methods_and_args)
-        }
-    } else {
-        quote! {
-            msg_send!(*self, #methods_and_args)
-        }
+    let body = {
+        let body = if method.is_class_method() {
+            let class_name = ctx.rust_ident(
+                class_name
+                    .expect("Generating a class method without class name?"),
+            );
+            quote!(msg_send!(class!(#class_name), #methods_and_args))
+        } else {
+            quote!(msg_send!(*self, #methods_and_args))
+        };
+
+        ctx.wrap_unsafe_ops(body)
     };
 
     let method_name =
@@ -4271,9 +4222,7 @@ fn objc_method_codegen(
 
     methods.push(quote! {
         unsafe fn #method_name #sig where <Self as std::ops::Deref>::Target: objc::Message + Sized {
-            unsafe {
-                #body
-            }
+            #body
         }
     });
 }
@@ -4282,10 +4231,10 @@ impl CodeGenerator for ObjCInterface {
     type Extra = Item;
     type Return = ();
 
-    fn codegen<'a>(
+    fn codegen(
         &self,
         ctx: &BindgenContext,
-        result: &mut CodegenResult<'a>,
+        result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
         debug_assert!(item.is_enabled_for_codegen(ctx));
@@ -4536,7 +4485,7 @@ pub(crate) fn codegen(
         if let Some(ref lib_name) = context.options().dynamic_library_name {
             let lib_ident = context.rust_ident(lib_name);
             let dynamic_items_tokens =
-                result.dynamic_items().get_tokens(lib_ident);
+                result.dynamic_items().get_tokens(lib_ident, context);
             result.push(dynamic_items_tokens);
         }
 
@@ -4639,6 +4588,9 @@ pub mod utils {
             pub struct __BindgenUnionField<T>(::#prefix::marker::PhantomData<T>);
         };
 
+        let transmute =
+            ctx.wrap_unsafe_ops(quote!(::#prefix::mem::transmute(self)));
+
         let union_field_impl = quote! {
             impl<T> __BindgenUnionField<T> {
                 #[inline]
@@ -4648,16 +4600,12 @@ pub mod utils {
 
                 #[inline]
                 pub unsafe fn as_ref(&self) -> &T {
-                    unsafe {
-                        ::#prefix::mem::transmute(self)
-                    }
+                    #transmute
                 }
 
                 #[inline]
                 pub unsafe fn as_mut(&mut self) -> &mut T {
-                    unsafe {
-                        ::#prefix::mem::transmute(self)
-                    }
+                    #transmute
                 }
             }
         };
@@ -4752,6 +4700,13 @@ pub mod utils {
                 ::#prefix::marker::PhantomData<T>, [T; 0]);
         };
 
+        let from_raw_parts = ctx.wrap_unsafe_ops(quote! (
+            ::#prefix::slice::from_raw_parts(self.as_ptr(), len)
+        ));
+        let from_raw_parts_mut = ctx.wrap_unsafe_ops(quote! (
+            ::#prefix::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
+        ));
+
         let incomplete_array_impl = quote! {
             impl<T> __IncompleteArrayField<T> {
                 #[inline]
@@ -4771,16 +4726,12 @@ pub mod utils {
 
                 #[inline]
                 pub unsafe fn as_slice(&self, len: usize) -> &[T] {
-                    unsafe {
-                        ::#prefix::slice::from_raw_parts(self.as_ptr(), len)
-                    }
+                    #from_raw_parts
                 }
 
                 #[inline]
                 pub unsafe fn as_mut_slice(&mut self, len: usize) -> &mut [T] {
-                    unsafe {
-                        ::#prefix::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
-                    }
+                    #from_raw_parts_mut
                 }
             }
         };

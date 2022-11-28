@@ -12,10 +12,10 @@ enum Kind {
 }
 
 /// Preprocesses a C/C++ comment so that it is a valid Rust comment.
-pub fn preprocess(comment: &str, indent: usize) -> String {
+pub fn preprocess(comment: &str) -> String {
     match self::kind(comment) {
-        Some(Kind::SingleLines) => preprocess_single_lines(comment, indent),
-        Some(Kind::MultiLine) => preprocess_multi_line(comment, indent),
+        Some(Kind::SingleLines) => preprocess_single_lines(comment),
+        Some(Kind::MultiLine) => preprocess_multi_line(comment),
         None => comment.to_owned(),
     }
 }
@@ -31,56 +31,34 @@ fn kind(comment: &str) -> Option<Kind> {
     }
 }
 
-fn make_indent(indent: usize) -> String {
-    const RUST_INDENTATION: usize = 4;
-    " ".repeat(indent * RUST_INDENTATION)
-}
-
 /// Preprocesses multiple single line comments.
 ///
 /// Handles lines starting with both `//` and `///`.
-fn preprocess_single_lines(comment: &str, indent: usize) -> String {
+fn preprocess_single_lines(comment: &str) -> String {
     debug_assert!(comment.starts_with("//"), "comment is not single line");
 
-    let indent = make_indent(indent);
-    let mut is_first = true;
     let lines: Vec<_> = comment
         .lines()
         .map(|l| l.trim().trim_start_matches('/'))
-        .map(|l| {
-            let indent = if is_first { "" } else { &*indent };
-            is_first = false;
-            format!("{}///{}", indent, l)
-        })
         .collect();
     lines.join("\n")
 }
 
-fn preprocess_multi_line(comment: &str, indent: usize) -> String {
+fn preprocess_multi_line(comment: &str) -> String {
     let comment = comment
         .trim_start_matches('/')
         .trim_end_matches('/')
         .trim_end_matches('*');
 
-    let indent = make_indent(indent);
     // Strip any potential `*` characters preceding each line.
-    let mut is_first = true;
     let mut lines: Vec<_> = comment
         .lines()
         .map(|line| line.trim().trim_start_matches('*').trim_start_matches('!'))
         .skip_while(|line| line.trim().is_empty()) // Skip the first empty lines.
-        .map(|line| {
-            let indent = if is_first { "" } else { &*indent };
-            is_first = false;
-            format!("{}///{}", indent, line)
-        })
         .collect();
 
     // Remove the trailing line corresponding to the `*/`.
-    if lines
-        .last()
-        .map_or(false, |l| l.trim().is_empty() || l.trim() == "///")
-    {
+    if lines.last().map_or(false, |l| l.trim().is_empty()) {
         lines.pop();
     }
 
@@ -99,21 +77,24 @@ mod test {
 
     #[test]
     fn processes_single_lines_correctly() {
-        assert_eq!(preprocess("/// hello", 0), "/// hello");
-        assert_eq!(preprocess("// hello", 0), "/// hello");
-        assert_eq!(preprocess("//    hello", 0), "///    hello");
+        assert_eq!(preprocess("///"), "");
+        assert_eq!(preprocess("/// hello"), " hello");
+        assert_eq!(preprocess("// hello"), " hello");
+        assert_eq!(preprocess("//    hello"), "    hello");
     }
 
     #[test]
     fn processes_multi_lines_correctly() {
+        assert_eq!(preprocess("/**/"), "");
+
         assert_eq!(
-            preprocess("/** hello \n * world \n * foo \n */", 0),
-            "/// hello\n/// world\n/// foo"
+            preprocess("/** hello \n * world \n * foo \n */"),
+            " hello\n world\n foo"
         );
 
         assert_eq!(
-            preprocess("/**\nhello\n*world\n*foo\n*/", 0),
-            "///hello\n///world\n///foo"
+            preprocess("/**\nhello\n*world\n*foo\n*/"),
+            "hello\nworld\nfoo"
         );
     }
 }

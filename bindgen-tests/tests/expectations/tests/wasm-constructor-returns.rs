@@ -33,10 +33,8 @@ extern "C" {
 impl Foo {
     #[inline]
     pub unsafe fn new(var: ::std::os::raw::c_int) -> Self {
-        unsafe {
-            let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
-            Foo_Foo(__bindgen_tmp.as_mut_ptr(), var);
-            __bindgen_tmp.assume_init()
-        }
+        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+        Foo_Foo(__bindgen_tmp.as_mut_ptr(), var);
+        __bindgen_tmp.assume_init()
     }
 }
