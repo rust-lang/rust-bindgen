@@ -32,7 +32,7 @@ pub trait ParseCallbacks: fmt::Debug {
 
     /// This function will run for every extern variable and function. The returned value determines
     /// the name visible in the bindings.
-    fn generated_name_override(&self, _item_info: ItemInfo) -> Option<String> {
+    fn generated_name_override(&self, _item_info: ItemInfo<'_>) -> Option<String> {
         None
     }
 

@@ -156,6 +156,8 @@
 ## Changed
  * Fixed name collisions when having a C `enum` and a `typedef` with the same
    name.
+ * The `ParseCallbacks::generated_name_override` now receives `ItemInfo<'_>` as
+   argument instead of a `&str`.
 
 ## Removed
 
