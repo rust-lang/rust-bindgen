@@ -154,6 +154,8 @@
 ## Added
 
 ## Changed
+ * Fixed name collisions when having a C `enum` and a `typedef` with the same
+   name.
 
 ## Removed
 
