@@ -30,8 +30,8 @@ pub trait ParseCallbacks: fmt::Debug {
         MacroParsingBehavior::Default
     }
 
-    /// This function will run for every function. The returned value determines the name visible
-    /// in the bindings.
+    /// This function will run for every extern variable and function. The returned value determines
+    /// the name visible in the bindings.
     fn generated_name_override(&self, _item_info: ItemInfo) -> Option<String> {
         None
     }
