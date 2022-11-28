@@ -398,6 +398,22 @@ pub struct BindgenContext {
     /// bitfield allocation units computed. Drained in `compute_bitfield_units`.
     need_bitfield_allocation: Vec<ItemId>,
 
+    /// The set of enums that are defined by a pair of `enum` and `typedef`,
+    /// which is legal in C (but not C++).
+    ///
+    /// ```c++
+    /// // in either order
+    /// enum Enum { Variants... };
+    /// typedef int16_t Enum;
+    /// ```
+    ///
+    /// The stored `ItemId` is that of the `TypeKind::Enum`, not of the
+    /// `TypeKind::Alias`.
+    ///
+    /// This is populated when we enter codegen by `compute_enum_typedef_combos`
+    /// and is always `None` before that and `Some` after.
+    enum_typedef_combos: Option<HashSet<ItemId>>,
+
     /// The set of (`ItemId`s of) types that can't derive debug.
     ///
     /// This is populated when we enter codegen by `compute_cannot_derive_debug`
@@ -565,6 +581,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             codegen_items: None,
             used_template_parameters: None,
             need_bitfield_allocation: Default::default(),
+            enum_typedef_combos: None,
             cannot_derive_debug: None,
             cannot_derive_default: None,
             cannot_derive_copy: None,
@@ -1157,6 +1174,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.compute_sizedness();
         self.compute_has_destructor();
         self.find_used_template_parameters();
+        self.compute_enum_typedef_combos();
         self.compute_cannot_derive_debug();
         self.compute_cannot_derive_default();
         self.compute_cannot_derive_copy();
@@ -2474,6 +2492,70 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Whether we need to generate the bindgen complex type
     pub fn need_bindgen_complex_type(&self) -> bool {
         self.generated_bindgen_complex.get()
+    }
+
+    /// Compute which `enum`s have an associated `typedef` definition.
+    fn compute_enum_typedef_combos(&mut self) {
+        let _t = self.timer("compute_enum_typedef_combos");
+        assert!(self.enum_typedef_combos.is_none());
+
+        let mut enum_typedef_combos = HashSet::default();
+        for item in &self.items {
+            if let Some(ItemKind::Module(module)) =
+                item.as_ref().map(Item::kind)
+            {
+                // Find typedefs in this module, and build set of their names.
+                let mut names_of_typedefs = HashSet::default();
+                for child_id in module.children() {
+                    if let Some(ItemKind::Type(ty)) =
+                        self.items[child_id.0].as_ref().map(Item::kind)
+                    {
+                        if let (Some(name), TypeKind::Alias(type_id)) =
+                            (ty.name(), ty.kind())
+                        {
+                            // We disregard aliases that refer to the enum
+                            // itself, such as in `typedef enum { ... } Enum;`.
+                            if type_id
+                                .into_resolver()
+                                .through_type_refs()
+                                .through_type_aliases()
+                                .resolve(self)
+                                .expect_type()
+                                .is_int()
+                            {
+                                names_of_typedefs.insert(name);
+                            }
+                        }
+                    }
+                }
+
+                // Find enums in this module, and record the id of each one that
+                // has a typedef.
+                for child_id in module.children() {
+                    if let Some(ItemKind::Type(ty)) =
+                        self.items[child_id.0].as_ref().map(Item::kind)
+                    {
+                        if let (Some(name), true) = (ty.name(), ty.is_enum()) {
+                            if names_of_typedefs.contains(name) {
+                                enum_typedef_combos.insert(*child_id);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        self.enum_typedef_combos = Some(enum_typedef_combos);
+    }
+
+    /// Look up whether `id` refers to an `enum` whose underlying type is
+    /// defined by a `typedef`.
+    pub fn is_enum_typedef_combo(&self, id: ItemId) -> bool {
+        assert!(
+            self.in_codegen_phase(),
+            "We only compute enum_typedef_combos when we enter codegen",
+        );
+        self.enum_typedef_combos.as_ref().unwrap().contains(&id)
     }
 
     /// Compute whether we can derive debug.

@@ -2709,6 +2709,7 @@ impl<'a> EnumBuilder<'a> {
         mut attrs: Vec<proc_macro2::TokenStream>,
         repr: proc_macro2::TokenStream,
         enum_variation: EnumVariation,
+        has_typedef: bool,
     ) -> Self {
         let ident = Ident::new(name, Span::call_site());
 
@@ -2741,10 +2742,12 @@ impl<'a> EnumBuilder<'a> {
             EnumVariation::Consts => {
                 let mut variants = Vec::new();
 
-                variants.push(quote! {
-                    #( #attrs )*
-                    pub type #ident = #repr;
-                });
+                if !has_typedef {
+                    variants.push(quote! {
+                        #( #attrs )*
+                        pub type #ident = #repr;
+                    });
+                }
 
                 EnumBuilder::Consts { variants }
             }
@@ -3157,8 +3160,10 @@ impl CodeGenerator for Enum {
         }
 
         let repr = repr.to_rust_ty_or_opaque(ctx, item);
+        let has_typedef = ctx.is_enum_typedef_combo(item.id());
 
-        let mut builder = EnumBuilder::new(&name, attrs, repr, variation);
+        let mut builder =
+            EnumBuilder::new(&name, attrs, repr, variation, has_typedef);
 
         // A map where we keep a value -> variant relation.
         let mut seen_values = HashMap::<_, Ident>::default();
