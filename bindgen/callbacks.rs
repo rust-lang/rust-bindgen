@@ -123,16 +123,20 @@ pub struct DeriveInfo<'a> {
     pub name: &'a str,
 }
 
-/// An enum providing information about the item being passed to `ParseCallbacks::generated_name_override`.
-pub enum ItemInfo<'a> {
+/// An struct providing information about the item being passed to `ParseCallbacks::generated_name_override`.
+#[non_exhaustive]
+pub struct ItemInfo<'a> {
+    /// The name of the item
+    pub name: &'a str,
+    /// The kind of item
+    pub kind: ItemKind,
+}
+
+/// An enum indicating the kind of item for an ItemInfo.
+#[non_exhaustive]
+pub enum ItemKind {
     /// A Function
-    Function {
-        /// The name of the function
-        name: &'a str,
-    },
+    Function,
     /// A Variable
-    Var {
-        /// The name of the variable
-        name: &'a str,
-    },
+    Var,
 }

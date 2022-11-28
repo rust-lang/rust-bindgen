@@ -16,12 +16,12 @@ impl RemovePrefixParseCallback {
 impl ParseCallbacks for RemovePrefixParseCallback {
     fn generated_name_override(&self, item_info: ItemInfo) -> Option<String> {
         if let Some(prefix) = &self.remove_prefix {
-            let (item_name, expected_prefix, expected_suffix) = match item_info
-            {
-                ItemInfo::Function { name } => (name, "function_", "_name"),
-                ItemInfo::Var { name } => (name, "var_", "_name"),
+            let (expected_prefix, expected_suffix) = match item_info.kind {
+                ItemKind::Function => ("function_", "_name"),
+                ItemKind::Var => ("var_", "_name"),
+                _ => todo!(),
             };
-            if let Some(name) = item_name.strip_prefix(prefix) {
+            if let Some(name) = item_info.name.strip_prefix(prefix) {
                 assert!(name.starts_with(expected_prefix));
                 assert!(name.ends_with(expected_suffix));
                 return Some(name.to_string());
