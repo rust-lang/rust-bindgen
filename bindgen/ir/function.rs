@@ -6,6 +6,7 @@ use super::dot::DotAttributes;
 use super::item::Item;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
+use crate::callbacks::{ItemInfo, ItemKind};
 use crate::clang::{self, Attribute};
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 use clang_sys::{self, CXCallingConv};
@@ -712,10 +713,12 @@ impl ClangSubItemParser for Function {
             // but seems easy enough to handle it here.
             name.push_str("_destructor");
         }
-        if let Some(nm) = context
-            .options()
-            .last_callback(|callbacks| callbacks.generated_name_override(&name))
-        {
+        if let Some(nm) = context.options().last_callback(|callbacks| {
+            callbacks.generated_name_override(ItemInfo {
+                name: name.as_str(),
+                kind: ItemKind::Function,
+            })
+        }) {
             name = nm;
         }
         assert!(!name.is_empty(), "Empty function name.");

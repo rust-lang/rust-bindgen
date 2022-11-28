@@ -1,22 +1,29 @@
 use bindgen::callbacks::*;
 
 #[derive(Debug)]
-pub struct RemoveFunctionPrefixParseCallback {
-    pub remove_function_prefix: Option<String>,
+pub struct RemovePrefixParseCallback {
+    pub remove_prefix: Option<String>,
 }
 
-impl RemoveFunctionPrefixParseCallback {
+impl RemovePrefixParseCallback {
     pub fn new(prefix: &str) -> Self {
-        RemoveFunctionPrefixParseCallback {
-            remove_function_prefix: Some(prefix.to_string()),
+        RemovePrefixParseCallback {
+            remove_prefix: Some(prefix.to_string()),
         }
     }
 }
 
-impl ParseCallbacks for RemoveFunctionPrefixParseCallback {
-    fn generated_name_override(&self, function_name: &str) -> Option<String> {
-        if let Some(prefix) = &self.remove_function_prefix {
-            if let Some(name) = function_name.strip_prefix(prefix) {
+impl ParseCallbacks for RemovePrefixParseCallback {
+    fn generated_name_override(&self, item_info: ItemInfo) -> Option<String> {
+        if let Some(prefix) = &self.remove_prefix {
+            let (expected_prefix, expected_suffix) = match item_info.kind {
+                ItemKind::Function => ("function_", "_name"),
+                ItemKind::Var => ("var_", "_name"),
+                _ => todo!(),
+            };
+            if let Some(name) = item_info.name.strip_prefix(prefix) {
+                assert!(name.starts_with(expected_prefix));
+                assert!(name.ends_with(expected_suffix));
                 return Some(name.to_string());
             }
         }
@@ -67,8 +74,7 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
                     .split("remove-function-prefix-")
                     .last()
                     .to_owned();
-                let lnopc =
-                    RemoveFunctionPrefixParseCallback::new(prefix.unwrap());
+                let lnopc = RemovePrefixParseCallback::new(prefix.unwrap());
                 Box::new(lnopc)
             } else {
                 panic!("Couldn't find name ParseCallbacks: {}", cb)

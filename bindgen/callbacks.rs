@@ -30,9 +30,9 @@ pub trait ParseCallbacks: fmt::Debug {
         MacroParsingBehavior::Default
     }
 
-    /// This function will run for every function. The returned value determines the name visible
-    /// in the bindings.
-    fn generated_name_override(&self, _function_name: &str) -> Option<String> {
+    /// This function will run for every extern variable and function. The returned value determines
+    /// the name visible in the bindings.
+    fn generated_name_override(&self, _item_info: ItemInfo) -> Option<String> {
         None
     }
 
@@ -121,4 +121,22 @@ pub trait ParseCallbacks: fmt::Debug {
 pub struct DeriveInfo<'a> {
     /// The name of the type.
     pub name: &'a str,
+}
+
+/// An struct providing information about the item being passed to `ParseCallbacks::generated_name_override`.
+#[non_exhaustive]
+pub struct ItemInfo<'a> {
+    /// The name of the item
+    pub name: &'a str,
+    /// The kind of item
+    pub kind: ItemKind,
+}
+
+/// An enum indicating the kind of item for an ItemInfo.
+#[non_exhaustive]
+pub enum ItemKind {
+    /// A Function
+    Function,
+    /// A Variable
+    Var,
 }
