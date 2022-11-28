@@ -6,7 +6,7 @@ use super::dot::DotAttributes;
 use super::item::Item;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
-use crate::callbacks::CallbackItemKind;
+use crate::callbacks::ItemInfo;
 use crate::clang::{self, Attribute};
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 use clang_sys::{self, CXCallingConv};
@@ -714,7 +714,9 @@ impl ClangSubItemParser for Function {
             name.push_str("_destructor");
         }
         if let Some(nm) = context.options().last_callback(|callbacks| {
-            callbacks.generated_name_override(&name, CallbackItemKind::Function)
+            callbacks.generated_name_override(ItemInfo::Function {
+                name: name.as_str(),
+            })
         }) {
             name = nm;
         }

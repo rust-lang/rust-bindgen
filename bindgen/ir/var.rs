@@ -7,7 +7,7 @@ use super::function::cursor_mangling;
 use super::int::IntKind;
 use super::item::Item;
 use super::ty::{FloatKind, TypeKind};
-use crate::callbacks::{CallbackItemKind, MacroParsingBehavior};
+use crate::callbacks::{ItemInfo, MacroParsingBehavior};
 use crate::clang;
 use crate::clang::ClangToken;
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
@@ -275,10 +275,9 @@ impl ClangSubItemParser for Var {
                 let mut name = cursor.spelling();
                 if cursor.linkage() == CXLinkage_External {
                     if let Some(nm) = ctx.options().last_callback(|callbacks| {
-                        callbacks.generated_name_override(
-                            &name,
-                            CallbackItemKind::Var,
-                        )
+                        callbacks.generated_name_override(ItemInfo::Var {
+                            name: name.as_str(),
+                        })
                     }) {
                         name = nm;
                     }
