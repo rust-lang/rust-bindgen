@@ -1784,7 +1784,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let name = if name.is_empty() { None } else { Some(name) };
         let is_const = ty.is_const();
         let layout = ty.fallible_layout(self).ok();
-        let ty = Type::new(name.clone(), layout.clone(), type_kind);
+        let ty = Type::new(name.clone(), layout, type_kind);
         let item = Item::new(
             with_id,
             None,
