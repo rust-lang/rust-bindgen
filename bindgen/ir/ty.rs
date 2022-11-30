@@ -7,6 +7,7 @@ use super::enum_ty::Enum;
 use super::function::FunctionSig;
 use super::int::IntKind;
 use super::item::{IsOpaque, Item};
+use super::item_kind::ItemKind;
 use super::layout::{Layout, Opaque};
 use super::objc::ObjCInterface;
 use super::template::{
@@ -1221,7 +1222,7 @@ impl Type {
                 ty.elem_type()
                     .map_or(false, |element| element.is_const()));
 
-        let mut ty = Type::new(name.clone(), layout.clone(), kind);
+        let mut ty = Type::new(name.clone(), layout, kind);
 
         if is_const {
             let id = ctx.next_item_id();
@@ -1249,6 +1250,40 @@ impl Type {
 
         // TODO: maybe declaration.canonical()?
         Ok(ParseResult::New(ty, Some(cursor.canonical())))
+    }
+
+    pub(crate) fn maybe_qualify(
+        &self,
+        is_const: bool,
+        id: ItemId,
+        parent_id: Option<ItemId>,
+        ctx: &mut BindgenContext,
+    ) -> Option<(ItemId, Item)> {
+        if is_const {
+            let qualified_ty = Type::new(
+                self.name.clone(),
+                self.layout,
+                TypeKind::Qualified {
+                    inner: id.as_type_id_unchecked(),
+                    is_const: true,
+                },
+            );
+
+            let qualified_id = ctx.next_item_id();
+            Some((
+                qualified_id,
+                Item::new(
+                    qualified_id,
+                    None,
+                    None,
+                    parent_id.unwrap_or_else(|| ctx.current_module().into()),
+                    ItemKind::Type(qualified_ty),
+                    None,
+                ),
+            ))
+        } else {
+            None
+        }
     }
 }
 

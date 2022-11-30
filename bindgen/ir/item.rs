@@ -1321,30 +1321,21 @@ impl Item {
         }
 
         let ty = Type::new(None, None, kind);
-        let mut id = ctx.next_item_id();
+        let id = ctx.next_item_id();
         let module = ctx.root_module().into();
+        let qualified_item = ty.maybe_qualify(is_const, id, Some(module), ctx);
         ctx.add_item(
             Item::new(id, None, None, module, ItemKind::Type(ty), None),
             None,
             None,
         );
-        if is_const {
-            let ty = Type::new(
-                None,
-                None,
-                TypeKind::Qualified {
-                    inner: id.as_type_id_unchecked(),
-                    is_const: true,
-                },
-            );
-            id = ctx.next_item_id();
-            ctx.add_item(
-                Item::new(id, None, None, module, ItemKind::Type(ty), None),
-                None,
-                None,
-            );
-        }
-        id.as_type_id_unchecked()
+
+        qualified_item
+            .map_or(id, |(id, item)| {
+                ctx.add_item(item, None, None);
+                id
+            })
+            .as_type_id_unchecked()
     }
 
     pub(crate) fn parse(
@@ -1553,46 +1544,29 @@ impl Item {
         let kind = TypeKind::UnresolvedTypeRef(ty, location, parent_id);
         let current_module = ctx.current_module();
 
+        let ty = Type::new(None, None, kind);
+        let qualified_item =
+            ty.maybe_qualify(is_const, potential_id, parent_id, ctx);
+
         ctx.add_item(
             Item::new(
                 potential_id,
                 None,
                 None,
                 parent_id.unwrap_or_else(|| current_module.into()),
-                ItemKind::Type(Type::new(None, None, kind)),
+                ItemKind::Type(ty),
                 Some(location.location()),
             ),
             None,
             None,
         );
 
-        let id = if is_const {
-            let id = ctx.next_item_id();
-            ctx.add_item(
-                Item::new(
-                    id,
-                    None,
-                    None,
-                    parent_id.unwrap_or_else(|| current_module.into()),
-                    ItemKind::Type(Type::new(
-                        None,
-                        None,
-                        TypeKind::Qualified {
-                            inner: potential_id.as_type_id_unchecked(),
-                            is_const: true,
-                        },
-                    )),
-                    None,
-                ),
-                None,
-                None,
-            );
-            id
-        } else {
-            potential_id
-        };
-
-        id.as_type_id_unchecked()
+        qualified_item
+            .map_or(potential_id, |(id, item)| {
+                ctx.add_item(item, None, None);
+                id
+            })
+            .as_type_id_unchecked()
     }
 
     pub(crate) fn from_ty(

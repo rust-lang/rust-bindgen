@@ -1784,12 +1784,15 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let name = if name.is_empty() { None } else { Some(name) };
         let is_const = ty.is_const();
         let layout = ty.fallible_layout(self).ok();
-        let ty = Type::new(name.clone(), layout, type_kind);
+        let ty = Type::new(name, layout, type_kind);
+        let module = self.current_module.into();
+        let qualified_item =
+            ty.maybe_qualify(is_const, with_id, Some(module), self);
         let item = Item::new(
             with_id,
             None,
             None,
-            self.current_module.into(),
+            module,
             ItemKind::Type(ty),
             Some(location.location()),
         );
@@ -1800,33 +1803,16 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         debug_assert_eq!(with_id, item.id());
         self.items[with_id.0] = Some(item);
 
-        let id = if is_const {
-            let ty = Type::new(
-                name,
-                layout,
-                TypeKind::Qualified {
-                    inner: with_id.as_type_id_unchecked(),
-                    is_const: true,
-                },
-            );
-            let id = self.next_item_id();
-            let item = Item::new(
-                id,
-                None,
-                None,
-                self.current_module.into(),
-                ItemKind::Type(ty),
-                None,
-            );
-            self.add_item_to_module(&item);
-            debug_assert_eq!(id, item.id());
-            self.items[id.0] = Some(item);
-            id
-        } else {
-            with_id
-        };
-
-        Some(id.as_type_id_unchecked())
+        Some(
+            qualified_item
+                .map_or(with_id, |(id, qualified_item)| {
+                    self.add_item_to_module(&qualified_item);
+                    debug_assert_eq!(id, qualified_item.id());
+                    self.items[id.0] = Some(qualified_item);
+                    id
+                })
+                .as_type_id_unchecked(),
+        )
     }
 
     /// If we have already resolved the type for the given type declaration,
@@ -1954,7 +1940,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let layout = ty.fallible_layout(self).ok();
         let location = ty.declaration().location();
         let type_kind = TypeKind::ResolvedTypeRef(wrapped_id);
-        let ty = Type::new(Some(spelling.clone()), layout.clone(), type_kind);
+        let ty = Type::new(Some(spelling), layout, type_kind);
+        let qualified_item =
+            ty.maybe_qualify(is_const, with_id, parent_id, self);
         let item = Item::new(
             with_id,
             None,
@@ -1965,31 +1953,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         );
         self.add_builtin_item(item);
 
-        let id = if is_const {
-            let id = self.next_item_id();
-            let ty = Type::new(
-                Some(spelling),
-                layout,
-                TypeKind::Qualified {
-                    inner: with_id.as_type_id_unchecked(),
-                    is_const: true,
-                },
-            );
-            let item = Item::new(
-                id,
-                None,
-                None,
-                parent_id.unwrap_or_else(|| self.current_module.into()),
-                ItemKind::Type(ty),
-                None,
-            );
-            self.add_builtin_item(item);
-            id
-        } else {
-            with_id
-        };
-
-        id.as_type_id_unchecked()
+        qualified_item
+            .map_or(with_id, |(id, item)| {
+                self.add_builtin_item(item);
+                id
+            })
+            .as_type_id_unchecked()
     }
 
     /// Returns the next item id to be used for an item.
@@ -2048,40 +2017,28 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let is_const = ty.is_const();
         let layout = ty.fallible_layout(self).ok();
         let location = ty.declaration().location();
-        let ty = Type::new(Some(spelling.clone()), layout.clone(), type_kind);
-        let mut id = self.next_item_id();
+        let ty = Type::new(Some(spelling), layout, type_kind);
+        let id = self.next_item_id();
+        let module = self.root_module.into();
+        let qualified_item = ty.maybe_qualify(is_const, id, Some(module), self);
         let item = Item::new(
             id,
             None,
             None,
-            self.root_module.into(),
+            module,
             ItemKind::Type(ty),
             Some(location),
         );
         self.add_builtin_item(item);
 
-        if is_const {
-            let ty = Type::new(
-                Some(spelling),
-                layout,
-                TypeKind::Qualified {
-                    inner: id.as_type_id_unchecked(),
-                    is_const: true,
-                },
-            );
-            id = self.next_item_id();
-            let item = Item::new(
-                id,
-                None,
-                None,
-                self.root_module.into(),
-                ItemKind::Type(ty),
-                None,
-            );
-            self.add_builtin_item(item);
-        }
-
-        Some(id.as_type_id_unchecked())
+        Some(
+            qualified_item
+                .map_or(id, |(id, item)| {
+                    self.add_builtin_item(item);
+                    id
+                })
+                .as_type_id_unchecked(),
+        )
     }
 
     /// Get the current Clang translation unit that is being processed.
