@@ -1,4 +1,5 @@
-
+// bindgen-flags: --no-layout-tests
+// FIXME: Enable layout tests when #465 is fixed.
 class A {
   int foo;
 };
