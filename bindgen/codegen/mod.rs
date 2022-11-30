@@ -2193,16 +2193,7 @@ impl CodeGenerator for CompInfo {
                         })
                     };
 
-                    // FIXME when [issue #465](https://github.com/rust-lang/rust-bindgen/issues/465) ready
-                    let too_many_base_vtables = self
-                        .base_members()
-                        .iter()
-                        .filter(|base| base.ty.has_vtable(ctx))
-                        .count() >
-                        1;
-
-                    let should_skip_field_offset_checks =
-                        is_opaque || too_many_base_vtables;
+                    let should_skip_field_offset_checks = is_opaque;
 
                     let check_field_offset = if should_skip_field_offset_checks
                     {
