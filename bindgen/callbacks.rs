@@ -1,6 +1,7 @@
 //! A public API for more fine-grained customization of bindgen behavior.
 
 pub use crate::ir::analysis::DeriveTrait;
+use crate::ir::comp::CompKind;
 pub use crate::ir::derive::CanDerive as ImplementsTrait;
 pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
 pub use crate::ir::int::IntKind;
@@ -120,10 +121,13 @@ pub trait ParseCallbacks: fmt::Debug {
 
 /// Relevant information about a type to which new derive attributes will be added using
 /// [`ParseCallbacks::add_derives`].
+#[derive(Debug)]
 #[non_exhaustive]
 pub struct DeriveInfo<'a> {
     /// The name of the type.
     pub name: &'a str,
+    /// The kind of the type
+    pub kind: Option<CompKind>,
 }
 
 /// An struct providing information about the item being passed to `ParseCallbacks::generated_name_override`.

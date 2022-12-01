@@ -340,6 +340,9 @@ struct BindgenCommand {
     /// Wrap unsafe operations in unsafe blocks.
     #[arg(long)]
     wrap_unsafe_ops: bool,
+    /// Derive custom traits on any kind of type. The <DERIVE> value must be of the shape <regex>=<kind>=<derive> where <kind> can be one of: Any, Struct, or Union.
+    #[arg(long, value_name = "DERIVE")]
+    with_derive_custom: Vec<String>,
     /// Prints the version, and exits
     #[arg(short = 'V', long)]
     version: bool,
@@ -456,6 +459,7 @@ where
         merge_extern_blocks,
         override_abi,
         wrap_unsafe_ops,
+        with_derive_custom,
         version,
         clang_args,
     } = command;
@@ -893,6 +897,69 @@ where
     if wrap_unsafe_ops {
         builder = builder.wrap_unsafe_ops(true);
     }
+
+    #[derive(Debug)]
+    struct CustomDeriveCallback {
+        derive: String,
+        kind: String,
+        regex: String,
+    }
+
+    impl bindgen::callbacks::ParseCallbacks for CustomDeriveCallback {
+        fn add_derives(
+            &self,
+            info: &bindgen::callbacks::DeriveInfo<'_>,
+        ) -> Vec<String> {
+            match self.kind.to_lowercase().as_str() {
+                "struct" => match info.kind {
+                    Some(bindgen::ir::comp::CompKind::Struct) => {} // continue
+                    _ => return vec![],                             // bail
+                },
+                "union" => match info.kind {
+                    Some(bindgen::ir::comp::CompKind::Union) => {} // continue
+                    _ => return vec![],                            // bail
+                },
+                "any" => {} // continue
+                other => {
+                    panic!("Invalid custom derive: Unexpected kind '{}'", other)
+                }
+            }
+
+            let mut re = bindgen::RegexSet::new();
+            re.insert(self.regex.to_owned());
+            re.build(false);
+
+            match re.matches(info.name) {
+                true => vec![self.derive.to_owned()],
+                false => vec![],
+            }
+        }
+    }
+
+    for custom_derive in with_derive_custom {
+        let mut values = custom_derive.rsplitn(3, "=");
+        let derive = values
+            .next()
+            .expect("Invalid custom derive: Expected 3 parts, found 0")
+            .to_owned();
+        let kind = values
+            .next()
+            .expect("Invalid custom derive: Expected 3 parts, found 1")
+            .to_owned();
+        let regex = values
+            .next()
+            .expect("Invalid custom derive: Expected 3 parts, found 2")
+            .to_owned();
+
+        builder = builder.parse_callbacks(Box::new(CustomDeriveCallback {
+            derive,
+            kind,
+            regex: regex,
+        }));
+    }
+
+    // let derives: Vec<String> = traits.into_iter().map(|t| t.to_string()).collect();
+    // builder = builder.parse_callbacks(Box::new(CustomTraitCallback { derives }));
 
     Ok((builder, output, verbose))
 }

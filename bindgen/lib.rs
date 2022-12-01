@@ -65,7 +65,7 @@ mod clang;
 mod codegen;
 mod deps;
 mod features;
-mod ir;
+pub mod ir;
 mod parse;
 mod regex_set;
 mod time;
@@ -91,7 +91,7 @@ use crate::ir::context::{BindgenContext, ItemId};
 pub use crate::ir::function::Abi;
 use crate::ir::item::Item;
 use crate::parse::ParseError;
-use crate::regex_set::RegexSet;
+pub use crate::regex_set::RegexSet;
 
 use std::borrow::Cow;
 use std::env;
