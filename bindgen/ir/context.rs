@@ -1805,10 +1805,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         Some(
             qualified_item
-                .map_or(with_id, |(id, qualified_item)| {
-                    self.add_item_to_module(&qualified_item);
-                    debug_assert_eq!(id, qualified_item.id());
-                    self.items[id.0] = Some(qualified_item);
+                .map_or(with_id, |item| {
+                    let id = item.id();
+                    self.add_item_to_module(&item);
+                    self.items[id.0] = Some(item);
                     id
                 })
                 .as_type_id_unchecked(),
@@ -1954,7 +1954,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.add_builtin_item(item);
 
         qualified_item
-            .map_or(with_id, |(id, item)| {
+            .map_or(with_id, |item| {
+                let id = item.id();
                 self.add_builtin_item(item);
                 id
             })
@@ -2033,7 +2034,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         Some(
             qualified_item
-                .map_or(id, |(id, item)| {
+                .map_or(id, |item| {
+                    let id = item.id();
                     self.add_builtin_item(item);
                     id
                 })

@@ -1252,13 +1252,15 @@ impl Type {
         Ok(ParseResult::New(ty, Some(cursor.canonical())))
     }
 
+    /// Returns an [`Item`] with the qualified version of this type and add this type as an item to
+    /// `ctx` with the desired `id` if `is_const` is true. Returns `None` otherwise.
     pub(crate) fn maybe_qualify(
         &self,
         is_const: bool,
         id: ItemId,
         parent_id: Option<ItemId>,
         ctx: &mut BindgenContext,
-    ) -> Option<(ItemId, Item)> {
+    ) -> Option<Item> {
         if is_const {
             let qualified_ty = Type::new(
                 self.name.clone(),
@@ -1270,16 +1272,13 @@ impl Type {
             );
 
             let qualified_id = ctx.next_item_id();
-            Some((
+            Some(Item::new(
                 qualified_id,
-                Item::new(
-                    qualified_id,
-                    None,
-                    None,
-                    parent_id.unwrap_or_else(|| ctx.current_module().into()),
-                    ItemKind::Type(qualified_ty),
-                    None,
-                ),
+                None,
+                None,
+                parent_id.unwrap_or_else(|| ctx.current_module().into()),
+                ItemKind::Type(qualified_ty),
+                None,
             ))
         } else {
             None

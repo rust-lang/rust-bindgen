@@ -1331,7 +1331,8 @@ impl Item {
         );
 
         qualified_item
-            .map_or(id, |(id, item)| {
+            .map_or(id, |item| {
+                let id = item.id();
                 ctx.add_item(item, None, None);
                 id
             })
@@ -1562,7 +1563,8 @@ impl Item {
         );
 
         qualified_item
-            .map_or(potential_id, |(id, item)| {
+            .map_or(potential_id, |item| {
+                let id = item.id();
                 ctx.add_item(item, None, None);
                 id
             })
