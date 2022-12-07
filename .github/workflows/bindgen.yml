@@ -166,7 +166,11 @@ jobs:
           toolchain: stable
           target: ${{matrix.target.rust}}
           override: true
-
+      - name: Install libtinfo
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install libtinfo5
       - name: Run all the tests
         env:
           GITHUB_ACTIONS_OS: ${{matrix.os}}
