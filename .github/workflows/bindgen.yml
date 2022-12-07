@@ -167,7 +167,7 @@ jobs:
           target: ${{matrix.target.rust}}
           override: true
       - name: Install libtinfo
-        if: matrix.os.ubuntu-latest
+        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install libtinfo5
