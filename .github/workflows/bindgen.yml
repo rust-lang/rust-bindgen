@@ -157,7 +157,7 @@ jobs:
           EOF
           sudo dpkg --add-architecture ${{matrix.target.debian}}
           sudo apt-get update
-          sudo apt-get install libc6:${{matrix.target.debian}} libstdc++6:${{matrix.target.debian}}
+          sudo apt-get install libc6:${{matrix.target.debian}} libstdc++6:${{matrix.target.debian}} libtinfo5:${{matrix.target.debian}}
 
       - name: Install stable
         uses: actions-rs/toolchain@v1
