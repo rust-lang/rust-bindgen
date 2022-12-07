@@ -157,7 +157,7 @@ jobs:
           EOF
           sudo dpkg --add-architecture ${{matrix.target.debian}}
           sudo apt-get update
-          sudo apt-get install libc6:${{matrix.target.debian}} libstdc++6:${{matrix.target.debian}} libtinfo5:${{matrix.target.debian}}
+          sudo apt-get install libc6:${{matrix.target.debian}} libstdc++6:${{matrix.target.debian}}
 
       - name: Install stable
         uses: actions-rs/toolchain@v1
@@ -166,7 +166,10 @@ jobs:
           toolchain: stable
           target: ${{matrix.target.rust}}
           override: true
-
+      - name: Install libtinfo
+        run: |
+          sudo apt-get update
+          sudo apt-get install libtinfo5
       - name: Run all the tests
         env:
           GITHUB_ACTIONS_OS: ${{matrix.os}}
