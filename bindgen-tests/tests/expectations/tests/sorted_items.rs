@@ -7,20 +7,23 @@
 
 #[allow(non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub mod root {
+    #[allow(unused_imports)]
+    use self::super::root;
+    extern "C" {
+        #[link_name = "\u{1}_Z3foov"]
+        pub fn foo() -> ::std::os::raw::c_int;
+    }
     pub type number = ::std::os::raw::c_int;
+    extern "C" {
+        #[link_name = "\u{1}_Z3bari"]
+        pub fn bar(x: root::number) -> ::std::os::raw::c_int;
+    }
     #[repr(C)]
     #[derive(Debug, Default, Copy, Clone)]
     pub struct Point {
         pub x: root::number,
         pub y: root::number,
     }
-    #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
-    pub struct Angle {
-        pub a: root::number,
-        pub b: root::number,
-    }
-    pub const NUMBER: root::number = 42;
     #[test]
     fn bindgen_test_layout_Point() {
         const UNINIT: ::std::mem::MaybeUninit<Point> =
@@ -56,6 +59,12 @@ pub mod root {
                 stringify!(y)
             )
         );
+    }
+    #[repr(C)]
+    #[derive(Debug, Default, Copy, Clone)]
+    pub struct Angle {
+        pub a: root::number,
+        pub b: root::number,
     }
     #[test]
     fn bindgen_test_layout_Angle() {
@@ -93,21 +102,29 @@ pub mod root {
             )
         );
     }
+    extern "C" {
+        #[link_name = "\u{1}_Z3baz5Point"]
+        pub fn baz(point: root::Point) -> ::std::os::raw::c_int;
+    }
+    pub const NUMBER: root::number = 42;
     pub mod ns {
+        #[allow(unused_imports)]
+        use self::super::super::root;
+        extern "C" {
+            #[link_name = "\u{1}_ZN2ns3fooEv"]
+            pub fn foo() -> ::std::os::raw::c_int;
+        }
         pub type number = ::std::os::raw::c_int;
+        extern "C" {
+            #[link_name = "\u{1}_ZN2ns3barEi"]
+            pub fn bar(x: root::ns::number) -> ::std::os::raw::c_int;
+        }
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct Point {
             pub x: root::ns::number,
             pub y: root::ns::number,
         }
-        #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
-        pub struct Angle {
-            pub a: root::ns::number,
-            pub b: root::ns::number,
-        }
-        pub const NUMBER: root::ns::number = 42;
         #[test]
         fn bindgen_test_layout_Point() {
             const UNINIT: ::std::mem::MaybeUninit<Point> =
@@ -147,6 +164,12 @@ pub mod root {
                     stringify!(y)
                 )
             );
+        }
+        #[repr(C)]
+        #[derive(Debug, Default, Copy, Clone)]
+        pub struct Angle {
+            pub a: root::ns::number,
+            pub b: root::ns::number,
         }
         #[test]
         fn bindgen_test_layout_Angle() {
@@ -188,33 +211,10 @@ pub mod root {
                 )
             );
         }
-        #[allow(unused_imports)]
-        use self::super::super::root;
-        extern "C" {
-            #[link_name = "\u{1}_ZN2ns3fooEv"]
-            pub fn foo() -> ::std::os::raw::c_int;
-        }
-        extern "C" {
-            #[link_name = "\u{1}_ZN2ns3barEi"]
-            pub fn bar(x: root::ns::number) -> ::std::os::raw::c_int;
-        }
         extern "C" {
             #[link_name = "\u{1}_ZN2ns3bazENS_5PointE"]
             pub fn baz(point: root::ns::Point) -> ::std::os::raw::c_int;
         }
-    }
-    #[allow(unused_imports)]
-    use self::super::root;
-    extern "C" {
-        #[link_name = "\u{1}_Z3foov"]
-        pub fn foo() -> ::std::os::raw::c_int;
-    }
-    extern "C" {
-        #[link_name = "\u{1}_Z3bari"]
-        pub fn bar(x: root::number) -> ::std::os::raw::c_int;
-    }
-    extern "C" {
-        #[link_name = "\u{1}_Z3baz5Point"]
-        pub fn baz(point: root::Point) -> ::std::os::raw::c_int;
+        pub const NUMBER: root::ns::number = 42;
     }
 }
