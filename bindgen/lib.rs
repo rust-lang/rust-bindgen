@@ -1564,7 +1564,7 @@ impl Builder {
                 .collect::<Vec<_>>();
 
         match Bindings::generate(options, input_unsaved_files) {
-            GenerateResult::Ok(bindings) => Ok(bindings),
+            GenerateResult::Ok(bindings) => Ok(*bindings),
             GenerateResult::ShouldRestart { header } => self
                 .header(header)
                 .generate_inline_functions(false)
@@ -2351,7 +2351,7 @@ fn ensure_libclang_is_loaded() {}
 
 #[derive(Debug)]
 enum GenerateResult {
-    Ok(Bindings),
+    Ok(Box<Bindings>),
     /// Error variant raised when bindgen requires to run again with a newly generated header
     /// input.
     #[allow(dead_code)]
@@ -2624,11 +2624,11 @@ impl Bindings {
 
         let (module, options, warnings) = codegen::codegen(context);
 
-        GenerateResult::Ok(Bindings {
+        GenerateResult::Ok(Box::new(Bindings {
             options,
             warnings,
             module,
-        })
+        }))
     }
 
     /// Write these bindings as source text to a file.
