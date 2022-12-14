@@ -10,7 +10,7 @@ pub struct Foo {
     pub member: Foo_SecondAlias,
 }
 pub type Foo_FirstAlias = [u8; 0usize];
-pub type Foo_SecondAlias = [u8; 0usize];
+pub type Foo_SecondAlias = Foo;
 impl Default for Foo {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

@@ -1200,6 +1200,32 @@ impl Type {
                 CXType_Dependent => {
                     return Err(ParseError::Continue);
                 }
+                179 /* CXType_Using */ => {
+                    let decl_ty = ty.declaration().cur_type();
+                    if decl_ty.is_valid() {
+                        if let Ok(ty) = Self::from_clang_ty(
+                            potential_id,
+                            &decl_ty,
+                            location,
+                            parent_id,
+                            ctx
+                        ) {
+                            return Ok(ty);
+                        }
+                    }
+                    if canonical_ty.is_valid() {
+                        if let Ok(ty) = Self::from_clang_ty(
+                            potential_id,
+                            &canonical_ty,
+                            location,
+                            parent_id,
+                            ctx
+                        ) {
+                            return Ok(ty);
+                        }
+                    }
+                    return Err(ParseError::Continue);
+                },
                 _ => {
                     warn!(
                         "unsupported type: kind = {:?}; ty = {:?}; at {:?}",
