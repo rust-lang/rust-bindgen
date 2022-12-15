@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Create a build.rs File - The `bindgen` User Guide</title>
+        <title>Code formatting - The `bindgen` User Guide</title>
         
         
 
@@ -95,7 +95,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="requirements.html"><strong aria-hidden="true">2.</strong> Requirements</a></li><li class="chapter-item expanded "><a href="library-usage.html"><strong aria-hidden="true">3.</strong> Library Usage with build.rs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial-0.html"><strong aria-hidden="true">3.1.</strong> Tutorial</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial-1.html"><strong aria-hidden="true">3.1.1.</strong> Add bindgen as a Build Dependency</a></li><li class="chapter-item expanded "><a href="tutorial-2.html"><strong aria-hidden="true">3.1.2.</strong> Create a wrapper.h Header</a></li><li class="chapter-item expanded "><a href="tutorial-3.html" class="active"><strong aria-hidden="true">3.1.3.</strong> Create a build.rs File</a></li><li class="chapter-item expanded "><a href="tutorial-4.html"><strong aria-hidden="true">3.1.4.</strong> Include the Generated Bindings in src/lib.rs</a></li><li class="chapter-item expanded "><a href="tutorial-5.html"><strong aria-hidden="true">3.1.5.</strong> Write a Sanity Test</a></li><li class="chapter-item expanded "><a href="tutorial-6.html"><strong aria-hidden="true">3.1.6.</strong> Publish Your Crate!</a></li></ol></li><li class="chapter-item expanded "><a href="non-system-libraries.html"><strong aria-hidden="true">3.2.</strong> Bindings for non-system libraries</a></li></ol></li><li class="chapter-item expanded "><a href="command-line-usage.html"><strong aria-hidden="true">4.</strong> Command Line Usage</a></li><li class="chapter-item expanded "><a href="customizing-generated-bindings.html"><strong aria-hidden="true">5.</strong> Customizing the Generated Bindings</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="allowlisting.html"><strong aria-hidden="true">5.1.</strong> Allowlisting</a></li><li class="chapter-item expanded "><a href="blocklisting.html"><strong aria-hidden="true">5.2.</strong> Blocklisting</a></li><li class="chapter-item expanded "><a href="opaque.html"><strong aria-hidden="true">5.3.</strong> Treating a Type as an Opaque Blob of Bytes</a></li><li class="chapter-item expanded "><a href="replacing-types.html"><strong aria-hidden="true">5.4.</strong> Replacing One Type with Another</a></li><li class="chapter-item expanded "><a href="nocopy.html"><strong aria-hidden="true">5.5.</strong> Preventing the Derivation of Copy and Clone</a></li><li class="chapter-item expanded "><a href="nodebug.html"><strong aria-hidden="true">5.6.</strong> Preventing the Derivation of Debug</a></li><li class="chapter-item expanded "><a href="nodefault.html"><strong aria-hidden="true">5.7.</strong> Preventing the Derivation of Default</a></li><li class="chapter-item expanded "><a href="must-use-types.html"><strong aria-hidden="true">5.8.</strong> Annotating types with #[must-use]</a></li><li class="chapter-item expanded "><a href="visibility.html"><strong aria-hidden="true">5.9.</strong> Field visibility</a></li><li class="chapter-item expanded "><a href="code-formatting.html"><strong aria-hidden="true">5.10.</strong> Code formatting</a></li></ol></li><li class="chapter-item expanded "><a href="cpp.html"><strong aria-hidden="true">6.</strong> Generating Bindings to C++</a></li><li class="chapter-item expanded "><a href="objc.html"><strong aria-hidden="true">7.</strong> Generating Bindings to Objective-c</a></li><li class="chapter-item expanded "><a href="using-unions.html"><strong aria-hidden="true">8.</strong> Using Unions</a></li><li class="chapter-item expanded "><a href="using-bitfields.html"><strong aria-hidden="true">9.</strong> Using Bitfields</a></li><li class="chapter-item expanded "><a href="faq.html"><strong aria-hidden="true">10.</strong> FAQ</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="requirements.html"><strong aria-hidden="true">2.</strong> Requirements</a></li><li class="chapter-item expanded "><a href="library-usage.html"><strong aria-hidden="true">3.</strong> Library Usage with build.rs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial-0.html"><strong aria-hidden="true">3.1.</strong> Tutorial</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial-1.html"><strong aria-hidden="true">3.1.1.</strong> Add bindgen as a Build Dependency</a></li><li class="chapter-item expanded "><a href="tutorial-2.html"><strong aria-hidden="true">3.1.2.</strong> Create a wrapper.h Header</a></li><li class="chapter-item expanded "><a href="tutorial-3.html"><strong aria-hidden="true">3.1.3.</strong> Create a build.rs File</a></li><li class="chapter-item expanded "><a href="tutorial-4.html"><strong aria-hidden="true">3.1.4.</strong> Include the Generated Bindings in src/lib.rs</a></li><li class="chapter-item expanded "><a href="tutorial-5.html"><strong aria-hidden="true">3.1.5.</strong> Write a Sanity Test</a></li><li class="chapter-item expanded "><a href="tutorial-6.html"><strong aria-hidden="true">3.1.6.</strong> Publish Your Crate!</a></li></ol></li><li class="chapter-item expanded "><a href="non-system-libraries.html"><strong aria-hidden="true">3.2.</strong> Bindings for non-system libraries</a></li></ol></li><li class="chapter-item expanded "><a href="command-line-usage.html"><strong aria-hidden="true">4.</strong> Command Line Usage</a></li><li class="chapter-item expanded "><a href="customizing-generated-bindings.html"><strong aria-hidden="true">5.</strong> Customizing the Generated Bindings</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="allowlisting.html"><strong aria-hidden="true">5.1.</strong> Allowlisting</a></li><li class="chapter-item expanded "><a href="blocklisting.html"><strong aria-hidden="true">5.2.</strong> Blocklisting</a></li><li class="chapter-item expanded "><a href="opaque.html"><strong aria-hidden="true">5.3.</strong> Treating a Type as an Opaque Blob of Bytes</a></li><li class="chapter-item expanded "><a href="replacing-types.html"><strong aria-hidden="true">5.4.</strong> Replacing One Type with Another</a></li><li class="chapter-item expanded "><a href="nocopy.html"><strong aria-hidden="true">5.5.</strong> Preventing the Derivation of Copy and Clone</a></li><li class="chapter-item expanded "><a href="nodebug.html"><strong aria-hidden="true">5.6.</strong> Preventing the Derivation of Debug</a></li><li class="chapter-item expanded "><a href="nodefault.html"><strong aria-hidden="true">5.7.</strong> Preventing the Derivation of Default</a></li><li class="chapter-item expanded "><a href="must-use-types.html"><strong aria-hidden="true">5.8.</strong> Annotating types with #[must-use]</a></li><li class="chapter-item expanded "><a href="visibility.html"><strong aria-hidden="true">5.9.</strong> Field visibility</a></li><li class="chapter-item expanded "><a href="code-formatting.html" class="active"><strong aria-hidden="true">5.10.</strong> Code formatting</a></li></ol></li><li class="chapter-item expanded "><a href="cpp.html"><strong aria-hidden="true">6.</strong> Generating Bindings to C++</a></li><li class="chapter-item expanded "><a href="objc.html"><strong aria-hidden="true">7.</strong> Generating Bindings to Objective-c</a></li><li class="chapter-item expanded "><a href="using-unions.html"><strong aria-hidden="true">8.</strong> Using Unions</a></li><li class="chapter-item expanded "><a href="using-bitfields.html"><strong aria-hidden="true">9.</strong> Using Bitfields</a></li><li class="chapter-item expanded "><a href="faq.html"><strong aria-hidden="true">10.</strong> FAQ</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -163,68 +163,73 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#create-a-buildrs-file" id="create-a-buildrs-file">Create a <code>build.rs</code> File</a></h1>
-<p>We create a <code>build.rs</code> file in our crate's root. Cargo will pick up on the existence of this file, then compile and execute it before the rest of the crate is built.
-This can be used to generate code at compile time.
-And of course in our case, we will be generating Rust FFI
-bindings to <code>bzip2</code> at compile time. The resulting bindings will be written to
-<code>$OUT_DIR/bindings.rs</code> where <code>$OUT_DIR</code> is chosen by <code>cargo</code> and is something
-like <code>./target/debug/build/bindgen-tutorial-bzip2-sys-afc7747d7eafd720/out/</code>.</p>
-<p>Note that the associated shared object to <code>bz2</code> is <code>libbz2.so</code>. In general, a <code>lib&lt;name&gt;.so</code> should be referenced in the build file by <code>&lt;name&gt;</code>.</p>
-<pre><code class="language-rust ignore">extern crate bindgen;
-
-use std::env;
-use std::path::PathBuf;
+                        <h1><a class="header" href="#code-formatting" id="code-formatting">Code Formatting</a></h1>
+<p><code>bindgen</code> uses <code>rustfmt</code> to format the emitted bindings. This section describes
+how to adjust the <code>rustfmt</code> behavior when being used from <code>bindgen</code>.</p>
+<h2><a class="header" href="#passing-a-rustfmttoml-configuration-file" id="passing-a-rustfmttoml-configuration-file">Passing a <code>rustfmt.toml</code> configuration file</a></h2>
+<p><code>rustfmt</code> should automatically use any <code>rustfmt.toml</code> file that is present in
+the directory from where <code>bindgen</code> will be run. If you want to use a
+configuration file that has a different name or that is in a different
+directory you can use the <code>--rustfmt-configuration-file</code> flag or the
+<a href="https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.rustfmt_configuration_file"><code>Builder::rustfmt_configuration_file</code></a>
+method.</p>
+<h2><a class="header" href="#using-a-nightly-release-of-rustfmt" id="using-a-nightly-release-of-rustfmt">Using a nightly release of <code>rustfmt</code></a></h2>
+<p>If the <code>rustfmt</code> command does not correspond to a nightly release of <code>rustfmt</code>
+but you have <code>rustup</code> available, you can use <code>nightly</code> by following these
+steps:</p>
+<h3><a class="header" href="#when-using-bindgen-as-a-cli-application" id="when-using-bindgen-as-a-cli-application">When using <code>bindgen</code> as a CLI application</a></h3>
+<p>Use <code>rustup run</code> to run <code>bindgen</code>:</p>
+<pre><code class="language-bash">$ rustup run nightly bindgen [ARGS]
+</code></pre>
+<h3><a class="header" href="#when-using-bindgen-as-a-library" id="when-using-bindgen-as-a-library">When using <code>bindgen</code> as a library</a></h3>
+<p>Take the output of the following command:</p>
+<pre><code class="language-bash">$ rustup which rustfmt --toolchain=nightly
+</code></pre>
+<p>and pass it to
+<a href="https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.with_rustfmt"><code>Builder::with_rustfmt</code></a>:</p>
+<pre><code class="language-rust ignore">use bindgen::Builder;
+use std::process::Command;
 
 fn main() {
-    // Tell cargo to look for shared libraries in the specified directory
-    println!(&quot;cargo:rustc-link-search=/path/to/lib&quot;);
+    let output = Command::new(&quot;rustup&quot;)
+        .args([&quot;which&quot;, &quot;rustfmt&quot;, &quot;--toolchain&quot;, &quot;nightly&quot;])
+        .output()
+        .expect(&quot;Could not spawn `rustup` command&quot;);
 
-    // Tell cargo to tell rustc to link the system bzip2
-    // shared library.
-    println!(&quot;cargo:rustc-link-lib=bz2&quot;);
+    assert!(
+        output.status.success(),
+        &quot;Unsuccessful status code when running `rustup`: {:?}&quot;,
+        output
+    );
 
-    // Tell cargo to invalidate the built crate whenever the wrapper changes
-    println!(&quot;cargo:rerun-if-changed=wrapper.h&quot;);
+    let rustfmt_path =
+        String::from_utf8(output.stdout).expect(&quot;The `rustfmt` path is not valid `utf-8`&quot;);
 
-    // The bindgen::Builder is the main entry point
-    // to bindgen, and lets you build up options for
-    // the resulting bindings.
-    let bindings = bindgen::Builder::default()
-        // The input header we would like to generate
-        // bindings for.
-        .header(&quot;wrapper.h&quot;)
-        // Tell cargo to invalidate the built crate whenever any of the
-        // included header files changed.
-        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
-        // Finish the builder and generate the bindings.
+    let bindings = Builder::default()
+        .header(&quot;path/to/input.h&quot;)
+        .with_rustfmt(rustfmt_path)
         .generate()
-        // Unwrap the Result and panic on failure.
-        .expect(&quot;Unable to generate bindings&quot;);
+        .expect(&quot;Could not generate bindings&quot;);
 
-    // Write the bindings to the $OUT_DIR/bindings.rs file.
-    let out_path = PathBuf::from(env::var(&quot;OUT_DIR&quot;).unwrap());
     bindings
-        .write_to_file(out_path.join(&quot;bindings.rs&quot;))
-        .expect(&quot;Couldn't write bindings!&quot;);
+        .write_to_file(&quot;path/to/output.rs&quot;)
+        .expect(&quot;Could not write bindings&quot;);
 }
 </code></pre>
-<p>Now, when we run <code>cargo build</code>, our bindings to <code>bzip2</code> are generated on the
-fly!</p>
-<p><a href="http://doc.crates.io/build-script.html">There's more info about <code>build.rs</code> files in the crates.io documentation.</a></p>
+<p>These two methods also apply to any other toolchain available in your system.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="tutorial-2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="visibility.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="tutorial-4.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="cpp.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -236,13 +241,13 @@ fly!</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="tutorial-2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="visibility.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a rel="next" href="tutorial-4.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="cpp.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
