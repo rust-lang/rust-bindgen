@@ -46,7 +46,7 @@ fn main() {
 
     assert!(
         output.status.success(),
-        "Unsuccessful status code when runnning `rustup`: {:?}",
+        "Unsuccessful status code when running `rustup`: {:?}",
         output
     );
 
