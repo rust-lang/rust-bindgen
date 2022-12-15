@@ -1,6 +1,7 @@
 # Code Formatting
 
-`bindgen` uses `rustfmt` to format the emitted bindings. This section describes how to adjust the `rustfmt` behavior when being used from `bindgen`.
+`bindgen` uses `rustfmt` to format the emitted bindings. This section describes
+how to adjust the `rustfmt` behavior when being used from `bindgen`.
 
 ## Passing a `rustfmt.toml` configuration file
 
