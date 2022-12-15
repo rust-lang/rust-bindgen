@@ -201,7 +201,8 @@
 ## Changed
 
  * Regex inputs are sanitized so alternation (`a|b`) is handled correctly but
-   wildcard patterns (`*`) are now considered invalid.
+   wildcard patterns (`*`) are now considered invalid. The `.*` pattern can be
+   used as a replacement.
  * the `ParseCallbacks`trait does not require to implement `UnwindSafe`.
  * the `Builder::parse_callbacks` method no longer overwrites previously added
    callbacks and composes them in a last-to-first manner.

@@ -244,6 +244,10 @@ impl Default for CodegenConfig {
 /// regular expressions as arguments. These regular expressions will be parenthesized and wrapped
 /// in `^` and `$`. So if `<regex>` is passed as argument, the regular expression to be stored will
 /// be `^(<regex>)$`.
+///
+/// Releases of `bindgen` with a version lesser or equal to `0.62.0` used to accept the wildcard
+/// pattern `*` as a valid regular expression. This behavior has been deprecated and the `.*`
+/// pattern must be used instead.
 #[derive(Debug, Default, Clone)]
 pub struct Builder {
     options: BindgenOptions,
