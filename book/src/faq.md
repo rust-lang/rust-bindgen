@@ -108,3 +108,19 @@ $ bindgen <input_headers> -- --target=armv7a-none-eabi
 ```
 If you are using `bindgen` as a library, you should call
 `builder.clang_arg("--target=armv7a-none-eabi")` on your `builder`.
+
+### How can I normalize `#[doc]` attributes?
+
+`bindgen` emits all the documentation using `#[doc]` attributes by default. If
+you want to use the more user-friendly `///` syntax, you have to create a
+`rustfmt.toml` file with the following contents:
+
+```toml
+normalize_doc_attributes = true
+```
+
+Then, you have set up bindgen so it passes this file to `rustfmt`. Given that
+the `normalize_doc_attributes` option is
+[unstable](https://github.com/rust-lang/rustfmt/issues/3351), you also have to
+set up bindgen to use a `nightly` release of `rustfmt`. Please check the [code
+formatting](./code-formatting.md) section for further information.
