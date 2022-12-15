@@ -35,7 +35,7 @@ $ rustup which rustfmt --toolchain=nightly
 and pass it to
 [`Builder::with_rustfmt`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.with_rustfmt):
 
-```rust
+```rust,ignore
 use bindgen::Builder;
 use std::process::Command;
 
