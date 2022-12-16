@@ -8,6 +8,7 @@
 - [Does `bindgen` support the C++ Standard Template Library (STL)?](#does-bindgen-support-the-c-standard-template-library-stl)
 - [How to deal with bindgen generated padding fields?](#how-to-deal-with-bindgen-generated-padding-fields)
 - [How to generate bindings for a custom target?](#how-to-generate-bindings-for-a-custom-target)
+- [How can I normalize `#[doc]` attributes?](#how-can-i-normalize-doc-attributes)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
