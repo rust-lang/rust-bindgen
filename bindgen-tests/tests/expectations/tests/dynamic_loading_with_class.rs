@@ -99,7 +99,7 @@ impl TestLib {
     ) -> ::std::os::raw::c_int {
         (self.foo.as_ref().expect("Expected function, got error."))(x)
     }
-    pub unsafe fn bar(&self) -> () {
+    pub unsafe fn bar(&self) {
         (self.bar.as_ref().expect("Expected function, got error."))()
     }
 }
