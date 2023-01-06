@@ -4846,7 +4846,6 @@ pub mod utils {
         }
     }
 
-
     pub fn fnsig_return_ty(
         ctx: &BindgenContext,
         sig: &FunctionSig,
@@ -4966,7 +4965,9 @@ pub mod utils {
             arg_item.to_rust_ty_or_opaque(ctx, &())
         });
 
-        let ret_ty = fnsig_return_ty_internal(ctx, sig, /* include_arrow = */ false);
+        let ret_ty = fnsig_return_ty_internal(
+            ctx, sig, /* include_arrow = */ false,
+        );
         quote! {
             *const ::block::Block<(#(#args,)*), #ret_ty>
         }
