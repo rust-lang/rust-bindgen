@@ -4135,11 +4135,7 @@ impl CodeGenerator for Function {
         if is_dynamic_function {
             let args_identifiers =
                 utils::fnsig_argument_identifiers(ctx, signature);
-            let return_item = ctx.resolve_item(signature.return_type());
-            let ret_ty = match *return_item.kind().expect_type().kind() {
-                TypeKind::Void => quote! {()},
-                _ => return_item.to_rust_ty_or_opaque(ctx, &()),
-            };
+            let ret_ty = utils::fnsig_return_ty(ctx, signature);
             result.dynamic_items().push(
                 ident,
                 abi,
@@ -4811,23 +4807,50 @@ pub mod utils {
         })
     }
 
+    fn fnsig_return_ty_internal(
+        ctx: &BindgenContext,
+        sig: &FunctionSig,
+        include_arrow: bool,
+    ) -> proc_macro2::TokenStream {
+        if sig.is_divergent() {
+            return if include_arrow {
+                quote! { -> ! }
+            } else {
+                quote! { ! }
+            };
+        }
+
+        let canonical_type_kind = sig
+            .return_type()
+            .into_resolver()
+            .through_type_refs()
+            .through_type_aliases()
+            .resolve(ctx)
+            .kind()
+            .expect_type()
+            .kind();
+
+        if let TypeKind::Void = canonical_type_kind {
+            return if include_arrow {
+                quote! {}
+            } else {
+                quote! { () }
+            };
+        }
+
+        let ret_ty = sig.return_type().to_rust_ty_or_opaque(ctx, &());
+        if include_arrow {
+            quote! { -> #ret_ty }
+        } else {
+            ret_ty
+        }
+    }
+
     pub fn fnsig_return_ty(
         ctx: &BindgenContext,
         sig: &FunctionSig,
     ) -> proc_macro2::TokenStream {
-        if sig.is_divergent() {
-            return quote! { -> ! };
-        }
-
-        let return_item = ctx.resolve_item(sig.return_type());
-        if let TypeKind::Void = *return_item.kind().expect_type().kind() {
-            quote! {}
-        } else {
-            let ret_ty = return_item.to_rust_ty_or_opaque(ctx, &());
-            quote! {
-                -> #ret_ty
-            }
-        }
+        fnsig_return_ty_internal(ctx, sig, /* include_arrow = */ true)
     }
 
     pub fn fnsig_arguments(
@@ -4942,14 +4965,9 @@ pub mod utils {
             arg_item.to_rust_ty_or_opaque(ctx, &())
         });
 
-        let return_item = ctx.resolve_item(sig.return_type());
-        let ret_ty =
-            if let TypeKind::Void = *return_item.kind().expect_type().kind() {
-                quote! { () }
-            } else {
-                return_item.to_rust_ty_or_opaque(ctx, &())
-            };
-
+        let ret_ty = fnsig_return_ty_internal(
+            ctx, sig, /* include_arrow = */ false,
+        );
         quote! {
             *const ::block::Block<(#(#args,)*), #ret_ty>
         }

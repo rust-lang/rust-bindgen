@@ -159,7 +159,8 @@
  * The `ParseCallbacks::generated_name_override` now receives `ItemInfo<'_>` as
    argument instead of a `&str`.
  * Updated the `clang-sys` crate version to 1.4.0 to support clang 15.
-
+ * The return type is now ommited in signatures of functions returning `void`.
+ 
 ## Removed
 
 ## Fixed
