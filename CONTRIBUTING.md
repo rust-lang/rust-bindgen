@@ -86,10 +86,10 @@ $ cargo build --features testing_only_docs
 
 ### Overview
 
-Input C/C++ test headers reside in the `tests/headers` directory. Expected
-output Rust bindings live in `tests/expectations/tests`. For example,
-`tests/headers/my_header.h`'s expected generated Rust bindings would be
-`tests/expectations/tests/my_header.rs`.
+Input C/C++ test headers reside in the `bindgen-tests/tests/headers` directory. Expected
+output Rust bindings live in `bindgen-tests/tests/expectations/tests`. For example,
+`bindgen-tests/tests/headers/my_header.h`'s expected generated Rust bindings would be
+`bindgen-tests/tests/expectations/tests/my_header.rs`.
 
 There are also some integration tests in the `./bindgen-integration` crate, which uses `bindgen` to
 generate bindings to some C++ code, and then uses the bindings, asserting that
@@ -109,8 +109,8 @@ These steps must be performed manually when needed.
 
 ### Testing Bindings Generation
 
-To regenerate bindings from the corpus of test headers in `tests/headers` and
-compare them against the expected bindings in `tests/expectations/tests`, run:
+To regenerate bindings from the corpus of test headers in `bindgen-tests/tests/headers` and
+compare them against the expected bindings in `bindgen-tests/tests/expectations/tests`, run:
 
 ```
 $ cargo test
@@ -139,14 +139,14 @@ those.
 ### Testing Generated Bindings
 
 If your local changes are introducing expected modifications in the
-`tests/expectations/tests/*` bindings files, then you should test that the
+`bindgen-tests/tests/expectations/tests/*` bindings files, then you should test that the
 generated bindings files still compile, and that their struct layout tests still
 pass. Also, run the integration tests (see below).
 
 You can do this with these commands:
 
 ```
-$ cd tests/expectations
+$ cd bindgen-tests/tests/expectations
 $ cargo test
 ```
 
@@ -157,12 +157,12 @@ is a dependency for running `test-one.sh`.
 
 Sometimes its useful to work with one test header from start (generating
 bindings for it) to finish (compiling the bindings and running their layout
-tests). This can be done with the `tests/test-one.sh` script. It supports fuzzy
+tests). This can be done with the `bindgen-tests/tests/test-one.sh` script. It supports fuzzy
 searching for test headers. For example, to test
 `tests/headers/what_is_going_on.hpp`, execute this command:
 
 ```
-$ ./tests/test-one.sh going
+$ ./bindgen-tests/tests/test-one.sh going
 ```
 
 Note that `test-one.sh` does not recompile `bindgen`, so if you change the code,
@@ -170,9 +170,9 @@ you'll need to rebuild it before running the script again.
 
 ### Authoring New Tests
 
-To add a new test header to the suite, simply put it in the `tests/headers`
+To add a new test header to the suite, simply put it in the `bindgen-tests/tests/headers`
 directory. Next, run `bindgen` to generate the initial expected output Rust
-bindings. Put those in `tests/expectations/tests`.
+bindings. Put those in `bindgen-tests/tests/expectations/tests`.
 
 If your new test requires certain flags to be passed to `bindgen`, you can
 specify them at the top of the test header, with a comment like this:
@@ -186,7 +186,7 @@ specify them at the top of the test header, with a comment like this:
 Then verify the new Rust bindings compile and pass their layout tests:
 
 ```
-$ cd tests/expectations
+$ cd bindgen-tests/tests/expectations
 $ cargo test new_test_header
 ```
 
@@ -195,11 +195,11 @@ $ cargo test new_test_header
 If a test generates different bindings across different `libclang` versions (for
 example, because we take advantage of better/newer APIs when possible), then you
 can add multiple test expectations, one for each supported `libclang`
-version. Instead of having a single `tests/expectations/tests/my_test.rs` file,
+version. Instead of having a single `bindgen-tests/tests/expectations/tests/my_test.rs` file,
 add each of:
 
-* `tests/expectations/tests/libclang-9/my_test.rs`
-* `tests/expectations/tests/libclang-5/my_test.rs`
+* `bindgen-tests/tests/expectations/tests/libclang-9/my_test.rs`
+* `bindgen-tests/tests/expectations/tests/libclang-5/my_test.rs`
 
 If you need to update the test expectations for a test file that generates
 different bindings for different `libclang` versions, you *don't* need to have
