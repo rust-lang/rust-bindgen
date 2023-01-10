@@ -258,6 +258,67 @@ in the MSVC ABI (see <a href="https://learn.microsoft.com/en-us/cpp/build/x64-ca
 Because bindgen does not know about these rules generated interfaces using such types are currently invalid.</p>
 </li>
 </ul>
+<h2><a class="header" href="#constructor-semantics" id="constructor-semantics">Constructor semantics</a></h2>
+<p><code>bindgen</code> will generate a wrapper for any class constructor declared in the
+input headers. For example, this headers file</p>
+<pre><code class="language-c++">class MyClass {
+    public:
+	MyClass();
+        void method();
+};
+</code></pre>
+<p>Will produce the following code:</p>
+<pre><code class="language-rust ignore">#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct MyClass {
+    pub _address: u8,
+}
+extern &quot;C&quot; {
+    #[link_name = &quot;\u{1}_ZN7MyClass6methodEv&quot;]
+    pub fn MyClass_method(this: *mut MyClass);
+}
+extern &quot;C&quot; {
+    #[link_name = &quot;\u{1}_ZN7MyClassC1Ev&quot;]
+    pub fn MyClass_MyClass(this: *mut MyClass);
+}
+impl MyClass {
+    #[inline]
+    pub unsafe fn method(&amp;mut self) {
+        MyClass_method(self)
+    }
+    #[inline]
+    pub unsafe fn new() -&gt; Self {
+        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+        MyClass_MyClass(__bindgen_tmp.as_mut_ptr());
+        __bindgen_tmp.assume_init()
+    }
+}
+</code></pre>
+<p>This <code>MyClass::new</code> Rust method can be used as a substitute for the <code>MyClass</code>
+C++ constructor. However, the address of the value from inside the method will
+be different than from the outside. This is because the <code>__bindgen_tmp</code> value
+is moved when the <code>MyClass::new</code> method returns.</p>
+<p>In contrast, the C++ constructor will not move the value, meaning that the
+address of the value will be the same inside and outside the constructor.
+If the original C++ relies on this semantic difference somehow, you should use the
+<code>MyClass_MyClass</code> binding directly instead of the <code>MyClass::new</code> method.</p>
+<p>In other words, the Rust equivalent for the following C++ code</p>
+<pre><code class="language-c++">MyClass instance = MyClass();
+instance.method();
+</code></pre>
+<p>is not this</p>
+<pre><code class="language-rust ignore">let instance = MyClass::new();
+instance.method();
+</code></pre>
+<p>but this</p>
+<pre><code class="language-rust ignore">let instance = std::mem::MaybeUninit::&lt;MyClass&gt;::uninit();
+MyClass_MyClass(instance.as_mut_ptr());
+instance.assume_init_mut().method();
+</code></pre>
+<p>You can easily verify this fact if you provide a implementation for <code>MyClass</code>
+and <code>method</code> that prints the the <code>this</code> pointer address. However, you can
+ignore this fact if you know that the original C++ code does not rely on the
+instance address in its internal logic.</p>
 
                     </main>
 
