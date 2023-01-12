@@ -8,7 +8,7 @@ publish = false
 bindgen = { path = "../bindgen" }
 diff = "0.1"
 shlex = "1"
-clap = "3"
+clap = "4"
 tempfile = "3"
 
 [features]

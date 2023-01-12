@@ -39,7 +39,7 @@ extern "C" {
 
 ## MSRV
 
-The minimum supported Rust version is **1.57.0**.
+The minimum supported Rust version is **1.60.0**.
 
 No MSRV bump policy has been established yet, so MSRV may increase in any release.
 
