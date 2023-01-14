@@ -86,7 +86,6 @@ where
 pub type U8 = ::std::os::raw::c_uchar;
 pub type U16 = ::std::os::raw::c_ushort;
 #[repr(C)]
-#[repr(align(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct V56AMDY {
     pub _bitfield_align_1: [u16; 0],

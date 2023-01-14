@@ -229,7 +229,6 @@ pub struct jsval_layout {
 pub struct jsval_layout__bindgen_ty_1 {
     pub _bitfield_align_1: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
-    pub __bindgen_align: [u64; 0usize],
 }
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_1() {

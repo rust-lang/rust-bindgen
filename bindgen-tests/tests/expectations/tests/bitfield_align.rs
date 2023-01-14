@@ -332,7 +332,6 @@ impl A {
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct B {
     pub _bitfield_align_1: [u32; 0],

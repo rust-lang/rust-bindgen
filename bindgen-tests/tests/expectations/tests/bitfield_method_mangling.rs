@@ -84,7 +84,6 @@ where
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct mach_msg_type_descriptor_t {
     pub _bitfield_align_1: [u32; 0],

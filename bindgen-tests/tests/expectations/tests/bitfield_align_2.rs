@@ -93,7 +93,6 @@ pub enum MyEnum {
     FOUR = 3,
 }
 #[repr(C)]
-#[repr(align(8))]
 #[derive(Debug, Copy, Clone)]
 pub struct TaggedPtr {
     pub _bitfield_align_1: [u64; 0],

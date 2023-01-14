@@ -142,7 +142,6 @@ impl U4 {
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union B {
     pub _bitfield_align_1: [u32; 0],
