@@ -156,9 +156,7 @@ impl<'a> StructLayoutTracker<'a> {
 
         self.latest_field_layout = Some(layout);
         self.last_field_was_bitfield = true;
-        // NB: We intentionally don't update the max_field_align here, since our
-        // bitfields code doesn't necessarily guarantee it, so we need to
-        // actually generate the dummy alignment.
+        self.max_field_align = cmp::max(self.max_field_align, layout.align);
     }
 
     /// Returns a padding field if necessary for a given new field _before_
