@@ -91,7 +91,7 @@ where
         }
     }
 }
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Foo {
     pub _bitfield_align_1: [u8; 0],

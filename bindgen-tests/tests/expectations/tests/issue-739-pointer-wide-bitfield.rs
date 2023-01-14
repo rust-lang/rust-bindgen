@@ -93,7 +93,6 @@ where
     }
 }
 #[repr(C)]
-#[repr(align(8))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Foo {
     pub _bitfield_align_1: [u64; 0],
