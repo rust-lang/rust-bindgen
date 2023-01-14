@@ -7,3 +7,14 @@ struct Struct {
     unsigned char e : 8;
 };
 #pragma pack(pop)
+
+struct Inner {
+    unsigned short a: 16;
+    unsigned short b: 16;
+};
+
+#pragma pack(push, 1)
+struct Outer {
+    struct Inner inner;
+};
+#pragma pop
