@@ -161,6 +161,8 @@
  * Updated the `clang-sys` crate version to 1.4.0 to support clang 15.
  * The return type is now ommited in signatures of functions returning `void`.
  * Updated the `clap` dependency for `bindgen-cli` to 4.
+ * Rewrote the `bindgen-cli` argument parser which could introduce unexpected
+   behavior changes. 
 
 ## Removed
 
