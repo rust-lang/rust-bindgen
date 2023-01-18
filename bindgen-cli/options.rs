@@ -91,7 +91,7 @@ struct BindgenCommand {
     /// Mark any union whose name matches <REGEX> and who has a non-Copy member to use a bindgen-generated wrapper for fields.
     #[arg(long, value_name = "REGEX")]
     bindgen_wrapper_union: Vec<String>,
-    /// Mark any union whose name matches <regex> and who has a non-Copy member to use ManuallyDrop (stabilized in Rust 1.20.0) for fields.
+    /// Mark any union whose name matches <REGEX> and who has a non-Copy member to use ManuallyDrop (stabilized in Rust 1.20.0) for fields.
     #[arg(long, value_name = "REGEX")]
     manually_drop_union: Vec<String>,
     /// Mark <TYPE> as hidden.
@@ -184,10 +184,10 @@ struct BindgenCommand {
     /// Enable support for C++ namespaces.
     #[arg(long)]
     enable_cxx_namespaces: bool,
-    /// Disable namespacing via mangling, causing bindgen to generate names like \"Baz\" instead of \"foo_bar_Baz\" for an input name \"foo::bar::Baz\".
+    /// Disable namespacing via mangling, causing bindgen to generate names like `Baz` instead of `foo_bar_Baz` for an input name `foo::bar::Baz`.
     #[arg(long)]
     disable_name_namespacing: bool,
-    /// Disable nested struct naming, causing bindgen to generate names like \"bar\" instead of \"foo_bar\" for a nested definition \"struct foo { struct bar { } b; };\".
+    /// Disable nested struct naming, causing bindgen to generate names like `bar` instead of `foo_bar` for a nested definition `struct foo { struct bar { } b; };`.
     #[arg(long)]
     disable_nested_struct_naming: bool,
     /// Disable support for native Rust unions.
@@ -199,7 +199,7 @@ struct BindgenCommand {
     /// Do not generate bindings for functions or methods. This is useful when you only care about struct layouts.docstring
     #[arg(long)]
     ignore_functions: bool,
-    /// Generate only given items, split by commas. Valid values are \"functions\",\"types\", \"vars\", \"methods\", \"constructors\" and \"destructors\".
+    /// Generate only given items, split by commas. Valid values are `functions`,`types`, `vars`, `methods`, `constructors` and `destructors`.
     #[arg(long, value_parser = parse_codegen_config)]
     generate: Option<CodegenConfig>,
     /// Do not generate bindings for methods.
