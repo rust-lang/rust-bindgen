@@ -41,7 +41,7 @@ Found a bug with `bindgen`? [File an issue here.][file-issue]
 [crates.io]: https://crates.io/crates/bindgen
 [guide]: https://rust-lang.github.io/rust-bindgen
 [docs]: https://docs.rs/bindgen
-[contributing]: https://github.com/rust-lang/rust-bindgen/blob/master/CONTRIBUTING.md
+[contributing]: https://github.com/rust-lang/rust-bindgen/blob/main/CONTRIBUTING.md
 [easy]: https://github.com/rust-lang/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-easy
 [less-easy]: https://github.com/rust-lang/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-less-easy
 [looking]: https://github.com/rust-lang/rust-bindgen/issues/747

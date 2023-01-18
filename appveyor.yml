@@ -25,7 +25,7 @@ platform:
 
 branches:
   only:
-    - master
+    - main
 
 install:
   - if %PLATFORM% == x86 (set RUST_PLATFORM=i686&set MINGW_BITS=32) else (set RUST_PLATFORM=x86_64&set MINGW_BITS=64)

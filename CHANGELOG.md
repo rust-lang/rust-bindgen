@@ -1302,7 +1302,7 @@ Released 2017/10/27
   have. [#1094][]
 
 [faq]: https://rust-lang.github.io/rust-bindgen/faq.html
-[fuzzing]: https://github.com/rust-lang/rust-bindgen/blob/master/csmith-fuzzing/README.md
+[fuzzing]: https://github.com/rust-lang/rust-bindgen/blob/main/csmith-fuzzing/README.md
 
 [#938]: https://github.com/rust-lang/rust-bindgen/issues/938
 [#888]: https://github.com/rust-lang/rust-bindgen/issues/888
