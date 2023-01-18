@@ -336,7 +336,7 @@ the `codegen::postprocessing` module by following these steps:
 
 Ensure that each commit stands alone, and passes tests. This enables better `git
 bisect`ing when needed. If your commits do not stand on their own, then rebase
-them on top of the latest master and squash them into a single commit.
+them on top of the latest main and squash them into a single commit.
 
 All pull requests undergo code review before merging. To request review, comment
 `r? @github_username_of_reviewer`. They we will respond with `r+` to approve the
@@ -419,7 +419,7 @@ $ brew install creduce
 $ # Etc...
 ```
 
-Otherwise, follow [these instructions](https://github.com/csmith-project/creduce/blob/master/INSTALL.md) for building and/or installing `creduce`.
+Otherwise, follow [these instructions](https://github.com/csmith-project/creduce/blob/main/INSTALL.md) for building and/or installing `creduce`.
 
 Running `creduce` requires two things:
 
@@ -548,9 +548,9 @@ $ ./node_modules/doctoc/doctoc.js CHANGELOG.md
 Bump version numbers as needed. Run tests just to ensure everything is working
 as expected.
 
-### Merge to `master`
+### Merge to `main`
 
-For regular releases, the changes above should end up in `master` before
+For regular releases, the changes above should end up in `main` before
 publishing. For dot-releases of an old version (e.g., cherry-picking an
 important fix) you can skip this.
 
