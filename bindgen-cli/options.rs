@@ -42,7 +42,7 @@ fn parse_codegen_config(what_to_generate: &str) -> io::Result<CodegenConfig> {
 #[clap(
     about = "Generates Rust bindings from C/C++ headers.",
     override_usage = "bindgen [FLAGS] [OPTIONS] [HEADER] -- [CLANG_ARGS]...",
-    trailing_var_arg = true,
+    trailing_var_arg = true
 )]
 struct BindgenCommand {
     /// C or C++ header file.
