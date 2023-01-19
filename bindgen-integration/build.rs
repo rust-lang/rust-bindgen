@@ -4,7 +4,7 @@ extern crate cc;
 use bindgen::callbacks::{
     DeriveInfo, IntKind, MacroParsingBehavior, ParseCallbacks,
 };
-use bindgen::{Builder, EnumVariation};
+use bindgen::{Builder, CargoCallbacks, EnumVariation};
 use std::collections::HashSet;
 use std::env;
 use std::path::PathBuf;
@@ -28,21 +28,14 @@ impl ParseCallbacks for MacroCallback {
         MacroParsingBehavior::Default
     }
 
-    fn item_name(&self, original_item_name: &str) -> Option<String> {
-        if original_item_name.starts_with("my_prefixed_") {
-            Some(
-                original_item_name
-                    .trim_start_matches("my_prefixed_")
-                    .to_string(),
-            )
-        } else if original_item_name.starts_with("MY_PREFIXED_") {
-            Some(
-                original_item_name
-                    .trim_start_matches("MY_PREFIXED_")
-                    .to_string(),
-            )
-        } else {
-            None
+    fn int_macro(&self, name: &str, _value: i64) -> Option<IntKind> {
+        match name {
+            "TESTMACRO_CUSTOMINTKIND_PATH" => Some(IntKind::Custom {
+                name: "crate::MacroInteger",
+                is_signed: true,
+            }),
+
+            _ => None,
         }
     }
 
@@ -64,17 +57,6 @@ impl ParseCallbacks for MacroCallback {
                 *self.seen_hellos.lock().unwrap() += 1;
             }
             _ => {}
-        }
-    }
-
-    fn int_macro(&self, name: &str, _value: i64) -> Option<IntKind> {
-        match name {
-            "TESTMACRO_CUSTOMINTKIND_PATH" => Some(IntKind::Custom {
-                name: "crate::MacroInteger",
-                is_signed: true,
-            }),
-
-            _ => None,
         }
     }
 
@@ -122,6 +104,24 @@ impl ParseCallbacks for MacroCallback {
         }
     }
 
+    fn item_name(&self, original_item_name: &str) -> Option<String> {
+        if original_item_name.starts_with("my_prefixed_") {
+            Some(
+                original_item_name
+                    .trim_start_matches("my_prefixed_")
+                    .to_string(),
+            )
+        } else if original_item_name.starts_with("MY_PREFIXED_") {
+            Some(
+                original_item_name
+                    .trim_start_matches("MY_PREFIXED_")
+                    .to_string(),
+            )
+        } else {
+            None
+        }
+    }
+
     // Test the "custom derives" capability by adding `PartialEq` to the `Test` struct.
     fn add_derives(&self, info: &DeriveInfo<'_>) -> Vec<String> {
         if info.name == "Test" {
@@ -149,7 +149,7 @@ impl Drop for MacroCallback {
     }
 }
 
-fn main() {
+fn setup_macro_test() {
     cc::Build::new()
         .cpp(true)
         .file("cpp/Test.cc")
@@ -203,4 +203,66 @@ fn main() {
         observed_deps, expected_deps,
         "including stub via include dir must produce correct dep path",
     );
+}
+
+fn setup_extern_test() {
+    // GH-1090: https://github.com/rust-lang/rust-bindgen/issues/1090
+    // set output directory under /target so it is easy to clean generated files
+    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let out_rust_file = out_path.join("extern.rs");
+
+    let input_header_dir = PathBuf::from("../bindgen-tests/tests/headers/").canonicalize()
+        .expect("Cannot canonicalize libdir path");
+    let input_header_file_path = input_header_dir.join("generate-extern-functions.h");
+    let input_header_file_path_str = input_header_file_path.to_str()
+        .expect("Path could not be converted to a str");
+
+    // generate external bindings with the external .c and .h files
+    let bindings = Builder::default()
+        .header(input_header_file_path_str)
+        .parse_callbacks(Box::new(CargoCallbacks))
+        .generate_extern_functions(true)
+        .extern_functions_directory(out_path.display().to_string())
+        .generate()
+        .expect("Unable to generate bindings");
+
+    println!("cargo:rustc-link-lib=extern");  // tell cargo to link libextern
+    println!("bindings generated: {}", bindings);
+
+    let obj_path = out_path.join("extern.o");
+    let lib_path = out_path.join("libextern.a");
+
+    // build the external files to check if they work
+    if !std::process::Command::new("clang")
+        .arg("-c")
+        .arg("-o")
+        .arg(&obj_path)
+        .arg(out_path.join("extern.c"))
+        .arg("-include")
+        .arg(input_header_file_path)
+        .output()
+        .expect("`clang` command error")
+        .status
+        .success() {
+        panic!("Could not compile object file");
+    }
+
+    if !std::process::Command::new("ar")
+        .arg("rcs")
+        .arg(lib_path)
+        .arg(obj_path)
+        .output()
+        .expect("`ar` command error")
+        .status
+        .success() {
+        panic!("Could not emit library file");
+    }
+
+    bindings.write_to_file(out_rust_file)
+        .expect("Cound not write bindings to the Rust file");
+}
+
+fn main() {
+    setup_macro_test();
+    setup_extern_test();
 }

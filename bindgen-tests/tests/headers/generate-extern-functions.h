@@ -1,7 +1,7 @@
 // bindgen-flags: --generate-extern-functions
 
 static inline int foo() {
-    return 0;
+    return 11;
 }
 static int bar() {
     return 1;
