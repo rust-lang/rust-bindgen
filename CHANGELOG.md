@@ -156,13 +156,18 @@
 ## Changed
  * Fixed name collisions when having a C `enum` and a `typedef` with the same
    name.
- * The `ParseCallbacks::generated_name_override` now receives `ItemInfo<'_>` as
+ * The `ParseCallbacks::generated_name_override` method now receives `ItemInfo<'_>` as
    argument instead of a `&str`.
  * Updated the `clang-sys` crate version to 1.4.0 to support clang 15.
  * The return type is now ommited in signatures of functions returning `void`.
  * Updated the `clap` dependency for `bindgen-cli` to 4.
  * Rewrote the `bindgen-cli` argument parser which could introduce unexpected
    behavior changes. 
+ * The `ParseCallbacks::add_derives` method now receives `DeriveInfo<'_>` as
+   argument instead of a `&str`. This type also includes the kind of target type.
+ * Added a new set of flags `--with-derive-custom`,
+   `--with-derive-custom-struct`, `--with-derive-custom-enum` and
+   `--with-derive-custom-enum` to add custom derives from the CLI.
 
 ## Removed
 

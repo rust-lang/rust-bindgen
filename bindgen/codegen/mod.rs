@@ -18,6 +18,7 @@ use self::struct_layout::StructLayoutTracker;
 
 use super::BindgenOptions;
 
+use crate::callbacks::{DeriveInfo, TypeKind as DeriveTypeKind};
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::FieldAccessorKind;
 use crate::ir::comp::{
@@ -2100,11 +2101,18 @@ impl CodeGenerator for CompInfo {
         let mut derives: Vec<_> = derivable_traits.into();
         derives.extend(item.annotations().derives().iter().map(String::as_str));
 
+        let is_rust_union = is_union && struct_layout.is_rust_union();
+
         // The custom derives callback may return a list of derive attributes;
         // add them to the end of the list.
         let custom_derives = ctx.options().all_callbacks(|cb| {
-            cb.add_derives(&crate::callbacks::DeriveInfo {
+            cb.add_derives(&DeriveInfo {
                 name: &canonical_name,
+                kind: if is_rust_union {
+                    DeriveTypeKind::Union
+                } else {
+                    DeriveTypeKind::Struct
+                },
             })
         });
         // In most cases this will be a no-op, since custom_derives will be empty.
@@ -2118,7 +2126,7 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::must_use());
         }
 
-        let mut tokens = if is_union && struct_layout.is_rust_union() {
+        let mut tokens = if is_rust_union {
             quote! {
                 #( #attributes )*
                 pub union #canonical_ident
@@ -3112,7 +3120,10 @@ impl CodeGenerator for Enum {
             // The custom derives callback may return a list of derive attributes;
             // add them to the end of the list.
             let custom_derives = ctx.options().all_callbacks(|cb| {
-                cb.add_derives(&crate::callbacks::DeriveInfo { name: &name })
+                cb.add_derives(&DeriveInfo {
+                    name: &name,
+                    kind: DeriveTypeKind::Enum,
+                })
             });
             // In most cases this will be a no-op, since custom_derives will be empty.
             derives.extend(custom_derives.iter().map(|s| s.as_str()));

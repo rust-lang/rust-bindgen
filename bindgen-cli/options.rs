@@ -1,6 +1,7 @@
+use bindgen::callbacks::TypeKind;
 use bindgen::{
     builder, AliasVariation, Builder, CodegenConfig, EnumVariation,
-    MacroTypeVariation, NonCopyUnionStyle, RustTarget,
+    MacroTypeVariation, NonCopyUnionStyle, RegexSet, RustTarget,
     DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
 };
 use clap::Parser;
@@ -340,6 +341,18 @@ struct BindgenCommand {
     /// Wrap unsafe operations in unsafe blocks.
     #[arg(long)]
     wrap_unsafe_ops: bool,
+    /// Derive custom traits on any kind of type. The <CUSTOM> value must be of the shape <REGEX>=<DERIVE> where <DERIVE> is a coma-separated list of derive macros.
+    #[arg(long, value_name = "CUSTOM")]
+    with_derive_custom: Vec<String>,
+    /// Derive custom traits on a `struct`. The <CUSTOM> value must be of the shape <REGEX>=<DERIVE> where <DERIVE> is a coma-separated list of derive macros.
+    #[arg(long, value_name = "CUSTOM")]
+    with_derive_custom_struct: Vec<String>,
+    /// Derive custom traits on an `enum. The <CUSTOM> value must be of the shape <REGEX>=<DERIVE> where <DERIVE> is a coma-separated list of derive macros.
+    #[arg(long, value_name = "CUSTOM")]
+    with_derive_custom_enum: Vec<String>,
+    /// Derive custom traits on a `union`. The <CUSTOM> value must be of the shape <REGEX>=<DERIVE> where <DERIVE> is a coma-separated list of derive macros.
+    #[arg(long, value_name = "CUSTOM")]
+    with_derive_custom_union: Vec<String>,
     /// Prints the version, and exits
     #[arg(short = 'V', long)]
     version: bool,
@@ -456,6 +469,10 @@ where
         merge_extern_blocks,
         override_abi,
         wrap_unsafe_ops,
+        with_derive_custom,
+        with_derive_custom_struct,
+        with_derive_custom_enum,
+        with_derive_custom_union,
         version,
         clang_args,
     } = command;
@@ -892,6 +909,73 @@ where
 
     if wrap_unsafe_ops {
         builder = builder.wrap_unsafe_ops(true);
+    }
+
+    #[derive(Debug)]
+    struct CustomDeriveCallback {
+        derives: Vec<String>,
+        kind: Option<TypeKind>,
+        regex_set: bindgen::RegexSet,
+    }
+
+    impl bindgen::callbacks::ParseCallbacks for CustomDeriveCallback {
+        fn cli_args(&self) -> Vec<String> {
+            let mut args = vec![];
+
+            let flag = match &self.kind {
+                None => "--with-derive-custom",
+                Some(TypeKind::Struct) => "--with-derive-custom-struct",
+                Some(TypeKind::Enum) => "--with-derive-custom-enum",
+                Some(TypeKind::Union) => "--with-derive-custom-union",
+            };
+
+            let derives = self.derives.join(",");
+
+            for item in self.regex_set.get_items() {
+                args.extend_from_slice(&[
+                    flag.to_owned(),
+                    format!("{}={}", item, derives),
+                ]);
+            }
+
+            args
+        }
+
+        fn add_derives(
+            &self,
+            info: &bindgen::callbacks::DeriveInfo<'_>,
+        ) -> Vec<String> {
+            if self.kind.map(|kind| kind == info.kind).unwrap_or(true) &&
+                self.regex_set.matches(info.name)
+            {
+                return self.derives.clone();
+            }
+            vec![]
+        }
+    }
+
+    for (custom_derives, kind) in [
+        (with_derive_custom, None),
+        (with_derive_custom_struct, Some(TypeKind::Struct)),
+        (with_derive_custom_enum, Some(TypeKind::Enum)),
+        (with_derive_custom_union, Some(TypeKind::Union)),
+    ] {
+        for custom_derive in custom_derives {
+            let (regex, derives) = custom_derive
+                .rsplit_once('=')
+                .expect("Invalid custom derive argument: Missing `=`");
+            let derives = derives.split(',').map(|s| s.to_owned()).collect();
+
+            let mut regex_set = RegexSet::new();
+            regex_set.insert(regex);
+            regex_set.build(false);
+
+            builder = builder.parse_callbacks(Box::new(CustomDeriveCallback {
+                derives,
+                kind,
+                regex_set,
+            }));
+        }
     }
 
     Ok((builder, output, verbose))
