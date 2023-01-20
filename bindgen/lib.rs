@@ -653,6 +653,11 @@ impl Builder {
             output_vector.push("--wrap-unsafe-ops".into());
         }
 
+        #[cfg(feature = "cli")]
+        for callbacks in &self.options.parse_callbacks {
+            output_vector.extend(callbacks.cli_args());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());

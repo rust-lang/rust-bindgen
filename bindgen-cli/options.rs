@@ -919,14 +919,36 @@ where
     }
 
     impl bindgen::callbacks::ParseCallbacks for CustomDeriveCallback {
+        fn cli_args(&self) -> Vec<String> {
+            let mut args = vec![];
+
+            let flag = match &self.kind {
+                None => "--with-derive-custom",
+                Some(TypeKind::Struct) => "--with-derive-custom-struct",
+                Some(TypeKind::Enum) => "--with-derive-custom-enum",
+                Some(TypeKind::Union) => "--with-derive-custom-union",
+            };
+
+            let derives = self.derives.join(",");
+
+            for item in self.regex_set.get_items() {
+                args.extend_from_slice(&[
+                    flag.to_owned(),
+                    format!("{}={}", item, derives),
+                ]);
+            }
+
+            args
+        }
+
         fn add_derives(
             &self,
             info: &bindgen::callbacks::DeriveInfo<'_>,
         ) -> Vec<String> {
-            if self.kind.map(|kind| kind == info.kind).unwrap_or(true) {
-                if self.regex_set.matches(info.name) {
-                    return self.derives.clone();
-                }
+            if self.kind.map(|kind| kind == info.kind).unwrap_or(true)
+                && self.regex_set.matches(info.name)
+            {
+                return self.derives.clone();
             }
             vec![]
         }
@@ -940,9 +962,9 @@ where
     ] {
         for custom_derive in custom_derives {
             let (regex, derives) = custom_derive
-                .rsplit_once("=")
+                .rsplit_once('=')
                 .expect("Invalid custom derive argument: Missing `=`");
-            let derives = derives.split(",").map(|s| s.to_owned()).collect();
+            let derives = derives.split(',').map(|s| s.to_owned()).collect();
 
             let mut regex_set = RegexSet::new();
             regex_set.insert(regex);

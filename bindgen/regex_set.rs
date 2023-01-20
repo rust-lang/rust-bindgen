@@ -18,7 +18,9 @@ pub struct RegexSet {
 impl RegexSet {
     /// Create a new RegexSet
     pub fn new() -> RegexSet {
-        RegexSet { ..Default::default() }
+        RegexSet {
+            ..Default::default()
+        }
     }
 
     /// Is this set empty?
