@@ -6,7 +6,7 @@
 )]
 
 #[repr(C)]
-#[derive(Debug, Default)]
+#[derive(Clone, Default)]
 pub struct foo_struct {
     pub inner: ::std::os::raw::c_int,
 }
@@ -37,12 +37,12 @@ fn bindgen_test_layout_foo_struct() {
     );
 }
 #[repr(u32)]
-#[derive(Clone, Hash, PartialEq, Eq, Debug, Copy)]
+#[derive(Clone, Hash, PartialEq, Eq, Copy)]
 pub enum foo_enum {
     inner = 0,
 }
 #[repr(C)]
-#[derive(Debug, Hash)]
+#[derive(Clone, Copy)]
 pub union foo_union {
     pub fst: ::std::mem::ManuallyDrop<::std::os::raw::c_int>,
     pub snd: ::std::mem::ManuallyDrop<f32>,
