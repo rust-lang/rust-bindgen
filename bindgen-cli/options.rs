@@ -354,17 +354,20 @@ struct BindgenCommand {
     #[arg(long, value_name = "CUSTOM")]
     with_derive_custom_union: Vec<String>,
     /// Generate extern wrappers for inlined functions
-    #[arg(long)]
+    #[arg(long, requires = "experimental")]
     generate_extern_functions: bool,
     /// Sets the name of the header and source code files that would be created if any extern wrapper functions must be generated due to the presence of inlined functions.
-    #[arg(long, value_name = "FILENAME")]
+    #[arg(long, requires = "experimental", value_name = "FILENAME")]
     extern_functions_file_name: Option<String>,
-    #[arg(long, value_name = "DIRECTORY")]
+    #[arg(long, requires = "experimental", value_name = "DIRECTORY")]
     /// Sets the directory path where any extra files must be created due to the presence of inlined functions.
     extern_functions_directory: Option<String>,
     /// Sets the suffix added to the extern wrapper functions generated for inlined functions.
-    #[arg(long, value_name = "SUFFIX")]
+    #[arg(long, requires = "experimental", value_name = "SUFFIX")]
     extern_function_suffix: Option<String>,
+    /// Enables experimental features.
+    #[arg(long)]
+    experimental: bool,
     /// Prints the version, and exits
     #[arg(short = 'V', long)]
     version: bool,
@@ -489,6 +492,7 @@ where
         extern_functions_file_name,
         extern_functions_directory,
         extern_function_suffix,
+        experimental: _,
         version,
         clang_args,
     } = command;

@@ -1,4 +1,4 @@
-// bindgen-flags: --generate-extern-functions
+// bindgen-flags: --experimental --generate-extern-functions
 
 static inline int foo() {
     return 11;

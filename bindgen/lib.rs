@@ -677,6 +677,10 @@ impl Builder {
             output_vector.push(suffix.clone());
         }
 
+        if cfg!(feature = "experimental") {
+            output_vector.push("--experimental".into());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -1815,6 +1819,7 @@ impl Builder {
         self
     }
 
+    #[cfg(feature = "experimental")]
     /// Whether to generate extern wrappers for inline functions. Defaults to false.
     pub fn generate_extern_functions(mut self, doit: bool) -> Self {
         self.options.generate_extern_functions = if doit {
@@ -1825,6 +1830,7 @@ impl Builder {
         self
     }
 
+    #[cfg(feature = "experimental")]
     /// Set the name of the header and source code files that would be created if any extern
     /// wrapper functions must be generated due to the presence of inlined functions.
     pub fn extern_functions_file_name<T: AsRef<str>>(
@@ -1836,6 +1842,7 @@ impl Builder {
         self
     }
 
+    #[cfg(feature = "experimental")]
     /// Set the directory path where any extra files must be created due to the presence of inlined
     /// functions.
     pub fn extern_functions_directory<T: AsRef<str>>(
@@ -1847,6 +1854,7 @@ impl Builder {
         self
     }
 
+    #[cfg(feature = "experimental")]
     /// Set the suffix added to the extern wrapper functions generated for inlined functions.
     pub fn extern_function_suffix<T: AsRef<str>>(mut self, suffix: T) -> Self {
         self.options.extern_function_suffix = Some(suffix.as_ref().to_owned());

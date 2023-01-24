@@ -211,10 +211,13 @@ fn setup_extern_test() {
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     let out_rust_file = out_path.join("extern.rs");
 
-    let input_header_dir = PathBuf::from("../bindgen-tests/tests/headers/").canonicalize()
+    let input_header_dir = PathBuf::from("../bindgen-tests/tests/headers/")
+        .canonicalize()
         .expect("Cannot canonicalize libdir path");
-    let input_header_file_path = input_header_dir.join("generate-extern-functions.h");
-    let input_header_file_path_str = input_header_file_path.to_str()
+    let input_header_file_path =
+        input_header_dir.join("generate-extern-functions.h");
+    let input_header_file_path_str = input_header_file_path
+        .to_str()
         .expect("Path could not be converted to a str");
 
     // generate external bindings with the external .c and .h files
@@ -226,7 +229,7 @@ fn setup_extern_test() {
         .generate()
         .expect("Unable to generate bindings");
 
-    println!("cargo:rustc-link-lib=extern");  // tell cargo to link libextern
+    println!("cargo:rustc-link-lib=extern"); // tell cargo to link libextern
     println!("bindings generated: {}", bindings);
 
     let obj_path = out_path.join("extern.o");
@@ -243,7 +246,8 @@ fn setup_extern_test() {
         .output()
         .expect("`clang` command error")
         .status
-        .success() {
+        .success()
+    {
         panic!("Could not compile object file");
     }
 
@@ -254,11 +258,13 @@ fn setup_extern_test() {
         .output()
         .expect("`ar` command error")
         .status
-        .success() {
+        .success()
+    {
         panic!("Could not emit library file");
     }
 
-    bindings.write_to_file(out_rust_file)
+    bindings
+        .write_to_file(out_rust_file)
         .expect("Cound not write bindings to the Rust file");
 }
 

@@ -749,7 +749,7 @@ fn test_extern_generated_headers() {
             None,
             Path::new(expect_path.join("extern.c").to_str().unwrap()),
         )
-            .unwrap();
+        .unwrap();
     }
 
     if expected_h != actual_h {
@@ -759,7 +759,6 @@ fn test_extern_generated_headers() {
             None,
             Path::new(expect_path.join("extern.h").to_str().unwrap()),
         )
-            .unwrap();
+        .unwrap();
     }
-
 }
