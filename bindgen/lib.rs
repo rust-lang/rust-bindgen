@@ -2428,6 +2428,15 @@ fn rust_to_clang_target(rust_target: &str) -> String {
         let mut clang_target = "riscv64-".to_owned();
         clang_target.push_str(rust_target.strip_prefix("riscv64gc-").unwrap());
         return clang_target;
+    } else if rust_target.ends_with("-espidf") {
+        let mut clang_target =
+            rust_target.strip_suffix("-espidf").unwrap().to_owned();
+        clang_target.push_str("-elf");
+        if clang_target.starts_with("riscv32imc-") {
+            clang_target = "riscv32-".to_owned() +
+                clang_target.strip_prefix("riscv32imc-").unwrap();
+        }
+        return clang_target;
     }
     rust_target.to_owned()
 }
@@ -3010,4 +3019,16 @@ fn test_rust_to_clang_target_riscv() {
         rust_to_clang_target("riscv64gc-unknown-linux-gnu"),
         "riscv64-unknown-linux-gnu"
     )
+}
+
+#[test]
+fn test_rust_to_clang_target_espidf() {
+    assert_eq!(
+        rust_to_clang_target("riscv32imc-esp-espidf"),
+        "riscv32-esp-elf"
+    );
+    assert_eq!(
+        rust_to_clang_target("xtensa-esp32-espidf"),
+        "xtensa-esp32-elf"
+    );
 }
