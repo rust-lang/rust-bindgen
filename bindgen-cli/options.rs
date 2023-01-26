@@ -355,16 +355,16 @@ struct BindgenCommand {
     with_derive_custom_union: Vec<String>,
     /// Generate extern wrappers for inlined functions
     #[arg(long, requires = "experimental")]
-    generate_extern_functions: bool,
+    wrap_non_extern_fns: bool,
     /// Sets the name of the header and source code files that would be created if any extern wrapper functions must be generated due to the presence of inlined functions.
     #[arg(long, requires = "experimental", value_name = "FILENAME")]
-    extern_functions_file_name: Option<String>,
+    non_extern_fns_filename: Option<String>,
     #[arg(long, requires = "experimental", value_name = "DIRECTORY")]
     /// Sets the directory path where any extra files must be created due to the presence of inlined functions.
-    extern_functions_directory: Option<String>,
+    non_extern_fns_directory: Option<String>,
     /// Sets the suffix added to the extern wrapper functions generated for inlined functions.
     #[arg(long, requires = "experimental", value_name = "SUFFIX")]
-    extern_function_suffix: Option<String>,
+    non_extern_fns_suffix: Option<String>,
     /// Enables experimental features.
     #[arg(long)]
     experimental: bool,
@@ -488,10 +488,10 @@ where
         with_derive_custom_struct,
         with_derive_custom_enum,
         with_derive_custom_union,
-        generate_extern_functions,
-        extern_functions_file_name,
-        extern_functions_directory,
-        extern_function_suffix,
+        wrap_non_extern_fns,
+        non_extern_fns_filename,
+        non_extern_fns_directory,
+        non_extern_fns_suffix,
         experimental: _,
         version,
         clang_args,
@@ -965,8 +965,8 @@ where
             &self,
             info: &bindgen::callbacks::DeriveInfo<'_>,
         ) -> Vec<String> {
-            if self.kind.map(|kind| kind == info.kind).unwrap_or(true) &&
-                self.regex_set.matches(info.name)
+            if self.kind.map(|kind| kind == info.kind).unwrap_or(true)
+                && self.regex_set.matches(info.name)
             {
                 return self.derives.clone();
             }
@@ -998,20 +998,20 @@ where
         }
     }
 
-    if generate_extern_functions {
-        builder = builder.generate_extern_functions(true);
+    if wrap_non_extern_fns {
+        builder = builder.wrap_non_extern_fns(true);
     }
 
-    if let Some(file_name) = extern_functions_file_name {
-        builder = builder.extern_functions_file_name(file_name);
+    if let Some(file_name) = non_extern_fns_filename {
+        builder = builder.non_extern_fns_filename(file_name);
     }
 
-    if let Some(directory) = extern_functions_directory {
-        builder = builder.extern_functions_directory(directory);
+    if let Some(directory) = non_extern_fns_directory {
+        builder = builder.non_extern_fns_directory(directory);
     }
 
-    if let Some(suffix) = extern_function_suffix {
-        builder = builder.extern_function_suffix(suffix);
+    if let Some(suffix) = non_extern_fns_suffix {
+        builder = builder.non_extern_fsn_suffix(suffix);
     }
 
     Ok((builder, output, verbose))

@@ -727,8 +727,8 @@ fn test_extern_generated_headers() {
 
     let _bindings = Builder::default()
         .header("tests/headers/generate-extern-functions.h")
-        .generate_extern_functions(true)
-        .extern_functions_directory(generated_path.display().to_string())
+        .wrap_non_extern_fns(true)
+        .non_extern_fns_directory(generated_path.display().to_string())
         .generate()
         .expect("Failed to generate bindings");
 

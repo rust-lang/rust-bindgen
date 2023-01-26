@@ -224,8 +224,8 @@ fn setup_extern_test() {
     let bindings = Builder::default()
         .header(input_header_file_path_str)
         .parse_callbacks(Box::new(CargoCallbacks))
-        .generate_extern_functions(true)
-        .extern_functions_directory(out_path.display().to_string())
+        .wrap_non_extern_fns(true)
+        .non_extern_fns_directory(out_path.display().to_string())
         .generate()
         .expect("Unable to generate bindings");
 

@@ -1821,7 +1821,7 @@ impl Builder {
 
     #[cfg(feature = "experimental")]
     /// Whether to generate extern wrappers for inline functions. Defaults to false.
-    pub fn generate_extern_functions(mut self, doit: bool) -> Self {
+    pub fn wrap_non_extern_fns(mut self, doit: bool) -> Self {
         self.options.generate_extern_functions = if doit {
             GenerateExternFunctions::True
         } else {
@@ -1833,7 +1833,7 @@ impl Builder {
     #[cfg(feature = "experimental")]
     /// Set the name of the header and source code files that would be created if any extern
     /// wrapper functions must be generated due to the presence of inlined functions.
-    pub fn extern_functions_file_name<T: AsRef<str>>(
+    pub fn non_extern_fns_filename<T: AsRef<str>>(
         mut self,
         file_name: T,
     ) -> Self {
@@ -1845,7 +1845,7 @@ impl Builder {
     #[cfg(feature = "experimental")]
     /// Set the directory path where any extra files must be created due to the presence of inlined
     /// functions.
-    pub fn extern_functions_directory<T: AsRef<str>>(
+    pub fn non_extern_fns_directory<T: AsRef<str>>(
         mut self,
         directory: T,
     ) -> Self {
@@ -1856,7 +1856,7 @@ impl Builder {
 
     #[cfg(feature = "experimental")]
     /// Set the suffix added to the extern wrapper functions generated for inlined functions.
-    pub fn extern_function_suffix<T: AsRef<str>>(mut self, suffix: T) -> Self {
+    pub fn non_extern_fsn_suffix<T: AsRef<str>>(mut self, suffix: T) -> Self {
         self.options.extern_function_suffix = Some(suffix.as_ref().to_owned());
         self
     }
