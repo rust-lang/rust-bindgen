@@ -8,7 +8,6 @@ use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
 use crate::callbacks::{ItemInfo, ItemKind};
 use crate::clang::{self, Attribute};
-use crate::ir::serialize::CItem;
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 use clang_sys::{self, CXCallingConv};
 use proc_macro2;
@@ -755,15 +754,6 @@ impl ClangSubItemParser for Function {
             linkage,
             cursor.is_inlined_function(),
         );
-
-        if matches!(linkage, Linkage::Internal) &&
-            context.options().wrap_non_extern_fns
-        {
-            match CItem::from_function(&function, context) {
-                Ok(c_item) => context.c_items.push(c_item),
-                Err(err) => warn!("Serialization failed: {:?}", err),
-            }
-        }
 
         dbg!(("done parsing", name));
 

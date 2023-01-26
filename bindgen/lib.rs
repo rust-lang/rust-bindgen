@@ -2660,54 +2660,6 @@ impl Bindings {
             parse(&mut context)?;
         }
 
-        fn serialize_c_items(
-            context: &BindgenContext,
-        ) -> Result<(), std::io::Error> {
-            let path = context
-                .options()
-                .wrap_non_extern_fns_path
-                .as_ref()
-                .map(|path| PathBuf::from(path))
-                .unwrap_or_else(|| {
-                    std::env::temp_dir().join("bindgen").join("extern")
-                });
-
-            let dir = path.parent().unwrap();
-
-            if !dir.exists() {
-                std::fs::create_dir_all(&dir)?;
-            }
-
-            let is_cpp = args_are_cpp(&context.options().clang_args) ||
-                context
-                    .options()
-                    .input_headers
-                    .iter()
-                    .any(|h| file_is_cpp(h));
-
-            let headers_path =
-                path.with_extension(if is_cpp { "hpp" } else { "h" });
-            let source_path =
-                path.with_extension(if is_cpp { "cpp" } else { "c" });
-
-            let mut headers_file = File::create(&headers_path)?;
-            let mut source_file = File::create(source_path)?;
-
-            for item in &context.c_items {
-                writeln!(headers_file, "{}", item.header())?;
-                writeln!(source_file, "{}", item.code())?;
-            }
-
-            Ok(())
-        }
-
-        if !context.c_items.is_empty() {
-            match serialize_c_items(&context) {
-                Ok(()) => (),
-                Err(err) => warn!("Could not serialize C items: {}", err),
-            }
-        }
-
         let (module, options, warnings) = codegen::codegen(context);
 
         Ok(Bindings {

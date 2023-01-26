@@ -3,9 +3,9 @@ use std::fmt::{self, Write};
 use crate::callbacks::IntKind;
 use crate::DEFAULT_NON_EXTERN_FNS_SUFFIX;
 
-use super::context::{BindgenContext, TypeId};
-use super::function::{Function, FunctionKind};
-use super::ty::{FloatKind, TypeKind};
+use crate::ir::context::{BindgenContext, TypeId};
+use crate::ir::function::{Function, FunctionKind};
+use crate::ir::ty::{FloatKind, TypeKind};
 
 #[derive(Debug)]
 pub(crate) enum Error {

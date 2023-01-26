@@ -4,6 +4,7 @@ mod helpers;
 mod impl_debug;
 mod impl_partialeq;
 mod postprocessing;
+mod serialize;
 pub mod struct_layout;
 
 #[cfg(test)]
@@ -46,6 +47,7 @@ use crate::ir::template::{
 };
 use crate::ir::ty::{Type, TypeKind};
 use crate::ir::var::Var;
+use serialize::CItem;
 
 use proc_macro2::{self, Ident, Span};
 use quote::TokenStreamExt;
@@ -241,6 +243,8 @@ struct CodegenResult<'a> {
     /// function name to the number of overloads we have already codegen'd for
     /// that name. This lets us give each overload a unique suffix.
     overload_counters: HashMap<String, u32>,
+
+    c_items: Vec<CItem>,
 }
 
 impl<'a> CodegenResult<'a> {
@@ -258,6 +262,7 @@ impl<'a> CodegenResult<'a> {
             functions_seen: Default::default(),
             vars_seen: Default::default(),
             overload_counters: Default::default(),
+            c_items: Default::default(),
         }
     }
 
@@ -4001,10 +4006,18 @@ impl CodeGenerator for Function {
         debug_assert!(item.is_enabled_for_codegen(ctx));
 
         let is_internal = matches!(self.linkage(), Linkage::Internal);
-        // We can't do anything with Internal functions if we are not wrapping them so just avoid
-        // generating anything for them.
-        if is_internal && !ctx.options().wrap_non_extern_fns {
-            return None;
+
+        if is_internal {
+            if ctx.options().wrap_non_extern_fns {
+                match CItem::from_function(&self, ctx) {
+                    Ok(c_item) => result.c_items.push(c_item),
+                    Err(err) => warn!("Serialization failed: {:?}", err),
+                }
+            } else {
+                // We can't do anything with Internal functions if we are not wrapping them so just
+                // avoid generating anything for them.
+                return None;
+            }
         }
 
         // Pure virtual methods have no actual symbol, so we can't generate
@@ -4501,20 +4514,72 @@ pub(crate) fn codegen(
             result.push(dynamic_items_tokens);
         }
 
+        if !result.c_items.is_empty() {
+            match utils::serialize_c_items(&result, &context) {
+                Ok(()) => (),
+                Err(err) => warn!("Could not serialize C items: {}", err),
+            }
+        }
+
         postprocessing::postprocessing(result.items, context.options())
     })
 }
 
 pub mod utils {
-    use super::{error, ToRustTyOrOpaque};
+    use super::{error, CodegenResult, ToRustTyOrOpaque};
     use crate::ir::context::BindgenContext;
     use crate::ir::function::{Abi, ClangAbi, FunctionSig};
     use crate::ir::item::{Item, ItemCanonicalPath};
     use crate::ir::ty::TypeKind;
+    use crate::{args_are_cpp, file_is_cpp};
     use proc_macro2;
     use std::borrow::Cow;
+    use std::fs::File;
+    use std::io::Write;
     use std::mem;
+    use std::path::PathBuf;
     use std::str::FromStr;
+
+    pub(super) fn serialize_c_items(
+        result: &CodegenResult,
+        context: &BindgenContext,
+    ) -> Result<(), std::io::Error> {
+        let path = context
+            .options()
+            .wrap_non_extern_fns_path
+            .as_ref()
+            .map(|path| PathBuf::from(path))
+            .unwrap_or_else(|| {
+                std::env::temp_dir().join("bindgen").join("extern")
+            });
+
+        let dir = path.parent().unwrap();
+
+        if !dir.exists() {
+            std::fs::create_dir_all(&dir)?;
+        }
+
+        let is_cpp = args_are_cpp(&context.options().clang_args) ||
+            context
+                .options()
+                .input_headers
+                .iter()
+                .any(|h| file_is_cpp(h));
+
+        let headers_path =
+            path.with_extension(if is_cpp { "hpp" } else { "h" });
+        let source_path = path.with_extension(if is_cpp { "cpp" } else { "c" });
+
+        let mut headers_file = File::create(&headers_path)?;
+        let mut source_file = File::create(source_path)?;
+
+        for item in &result.c_items {
+            writeln!(headers_file, "{}", item.header())?;
+            writeln!(source_file, "{}", item.code())?;
+        }
+
+        Ok(())
+    }
 
     pub fn prepend_bitfield_unit_type(
         ctx: &BindgenContext,
