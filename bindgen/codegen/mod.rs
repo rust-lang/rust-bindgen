@@ -4137,9 +4137,9 @@ impl CodeGenerator for Function {
         if ctx.options().wrap_non_extern_fns.is_second_run() {
             if let Some(name) = canonical_name.strip_suffix(
                 ctx.options()
-                    .non_extern_fns_suffix
+                    .wrap_non_extern_fns_suffix
                     .as_deref()
-                    .unwrap_or(crate::DEFAULT_EXTERN_FUNCTION_SUFFIX),
+                    .unwrap_or(crate::DEFAULT_NON_EXTERN_FNS_SUFFIX),
             ) {
                 if !has_link_name_attr {
                     attributes.push(attributes::link_name(&canonical_name));

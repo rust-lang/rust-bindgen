@@ -356,15 +356,12 @@ struct BindgenCommand {
     /// Generate extern wrappers for inlined functions
     #[arg(long, requires = "experimental")]
     wrap_non_extern_fns: bool,
-    /// Sets the name of the header and source code files that would be created if any extern wrapper functions must be generated due to the presence of inlined functions.
-    #[arg(long, requires = "experimental", value_name = "FILENAME")]
-    non_extern_fns_filename: Option<String>,
-    #[arg(long, requires = "experimental", value_name = "DIRECTORY")]
-    /// Sets the directory path where any extra files must be created due to the presence of inlined functions.
-    non_extern_fns_directory: Option<String>,
+    /// Sets the path for any extra files must be created due to the presence of inlined functions.
+    #[arg(long, requires = "experimental", value_name = "PATH")]
+    wrap_non_extern_fns_path: Option<String>,
     /// Sets the suffix added to the extern wrapper functions generated for inlined functions.
     #[arg(long, requires = "experimental", value_name = "SUFFIX")]
-    non_extern_fns_suffix: Option<String>,
+    wrap_non_extern_fns_suffix: Option<String>,
     /// Enables experimental features.
     #[arg(long)]
     experimental: bool,
@@ -489,9 +486,8 @@ where
         with_derive_custom_enum,
         with_derive_custom_union,
         wrap_non_extern_fns,
-        non_extern_fns_filename,
-        non_extern_fns_directory,
-        non_extern_fns_suffix,
+        wrap_non_extern_fns_path,
+        wrap_non_extern_fns_suffix,
         experimental: _,
         version,
         clang_args,
@@ -1002,16 +998,12 @@ where
         builder = builder.wrap_non_extern_fns(true);
     }
 
-    if let Some(file_name) = non_extern_fns_filename {
-        builder = builder.non_extern_fns_filename(file_name);
+    if let Some(path) = wrap_non_extern_fns_path {
+        builder = builder.wrap_non_extern_fns_path(path);
     }
 
-    if let Some(directory) = non_extern_fns_directory {
-        builder = builder.non_extern_fns_directory(directory);
-    }
-
-    if let Some(suffix) = non_extern_fns_suffix {
-        builder = builder.non_extern_fsn_suffix(suffix);
+    if let Some(suffix) = wrap_non_extern_fns_suffix {
+        builder = builder.wrap_non_extern_fns_suffix(suffix);
     }
 
     Ok((builder, output, verbose))

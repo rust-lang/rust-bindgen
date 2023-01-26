@@ -719,27 +719,29 @@ fn test_extern_generated_headers() {
     // This test is for testing diffs of the generated C source and header files
     // TODO: If another such feature is added, convert this test into a more generic
     //      test that looks at `tests/headers/generated` directory.
-    let expect_path = PathBuf::from("tests/expectations/tests/generated");
-    println!("In path is ::: {}", expect_path.to_str().unwrap());
+    let expect_path =
+        PathBuf::from("tests/expectations/tests/generated").join("extern");
+    println!("In path is ::: {}", expect_path.display());
 
-    let generated_path = PathBuf::from(env::var("OUT_DIR").unwrap());
-    println!("Out path is ::: {}", generated_path.to_str().unwrap());
+    let generated_path =
+        PathBuf::from(env::var("OUT_DIR").unwrap()).join("extern");
+    println!("Out path is ::: {}", generated_path.display());
 
     let _bindings = Builder::default()
         .header("tests/headers/wrap-non-extern-fns.h")
         .wrap_non_extern_fns(true)
-        .non_extern_fns_directory(generated_path.display().to_string())
+        .wrap_non_extern_fns_path(generated_path.display().to_string())
         .generate()
         .expect("Failed to generate bindings");
 
-    let expected_c = fs::read_to_string(expect_path.join("extern.c"))
+    let expected_c = fs::read_to_string(expect_path.with_extension("c"))
         .expect("Could not read generated extern.c");
-    let expected_h = fs::read_to_string(expect_path.join("extern.h"))
+    let expected_h = fs::read_to_string(expect_path.with_extension("h"))
         .expect("Could not read generated extern.h");
 
-    let actual_c = fs::read_to_string(generated_path.join("extern.c"))
+    let actual_c = fs::read_to_string(generated_path.with_extension("c"))
         .expect("Could not read actual extern.c");
-    let actual_h = fs::read_to_string(generated_path.join("extern.h"))
+    let actual_h = fs::read_to_string(generated_path.with_extension("h"))
         .expect("Could not read actual extern.h");
 
     if expected_c != actual_c {
@@ -747,7 +749,7 @@ fn test_extern_generated_headers() {
             &actual_c,
             &expected_c,
             None,
-            Path::new(expect_path.join("extern.c").to_str().unwrap()),
+            &expect_path.with_extension("c"),
         )
         .unwrap();
     }
@@ -757,7 +759,7 @@ fn test_extern_generated_headers() {
             &actual_h,
             &expected_h,
             None,
-            Path::new(expect_path.join("extern.h").to_str().unwrap()),
+            &expect_path.with_extension("h"),
         )
         .unwrap();
     }

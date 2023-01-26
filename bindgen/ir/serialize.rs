@@ -1,7 +1,7 @@
 use std::fmt::{self, Write};
 
 use crate::callbacks::IntKind;
-use crate::DEFAULT_EXTERN_FUNCTION_SUFFIX;
+use crate::DEFAULT_NON_EXTERN_FNS_SUFFIX;
 
 use super::context::{BindgenContext, TypeId};
 use super::function::{Function, FunctionKind};
@@ -68,9 +68,9 @@ impl CItem {
                             " {}{}(",
                             name,
                             ctx.options()
-                                .non_extern_fns_suffix
+                                .wrap_non_extern_fns_suffix
                                 .as_deref()
-                                .unwrap_or(DEFAULT_EXTERN_FUNCTION_SUFFIX)
+                                .unwrap_or(DEFAULT_NON_EXTERN_FNS_SUFFIX)
                         )?;
                         serialize_sep(
                             ", ",

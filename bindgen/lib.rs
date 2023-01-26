@@ -108,7 +108,7 @@ pub(crate) use std::collections::hash_map::Entry;
 
 /// Default prefix for the anon fields.
 pub const DEFAULT_ANON_FIELDS_PREFIX: &str = "__bindgen_anon_";
-const DEFAULT_EXTERN_FUNCTION_SUFFIX: &str = "__extern";
+const DEFAULT_NON_EXTERN_FNS_SUFFIX: &str = "__extern";
 
 fn file_is_cpp(name_file: &str) -> bool {
     name_file.ends_with(".hpp") ||
@@ -662,18 +662,13 @@ impl Builder {
             output_vector.push("--wrap-non-extern-fns".into())
         }
 
-        if let Some(ref file_name) = self.options.non_extern_fns_filename {
-            output_vector.push("--non-extern-fns-filename".into());
-            output_vector.push(file_name.clone());
+        if let Some(ref path) = self.options.wrap_non_extern_fns_path {
+            output_vector.push("--wrap-non-extern-fns-path".into());
+            output_vector.push(path.to_string());
         }
 
-        if let Some(ref directory) = self.options.non_extern_fns_directory {
-            output_vector.push("--non-extern-fns-directory".into());
-            output_vector.push(directory.display().to_string());
-        }
-
-        if let Some(ref suffix) = self.options.non_extern_fns_suffix {
-            output_vector.push("--non-extern-fns-suffix".into());
+        if let Some(ref suffix) = self.options.wrap_non_extern_fns_suffix {
+            output_vector.push("--wrap-non-extern-fns-suffix".into());
             output_vector.push(suffix.clone());
         }
 
@@ -1831,33 +1826,23 @@ impl Builder {
     }
 
     #[cfg(feature = "experimental")]
-    /// Set the name of the header and source code files that would be created if any extern
-    /// wrapper functions must be generated due to the presence of inlined functions.
-    pub fn non_extern_fns_filename<T: AsRef<str>>(
-        mut self,
-        file_name: T,
-    ) -> Self {
-        self.options.non_extern_fns_filename =
-            Some(file_name.as_ref().to_owned());
-        self
-    }
-
-    #[cfg(feature = "experimental")]
-    /// Set the directory path where any extra files must be created due to the presence of inlined
-    /// functions.
-    pub fn non_extern_fns_directory<T: AsRef<str>>(
-        mut self,
-        directory: T,
-    ) -> Self {
-        self.options.non_extern_fns_directory =
-            Some(directory.as_ref().to_owned().into());
+    /// Set the path of the header and source code files that would be created if any extern
+    /// wrapper functions must be generated due to the presence of non-extern functions.
+    ///
+    /// Bindgen will automatically add the right extension to the header and source code files.
+    pub fn wrap_non_extern_fns_path<T: AsRef<str>>(mut self, path: T) -> Self {
+        self.options.wrap_non_extern_fns_path = Some(path.as_ref().to_owned());
         self
     }
 
     #[cfg(feature = "experimental")]
     /// Set the suffix added to the extern wrapper functions generated for inlined functions.
-    pub fn non_extern_fsn_suffix<T: AsRef<str>>(mut self, suffix: T) -> Self {
-        self.options.non_extern_fns_suffix = Some(suffix.as_ref().to_owned());
+    pub fn wrap_non_extern_fns_suffix<T: AsRef<str>>(
+        mut self,
+        suffix: T,
+    ) -> Self {
+        self.options.wrap_non_extern_fns_suffix =
+            Some(suffix.as_ref().to_owned());
         self
     }
 
@@ -2231,11 +2216,9 @@ struct BindgenOptions {
 
     wrap_non_extern_fns: WrapNonExternFns,
 
-    non_extern_fns_suffix: Option<String>,
+    wrap_non_extern_fns_suffix: Option<String>,
 
-    non_extern_fns_directory: Option<PathBuf>,
-
-    non_extern_fns_filename: Option<String>,
+    wrap_non_extern_fns_path: Option<String>,
 }
 
 impl BindgenOptions {
@@ -2429,9 +2412,8 @@ impl Default for BindgenOptions {
             abi_overrides,
             wrap_unsafe_ops,
             wrap_non_extern_fns,
-            non_extern_fns_suffix,
-            non_extern_fns_directory,
-            non_extern_fns_filename,
+            wrap_non_extern_fns_suffix,
+            wrap_non_extern_fns_path,
         }
     }
 }
@@ -2737,23 +2719,20 @@ impl Bindings {
         fn serialize_c_items(
             context: &BindgenContext,
         ) -> Result<PathBuf, std::io::Error> {
-            let dir = context
+            let path = context
                 .options()
-                .non_extern_fns_directory
-                .clone()
-                .unwrap_or_else(|| std::env::temp_dir().join("bindgen"));
+                .wrap_non_extern_fns_path
+                .as_ref()
+                .map(|path| PathBuf::from(path))
+                .unwrap_or_else(|| {
+                    std::env::temp_dir().join("bindgen").join("extern")
+                });
+
+            let dir = path.parent().unwrap();
 
             if !dir.exists() {
                 std::fs::create_dir_all(&dir)?;
             }
-
-            let path = std::fs::canonicalize(dir)?.join(
-                context
-                    .options()
-                    .non_extern_fns_filename
-                    .as_deref()
-                    .unwrap_or("extern"),
-            );
 
             let is_cpp = args_are_cpp(&context.options().clang_args) ||
                 context
