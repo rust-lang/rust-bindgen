@@ -658,7 +658,7 @@ impl Builder {
         for callbacks in &self.options.parse_callbacks {
             output_vector.extend(callbacks.cli_args());
         }
-        if self.options.wrap_non_extern_fns.is_true() {
+        if self.options.wrap_non_extern_fns {
             output_vector.push("--wrap-non-extern-fns".into())
         }
 
@@ -1571,32 +1571,25 @@ impl Builder {
     }
 
     /// Generate the Rust bindings using the options built up thus far.
-    pub fn generate(self) -> Result<Bindings, BindgenError> {
-        let mut options = self.options.clone();
+    pub fn generate(mut self) -> Result<Bindings, BindgenError> {
         // Add any extra arguments from the environment to the clang command line.
-        options.clang_args.extend(get_extra_clang_args());
+        self.options.clang_args.extend(get_extra_clang_args());
 
         // Transform input headers to arguments on the clang command line.
-        options.clang_args.extend(
-            options.input_headers
-                [..options.input_headers.len().saturating_sub(1)]
+        self.options.clang_args.extend(
+            self.options.input_headers
+                [..self.options.input_headers.len().saturating_sub(1)]
                 .iter()
                 .flat_map(|header| ["-include".into(), header.to_string()]),
         );
 
         let input_unsaved_files =
-            std::mem::take(&mut options.input_header_contents)
+            std::mem::take(&mut self.options.input_header_contents)
                 .into_iter()
                 .map(|(name, contents)| clang::UnsavedFile::new(name, contents))
                 .collect::<Vec<_>>();
 
-        match Bindings::generate(options, input_unsaved_files) {
-            GenerateResult::Ok(bindings) => Ok(*bindings),
-            GenerateResult::ShouldRestart { header } => {
-                self.second_run(header).generate()
-            }
-            GenerateResult::Err(err) => Err(err),
-        }
+        Bindings::generate(self.options, input_unsaved_files)
     }
 
     /// Preprocess and dump the input header files to disk.
@@ -1817,11 +1810,7 @@ impl Builder {
     #[cfg(feature = "experimental")]
     /// Whether to generate extern wrappers for inline functions. Defaults to false.
     pub fn wrap_non_extern_fns(mut self, doit: bool) -> Self {
-        self.options.wrap_non_extern_fns = if doit {
-            WrapNonExternFns::True
-        } else {
-            WrapNonExternFns::False
-        };
+        self.options.wrap_non_extern_fns = doit;
         self
     }
 
@@ -1844,34 +1833,6 @@ impl Builder {
         self.options.wrap_non_extern_fns_suffix =
             Some(suffix.as_ref().to_owned());
         self
-    }
-
-    fn second_run(mut self, extra_header: String) -> Self {
-        self.options.wrap_non_extern_fns = WrapNonExternFns::SecondRun;
-        self.header(extra_header)
-    }
-}
-
-#[derive(Clone, Copy, Debug)]
-enum WrapNonExternFns {
-    True,
-    False,
-    SecondRun,
-}
-
-impl WrapNonExternFns {
-    fn is_true(self) -> bool {
-        matches!(self, Self::True)
-    }
-
-    fn is_second_run(self) -> bool {
-        matches!(self, Self::SecondRun)
-    }
-}
-
-impl Default for WrapNonExternFns {
-    fn default() -> Self {
-        Self::False
     }
 }
 
@@ -2214,7 +2175,7 @@ struct BindgenOptions {
     /// Whether to wrap unsafe operations in unsafe blocks or not.
     wrap_unsafe_ops: bool,
 
-    wrap_non_extern_fns: WrapNonExternFns,
+    wrap_non_extern_fns: bool,
 
     wrap_non_extern_fns_suffix: Option<String>,
 
@@ -2444,17 +2405,6 @@ fn ensure_libclang_is_loaded() {
 #[cfg(not(feature = "runtime"))]
 fn ensure_libclang_is_loaded() {}
 
-#[derive(Debug)]
-enum GenerateResult {
-    Ok(Box<Bindings>),
-    /// Error variant raised when bindgen requires to run again with a newly generated header
-    /// input.
-    ShouldRestart {
-        header: String,
-    },
-    Err(BindgenError),
-}
-
 /// Error type for rust-bindgen.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 #[non_exhaustive]
@@ -2548,7 +2498,7 @@ impl Bindings {
     pub(crate) fn generate(
         mut options: BindgenOptions,
         input_unsaved_files: Vec<clang::UnsavedFile>,
-    ) -> GenerateResult {
+    ) -> Result<Bindings, BindgenError> {
         ensure_libclang_is_loaded();
 
         #[cfg(feature = "runtime")]
@@ -2669,21 +2619,17 @@ impl Bindings {
             let path = Path::new(h);
             if let Ok(md) = std::fs::metadata(path) {
                 if md.is_dir() {
-                    return GenerateResult::Err(BindgenError::FolderAsHeader(
-                        path.into(),
-                    ));
+                    return Err(BindgenError::FolderAsHeader(path.into()));
                 }
                 if !can_read(&md.permissions()) {
-                    return GenerateResult::Err(
-                        BindgenError::InsufficientPermissions(path.into()),
-                    );
+                    return Err(BindgenError::InsufficientPermissions(
+                        path.into(),
+                    ));
                 }
                 let h = h.clone();
                 options.clang_args.push(h);
             } else {
-                return GenerateResult::Err(BindgenError::NotExist(
-                    path.into(),
-                ));
+                return Err(BindgenError::NotExist(path.into()));
             }
         }
 
@@ -2711,14 +2657,12 @@ impl Bindings {
 
         {
             let _t = time::Timer::new("parse").with_output(time_phases);
-            if let Err(err) = parse(&mut context) {
-                return GenerateResult::Err(err);
-            }
+            parse(&mut context)?;
         }
 
         fn serialize_c_items(
             context: &BindgenContext,
-        ) -> Result<PathBuf, std::io::Error> {
+        ) -> Result<(), std::io::Error> {
             let path = context
                 .options()
                 .wrap_non_extern_fns_path
@@ -2754,27 +2698,23 @@ impl Bindings {
                 writeln!(source_file, "{}", item.code())?;
             }
 
-            Ok(headers_path)
+            Ok(())
         }
 
         if !context.c_items.is_empty() {
             match serialize_c_items(&context) {
-                Ok(headers) => {
-                    return GenerateResult::ShouldRestart {
-                        header: headers.display().to_string(),
-                    }
-                }
+                Ok(()) => (),
                 Err(err) => warn!("Could not serialize C items: {}", err),
             }
         }
 
         let (module, options, warnings) = codegen::codegen(context);
 
-        GenerateResult::Ok(Box::new(Bindings {
+        Ok(Bindings {
             options,
             warnings,
             module,
-        }))
+        })
     }
 
     /// Write these bindings as source text to a file.

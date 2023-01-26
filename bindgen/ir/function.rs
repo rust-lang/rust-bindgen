@@ -95,6 +95,9 @@ pub struct Function {
 
     /// The linkage of the function.
     linkage: Linkage,
+
+    /// Is this function inlined?.
+    is_inlined_function: bool,
 }
 
 impl Function {
@@ -106,6 +109,7 @@ impl Function {
         comment: Option<String>,
         kind: FunctionKind,
         linkage: Linkage,
+        is_inlined_function: bool,
     ) -> Self {
         Function {
             name,
@@ -114,6 +118,7 @@ impl Function {
             comment,
             kind,
             linkage,
+            is_inlined_function,
         }
     }
 
@@ -145,6 +150,11 @@ impl Function {
     /// Get this function's linkage.
     pub fn linkage(&self) -> Linkage {
         self.linkage
+    }
+
+    /// Is this function inlined?
+    pub fn is_inlined_function(&self) -> bool {
+        self.is_inlined_function
     }
 }
 
@@ -665,7 +675,6 @@ impl ClangSubItemParser for Function {
         };
 
         debug!("Function::parse({:?}, {:?})", cursor, cursor.cur_type());
-
         let visibility = cursor.visibility();
         if visibility != CXVisibility_Default {
             return Err(ParseError::Continue);
@@ -675,13 +684,20 @@ impl ClangSubItemParser for Function {
             return Err(ParseError::Continue);
         }
 
+        let linkage = cursor.linkage();
+        let linkage = match linkage {
+            CXLinkage_External | CXLinkage_UniqueExternal => Linkage::External,
+            CXLinkage_Internal => Linkage::Internal,
+            _ => return Err(ParseError::Continue),
+        };
+
         if cursor.is_inlined_function() ||
             cursor
                 .definition()
                 .map_or(false, |x| x.is_inlined_function())
         {
             if !(context.options().generate_inline_functions ||
-                context.options().wrap_non_extern_fns.is_true())
+                context.options().wrap_non_extern_fns)
             {
                 return Err(ParseError::Continue);
             }
@@ -689,14 +705,14 @@ impl ClangSubItemParser for Function {
             if cursor.is_deleted_function() {
                 return Err(ParseError::Continue);
             }
-        }
 
-        let linkage = cursor.linkage();
-        let linkage = match linkage {
-            CXLinkage_External | CXLinkage_UniqueExternal => Linkage::External,
-            CXLinkage_Internal => Linkage::Internal,
-            _ => return Err(ParseError::Continue),
-        };
+            if context.options().wrap_non_extern_fns &&
+                cursor.is_inlined_function() &&
+                matches!(linkage, Linkage::External)
+            {
+                return Err(ParseError::Continue);
+            }
+        }
 
         // Grab the signature using Item::from_ty.
         let sig = Item::from_ty(&cursor.cur_type(), cursor, None, context)?;
@@ -730,17 +746,26 @@ impl ClangSubItemParser for Function {
         let mangled_name = cursor_mangling(context, &cursor);
         let comment = cursor.raw_comment();
 
-        let function =
-            Self::new(name, mangled_name, sig, comment, kind, linkage);
+        let function = Self::new(
+            name.clone(),
+            mangled_name,
+            sig,
+            comment,
+            kind,
+            linkage,
+            cursor.is_inlined_function(),
+        );
 
         if matches!(linkage, Linkage::Internal) &&
-            context.options().wrap_non_extern_fns.is_true()
+            context.options().wrap_non_extern_fns
         {
             match CItem::from_function(&function, context) {
                 Ok(c_item) => context.c_items.push(c_item),
                 Err(err) => warn!("Serialization failed: {:?}", err),
             }
         }
+
+        dbg!(("done parsing", name));
 
         Ok(ParseResult::New(function, Some(cursor)))
     }

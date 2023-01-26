@@ -4000,9 +4000,10 @@ impl CodeGenerator for Function {
         debug!("<Function as CodeGenerator>::codegen: item = {:?}", item);
         debug_assert!(item.is_enabled_for_codegen(ctx));
 
-        // We can't currently do anything with Internal functions so just
-        // avoid generating anything for them.
-        if matches!(self.linkage(), Linkage::Internal) {
+        let is_internal = matches!(self.linkage(), Linkage::Internal);
+        // We can't do anything with Internal functions if we are not wrapping them so just avoid
+        // generating anything for them.
+        if is_internal && !ctx.options().wrap_non_extern_fns {
             return None;
         }
 
@@ -4134,17 +4135,15 @@ impl CodeGenerator for Function {
                 quote! { #[link(wasm_import_module = #name)] }
             });
 
-        if ctx.options().wrap_non_extern_fns.is_second_run() {
-            if let Some(name) = canonical_name.strip_suffix(
+        if is_internal && ctx.options().wrap_non_extern_fns {
+            let name = canonical_name.clone() +
                 ctx.options()
                     .wrap_non_extern_fns_suffix
                     .as_deref()
-                    .unwrap_or(crate::DEFAULT_NON_EXTERN_FNS_SUFFIX),
-            ) {
-                if !has_link_name_attr {
-                    attributes.push(attributes::link_name(&canonical_name));
-                }
-                canonical_name = name.to_owned();
+                    .unwrap_or(crate::DEFAULT_NON_EXTERN_FNS_SUFFIX);
+
+            if !has_link_name_attr {
+                attributes.push(attributes::link_name(&name));
             }
         }
 
