@@ -681,7 +681,7 @@ impl ClangSubItemParser for Function {
                 .map_or(false, |x| x.is_inlined_function())
         {
             if !(context.options().generate_inline_functions ||
-                context.options().generate_extern_functions.is_true())
+                context.options().wrap_non_extern_fns.is_true())
             {
                 return Err(ParseError::Continue);
             }
@@ -734,7 +734,7 @@ impl ClangSubItemParser for Function {
             Self::new(name, mangled_name, sig, comment, kind, linkage);
 
         if matches!(linkage, Linkage::Internal) &&
-            context.options().generate_extern_functions.is_true()
+            context.options().wrap_non_extern_fns.is_true()
         {
             match CItem::from_function(&function, context) {
                 Ok(c_item) => context.c_items.push(c_item),

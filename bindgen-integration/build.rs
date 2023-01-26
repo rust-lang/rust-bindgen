@@ -214,8 +214,7 @@ fn setup_extern_test() {
     let input_header_dir = PathBuf::from("../bindgen-tests/tests/headers/")
         .canonicalize()
         .expect("Cannot canonicalize libdir path");
-    let input_header_file_path =
-        input_header_dir.join("generate-extern-functions.h");
+    let input_header_file_path = input_header_dir.join("wrap-non-extern-fns.h");
     let input_header_file_path_str = input_header_file_path
         .to_str()
         .expect("Path could not be converted to a str");

@@ -4134,10 +4134,10 @@ impl CodeGenerator for Function {
                 quote! { #[link(wasm_import_module = #name)] }
             });
 
-        if ctx.options().generate_extern_functions.is_second_run() {
+        if ctx.options().wrap_non_extern_fns.is_second_run() {
             if let Some(name) = canonical_name.strip_suffix(
                 ctx.options()
-                    .extern_function_suffix
+                    .non_extern_fns_suffix
                     .as_deref()
                     .unwrap_or(crate::DEFAULT_EXTERN_FUNCTION_SUFFIX),
             ) {

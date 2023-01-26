@@ -68,7 +68,7 @@ impl CItem {
                             " {}{}(",
                             name,
                             ctx.options()
-                                .extern_function_suffix
+                                .non_extern_fns_suffix
                                 .as_deref()
                                 .unwrap_or(DEFAULT_EXTERN_FUNCTION_SUFFIX)
                         )?;

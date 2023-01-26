@@ -726,7 +726,7 @@ fn test_extern_generated_headers() {
     println!("Out path is ::: {}", generated_path.to_str().unwrap());
 
     let _bindings = Builder::default()
-        .header("tests/headers/generate-extern-functions.h")
+        .header("tests/headers/wrap-non-extern-fns.h")
         .wrap_non_extern_fns(true)
         .non_extern_fns_directory(generated_path.display().to_string())
         .generate()

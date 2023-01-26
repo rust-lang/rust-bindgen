@@ -658,22 +658,22 @@ impl Builder {
         for callbacks in &self.options.parse_callbacks {
             output_vector.extend(callbacks.cli_args());
         }
-        if self.options.generate_extern_functions.is_true() {
-            output_vector.push("--generate-extern-functions".into())
+        if self.options.wrap_non_extern_fns.is_true() {
+            output_vector.push("--wrap-non-extern-fns".into())
         }
 
-        if let Some(ref file_name) = self.options.extern_functions_file_name {
-            output_vector.push("--extern-functions-file-name".into());
+        if let Some(ref file_name) = self.options.non_extern_fns_filename {
+            output_vector.push("--non-extern-fns-filename".into());
             output_vector.push(file_name.clone());
         }
 
-        if let Some(ref directory) = self.options.extern_functions_directory {
-            output_vector.push("--extern-functions-directory".into());
+        if let Some(ref directory) = self.options.non_extern_fns_directory {
+            output_vector.push("--non-extern-fns-directory".into());
             output_vector.push(directory.display().to_string());
         }
 
-        if let Some(ref suffix) = self.options.extern_function_suffix {
-            output_vector.push("--extern-function-suffix".into());
+        if let Some(ref suffix) = self.options.non_extern_fns_suffix {
+            output_vector.push("--non-extern-fns-suffix".into());
             output_vector.push(suffix.clone());
         }
 
@@ -1822,10 +1822,10 @@ impl Builder {
     #[cfg(feature = "experimental")]
     /// Whether to generate extern wrappers for inline functions. Defaults to false.
     pub fn wrap_non_extern_fns(mut self, doit: bool) -> Self {
-        self.options.generate_extern_functions = if doit {
-            GenerateExternFunctions::True
+        self.options.wrap_non_extern_fns = if doit {
+            WrapNonExternFns::True
         } else {
-            GenerateExternFunctions::False
+            WrapNonExternFns::False
         };
         self
     }
@@ -1837,7 +1837,7 @@ impl Builder {
         mut self,
         file_name: T,
     ) -> Self {
-        self.options.extern_functions_file_name =
+        self.options.non_extern_fns_filename =
             Some(file_name.as_ref().to_owned());
         self
     }
@@ -1849,7 +1849,7 @@ impl Builder {
         mut self,
         directory: T,
     ) -> Self {
-        self.options.extern_functions_directory =
+        self.options.non_extern_fns_directory =
             Some(directory.as_ref().to_owned().into());
         self
     }
@@ -1857,25 +1857,24 @@ impl Builder {
     #[cfg(feature = "experimental")]
     /// Set the suffix added to the extern wrapper functions generated for inlined functions.
     pub fn non_extern_fsn_suffix<T: AsRef<str>>(mut self, suffix: T) -> Self {
-        self.options.extern_function_suffix = Some(suffix.as_ref().to_owned());
+        self.options.non_extern_fns_suffix = Some(suffix.as_ref().to_owned());
         self
     }
 
     fn second_run(mut self, extra_header: String) -> Self {
-        self.options.generate_extern_functions =
-            GenerateExternFunctions::SecondRun;
+        self.options.wrap_non_extern_fns = WrapNonExternFns::SecondRun;
         self.header(extra_header)
     }
 }
 
 #[derive(Clone, Copy, Debug)]
-enum GenerateExternFunctions {
+enum WrapNonExternFns {
     True,
     False,
     SecondRun,
 }
 
-impl GenerateExternFunctions {
+impl WrapNonExternFns {
     fn is_true(self) -> bool {
         matches!(self, Self::True)
     }
@@ -1885,7 +1884,7 @@ impl GenerateExternFunctions {
     }
 }
 
-impl Default for GenerateExternFunctions {
+impl Default for WrapNonExternFns {
     fn default() -> Self {
         Self::False
     }
@@ -2230,13 +2229,13 @@ struct BindgenOptions {
     /// Whether to wrap unsafe operations in unsafe blocks or not.
     wrap_unsafe_ops: bool,
 
-    generate_extern_functions: GenerateExternFunctions,
+    wrap_non_extern_fns: WrapNonExternFns,
 
-    extern_function_suffix: Option<String>,
+    non_extern_fns_suffix: Option<String>,
 
-    extern_functions_directory: Option<PathBuf>,
+    non_extern_fns_directory: Option<PathBuf>,
 
-    extern_functions_file_name: Option<String>,
+    non_extern_fns_filename: Option<String>,
 }
 
 impl BindgenOptions {
@@ -2429,10 +2428,10 @@ impl Default for BindgenOptions {
             merge_extern_blocks,
             abi_overrides,
             wrap_unsafe_ops,
-            generate_extern_functions,
-            extern_function_suffix,
-            extern_functions_directory,
-            extern_functions_file_name,
+            wrap_non_extern_fns,
+            non_extern_fns_suffix,
+            non_extern_fns_directory,
+            non_extern_fns_filename,
         }
     }
 }
@@ -2740,7 +2739,7 @@ impl Bindings {
         ) -> Result<PathBuf, std::io::Error> {
             let dir = context
                 .options()
-                .extern_functions_directory
+                .non_extern_fns_directory
                 .clone()
                 .unwrap_or_else(|| std::env::temp_dir().join("bindgen"));
 
@@ -2751,7 +2750,7 @@ impl Bindings {
             let path = std::fs::canonicalize(dir)?.join(
                 context
                     .options()
-                    .extern_functions_file_name
+                    .non_extern_fns_filename
                     .as_deref()
                     .unwrap_or("extern"),
             );
