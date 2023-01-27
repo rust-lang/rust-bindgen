@@ -664,7 +664,7 @@ impl Builder {
 
         if let Some(ref path) = self.options.wrap_non_extern_fns_path {
             output_vector.push("--wrap-non-extern-fns-path".into());
-            output_vector.push(path.to_string());
+            output_vector.push(path.display().to_string());
         }
 
         if let Some(ref suffix) = self.options.wrap_non_extern_fns_suffix {
@@ -1819,7 +1819,7 @@ impl Builder {
     /// wrapper functions must be generated due to the presence of non-extern functions.
     ///
     /// Bindgen will automatically add the right extension to the header and source code files.
-    pub fn wrap_non_extern_fns_path<T: AsRef<str>>(mut self, path: T) -> Self {
+    pub fn wrap_non_extern_fns_path<T: AsRef<Path>>(mut self, path: T) -> Self {
         self.options.wrap_non_extern_fns_path = Some(path.as_ref().to_owned());
         self
     }
@@ -2179,7 +2179,7 @@ struct BindgenOptions {
 
     wrap_non_extern_fns_suffix: Option<String>,
 
-    wrap_non_extern_fns_path: Option<String>,
+    wrap_non_extern_fns_path: Option<PathBuf>,
 }
 
 impl BindgenOptions {

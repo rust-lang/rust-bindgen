@@ -4009,7 +4009,7 @@ impl CodeGenerator for Function {
 
         if is_internal {
             if ctx.options().wrap_non_extern_fns {
-                match CItem::from_function(&self, ctx) {
+                match CItem::from_function(self, ctx) {
                     Ok(c_item) => result.c_items.push(c_item),
                     Err(err) => warn!("Serialization failed: {:?}", err),
                 }
@@ -4148,16 +4148,14 @@ impl CodeGenerator for Function {
                 quote! { #[link(wasm_import_module = #name)] }
             });
 
-        if is_internal && ctx.options().wrap_non_extern_fns {
-            let name = canonical_name.clone() +
-                ctx.options()
-                    .wrap_non_extern_fns_suffix
-                    .as_deref()
-                    .unwrap_or(crate::DEFAULT_NON_EXTERN_FNS_SUFFIX);
+        if is_internal &&
+            ctx.options().wrap_non_extern_fns &&
+            !has_link_name_attr
+        {
+            let name =
+                canonical_name.clone() + ctx.wrap_non_extern_fns_suffix();
 
-            if !has_link_name_attr {
-                attributes.push(attributes::link_name(&name));
-            }
+            attributes.push(attributes::link_name(&name));
         }
 
         let ident = ctx.rust_ident(canonical_name);

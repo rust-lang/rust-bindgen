@@ -695,8 +695,8 @@ impl ClangSubItemParser for Function {
                 .definition()
                 .map_or(false, |x| x.is_inlined_function())
         {
-            if !(context.options().generate_inline_functions ||
-                context.options().wrap_non_extern_fns)
+            if !context.options().generate_inline_functions &&
+                !context.options().wrap_non_extern_fns
             {
                 return Err(ParseError::Continue);
             }
@@ -754,8 +754,6 @@ impl ClangSubItemParser for Function {
             linkage,
             cursor.is_inlined_function(),
         );
-
-        dbg!(("done parsing", name));
 
         Ok(ParseResult::New(function, Some(cursor)))
     }

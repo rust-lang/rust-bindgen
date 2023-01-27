@@ -2792,6 +2792,13 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             tokens.into_token_stream()
         }
     }
+
+    pub(crate) fn wrap_non_extern_fns_suffix(&self) -> &str {
+        self.options()
+            .wrap_non_extern_fns_suffix
+            .as_deref()
+            .unwrap_or(crate::DEFAULT_NON_EXTERN_FNS_SUFFIX)
+    }
 }
 
 /// A builder struct for configuring item resolution options.

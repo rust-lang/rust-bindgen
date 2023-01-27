@@ -358,7 +358,7 @@ struct BindgenCommand {
     wrap_non_extern_fns: bool,
     /// Sets the path for any extra files must be created due to the presence of inlined functions.
     #[arg(long, requires = "experimental", value_name = "PATH")]
-    wrap_non_extern_fns_path: Option<String>,
+    wrap_non_extern_fns_path: Option<PathBuf>,
     /// Sets the suffix added to the extern wrapper functions generated for inlined functions.
     #[arg(long, requires = "experimental", value_name = "SUFFIX")]
     wrap_non_extern_fns_suffix: Option<String>,
