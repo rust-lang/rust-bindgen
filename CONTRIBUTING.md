@@ -8,7 +8,6 @@ and introduce yourself.
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
 - [Code of Conduct](#code-of-conduct)
 - [Filing an Issue](#filing-an-issue)
 - [Looking to Start Contributing to `bindgen`?](#looking-to-start-contributing-to-bindgen)
@@ -24,6 +23,7 @@ and introduce yourself.
   - [Fuzzing `bindgen` with `csmith`](#fuzzing-bindgen-with-csmith)
   - [Property tests for `bindgen` with `quickchecking`](#property-tests-for-bindgen-with-quickchecking)
 - [Code Overview](#code-overview)
+  - [Implementing new options using `syn`](#implementing-new-options-using-syn)
 - [Pull Requests and Code Reviews](#pull-requests-and-code-reviews)
 - [Generating Graphviz Dot Files](#generating-graphviz-dot-files)
 - [Debug Logging](#debug-logging)
@@ -31,6 +31,11 @@ and introduce yourself.
   - [Getting `creduce`](#getting-creduce)
   - [Isolating Your Test Case](#isolating-your-test-case)
   - [Writing a Predicate Script](#writing-a-predicate-script)
+- [Cutting a new bindgen release](#cutting-a-new-bindgen-release)
+  - [Updating the changelog](#updating-the-changelog)
+  - [Bumping the version numbers.](#bumping-the-version-numbers)
+  - [Merge to `main`](#merge-to-main)
+  - [Publish and add a git tag for the right commit](#publish-and-add-a-git-tag-for-the-right-commit)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
