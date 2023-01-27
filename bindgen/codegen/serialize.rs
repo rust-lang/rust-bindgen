@@ -35,78 +35,69 @@ impl CItem {
         function: &Function,
         ctx: &BindgenContext,
     ) -> Result<Self, Error> {
-        match function.kind() {
-            FunctionKind::Function => {
-                let signature_type = ctx.resolve_type(function.signature());
-                match signature_type.kind() {
-                    TypeKind::Function(signature) => {
-                        let mut code = String::new();
-
-                        let mut count = 0;
-
-                        let name = function.name();
-                        let args = signature
-                            .argument_types()
-                            .iter()
-                            .cloned()
-                            .map(|(opt_name, type_id)| {
-                                (
-                                    opt_name.unwrap_or_else(|| {
-                                        let name = format!("arg_{}", count);
-                                        count += 1;
-                                        name
-                                    }),
-                                    type_id,
-                                )
-                            })
-                            .collect::<Vec<_>>();
-
-                        serialize_type(
-                            signature.return_type(),
-                            ctx,
-                            &mut code,
-                        )?;
-                        write!(
-                            code,
-                            " {}{}(",
-                            name,
-                            ctx.options()
-                                .wrap_non_extern_fns_suffix
-                                .as_deref()
-                                .unwrap_or(DEFAULT_NON_EXTERN_FNS_SUFFIX)
-                        )?;
-                        serialize_sep(
-                            ", ",
-                            args.iter(),
-                            ctx,
-                            &mut code,
-                            |(name, type_id), ctx, buf| {
-                                serialize_type(*type_id, ctx, buf)?;
-                                write!(buf, " {}", name).map_err(Error::from)
-                            },
-                        )?;
-                        write!(code, ") {{ return {}(", name)?;
-                        serialize_sep(
-                            ", ",
-                            args.iter(),
-                            ctx,
-                            &mut code,
-                            |(name, _), _, buf| {
-                                write!(buf, "{}", name).map_err(Error::from)
-                            },
-                        )?;
-                        write!(code, "); }}")?;
-
-                        Ok(Self { code })
-                    }
-                    _ => unreachable!(),
-                }
-            }
-            function_kind => Err(Error::Serialize(format!(
+        if function.kind() != FunctionKind::Function {
+            return Err(Error::Serialize(format!(
                 "Cannot serialize function kind {:?}",
-                function_kind
-            ))),
+                function.kind()
+            )));
         }
+        let signature = match ctx.resolve_type(function.signature()).kind() {
+            TypeKind::Function(signature) => signature,
+            _ => unreachable!(),
+        };
+
+        let mut code = String::new();
+
+        let mut count = 0;
+
+        let name = function.name();
+        let args = signature
+            .argument_types()
+            .iter()
+            .cloned()
+            .map(|(opt_name, type_id)| {
+                (
+                    opt_name.unwrap_or_else(|| {
+                        let name = format!("arg_{}", count);
+                        count += 1;
+                        name
+                    }),
+                    type_id,
+                )
+            })
+            .collect::<Vec<_>>();
+
+        serialize_type(signature.return_type(), ctx, &mut code)?;
+        write!(
+            code,
+            " {}{}(",
+            name,
+            ctx.options()
+                .wrap_non_extern_fns_suffix
+                .as_deref()
+                .unwrap_or(DEFAULT_NON_EXTERN_FNS_SUFFIX)
+        )?;
+        serialize_sep(
+            ", ",
+            args.iter(),
+            ctx,
+            &mut code,
+            |(name, type_id), ctx, buf| {
+                serialize_type(*type_id, ctx, buf)?;
+                write!(buf, " {}", name).map_err(Error::from)
+            },
+        )?;
+        write!(code, ") {{ return {}(", name)?;
+        serialize_sep(
+            ", ",
+            args.iter(),
+            ctx,
+            &mut code,
+            |(name, _), _, buf| write!(buf, "{}", name).map_err(Error::from),
+        )?;
+        write!(code, "); }}")?;
+
+        Ok(Self { code })
     }
 
     pub(crate) fn code(&self) -> &str {
