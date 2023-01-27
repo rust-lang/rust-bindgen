@@ -1,4 +1,4 @@
-// bindgen-flags: --experimental --wrap-non-extern-fns
+// bindgen-flags: --experimental --wrap-static-fns
 
 static inline int foo() {
     return 11;

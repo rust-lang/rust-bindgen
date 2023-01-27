@@ -94,9 +94,6 @@ pub struct Function {
 
     /// The linkage of the function.
     linkage: Linkage,
-
-    /// Is this function inlined?.
-    is_inlined_function: bool,
 }
 
 impl Function {
@@ -108,7 +105,6 @@ impl Function {
         comment: Option<String>,
         kind: FunctionKind,
         linkage: Linkage,
-        is_inlined_function: bool,
     ) -> Self {
         Function {
             name,
@@ -117,7 +113,6 @@ impl Function {
             comment,
             kind,
             linkage,
-            is_inlined_function,
         }
     }
 
@@ -149,11 +144,6 @@ impl Function {
     /// Get this function's linkage.
     pub fn linkage(&self) -> Linkage {
         self.linkage
-    }
-
-    /// Is this function inlined?
-    pub fn is_inlined_function(&self) -> bool {
-        self.is_inlined_function
     }
 }
 
@@ -696,7 +686,7 @@ impl ClangSubItemParser for Function {
                 .map_or(false, |x| x.is_inlined_function())
         {
             if !context.options().generate_inline_functions &&
-                !context.options().wrap_non_extern_fns
+                !context.options().wrap_static_fns
             {
                 return Err(ParseError::Continue);
             }
@@ -705,7 +695,8 @@ impl ClangSubItemParser for Function {
                 return Err(ParseError::Continue);
             }
 
-            if context.options().wrap_non_extern_fns &&
+            // We cannot handle `inline` functions that are not `static`.
+            if context.options().wrap_static_fns &&
                 cursor.is_inlined_function() &&
                 matches!(linkage, Linkage::External)
             {
@@ -752,7 +743,6 @@ impl ClangSubItemParser for Function {
             comment,
             kind,
             linkage,
-            cursor.is_inlined_function(),
         );
 
         Ok(ParseResult::New(function, Some(cursor)))

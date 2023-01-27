@@ -73,7 +73,7 @@ impl CItem {
             " {}{}(",
             name,
             ctx.options()
-                .wrap_non_extern_fns_suffix
+                .wrap_static_fns_suffix
                 .as_deref()
                 .unwrap_or(DEFAULT_NON_EXTERN_FNS_SUFFIX)
         )?;

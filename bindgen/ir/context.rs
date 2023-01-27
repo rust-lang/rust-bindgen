@@ -2793,9 +2793,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         }
     }
 
-    pub(crate) fn wrap_non_extern_fns_suffix(&self) -> &str {
+    pub(crate) fn wrap_static_fns_suffix(&self) -> &str {
         self.options()
-            .wrap_non_extern_fns_suffix
+            .wrap_static_fns_suffix
             .as_deref()
             .unwrap_or(crate::DEFAULT_NON_EXTERN_FNS_SUFFIX)
     }

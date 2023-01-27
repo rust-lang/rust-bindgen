@@ -728,9 +728,9 @@ fn test_extern_generated_headers() {
     println!("Out path is ::: {}", generated_path.display());
 
     let _bindings = Builder::default()
-        .header("tests/headers/wrap-non-extern-fns.h")
-        .wrap_non_extern_fns(true)
-        .wrap_non_extern_fns_path(generated_path.display().to_string())
+        .header("tests/headers/wrap-static-fns.h")
+        .wrap_static_fns(true)
+        .wrap_static_fns_path(generated_path.display().to_string())
         .generate()
         .expect("Failed to generate bindings");
 

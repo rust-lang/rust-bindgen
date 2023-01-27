@@ -4008,7 +4008,7 @@ impl CodeGenerator for Function {
         let is_internal = matches!(self.linkage(), Linkage::Internal);
 
         if is_internal {
-            if ctx.options().wrap_non_extern_fns {
+            if ctx.options().wrap_static_fns {
                 match CItem::from_function(self, ctx) {
                     Ok(c_item) => result.c_items.push(c_item),
                     Err(err) => warn!("Serialization failed: {:?}", err),
@@ -4148,12 +4148,8 @@ impl CodeGenerator for Function {
                 quote! { #[link(wasm_import_module = #name)] }
             });
 
-        if is_internal &&
-            ctx.options().wrap_non_extern_fns &&
-            !has_link_name_attr
-        {
-            let name =
-                canonical_name.clone() + ctx.wrap_non_extern_fns_suffix();
+        if is_internal && ctx.options().wrap_static_fns && !has_link_name_attr {
+            let name = canonical_name.clone() + ctx.wrap_static_fns_suffix();
 
             attributes.push(attributes::link_name(&name));
         }
@@ -4544,7 +4540,7 @@ pub mod utils {
     ) -> Result<(), std::io::Error> {
         let path = context
             .options()
-            .wrap_non_extern_fns_path
+            .wrap_static_fns_path
             .as_ref()
             .map(|path| PathBuf::from(path))
             .unwrap_or_else(|| {

@@ -214,7 +214,7 @@ fn setup_extern_test() {
     let input_header_dir = PathBuf::from("../bindgen-tests/tests/headers/")
         .canonicalize()
         .expect("Cannot canonicalize libdir path");
-    let input_header_file_path = input_header_dir.join("wrap-non-extern-fns.h");
+    let input_header_file_path = input_header_dir.join("wrap-static-fns.h");
     let input_header_file_path_str = input_header_file_path
         .to_str()
         .expect("Path could not be converted to a str");
@@ -223,8 +223,8 @@ fn setup_extern_test() {
     let bindings = Builder::default()
         .header(input_header_file_path_str)
         .parse_callbacks(Box::new(CargoCallbacks))
-        .wrap_non_extern_fns(true)
-        .non_extern_fns_directory(out_path.display().to_string())
+        .wrap_static_fns(true)
+        .static_fns_directory(out_path.display().to_string())
         .generate()
         .expect("Unable to generate bindings");
 

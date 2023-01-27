@@ -658,17 +658,17 @@ impl Builder {
         for callbacks in &self.options.parse_callbacks {
             output_vector.extend(callbacks.cli_args());
         }
-        if self.options.wrap_non_extern_fns {
-            output_vector.push("--wrap-non-extern-fns".into())
+        if self.options.wrap_static_fns {
+            output_vector.push("--wrap-static-fns".into())
         }
 
-        if let Some(ref path) = self.options.wrap_non_extern_fns_path {
-            output_vector.push("--wrap-non-extern-fns-path".into());
+        if let Some(ref path) = self.options.wrap_static_fns_path {
+            output_vector.push("--wrap-static-fns-path".into());
             output_vector.push(path.display().to_string());
         }
 
-        if let Some(ref suffix) = self.options.wrap_non_extern_fns_suffix {
-            output_vector.push("--wrap-non-extern-fns-suffix".into());
+        if let Some(ref suffix) = self.options.wrap_static_fns_suffix {
+            output_vector.push("--wrap-static-fns-suffix".into());
             output_vector.push(suffix.clone());
         }
 
@@ -1810,30 +1810,26 @@ impl Builder {
     #[cfg(feature = "experimental")]
     /// Whether to generate extern wrappers for `static` and `static inline` functions. Defaults to
     /// false.
-    pub fn wrap_non_extern_fns(mut self, doit: bool) -> Self {
-        self.options.wrap_non_extern_fns = doit;
+    pub fn wrap_static_fns(mut self, doit: bool) -> Self {
+        self.options.wrap_static_fns = doit;
         self
     }
 
     #[cfg(feature = "experimental")]
     /// Set the path for the source code file that would be created if any wrapper functions must
-    /// be generated due to the presence of non-extern functions.
+    /// be generated due to the presence of static functions.
     ///
     /// Bindgen will automatically add the right extension to the header and source code files.
-    pub fn wrap_non_extern_fns_path<T: AsRef<Path>>(mut self, path: T) -> Self {
-        self.options.wrap_non_extern_fns_path = Some(path.as_ref().to_owned());
+    pub fn wrap_static_fns_path<T: AsRef<Path>>(mut self, path: T) -> Self {
+        self.options.wrap_static_fns_path = Some(path.as_ref().to_owned());
         self
     }
 
     #[cfg(feature = "experimental")]
     /// Set the suffix added to the extern wrapper functions generated for `static` and `static
     /// inline` functions.
-    pub fn wrap_non_extern_fns_suffix<T: AsRef<str>>(
-        mut self,
-        suffix: T,
-    ) -> Self {
-        self.options.wrap_non_extern_fns_suffix =
-            Some(suffix.as_ref().to_owned());
+    pub fn wrap_static_fns_suffix<T: AsRef<str>>(mut self, suffix: T) -> Self {
+        self.options.wrap_static_fns_suffix = Some(suffix.as_ref().to_owned());
         self
     }
 }
@@ -2177,11 +2173,11 @@ struct BindgenOptions {
     /// Whether to wrap unsafe operations in unsafe blocks or not.
     wrap_unsafe_ops: bool,
 
-    wrap_non_extern_fns: bool,
+    wrap_static_fns: bool,
 
-    wrap_non_extern_fns_suffix: Option<String>,
+    wrap_static_fns_suffix: Option<String>,
 
-    wrap_non_extern_fns_path: Option<PathBuf>,
+    wrap_static_fns_path: Option<PathBuf>,
 }
 
 impl BindgenOptions {
@@ -2374,9 +2370,9 @@ impl Default for BindgenOptions {
             merge_extern_blocks,
             abi_overrides,
             wrap_unsafe_ops,
-            wrap_non_extern_fns,
-            wrap_non_extern_fns_suffix,
-            wrap_non_extern_fns_path,
+            wrap_static_fns,
+            wrap_static_fns_suffix,
+            wrap_static_fns_path,
         }
     }
 }

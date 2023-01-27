@@ -355,15 +355,15 @@ struct BindgenCommand {
     with_derive_custom_union: Vec<String>,
     /// Generate wrappers for `static` and `static inline` functions.
     #[arg(long, requires = "experimental")]
-    wrap_non_extern_fns: bool,
+    wrap_static_fns: bool,
     /// Sets the path for the source file that must be created due to the presence of `static` and
     /// `static inline` functions.
     #[arg(long, requires = "experimental", value_name = "PATH")]
-    wrap_non_extern_fns_path: Option<PathBuf>,
+    wrap_static_fns_path: Option<PathBuf>,
     /// Sets the suffix added to the extern wrapper functions generated for `static` and `static
     /// inline` functions.
     #[arg(long, requires = "experimental", value_name = "SUFFIX")]
-    wrap_non_extern_fns_suffix: Option<String>,
+    wrap_static_fns_suffix: Option<String>,
     /// Enables experimental features.
     #[arg(long)]
     experimental: bool,
@@ -487,9 +487,9 @@ where
         with_derive_custom_struct,
         with_derive_custom_enum,
         with_derive_custom_union,
-        wrap_non_extern_fns,
-        wrap_non_extern_fns_path,
-        wrap_non_extern_fns_suffix,
+        wrap_static_fns,
+        wrap_static_fns_path,
+        wrap_static_fns_suffix,
         experimental: _,
         version,
         clang_args,
@@ -996,16 +996,16 @@ where
         }
     }
 
-    if wrap_non_extern_fns {
-        builder = builder.wrap_non_extern_fns(true);
+    if wrap_static_fns {
+        builder = builder.wrap_static_fns(true);
     }
 
-    if let Some(path) = wrap_non_extern_fns_path {
-        builder = builder.wrap_non_extern_fns_path(path);
+    if let Some(path) = wrap_static_fns_path {
+        builder = builder.wrap_static_fns_path(path);
     }
 
-    if let Some(suffix) = wrap_non_extern_fns_suffix {
-        builder = builder.wrap_non_extern_fns_suffix(suffix);
+    if let Some(suffix) = wrap_static_fns_suffix {
+        builder = builder.wrap_static_fns_suffix(suffix);
     }
 
     Ok((builder, output, verbose))
