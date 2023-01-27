@@ -353,13 +353,15 @@ struct BindgenCommand {
     /// Derive custom traits on a `union`. The <CUSTOM> value must be of the shape <REGEX>=<DERIVE> where <DERIVE> is a coma-separated list of derive macros.
     #[arg(long, value_name = "CUSTOM")]
     with_derive_custom_union: Vec<String>,
-    /// Generate extern wrappers for inlined functions
+    /// Generate wrappers for `static` and `static inline` functions.
     #[arg(long, requires = "experimental")]
     wrap_non_extern_fns: bool,
-    /// Sets the path for any extra files must be created due to the presence of inlined functions.
+    /// Sets the path for the source file that must be created due to the presence of `static` and
+    /// `static inline` functions.
     #[arg(long, requires = "experimental", value_name = "PATH")]
     wrap_non_extern_fns_path: Option<PathBuf>,
-    /// Sets the suffix added to the extern wrapper functions generated for inlined functions.
+    /// Sets the suffix added to the extern wrapper functions generated for `static` and `static
+    /// inline` functions.
     #[arg(long, requires = "experimental", value_name = "SUFFIX")]
     wrap_non_extern_fns_suffix: Option<String>,
     /// Enables experimental features.

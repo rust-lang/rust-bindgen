@@ -1808,15 +1808,16 @@ impl Builder {
     }
 
     #[cfg(feature = "experimental")]
-    /// Whether to generate extern wrappers for inline functions. Defaults to false.
+    /// Whether to generate extern wrappers for `static` and `static inline` functions. Defaults to
+    /// false.
     pub fn wrap_non_extern_fns(mut self, doit: bool) -> Self {
         self.options.wrap_non_extern_fns = doit;
         self
     }
 
     #[cfg(feature = "experimental")]
-    /// Set the path of the header and source code files that would be created if any extern
-    /// wrapper functions must be generated due to the presence of non-extern functions.
+    /// Set the path for the source code file that would be created if any wrapper functions must
+    /// be generated due to the presence of non-extern functions.
     ///
     /// Bindgen will automatically add the right extension to the header and source code files.
     pub fn wrap_non_extern_fns_path<T: AsRef<Path>>(mut self, path: T) -> Self {
@@ -1825,7 +1826,8 @@ impl Builder {
     }
 
     #[cfg(feature = "experimental")]
-    /// Set the suffix added to the extern wrapper functions generated for inlined functions.
+    /// Set the suffix added to the extern wrapper functions generated for `static` and `static
+    /// inline` functions.
     pub fn wrap_non_extern_fns_suffix<T: AsRef<str>>(
         mut self,
         suffix: T,

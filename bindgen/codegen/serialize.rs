@@ -27,7 +27,6 @@ impl From<String> for Error {
 
 #[derive(Debug)]
 pub(crate) struct CItem {
-    header: String,
     code: String,
 }
 
@@ -41,7 +40,7 @@ impl CItem {
                 let signature_type = ctx.resolve_type(function.signature());
                 match signature_type.kind() {
                     TypeKind::Function(signature) => {
-                        let mut buf = String::new();
+                        let mut code = String::new();
 
                         let mut count = 0;
 
@@ -62,9 +61,13 @@ impl CItem {
                             })
                             .collect::<Vec<_>>();
 
-                        serialize_type(signature.return_type(), ctx, &mut buf)?;
+                        serialize_type(
+                            signature.return_type(),
+                            ctx,
+                            &mut code,
+                        )?;
                         write!(
-                            buf,
+                            code,
                             " {}{}(",
                             name,
                             ctx.options()
@@ -76,29 +79,25 @@ impl CItem {
                             ", ",
                             args.iter(),
                             ctx,
-                            &mut buf,
+                            &mut code,
                             |(name, type_id), ctx, buf| {
                                 serialize_type(*type_id, ctx, buf)?;
                                 write!(buf, " {}", name).map_err(Error::from)
                             },
                         )?;
-                        write!(buf, ")")?;
-
-                        let header = format!("{};", buf);
-
-                        write!(buf, " {{ return {}(", name)?;
+                        write!(code, ") {{ return {}(", name)?;
                         serialize_sep(
                             ", ",
                             args.iter(),
                             ctx,
-                            &mut buf,
+                            &mut code,
                             |(name, _), _, buf| {
                                 write!(buf, "{}", name).map_err(Error::from)
                             },
                         )?;
-                        write!(buf, "); }}")?;
+                        write!(code, "); }}")?;
 
-                        Ok(Self { header, code: buf })
+                        Ok(Self { code })
                     }
                     _ => unreachable!(),
                 }
@@ -108,10 +107,6 @@ impl CItem {
                 function_kind
             ))),
         }
-    }
-
-    pub(crate) fn header(&self) -> &str {
-        self.header.as_ref()
     }
 
     pub(crate) fn code(&self) -> &str {

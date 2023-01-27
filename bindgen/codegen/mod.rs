@@ -4564,15 +4564,11 @@ pub mod utils {
                 .iter()
                 .any(|h| file_is_cpp(h));
 
-        let headers_path =
-            path.with_extension(if is_cpp { "hpp" } else { "h" });
         let source_path = path.with_extension(if is_cpp { "cpp" } else { "c" });
 
-        let mut headers_file = File::create(&headers_path)?;
         let mut source_file = File::create(source_path)?;
 
         for item in &result.c_items {
-            writeln!(headers_file, "{}", item.header())?;
             writeln!(source_file, "{}", item.code())?;
         }
 
