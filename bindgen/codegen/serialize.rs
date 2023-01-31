@@ -67,16 +67,17 @@ impl CItem {
             })
             .collect::<Vec<_>>();
 
-        serialize_type(signature.return_type(), ctx, &mut code)?;
-        write!(
-            code,
-            " {}{}(",
+        let wrap_name = format!(
+            "{}{}",
             name,
             ctx.options()
                 .wrap_static_fns_suffix
                 .as_deref()
                 .unwrap_or(DEFAULT_NON_EXTERN_FNS_SUFFIX)
-        )?;
+        );
+
+        serialize_type(signature.return_type(), ctx, &mut code)?;
+        write!(code, " {}(", wrap_name)?;
         serialize_sep(
             ", ",
             args.iter(),
@@ -87,6 +88,17 @@ impl CItem {
                 write!(buf, " {}", name).map_err(Error::from)
             },
         )?;
+        writeln!(code, ") asm(\"{}\");", wrap_name)?;
+
+        write!(code, "{}(", wrap_name)?;
+        serialize_sep(
+            ", ",
+            args.iter(),
+            ctx,
+            &mut code,
+            |(name, _), _, buf| write!(buf, "{}", name).map_err(Error::from),
+        )?;
+
         write!(code, ") {{ return {}(", name)?;
         serialize_sep(
             ", ",
