@@ -224,7 +224,7 @@ fn setup_extern_test() {
         .header(input_header_file_path_str)
         .parse_callbacks(Box::new(CargoCallbacks))
         .wrap_static_fns(true)
-        .static_fns_directory(out_path.display().to_string())
+        .wrap_static_fns_path(out_path.join("extern").display().to_string())
         .generate()
         .expect("Unable to generate bindings");
 
