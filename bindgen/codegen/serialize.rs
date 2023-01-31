@@ -1,125 +1,219 @@
-use std::fmt::{self, Write};
+use std::io::{self, Write};
 
 use crate::callbacks::IntKind;
-use crate::DEFAULT_NON_EXTERN_FNS_SUFFIX;
 
 use crate::ir::context::{BindgenContext, TypeId};
 use crate::ir::function::{Function, FunctionKind};
-use crate::ir::ty::{FloatKind, TypeKind};
+use crate::ir::item::Item;
+use crate::ir::item_kind::ItemKind;
+use crate::ir::ty::{FloatKind, Type, TypeKind};
 
-#[derive(Debug)]
-pub(crate) enum Error {
-    Serialize(String),
-    Fmt(fmt::Error),
-}
-
-impl From<fmt::Error> for Error {
-    fn from(err: fmt::Error) -> Self {
-        Self::Fmt(err)
-    }
-}
-
-impl From<String> for Error {
-    fn from(err: String) -> Self {
-        Self::Serialize(err)
-    }
-}
-
-#[derive(Debug)]
-pub(crate) struct CItem {
-    code: String,
-}
-
-impl CItem {
-    pub(crate) fn from_function(
-        function: &Function,
+pub(crate) trait CSerialize {
+    fn serialize<W: Write>(
+        &self,
         ctx: &BindgenContext,
-    ) -> Result<Self, Error> {
-        if function.kind() != FunctionKind::Function {
-            return Err(Error::Serialize(format!(
-                "Cannot serialize function kind {:?}",
-                function.kind()
-            )));
+        writer: &mut W,
+    ) -> io::Result<()>;
+}
+
+impl CSerialize for Item {
+    fn serialize<W: Write>(
+        &self,
+        ctx: &BindgenContext,
+        writer: &mut W,
+    ) -> io::Result<()> {
+        match self.kind() {
+            ItemKind::Function(func) => func.serialize(ctx, writer),
+            kind => {
+                return Err(io::Error::new(
+                    io::ErrorKind::Other,
+                    format!("Cannot serialize item kind {:?}", kind),
+                ));
+            }
         }
-        let signature = match ctx.resolve_type(function.signature()).kind() {
+    }
+}
+
+impl CSerialize for Function {
+    fn serialize<W: Write>(
+        &self,
+        ctx: &BindgenContext,
+        writer: &mut W,
+    ) -> io::Result<()> {
+        if self.kind() != FunctionKind::Function {
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                format!("Cannot serialize function kind {:?}", self.kind()),
+            ));
+        }
+
+        let signature = match ctx.resolve_type(self.signature()).kind() {
             TypeKind::Function(signature) => signature,
             _ => unreachable!(),
         };
 
-        let mut code = String::new();
+        let name = self.name();
 
-        let mut count = 0;
+        // Function argoments stored as `(name, type_id)` tuples.
+        let args = {
+            let mut count = 0;
 
-        let name = function.name();
-        let args = signature
-            .argument_types()
-            .iter()
-            .cloned()
-            .map(|(opt_name, type_id)| {
-                (
-                    opt_name.unwrap_or_else(|| {
-                        let name = format!("arg_{}", count);
-                        count += 1;
-                        name
-                    }),
-                    type_id,
-                )
-            })
-            .collect::<Vec<_>>();
+            signature
+                .argument_types()
+                .iter()
+                .cloned()
+                .map(|(opt_name, type_id)| {
+                    (
+                        opt_name.unwrap_or_else(|| {
+                            let name = format!("arg_{}", count);
+                            count += 1;
+                            name
+                        }),
+                        type_id,
+                    )
+                })
+                .collect::<Vec<_>>()
+        };
 
-        let wrap_name = format!(
-            "{}{}",
-            name,
-            ctx.options()
-                .wrap_static_fns_suffix
-                .as_deref()
-                .unwrap_or(DEFAULT_NON_EXTERN_FNS_SUFFIX)
-        );
+        // The name used for the wrapper self.
+        let wrap_name = format!("{}{}", name, ctx.wrap_static_fns_suffix());
 
-        serialize_type(signature.return_type(), ctx, &mut code)?;
-        write!(code, " {}(", wrap_name)?;
+        // Write `ret_ty wrap_name(args) asm("wrap_name");`
+        signature.return_type().serialize(ctx, writer)?;
+        write!(writer, " {}(", wrap_name)?;
         serialize_sep(
             ", ",
             args.iter(),
             ctx,
-            &mut code,
+            writer,
             |(name, type_id), ctx, buf| {
-                serialize_type(*type_id, ctx, buf)?;
-                write!(buf, " {}", name).map_err(Error::from)
+                type_id.serialize(ctx, buf)?;
+                write!(buf, " {}", name)
             },
         )?;
-        writeln!(code, ") asm(\"{}\");", wrap_name)?;
+        writeln!(writer, ") asm(\"{}\");", wrap_name)?;
 
-        write!(code, "{}(", wrap_name)?;
-        serialize_sep(
-            ", ",
-            args.iter(),
-            ctx,
-            &mut code,
-            |(name, _), _, buf| write!(buf, "{}", name).map_err(Error::from),
-        )?;
+        // Write `wrap_name(arg_names) { return name(arg_names)' }`
+        write!(writer, "{}(", wrap_name)?;
+        serialize_sep(", ", args.iter(), ctx, writer, |(name, _), _, buf| {
+            write!(buf, "{}", name)
+        })?;
+        write!(writer, ") {{ return {}(", name)?;
+        serialize_sep(", ", args.iter(), ctx, writer, |(name, _), _, buf| {
+            write!(buf, "{}", name)
+        })?;
+        writeln!(writer, "); }}")?;
 
-        write!(code, ") {{ return {}(", name)?;
-        serialize_sep(
-            ", ",
-            args.iter(),
-            ctx,
-            &mut code,
-            |(name, _), _, buf| write!(buf, "{}", name).map_err(Error::from),
-        )?;
-        write!(code, "); }}")?;
-
-        Ok(Self { code })
+        Ok(())
     }
+}
 
-    pub(crate) fn code(&self) -> &str {
-        self.code.as_ref()
+impl CSerialize for TypeId {
+    fn serialize<W: Write>(
+        &self,
+        ctx: &BindgenContext,
+        writer: &mut W,
+    ) -> io::Result<()> {
+        ctx.resolve_type(*self).serialize(ctx, writer)
+    }
+}
+
+impl CSerialize for Type {
+    fn serialize<W: Write>(
+        &self,
+        ctx: &BindgenContext,
+        writer: &mut W,
+    ) -> io::Result<()> {
+        match self.kind() {
+            TypeKind::Void => write!(writer, "void")?,
+            TypeKind::NullPtr => write!(writer, "nullptr_t")?,
+            TypeKind::Int(int_kind) => match int_kind {
+                IntKind::Bool => write!(writer, "bool")?,
+                IntKind::SChar => write!(writer, "signed char")?,
+                IntKind::UChar => write!(writer, "unsigned char")?,
+                IntKind::WChar => write!(writer, "wchar_t")?,
+                IntKind::Short => write!(writer, "short")?,
+                IntKind::UShort => write!(writer, "unsigned short")?,
+                IntKind::Int => write!(writer, "int")?,
+                IntKind::UInt => write!(writer, "unsigned int")?,
+                IntKind::Long => write!(writer, "long")?,
+                IntKind::ULong => write!(writer, "unsigned long")?,
+                IntKind::LongLong => write!(writer, "long long")?,
+                IntKind::ULongLong => write!(writer, "unsigned long long")?,
+                int_kind => {
+                    return Err(io::Error::new(
+                        io::ErrorKind::Other,
+                        format!("Cannot serialize integer kind {:?}", int_kind),
+                    ))
+                }
+            },
+            TypeKind::Float(float_kind) => match float_kind {
+                FloatKind::Float => write!(writer, "float")?,
+                FloatKind::Double => write!(writer, "double")?,
+                FloatKind::LongDouble => write!(writer, "long double")?,
+                FloatKind::Float128 => write!(writer, "__float128")?,
+            },
+            TypeKind::Complex(float_kind) => match float_kind {
+                FloatKind::Float => write!(writer, "float complex")?,
+                FloatKind::Double => write!(writer, "double complex")?,
+                FloatKind::LongDouble => write!(writer, "long double complex")?,
+                FloatKind::Float128 => write!(writer, "__complex128")?,
+            },
+            TypeKind::Alias(type_id) => { type_id.serialize(ctx, writer) }?,
+            TypeKind::TemplateAlias(type_id, params) => {
+                type_id.serialize(ctx, writer)?;
+                write!(writer, "<")?;
+                serialize_sep(
+                    ", ",
+                    params.iter(),
+                    ctx,
+                    writer,
+                    TypeId::serialize,
+                )?;
+                write!(writer, ">")?
+            }
+            TypeKind::Array(type_id, length) => {
+                type_id.serialize(ctx, writer)?;
+                write!(writer, " [{}]", length)?
+            }
+            TypeKind::Function(signature) => {
+                signature.return_type().serialize(ctx, writer)?;
+                write!(writer, " (")?;
+                serialize_sep(
+                    ", ",
+                    signature.argument_types().iter(),
+                    ctx,
+                    writer,
+                    |(name, type_id), ctx, buf| {
+                        type_id.serialize(ctx, buf)?;
+
+                        if let Some(name) = name {
+                            write!(buf, "{}", name)?;
+                        }
+
+                        Ok(())
+                    },
+                )?;
+                write!(writer, ")")?
+            }
+            TypeKind::ResolvedTypeRef(type_id) => {
+                type_id.serialize(ctx, writer)?
+            }
+            ty => {
+                return Err(io::Error::new(
+                    io::ErrorKind::Other,
+                    format!("Cannot serialize type kind {:?}", ty),
+                ))
+            }
+        };
+
+        Ok(())
     }
 }
 
 fn serialize_sep<
-    W: fmt::Write,
-    F: Fn(I::Item, &BindgenContext, &mut W) -> Result<(), Error>,
+    W: io::Write,
+    F: Fn(I::Item, &BindgenContext, &mut W) -> io::Result<()>,
     I: Iterator,
 >(
     sep: &'static str,
@@ -127,106 +221,14 @@ fn serialize_sep<
     ctx: &BindgenContext,
     buf: &mut W,
     f: F,
-) -> Result<(), Error> {
+) -> io::Result<()> {
     if let Some(item) = iter.next() {
         f(item, ctx, buf)?;
-
         for item in iter {
             write!(buf, "{}", sep)?;
             f(item, ctx, buf)?;
         }
     }
-
-    Ok(())
-}
-
-fn serialize_type<W: fmt::Write>(
-    type_id: TypeId,
-    ctx: &BindgenContext,
-    buf: &mut W,
-) -> Result<(), Error> {
-    match ctx.resolve_type(type_id).kind() {
-        TypeKind::Void => write!(buf, "void")?,
-        TypeKind::NullPtr => write!(buf, "nullptr_t")?,
-        TypeKind::Int(int_kind) => match int_kind {
-            IntKind::Bool => write!(buf, "bool")?,
-            IntKind::SChar => write!(buf, "signed char")?,
-            IntKind::UChar => write!(buf, "unsigned char")?,
-            IntKind::WChar => write!(buf, "wchar_t")?,
-            IntKind::Short => write!(buf, "short")?,
-            IntKind::UShort => write!(buf, "unsigned short")?,
-            IntKind::Int => write!(buf, "int")?,
-            IntKind::UInt => write!(buf, "unsigned int")?,
-            IntKind::Long => write!(buf, "long")?,
-            IntKind::ULong => write!(buf, "unsigned long")?,
-            IntKind::LongLong => write!(buf, "long long")?,
-            IntKind::ULongLong => write!(buf, "unsigned long long")?,
-            int_kind => {
-                return Err(Error::Serialize(format!(
-                    "Cannot serialize integer kind {:?}",
-                    int_kind
-                )))
-            }
-        },
-        TypeKind::Float(float_kind) => match float_kind {
-            FloatKind::Float => write!(buf, "float")?,
-            FloatKind::Double => write!(buf, "double")?,
-            FloatKind::LongDouble => write!(buf, "long double")?,
-            FloatKind::Float128 => write!(buf, "__float128")?,
-        },
-        TypeKind::Complex(float_kind) => match float_kind {
-            FloatKind::Float => write!(buf, "float complex")?,
-            FloatKind::Double => write!(buf, "double complex")?,
-            FloatKind::LongDouble => write!(buf, "long double complex")?,
-            FloatKind::Float128 => write!(buf, "__complex128")?,
-        },
-        TypeKind::Alias(type_id) => serialize_type(*type_id, ctx, buf)?,
-        TypeKind::TemplateAlias(type_id, params) => {
-            serialize_type(*type_id, ctx, buf)?;
-            write!(buf, "<")?;
-            serialize_sep(
-                ", ",
-                params.iter().copied(),
-                ctx,
-                buf,
-                serialize_type,
-            )?;
-            write!(buf, ">")?
-        }
-        TypeKind::Array(type_id, length) => {
-            serialize_type(*type_id, ctx, buf)?;
-            write!(buf, " [{}]", length)?
-        }
-        TypeKind::Function(signature) => {
-            serialize_type(signature.return_type(), ctx, buf)?;
-            write!(buf, " (")?;
-            serialize_sep(
-                ", ",
-                signature.argument_types().iter(),
-                ctx,
-                buf,
-                |(name, type_id), ctx, buf| {
-                    serialize_type(*type_id, ctx, buf)?;
-
-                    if let Some(name) = name {
-                        write!(buf, "{}", name)?;
-                    }
-
-                    Ok(())
-                },
-            )?;
-            write!(buf, ")")?
-        }
-        TypeKind::ResolvedTypeRef(type_id) => {
-            serialize_type(*type_id, ctx, buf)?
-        }
-        ty => {
-            return Err(Error::Serialize(format!(
-                "Cannot serialize type kind {:?}",
-                ty
-            )))
-        }
-    };
 
     Ok(())
 }

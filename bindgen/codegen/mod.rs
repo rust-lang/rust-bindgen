@@ -47,7 +47,6 @@ use crate::ir::template::{
 };
 use crate::ir::ty::{Type, TypeKind};
 use crate::ir::var::Var;
-use serialize::CItem;
 
 use proc_macro2::{self, Ident, Span};
 use quote::TokenStreamExt;
@@ -244,7 +243,7 @@ struct CodegenResult<'a> {
     /// that name. This lets us give each overload a unique suffix.
     overload_counters: HashMap<String, u32>,
 
-    c_items: Vec<CItem>,
+    items_to_serialize: Vec<ItemId>,
 }
 
 impl<'a> CodegenResult<'a> {
@@ -262,7 +261,7 @@ impl<'a> CodegenResult<'a> {
             functions_seen: Default::default(),
             vars_seen: Default::default(),
             overload_counters: Default::default(),
-            c_items: Default::default(),
+            items_to_serialize: Default::default(),
         }
     }
 
@@ -307,7 +306,7 @@ impl<'a> CodegenResult<'a> {
     }
 
     /// Get the overload number for the given function name. Increments the
-    /// counter internally so the next time we ask for the overload for this
+    /// counter internally so the next time we ask for the loverload for this
     /// name, we get the incremented value, and so on.
     fn overload_number(&mut self, name: &str) -> u32 {
         let counter = self.overload_counters.entry(name.into()).or_insert(0);
@@ -4009,10 +4008,7 @@ impl CodeGenerator for Function {
 
         if is_internal {
             if ctx.options().wrap_static_fns {
-                match CItem::from_function(self, ctx) {
-                    Ok(c_item) => result.c_items.push(c_item),
-                    Err(err) => warn!("Serialization failed: {:?}", err),
-                }
+                result.items_to_serialize.push(item.id());
             } else {
                 // We can't do anything with Internal functions if we are not wrapping them so just
                 // avoid generating anything for them.
@@ -4508,8 +4504,8 @@ pub(crate) fn codegen(
             result.push(dynamic_items_tokens);
         }
 
-        if !result.c_items.is_empty() {
-            match utils::serialize_c_items(&result, &context) {
+        if !result.items_to_serialize.is_empty() {
+            match utils::serialize_items(&result, &context) {
                 Ok(()) => (),
                 Err(err) => warn!("Could not serialize C items: {}", err),
             }
@@ -4520,6 +4516,7 @@ pub(crate) fn codegen(
 }
 
 pub mod utils {
+    use super::serialize::CSerialize;
     use super::{error, CodegenResult, ToRustTyOrOpaque};
     use crate::ir::context::BindgenContext;
     use crate::ir::function::{Abi, ClangAbi, FunctionSig};
@@ -4529,15 +4526,14 @@ pub mod utils {
     use proc_macro2;
     use std::borrow::Cow;
     use std::fs::File;
-    use std::io::Write;
     use std::mem;
     use std::path::PathBuf;
     use std::str::FromStr;
 
-    pub(super) fn serialize_c_items(
+    pub(super) fn serialize_items(
         result: &CodegenResult,
         context: &BindgenContext,
-    ) -> Result<(), std::io::Error> {
+    ) -> std::io::Result<()> {
         let path = context
             .options()
             .wrap_static_fns_path
@@ -4564,8 +4560,9 @@ pub mod utils {
 
         let mut source_file = File::create(source_path)?;
 
-        for item in &result.c_items {
-            writeln!(source_file, "{}", item.code())?;
+        for &id in &result.items_to_serialize {
+            let item = context.resolve_item(id);
+            item.serialize(context, &mut source_file)?;
         }
 
         Ok(())
