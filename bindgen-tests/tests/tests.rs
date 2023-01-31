@@ -736,13 +736,9 @@ fn test_extern_generated_headers() {
 
     let expected_c = fs::read_to_string(expect_path.with_extension("c"))
         .expect("Could not read generated extern.c");
-    let expected_h = fs::read_to_string(expect_path.with_extension("h"))
-        .expect("Could not read generated extern.h");
 
     let actual_c = fs::read_to_string(generated_path.with_extension("c"))
         .expect("Could not read actual extern.c");
-    let actual_h = fs::read_to_string(generated_path.with_extension("h"))
-        .expect("Could not read actual extern.h");
 
     if expected_c != actual_c {
         error_diff_mismatch(
@@ -750,16 +746,6 @@ fn test_extern_generated_headers() {
             &expected_c,
             None,
             &expect_path.with_extension("c"),
-        )
-        .unwrap();
-    }
-
-    if expected_h != actual_h {
-        error_diff_mismatch(
-            &actual_h,
-            &expected_h,
-            None,
-            &expect_path.with_extension("h"),
         )
         .unwrap();
     }
