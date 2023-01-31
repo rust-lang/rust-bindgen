@@ -736,14 +736,8 @@ impl ClangSubItemParser for Function {
         let mangled_name = cursor_mangling(context, &cursor);
         let comment = cursor.raw_comment();
 
-        let function = Self::new(
-            name.clone(),
-            mangled_name,
-            sig,
-            comment,
-            kind,
-            linkage,
-        );
+        let function =
+            Self::new(name.clone(), mangled_name, sig, comment, kind, linkage);
 
         Ok(ParseResult::New(function, Some(cursor)))
     }
