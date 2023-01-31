@@ -228,7 +228,7 @@ fn setup_extern_test() {
         .generate()
         .expect("Unable to generate bindings");
 
-    println!("cargo:rustc-link-lib=extern"); // tell cargo to link libextern
+    println!("cargo:rustc-link-lib=static=extern"); // tell cargo to link libextern
     println!("bindings generated: {}", bindings);
 
     let obj_path = out_path.join("extern.o");
