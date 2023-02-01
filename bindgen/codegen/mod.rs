@@ -4525,7 +4525,6 @@ pub mod utils {
     use crate::{args_are_cpp, file_is_cpp};
     use proc_macro2;
     use std::borrow::Cow;
-    use std::fs::File;
     use std::mem;
     use std::path::PathBuf;
     use std::str::FromStr;
@@ -4558,12 +4557,14 @@ pub mod utils {
 
         let source_path = path.with_extension(if is_cpp { "cpp" } else { "c" });
 
-        let mut source_file = File::create(source_path)?;
+        let mut code = Vec::new();
 
         for &id in &result.items_to_serialize {
             let item = context.resolve_item(id);
-            item.serialize(context, &mut source_file)?;
+            item.serialize(context, &mut code)?;
         }
+
+        std::fs::write(source_path, code)?;
 
         Ok(())
     }
