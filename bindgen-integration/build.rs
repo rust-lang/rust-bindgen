@@ -205,7 +205,7 @@ fn setup_macro_test() {
     );
 }
 
-fn setup_extern_test() {
+fn setup_wrap_static_fns_test() {
     // GH-1090: https://github.com/rust-lang/rust-bindgen/issues/1090
     // set output directory under /target so it is easy to clean generated files
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
@@ -235,7 +235,7 @@ fn setup_extern_test() {
     let lib_path = out_path.join("libextern.a");
 
     // build the external files to check if they work
-    if !std::process::Command::new("clang")
+    let clang_output = std::process::Command::new("clang")
         .arg("-c")
         .arg("-o")
         .arg(&obj_path)
@@ -243,23 +243,26 @@ fn setup_extern_test() {
         .arg("-include")
         .arg(input_header_file_path)
         .output()
-        .expect("`clang` command error")
-        .status
-        .success()
-    {
-        panic!("Could not compile object file");
+        .expect("`clang` command error");
+    if !clang_output.status.success() {
+        panic!(
+            "Could not compile object file:\n{}",
+            String::from_utf8_lossy(&clang_output.stderr)
+        );
     }
 
-    if !std::process::Command::new("ar")
+    let ar_output = std::process::Command::new("ar")
         .arg("rcs")
         .arg(lib_path)
         .arg(obj_path)
         .output()
-        .expect("`ar` command error")
-        .status
-        .success()
-    {
-        panic!("Could not emit library file");
+        .expect("`ar` command error");
+
+    if !ar_output.status.success() {
+        panic!(
+            "Could not emit library file:\n{}",
+            String::from_utf8_lossy(&ar_output.stderr)
+        );
     }
 
     bindings
@@ -269,5 +272,5 @@ fn setup_extern_test() {
 
 fn main() {
     setup_macro_test();
-    setup_extern_test();
+    setup_wrap_static_fns_test();
 }

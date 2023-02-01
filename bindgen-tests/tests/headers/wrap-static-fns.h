@@ -9,3 +9,7 @@ static int bar() {
 inline int baz() {
     return 2;
 }
+
+static inline int takes_ptr(int* arg) {
+    return *arg + 1;
+}

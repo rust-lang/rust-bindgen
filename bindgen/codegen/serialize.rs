@@ -77,9 +77,11 @@ impl CSerialize for Function {
 
         // The name used for the wrapper self.
         let wrap_name = format!("{}{}", name, ctx.wrap_static_fns_suffix());
+        // The function's return type
+        let ret_ty = signature.return_type();
 
         // Write `ret_ty wrap_name(args) asm("wrap_name");`
-        signature.return_type().serialize(ctx, writer)?;
+        ret_ty.serialize(ctx, writer)?;
         write!(writer, " {}(", wrap_name)?;
         serialize_sep(
             ", ",
@@ -93,11 +95,19 @@ impl CSerialize for Function {
         )?;
         writeln!(writer, ") asm(\"{}\");", wrap_name)?;
 
-        // Write `wrap_name(arg_names) { return name(arg_names)' }`
-        write!(writer, "{}(", wrap_name)?;
-        serialize_sep(", ", args.iter(), ctx, writer, |(name, _), _, buf| {
-            write!(buf, "{}", name)
-        })?;
+        // Write `ret_ty wrap_name(args) { return name(arg_names)' }`
+        ret_ty.serialize(ctx, writer)?;
+        write!(writer, " {}(", wrap_name)?;
+        serialize_sep(
+            ", ",
+            args.iter(),
+            ctx,
+            writer,
+            |(name, type_id), _, buf| {
+                type_id.serialize(ctx, buf)?;
+                write!(buf, "{}", name)
+            },
+        )?;
         write!(writer, ") {{ return {}(", name)?;
         serialize_sep(", ", args.iter(), ctx, writer, |(name, _), _, buf| {
             write!(buf, "{}", name)
@@ -198,6 +208,10 @@ impl CSerialize for Type {
             }
             TypeKind::ResolvedTypeRef(type_id) => {
                 type_id.serialize(ctx, writer)?
+            }
+            TypeKind::Pointer(type_id) => {
+                type_id.serialize(ctx, writer)?;
+                write!(writer, "*")?;
             }
             ty => {
                 return Err(io::Error::new(

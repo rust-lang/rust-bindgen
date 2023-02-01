@@ -292,7 +292,7 @@ fn test_custom_derive() {
 }
 
 #[test]
-fn test_extern_bindings() {
+fn test_wrap_static_fns() {
     // GH-1090: https://github.com/rust-lang/rust-bindgen/issues/1090
     unsafe {
         let f = extern_bindings::foo();
@@ -300,5 +300,8 @@ fn test_extern_bindings() {
 
         let b = extern_bindings::bar();
         assert_eq!(1, b);
+
+        let t = extern_bindings::takes_ptr(&mut 1);
+        assert_eq!(2, t);
     }
 }
