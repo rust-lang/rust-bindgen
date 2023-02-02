@@ -107,7 +107,7 @@ impl CSerialize for Function {
             writer,
             |(name, type_id), _, buf| {
                 type_id.serialize(ctx, buf)?;
-                write!(buf, "{}", name).map_err(From::from)
+                write!(buf, " {}", name).map_err(From::from)
             },
         )?;
         write!(writer, ") {{ return {}(", name)?;
