@@ -4585,7 +4585,7 @@ pub mod utils {
 
         for &id in &result.items_to_serialize {
             let item = context.resolve_item(id);
-            item.serialize(context, item, &mut code)?;
+            item.serialize(context, &(), &mut code)?;
         }
 
         std::fs::write(source_path, code)?;
