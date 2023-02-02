@@ -201,7 +201,11 @@ impl<'a> CSerialize<'a, 'a> for Type {
                 FloatKind::Float128 => write!(writer, "__complex128")?,
             },
             TypeKind::Alias(type_id) => {
-                type_id.serialize(ctx, &mut None, writer)?
+                if let Some(name) = self.name() {
+                    write!(writer, "{}", name)?;
+                } else {
+                    return type_id.serialize(ctx, arg, writer);
+                }
             }
             TypeKind::TemplateAlias(type_id, params) => {
                 type_id.serialize(ctx, &mut None, writer)?;

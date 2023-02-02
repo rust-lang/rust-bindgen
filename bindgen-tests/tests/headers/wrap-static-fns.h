@@ -21,3 +21,9 @@ static inline int takes_fn_ptr(int (*f)(int)) {
 static inline int takes_fn(int (f)(int)) {
     return f(2);
 }
+
+typedef int (func)(int);
+
+static inline int takes_alias(func f) {
+    return f(3);
+}

@@ -308,10 +308,13 @@ fn test_wrap_static_fns() {
             x + 1
         }
 
-        let p = extern_bindings::takes_fn_ptr(Some(function));
-        assert_eq!(2, p);
+        let tp = extern_bindings::takes_fn_ptr(Some(function));
+        assert_eq!(2, tp);
 
-        let f = extern_bindings::takes_fn(Some(function));
-        assert_eq!(3, f);
+        let tf = extern_bindings::takes_fn(Some(function));
+        assert_eq!(3, tf);
+
+        let ta = extern_bindings::takes_alias(Some(function));
+        assert_eq!(4, ta);
     }
 }

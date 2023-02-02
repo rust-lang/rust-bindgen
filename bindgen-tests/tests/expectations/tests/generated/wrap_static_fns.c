@@ -8,3 +8,5 @@ int takes_fn_ptr__extern(int (*f) (int)) asm("takes_fn_ptr__extern");
 int takes_fn_ptr__extern(int (*f) (int)) { return takes_fn_ptr(f); }
 int takes_fn__extern(int (f) (int)) asm("takes_fn__extern");
 int takes_fn__extern(int (f) (int)) { return takes_fn(f); }
+int takes_alias__extern(func f) asm("takes_alias__extern");
+int takes_alias__extern(func f) { return takes_alias(f); }

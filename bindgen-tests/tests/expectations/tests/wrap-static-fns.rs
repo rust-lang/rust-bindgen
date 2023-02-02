@@ -37,3 +37,10 @@ extern "C" {
         >,
     ) -> ::std::os::raw::c_int;
 }
+pub type func = ::std::option::Option<
+    unsafe extern "C" fn(arg1: ::std::os::raw::c_int) -> ::std::os::raw::c_int,
+>;
+extern "C" {
+    #[link_name = "\u{1}takes_alias__extern"]
+    pub fn takes_alias(f: func) -> ::std::os::raw::c_int;
+}
