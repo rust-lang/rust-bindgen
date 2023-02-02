@@ -2,13 +2,13 @@ use std::io::Write;
 
 use crate::callbacks::IntKind;
 
+use crate::ir::comp::CompKind;
 use crate::ir::context::{BindgenContext, TypeId};
 use crate::ir::function::{Function, FunctionKind};
 use crate::ir::item::Item;
+use crate::ir::item::ItemCanonicalName;
 use crate::ir::item_kind::ItemKind;
 use crate::ir::ty::{FloatKind, Type, TypeKind};
-use crate::ir::comp::CompKind;
-use crate::ir::item::ItemCanonicalName;
 
 use super::CodegenError;
 
@@ -257,7 +257,6 @@ impl CSerialize for Type {
                     CompKind::Struct => write!(writer, "struct {}", name)?,
                     CompKind::Union => write!(writer, "union {}", name)?,
                 };
-
             }
             ty => {
                 return Err(CodegenError::Serialize {
