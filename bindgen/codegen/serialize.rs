@@ -110,15 +110,19 @@ impl<'a> CSerialize<'a> for Function {
         // Write `ret_ty wrap_name(args) asm("wrap_name");`
         ret_ty.serialize(ctx, (), stack, writer)?;
         write!(writer, " {}(", wrap_name)?;
-        serialize_sep(
-            ", ",
-            args.iter(),
-            ctx,
-            writer,
-            |(name, type_id), ctx, buf| {
-                type_id.serialize(ctx, (), &mut vec![name.clone()], buf)
-            },
-        )?;
+        if args.is_empty() {
+            write!(writer, "void")?;
+        } else {
+            serialize_sep(
+                ", ",
+                args.iter(),
+                ctx,
+                writer,
+                |(name, type_id), ctx, buf| {
+                    type_id.serialize(ctx, (), &mut vec![name.clone()], buf)
+                },
+            )?;
+        }
         writeln!(writer, ") asm(\"{}\");", wrap_name)?;
 
         // Write `ret_ty wrap_name(args) { return name(arg_names)' }`
