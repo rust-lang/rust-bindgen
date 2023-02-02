@@ -168,6 +168,7 @@ impl CSerialize for Type {
                 IntKind::ULong => write!(writer, "unsigned long")?,
                 IntKind::LongLong => write!(writer, "long long")?,
                 IntKind::ULongLong => write!(writer, "unsigned long long")?,
+                IntKind::Char { .. } => write!(writer, "char")?,
                 int_kind => {
                     return Err(CodegenError::Serialize {
                         msg: format!(
