@@ -7,6 +7,8 @@ use crate::ir::function::{Function, FunctionKind};
 use crate::ir::item::Item;
 use crate::ir::item_kind::ItemKind;
 use crate::ir::ty::{FloatKind, Type, TypeKind};
+use crate::ir::comp::CompKind;
+use crate::ir::item::ItemCanonicalName;
 
 use super::CodegenError;
 
@@ -247,6 +249,15 @@ impl CSerialize for Type {
             TypeKind::Pointer(type_id) => {
                 type_id.serialize(ctx, ctx.resolve_item(type_id), writer)?;
                 write!(writer, "*")?;
+            }
+            TypeKind::Comp(comp_info) => {
+                let name = item.canonical_name(ctx);
+
+                match comp_info.kind() {
+                    CompKind::Struct => write!(writer, "struct {}", name)?,
+                    CompKind::Union => write!(writer, "union {}", name)?,
+                };
+
             }
             ty => {
                 return Err(CodegenError::Serialize {
