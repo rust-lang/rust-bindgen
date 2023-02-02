@@ -111,10 +111,7 @@ impl<'a, 'ctx> CSerialize<'a, 'ctx> for Function {
             ctx,
             writer,
             |(name, type_id), ctx, buf| {
-                let mut name = Some(name.as_str());
-                dbg!(&name);
-                type_id.serialize(ctx, &mut name, buf)?;
-                Ok(())
+                type_id.serialize(ctx, &mut Some(name.as_str()), buf)
             },
         )?;
         writeln!(writer, ") asm(\"{}\");", wrap_name)?;
@@ -128,9 +125,7 @@ impl<'a, 'ctx> CSerialize<'a, 'ctx> for Function {
             ctx,
             writer,
             |(name, type_id), _, buf| {
-                let mut name = Some(name.as_str());
-                type_id.serialize(ctx, &mut name, buf)?;
-                Ok(())
+                type_id.serialize(ctx, &mut Some(name.as_str()), buf)
             },
         )?;
         write!(writer, ") {{ return {}(", name)?;
@@ -153,7 +148,6 @@ impl<'a> CSerialize<'a, 'a> for TypeId {
         writer: &mut W,
     ) -> Result<(), CodegenError> {
         let item = ctx.resolve_item(*self);
-        dbg!(&arg);
         item.expect_type().serialize(ctx, (item, arg), writer)
     }
 }
@@ -229,7 +223,6 @@ impl<'a> CSerialize<'a, 'a> for Type {
             }
             TypeKind::Function(signature) => {
                 signature.return_type().serialize(ctx, &mut None, writer)?;
-                dbg!(&arg);
 
                 if let Some(name) = arg.take() {
                     write!(writer, " ({})", name)?;
@@ -242,14 +235,7 @@ impl<'a> CSerialize<'a, 'a> for Type {
                     ctx,
                     writer,
                     |(arg, type_id), ctx, buf| {
-                        let mut name = None;
-                        if let Some(arg) = arg {
-                            name = Some(arg.as_str());
-                        }
-
-                        type_id.serialize(ctx, &mut name, buf)?;
-
-                        Ok(())
+                        type_id.serialize(ctx, &mut arg.as_ref().map(|a| a.as_str()), buf)
                     },
                 )?;
                 write!(writer, ")")?

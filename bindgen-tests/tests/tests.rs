@@ -715,7 +715,7 @@ fn commandline_multiple_headers() {
 }
 
 #[test]
-fn test_extern_generated_headers() {
+fn test_wrap_static_fns() {
     // This test is for testing diffs of the generated C source and header files
     // TODO: If another such feature is added, convert this test into a more generic
     //      test that looks at `tests/headers/generated` directory.

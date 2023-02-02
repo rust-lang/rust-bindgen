@@ -27,3 +27,13 @@ extern "C" {
         >,
     ) -> ::std::os::raw::c_int;
 }
+extern "C" {
+    #[link_name = "\u{1}takes_fn__extern"]
+    pub fn takes_fn(
+        f: ::std::option::Option<
+            unsafe extern "C" fn(
+                arg1: ::std::os::raw::c_int,
+            ) -> ::std::os::raw::c_int,
+        >,
+    ) -> ::std::os::raw::c_int;
+}
