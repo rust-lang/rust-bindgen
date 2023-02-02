@@ -62,7 +62,7 @@ use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum CodegenError {
-    Serialize(String),
+    Serialize { msg: String, loc: String },
     Io(String),
 }
 
@@ -75,7 +75,9 @@ impl From<std::io::Error> for CodegenError {
 impl std::fmt::Display for CodegenError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            CodegenError::Serialize(err) => err.fmt(f),
+            CodegenError::Serialize { msg, loc } => {
+                write!(f, "serialization error at {}: {}", loc, msg)
+            }
             CodegenError::Io(err) => err.fmt(f),
         }
     }
@@ -4583,7 +4585,7 @@ pub mod utils {
 
         for &id in &result.items_to_serialize {
             let item = context.resolve_item(id);
-            item.serialize(context, &mut code)?;
+            item.serialize(context, item, &mut code)?;
         }
 
         std::fs::write(source_path, code)?;

@@ -10,10 +10,17 @@ use crate::ir::ty::{FloatKind, Type, TypeKind};
 
 use super::CodegenError;
 
+fn get_loc(item: &Item) -> String {
+    item.location()
+        .map(|x| x.to_string())
+        .unwrap_or_else(|| "unknown".to_owned())
+}
+
 pub(crate) trait CSerialize {
     fn serialize<W: Write>(
         &self,
         ctx: &BindgenContext,
+        item: &Item,
         writer: &mut W,
     ) -> Result<(), CodegenError>;
 }
@@ -22,15 +29,16 @@ impl CSerialize for Item {
     fn serialize<W: Write>(
         &self,
         ctx: &BindgenContext,
+        item: &Item,
         writer: &mut W,
     ) -> Result<(), CodegenError> {
         match self.kind() {
-            ItemKind::Function(func) => func.serialize(ctx, writer),
+            ItemKind::Function(func) => func.serialize(ctx, item, writer),
             kind => {
-                return Err(CodegenError::Serialize(format!(
-                    "Cannot serialize item kind {:?}",
-                    kind
-                )));
+                return Err(CodegenError::Serialize {
+                    msg: format!("Cannot serialize item kind {:?}", kind),
+                    loc: get_loc(item),
+                });
             }
         }
     }
@@ -40,13 +48,17 @@ impl CSerialize for Function {
     fn serialize<W: Write>(
         &self,
         ctx: &BindgenContext,
+        item: &Item,
         writer: &mut W,
     ) -> Result<(), CodegenError> {
         if self.kind() != FunctionKind::Function {
-            return Err(CodegenError::Serialize(format!(
-                "Cannot serialize function kind {:?}",
-                self.kind()
-            )));
+            return Err(CodegenError::Serialize {
+                msg: format!(
+                    "Cannot serialize function kind {:?}",
+                    self.kind(),
+                ),
+                loc: get_loc(item),
+            });
         }
 
         let signature = match ctx.resolve_type(self.signature()).kind() {
@@ -83,7 +95,7 @@ impl CSerialize for Function {
         let ret_ty = signature.return_type();
 
         // Write `ret_ty wrap_name(args) asm("wrap_name");`
-        ret_ty.serialize(ctx, writer)?;
+        ret_ty.serialize(ctx, ctx.resolve_item(ret_ty), writer)?;
         write!(writer, " {}(", wrap_name)?;
         serialize_sep(
             ", ",
@@ -91,14 +103,14 @@ impl CSerialize for Function {
             ctx,
             writer,
             |(name, type_id), ctx, buf| {
-                type_id.serialize(ctx, buf)?;
+                type_id.serialize(ctx, ctx.resolve_item(type_id), buf)?;
                 write!(buf, " {}", name).map_err(From::from)
             },
         )?;
         writeln!(writer, ") asm(\"{}\");", wrap_name)?;
 
         // Write `ret_ty wrap_name(args) { return name(arg_names)' }`
-        ret_ty.serialize(ctx, writer)?;
+        ret_ty.serialize(ctx, ctx.resolve_item(ret_ty), writer)?;
         write!(writer, " {}(", wrap_name)?;
         serialize_sep(
             ", ",
@@ -106,7 +118,7 @@ impl CSerialize for Function {
             ctx,
             writer,
             |(name, type_id), _, buf| {
-                type_id.serialize(ctx, buf)?;
+                type_id.serialize(ctx, ctx.resolve_item(type_id), buf)?;
                 write!(buf, " {}", name).map_err(From::from)
             },
         )?;
@@ -124,9 +136,10 @@ impl CSerialize for TypeId {
     fn serialize<W: Write>(
         &self,
         ctx: &BindgenContext,
+        item: &Item,
         writer: &mut W,
     ) -> Result<(), CodegenError> {
-        ctx.resolve_type(*self).serialize(ctx, writer)
+        ctx.resolve_type(*self).serialize(ctx, item, writer)
     }
 }
 
@@ -134,6 +147,7 @@ impl CSerialize for Type {
     fn serialize<W: Write>(
         &self,
         ctx: &BindgenContext,
+        item: &Item,
         writer: &mut W,
     ) -> Result<(), CodegenError> {
         match self.kind() {
@@ -153,10 +167,13 @@ impl CSerialize for Type {
                 IntKind::LongLong => write!(writer, "long long")?,
                 IntKind::ULongLong => write!(writer, "unsigned long long")?,
                 int_kind => {
-                    return Err(CodegenError::Serialize(format!(
-                        "Cannot serialize integer kind {:?}",
-                        int_kind
-                    )))
+                    return Err(CodegenError::Serialize {
+                        msg: format!(
+                            "Cannot serialize integer kind {:?}",
+                            int_kind
+                        ),
+                        loc: get_loc(item),
+                    })
                 }
             },
             TypeKind::Float(float_kind) => match float_kind {
@@ -171,25 +188,37 @@ impl CSerialize for Type {
                 FloatKind::LongDouble => write!(writer, "long double complex")?,
                 FloatKind::Float128 => write!(writer, "__complex128")?,
             },
-            TypeKind::Alias(type_id) => { type_id.serialize(ctx, writer) }?,
+            TypeKind::Alias(type_id) => {
+                type_id.serialize(ctx, ctx.resolve_item(type_id), writer)?
+            }
             TypeKind::TemplateAlias(type_id, params) => {
-                type_id.serialize(ctx, writer)?;
+                type_id.serialize(ctx, ctx.resolve_item(type_id), writer)?;
                 write!(writer, "<")?;
                 serialize_sep(
                     ", ",
                     params.iter(),
                     ctx,
                     writer,
-                    TypeId::serialize,
+                    |type_id, ctx, writer| {
+                        type_id.serialize(
+                            ctx,
+                            ctx.resolve_item(type_id),
+                            writer,
+                        )
+                    },
                 )?;
                 write!(writer, ">")?
             }
             TypeKind::Array(type_id, length) => {
-                type_id.serialize(ctx, writer)?;
+                type_id.serialize(ctx, ctx.resolve_item(type_id), writer)?;
                 write!(writer, " [{}]", length)?
             }
             TypeKind::Function(signature) => {
-                signature.return_type().serialize(ctx, writer)?;
+                signature.return_type().serialize(
+                    ctx,
+                    ctx.resolve_item(signature.return_type()),
+                    writer,
+                )?;
                 write!(writer, " (")?;
                 serialize_sep(
                     ", ",
@@ -197,7 +226,11 @@ impl CSerialize for Type {
                     ctx,
                     writer,
                     |(name, type_id), ctx, buf| {
-                        type_id.serialize(ctx, buf)?;
+                        type_id.serialize(
+                            ctx,
+                            ctx.resolve_item(type_id),
+                            buf,
+                        )?;
 
                         if let Some(name) = name {
                             write!(buf, "{}", name)?;
@@ -209,17 +242,17 @@ impl CSerialize for Type {
                 write!(writer, ")")?
             }
             TypeKind::ResolvedTypeRef(type_id) => {
-                type_id.serialize(ctx, writer)?
+                type_id.serialize(ctx, ctx.resolve_item(type_id), writer)?
             }
             TypeKind::Pointer(type_id) => {
-                type_id.serialize(ctx, writer)?;
+                type_id.serialize(ctx, ctx.resolve_item(type_id), writer)?;
                 write!(writer, "*")?;
             }
             ty => {
-                return Err(CodegenError::Serialize(format!(
-                    "Cannot serialize type kind {:?}",
-                    ty
-                )))
+                return Err(CodegenError::Serialize {
+                    msg: format!("Cannot serialize type kind {:?}", ty),
+                    loc: get_loc(item),
+                })
             }
         };
 
