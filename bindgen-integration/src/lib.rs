@@ -303,5 +303,15 @@ fn test_wrap_static_fns() {
 
         let t = extern_bindings::takes_ptr(&mut 1);
         assert_eq!(2, t);
+
+        extern "C" fn function(x: i32) -> i32 {
+            x + 1
+        }
+
+        let p = extern_bindings::takes_fn_ptr(Some(function));
+        assert_eq!(2, p);
+
+        let f = extern_bindings::takes_fn(Some(function));
+        assert_eq!(3, f);
     }
 }

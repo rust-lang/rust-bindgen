@@ -224,22 +224,24 @@ fn setup_wrap_static_fns_test() {
         .header(input_header_file_path_str)
         .parse_callbacks(Box::new(CargoCallbacks))
         .wrap_static_fns(true)
-        .wrap_static_fns_path(out_path.join("extern").display().to_string())
+        .wrap_static_fns_path(
+            out_path.join("wrap_static_fns").display().to_string(),
+        )
         .generate()
         .expect("Unable to generate bindings");
 
-    println!("cargo:rustc-link-lib=static=extern"); // tell cargo to link libextern
+    println!("cargo:rustc-link-lib=static=wrap_static_fns"); // tell cargo to link libextern
     println!("bindings generated: {}", bindings);
 
-    let obj_path = out_path.join("extern.o");
-    let lib_path = out_path.join("libextern.a");
+    let obj_path = out_path.join("wrap_static_fns.o");
+    let lib_path = out_path.join("libwrap_static_fns.a");
 
     // build the external files to check if they work
     let clang_output = std::process::Command::new("clang")
         .arg("-c")
         .arg("-o")
         .arg(&obj_path)
-        .arg(out_path.join("extern.c"))
+        .arg(out_path.join("wrap_static_fns.c"))
         .arg("-include")
         .arg(input_header_file_path)
         .output()

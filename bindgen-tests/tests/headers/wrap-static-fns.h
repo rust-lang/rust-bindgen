@@ -13,3 +13,11 @@ inline int baz() {
 static inline int takes_ptr(int* arg) {
     return *arg + 1;
 }
+
+static inline int takes_fn_ptr(int (*f)(int)) {
+    return f(1);
+}
+
+static inline int takes_fn(int (f)(int)) {
+    return f(2);
+}

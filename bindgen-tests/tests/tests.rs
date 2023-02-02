@@ -719,12 +719,12 @@ fn test_extern_generated_headers() {
     // This test is for testing diffs of the generated C source and header files
     // TODO: If another such feature is added, convert this test into a more generic
     //      test that looks at `tests/headers/generated` directory.
-    let expect_path =
-        PathBuf::from("tests/expectations/tests/generated").join("extern");
+    let expect_path = PathBuf::from("tests/expectations/tests/generated")
+        .join("wrap_static_fns");
     println!("In path is ::: {}", expect_path.display());
 
     let generated_path =
-        PathBuf::from(env::var("OUT_DIR").unwrap()).join("extern");
+        PathBuf::from(env::var("OUT_DIR").unwrap()).join("wrap_static_fns");
     println!("Out path is ::: {}", generated_path.display());
 
     let _bindings = Builder::default()
@@ -735,10 +735,10 @@ fn test_extern_generated_headers() {
         .expect("Failed to generate bindings");
 
     let expected_c = fs::read_to_string(expect_path.with_extension("c"))
-        .expect("Could not read generated extern.c");
+        .expect("Could not read generated wrap_static_fns.c");
 
     let actual_c = fs::read_to_string(generated_path.with_extension("c"))
-        .expect("Could not read actual extern.c");
+        .expect("Could not read actual wrap_static_fns.c");
 
     if expected_c != actual_c {
         error_diff_mismatch(

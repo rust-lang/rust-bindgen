@@ -18,24 +18,24 @@ fn get_loc(item: &Item) -> String {
         .unwrap_or_else(|| "unknown".to_owned())
 }
 
-pub(crate) trait CSerialize {
+pub(crate) trait CSerialize<'a, 'ctx> {
     type Extra;
 
     fn serialize<W: Write>(
         &self,
-        ctx: &BindgenContext,
-        extra: &Self::Extra,
+        ctx: &'ctx BindgenContext,
+        arg: Self::Extra,
         writer: &mut W,
     ) -> Result<(), CodegenError>;
 }
 
-impl CSerialize for Item {
+impl<'a, 'ctx> CSerialize<'a, 'ctx> for Item {
     type Extra = ();
 
     fn serialize<W: Write>(
         &self,
-        ctx: &BindgenContext,
-        (): &Self::Extra,
+        ctx: &'ctx BindgenContext,
+        (): Self::Extra,
         writer: &mut W,
     ) -> Result<(), CodegenError> {
         match self.kind() {
@@ -50,13 +50,13 @@ impl CSerialize for Item {
     }
 }
 
-impl CSerialize for Function {
-    type Extra = Item;
+impl<'a, 'ctx> CSerialize<'a, 'ctx> for Function {
+    type Extra = &'a Item;
 
     fn serialize<W: Write>(
         &self,
-        ctx: &BindgenContext,
-        item: &Self::Extra,
+        ctx: &'ctx BindgenContext,
+        item: Self::Extra,
         writer: &mut W,
     ) -> Result<(), CodegenError> {
         if self.kind() != FunctionKind::Function {
@@ -103,7 +103,7 @@ impl CSerialize for Function {
         let ret_ty = signature.return_type();
 
         // Write `ret_ty wrap_name(args) asm("wrap_name");`
-        ret_ty.serialize(ctx, &(), writer)?;
+        ret_ty.serialize(ctx, &mut None, writer)?;
         write!(writer, " {}(", wrap_name)?;
         serialize_sep(
             ", ",
@@ -111,14 +111,16 @@ impl CSerialize for Function {
             ctx,
             writer,
             |(name, type_id), ctx, buf| {
-                type_id.serialize(ctx, &(), buf)?;
-                write!(buf, " {}", name).map_err(From::from)
+                let mut name = Some(name.as_str());
+                dbg!(&name);
+                type_id.serialize(ctx, &mut name, buf)?;
+                Ok(())
             },
         )?;
         writeln!(writer, ") asm(\"{}\");", wrap_name)?;
 
         // Write `ret_ty wrap_name(args) { return name(arg_names)' }`
-        ret_ty.serialize(ctx, &(), writer)?;
+        ret_ty.serialize(ctx, &mut None, writer)?;
         write!(writer, " {}(", wrap_name)?;
         serialize_sep(
             ", ",
@@ -126,8 +128,9 @@ impl CSerialize for Function {
             ctx,
             writer,
             |(name, type_id), _, buf| {
-                type_id.serialize(ctx, &(), buf)?;
-                write!(buf, " {}", name).map_err(From::from)
+                let mut name = Some(name.as_str());
+                type_id.serialize(ctx, &mut name, buf)?;
+                Ok(())
             },
         )?;
         write!(writer, ") {{ return {}(", name)?;
@@ -140,27 +143,28 @@ impl CSerialize for Function {
     }
 }
 
-impl CSerialize for TypeId {
-    type Extra = ();
+impl<'a> CSerialize<'a, 'a> for TypeId {
+    type Extra = &'a mut Option<&'a str>;
 
     fn serialize<W: Write>(
         &self,
-        ctx: &BindgenContext,
-        (): &Self::Extra,
+        ctx: &'a BindgenContext,
+        arg: Self::Extra,
         writer: &mut W,
     ) -> Result<(), CodegenError> {
         let item = ctx.resolve_item(*self);
-        item.expect_type().serialize(ctx, item, writer)
+        dbg!(&arg);
+        item.expect_type().serialize(ctx, (item, arg), writer)
     }
 }
 
-impl CSerialize for Type {
-    type Extra = Item;
+impl<'a> CSerialize<'a, 'a> for Type {
+    type Extra = (&'a Item, &'a mut Option<&'a str>);
 
     fn serialize<W: Write>(
         &self,
-        ctx: &BindgenContext,
-        item: &Self::Extra,
+        ctx: &'a BindgenContext,
+        (item, arg): Self::Extra,
         writer: &mut W,
     ) -> Result<(), CodegenError> {
         match self.kind() {
@@ -203,10 +207,10 @@ impl CSerialize for Type {
                 FloatKind::Float128 => write!(writer, "__complex128")?,
             },
             TypeKind::Alias(type_id) => {
-                type_id.serialize(ctx, &(), writer)?
+                type_id.serialize(ctx, &mut None, writer)?
             }
             TypeKind::TemplateAlias(type_id, params) => {
-                type_id.serialize(ctx, &(), writer)?;
+                type_id.serialize(ctx, &mut None, writer)?;
                 write!(writer, "<")?;
                 serialize_sep(
                     ", ",
@@ -214,41 +218,36 @@ impl CSerialize for Type {
                     ctx,
                     writer,
                     |type_id, ctx, writer| {
-                        type_id.serialize(
-                            ctx,
-                            &(),
-                            writer,
-                        )
+                        type_id.serialize(ctx, &mut None, writer)
                     },
                 )?;
                 write!(writer, ">")?
             }
             TypeKind::Array(type_id, length) => {
-                type_id.serialize(ctx, &(), writer)?;
+                type_id.serialize(ctx, &mut None, writer)?;
                 write!(writer, " [{}]", length)?
             }
             TypeKind::Function(signature) => {
-                signature.return_type().serialize(
-                    ctx,
-                    &(),
-                    writer,
-                )?;
+                signature.return_type().serialize(ctx, &mut None, writer)?;
+                dbg!(&arg);
+
+                if let Some(name) = arg.take() {
+                    write!(writer, " ({})", name)?;
+                }
+
                 write!(writer, " (")?;
                 serialize_sep(
                     ", ",
                     signature.argument_types().iter(),
                     ctx,
                     writer,
-                    |(name, type_id), ctx, buf| {
-                        type_id.serialize(
-                            ctx,
-                            &(),
-                            buf,
-                        )?;
-
-                        if let Some(name) = name {
-                            write!(buf, "{}", name)?;
+                    |(arg, type_id), ctx, buf| {
+                        let mut name = None;
+                        if let Some(arg) = arg {
+                            name = Some(arg.as_str());
                         }
+
+                        type_id.serialize(ctx, &mut name, buf)?;
 
                         Ok(())
                     },
@@ -256,11 +255,16 @@ impl CSerialize for Type {
                 write!(writer, ")")?
             }
             TypeKind::ResolvedTypeRef(type_id) => {
-                type_id.serialize(ctx, &(), writer)?
+                return type_id.serialize(ctx, arg, writer);
             }
             TypeKind::Pointer(type_id) => {
-                type_id.serialize(ctx, &(), writer)?;
-                write!(writer, "*")?;
+                let mut name = "*".to_owned();
+                if let Some(arg) = arg {
+                    name += arg;
+                }
+                type_id.serialize(ctx, &mut Some(name.as_str()), writer)?;
+
+                return Ok(());
             }
             TypeKind::Comp(comp_info) => {
                 let name = item.canonical_name(ctx);
@@ -277,6 +281,10 @@ impl CSerialize for Type {
                 })
             }
         };
+
+        if let Some(arg) = arg {
+            write!(writer, " {}", arg)?;
+        }
 
         Ok(())
     }

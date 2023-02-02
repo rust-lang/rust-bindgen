@@ -17,3 +17,13 @@ extern "C" {
     #[link_name = "\u{1}takes_ptr__extern"]
     pub fn takes_ptr(arg: *mut ::std::os::raw::c_int) -> ::std::os::raw::c_int;
 }
+extern "C" {
+    #[link_name = "\u{1}takes_fn_ptr__extern"]
+    pub fn takes_fn_ptr(
+        f: ::std::option::Option<
+            unsafe extern "C" fn(
+                arg1: ::std::os::raw::c_int,
+            ) -> ::std::os::raw::c_int,
+        >,
+    ) -> ::std::os::raw::c_int;
+}
