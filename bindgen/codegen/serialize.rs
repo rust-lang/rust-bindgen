@@ -1,4 +1,4 @@
-use std::io::{self, Write};
+use std::io::Write;
 
 use crate::callbacks::IntKind;
 
@@ -8,12 +8,14 @@ use crate::ir::item::Item;
 use crate::ir::item_kind::ItemKind;
 use crate::ir::ty::{FloatKind, Type, TypeKind};
 
+use super::CodegenError;
+
 pub(crate) trait CSerialize {
     fn serialize<W: Write>(
         &self,
         ctx: &BindgenContext,
         writer: &mut W,
-    ) -> io::Result<()>;
+    ) -> Result<(), CodegenError>;
 }
 
 impl CSerialize for Item {
@@ -21,14 +23,14 @@ impl CSerialize for Item {
         &self,
         ctx: &BindgenContext,
         writer: &mut W,
-    ) -> io::Result<()> {
+    ) -> Result<(), CodegenError> {
         match self.kind() {
             ItemKind::Function(func) => func.serialize(ctx, writer),
             kind => {
-                return Err(io::Error::new(
-                    io::ErrorKind::Other,
-                    format!("Cannot serialize item kind {:?}", kind),
-                ));
+                return Err(CodegenError::Serialize(format!(
+                    "Cannot serialize item kind {:?}",
+                    kind
+                )));
             }
         }
     }
@@ -39,12 +41,12 @@ impl CSerialize for Function {
         &self,
         ctx: &BindgenContext,
         writer: &mut W,
-    ) -> io::Result<()> {
+    ) -> Result<(), CodegenError> {
         if self.kind() != FunctionKind::Function {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
-                format!("Cannot serialize function kind {:?}", self.kind()),
-            ));
+            return Err(CodegenError::Serialize(format!(
+                "Cannot serialize function kind {:?}",
+                self.kind()
+            )));
         }
 
         let signature = match ctx.resolve_type(self.signature()).kind() {
@@ -90,7 +92,7 @@ impl CSerialize for Function {
             writer,
             |(name, type_id), ctx, buf| {
                 type_id.serialize(ctx, buf)?;
-                write!(buf, " {}", name)
+                write!(buf, " {}", name).map_err(From::from)
             },
         )?;
         writeln!(writer, ") asm(\"{}\");", wrap_name)?;
@@ -105,12 +107,12 @@ impl CSerialize for Function {
             writer,
             |(name, type_id), _, buf| {
                 type_id.serialize(ctx, buf)?;
-                write!(buf, "{}", name)
+                write!(buf, "{}", name).map_err(From::from)
             },
         )?;
         write!(writer, ") {{ return {}(", name)?;
         serialize_sep(", ", args.iter(), ctx, writer, |(name, _), _, buf| {
-            write!(buf, "{}", name)
+            write!(buf, "{}", name).map_err(From::from)
         })?;
         writeln!(writer, "); }}")?;
 
@@ -123,7 +125,7 @@ impl CSerialize for TypeId {
         &self,
         ctx: &BindgenContext,
         writer: &mut W,
-    ) -> io::Result<()> {
+    ) -> Result<(), CodegenError> {
         ctx.resolve_type(*self).serialize(ctx, writer)
     }
 }
@@ -133,7 +135,7 @@ impl CSerialize for Type {
         &self,
         ctx: &BindgenContext,
         writer: &mut W,
-    ) -> io::Result<()> {
+    ) -> Result<(), CodegenError> {
         match self.kind() {
             TypeKind::Void => write!(writer, "void")?,
             TypeKind::NullPtr => write!(writer, "nullptr_t")?,
@@ -151,10 +153,10 @@ impl CSerialize for Type {
                 IntKind::LongLong => write!(writer, "long long")?,
                 IntKind::ULongLong => write!(writer, "unsigned long long")?,
                 int_kind => {
-                    return Err(io::Error::new(
-                        io::ErrorKind::Other,
-                        format!("Cannot serialize integer kind {:?}", int_kind),
-                    ))
+                    return Err(CodegenError::Serialize(format!(
+                        "Cannot serialize integer kind {:?}",
+                        int_kind
+                    )))
                 }
             },
             TypeKind::Float(float_kind) => match float_kind {
@@ -214,10 +216,10 @@ impl CSerialize for Type {
                 write!(writer, "*")?;
             }
             ty => {
-                return Err(io::Error::new(
-                    io::ErrorKind::Other,
-                    format!("Cannot serialize type kind {:?}", ty),
-                ))
+                return Err(CodegenError::Serialize(format!(
+                    "Cannot serialize type kind {:?}",
+                    ty
+                )))
             }
         };
 
@@ -226,8 +228,8 @@ impl CSerialize for Type {
 }
 
 fn serialize_sep<
-    W: io::Write,
-    F: Fn(I::Item, &BindgenContext, &mut W) -> io::Result<()>,
+    W: Write,
+    F: Fn(I::Item, &BindgenContext, &mut W) -> Result<(), CodegenError>,
     I: Iterator,
 >(
     sep: &'static str,
@@ -235,7 +237,7 @@ fn serialize_sep<
     ctx: &BindgenContext,
     buf: &mut W,
     f: F,
-) -> io::Result<()> {
+) -> Result<(), CodegenError> {
     if let Some(item) = iter.next() {
         f(item, ctx, buf)?;
         for item in iter {

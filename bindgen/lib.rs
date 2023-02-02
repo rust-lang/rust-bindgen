@@ -78,6 +78,7 @@ doc_mod!(ir, ir_docs);
 doc_mod!(parse, parse_docs);
 doc_mod!(regex_set, regex_set_docs);
 
+use codegen::CodegenError;
 use ir::comment;
 
 pub use crate::codegen::{
@@ -2415,6 +2416,8 @@ pub enum BindgenError {
     NotExist(PathBuf),
     /// Clang diagnosed an error.
     ClangDiagnostic(String),
+    /// Code generation reported an error.
+    Codegen(CodegenError),
 }
 
 impl std::fmt::Display for BindgenError {
@@ -2431,6 +2434,9 @@ impl std::fmt::Display for BindgenError {
             }
             BindgenError::ClangDiagnostic(message) => {
                 write!(f, "clang diagnosed error: {}", message)
+            }
+            BindgenError::Codegen(err) => {
+                write!(f, "codegen error: {}", err)
             }
         }
     }
@@ -2658,7 +2664,8 @@ impl Bindings {
             parse(&mut context)?;
         }
 
-        let (module, options, warnings) = codegen::codegen(context);
+        let (module, options, warnings) =
+            codegen::codegen(context).map_err(BindgenError::Codegen)?;
 
         Ok(Bindings {
             options,

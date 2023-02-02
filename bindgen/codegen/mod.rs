@@ -60,6 +60,27 @@ use std::iter;
 use std::ops;
 use std::str::FromStr;
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum CodegenError {
+    Serialize(String),
+    Io(String),
+}
+
+impl From<std::io::Error> for CodegenError {
+    fn from(err: std::io::Error) -> Self {
+        Self::Io(err.to_string())
+    }
+}
+
+impl std::fmt::Display for CodegenError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CodegenError::Serialize(err) => err.fmt(f),
+            CodegenError::Io(err) => err.fmt(f),
+        }
+    }
+}
+
 // Name of type defined in constified enum module
 pub static CONSTIFIED_ENUM_MODULE_REPR_NAME: &str = "Type";
 
@@ -4454,7 +4475,8 @@ impl CodeGenerator for ObjCInterface {
 
 pub(crate) fn codegen(
     context: BindgenContext,
-) -> (proc_macro2::TokenStream, BindgenOptions, Vec<String>) {
+) -> Result<(proc_macro2::TokenStream, BindgenOptions, Vec<String>), CodegenError>
+{
     context.gen(|context| {
         let _t = context.timer("codegen");
         let counter = Cell::new(0);
@@ -4505,19 +4527,19 @@ pub(crate) fn codegen(
         }
 
         if !result.items_to_serialize.is_empty() {
-            match utils::serialize_items(&result, &context) {
-                Ok(()) => (),
-                Err(err) => warn!("Could not serialize C items: {}", err),
-            }
+            utils::serialize_items(&result, context)?;
         }
 
-        postprocessing::postprocessing(result.items, context.options())
+        Ok(postprocessing::postprocessing(
+            result.items,
+            context.options(),
+        ))
     })
 }
 
 pub mod utils {
     use super::serialize::CSerialize;
-    use super::{error, CodegenResult, ToRustTyOrOpaque};
+    use super::{error, CodegenError, CodegenResult, ToRustTyOrOpaque};
     use crate::ir::context::BindgenContext;
     use crate::ir::function::{Abi, ClangAbi, FunctionSig};
     use crate::ir::item::{Item, ItemCanonicalPath};
@@ -4532,12 +4554,12 @@ pub mod utils {
     pub(super) fn serialize_items(
         result: &CodegenResult,
         context: &BindgenContext,
-    ) -> std::io::Result<()> {
+    ) -> Result<(), CodegenError> {
         let path = context
             .options()
             .wrap_static_fns_path
             .as_ref()
-            .map(|path| PathBuf::from(path))
+            .map(PathBuf::from)
             .unwrap_or_else(|| {
                 std::env::temp_dir().join("bindgen").join("extern")
             });
