@@ -27,3 +27,7 @@ typedef int (func)(int);
 static inline int takes_alias(func f) {
     return f(3);
 }
+
+static inline int takes_qualified(const int *const *arg) {
+    return **arg;
+}

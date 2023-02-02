@@ -10,3 +10,5 @@ int takes_fn__extern(int (f) (int)) asm("takes_fn__extern");
 int takes_fn__extern(int (f) (int)) { return takes_fn(f); }
 int takes_alias__extern(func f) asm("takes_alias__extern");
 int takes_alias__extern(func f) { return takes_alias(f); }
+int takes_qualified__extern(const int *const *arg) asm("takes_qualified__extern");
+int takes_qualified__extern(const int *const *arg) { return takes_qualified(arg); }

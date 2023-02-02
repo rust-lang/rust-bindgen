@@ -316,5 +316,9 @@ fn test_wrap_static_fns() {
 
         let ta = extern_bindings::takes_alias(Some(function));
         assert_eq!(4, ta);
+
+        let tq =
+            extern_bindings::takes_qualified(&(&5 as *const _) as *const _);
+        assert_eq!(5, tq);
     }
 }
