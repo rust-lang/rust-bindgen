@@ -235,7 +235,11 @@ impl<'a> CSerialize<'a, 'a> for Type {
                     ctx,
                     writer,
                     |(arg, type_id), ctx, buf| {
-                        type_id.serialize(ctx, &mut arg.as_ref().map(|a| a.as_str()), buf)
+                        type_id.serialize(
+                            ctx,
+                            &mut arg.as_ref().map(|a| a.as_str()),
+                            buf,
+                        )
                     },
                 )?;
                 write!(writer, ")")?
