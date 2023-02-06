@@ -24,7 +24,7 @@
 - [0.61.0](#0610)
   - [Added](#added-4)
   - [Changed](#changed-4)
-  - [Fixed](#fixed-3)
+  - [Fixed](#fixed-3)d
 - [0.60.1](#0601)
   - [Fixed](#fixed-4)
 - [0.60.0](#0600)
@@ -35,10 +35,12 @@
 - [0.59.2](#0592)
 - [0.59.1](#0591)
   - [Fixed](#fixed-6)
-- [0.59.0](#0590)
+- [0.59.0](#0590)d
   - [Added](#added-6)
+- [0.58.0](#0580)
+  - [Added](#added-7)
   - [Fixed](#fixed-7)
-  - [Changed](#changed-6)
+  - [Changed](#changed-6)d
 - [0.58.1](#0581)
   - [Added](#added-7)
 - [0.58.0](#0580)
@@ -78,14 +80,14 @@
   - [Changed](#changed-12)
 - [0.53.1](#0531)
   - [Added](#added-15)
-- [0.53.0](#0530)
+- [0.53.0](#0530)d
   - [Added](#added-16)
   - [Changed](#changed-13)
   - [Fixed](#fixed-17)
 - [0.52.0](#0520)
   - [Added](#added-17)
   - [Changed](#changed-14)
-  - [Fixed](#fixed-18)
+  - [Fixed](#fixed-18)d
 - [0.51.1](#0511)
   - [Fixed](#fixed-19)
   - [Changed](#changed-15)
@@ -106,12 +108,12 @@
   - [Added](#added-21)
   - [Fixed](#fixed-22)
   - [Changed](#changed-19)
-- [0.48.1](#0481)
+- [0.48.1](#0481)d
   - [Fixed](#fixed-23)
 - [0.48.0](#0480)
   - [Changed](#changed-20)
   - [Fixed](#fixed-24)
-- [0.47.4](#0474)
+- [0.47.4](#0474)d
   - [Added](#added-22)
 - [0.47.3](#0473)
   - [Changed](#changed-21)
@@ -120,7 +122,7 @@
 - [0.47.1](#0471)
   - [Changed](#changed-22)
   - [Fixed](#fixed-26)
-- [0.47.0](#0470)
+- [0.47.0](#0470)d
   - [Changed](#changed-23)
   - [Fixed](#fixed-27)
 - [0.33.1 .. 0.46.0](#0331--0460)
@@ -200,6 +202,8 @@
 # 0.63.0
 
 ## Added
+ * new feature: `process_comments` method to the `ParseCallbacks` trait to
+   handle source code comments.
 
 ## Changed
  * Only wrap unsafe operations in unsafe blocks if the `--wrap_unsafe_ops`
@@ -226,8 +230,6 @@
    matching a regular expression.
  * new feature: allow using the `C-unwind` ABI in `--override-abi` on nightly
    rust.
- * new feature: `process_comments` method to the `ParseCallbacks` trait to
-   handle source code comments.
 
 ## Changed
 
