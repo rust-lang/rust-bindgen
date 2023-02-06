@@ -24,7 +24,7 @@
 - [0.61.0](#0610)
   - [Added](#added-4)
   - [Changed](#changed-4)
-  - [Fixed](#fixed-3)d
+  - [Fixed](#fixed-3)
 - [0.60.1](#0601)
   - [Fixed](#fixed-4)
 - [0.60.0](#0600)
@@ -40,7 +40,7 @@
 - [0.58.0](#0580)
   - [Added](#added-7)
   - [Fixed](#fixed-7)
-  - [Changed](#changed-6)d
+  - [Changed](#changed-6)
 - [0.58.1](#0581)
   - [Added](#added-7)
 - [0.58.0](#0580)
@@ -87,7 +87,7 @@
 - [0.52.0](#0520)
   - [Added](#added-17)
   - [Changed](#changed-14)
-  - [Fixed](#fixed-18)d
+  - [Fixed](#fixed-18)
 - [0.51.1](#0511)
   - [Fixed](#fixed-19)
   - [Changed](#changed-15)
