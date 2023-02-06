@@ -329,7 +329,7 @@ impl<'a> CodegenResult<'a> {
     }
 
     /// Get the overload number for the given function name. Increments the
-    /// counter internally so the next time we ask for the loverload for this
+    /// counter internally so the next time we ask for the overload for this
     /// name, we get the incremented value, and so on.
     fn overload_number(&mut self, name: &str) -> u32 {
         let counter = self.overload_counters.entry(name.into()).or_insert(0);
