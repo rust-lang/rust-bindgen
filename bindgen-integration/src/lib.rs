@@ -4,6 +4,10 @@ mod bindings {
     include!(concat!(env!("OUT_DIR"), "/test.rs"));
 }
 
+mod extern_bindings {
+    include!(concat!(env!("OUT_DIR"), "/extern.rs"));
+}
+
 use std::ffi::CStr;
 use std::mem;
 use std::os::raw::c_int;
@@ -285,4 +289,36 @@ fn test_custom_derive() {
 
     assert!(meter < lightyear);
     assert!(meter > micron);
+}
+
+#[test]
+fn test_wrap_static_fns() {
+    // GH-1090: https://github.com/rust-lang/rust-bindgen/issues/1090
+    unsafe {
+        let f = extern_bindings::foo();
+        assert_eq!(11, f);
+
+        let b = extern_bindings::bar();
+        assert_eq!(1, b);
+
+        let t = extern_bindings::takes_ptr(&mut 1);
+        assert_eq!(2, t);
+
+        extern "C" fn function(x: i32) -> i32 {
+            x + 1
+        }
+
+        let tp = extern_bindings::takes_fn_ptr(Some(function));
+        assert_eq!(2, tp);
+
+        let tf = extern_bindings::takes_fn(Some(function));
+        assert_eq!(3, tf);
+
+        let ta = extern_bindings::takes_alias(Some(function));
+        assert_eq!(4, ta);
+
+        let tq =
+            extern_bindings::takes_qualified(&(&5 as *const _) as *const _);
+        assert_eq!(5, tq);
+    }
 }
