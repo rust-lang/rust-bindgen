@@ -4169,7 +4169,6 @@ impl CodeGenerator for Function {
 
         if is_internal && ctx.options().wrap_static_fns && !has_link_name_attr {
             let name = canonical_name.clone() + ctx.wrap_static_fns_suffix();
-
             attributes.push(attributes::link_name(&name));
         }
 
@@ -4528,9 +4527,7 @@ pub(crate) fn codegen(
             result.push(dynamic_items_tokens);
         }
 
-        if !result.items_to_serialize.is_empty() {
-            utils::serialize_items(&result, context)?;
-        }
+        utils::serialize_items(&result, context)?;
 
         Ok(postprocessing::postprocessing(
             result.items,
@@ -4557,6 +4554,10 @@ pub mod utils {
         result: &CodegenResult,
         context: &BindgenContext,
     ) -> Result<(), CodegenError> {
+        if result.items_to_serialize.is_empty() {
+            return Ok(());
+        }
+
         let path = context
             .options()
             .wrap_static_fns_path

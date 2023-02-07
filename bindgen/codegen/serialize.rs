@@ -337,7 +337,7 @@ fn serialize_sep<
     F: FnMut(I::Item, &BindgenContext, &mut W) -> Result<(), CodegenError>,
     I: Iterator,
 >(
-    sep: &'static str,
+    sep: &str,
     mut iter: I,
     ctx: &BindgenContext,
     buf: &mut W,
@@ -345,8 +345,9 @@ fn serialize_sep<
 ) -> Result<(), CodegenError> {
     if let Some(item) = iter.next() {
         f(item, ctx, buf)?;
+        let sep = sep.as_bytes();
         for item in iter {
-            write!(buf, "{}", sep)?;
+            buf.write_all(sep)?;
             f(item, ctx, buf)?;
         }
     }
