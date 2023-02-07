@@ -20,6 +20,7 @@ use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
 use crate::clang::{self, Cursor};
+use crate::codegen::CodegenError;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 use cexpr;
@@ -1146,9 +1147,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     pub(crate) fn gen<F, Out>(
         mut self,
         cb: F,
-    ) -> (Out, BindgenOptions, Vec<String>)
+    ) -> Result<(Out, BindgenOptions, Vec<String>), CodegenError>
     where
-        F: FnOnce(&Self) -> Out,
+        F: FnOnce(&Self) -> Result<Out, CodegenError>,
     {
         self.in_codegen = true;
 
@@ -1183,8 +1184,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.compute_cannot_derive_hash();
         self.compute_cannot_derive_partialord_partialeq_or_eq();
 
-        let ret = cb(&self);
-        (ret, self.options, self.warnings)
+        let ret = cb(&self)?;
+        Ok((ret, self.options, self.warnings))
     }
 
     /// When the `testing_only_extra_assertions` feature is enabled, this
@@ -2791,6 +2792,13 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         } else {
             tokens.into_token_stream()
         }
+    }
+
+    pub(crate) fn wrap_static_fns_suffix(&self) -> &str {
+        self.options()
+            .wrap_static_fns_suffix
+            .as_deref()
+            .unwrap_or(crate::DEFAULT_NON_EXTERN_FNS_SUFFIX)
     }
 }
 

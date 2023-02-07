@@ -7,7 +7,7 @@ publish = false
 build = "build.rs"
 
 [build-dependencies]
-bindgen = { path = "../bindgen" }
+bindgen = { path = "../bindgen", features = ["experimental"] }
 cc = "1.0"
 
 [features]

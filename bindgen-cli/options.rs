@@ -353,6 +353,20 @@ struct BindgenCommand {
     /// Derive custom traits on a `union`. The <CUSTOM> value must be of the shape <REGEX>=<DERIVE> where <DERIVE> is a coma-separated list of derive macros.
     #[arg(long, value_name = "CUSTOM")]
     with_derive_custom_union: Vec<String>,
+    /// Generate wrappers for `static` and `static inline` functions.
+    #[arg(long, requires = "experimental")]
+    wrap_static_fns: bool,
+    /// Sets the path for the source file that must be created due to the presence of `static` and
+    /// `static inline` functions.
+    #[arg(long, requires = "experimental", value_name = "PATH")]
+    wrap_static_fns_path: Option<PathBuf>,
+    /// Sets the suffix added to the extern wrapper functions generated for `static` and `static
+    /// inline` functions.
+    #[arg(long, requires = "experimental", value_name = "SUFFIX")]
+    wrap_static_fns_suffix: Option<String>,
+    /// Enables experimental features.
+    #[arg(long)]
+    experimental: bool,
     /// Prints the version, and exits
     #[arg(short = 'V', long)]
     version: bool,
@@ -473,6 +487,10 @@ where
         with_derive_custom_struct,
         with_derive_custom_enum,
         with_derive_custom_union,
+        wrap_static_fns,
+        wrap_static_fns_path,
+        wrap_static_fns_suffix,
+        experimental: _,
         version,
         clang_args,
     } = command;
@@ -976,6 +994,18 @@ where
                 regex_set,
             }));
         }
+    }
+
+    if wrap_static_fns {
+        builder = builder.wrap_static_fns(true);
+    }
+
+    if let Some(path) = wrap_static_fns_path {
+        builder = builder.wrap_static_fns_path(path);
+    }
+
+    if let Some(suffix) = wrap_static_fns_suffix {
+        builder = builder.wrap_static_fns_suffix(suffix);
     }
 
     Ok((builder, output, verbose))

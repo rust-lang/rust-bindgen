@@ -5,7 +5,7 @@ version = "0.1.0"
 publish = false
 
 [dev-dependencies]
-bindgen = { path = "../bindgen", features = ["cli"] }
+bindgen = { path = "../bindgen", features = ["cli", "experimental"] }
 diff = "0.1"
 shlex = "1"
 clap = { version = "4", features = ["derive"] }
