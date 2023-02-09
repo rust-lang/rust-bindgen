@@ -37,6 +37,7 @@ use std::mem;
 #[derive(Debug, Copy, Clone, Eq, PartialOrd, Ord, Hash)]
 pub(crate) struct ItemId(usize);
 
+/// Declare a newtype around `ItemId` with convesion methods.
 macro_rules! item_id_newtype {
     (
         $( #[$attr:meta] )*
@@ -2809,6 +2810,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.options().must_use_types.matches(name)
     }
 
+    /// Wrap some tokens in an `unsafe` block if the `--wrap-unsafe-ops` option is enabled.
     pub(crate) fn wrap_unsafe_ops(&self, tokens: impl ToTokens) -> TokenStream {
         if self.options.wrap_unsafe_ops {
             quote!(unsafe { #tokens })
@@ -2817,6 +2819,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         }
     }
 
+    /// Get the suffix to be added to `static` functions if the `--wrap-static-fns` option is
+    /// enabled.
     pub(crate) fn wrap_static_fns_suffix(&self) -> &str {
         self.options()
             .wrap_static_fns_suffix

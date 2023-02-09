@@ -4544,7 +4544,6 @@ pub(crate) mod utils {
     use crate::ir::item::{Item, ItemCanonicalPath};
     use crate::ir::ty::TypeKind;
     use crate::{args_are_cpp, file_is_cpp};
-    use proc_macro2;
     use std::borrow::Cow;
     use std::mem;
     use std::path::PathBuf;
@@ -4570,7 +4569,7 @@ pub(crate) mod utils {
         let dir = path.parent().unwrap();
 
         if !dir.exists() {
-            std::fs::create_dir_all(&dir)?;
+            std::fs::create_dir_all(dir)?;
         }
 
         let is_cpp = args_are_cpp(&context.options().clang_args) ||

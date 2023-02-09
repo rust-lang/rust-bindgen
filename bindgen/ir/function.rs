@@ -226,6 +226,7 @@ impl quote::ToTokens for Abi {
 /// An ABI extracted from a clang cursor.
 #[derive(Debug, Copy, Clone)]
 pub(crate) enum ClangAbi {
+    /// An ABI known by rust.
     Known(Abi),
     /// An unknown or invalid ABI.
     Unknown(CXCallingConv),
@@ -636,6 +637,7 @@ impl FunctionSig {
         matches!(self.abi, ClangAbi::Known(Abi::C) | ClangAbi::Unknown(..))
     }
 
+    /// Whether this function has attributes marking it as divergent.
     pub(crate) fn is_divergent(&self) -> bool {
         self.is_divergent
     }

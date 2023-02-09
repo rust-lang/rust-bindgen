@@ -1308,6 +1308,7 @@ fn visit_child(
 }
 
 impl Item {
+    /// Create a builtin type.
     pub(crate) fn builtin_type(
         kind: TypeKind,
         is_const: bool,
@@ -1333,6 +1334,7 @@ impl Item {
         id.as_type_id_unchecked()
     }
 
+    /// Parse this item from the given Clang cursor.
     pub(crate) fn parse(
         cursor: clang::Cursor,
         parent_id: Option<ItemId>,
@@ -1351,6 +1353,7 @@ impl Item {
         let current_module = ctx.current_module().into();
         let relevant_parent_id = parent_id.unwrap_or(current_module);
 
+        #[allow(clippy::missing_docs_in_private_items)]
         macro_rules! try_parse {
             ($what:ident) => {
                 match $what::parse(cursor, ctx) {
@@ -1479,6 +1482,8 @@ impl Item {
         }
     }
 
+    /// Parse this item from the given Clang type, or if we haven't resolved all
+    /// the other items this one depends on, an unresolved reference.
     pub(crate) fn from_ty_or_ref(
         ty: clang::Type,
         location: clang::Cursor,
@@ -1554,6 +1559,7 @@ impl Item {
         potential_id.as_type_id_unchecked()
     }
 
+    /// Parse this item from the given Clang type. See [`Item::from_ty_with_id`].
     pub(crate) fn from_ty(
         ty: &clang::Type,
         location: clang::Cursor,
