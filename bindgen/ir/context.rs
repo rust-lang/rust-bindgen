@@ -55,6 +55,7 @@ macro_rules! item_id_newtype {
 
         impl $name {
             /// Create an `ItemResolver` from this id.
+            #[allow(dead_code)]
             pub(crate) fn into_resolver(self) -> ItemResolver {
                 let id: ItemId = self.into();
                 id.into()
@@ -83,6 +84,7 @@ macro_rules! item_id_newtype {
             }
         }
 
+        #[allow(dead_code)]
         impl ItemId {
             $( #[$checked_attr] )*
             pub(crate) fn $checked(&self, ctx: &BindgenContext) -> Option<$name> {

@@ -86,9 +86,6 @@ pub(crate) struct Function {
     /// The id pointing to the current function signature.
     signature: TypeId,
 
-    /// The doc comment on the function, if any.
-    comment: Option<String>,
-
     /// The kind of function this is.
     kind: FunctionKind,
 
@@ -102,7 +99,6 @@ impl Function {
         name: String,
         mangled_name: Option<String>,
         signature: TypeId,
-        comment: Option<String>,
         kind: FunctionKind,
         linkage: Linkage,
     ) -> Self {
@@ -110,7 +106,6 @@ impl Function {
             name,
             mangled_name,
             signature,
-            comment,
             kind,
             linkage,
         }
@@ -129,11 +124,6 @@ impl Function {
     /// Get this function's signature type.
     pub(crate) fn signature(&self) -> TypeId {
         self.signature
-    }
-
-    /// Get this function's comment.
-    pub(crate) fn comment(&self) -> Option<&str> {
-        self.comment.as_deref()
     }
 
     /// Get this function's kind.
@@ -734,10 +724,9 @@ impl ClangSubItemParser for Function {
         assert!(!name.is_empty(), "Empty function name.");
 
         let mangled_name = cursor_mangling(context, &cursor);
-        let comment = cursor.raw_comment();
 
         let function =
-            Self::new(name.clone(), mangled_name, sig, comment, kind, linkage);
+            Self::new(name.clone(), mangled_name, sig, kind, linkage);
 
         Ok(ParseResult::New(function, Some(cursor)))
     }

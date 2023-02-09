@@ -229,12 +229,6 @@ impl ObjCMethod {
         }
     }
 
-    /// The original method selector name
-    /// like, dataWithBytes:length:
-    pub(crate) fn name(&self) -> &str {
-        self.name.as_ref()
-    }
-
     /// Method name as converted to rust
     /// like, dataWithBytes_length_
     pub(crate) fn rust_name(&self) -> &str {

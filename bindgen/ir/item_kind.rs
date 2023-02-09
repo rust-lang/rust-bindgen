@@ -50,12 +50,6 @@ impl ItemKind {
         self.as_module().is_some()
     }
 
-    /// Get a reference to this `ItemKind`'s underying `Module`, or panic if it
-    /// is some other kind.
-    pub(crate) fn expect_module(&self) -> &Module {
-        self.as_module().expect("Not a module")
-    }
-
     /// Get a reference to this `ItemKind`'s underying `Function`, or `None` if
     /// it is some other kind.
     pub(crate) fn as_function(&self) -> Option<&Function> {
@@ -117,12 +111,6 @@ impl ItemKind {
     /// Is this a variable?
     pub(crate) fn is_var(&self) -> bool {
         self.as_var().is_some()
-    }
-
-    /// Get a reference to this `ItemKind`'s underying `Var`, or panic if it is
-    /// some other kind.
-    pub(crate) fn expect_var(&self) -> &Var {
-        self.as_var().expect("Not a var")
     }
 }
 

@@ -42,15 +42,6 @@ pub(crate) struct Type {
 pub(crate) const RUST_DERIVE_IN_ARRAY_LIMIT: usize = 32;
 
 impl Type {
-    /// Get the underlying `CompInfo` for this type, or `None` if this is some
-    /// other kind of type.
-    pub(crate) fn as_comp(&self) -> Option<&CompInfo> {
-        match self.kind {
-            TypeKind::Comp(ref ci) => Some(ci),
-            _ => None,
-        }
-    }
-
     /// Get the underlying `CompInfo` for this type as a mutable reference, or
     /// `None` if this is some other kind of type.
     pub(crate) fn as_comp_mut(&mut self) -> Option<&mut CompInfo> {
@@ -123,11 +114,6 @@ impl Type {
         matches!(self.kind, TypeKind::TemplateInstantiation(..))
     }
 
-    /// Is this a template alias type?
-    pub(crate) fn is_template_alias(&self) -> bool {
-        matches!(self.kind, TypeKind::TemplateAlias(..))
-    }
-
     /// Is this a function type?
     pub(crate) fn is_function(&self) -> bool {
         matches!(self.kind, TypeKind::Function(..))
@@ -187,14 +173,6 @@ impl Type {
     /// Is this a `const` qualified type?
     pub(crate) fn is_const(&self) -> bool {
         self.is_const
-    }
-
-    /// Is this a reference to another type?
-    pub(crate) fn is_type_ref(&self) -> bool {
-        matches!(
-            self.kind,
-            TypeKind::ResolvedTypeRef(_) | TypeKind::UnresolvedTypeRef(_, _, _)
-        )
     }
 
     /// Is this an unresolved reference?

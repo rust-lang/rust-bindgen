@@ -76,16 +76,6 @@ impl Layout {
         Self::for_size_internal(ctx.target_pointer_size(), size)
     }
 
-    /// Is this a zero-sized layout?
-    pub(crate) fn is_zero(&self) -> bool {
-        self.size == 0 && self.align == 0
-    }
-
-    /// Construct a zero-sized layout.
-    pub(crate) fn zero() -> Self {
-        Self::new(0, 0)
-    }
-
     /// Get this layout as an opaque type.
     pub(crate) fn opaque(&self) -> Opaque {
         Opaque(*self)

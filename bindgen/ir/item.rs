@@ -673,16 +673,6 @@ impl Item {
             }
     }
 
-    /// Is this a reference to another type?
-    pub(crate) fn is_type_ref(&self) -> bool {
-        self.as_type().map_or(false, |ty| ty.is_type_ref())
-    }
-
-    /// Is this item a var type?
-    pub(crate) fn is_var(&self) -> bool {
-        matches!(*self.kind(), ItemKind::Var(..))
-    }
-
     /// Take out item NameOptions
     pub(crate) fn name<'a>(
         &'a self,

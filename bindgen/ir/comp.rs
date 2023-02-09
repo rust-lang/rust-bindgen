@@ -345,21 +345,6 @@ impl Bitfield {
         self.offset_into_unit
     }
 
-    /// Get the mask value that when &'ed with this bitfield's allocation unit
-    /// produces this bitfield's value.
-    pub(crate) fn mask(&self) -> u64 {
-        use std::u64;
-
-        let unoffseted_mask =
-            if self.width() as u64 == mem::size_of::<u64>() as u64 * 8 {
-                u64::MAX
-            } else {
-                (1u64 << self.width()) - 1u64
-            };
-
-        unoffseted_mask << self.offset_into_unit()
-    }
-
     /// Get the bit width of this bitfield.
     pub(crate) fn width(&self) -> u32 {
         self.data.bitfield_width().unwrap()
