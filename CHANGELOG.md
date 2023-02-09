@@ -166,6 +166,8 @@
 ## Changed
 
 ## Removed
+ * The following deprecated flags were removed: `--use-msvc-mangling`,
+   `--rustfmt-bindings` and `--size_t-is-usize`.
 
 ## Fixed
 
