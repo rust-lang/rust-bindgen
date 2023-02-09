@@ -239,9 +239,6 @@ struct BindgenCommand {
     /// Conservatively generate inline namespaces to avoid name conflicts.
     #[arg(long)]
     conservative_inline_namespaces: bool,
-    /// MSVC C++ ABI mangling. DEPRECATED: Has no effect.
-    #[arg(long)]
-    use_msvc_mangling: bool,
     /// Allowlist all the free-standing functions matching <REGEX>. Other non-allowlisted functions will not be generated.
     #[arg(long, value_name = "REGEX")]
     allowlist_function: Vec<String>,
@@ -266,20 +263,14 @@ struct BindgenCommand {
     /// Do not record matching items in the regex sets. This disables reporting of unused items.
     #[arg(long)]
     no_record_matches: bool,
-    /// Ignored - this is enabled by default.
-    #[arg(long = "size_t-is-usize")]
-    size_t_is_usize: bool,
     /// Do not bind size_t as usize (useful on platforms where those types are incompatible).
     #[arg(long = "no-size_t-is-usize")]
     no_size_t_is_usize: bool,
     /// Do not format the generated bindings with rustfmt.
     #[arg(long)]
     no_rustfmt_bindings: bool,
-    /// Format the generated bindings with rustfmt. DEPRECATED: --rustfmt-bindings is now enabled by default. Disable with --no-rustfmt-bindings.
-    #[arg(long)]
-    rustfmt_bindings: bool,
     /// The absolute path to the rustfmt configuration file. The configuration file will be used for formatting the bindings. This parameter is incompatible with --no-rustfmt-bindings.
-    #[arg(long, value_name = "PATH")]
+    #[arg(long, value_name = "PATH", conflicts_with("no_rustfmt_bindings"))]
     rustfmt_configuration_file: Option<String>,
     /// Avoid deriving PartialEq for types matching <REGEX>.
     #[arg(long, value_name = "REGEX")]
@@ -449,7 +440,6 @@ where
         rust_target,
         use_core,
         conservative_inline_namespaces,
-        use_msvc_mangling: _,
         allowlist_function,
         generate_inline_functions,
         allowlist_type,
@@ -458,10 +448,8 @@ where
         verbose,
         dump_preprocessed_input,
         no_record_matches,
-        size_t_is_usize: _,
         no_size_t_is_usize,
         no_rustfmt_bindings,
-        rustfmt_bindings: _,
         rustfmt_configuration_file,
         no_partialeq,
         no_copy,
@@ -830,13 +818,6 @@ where
 
     if let Some(path_str) = rustfmt_configuration_file {
         let path = PathBuf::from(path_str);
-
-        if no_rustfmt_bindings {
-            return Err(Error::new(
-                ErrorKind::Other,
-                "Cannot supply both --rustfmt-configuration-file and --no-rustfmt-bindings",
-            ));
-        }
 
         if !path.is_absolute() {
             return Err(Error::new(
