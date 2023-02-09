@@ -44,12 +44,10 @@ impl<'a> CSerialize<'a> for Item {
             ItemKind::Function(func) => {
                 func.serialize(ctx, self, stack, writer)
             }
-            kind => {
-                return Err(CodegenError::Serialize {
-                    msg: format!("Cannot serialize item kind {:?}", kind),
-                    loc: get_loc(self),
-                });
-            }
+            kind => Err(CodegenError::Serialize {
+                msg: format!("Cannot serialize item kind {:?}", kind),
+                loc: get_loc(self),
+            }),
         }
     }
 }
