@@ -5,7 +5,7 @@ use crate::ir::ty::{TypeKind, RUST_DERIVE_IN_ARRAY_LIMIT};
 
 /// Generate a manual implementation of `PartialEq` trait for the
 /// specified compound type.
-pub fn gen_partialeq_impl(
+pub(crate) fn gen_partialeq_impl(
     ctx: &BindgenContext,
     comp_info: &CompInfo,
     item: &Item,

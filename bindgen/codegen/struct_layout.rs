@@ -13,7 +13,7 @@ const MAX_GUARANTEED_ALIGN: usize = 8;
 
 /// Trace the layout of struct.
 #[derive(Debug)]
-pub struct StructLayoutTracker<'a> {
+pub(crate) struct StructLayoutTracker<'a> {
     name: &'a str,
     ctx: &'a BindgenContext,
     comp: &'a CompInfo,
@@ -29,7 +29,7 @@ pub struct StructLayoutTracker<'a> {
 }
 
 /// Returns a size aligned to a given value.
-pub fn align_to(size: usize, align: usize) -> usize {
+pub(crate) fn align_to(size: usize, align: usize) -> usize {
     if align == 0 {
         return size;
     }
@@ -43,7 +43,7 @@ pub fn align_to(size: usize, align: usize) -> usize {
 }
 
 /// Returns the lower power of two byte count that can hold at most n bits.
-pub fn bytes_from_bits_pow2(mut n: usize) -> usize {
+pub(crate) fn bytes_from_bits_pow2(mut n: usize) -> usize {
     if n == 0 {
         return 0;
     }
@@ -83,7 +83,7 @@ fn test_bytes_from_bits_pow2() {
 }
 
 impl<'a> StructLayoutTracker<'a> {
-    pub fn new(
+    pub(crate) fn new(
         ctx: &'a BindgenContext,
         comp: &'a CompInfo,
         ty: &'a Type,
@@ -109,15 +109,15 @@ impl<'a> StructLayoutTracker<'a> {
         }
     }
 
-    pub fn can_copy_union_fields(&self) -> bool {
+    pub(crate) fn can_copy_union_fields(&self) -> bool {
         self.can_copy_union_fields
     }
 
-    pub fn is_rust_union(&self) -> bool {
+    pub(crate) fn is_rust_union(&self) -> bool {
         self.is_rust_union
     }
 
-    pub fn saw_vtable(&mut self) {
+    pub(crate) fn saw_vtable(&mut self) {
         debug!("saw vtable for {}", self.name);
 
         let ptr_size = self.ctx.target_pointer_size();
@@ -126,7 +126,7 @@ impl<'a> StructLayoutTracker<'a> {
         self.max_field_align = ptr_size;
     }
 
-    pub fn saw_base(&mut self, base_ty: &Type) {
+    pub(crate) fn saw_base(&mut self, base_ty: &Type) {
         debug!("saw base for {}", self.name);
         if let Some(layout) = base_ty.layout(self.ctx) {
             self.align_to_latest_field(layout);
@@ -137,7 +137,7 @@ impl<'a> StructLayoutTracker<'a> {
         }
     }
 
-    pub fn saw_bitfield_unit(&mut self, layout: Layout) {
+    pub(crate) fn saw_bitfield_unit(&mut self, layout: Layout) {
         debug!("saw bitfield unit for {}: {:?}", self.name, layout);
 
         self.align_to_latest_field(layout);
@@ -159,7 +159,7 @@ impl<'a> StructLayoutTracker<'a> {
 
     /// Returns a padding field if necessary for a given new field _before_
     /// adding that field.
-    pub fn saw_field(
+    pub(crate) fn saw_field(
         &mut self,
         field_name: &str,
         field_ty: &Type,
@@ -189,7 +189,7 @@ impl<'a> StructLayoutTracker<'a> {
         self.saw_field_with_layout(field_name, field_layout, field_offset)
     }
 
-    pub fn saw_field_with_layout(
+    pub(crate) fn saw_field_with_layout(
         &mut self,
         field_name: &str,
         field_layout: Layout,
@@ -274,7 +274,7 @@ impl<'a> StructLayoutTracker<'a> {
         padding_layout.map(|layout| self.padding_field(layout))
     }
 
-    pub fn add_tail_padding(
+    pub(crate) fn add_tail_padding(
         &mut self,
         comp_name: &str,
         comp_layout: Layout,
@@ -305,7 +305,7 @@ impl<'a> StructLayoutTracker<'a> {
         Some(self.padding_field(Layout::new(size, 0)))
     }
 
-    pub fn pad_struct(
+    pub(crate) fn pad_struct(
         &mut self,
         layout: Layout,
     ) -> Option<proc_macro2::TokenStream> {
@@ -360,7 +360,7 @@ impl<'a> StructLayoutTracker<'a> {
         }
     }
 
-    pub fn requires_explicit_align(&self, layout: Layout) -> bool {
+    pub(crate) fn requires_explicit_align(&self, layout: Layout) -> bool {
         let repr_align = self.ctx.options().rust_features().repr_align;
 
         // Always force explicit repr(align) for stuff more than 16-byte aligned

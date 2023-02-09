@@ -17,7 +17,7 @@ use std::num::Wrapping;
 
 /// The type for a constant variable.
 #[derive(Debug)]
-pub enum VarType {
+pub(crate) enum VarType {
     /// A boolean.
     Bool(bool),
     /// An integer.
@@ -32,7 +32,7 @@ pub enum VarType {
 
 /// A `Var` is our intermediate representation of a variable.
 #[derive(Debug)]
-pub struct Var {
+pub(crate) struct Var {
     /// The name of the variable.
     name: String,
     /// The mangled name of the variable.
@@ -47,7 +47,7 @@ pub struct Var {
 
 impl Var {
     /// Construct a new `Var`.
-    pub fn new(
+    pub(crate) fn new(
         name: String,
         mangled_name: Option<String>,
         ty: TypeId,
@@ -65,27 +65,27 @@ impl Var {
     }
 
     /// Is this variable `const` qualified?
-    pub fn is_const(&self) -> bool {
+    pub(crate) fn is_const(&self) -> bool {
         self.is_const
     }
 
     /// The value of this constant variable, if any.
-    pub fn val(&self) -> Option<&VarType> {
+    pub(crate) fn val(&self) -> Option<&VarType> {
         self.val.as_ref()
     }
 
     /// Get this variable's type.
-    pub fn ty(&self) -> TypeId {
+    pub(crate) fn ty(&self) -> TypeId {
         self.ty
     }
 
     /// Get this variable's name.
-    pub fn name(&self) -> &str {
+    pub(crate) fn name(&self) -> &str {
         &self.name
     }
 
     /// Get this variable's mangled name.
-    pub fn mangled_name(&self) -> Option<&str> {
+    pub(crate) fn mangled_name(&self) -> Option<&str> {
         self.mangled_name.as_deref()
     }
 }
