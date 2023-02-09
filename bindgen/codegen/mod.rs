@@ -1613,7 +1613,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
             };
             let align_field = quote! {
                 pub #align_field_ident: [#align_ty; 0],
-            } ;
+            };
             fields.extend(Some(align_field));
         }
 
