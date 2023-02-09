@@ -22,7 +22,7 @@ rust-version = "1.60.0"
 
 [lib]
 name = "bindgen"
-path = "./lib.rs"
+path = "lib.rs"
 
 [dependencies]
 bitflags = "1.0.3"
