@@ -9,6 +9,7 @@
 //! additional documentation.
 #![deny(missing_docs)]
 #![deny(unused_extern_crates)]
+#![deny(clippy::disallowed_methods)]
 // To avoid rather annoying warnings when matching with CXCursor_xxx as a
 // constant.
 #![allow(non_upper_case_globals)]
