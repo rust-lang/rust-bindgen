@@ -5,16 +5,14 @@
 //! ```rust
 //! extern crate quickcheck;
 //! extern crate quickchecking;
-//! extern crate rand;
-//! use quickcheck::{Arbitrary, Gen, StdGen};
+//! use quickcheck::{Arbitrary, Gen};
 //! use quickchecking::fuzzers;
-//! use rand::thread_rng;
 //!
 //! fn main() {
 //!     let generate_range: usize = 10; // Determines things like the length of
 //!                                     // arbitrary vectors generated.
 //!     let header = fuzzers::HeaderC::arbitrary(
-//!        &mut StdGen::new(thread_rng(), generate_range));
+//!        &mut Gen::new(generate_range));
 //!     println!("{}", header);
 //! }
 //! ```
@@ -23,11 +21,9 @@
 #[macro_use]
 extern crate lazy_static;
 extern crate quickcheck;
-extern crate rand;
 extern crate tempdir;
 
-use quickcheck::{QuickCheck, StdGen, TestResult};
-use rand::thread_rng;
+use quickcheck::{Gen, QuickCheck, TestResult};
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
@@ -110,7 +106,7 @@ fn bindgen_prop(header: fuzzers::HeaderC) -> TestResult {
 /// to the `csmith-fuzzing/predicate.py` script.
 pub fn test_bindgen(
     generate_range: usize,
-    tests: usize,
+    tests: u64,
     output_path: Option<&str>,
 ) {
     if let Some(path) = output_path {
@@ -120,6 +116,6 @@ pub fn test_bindgen(
 
     QuickCheck::new()
         .tests(tests)
-        .gen(StdGen::new(thread_rng(), generate_range))
+        .gen(Gen::new(generate_range))
         .quickcheck(bindgen_prop as fn(fuzzers::HeaderC) -> TestResult)
 }
