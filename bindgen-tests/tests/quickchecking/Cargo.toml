@@ -15,8 +15,7 @@ path = "src/bin.rs"
 [dependencies]
 clap = "2.28"
 lazy_static = "1.0"
-quickcheck = "0.4"
-rand = "0.3"
+quickcheck = "1.0"
 tempdir = "0.3"
 
 [features]
