@@ -105,8 +105,7 @@ fn main() {
     let output_path: Option<&str> = matches.value_of("path");
     let generate_range: usize =
         matches.value_of("range").unwrap().parse::<usize>().unwrap();
-    let tests: usize =
-        matches.value_of("count").unwrap().parse::<usize>().unwrap();
+    let tests: u64 = matches.value_of("count").unwrap().parse::<u64>().unwrap();
 
     quickchecking::test_bindgen(generate_range, tests, output_path)
 }

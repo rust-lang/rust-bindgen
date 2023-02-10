@@ -1,5 +1,4 @@
-use quickcheck::{Arbitrary, Gen, StdGen};
-use rand::thread_rng;
+use quickcheck::{Arbitrary, Gen};
 use std::fmt;
 
 /// BaseTypeC is used in generation of C headers to represent the C language's
@@ -182,8 +181,8 @@ impl MakeUnique for DeclarationC {
 /// A qucickcheck trait for describing how DeclarationC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for DeclarationC {
-    fn arbitrary<G: Gen>(g: &mut G) -> DeclarationC {
-        match g.gen_range(0, 5) {
+    fn arbitrary(g: &mut Gen) -> DeclarationC {
+        match gen_range(g, 0, 5) {
             0 => DeclarationC::FunctionDecl(FunctionPrototypeC::arbitrary(g)),
             1 => DeclarationC::FunctionPtrDecl(
                 FunctionPointerDeclarationC::arbitrary(g),
@@ -214,7 +213,7 @@ impl fmt::Display for DeclarationC {
 /// A qucickcheck trait for describing how DeclarationListC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for DeclarationListC {
-    fn arbitrary<G: Gen>(g: &mut G) -> DeclarationListC {
+    fn arbitrary(g: &mut Gen) -> DeclarationListC {
         DeclarationListC {
             decls: Arbitrary::arbitrary(g),
         }
@@ -235,7 +234,7 @@ impl fmt::Display for DeclarationListC {
 /// A qucickcheck trait for describing how BaseTypeC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for BaseTypeC {
-    fn arbitrary<G: Gen>(g: &mut G) -> BaseTypeC {
+    fn arbitrary(g: &mut Gen) -> BaseTypeC {
         // Special case `long double` until issue #550 is resolved.
         let base_type = vec![
             "char",
@@ -286,7 +285,7 @@ impl fmt::Display for BaseTypeC {
 /// A qucickcheck trait for describing how TypeQualifierC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for TypeQualifierC {
-    fn arbitrary<G: Gen>(g: &mut G) -> TypeQualifierC {
+    fn arbitrary(g: &mut Gen) -> TypeQualifierC {
         let qualifier = vec!["const", ""];
         TypeQualifierC {
             def: String::from(*g.choose(&qualifier).unwrap()),
@@ -304,10 +303,10 @@ impl fmt::Display for TypeQualifierC {
 /// A qucickcheck trait for describing how PointerLevelC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for PointerLevelC {
-    fn arbitrary<G: Gen>(g: &mut G) -> PointerLevelC {
+    fn arbitrary(g: &mut Gen) -> PointerLevelC {
         PointerLevelC {
             // 16 is an arbitrary "not too big" number for capping pointer level.
-            def: (0..g.gen_range(0, 16)).map(|_| "*").collect::<String>(),
+            def: (0..gen_range(g, 0, 16)).map(|_| "*").collect::<String>(),
         }
     }
 }
@@ -322,16 +321,16 @@ impl fmt::Display for PointerLevelC {
 /// A qucickcheck trait for describing how ArrayDimensionC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for ArrayDimensionC {
-    fn arbitrary<G: Gen>(g: &mut G) -> ArrayDimensionC {
+    fn arbitrary(g: &mut Gen) -> ArrayDimensionC {
         // Keep these small, clang complains when they get too big.
-        let dimensions = g.gen_range(0, 5);
+        let dimensions = gen_range(g, 0, 5);
         let mut def = String::new();
 
-        let lower_bound = i32::from(cfg!(feature = "zero-sized-arrays"));
+        let lower_bound = u64::from(cfg!(feature = "zero-sized-arrays"));
 
         for _ in 1..dimensions {
             // 16 is an arbitrary "not too big" number for capping array size.
-            def += &format!("[{}]", g.gen_range(lower_bound, 16));
+            def += &format!("[{}]", gen_range(g, lower_bound, 16));
         }
         ArrayDimensionC { def }
     }
@@ -355,7 +354,7 @@ impl MakeUnique for BasicTypeDeclarationC {
 /// A qucickcheck trait for describing how BasicTypeDeclarationC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for BasicTypeDeclarationC {
-    fn arbitrary<G: Gen>(g: &mut G) -> BasicTypeDeclarationC {
+    fn arbitrary(g: &mut Gen) -> BasicTypeDeclarationC {
         BasicTypeDeclarationC {
             type_qualifier: Arbitrary::arbitrary(g),
             type_name: Arbitrary::arbitrary(g),
@@ -392,12 +391,12 @@ impl MakeUnique for StructDeclarationC {
 /// A qucickcheck trait for describing how StructDeclarationC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for StructDeclarationC {
-    fn arbitrary<G: Gen>(g: &mut G) -> StructDeclarationC {
+    fn arbitrary(g: &mut Gen) -> StructDeclarationC {
         // Reduce generator size as a method of putting a bound on recursion.
         // When size < 1 the empty list is generated.
         let reduced_size: usize = (g.size() / 2) + 1;
         let mut decl_list: DeclarationListC =
-            Arbitrary::arbitrary(&mut StdGen::new(thread_rng(), reduced_size));
+            Arbitrary::arbitrary(&mut Gen::new(reduced_size));
         let mut fields: DeclarationListC = DeclarationListC { decls: vec![] };
 
         for (i, decl) in decl_list.decls.iter_mut().enumerate() {
@@ -440,12 +439,12 @@ impl MakeUnique for UnionDeclarationC {
 /// A qucickcheck trait for describing how UnionDeclarationC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for UnionDeclarationC {
-    fn arbitrary<G: Gen>(g: &mut G) -> UnionDeclarationC {
+    fn arbitrary(g: &mut Gen) -> UnionDeclarationC {
         // Reduce generator size as a method of putting a bound on recursion.
         // When size < 1 the empty list is generated.
         let reduced_size: usize = (g.size() / 2) + 1;
         let mut decl_list: DeclarationListC =
-            Arbitrary::arbitrary(&mut StdGen::new(thread_rng(), reduced_size));
+            Arbitrary::arbitrary(&mut Gen::new(reduced_size));
         let mut fields: DeclarationListC = DeclarationListC { decls: vec![] };
 
         for (i, decl) in decl_list.decls.iter_mut().enumerate() {
@@ -488,7 +487,7 @@ impl MakeUnique for FunctionPointerDeclarationC {
 /// A qucickcheck trait for describing how FunctionPointerDeclarationC types can
 /// be randomly generated and shrunk.
 impl Arbitrary for FunctionPointerDeclarationC {
-    fn arbitrary<G: Gen>(g: &mut G) -> FunctionPointerDeclarationC {
+    fn arbitrary(g: &mut Gen) -> FunctionPointerDeclarationC {
         FunctionPointerDeclarationC {
             type_qualifier: Arbitrary::arbitrary(g),
             type_name: Arbitrary::arbitrary(g),
@@ -525,7 +524,7 @@ impl MakeUnique for FunctionPrototypeC {
 /// A qucickcheck trait for describing how FunctionPrototypeC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for FunctionPrototypeC {
-    fn arbitrary<G: Gen>(g: &mut G) -> FunctionPrototypeC {
+    fn arbitrary(g: &mut Gen) -> FunctionPrototypeC {
         FunctionPrototypeC {
             type_qualifier: Arbitrary::arbitrary(g),
             type_name: Arbitrary::arbitrary(g),
@@ -554,7 +553,7 @@ impl fmt::Display for FunctionPrototypeC {
 /// A qucickcheck trait for describing how ParameterC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for ParameterC {
-    fn arbitrary<G: Gen>(g: &mut G) -> ParameterC {
+    fn arbitrary(g: &mut Gen) -> ParameterC {
         ParameterC {
             type_qualifier: Arbitrary::arbitrary(g),
             type_name: Arbitrary::arbitrary(g),
@@ -577,7 +576,7 @@ impl fmt::Display for ParameterC {
 /// A qucickcheck trait for describing how ParameterListC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for ParameterListC {
-    fn arbitrary<G: Gen>(g: &mut G) -> ParameterListC {
+    fn arbitrary(g: &mut Gen) -> ParameterListC {
         ParameterListC {
             params: Arbitrary::arbitrary(g),
         }
@@ -601,7 +600,7 @@ impl fmt::Display for ParameterListC {
 /// A qucickcheck trait for describing how HeaderC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for HeaderC {
-    fn arbitrary<G: Gen>(g: &mut G) -> HeaderC {
+    fn arbitrary(g: &mut Gen) -> HeaderC {
         let mut decl_list: DeclarationListC = Arbitrary::arbitrary(g);
         for (i, decl) in decl_list.decls.iter_mut().enumerate() {
             decl.make_unique(i);
@@ -627,4 +626,10 @@ impl fmt::Debug for HeaderC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self)
     }
+}
+
+/// FIXME: is this actually uniform?
+fn gen_range(gen: &mut Gen, lo: u64, hi: u64) -> u64 {
+    let len = hi - lo;
+    (u64::arbitrary(gen) % len) + lo
 }
