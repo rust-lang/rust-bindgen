@@ -3,6 +3,7 @@
 static inline int foo() {
     return 11;
 }
+static int bar();
 static int bar() {
     return 1;
 }
