@@ -5,7 +5,7 @@
 As Rust does not support bitfields, Bindgen generates a struct for each with the following characteristics
 * Immutable getter functions for each bitfield named ```<bitfield>```
 * Setter functions for each contiguous block of bitfields named ```set_<bitfield>```
-* Far each contiguous block of bitfields, Bindgen emits an opaque physical field that contains one or more logical bitfields
+* For each contiguous block of bitfields, Bindgen emits an opaque physical field that contains one or more logical bitfields
 * A static constructor  ```new_bitfield_{1, 2, ...}``` with a parameter for each bitfield contained within the opaque physical field.
 
 ## Bitfield examples
