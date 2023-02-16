@@ -278,6 +278,12 @@ you're unsure.</p>
 <pre><code class="language-toml">[build-dependencies]
 bindgen = &quot;0.53.1&quot;
 </code></pre>
+<blockquote>
+<p>⚠️ <strong>Warning</strong></p>
+<p><code>bindgen</code> needs to be added to the <code>[build-dependencies]</code> section, not the normal
+<code>[dependencies]</code> section. If you add it as a regular dependency, you will get
+errors like the following: <code>error[E0463]: can't find crate for `bindgen`</code></p>
+</blockquote>
 <h1><a class="header" href="#create-a-wrapperh-header" id="create-a-wrapperh-header">Create a <code>wrapper.h</code> Header</a></h1>
 <p>The <code>wrapper.h</code> file will include all the various headers containing
 declarations of structs and functions we would like bindings for. In the
