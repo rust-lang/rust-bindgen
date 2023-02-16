@@ -4029,14 +4029,10 @@ impl CodeGenerator for Function {
 
         let is_internal = matches!(self.linkage(), Linkage::Internal);
 
-        if is_internal {
-            if ctx.options().wrap_static_fns {
-                result.items_to_serialize.push(item.id());
-            } else {
-                // We can't do anything with Internal functions if we are not wrapping them so just
-                // avoid generating anything for them.
-                return None;
-            }
+        if is_internal && !ctx.options().wrap_static_fns {
+            // We can't do anything with Internal functions if we are not wrapping them so just
+            // avoid generating anything for them.
+            return None;
         }
 
         // Pure virtual methods have no actual symbol, so we can't generate
@@ -4138,6 +4134,10 @@ impl CodeGenerator for Function {
             }
             abi => abi,
         };
+
+        if is_internal && ctx.options().wrap_static_fns {
+            result.items_to_serialize.push(item.id());
+        }
 
         // Handle overloaded functions by giving each overload its own unique
         // suffix.
