@@ -31,3 +31,11 @@ static inline int takes_alias(func f) {
 static inline int takes_qualified(const int *const *arg) {
     return **arg;
 }
+
+enum foo {
+    BAR = 0x0,
+};
+
+static inline enum foo takes_enum(const enum foo f) {
+    return f;
+}

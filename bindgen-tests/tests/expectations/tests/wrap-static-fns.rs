@@ -50,3 +50,9 @@ extern "C" {
         arg: *const *const ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_int;
 }
+pub const foo_BAR: foo = 0;
+pub type foo = ::std::os::raw::c_uint;
+extern "C" {
+    #[link_name = "\u{1}takes_enum__extern"]
+    pub fn takes_enum(f: foo) -> foo;
+}

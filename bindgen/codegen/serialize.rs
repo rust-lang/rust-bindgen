@@ -311,6 +311,14 @@ impl<'a> CSerialize<'a> for Type {
                     CompKind::Union => write!(writer, "union {}", name)?,
                 };
             }
+            TypeKind::Enum(_enum_ty) => {
+                if self.is_const() {
+                    write!(writer, "const ")?;
+                }
+
+                let name = item.canonical_name(ctx);
+                write!(writer, "enum {}", name)?;
+            }
             ty => {
                 return Err(CodegenError::Serialize {
                     msg: format!("Cannot serialize type kind {:?}", ty),
