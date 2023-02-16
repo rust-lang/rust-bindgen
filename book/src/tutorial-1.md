@@ -13,3 +13,9 @@ you're unsure.
 [build-dependencies]
 bindgen = "0.53.1"
 ```
+
+> ⚠️ **Warning**
+>
+> `bindgen` needs to be added to the `[build-dependencies]` section, not the normal
+> `[dependencies]` section. If you add it as a regular dependency, you will get
+> errors like the following: `` error[E0463]: can't find crate for `bindgen` ``
