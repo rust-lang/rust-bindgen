@@ -12,3 +12,5 @@ int takes_alias__extern(func f) asm("takes_alias__extern");
 int takes_alias__extern(func f) { return takes_alias(f); }
 int takes_qualified__extern(const int *const *arg) asm("takes_qualified__extern");
 int takes_qualified__extern(const int *const *arg) { return takes_qualified(arg); }
+enum foo takes_enum__extern(const enum foo f) asm("takes_enum__extern");
+enum foo takes_enum__extern(const enum foo f) { return takes_enum(f); }
