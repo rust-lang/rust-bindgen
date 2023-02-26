@@ -13,6 +13,11 @@ It is required to use Clang 5.0 or greater.
 
 #### Windows
 
+Recent versions of Windows 10 or Windows 11:
+```
+winget install LLVM.LLVM
+```
+
 Download and install the official pre-built binary from
 [LLVM download page](http://releases.llvm.org/download.html).
 
