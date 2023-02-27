@@ -13,12 +13,12 @@ It is required to use Clang 5.0 or greater.
 
 #### Windows
 
-Recent versions of Windows 10 or Windows 11:
-```
+If you use winget:
+```powershell
 winget install LLVM.LLVM
 ```
 
-Download and install the official pre-built binary from
+Alternatively, you can download and install the official pre-built binary from
 [LLVM download page](http://releases.llvm.org/download.html).
 
 You will also need to set `LIBCLANG_PATH` as an [environment
