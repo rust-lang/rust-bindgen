@@ -305,6 +305,9 @@ struct BindgenCommand {
     /// Require successful linkage to all functions in the library.
     #[arg(long)]
     dynamic_link_require_all: bool,
+    /// Prefix the name of exported symbols.
+    #[arg(long)]
+    prefix_link_name: Option<String>,
     /// Makes generated bindings `pub` only for items if the items are publically accessible in C++.
     #[arg(long)]
     respect_cxx_access_specs: bool,
@@ -462,6 +465,7 @@ where
         wasm_import_module_name,
         dynamic_loading,
         dynamic_link_require_all,
+        prefix_link_name,
         respect_cxx_access_specs,
         translate_enum_integer_types,
         c_naming,
@@ -866,6 +870,28 @@ where
 
     if dynamic_link_require_all {
         builder = builder.dynamic_link_require_all(true);
+    }
+
+    if let Some(prefix_link_name) = prefix_link_name {
+        #[derive(Debug)]
+        struct PrefixLinkNameCallback {
+            prefix: String,
+        }
+
+        impl bindgen::callbacks::ParseCallbacks for PrefixLinkNameCallback {
+            fn generated_link_name_override(
+                &self,
+                item_info: bindgen::callbacks::ItemInfo<'_>,
+            ) -> Option<String> {
+                let mut prefix = self.prefix.clone();
+                prefix.push_str(item_info.name);
+                Some(prefix)
+            }
+        }
+
+        builder = builder.parse_callbacks(Box::new(PrefixLinkNameCallback {
+            prefix: prefix_link_name,
+        }))
     }
 
     if respect_cxx_access_specs {
