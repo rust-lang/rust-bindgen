@@ -12,4 +12,4 @@ edition = "2018"
 [dependencies]
 objc = "0.2"
 block = "0.1"
-libloading = "0.6.2"
+libloading = "0.7"
