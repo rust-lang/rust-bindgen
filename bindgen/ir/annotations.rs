@@ -21,10 +21,7 @@ pub enum FieldAccessorKind {
 
 /// Annotations for a given item, or a field.
 ///
-/// You can see the kind of comments that are accepted in the Doxygen
-/// documentation:
-///
-/// http://www.stack.nl/~dimitri/doxygen/manual/docblocks.html
+/// You can see the kind of comments that are accepted in the [Doxygen documentation](https://www.doxygen.nl/manual/docblocks.html).
 #[derive(Default, Clone, PartialEq, Eq, Debug)]
 pub struct Annotations {
     /// Whether this item is marked as opaque. Only applies to types.
