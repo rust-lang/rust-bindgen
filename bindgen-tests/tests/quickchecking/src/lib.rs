@@ -21,7 +21,7 @@
 #[macro_use]
 extern crate lazy_static;
 extern crate quickcheck;
-extern crate tempdir;
+extern crate tempfile;
 
 use quickcheck::{Gen, QuickCheck, TestResult};
 use std::error::Error;
@@ -30,7 +30,7 @@ use std::io::Write;
 use std::path::PathBuf;
 use std::process::{Command, Output};
 use std::sync::Mutex;
-use tempdir::TempDir;
+use tempfile::Builder;
 
 /// Contains definitions of and impls for types used to fuzz C declarations.
 pub mod fuzzers;
@@ -52,7 +52,7 @@ lazy_static! {
 fn run_predicate_script(
     header: fuzzers::HeaderC,
 ) -> Result<Output, Box<dyn Error>> {
-    let dir = TempDir::new("bindgen_prop")?;
+    let dir = Builder::new().prefix("bindgen_prop").tempdir()?;
     let header_path = dir.path().join("prop_test.h");
 
     let mut header_file = File::create(&header_path)?;
