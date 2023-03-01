@@ -13,7 +13,7 @@ name = "quickchecking"
 path = "src/bin.rs"
 
 [dependencies]
-clap = "2.28"
+clap = "4"
 lazy_static = "1.0"
 quickcheck = "1.0"
 tempfile = "3"
