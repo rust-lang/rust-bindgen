@@ -17,39 +17,40 @@
 extern crate clap;
 extern crate quickchecking;
 
-use clap::{App, Arg};
-use std::path::Path;
+use clap::{Arg, ArgAction, Command};
+use std::path::PathBuf;
 
-// Validate CLI argument input for generation range.
-fn validate_generate_range(v: String) -> Result<(), String> {
+// Parse CLI argument input for generation range.
+fn parse_generate_range(v: &str) -> Result<usize, String> {
     match v.parse::<usize>() {
-        Ok(_) => Ok(()),
+        Ok(v) => Ok(v),
         Err(_) => Err(String::from(
             "Generate range could not be converted to a usize.",
         )),
     }
 }
 
-// Validate CLI argument input for tests count.
-fn validate_tests_count(v: String) -> Result<(), String> {
-    match v.parse::<usize>() {
-        Ok(_) => Ok(()),
+// Parse CLI argument input for tests count.
+fn parse_tests_count(v: &str) -> Result<u64, String> {
+    match v.parse::<u64>() {
+        Ok(v) => Ok(v),
         Err(_) => Err(String::from(
             "Tests count could not be converted to a usize.",
         )),
     }
 }
 
-// Validate CLI argument input for fuzzed headers output path.
-fn validate_path(v: String) -> Result<(), String> {
-    match Path::new(&v).is_dir() {
-        true => Ok(()),
+// Parse CLI argument input for fuzzed headers output path.
+fn parse_path(v: &str) -> Result<PathBuf, String> {
+    let path = PathBuf::from(v);
+    match path.is_dir() {
+        true => Ok(path),
         false => Err(String::from("Provided directory path does not exist.")),
     }
 }
 
 fn main() {
-    let matches = App::new("quickchecking")
+    let matches = Command::new("quickchecking")
         .version("0.2.0")
         .about(
             "Bindgen property tests with quickcheck. \
@@ -57,20 +58,20 @@ fn main() {
              csmith/predicate.py script",
         )
         .arg(
-            Arg::with_name("path")
-                .short("p")
+            Arg::new("path")
+                .short('p')
                 .long("path")
                 .value_name("PATH")
                 .help(
                     "Optional. Preserve generated headers for inspection, \
                      provide directory path for header output. [default: None] ",
                 )
-                .takes_value(true)
-                .validator(validate_path),
+                .action(ArgAction::Set)
+                .value_parser(parse_path),
         )
         .arg(
-            Arg::with_name("range")
-                .short("r")
+            Arg::new("range")
+                .short('r')
                 .long("range")
                 .value_name("RANGE")
                 .help(
@@ -80,13 +81,13 @@ fn main() {
                      to grow much for execution time to increase \
                      significantly.",
                 )
-                .takes_value(true)
+                .action(ArgAction::Set)
                 .default_value("32")
-                .validator(validate_generate_range),
+                .value_parser(parse_generate_range),
         )
         .arg(
-            Arg::with_name("count")
-                .short("c")
+            Arg::new("count")
+                .short('c')
                 .long("count")
                 .value_name("COUNT")
                 .help(
@@ -96,16 +97,15 @@ fn main() {
                      large. Increase this number if you're willing to \
                      wait a while.",
                 )
-                .takes_value(true)
+                .action(ArgAction::Set)
                 .default_value("2")
-                .validator(validate_tests_count),
+                .value_parser(parse_tests_count),
         )
         .get_matches();
 
-    let output_path: Option<&str> = matches.value_of("path");
-    let generate_range: usize =
-        matches.value_of("range").unwrap().parse::<usize>().unwrap();
-    let tests: u64 = matches.value_of("count").unwrap().parse::<u64>().unwrap();
+    let output_path = matches.get_one::<PathBuf>("path").map(PathBuf::as_path);
+    let generate_range = *matches.get_one::<usize>("range").unwrap();
+    let tests = *matches.get_one::<u64>("count").unwrap();
 
     quickchecking::test_bindgen(generate_range, tests, output_path)
 }
