@@ -27,7 +27,7 @@ use quickcheck::{Gen, QuickCheck, TestResult};
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 use std::sync::Mutex;
 use tempfile::Builder;
@@ -107,11 +107,10 @@ fn bindgen_prop(header: fuzzers::HeaderC) -> TestResult {
 pub fn test_bindgen(
     generate_range: usize,
     tests: u64,
-    output_path: Option<&str>,
+    output_path: Option<&Path>,
 ) {
     if let Some(path) = output_path {
-        CONTEXT.lock().unwrap().output_path =
-            Some(String::from(PathBuf::from(path).to_str().unwrap()));
+        CONTEXT.lock().unwrap().output_path = Some(path.display().to_string());
     }
 
     QuickCheck::new()
