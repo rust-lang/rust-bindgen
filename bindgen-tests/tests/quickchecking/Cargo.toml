@@ -16,7 +16,7 @@ path = "src/bin.rs"
 clap = "2.28"
 lazy_static = "1.0"
 quickcheck = "1.0"
-tempdir = "0.3"
+tempfile = "3"
 
 [features]
 # No features by default.
