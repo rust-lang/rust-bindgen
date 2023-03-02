@@ -2,3 +2,4 @@ disallowed-methods = [
     { path = "clang_sys::CXCursor_TranslationUnit", reason = "This value was changed in clang 15"},
     { path = "clang_sys::CXCursor_LastStmt", reason = "This value was changed in clang 15"}
 ]
+missing-docs-in-crate-items = true

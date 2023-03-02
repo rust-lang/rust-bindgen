@@ -110,9 +110,6 @@ get_cargo_args() {
   if [ "$BINDGEN_FEATURE_EXTRA_ASSERTS" == "1"  ]; then
     features+=" testing_only_extra_assertions"
   fi
-  if [ "$BINDGEN_FEATURE_TESTING_ONLY_DOCS" == "1"  ]; then
-    features+=" testing_only_docs"
-  fi
   if [ ! -z "$features" ]; then
     args+=" --features $(echo $features | tr ' ' ',')"
   fi

@@ -3,7 +3,7 @@ use std::fmt;
 
 /// Errors that can occur during code generation.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Error {
+pub(crate) enum Error {
     /// Tried to generate an opaque blob for a type that did not have a layout.
     NoLayoutForOpaqueBlob,
 
@@ -30,4 +30,4 @@ impl fmt::Display for Error {
 impl error::Error for Error {}
 
 /// A `Result` of `T` or an error of `bindgen::codegen::error::Error`.
-pub type Result<T> = ::std::result::Result<T, Error>;
+pub(crate) type Result<T> = ::std::result::Result<T, Error>;
