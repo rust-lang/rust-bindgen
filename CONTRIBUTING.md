@@ -79,14 +79,6 @@ versions of llvm, or specify the path of the desired libclang explicitly:
 $ export LIBCLANG_PATH=path/to/clang-9.0/lib
 ```
 
-Additionally, you may want to build and test with the `testing_only_docs`
-feature to ensure that you aren't forgetting to document types and functions. CI
-will catch it if you forget, but the turn around will be a lot slower ;)
-
-```
-$ cargo build --features testing_only_docs
-```
-
 ## Testing
 
 ### Overview

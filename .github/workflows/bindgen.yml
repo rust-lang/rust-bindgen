@@ -107,7 +107,6 @@ jobs:
         # `static` feature is not testable atm.
         feature_runtime: [0, 1]
         feature_extra_asserts: [0]
-        feature_testing_only_docs: [0]
 
         include:
           # Test with extra asserts + docs just with latest llvm versions to
@@ -117,7 +116,6 @@ jobs:
             release_build: 0
             no_default_features: 0
             feature_extra_asserts: 1
-            feature_testing_only_docs: 1
 
           # FIXME: Seems installing multiarch packages fails:
           #
@@ -132,7 +130,6 @@ jobs:
           #   main_tests: 0
           #   release_build: 0
           #   feature_extra_asserts: 0
-          #   feature_testing_only_docs: 0
 
           # Ensure stuff works on macos too
           - os: macos-latest
@@ -140,7 +137,6 @@ jobs:
             release_build: 0
             no_default_features: 0
             feature_extra_asserts: 0
-            feature_testing_only_docs: 0
     steps:
       - uses: actions/checkout@v3
 
@@ -181,7 +177,6 @@ jobs:
           BINDGEN_RELEASE_BUILD: ${{matrix.release_build}}
           BINDGEN_FEATURE_RUNTIME: ${{matrix.feature_runtime}}
           BINDGEN_FEATURE_EXTRA_ASSERTS: ${{matrix.feature_extra_asserts}}
-          BINDGEN_FEATURE_TESTING_ONLY_DOCS: ${{matrix.feature_testing_only_docs}}
           BINDGEN_NO_DEFAULT_FEATURES: ${{matrix.no_default_features}}
         run: ./ci/test.sh
 
