@@ -54,7 +54,7 @@ pub mod callbacks;
 
 mod clang;
 mod features;
-pub mod ir;
+mod ir;
 mod parse;
 mod regex_set;
 

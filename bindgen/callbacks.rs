@@ -146,7 +146,7 @@ pub enum TypeKind {
     Union,
 }
 
-/// An struct providing information about the item being passed to `ParseCallbacks::generated_name_override`.
+/// An struct providing information about the item being passed to [`ParseCallbacks::generated_name_override`].
 #[non_exhaustive]
 pub struct ItemInfo<'a> {
     /// The name of the item
