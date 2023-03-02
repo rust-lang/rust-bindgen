@@ -1,4 +1,4 @@
-// bindgen-flags: --prefix-link-name foo_
+// bindgen-flags: --prefix-link-name foo_ -- -std=c++11
 
 namespace baz {
 
