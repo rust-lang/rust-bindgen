@@ -32,6 +32,30 @@ impl ParseCallbacks for RemovePrefixParseCallback {
 }
 
 #[derive(Debug)]
+pub struct PrefixLinkNameParseCallback {
+    pub prefix: Option<String>,
+}
+
+impl PrefixLinkNameParseCallback {
+    pub fn new(prefix: &str) -> Self {
+        PrefixLinkNameParseCallback {
+            prefix: Some(prefix.to_string()),
+        }
+    }
+}
+
+impl ParseCallbacks for PrefixLinkNameParseCallback {
+    fn generated_link_name_override(
+        &self,
+        item_info: ItemInfo,
+    ) -> Option<String> {
+        self.prefix
+            .as_deref()
+            .map(|prefix| format!("{}{}", prefix, item_info.name))
+    }
+}
+
+#[derive(Debug)]
 struct EnumVariantRename;
 
 impl ParseCallbacks for EnumVariantRename {
@@ -76,6 +100,11 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
                     .to_owned();
                 let lnopc = RemovePrefixParseCallback::new(prefix.unwrap());
                 Box::new(lnopc)
+            } else if call_back.starts_with("prefix-link-name-") {
+                let prefix =
+                    call_back.split("prefix-link-name-").last().to_owned();
+                let plnpc = PrefixLinkNameParseCallback::new(prefix.unwrap());
+                Box::new(plnpc)
             } else {
                 panic!("Couldn't find name ParseCallbacks: {}", cb)
             }
