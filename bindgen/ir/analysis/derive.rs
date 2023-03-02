@@ -61,7 +61,7 @@ pub enum DeriveTrait {
 /// * For all other (simple) types, compiler and standard library limitations
 ///   dictate whether the trait is implemented.
 #[derive(Debug, Clone)]
-pub struct CannotDerive<'ctx> {
+pub(crate) struct CannotDerive<'ctx> {
     ctx: &'ctx BindgenContext,
 
     derive_trait: DeriveTrait,
@@ -722,7 +722,7 @@ impl<'ctx> From<CannotDerive<'ctx>> for HashMap<ItemId, CanDerive> {
 ///
 /// Elements that are not `CanDerive::Yes` are kept in the set, so that it
 /// represents all items that cannot derive.
-pub fn as_cannot_derive_set(
+pub(crate) fn as_cannot_derive_set(
     can_derive: HashMap<ItemId, CanDerive>,
 ) -> HashSet<ItemId> {
     can_derive

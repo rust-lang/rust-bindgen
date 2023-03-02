@@ -38,7 +38,7 @@ use std::iter;
 ///
 /// This name is required to be safe for Rust, that is, is not expected to
 /// return any rust keyword from here.
-pub trait ItemCanonicalName {
+pub(crate) trait ItemCanonicalName {
     /// Get the canonical name for this item.
     fn canonical_name(&self, ctx: &BindgenContext) -> String;
 }
@@ -55,7 +55,7 @@ pub trait ItemCanonicalName {
 ///
 /// For bar, the canonical path is `vec!["foo", "BAR"]`, while the canonical
 /// name is just `"BAR"`.
-pub trait ItemCanonicalPath {
+pub(crate) trait ItemCanonicalPath {
     /// Get the namespace-aware canonical path for this item. This means that if
     /// namespaces are disabled, you'll get a single item, and otherwise you get
     /// the whole path.
@@ -69,7 +69,7 @@ pub trait ItemCanonicalPath {
 }
 
 /// A trait for determining if some IR thing is opaque or not.
-pub trait IsOpaque {
+pub(crate) trait IsOpaque {
     /// Extra context the IR thing needs to determine if it is opaque or not.
     type Extra;
 
@@ -80,20 +80,20 @@ pub trait IsOpaque {
 }
 
 /// A trait for determining if some IR thing has type parameter in array or not.
-pub trait HasTypeParamInArray {
+pub(crate) trait HasTypeParamInArray {
     /// Returns `true` if the thing has Array, and `false` otherwise.
     fn has_type_param_in_array(&self, ctx: &BindgenContext) -> bool;
 }
 
 /// A trait for determining if some IR thing has float or not.
-pub trait HasFloat {
+pub(crate) trait HasFloat {
     /// Returns `true` if the thing has float, and `false` otherwise.
     fn has_float(&self, ctx: &BindgenContext) -> bool;
 }
 
 /// A trait for iterating over an item and its parents and up its ancestor chain
 /// up to (but not including) the implicit root module.
-pub trait ItemAncestors {
+pub(crate) trait ItemAncestors {
     /// Get an iterable over this item's ancestors.
     fn ancestors<'a>(&self, ctx: &'a BindgenContext) -> ItemAncestorsIter<'a>;
 }
@@ -118,7 +118,7 @@ impl DebugOnlyItemSet {
 }
 
 /// An iterator over an item and its ancestors.
-pub struct ItemAncestorsIter<'a> {
+pub(crate) struct ItemAncestorsIter<'a> {
     item: ItemId,
     ctx: &'a BindgenContext,
     seen: DebugOnlyItemSet,
@@ -375,7 +375,7 @@ impl CanDeriveOrd for Item {
 /// all of them apply to every item. Those rules are described in the
 /// `annotations` module.
 #[derive(Debug)]
-pub struct Item {
+pub(crate) struct Item {
     /// This item's id.
     id: ItemId,
 
@@ -426,7 +426,7 @@ impl AsRef<ItemId> for Item {
 
 impl Item {
     /// Construct a new `Item`.
-    pub fn new(
+    pub(crate) fn new(
         id: ItemId,
         comment: Option<String>,
         annotations: Option<Annotations>,
@@ -450,7 +450,7 @@ impl Item {
     }
 
     /// Construct a new opaque item type.
-    pub fn new_opaque_type(
+    pub(crate) fn new_opaque_type(
         with_id: ItemId,
         ty: &clang::Type,
         ctx: &mut BindgenContext,
@@ -468,28 +468,31 @@ impl Item {
     }
 
     /// Get this `Item`'s identifier.
-    pub fn id(&self) -> ItemId {
+    pub(crate) fn id(&self) -> ItemId {
         self.id
     }
 
     /// Get this `Item`'s parent's identifier.
     ///
     /// For the root module, the parent's ID is its own ID.
-    pub fn parent_id(&self) -> ItemId {
+    pub(crate) fn parent_id(&self) -> ItemId {
         self.parent_id
     }
 
     /// Set this item's parent id.
     ///
     /// This is only used so replacements get generated in the proper module.
-    pub fn set_parent_for_replacement<Id: Into<ItemId>>(&mut self, id: Id) {
+    pub(crate) fn set_parent_for_replacement<Id: Into<ItemId>>(
+        &mut self,
+        id: Id,
+    ) {
         self.parent_id = id.into();
     }
 
     /// Returns the depth this item is indented to.
     ///
     /// FIXME(emilio): This may need fixes for the enums within modules stuff.
-    pub fn codegen_depth(&self, ctx: &BindgenContext) -> usize {
+    pub(crate) fn codegen_depth(&self, ctx: &BindgenContext) -> usize {
         if !ctx.options().enable_cxx_namespaces {
             return 0;
         }
@@ -507,7 +510,7 @@ impl Item {
 
     /// Get this `Item`'s comment, if it has any, already preprocessed and with
     /// the right indentation.
-    pub fn comment(&self, ctx: &BindgenContext) -> Option<String> {
+    pub(crate) fn comment(&self, ctx: &BindgenContext) -> Option<String> {
         if !ctx.options().generate_comments {
             return None;
         }
@@ -518,17 +521,17 @@ impl Item {
     }
 
     /// What kind of item is this?
-    pub fn kind(&self) -> &ItemKind {
+    pub(crate) fn kind(&self) -> &ItemKind {
         &self.kind
     }
 
     /// Get a mutable reference to this item's kind.
-    pub fn kind_mut(&mut self) -> &mut ItemKind {
+    pub(crate) fn kind_mut(&mut self) -> &mut ItemKind {
         &mut self.kind
     }
 
     /// Where in the source is this item located?
-    pub fn location(&self) -> Option<&clang::SourceLocation> {
+    pub(crate) fn location(&self) -> Option<&clang::SourceLocation> {
         self.location.as_ref()
     }
 
@@ -537,7 +540,7 @@ impl Item {
     /// This should stay relatively stable in the face of code motion outside or
     /// below this item's lexical scope, meaning that this can be useful for
     /// generating relatively stable identifiers within a scope.
-    pub fn local_id(&self, ctx: &BindgenContext) -> usize {
+    pub(crate) fn local_id(&self, ctx: &BindgenContext) -> usize {
         *self.local_id.borrow_with(|| {
             let parent = ctx.resolve_item(self.parent_id);
             parent.next_child_local_id()
@@ -550,7 +553,7 @@ impl Item {
     /// This is currently used for anonymous items, and template instantiation
     /// tests, in both cases in order to reduce noise when system headers are at
     /// place.
-    pub fn next_child_local_id(&self) -> usize {
+    pub(crate) fn next_child_local_id(&self) -> usize {
         let local_id = self.next_child_local_id.get();
         self.next_child_local_id.set(local_id + 1);
         local_id
@@ -574,7 +577,7 @@ impl Item {
     /// This function is used to determine when the codegen phase should call
     /// `codegen` on an item, since any item that is not top-level will be
     /// generated by its parent.
-    pub fn is_toplevel(&self, ctx: &BindgenContext) -> bool {
+    pub(crate) fn is_toplevel(&self, ctx: &BindgenContext) -> bool {
         // FIXME: Workaround for some types falling behind when parsing weird
         // stl classes, for example.
         if ctx.options().enable_cxx_namespaces &&
@@ -605,36 +608,36 @@ impl Item {
 
     /// Get a reference to this item's underlying `Type`. Panic if this is some
     /// other kind of item.
-    pub fn expect_type(&self) -> &Type {
+    pub(crate) fn expect_type(&self) -> &Type {
         self.kind().expect_type()
     }
 
     /// Get a reference to this item's underlying `Type`, or `None` if this is
     /// some other kind of item.
-    pub fn as_type(&self) -> Option<&Type> {
+    pub(crate) fn as_type(&self) -> Option<&Type> {
         self.kind().as_type()
     }
 
     /// Get a reference to this item's underlying `Function`. Panic if this is
     /// some other kind of item.
-    pub fn expect_function(&self) -> &Function {
+    pub(crate) fn expect_function(&self) -> &Function {
         self.kind().expect_function()
     }
 
     /// Is this item a module?
-    pub fn is_module(&self) -> bool {
+    pub(crate) fn is_module(&self) -> bool {
         matches!(self.kind, ItemKind::Module(..))
     }
 
     /// Get this item's annotations.
-    pub fn annotations(&self) -> &Annotations {
+    pub(crate) fn annotations(&self) -> &Annotations {
         &self.annotations
     }
 
     /// Whether this item should be blocklisted.
     ///
     /// This may be due to either annotations or to other kind of configuration.
-    pub fn is_blocklisted(&self, ctx: &BindgenContext) -> bool {
+    pub(crate) fn is_blocklisted(&self, ctx: &BindgenContext) -> bool {
         debug_assert!(
             ctx.in_codegen_phase(),
             "You're not supposed to call this yet"
@@ -670,18 +673,11 @@ impl Item {
             }
     }
 
-    /// Is this a reference to another type?
-    pub fn is_type_ref(&self) -> bool {
-        self.as_type().map_or(false, |ty| ty.is_type_ref())
-    }
-
-    /// Is this item a var type?
-    pub fn is_var(&self) -> bool {
-        matches!(*self.kind(), ItemKind::Var(..))
-    }
-
     /// Take out item NameOptions
-    pub fn name<'a>(&'a self, ctx: &'a BindgenContext) -> NameOptions<'a> {
+    pub(crate) fn name<'a>(
+        &'a self,
+        ctx: &'a BindgenContext,
+    ) -> NameOptions<'a> {
         NameOptions::new(self, ctx)
     }
 
@@ -715,7 +711,10 @@ impl Item {
 
     /// Create a fully disambiguated name for an item, including template
     /// parameters if it is a type
-    pub fn full_disambiguated_name(&self, ctx: &BindgenContext) -> String {
+    pub(crate) fn full_disambiguated_name(
+        &self,
+        ctx: &BindgenContext,
+    ) -> String {
         let mut s = String::new();
         let level = 0;
         self.push_disambiguated_name(ctx, &mut s, level);
@@ -839,7 +838,7 @@ impl Item {
     /// If `BindgenOptions::disable_nested_struct_naming` is true then returned
     /// name is the inner most non-anonymous name plus all the anonymous base names
     /// that follows.
-    pub fn real_canonical_name(
+    pub(crate) fn real_canonical_name(
         &self,
         ctx: &BindgenContext,
         opt: &NameOptions,
@@ -941,7 +940,7 @@ impl Item {
 
     /// The exposed id that represents an unique id among the siblings of a
     /// given item.
-    pub fn exposed_id(&self, ctx: &BindgenContext) -> String {
+    pub(crate) fn exposed_id(&self, ctx: &BindgenContext) -> String {
         // Only use local ids for enums, classes, structs and union types.  All
         // other items use their global id.
         let ty_kind = self.kind().as_type().map(|t| t.kind());
@@ -962,7 +961,7 @@ impl Item {
 
     /// Get a reference to this item's `Module`, or `None` if this is not a
     /// `Module` item.
-    pub fn as_module(&self) -> Option<&Module> {
+    pub(crate) fn as_module(&self) -> Option<&Module> {
         match self.kind {
             ItemKind::Module(ref module) => Some(module),
             _ => None,
@@ -971,7 +970,7 @@ impl Item {
 
     /// Get a mutable reference to this item's `Module`, or `None` if this is
     /// not a `Module` item.
-    pub fn as_module_mut(&mut self) -> Option<&mut Module> {
+    pub(crate) fn as_module_mut(&mut self) -> Option<&mut Module> {
         match self.kind {
             ItemKind::Module(ref mut module) => Some(module),
             _ => None,
@@ -1010,7 +1009,7 @@ impl Item {
     }
 
     /// Is this item of a kind that is enabled for code generation?
-    pub fn is_enabled_for_codegen(&self, ctx: &BindgenContext) -> bool {
+    pub(crate) fn is_enabled_for_codegen(&self, ctx: &BindgenContext) -> bool {
         let cc = &ctx.options().codegen_config;
         match *self.kind() {
             ItemKind::Module(..) => true,
@@ -1036,7 +1035,10 @@ impl Item {
 
     /// Returns the path we should use for allowlisting / blocklisting, which
     /// doesn't include user-mangling.
-    pub fn path_for_allowlisting(&self, ctx: &BindgenContext) -> &Vec<String> {
+    pub(crate) fn path_for_allowlisting(
+        &self,
+        ctx: &BindgenContext,
+    ) -> &Vec<String> {
         self.path_for_allowlisting
             .borrow_with(|| self.compute_path(ctx, UserMangled::No))
     }
@@ -1095,7 +1097,7 @@ impl Item {
     }
 
     /// Whether this is a #[must_use] type.
-    pub fn must_use(&self, ctx: &BindgenContext) -> bool {
+    pub(crate) fn must_use(&self, ctx: &BindgenContext) -> bool {
         self.annotations().must_use_type() || ctx.must_use_type_by_name(self)
     }
 }
@@ -1222,7 +1224,7 @@ impl HasFloat for Item {
 }
 
 /// A set of items.
-pub type ItemSet = BTreeSet<ItemId>;
+pub(crate) type ItemSet = BTreeSet<ItemId>;
 
 impl DotAttributes for Item {
     fn dot_attributes<W>(
@@ -1306,6 +1308,7 @@ fn visit_child(
 }
 
 impl Item {
+    /// Create a builtin type.
     pub(crate) fn builtin_type(
         kind: TypeKind,
         is_const: bool,
@@ -1331,6 +1334,7 @@ impl Item {
         id.as_type_id_unchecked()
     }
 
+    /// Parse this item from the given Clang cursor.
     pub(crate) fn parse(
         cursor: clang::Cursor,
         parent_id: Option<ItemId>,
@@ -1349,6 +1353,7 @@ impl Item {
         let current_module = ctx.current_module().into();
         let relevant_parent_id = parent_id.unwrap_or(current_module);
 
+        #[allow(clippy::missing_docs_in_private_items)]
         macro_rules! try_parse {
             ($what:ident) => {
                 match $what::parse(cursor, ctx) {
@@ -1477,6 +1482,8 @@ impl Item {
         }
     }
 
+    /// Parse this item from the given Clang type, or if we haven't resolved all
+    /// the other items this one depends on, an unresolved reference.
     pub(crate) fn from_ty_or_ref(
         ty: clang::Type,
         location: clang::Cursor,
@@ -1552,6 +1559,7 @@ impl Item {
         potential_id.as_type_id_unchecked()
     }
 
+    /// Parse this item from the given Clang type. See [`Item::from_ty_with_id`].
     pub(crate) fn from_ty(
         ty: &clang::Type,
         location: clang::Cursor,
@@ -1978,7 +1986,7 @@ enum UserMangled {
 /// Builder struct for naming variations, which hold inside different
 /// flags for naming options.
 #[derive(Debug)]
-pub struct NameOptions<'a> {
+pub(crate) struct NameOptions<'a> {
     item: &'a Item,
     ctx: &'a BindgenContext,
     within_namespaces: bool,
@@ -1987,7 +1995,7 @@ pub struct NameOptions<'a> {
 
 impl<'a> NameOptions<'a> {
     /// Construct a new `NameOptions`
-    pub fn new(item: &'a Item, ctx: &'a BindgenContext) -> Self {
+    pub(crate) fn new(item: &'a Item, ctx: &'a BindgenContext) -> Self {
         NameOptions {
             item,
             ctx,
@@ -1998,7 +2006,7 @@ impl<'a> NameOptions<'a> {
 
     /// Construct the name without the item's containing C++ namespaces mangled
     /// into it. In other words, the item's name within the item's namespace.
-    pub fn within_namespaces(&mut self) -> &mut Self {
+    pub(crate) fn within_namespaces(&mut self) -> &mut Self {
         self.within_namespaces = true;
         self
     }
@@ -2009,7 +2017,7 @@ impl<'a> NameOptions<'a> {
     }
 
     /// Construct a name `String`
-    pub fn get(&self) -> String {
+    pub(crate) fn get(&self) -> String {
         self.item.real_canonical_name(self.ctx, self)
     }
 }

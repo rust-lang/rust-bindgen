@@ -1,4 +1,5 @@
 //! A type that represents the union of a set of regular expressions.
+#![deny(clippy::missing_docs_in_private_items)]
 
 use regex::RegexSet as RxSet;
 use std::cell::Cell;

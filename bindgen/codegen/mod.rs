@@ -5,7 +5,7 @@ mod impl_debug;
 mod impl_partialeq;
 mod postprocessing;
 mod serialize;
-pub mod struct_layout;
+pub(crate) mod struct_layout;
 
 #[cfg(test)]
 #[allow(warnings)]
@@ -84,7 +84,7 @@ impl std::fmt::Display for CodegenError {
 }
 
 // Name of type defined in constified enum module
-pub static CONSTIFIED_ENUM_MODULE_REPR_NAME: &str = "Type";
+pub(crate) static CONSTIFIED_ENUM_MODULE_REPR_NAME: &str = "Type";
 
 fn top_level_path(
     ctx: &BindgenContext,
@@ -3349,7 +3349,7 @@ pub enum MacroTypeVariation {
 
 impl MacroTypeVariation {
     /// Convert a `MacroTypeVariation` to its str representation.
-    pub fn as_str(&self) -> &str {
+    pub(crate) fn as_str(&self) -> &str {
         match self {
             MacroTypeVariation::Signed => "signed",
             MacroTypeVariation::Unsigned => "unsigned",
@@ -3395,7 +3395,7 @@ pub enum AliasVariation {
 
 impl AliasVariation {
     /// Convert an `AliasVariation` to its str representation.
-    pub fn as_str(&self) -> &str {
+    pub(crate) fn as_str(&self) -> &str {
         match self {
             AliasVariation::TypeAlias => "type_alias",
             AliasVariation::NewType => "new_type",
@@ -3444,7 +3444,7 @@ pub enum NonCopyUnionStyle {
 
 impl NonCopyUnionStyle {
     /// Convert an `NonCopyUnionStyle` to its str representation.
-    pub fn as_str(&self) -> &'static str {
+    pub(crate) fn as_str(&self) -> &'static str {
         match self {
             Self::BindgenWrapper => "bindgen_wrapper",
             Self::ManuallyDrop => "manually_drop",
@@ -4536,7 +4536,7 @@ pub(crate) fn codegen(
     })
 }
 
-pub mod utils {
+pub(crate) mod utils {
     use super::serialize::CSerialize;
     use super::{error, CodegenError, CodegenResult, ToRustTyOrOpaque};
     use crate::ir::context::BindgenContext;
@@ -4544,7 +4544,6 @@ pub mod utils {
     use crate::ir::item::{Item, ItemCanonicalPath};
     use crate::ir::ty::TypeKind;
     use crate::{args_are_cpp, file_is_cpp};
-    use proc_macro2;
     use std::borrow::Cow;
     use std::mem;
     use std::path::PathBuf;
@@ -4570,7 +4569,7 @@ pub mod utils {
         let dir = path.parent().unwrap();
 
         if !dir.exists() {
-            std::fs::create_dir_all(&dir)?;
+            std::fs::create_dir_all(dir)?;
         }
 
         let is_cpp = args_are_cpp(&context.options().clang_args) ||
@@ -4594,7 +4593,7 @@ pub mod utils {
         Ok(())
     }
 
-    pub fn prepend_bitfield_unit_type(
+    pub(crate) fn prepend_bitfield_unit_type(
         ctx: &BindgenContext,
         result: &mut Vec<proc_macro2::TokenStream>,
     ) {
@@ -4613,7 +4612,7 @@ pub mod utils {
         result.extend(old_items);
     }
 
-    pub fn prepend_objc_header(
+    pub(crate) fn prepend_objc_header(
         ctx: &BindgenContext,
         result: &mut Vec<proc_macro2::TokenStream>,
     ) {
@@ -4638,7 +4637,7 @@ pub mod utils {
         result.extend(old_items.into_iter());
     }
 
-    pub fn prepend_block_header(
+    pub(crate) fn prepend_block_header(
         ctx: &BindgenContext,
         result: &mut Vec<proc_macro2::TokenStream>,
     ) {
@@ -4657,7 +4656,7 @@ pub mod utils {
         result.extend(old_items.into_iter());
     }
 
-    pub fn prepend_union_types(
+    pub(crate) fn prepend_union_types(
         ctx: &BindgenContext,
         result: &mut Vec<proc_macro2::TokenStream>,
     ) {
@@ -4769,7 +4768,7 @@ pub mod utils {
         result.extend(old_items.into_iter());
     }
 
-    pub fn prepend_incomplete_array_types(
+    pub(crate) fn prepend_incomplete_array_types(
         ctx: &BindgenContext,
         result: &mut Vec<proc_macro2::TokenStream>,
     ) {
@@ -4845,7 +4844,9 @@ pub mod utils {
         result.extend(old_items.into_iter());
     }
 
-    pub fn prepend_complex_type(result: &mut Vec<proc_macro2::TokenStream>) {
+    pub(crate) fn prepend_complex_type(
+        result: &mut Vec<proc_macro2::TokenStream>,
+    ) {
         let complex_type = quote! {
             #[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
             #[repr(C)]
@@ -4860,7 +4861,7 @@ pub mod utils {
         result.extend(old_items.into_iter());
     }
 
-    pub fn build_path(
+    pub(crate) fn build_path(
         item: &Item,
         ctx: &BindgenContext,
     ) -> error::Result<proc_macro2::TokenStream> {
@@ -4881,7 +4882,7 @@ pub mod utils {
         }
     }
 
-    pub fn type_from_named(
+    pub(crate) fn type_from_named(
         ctx: &BindgenContext,
         name: &str,
     ) -> Option<proc_macro2::TokenStream> {
@@ -4949,14 +4950,14 @@ pub mod utils {
         }
     }
 
-    pub fn fnsig_return_ty(
+    pub(crate) fn fnsig_return_ty(
         ctx: &BindgenContext,
         sig: &FunctionSig,
     ) -> proc_macro2::TokenStream {
         fnsig_return_ty_internal(ctx, sig, /* include_arrow = */ true)
     }
 
-    pub fn fnsig_arguments(
+    pub(crate) fn fnsig_arguments(
         ctx: &BindgenContext,
         sig: &FunctionSig,
     ) -> Vec<proc_macro2::TokenStream> {
@@ -5029,7 +5030,7 @@ pub mod utils {
         args
     }
 
-    pub fn fnsig_argument_identifiers(
+    pub(crate) fn fnsig_argument_identifiers(
         ctx: &BindgenContext,
         sig: &FunctionSig,
     ) -> Vec<proc_macro2::TokenStream> {
@@ -5058,7 +5059,7 @@ pub mod utils {
         args
     }
 
-    pub fn fnsig_block(
+    pub(crate) fn fnsig_block(
         ctx: &BindgenContext,
         sig: &FunctionSig,
     ) -> proc_macro2::TokenStream {

@@ -1,7 +1,7 @@
 //! Contains code for selecting features
 
-#![deny(missing_docs)]
 #![deny(unused_extern_crates)]
+#![deny(clippy::missing_docs_in_private_items)]
 #![allow(deprecated)]
 
 use std::io;

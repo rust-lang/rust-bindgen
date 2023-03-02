@@ -14,7 +14,7 @@
 //! If we generate the naive Rust code for this alias, we get:
 //!
 //! ```ignore
-//! pub type Fml<T> = ::std::os::raw::int;
+//! pub(crate) type Fml<T> = ::std::os::raw::int;
 //! ```
 //!
 //! And this is rejected by `rustc` due to the unused type parameter.
@@ -146,7 +146,7 @@ use crate::{HashMap, HashSet};
 /// specially; see `constrain_instantiation_of_blocklisted_template` and its
 /// documentation for details.
 #[derive(Debug, Clone)]
-pub struct UsedTemplateParameters<'ctx> {
+pub(crate) struct UsedTemplateParameters<'ctx> {
     ctx: &'ctx BindgenContext,
 
     // The Option is only there for temporary moves out of the hash map. See the

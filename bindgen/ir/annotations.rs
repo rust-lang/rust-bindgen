@@ -8,7 +8,7 @@ use crate::clang;
 
 /// What kind of accessor should we provide for a field?
 #[derive(Copy, PartialEq, Eq, Clone, Debug)]
-pub enum FieldAccessorKind {
+pub(crate) enum FieldAccessorKind {
     /// No accessor.
     None,
     /// Plain accessor.
@@ -23,7 +23,7 @@ pub enum FieldAccessorKind {
 ///
 /// You can see the kind of comments that are accepted in the [Doxygen documentation](https://www.doxygen.nl/manual/docblocks.html).
 #[derive(Default, Clone, PartialEq, Eq, Debug)]
-pub struct Annotations {
+pub(crate) struct Annotations {
     /// Whether this item is marked as opaque. Only applies to types.
     opaque: bool,
     /// Whether this item should be hidden from the output. Only applies to
@@ -77,7 +77,7 @@ fn parse_accessor(s: &str) -> FieldAccessorKind {
 impl Annotations {
     /// Construct new annotations for the given cursor and its bindgen comments
     /// (if any).
-    pub fn new(cursor: &clang::Cursor) -> Option<Annotations> {
+    pub(crate) fn new(cursor: &clang::Cursor) -> Option<Annotations> {
         let mut anno = Annotations::default();
         let mut matched_one = false;
         anno.parse(&cursor.comment(), &mut matched_one);
@@ -90,12 +90,12 @@ impl Annotations {
     }
 
     /// Should this type be hidden?
-    pub fn hide(&self) -> bool {
+    pub(crate) fn hide(&self) -> bool {
         self.hide
     }
 
     /// Should this type be opaque?
-    pub fn opaque(&self) -> bool {
+    pub(crate) fn opaque(&self) -> bool {
         self.opaque
     }
 
@@ -121,42 +121,42 @@ impl Annotations {
     /// ```
     ///
     /// That is, code for `Foo` is used to generate `Bar`.
-    pub fn use_instead_of(&self) -> Option<&[String]> {
+    pub(crate) fn use_instead_of(&self) -> Option<&[String]> {
         self.use_instead_of.as_deref()
     }
 
     /// The list of derives that have been specified in this annotation.
-    pub fn derives(&self) -> &[String] {
+    pub(crate) fn derives(&self) -> &[String] {
         &self.derives
     }
 
     /// Should we avoid implementing the `Copy` trait?
-    pub fn disallow_copy(&self) -> bool {
+    pub(crate) fn disallow_copy(&self) -> bool {
         self.disallow_copy
     }
 
     /// Should we avoid implementing the `Debug` trait?
-    pub fn disallow_debug(&self) -> bool {
+    pub(crate) fn disallow_debug(&self) -> bool {
         self.disallow_debug
     }
 
     /// Should we avoid implementing the `Default` trait?
-    pub fn disallow_default(&self) -> bool {
+    pub(crate) fn disallow_default(&self) -> bool {
         self.disallow_default
     }
 
     /// Should this type get a `#[must_use]` annotation?
-    pub fn must_use_type(&self) -> bool {
+    pub(crate) fn must_use_type(&self) -> bool {
         self.must_use_type
     }
 
     /// Should the fields be private?
-    pub fn private_fields(&self) -> Option<bool> {
+    pub(crate) fn private_fields(&self) -> Option<bool> {
         self.private_fields
     }
 
     /// What kind of accessors should we provide for this type's fields?
-    pub fn accessor_kind(&self) -> Option<FieldAccessorKind> {
+    pub(crate) fn accessor_kind(&self) -> Option<FieldAccessorKind> {
         self.accessor_kind
     }
 
@@ -202,7 +202,7 @@ impl Annotations {
     }
 
     /// Returns whether we've parsed a "constant" attribute.
-    pub fn constify_enum_variant(&self) -> bool {
+    pub(crate) fn constify_enum_variant(&self) -> bool {
         self.constify_enum_variant
     }
 }
