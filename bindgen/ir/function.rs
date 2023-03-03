@@ -11,7 +11,6 @@ use crate::clang::{self, Attribute};
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 use clang_sys::{self, CXCallingConv};
 
-
 use quote::TokenStreamExt;
 use std::io;
 use std::str::FromStr;
