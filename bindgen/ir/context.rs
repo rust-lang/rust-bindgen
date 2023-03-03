@@ -23,8 +23,8 @@ use crate::clang::{self, Cursor};
 use crate::codegen::CodegenError;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
-use cexpr;
-use clang_sys;
+
+
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::ToTokens;
 use std::borrow::Cow;
