@@ -19,9 +19,9 @@ use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{Type, TypeKind};
 use crate::clang;
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
-use clang_sys;
+
 use lazycell::LazyCell;
-use regex;
+
 use std::cell::Cell;
 use std::collections::BTreeSet;
 use std::fmt::Write;

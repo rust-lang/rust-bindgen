@@ -11,7 +11,7 @@ use crate::callbacks::{ItemInfo, ItemKind, MacroParsingBehavior};
 use crate::clang;
 use crate::clang::ClangToken;
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
-use cexpr;
+
 use std::io;
 use std::num::Wrapping;
 
