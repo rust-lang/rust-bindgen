@@ -10,8 +10,7 @@ use crate::callbacks::{ItemInfo, ItemKind};
 use crate::clang::{self, Attribute};
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 use clang_sys::{self, CXCallingConv};
-use proc_macro2;
-use quote;
+
 use quote::TokenStreamExt;
 use std::io;
 use std::str::FromStr;
