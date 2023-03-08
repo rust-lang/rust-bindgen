@@ -42,6 +42,7 @@ mod time;
 pub mod callbacks;
 
 mod clang;
+mod diagnostics;
 mod features;
 mod ir;
 mod parse;
@@ -404,7 +405,10 @@ impl Builder {
 
 impl BindgenOptions {
     fn build(&mut self) {
-        let regex_sets = [
+        const REGEX_SETS_LEN: usize = 27;
+        let sets_len = REGEX_SETS_LEN + self.abi_overrides.len();
+
+        let regex_sets: [_; REGEX_SETS_LEN] = [
             &mut self.allowlisted_vars,
             &mut self.allowlisted_types,
             &mut self.allowlisted_functions,
@@ -433,9 +437,49 @@ impl BindgenOptions {
             &mut self.no_hash_types,
             &mut self.must_use_types,
         ];
+
+        let names = if self.emit_diagnostics {
+            <[&str; 27]>::into_iter([
+                "--blocklist-type",
+                "--blocklist-function",
+                "--blocklist-item",
+                "--blocklist-file",
+                "--opaque-type",
+                "--allowlist-type",
+                "--allowlist-function",
+                "--allowlist-var",
+                "--allowlist-file",
+                "--bitfield-enum",
+                "--newtype-enum",
+                "--newtype-global-enum",
+                "--rustified-enum",
+                "--rustified-enum-non-exhaustive",
+                "--constified-enum-module",
+                "--constified-enum",
+                "--type-alias",
+                "--new-type-alias",
+                "--new-type-alias-deref",
+                "--bindgen-wrapper-union",
+                "--manually-drop-union",
+                "--no-partialeq",
+                "--no-copy",
+                "--no-debug",
+                "--no-default",
+                "--no-hash",
+                "--must-use",
+            ])
+            .chain((0..self.abi_overrides.len()).map(|_| "--override-abi"))
+            .map(Some)
+            .collect()
+        } else {
+            vec![None; sets_len]
+        };
+
         let record_matches = self.record_matches;
-        for regex_set in self.abi_overrides.values_mut().chain(regex_sets) {
-            regex_set.build(record_matches);
+        for (regex_set, name) in
+            self.abi_overrides.values_mut().chain(regex_sets).zip(names)
+        {
+            regex_set.build_with_diagnostics(record_matches, name);
         }
     }
 
@@ -551,7 +595,6 @@ impl std::error::Error for BindgenError {}
 #[derive(Debug)]
 pub struct Bindings {
     options: BindgenOptions,
-    warnings: Vec<String>,
     module: proc_macro2::TokenStream,
 }
 
@@ -776,14 +819,10 @@ impl Bindings {
             parse(&mut context)?;
         }
 
-        let (module, options, warnings) =
+        let (module, options) =
             codegen::codegen(context).map_err(BindgenError::Codegen)?;
 
-        Ok(Bindings {
-            options,
-            warnings,
-            module,
-        })
+        Ok(Bindings { options, module })
     }
 
     /// Write these bindings as source text to a file.
@@ -927,23 +966,6 @@ impl Bindings {
             },
             _ => Ok(source),
         }
-    }
-
-    /// Emit all the warning messages raised while generating the bindings in a build script.
-    ///
-    /// If you are using `bindgen` outside of a build script you should use [`Bindings::warnings`]
-    /// and handle the messages accordingly instead.
-    #[inline]
-    pub fn emit_warnings(&self) {
-        for message in &self.warnings {
-            println!("cargo:warning={}", message);
-        }
-    }
-
-    /// Return all the warning messages raised while generating the bindings.
-    #[inline]
-    pub fn warnings(&self) -> &[String] {
-        &self.warnings
     }
 }
 

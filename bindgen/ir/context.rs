@@ -21,6 +21,7 @@ use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
 use crate::clang::{self, Cursor};
 use crate::codegen::CodegenError;
+use crate::diagnostics::{AnnotationType, Diagnostic, Slice};
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 
@@ -477,9 +478,6 @@ pub(crate) struct BindgenContext {
     /// Populated when we enter codegen by `compute_has_float`; always `None`
     /// before that and `Some` after.
     has_float: Option<HashSet<ItemId>>,
-
-    /// The set of warnings raised during binding generation.
-    warnings: Vec<String>,
 }
 
 /// A traversal of allowlisted items.
@@ -595,7 +593,6 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             have_destructor: None,
             has_type_param_in_array: None,
             has_float: None,
-            warnings: Vec::new(),
         }
     }
 
@@ -1156,7 +1153,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     pub(crate) fn gen<F, Out>(
         mut self,
         cb: F,
-    ) -> Result<(Out, BindgenOptions, Vec<String>), CodegenError>
+    ) -> Result<(Out, BindgenOptions), CodegenError>
     where
         F: FnOnce(&Self) -> Result<Out, CodegenError>,
     {
@@ -1194,7 +1191,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.compute_cannot_derive_partialord_partialeq_or_eq();
 
         let ret = cb(&self)?;
-        Ok((ret, self.options, self.warnings))
+        Ok((ret, self.options))
     }
 
     /// When the `testing_only_extra_assertions` feature is enabled, this
@@ -2463,24 +2460,25 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.allowlisted = Some(allowlisted);
         self.codegen_items = Some(codegen_items);
 
-        let mut warnings = Vec::new();
+        let emit_diagnostics = self.options().emit_diagnostics;
 
         for item in self.options().allowlisted_functions.unmatched_items() {
-            warnings
-                .push(format!("unused option: --allowlist-function {}", item));
+            warn!("unused option: --allowlist-function {}", item);
+            unused_regex_diagnostic(
+                item,
+                "--allowlist-function",
+                emit_diagnostics,
+            );
         }
 
         for item in self.options().allowlisted_vars.unmatched_items() {
-            warnings.push(format!("unused option: --allowlist-var {}", item));
+            warn!("unused option: --allowlist-var {}", item);
+            unused_regex_diagnostic(item, "--allowlist-var", emit_diagnostics);
         }
 
         for item in self.options().allowlisted_types.unmatched_items() {
-            warnings.push(format!("unused option: --allowlist-type {}", item));
-        }
-
-        for msg in warnings {
-            warn!("{}", msg);
-            self.warnings.push(msg);
+            warn!("unused option: --allowlist-type {}", item);
+            unused_regex_diagnostic(item, "--allowlist-type", emit_diagnostics);
         }
     }
 
@@ -2969,5 +2967,21 @@ impl TemplateParameters for PartialType {
             }
             _ => 0,
         }
+    }
+}
+
+fn unused_regex_diagnostic(item: &str, name: &str, emit_diagnostics: bool) {
+    if emit_diagnostics {
+        let mut slice = Slice::default();
+        slice.with_source(item);
+
+        Diagnostic::default()
+            .with_title("unused regular expression:", AnnotationType::Warning)
+            .add_slice(slice)
+            .add_annotation(
+                format!("this regular expression was passed via `{}`", name),
+                AnnotationType::Note,
+            )
+            .display();
     }
 }

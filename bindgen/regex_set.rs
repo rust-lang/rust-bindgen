@@ -32,11 +32,7 @@ impl RegexSet {
     where
         S: AsRef<str>,
     {
-        let string = string.as_ref().to_owned();
-        if string == "*" {
-            warn!("using wildcard patterns (`*`) is no longer considered valid. Use `.*` instead");
-        }
-        self.items.push(string);
+        self.items.push(string.as_ref().to_owned());
         self.matched.push(Cell::new(false));
         self.set = None;
     }
@@ -62,13 +58,55 @@ impl RegexSet {
     ///
     /// Must be called before calling `matches()`, or it will always return
     /// false.
+    #[inline]
     pub fn build(&mut self, record_matches: bool) {
+        self.build_inner(record_matches, None)
+    }
+
+    #[cfg(feature = "__cli")]
+    /// Construct a RegexSet from the set of entries we've accumulated and emit diagnostics if the
+    /// name of the regex set is passed to it.
+    ///
+    /// Must be called before calling `matches()`, or it will always return
+    /// false.
+    #[inline]
+    pub fn build_with_diagnostics(
+        &mut self,
+        record_matches: bool,
+        name: Option<&'static str>,
+    ) {
+        self.build_inner(record_matches, name)
+    }
+
+    #[cfg(not(feature = "__cli"))]
+    /// Construct a RegexSet from the set of entries we've accumulated and emit diagnostics if the
+    /// name of the regex set is passed to it.
+    ///
+    /// Must be called before calling `matches()`, or it will always return
+    /// false.
+    #[inline]
+    pub(crate) fn build_with_diagnostics(
+        &mut self,
+        record_matches: bool,
+        name: Option<&'static str>,
+    ) {
+        self.build_inner(record_matches, name)
+    }
+
+    fn build_inner(
+        &mut self,
+        record_matches: bool,
+        name: Option<&'static str>,
+    ) {
         let items = self.items.iter().map(|item| format!("^({})$", item));
         self.record_matches = record_matches;
         self.set = match RxSet::new(items) {
             Ok(x) => Some(x),
             Err(e) => {
                 warn!("Invalid regex in {:?}: {:?}", self.items, e);
+                if let Some(name) = name {
+                    invalid_regex_warning(self, e, name);
+                }
                 None
             }
         }
@@ -99,4 +137,70 @@ impl RegexSet {
 
         true
     }
+}
+
+fn invalid_regex_warning(
+    set: &RegexSet,
+    err: regex::Error,
+    name: &'static str,
+) {
+    use crate::diagnostics::{AnnotationType, Diagnostic, Slice};
+
+    let mut diagnostic = Diagnostic::default();
+
+    match err {
+        regex::Error::Syntax(string) => {
+            if string.starts_with("regex parse error:\n") {
+                let mut source = String::new();
+
+                let mut parsing_source = true;
+
+                for line in string.lines().skip(1) {
+                    if parsing_source {
+                        if line.starts_with(' ') {
+                            source.push_str(line);
+                            source.push('\n');
+                            continue;
+                        }
+                        parsing_source = false;
+                    }
+                    let error = "error: ";
+                    if line.starts_with(error) {
+                        let (_, msg) = line.split_at(error.len());
+                        diagnostic.add_annotation(
+                            msg.to_owned(),
+                            AnnotationType::Error,
+                        );
+                    } else {
+                        diagnostic.add_annotation(
+                            line.to_owned(),
+                            AnnotationType::Info,
+                        );
+                    }
+                }
+                let mut slice = Slice::default();
+                slice.with_source(source);
+                diagnostic.add_slice(slice);
+
+                diagnostic
+                    .with_title("regex parse error:", AnnotationType::Warning);
+            } else {
+                diagnostic.with_title(string, AnnotationType::Warning);
+            }
+        }
+        err => {
+            let err = err.to_string();
+            diagnostic.with_title(err, AnnotationType::Warning);
+        }
+    }
+
+    diagnostic.add_annotation(
+        format!("this regular expression was passed via `{}`", name),
+        AnnotationType::Note,
+    );
+
+    if set.items.iter().any(|item| item == "*") {
+        diagnostic.add_annotation("using wildcard patterns \"*\" is no longer considered valid. Consider using \".*\" instead", AnnotationType::Help);
+    }
+    diagnostic.display();
 }

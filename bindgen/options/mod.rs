@@ -2101,4 +2101,16 @@ options! {
             }
         },
     },
+    /// Whether to emit diagnostics or not.
+    emit_diagnostics: {
+        ty: bool,
+        methods: {
+            /// Set whether to emit diagnostics.
+            pub fn emit_diagnostics(mut self, doit: bool) -> Self {
+                self.options.emit_diagnostics = doit;
+                self
+            }
+        },
+        as_args: "--emit-diagnostics",
+    }
 }

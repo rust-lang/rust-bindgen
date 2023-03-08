@@ -4586,8 +4586,7 @@ impl CodeGenerator for ObjCInterface {
 
 pub(crate) fn codegen(
     context: BindgenContext,
-) -> Result<(proc_macro2::TokenStream, BindgenOptions, Vec<String>), CodegenError>
-{
+) -> Result<(proc_macro2::TokenStream, BindgenOptions), CodegenError> {
     context.gen(|context| {
         let _t = context.timer("codegen");
         let counter = Cell::new(0);
