@@ -2,9 +2,12 @@
 name = "bindgen-integration"
 description = "A package to test various bindgen features"
 version = "0.1.0"
-authors = ["Emilio Cobos Álvarez <emilio@crisal.io>"]
-publish = false
+
 build = "build.rs"
+publish = false
+
+authors.workspace = true
+edition.workspace = true
 
 [build-dependencies]
 bindgen = { path = "../bindgen", features = ["experimental"] }

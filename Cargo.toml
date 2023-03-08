@@ -13,3 +13,22 @@ default-members = [
     "bindgen-cli",
     "bindgen-tests",
 ]
+
+[workspace.package]
+authors = [
+  "Jyun-Yan You <jyyou.tw@gmail.com>",
+  "Emilio Cobos Álvarez <emilio@crisal.io>",
+  "Nick Fitzgerald <fitzgen@gmail.com>",
+  "Shea Newton <sheanewt@gmail.com>",
+  "The Servo project developers",
+]
+description = "Automatically generates Rust FFI bindings to C and C++ libraries."
+keywords = ["bindings", "ffi", "code-generation"]
+categories = ["external-ffi-bindings", "development-tools::ffi"]
+license = "BSD-3-Clause"
+readme = "README.md"
+repository = "https://github.com/rust-lang/rust-bindgen"
+documentation = "https://docs.rs/bindgen"
+homepage = "https://rust-lang.github.io/rust-bindgen/"
+version = "0.64.0"
+edition = "2018"

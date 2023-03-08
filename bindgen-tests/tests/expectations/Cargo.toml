@@ -2,12 +2,11 @@
 name = "tests_expectations"
 description = "bindgen results when ran on ../headers/*"
 version = "0.1.0"
-authors = [
-  "Jyun-Yan You <jyyou.tw@gmail.com>",
-  "Emilio Cobos Álvarez <emilio@crisal.io>",
-  "The Servo project developers",
-]
-edition = "2018"
+
+publish = false
+
+authors.workspace = true
+edition.workspace = true
 
 [dependencies]
 objc = "0.2"

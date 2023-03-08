@@ -1,8 +1,11 @@
 [package]
 name = "bindgen-tests"
-edition = "2018"
 version = "0.1.0"
+
 publish = false
+
+authors.workspace = true
+edition.workspace = true
 
 [dev-dependencies]
 bindgen = { path = "../bindgen", features = ["cli", "experimental"] }

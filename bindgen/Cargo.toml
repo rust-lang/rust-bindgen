@@ -1,24 +1,21 @@
 [package]
-authors = [
-  "Jyun-Yan You <jyyou.tw@gmail.com>",
-  "Emilio Cobos Álvarez <emilio@crisal.io>",
-  "Nick Fitzgerald <fitzgen@gmail.com>",
-  "The Servo project developers",
-]
-description = "Automatically generates Rust FFI bindings to C and C++ libraries."
-keywords = ["bindings", "ffi", "code-generation"]
-categories = ["external-ffi-bindings", "development-tools::ffi"]
-license = "BSD-3-Clause"
 name = "bindgen"
-readme = "../README.md"
-repository = "https://github.com/rust-lang/rust-bindgen"
-documentation = "https://docs.rs/bindgen"
-homepage = "https://rust-lang.github.io/rust-bindgen/"
-version = "0.64.0"
-edition = "2018"
+
 build = "build.rs"
 # If you change this, also update README.md and msrv in .github/workflows/bindgen.yml
 rust-version = "1.60.0"
+
+authors.workspace = true
+description.workspace = true
+keywords.workspace = true
+categories.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+documentation.workspace = true
+homepage.workspace = true
+version.workspace = true
+edition.workspace = true
 
 [lib]
 name = "bindgen"
