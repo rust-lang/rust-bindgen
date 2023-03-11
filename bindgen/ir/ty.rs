@@ -711,7 +711,7 @@ impl Type {
         // Objective C template type parameter
         // FIXME: This is probably wrong, we are attempting to find the
         //        objc template params, which seem to manifest as a typedef.
-        //        We are rewriting them as id to suppress multiple conflicting
+        //        We are rewriting them as ID to suppress multiple conflicting
         //        typedefs at root level
         if ty_kind == CXType_Typedef {
             let is_template_type_param =

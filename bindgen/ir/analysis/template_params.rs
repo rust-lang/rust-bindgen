@@ -329,7 +329,7 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
         }
     }
 
-    /// The join operation on our lattice: the set union of all of this id's
+    /// The join operation on our lattice: the set union of all of this ID's
     /// successors.
     fn constrain_join(&self, used_by_this_id: &mut ItemSet, item: &Item) {
         trace!("    other item: join with successors' usage");
@@ -518,7 +518,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
         // exiting this method.
         extra_assert!(self.used.values().all(|v| v.is_some()));
 
-        // Take the set for this id out of the hash map while we mutate it based
+        // Take the set for this ID out of the hash map while we mutate it based
         // on other hash map entries. We *must* put it back into the hash map at
         // the end of this method. This allows us to side-step HashMap's lack of
         // an analog to slice::split_at_mut.
