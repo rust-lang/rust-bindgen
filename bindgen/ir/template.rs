@@ -167,7 +167,7 @@ pub(crate) trait AsTemplateParam {
     /// Any extra information the implementor might need to make this decision.
     type Extra;
 
-    /// Convert this thing to the item id of a named template type parameter.
+    /// Convert this thing to the item ID of a named template type parameter.
     fn as_template_param(
         &self,
         ctx: &BindgenContext,

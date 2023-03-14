@@ -346,7 +346,7 @@ impl<'ctx> From<SizednessAnalysis<'ctx>> for HashMap<TypeId, SizednessResult> {
     }
 }
 
-/// A convenience trait for querying whether some type or id is sized.
+/// A convenience trait for querying whether some type or ID is sized.
 ///
 /// This is not for _computing_ whether the thing is sized, it is for looking up
 /// the results of the `Sizedness` analysis's computations for a specific thing.

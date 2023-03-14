@@ -82,7 +82,7 @@ pub(crate) struct Function {
     /// The mangled name, that is, the symbol.
     mangled_name: Option<String>,
 
-    /// The id pointing to the current function signature.
+    /// The ID pointing to the current function signature.
     signature: TypeId,
 
     /// The kind of function this is.
@@ -225,7 +225,7 @@ impl quote::ToTokens for Abi {
 /// An ABI extracted from a clang cursor.
 #[derive(Debug, Copy, Clone)]
 pub(crate) enum ClangAbi {
-    /// An ABI known by rust.
+    /// An ABI known by Rust.
     Known(Abi),
     /// An unknown or invalid ABI.
     Unknown(CXCallingConv),

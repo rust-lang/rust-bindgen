@@ -222,7 +222,7 @@ struct CodegenResult<'a> {
     items: Vec<proc_macro2::TokenStream>,
     dynamic_items: DynamicItems,
 
-    /// A monotonic counter used to add stable unique id's to stuff that doesn't
+    /// A monotonic counter used to add stable unique ID's to stuff that doesn't
     /// need to be referenced by anything.
     codegen_id: &'a Cell<usize>,
 
@@ -694,7 +694,7 @@ impl CodeGenerator for Var {
                     // Account the trailing zero.
                     //
                     // TODO: Here we ignore the type we just made up, probably
-                    // we should refactor how the variable type and ty id work.
+                    // we should refactor how the variable type and ty ID work.
                     let len = bytes.len() + 1;
                     let ty = quote! {
                         [u8; #len]

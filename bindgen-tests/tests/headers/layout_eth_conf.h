@@ -139,7 +139,7 @@ enum rte_eth_nb_pools {
  * of an Ethernet port.
  *
  * Using this feature, packets are routed to a pool of queues, based
- * on the vlan id in the vlan tag, and then to a specific queue within
+ * on the vlan ID in the vlan tag, and then to a specific queue within
  * that pool, using the user priority vlan tag field.
  *
  * A default pool may be used, if desired, to route all traffic which
@@ -151,7 +151,7 @@ struct rte_eth_vmdq_dcb_conf {
 	uint8_t default_pool; /**< The default pool, if applicable */
 	uint8_t nb_pool_maps; /**< We can have up to 64 filters/mappings */
 	struct {
-		uint16_t vlan_id; /**< The vlan id of the received frame */
+		uint16_t vlan_id; /**< The vlan ID of the received frame */
 		uint64_t pools;   /**< Bitmask of pools for packet rx */
 	} pool_map[ETH_VMDQ_MAX_VLAN_FILTERS]; /**< VMDq vlan pool maps. */
 	uint8_t dcb_tc[ETH_DCB_NUM_USER_PRIORITIES];
@@ -189,7 +189,7 @@ struct rte_eth_vmdq_rx_conf {
 	uint8_t nb_pool_maps; /**< We can have up to 64 filters/mappings */
 	uint32_t rx_mode; /**< Flags from ETH_VMDQ_ACCEPT_* */
 	struct {
-		uint16_t vlan_id; /**< The vlan id of the received frame */
+		uint16_t vlan_id; /**< The vlan ID of the received frame */
 		uint64_t pools;   /**< Bitmask of pools for packet rx */
 	} pool_map[ETH_VMDQ_MAX_VLAN_FILTERS]; /**< VMDq vlan pool maps. */
 };

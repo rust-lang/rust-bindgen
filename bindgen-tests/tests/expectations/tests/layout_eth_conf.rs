@@ -642,7 +642,7 @@ pub enum rte_eth_nb_pools {
 /// of an Ethernet port.
 ///
 /// Using this feature, packets are routed to a pool of queues, based
-/// on the vlan id in the vlan tag, and then to a specific queue within
+/// on the vlan ID in the vlan tag, and then to a specific queue within
 /// that pool, using the user priority vlan tag field.
 ///
 /// A default pool may be used, if desired, to route all traffic which
@@ -665,7 +665,7 @@ pub struct rte_eth_vmdq_dcb_conf {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_vmdq_dcb_conf__bindgen_ty_1 {
-    ///< The vlan id of the received frame
+    ///< The vlan ID of the received frame
     pub vlan_id: u16,
     ///< Bitmask of pools for packet rx
     pub pools: u64,
@@ -1030,7 +1030,7 @@ pub struct rte_eth_vmdq_rx_conf {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_vmdq_rx_conf__bindgen_ty_1 {
-    ///< The vlan id of the received frame
+    ///< The vlan ID of the received frame
     pub vlan_id: u16,
     ///< Bitmask of pools for packet rx
     pub pools: u64,

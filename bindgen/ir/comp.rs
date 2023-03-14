@@ -121,7 +121,7 @@ impl Method {
         self.kind == MethodKind::Static
     }
 
-    /// Get the id for the `Function` signature for this method.
+    /// Get the ID for the `Function` signature for this method.
     pub(crate) fn signature(&self) -> FunctionId {
         self.signature
     }
