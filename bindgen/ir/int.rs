@@ -12,7 +12,7 @@ pub enum IntKind {
     /// An `unsigned char`.
     UChar,
 
-    /// An `wchar_t`.
+    /// A `wchar_t`.
     WChar,
 
     /// A platform-dependent `char` type, with the signedness support.

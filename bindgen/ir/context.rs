@@ -54,7 +54,7 @@ macro_rules! item_id_newtype {
         pub(crate) struct $name(ItemId);
 
         impl $name {
-            /// Create an `ItemResolver` from this id.
+            /// Create an `ItemResolver` from this ID.
             #[allow(dead_code)]
             pub(crate) fn into_resolver(self) -> ItemResolver {
                 let id: ItemId = self.into();
@@ -127,7 +127,7 @@ item_id_newtype! {
         expected = expect_type_id,
 
         /// Convert this `ItemId` into a `TypeId` without actually checking whether
-        /// this id actually points to a `Type`.
+        /// this ID actually points to a `Type`.
         unchecked = as_type_id_unchecked;
 }
 
@@ -146,7 +146,7 @@ item_id_newtype! {
         expected = expect_module_id,
 
         /// Convert this `ItemId` into a `ModuleId` without actually checking
-        /// whether this id actually points to a `Module`.
+        /// whether this ID actually points to a `Module`.
         unchecked = as_module_id_unchecked;
 }
 
@@ -165,7 +165,7 @@ item_id_newtype! {
         expected = expect_var_id,
 
         /// Convert this `ItemId` into a `VarId` without actually checking whether
-        /// this id actually points to a `Var`.
+        /// this ID actually points to a `Var`.
         unchecked = as_var_id_unchecked;
 }
 
@@ -184,7 +184,7 @@ item_id_newtype! {
         expected = expect_function_id,
 
         /// Convert this `ItemId` into a `FunctionId` without actually checking whether
-        /// this id actually points to a `Function`.
+        /// this ID actually points to a `Function`.
         unchecked = as_function_id_unchecked;
 }
 
@@ -195,7 +195,7 @@ impl From<ItemId> for usize {
 }
 
 impl ItemId {
-    /// Get a numeric representation of this id.
+    /// Get a numeric representation of this ID.
     pub(crate) fn as_usize(&self) -> usize {
         (*self).into()
     }
@@ -315,7 +315,7 @@ pub(crate) struct BindgenContext {
     /// item ids during parsing.
     types: HashMap<TypeKey, TypeId>,
 
-    /// Maps from a cursor to the item id of the named template type parameter
+    /// Maps from a cursor to the item ID of the named template type parameter
     /// for that cursor.
     type_params: HashMap<clang::Cursor, TypeId>,
 
@@ -328,7 +328,7 @@ pub(crate) struct BindgenContext {
     /// Current module being traversed.
     current_module: ModuleId,
 
-    /// A HashMap keyed on a type definition, and whose value is the parent id
+    /// A HashMap keyed on a type definition, and whose value is the parent ID
     /// of the declaration.
     ///
     /// This is used to handle the cases where the semantic and the lexical
@@ -392,7 +392,7 @@ pub(crate) struct BindgenContext {
     /// It's computed right after computing the allowlisted items.
     codegen_items: Option<ItemSet>,
 
-    /// Map from an item's id to the set of template parameter items that it
+    /// Map from an item's ID to the set of template parameter items that it
     /// uses. See `ir::named` for more details. Always `Some` during the codegen
     /// phase.
     used_template_parameters: Option<HashMap<ItemId, ItemSet>>,
@@ -1086,7 +1086,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             // Relocate the replacement item from where it was declared, to
             // where the thing it is replacing was declared.
             //
-            // First, we'll make sure that its parent id is correct.
+            // First, we'll make sure that its parent ID is correct.
 
             let old_parent = self.resolve_item(replacement_id).parent_id();
             if new_parent == old_parent {
@@ -1272,7 +1272,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.sizedness = Some(analyze::<SizednessAnalysis>(self));
     }
 
-    /// Look up whether the type with the given id is sized or not.
+    /// Look up whether the type with the given ID is sized or not.
     pub(crate) fn lookup_sizedness(&self, id: TypeId) -> SizednessResult {
         assert!(
             self.in_codegen_phase(),
@@ -1437,7 +1437,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.root_module
     }
 
-    /// Resolve a type with the given id.
+    /// Resolve a type with the given ID.
     ///
     /// Panics if there is no item for the given `TypeId` or if the resolved
     /// item is not a `Type`.
@@ -1445,7 +1445,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.resolve_item(type_id).kind().expect_type()
     }
 
-    /// Resolve a function with the given id.
+    /// Resolve a function with the given ID.
     ///
     /// Panics if there is no item for the given `FunctionId` or if the resolved
     /// item is not a `Function`.
@@ -1454,9 +1454,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Resolve the given `ItemId` as a type, or `None` if there is no item with
-    /// the given id.
+    /// the given ID.
     ///
-    /// Panics if the id resolves to an item that is not a type.
+    /// Panics if the ID resolves to an item that is not a type.
     pub(crate) fn safe_resolve_type(&self, type_id: TypeId) -> Option<&Type> {
         self.resolve_item_fallible(type_id)
             .map(|t| t.kind().expect_type())
@@ -1473,7 +1473,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Resolve the given `ItemId` into an `Item`.
     ///
-    /// Panics if the given id does not resolve to any item.
+    /// Panics if the given ID does not resolve to any item.
     pub(crate) fn resolve_item<Id: Into<ItemId>>(&self, item_id: Id) -> &Item {
         let item_id = item_id.into();
         match self.resolve_item_fallible(item_id) {
@@ -1658,7 +1658,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 clang_sys::CXCursor_TypeRef |
                 clang_sys::CXCursor_TypedefDecl |
                 clang_sys::CXCursor_TypeAliasDecl => {
-                    // The `with_id` id will potentially end up unused if we give up
+                    // The `with_id` ID will potentially end up unused if we give up
                     // on this type (for example, because it has const value
                     // template args), so if we pass `with_id` as the parent, it is
                     // potentially a dangling reference. Instead, use the canonical
@@ -1953,7 +1953,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         with_id.as_type_id_unchecked()
     }
 
-    /// Returns the next item id to be used for an item.
+    /// Returns the next item ID to be used for an item.
     pub(crate) fn next_item_id(&mut self) -> ItemId {
         let ret = ItemId(self.items.len());
         self.items.push(None);
@@ -2055,7 +2055,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.in_codegen
     }
 
-    /// Mark the type with the given `name` as replaced by the type with id
+    /// Mark the type with the given `name` as replaced by the type with ID
     /// `potential_ty`.
     ///
     /// Replacement types are declared using the `replaces="xxx"` annotation,
@@ -2185,7 +2185,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         (module_name, kind)
     }
 
-    /// Given a CXCursor_Namespace cursor, return the item id of the
+    /// Given a CXCursor_Namespace cursor, return the item ID of the
     /// corresponding module, or create one on the fly.
     pub(crate) fn module(&mut self, cursor: clang::Cursor) -> ModuleId {
         use clang_sys::*;
@@ -2539,7 +2539,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     }
                 }
 
-                // Find enums in this module, and record the id of each one that
+                // Find enums in this module, and record the ID of each one that
                 // has a typedef.
                 for child_id in module.children() {
                     if let Some(ItemKind::Type(ty)) =
@@ -2837,7 +2837,7 @@ pub(crate) struct ItemResolver {
 }
 
 impl ItemId {
-    /// Create an `ItemResolver` from this item id.
+    /// Create an `ItemResolver` from this item ID.
     pub(crate) fn into_resolver(self) -> ItemResolver {
         self.into()
     }
@@ -2853,7 +2853,7 @@ where
 }
 
 impl ItemResolver {
-    /// Construct a new `ItemResolver` from the given id.
+    /// Construct a new `ItemResolver` from the given ID.
     pub(crate) fn new<Id: Into<ItemId>>(id: Id) -> ItemResolver {
         let id = id.into();
         ItemResolver {

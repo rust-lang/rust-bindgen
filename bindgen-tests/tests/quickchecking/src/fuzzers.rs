@@ -231,7 +231,7 @@ impl fmt::Display for DeclarationListC {
     }
 }
 
-/// A qucickcheck trait for describing how BaseTypeC types can be
+/// A quickcheck trait for describing how BaseTypeC types can be
 /// randomly generated and shrunk.
 impl Arbitrary for BaseTypeC {
     fn arbitrary(g: &mut Gen) -> BaseTypeC {

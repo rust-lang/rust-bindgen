@@ -362,7 +362,7 @@ impl CanDeriveOrd for Item {
 /// information).
 ///
 /// Items refer to each other by `ItemId`. Every item has its parent's
-/// id. Depending on the kind of item this is, it may also refer to other items,
+/// ID. Depending on the kind of item this is, it may also refer to other items,
 /// such as a compound type item referring to other types. Collectively, these
 /// references form a graph.
 ///
@@ -376,19 +376,19 @@ impl CanDeriveOrd for Item {
 /// `annotations` module.
 #[derive(Debug)]
 pub(crate) struct Item {
-    /// This item's id.
+    /// This item's ID.
     id: ItemId,
 
-    /// The item's local id, unique only amongst its siblings. Only used for
+    /// The item's local ID, unique only amongst its siblings. Only used for
     /// anonymous items.
     ///
     /// Lazily initialized in local_id().
     ///
-    /// Note that only structs, unions, and enums get a local type id. In any
+    /// Note that only structs, unions, and enums get a local type ID. In any
     /// case this is an implementation detail.
     local_id: LazyCell<usize>,
 
-    /// The next local id to use for a child or template instantiation.
+    /// The next local ID to use for a child or template instantiation.
     next_child_local_id: Cell<usize>,
 
     /// A cached copy of the canonical name, as returned by `canonical_name`.
@@ -406,11 +406,11 @@ pub(crate) struct Item {
     /// Annotations extracted from the doc comment, or the default ones
     /// otherwise.
     annotations: Annotations,
-    /// An item's parent id. This will most likely be a class where this item
+    /// An item's parent ID. This will most likely be a class where this item
     /// was declared, or a module, etc.
     ///
     /// All the items have a parent, except the root module, in which case the
-    /// parent id is its own id.
+    /// parent ID is its own ID.
     parent_id: ItemId,
     /// The item kind.
     kind: ItemKind,
@@ -479,7 +479,7 @@ impl Item {
         self.parent_id
     }
 
-    /// Set this item's parent id.
+    /// Set this item's parent ID.
     ///
     /// This is only used so replacements get generated in the proper module.
     pub(crate) fn set_parent_for_replacement<Id: Into<ItemId>>(
@@ -681,7 +681,7 @@ impl Item {
         NameOptions::new(self, ctx)
     }
 
-    /// Get the target item id for name generation.
+    /// Get the target item ID for name generation.
     fn name_target(&self, ctx: &BindgenContext) -> ItemId {
         let mut targets_seen = DebugOnlyItemSet::new();
         let mut item = self;
@@ -861,7 +861,7 @@ impl Item {
             return base_name;
         }
 
-        // Ancestors' id iter
+        // Ancestors' ID iter
         let mut ids_iter = target
             .parent_id()
             .ancestors(ctx)
@@ -938,11 +938,11 @@ impl Item {
         ctx.rust_mangle(&name).into_owned()
     }
 
-    /// The exposed id that represents an unique id among the siblings of a
+    /// The exposed ID that represents an unique ID among the siblings of a
     /// given item.
     pub(crate) fn exposed_id(&self, ctx: &BindgenContext) -> String {
         // Only use local ids for enums, classes, structs and union types.  All
-        // other items use their global id.
+        // other items use their global ID.
         let ty_kind = self.kind().as_type().map(|t| t.kind());
         if let Some(ty_kind) = ty_kind {
             match *ty_kind {
@@ -954,7 +954,7 @@ impl Item {
         }
 
         // Note that this `id_` prefix prevents (really unlikely) collisions
-        // between the global id and the local id of an item with the same
+        // between the global ID and the local ID of an item with the same
         // parent.
         format!("id_{}", self.id().as_usize())
     }
@@ -1573,10 +1573,10 @@ impl Item {
     /// This is one of the trickiest methods you'll find (probably along with
     /// some of the ones that handle templates in `BindgenContext`).
     ///
-    /// This method parses a type, given the potential id of that type (if
+    /// This method parses a type, given the potential ID of that type (if
     /// parsing it was correct), an optional location we're scanning, which is
-    /// critical some times to obtain information, an optional parent item id,
-    /// that will, if it's `None`, become the current module id, and the
+    /// critical some times to obtain information, an optional parent item ID,
+    /// that will, if it's `None`, become the current module ID, and the
     /// context.
     pub(crate) fn from_ty_with_id(
         id: ItemId,
