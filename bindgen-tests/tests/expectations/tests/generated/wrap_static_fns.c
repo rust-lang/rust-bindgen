@@ -1,7 +1,7 @@
 int foo__extern(void) asm("foo__extern");
-int foo__extern() { return foo(); }
+int foo__extern(void) { return foo(); }
 int bar__extern(void) asm("bar__extern");
-int bar__extern() { return bar(); }
+int bar__extern(void) { return bar(); }
 int takes_ptr__extern(int *arg) asm("takes_ptr__extern");
 int takes_ptr__extern(int *arg) { return takes_ptr(arg); }
 int takes_fn_ptr__extern(int (*f) (int)) asm("takes_fn_ptr__extern");

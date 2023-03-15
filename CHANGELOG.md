@@ -164,7 +164,8 @@
 ## Added
 
 ## Changed
-
+ * Static functions with no arguments use `void` as their single argument
+   instead of having no arguments when the `--wrap-static-fns` flag is used.
 ## Removed
  * The following deprecated flags were removed: `--use-msvc-mangling`,
    `--rustfmt-bindings` and `--size_t-is-usize`.
