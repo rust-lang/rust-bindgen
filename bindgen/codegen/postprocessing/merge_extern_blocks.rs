@@ -1,5 +1,5 @@
 use syn::{
-    visit_mut::{visit_item_mod_mut, VisitMut, visit_file_mut},
+    visit_mut::{visit_file_mut, visit_item_mod_mut, VisitMut},
     File, Item, ItemForeignMod, ItemMod,
 };
 

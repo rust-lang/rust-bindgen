@@ -23,7 +23,7 @@ impl VisitMut for Visitor {
     }
 }
 
-fn visit_items(items: &mut Vec<Item>) {
+fn visit_items(items: &mut [Item]) {
     items.sort_by_key(|item| match item {
         Item::Type(_) => 0,
         Item::Struct(_) => 1,
