@@ -77,6 +77,9 @@ use std::str::FromStr;
 type HashMap<K, V> = rustc_hash::FxHashMap<K, V>;
 type HashSet<K> = rustc_hash::FxHashSet<K>;
 
+use annotate_snippets::snippet::AnnotationType;
+use crate::diagnostics::{Diagnostic, Slice};
+
 /// Default prefix for the anon fields.
 pub const DEFAULT_ANON_FIELDS_PREFIX: &str = "__bindgen_anon_";
 
@@ -957,6 +960,7 @@ impl Bindings {
                 )),
                 Some(3) => {
                     warn!("Rustfmt could not format some lines.");
+                    simple_format_failure_diagnostic(&bindings, true);
                     Ok(bindings)
                 }
                 _ => Err(io::Error::new(
@@ -966,6 +970,19 @@ impl Bindings {
             },
             _ => Ok(source),
         }
+    }
+}
+
+fn simple_format_failure_diagnostic(item: &str, emit_diagnostics: bool) {
+    if emit_diagnostics {
+        let mut slice = Slice::default();
+        slice.with_source(item);
+
+        Diagnostic::default()
+            .with_title("Rustfmt could not format some code", AnnotationType::Warning)
+            .add_slice(slice)
+            .add_annotation(format!("The lines that could not be formatted: {}", item), AnnotationType::Note)
+            .display();
     }
 }
 
