@@ -12,10 +12,10 @@ use crate::clang;
 use crate::clang::ClangToken;
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 
+use crate::diagnostics::Diagnostic;
+use annotate_snippets::snippet::AnnotationType;
 use std::io;
 use std::num::Wrapping;
-use annotate_snippets::snippet::AnnotationType;
-use crate::diagnostics::Diagnostic;
 
 /// The type for a constant variable.
 #[derive(Debug)]
@@ -127,19 +127,19 @@ impl DotAttributes for Var {
 }
 
 fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
-    if value < 0 ||
-        ctx.options().default_macro_constant_type ==
-            MacroTypeVariation::Signed
+    if value < 0
+        || ctx.options().default_macro_constant_type
+            == MacroTypeVariation::Signed
     {
         if value < i32::min_value() as i64 || value > i32::max_value() as i64 {
             IntKind::I64
-        } else if !ctx.options().fit_macro_constants ||
-            value < i16::min_value() as i64 ||
-            value > i16::max_value() as i64
+        } else if !ctx.options().fit_macro_constants
+            || value < i16::min_value() as i64
+            || value > i16::max_value() as i64
         {
             IntKind::I32
-        } else if value < i8::min_value() as i64 ||
-            value > i8::max_value() as i64
+        } else if value < i8::min_value() as i64
+            || value > i8::max_value() as i64
         {
             IntKind::I16
         } else {
@@ -147,8 +147,8 @@ fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
         }
     } else if value > u32::max_value() as i64 {
         IntKind::U64
-    } else if !ctx.options().fit_macro_constants ||
-        value > u16::max_value() as i64
+    } else if !ctx.options().fit_macro_constants
+        || value > u16::max_value() as i64
     {
         IntKind::U32
     } else if value > u8::max_value() as i64 {
@@ -225,7 +225,12 @@ impl ClangSubItemParser for Var {
                 if previously_defined {
                     let name = String::from_utf8(id).unwrap();
                     warn!("Duplicated macro definition: {}", name);
-                    var_diagnostics(&name, "Duplicated macro definition", "This macro had a duplicate", true);
+                    var_diagnostics(
+                        &name,
+                        "Duplicated macro definition",
+                        "This macro had a duplicate",
+                        true,
+                    );
                     return Err(ParseError::Continue);
                 }
 
@@ -314,10 +319,11 @@ impl ClangSubItemParser for Var {
 
                 // TODO(emilio): do we have to special-case constant arrays in
                 // some other places?
-                let is_const = ty.is_const() ||
-                    ([CXType_ConstantArray, CXType_IncompleteArray]
-                        .contains(&ty.kind()) &&
-                        ty.elem_type()
+                let is_const = ty.is_const()
+                    || ([CXType_ConstantArray, CXType_IncompleteArray]
+                        .contains(&ty.kind())
+                        && ty
+                            .elem_type()
                             .map_or(false, |element| element.is_const()));
 
                 let ty = match Item::from_ty(&ty, cursor, None, ctx) {
