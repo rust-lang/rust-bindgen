@@ -105,12 +105,6 @@ impl<'a> CSerialize<'a> for Function {
         // The function's return type
         let ret_ty = signature.return_type();
 
-        // Write `ret_ty wrap_name(args) asm("wrap_name");`
-        ret_ty.serialize(ctx, (), stack, writer)?;
-        write!(writer, " {}(", wrap_name)?;
-        serialize_args(&args, ctx, writer)?;
-        writeln!(writer, ") asm(\"{}\");", wrap_name)?;
-
         // Write `ret_ty wrap_name(args) { return name(arg_names)' }`
         ret_ty.serialize(ctx, (), stack, writer)?;
         write!(writer, " {}(", wrap_name)?;

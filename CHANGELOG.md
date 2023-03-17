@@ -169,6 +169,9 @@
  * The source file generated when the `--wrap-static-fns` flag is enabled now
    contains `#include` directives with all the input headers and all the source
    code added with the `header_contents` method.
+ * The source file generated when the `--wrap-static-fns` flag no longer uses
+   `asm` labeling and the link name of static wrapper functions is allowed to
+   be mangled.
 ## Removed
  * The following deprecated flags were removed: `--use-msvc-mangling`,
    `--rustfmt-bindings` and `--size_t-is-usize`.
