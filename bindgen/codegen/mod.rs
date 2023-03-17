@@ -751,7 +751,7 @@ impl CodeGenerator for Var {
                 link_name,
                 None,
             ) {
-                attrs.push(attributes::link_name(link_name));
+                attrs.push(attributes::link_name::<false>(link_name));
             }
 
             let maybe_mut = if self.is_const() {
@@ -4155,7 +4155,7 @@ impl CodeGenerator for Function {
                 Some(abi),
             )
         {
-            attributes.push(attributes::link_name(link_name));
+            attributes.push(attributes::link_name::<false>(link_name));
             has_link_name_attr = true;
         }
 
@@ -4169,7 +4169,7 @@ impl CodeGenerator for Function {
 
         if is_internal && ctx.options().wrap_static_fns && !has_link_name_attr {
             let name = canonical_name.clone() + ctx.wrap_static_fns_suffix();
-            attributes.push(attributes::link_name(&name));
+            attributes.push(attributes::link_name::<true>(&name));
         }
 
         let ident = ctx.rust_ident(canonical_name);

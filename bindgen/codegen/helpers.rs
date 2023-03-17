@@ -7,7 +7,7 @@ use quote::TokenStreamExt;
 
 pub(crate) mod attributes {
     use proc_macro2::{Ident, Span, TokenStream};
-    use std::str::FromStr;
+    use std::{borrow::Cow, str::FromStr};
 
     pub(crate) fn repr(which: &str) -> TokenStream {
         let which = Ident::new(which, Span::call_site());
@@ -62,10 +62,15 @@ pub(crate) mod attributes {
         }
     }
 
-    pub(crate) fn link_name(name: &str) -> TokenStream {
+    pub(crate) fn link_name<const MANGLE: bool>(name: &str) -> TokenStream {
         // LLVM mangles the name by default but it's already mangled.
         // Prefixing the name with \u{1} should tell LLVM to not mangle it.
-        let name = format!("\u{1}{}", name);
+        let name: Cow<'_, str> = if MANGLE {
+            name.into()
+        } else {
+            format!("\u{1}{}", name).into()
+        };
+
         quote! {
             #[link_name = #name]
         }
@@ -151,8 +156,8 @@ pub(crate) mod ast_ty {
                 }
             }
             None => {
-                if ctx.options().use_core &&
-                    ctx.options().rust_features.core_ffi_c_void
+                if ctx.options().use_core
+                    && ctx.options().rust_features.core_ffi_c_void
                 {
                     quote! { ::core::ffi::c_void }
                 } else {
@@ -172,8 +177,8 @@ pub(crate) mod ast_ty {
                 }
             }
             None => {
-                if ctx.options().use_core &&
-                    ctx.options().rust_features().core_ffi_c
+                if ctx.options().use_core
+                    && ctx.options().rust_features().core_ffi_c
                 {
                     quote! {
                         ::core::ffi::#ident
