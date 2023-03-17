@@ -224,8 +224,7 @@ impl ClangSubItemParser for Var {
 
                 if previously_defined {
                     let name = String::from_utf8(id).unwrap();
-                    let (file, line, column, byte_offset) = cursor.location().location();
-                    // println!("{} {} {} {}", file.name().unwrap(), line, column, byte_offset);
+                    let (file, line, _, _) = cursor.location().location();
                     warn!("Duplicated macro definition: {}", name);
                     var_diagnostics(
                         &name,
