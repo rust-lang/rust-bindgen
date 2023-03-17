@@ -1,3 +1,7 @@
+#include "tests/headers/wrap-static-fns.h"
+
+// Static wrappers
+
 int foo__extern(void) asm("foo__extern");
 int foo__extern(void) { return foo(); }
 int bar__extern(void) asm("bar__extern");

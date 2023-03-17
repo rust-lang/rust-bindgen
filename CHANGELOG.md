@@ -166,6 +166,9 @@
 ## Changed
  * Static functions with no arguments use `void` as their single argument
    instead of having no arguments when the `--wrap-static-fns` flag is used.
+ * The source file generated when the `--wrap-static-fns` flag is enabled now
+   contains `#include` directives with all the input headers and all the source
+   code added with the `header_contents` method.
 ## Removed
  * The following deprecated flags were removed: `--use-msvc-mangling`,
    `--rustfmt-bindings` and `--size_t-is-usize`.

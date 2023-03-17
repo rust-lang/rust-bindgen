@@ -4545,6 +4545,7 @@ pub(crate) mod utils {
     use crate::ir::ty::TypeKind;
     use crate::{args_are_cpp, file_is_cpp};
     use std::borrow::Cow;
+    use std::io::Write;
     use std::mem;
     use std::path::PathBuf;
     use std::str::FromStr;
@@ -4582,6 +4583,24 @@ pub(crate) mod utils {
         let source_path = path.with_extension(if is_cpp { "cpp" } else { "c" });
 
         let mut code = Vec::new();
+
+        if !context.options().input_headers.is_empty() {
+            for header in &context.options().input_headers {
+                writeln!(code, "#include \"{}\"", header)?;
+            }
+
+            writeln!(code)?;
+        }
+
+        if !context.options().input_header_contents.is_empty() {
+            for (name, contents) in &context.options().input_header_contents {
+                writeln!(code, "// {}\n{}", name, contents)?;
+            }
+
+            writeln!(code)?;
+        }
+
+        writeln!(code, "// Static wrappers\n")?;
 
         for &id in &result.items_to_serialize {
             let item = context.resolve_item(id);
