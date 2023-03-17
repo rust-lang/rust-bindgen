@@ -242,8 +242,6 @@ fn setup_wrap_static_fns_test() {
         .arg("-o")
         .arg(&obj_path)
         .arg(out_path.join("wrap_static_fns.c"))
-        .arg("-include")
-        .arg(input_header_file_path)
         .output()
         .expect("`clang` command error");
     if !clang_output.status.success() {
