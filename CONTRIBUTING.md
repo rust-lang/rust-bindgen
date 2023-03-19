@@ -11,6 +11,8 @@ and introduce yourself.
 - [Code of Conduct](#code-of-conduct)
 - [Filing an Issue](#filing-an-issue)
 - [Looking to Start Contributing to `bindgen`?](#looking-to-start-contributing-to-bindgen)
+- [Prerequisites](#prerequisites)
+  - [`rustfmt` / `cargo fmt`](#rustfmt--cargo-fmt)
 - [Building](#building)
 - [Testing](#testing)
   - [Overview](#overview)
