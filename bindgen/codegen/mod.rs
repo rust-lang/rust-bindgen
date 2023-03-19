@@ -745,13 +745,18 @@ impl CodeGenerator for Var {
             }
         } else {
             // If necessary, apply a `#[link_name]` attribute
-            let link_name = self.mangled_name().unwrap_or_else(|| self.name());
-            if !utils::names_will_be_identical_after_mangling(
-                &canonical_name,
-                link_name,
-                None,
-            ) {
+            if let Some(link_name) = self.link_name() {
                 attrs.push(attributes::link_name::<false>(link_name));
+            } else {
+                let link_name =
+                    self.mangled_name().unwrap_or_else(|| self.name());
+                if !utils::names_will_be_identical_after_mangling(
+                    &canonical_name,
+                    link_name,
+                    None,
+                ) {
+                    attrs.push(attributes::link_name::<false>(link_name));
+                }
             }
 
             let maybe_mut = if self.is_const() {
@@ -4147,16 +4152,21 @@ impl CodeGenerator for Function {
         }
 
         let mut has_link_name_attr = false;
-        let link_name = mangled_name.unwrap_or(name);
-        if !is_dynamic_function &&
-            !utils::names_will_be_identical_after_mangling(
-                &canonical_name,
-                link_name,
-                Some(abi),
-            )
-        {
+        if let Some(link_name) = self.link_name() {
             attributes.push(attributes::link_name::<false>(link_name));
             has_link_name_attr = true;
+        } else {
+            let link_name = mangled_name.unwrap_or(name);
+            if !is_dynamic_function &&
+                !utils::names_will_be_identical_after_mangling(
+                    &canonical_name,
+                    link_name,
+                    Some(abi),
+                )
+            {
+                attributes.push(attributes::link_name::<false>(link_name));
+                has_link_name_attr = true;
+            }
         }
 
         // Unfortunately this can't piggyback on the `attributes` list because
