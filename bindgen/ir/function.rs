@@ -82,6 +82,9 @@ pub(crate) struct Function {
     /// The mangled name, that is, the symbol.
     mangled_name: Option<String>,
 
+    /// The link name. If specified, overwrite mangled_name.
+    link_name: Option<String>,
+
     /// The ID pointing to the current function signature.
     signature: TypeId,
 
@@ -97,6 +100,7 @@ impl Function {
     pub(crate) fn new(
         name: String,
         mangled_name: Option<String>,
+        link_name: Option<String>,
         signature: TypeId,
         kind: FunctionKind,
         linkage: Linkage,
@@ -104,6 +108,7 @@ impl Function {
         Function {
             name,
             mangled_name,
+            link_name,
             signature,
             kind,
             linkage,
@@ -118,6 +123,11 @@ impl Function {
     /// Get this function's name.
     pub(crate) fn mangled_name(&self) -> Option<&str> {
         self.mangled_name.as_deref()
+    }
+
+    /// Get this function's link name.
+    pub fn link_name(&self) -> Option<&str> {
+        self.link_name.as_deref()
     }
 
     /// Get this function's signature type.
@@ -726,8 +736,21 @@ impl ClangSubItemParser for Function {
 
         let mangled_name = cursor_mangling(context, &cursor);
 
-        let function =
-            Self::new(name.clone(), mangled_name, sig, kind, linkage);
+        let link_name = context.options().last_callback(|callbacks| {
+            callbacks.generated_link_name_override(ItemInfo {
+                name: name.as_str(),
+                kind: ItemKind::Function,
+            })
+        });
+
+        let function = Self::new(
+            name.clone(),
+            mangled_name,
+            link_name,
+            sig,
+            kind,
+            linkage,
+        );
 
         Ok(ParseResult::New(function, Some(cursor)))
     }

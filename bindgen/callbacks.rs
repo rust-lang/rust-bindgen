@@ -45,6 +45,15 @@ pub trait ParseCallbacks: fmt::Debug {
         None
     }
 
+    /// This function will run for every extern variable and function. The returned value determines
+    /// the link name in the bindings.
+    fn generated_link_name_override(
+        &self,
+        _item_info: ItemInfo<'_>,
+    ) -> Option<String> {
+        None
+    }
+
     /// The integer kind an integer macro should have, given a name and the
     /// value of that macro, or `None` if you want the default to be chosen.
     fn int_macro(&self, _name: &str, _value: i64) -> Option<IntKind> {

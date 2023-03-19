@@ -37,6 +37,8 @@ pub(crate) struct Var {
     name: String,
     /// The mangled name of the variable.
     mangled_name: Option<String>,
+    /// The link name of the variable.
+    link_name: Option<String>,
     /// The type of the variable.
     ty: TypeId,
     /// The value of the variable, that needs to be suitable for `ty`.
@@ -50,6 +52,7 @@ impl Var {
     pub(crate) fn new(
         name: String,
         mangled_name: Option<String>,
+        link_name: Option<String>,
         ty: TypeId,
         val: Option<VarType>,
         is_const: bool,
@@ -58,6 +61,7 @@ impl Var {
         Var {
             name,
             mangled_name,
+            link_name,
             ty,
             val,
             is_const,
@@ -87,6 +91,11 @@ impl Var {
     /// Get this variable's mangled name.
     pub(crate) fn mangled_name(&self) -> Option<&str> {
         self.mangled_name.as_deref()
+    }
+
+    /// Get this variable's link name.
+    pub fn link_name(&self) -> Option<&str> {
+        self.link_name.as_deref()
     }
 }
 
@@ -267,7 +276,7 @@ impl ClangSubItemParser for Var {
                 let ty = Item::builtin_type(type_kind, true, ctx);
 
                 Ok(ParseResult::New(
-                    Var::new(name, None, ty, Some(val), true),
+                    Var::new(name, None, None, ty, Some(val), true),
                     Some(cursor),
                 ))
             }
@@ -290,6 +299,13 @@ impl ClangSubItemParser for Var {
                     warn!("Empty constant name?");
                     return Err(ParseError::Continue);
                 }
+
+                let link_name = ctx.options().last_callback(|callbacks| {
+                    callbacks.generated_link_name_override(ItemInfo {
+                        name: name.as_str(),
+                        kind: ItemKind::Var,
+                    })
+                });
 
                 let ty = cursor.cur_type();
 
@@ -360,7 +376,8 @@ impl ClangSubItemParser for Var {
                 };
 
                 let mangling = cursor_mangling(ctx, &cursor);
-                let var = Var::new(name, mangling, ty, value, is_const);
+                let var =
+                    Var::new(name, mangling, link_name, ty, value, is_const);
 
                 Ok(ParseResult::New(var, Some(cursor)))
             }
