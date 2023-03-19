@@ -63,6 +63,16 @@ issue, provide us with:
 * [Issues labeled "help wanted"](https://github.com/rust-lang/rust-bindgen/labels/help%20wanted)
 * Still can't find something to work on? [Drop a comment here](https://github.com/rust-lang/rust-bindgen/issues/747)
 
+## Prerequisites
+
+### `rustfmt` / `cargo fmt`
+
+We use `nightly` channel for `rustfmt` so please set the appropriate setting your editor/IDE for that.
+
+For rust-analyzer, you can set `rustfmt.extraArgs = ['+nightly']`.
+
+To check via command line, you can run `cargo +nightly fmt --check`.
+
 ## Building
 
 To build the `bindgen` library and the `bindgen` executable:
