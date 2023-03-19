@@ -56,7 +56,6 @@ use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::VecDeque;
 use std::fmt::Write;
-use std::iter;
 use std::ops;
 use std::str::FromStr;
 
@@ -1596,15 +1595,18 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
 
         let layout = self.layout();
         let unit_field_ty = helpers::bitfield_unit(ctx, layout);
-        let field_ty = if parent.is_union() {
-            wrap_union_field_if_needed(
-                ctx,
-                struct_layout,
-                unit_field_ty.clone(),
-                result,
-            )
-        } else {
-            unit_field_ty.clone()
+        let field_ty = {
+            let unit_field_ty = unit_field_ty.clone();
+            if parent.is_union() {
+                wrap_union_field_if_needed(
+                    ctx,
+                    struct_layout,
+                    unit_field_ty,
+                    result,
+                )
+            } else {
+                unit_field_ty
+            }
         };
 
         {
@@ -4236,13 +4238,12 @@ fn objc_method_codegen(
     let fn_ret = utils::fnsig_return_ty(ctx, signature);
 
     let sig = if method.is_class_method() {
-        let fn_args = fn_args.clone();
         quote! {
             ( #( #fn_args ),* ) #fn_ret
         }
     } else {
-        let fn_args = fn_args.clone();
-        let args = iter::once(quote! { &self }).chain(fn_args.into_iter());
+        let self_arr = [quote! { &self }];
+        let args = self_arr.iter().chain(fn_args.iter());
         quote! {
             ( #( #args ),* ) #fn_ret
         }
