@@ -35,6 +35,7 @@ quote = { version = "1", default-features = false }
 syn = { version = "2.0", features = ["full", "extra-traits", "visit-mut"]}
 regex = { version = "1.5", default-features = false , features = ["std", "unicode"] }
 which = { version = "4.2.1", optional = true, default-features = false }
+prettyplease = { version = "0.1.25", optional = true}
 shlex = "1"
 rustc-hash = "1.0.1"
 proc-macro2 = { version = "1", default-features = false }

@@ -164,6 +164,9 @@
 ## Added
  * Added the `Bindgen::default_visibility` nethod and the
    `--default-visibility` flag to set the default visibility of fields.
+ * Added the `--formatter` flag with the values `none`, `rustfmt` and
+   `prettyplease` to select which tool will be used to format the bindings. The
+   default value is `rustfmt`. 
 ## Changed
  * Static functions with no arguments use `void` as their single argument
    instead of having no arguments when the `--wrap-static-fns` flag is used.
@@ -179,6 +182,7 @@
 ## Removed
  * The following deprecated flags were removed: `--use-msvc-mangling`,
    `--rustfmt-bindings` and `--size_t-is-usize`.
+ * The `--no-rustfmt-bindings` flag was removed in favor of `--formatter=none`.
 
 ## Fixed
 

@@ -88,6 +88,7 @@ use std::rc::Rc;
 type HashMap<K, V> = ::rustc_hash::FxHashMap<K, V>;
 type HashSet<K> = ::rustc_hash::FxHashSet<K>;
 pub(crate) use std::collections::hash_map::Entry;
+use std::str::FromStr;
 
 /// Default prefix for the anon fields.
 pub const DEFAULT_ANON_FIELDS_PREFIX: &str = "__bindgen_anon_";
@@ -129,6 +130,7 @@ bitflags! {
         /// Whether to generate constructors
         const CONSTRUCTORS = 1 << 4;
         /// Whether to generate destructors.
+        /// Whether to generate destructors.
         const DESTRUCTORS = 1 << 5;
     }
 }
@@ -168,6 +170,34 @@ impl CodegenConfig {
 impl Default for CodegenConfig {
     fn default() -> Self {
         CodegenConfig::all()
+    }
+}
+
+/// Formatting tools that can be used to format the bindings
+#[derive(Default, Debug, Clone, Copy)]
+#[non_exhaustive]
+pub enum Formatter {
+    /// Do not format the bindings.
+    None,
+    #[default]
+    /// Use `rustfmt` to format the bindings.
+    Rustfmt,
+    #[cfg(feature = "prettyplease")]
+    /// Use `prettyplease` to format the bindings.
+    Prettyplease,
+}
+
+impl FromStr for Formatter {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "rustfmt" => Ok(Self::Rustfmt),
+            #[cfg(feature = "prettyplease")]
+            "prettyplease" => Ok(Self::Prettyplease),
+            _ => Err(format!("`{}` is not a valid formatter", s)),
+        }
     }
 }
 
@@ -344,7 +374,7 @@ impl Builder {
             rust_features,
             record_matches,
             size_t_is_usize,
-            rustfmt_bindings,
+            formatter,
             rustfmt_configuration_file,
             no_partialeq_types,
             no_copy_types,
@@ -703,8 +733,14 @@ impl Builder {
             output_vector.push("--no-size_t-is-usize".into());
         }
 
-        if !rustfmt_bindings {
-            output_vector.push("--no-rustfmt-bindings".into());
+
+        match formatter {
+            Formatter::None => output_vector.push("--formatter=none".into()),
+            Formatter::Rustfmt => (),
+            #[cfg(feature = "prettyplease")]
+            Formatter::Prettyplease => {
+                output_vector.push("--formatter=prettyplease".into())
+            }
         }
 
         if let Some(path) =
@@ -1616,9 +1652,9 @@ impl Builder {
         self
     }
 
-    /// Set whether rustfmt should format the generated bindings.
-    pub fn rustfmt_bindings(mut self, doit: bool) -> Self {
-        self.options.rustfmt_bindings = doit;
+    /// Set which tool should be used to format the generated bindings.
+    pub fn formatter(mut self, formatter: Formatter) -> Self {
+        self.options.formatter = formatter;
         self
     }
 
@@ -1631,7 +1667,7 @@ impl Builder {
     /// Set the absolute path to the rustfmt configuration file, if None, the standard rustfmt
     /// options are used.
     pub fn rustfmt_configuration_file(mut self, path: Option<PathBuf>) -> Self {
-        self = self.rustfmt_bindings(true);
+        self = self.formatter(Formatter::Rustfmt);
         self.options.rustfmt_configuration_file = path;
         self
     }
@@ -2224,8 +2260,8 @@ struct BindgenOptions {
     /// Whether `size_t` should be translated to `usize` automatically.
     size_t_is_usize: bool,
 
-    /// Whether rustfmt should format the generated bindings.
-    rustfmt_bindings: bool,
+    /// The tool that should be used to format the generated bindings.
+    formatter: Formatter,
 
     /// The absolute path to the rustfmt configuration file, if None, the standard rustfmt
     /// options are used.
@@ -2408,7 +2444,6 @@ impl Default for BindgenOptions {
             detect_include_paths: true,
             prepend_enum_name: true,
             record_matches: true,
-            rustfmt_bindings: true,
             size_t_is_usize: true,
 
             --default-fields--
@@ -2471,6 +2506,7 @@ impl Default for BindgenOptions {
             block_extern_crate,
             fit_macro_constants,
             time_phases,
+            formatter,
             rustfmt_configuration_file,
             no_partialeq_types,
             no_copy_types,
@@ -2835,18 +2871,16 @@ impl Bindings {
             writer.write_all("\n".as_bytes())?;
         }
 
-        let bindings = self.module.to_string();
-
-        match self.rustfmt_generated_string(&bindings) {
-            Ok(rustfmt_bindings) => {
-                writer.write_all(rustfmt_bindings.as_bytes())?;
+        match self.format_tokens(&self.module) {
+            Ok(formatted_bindings) => {
+                writer.write_all(formatted_bindings.as_bytes())?;
             }
             Err(err) => {
                 eprintln!(
                     "Failed to run rustfmt: {} (non-fatal, continuing)",
                     err
                 );
-                writer.write_all(bindings.as_bytes())?;
+                writer.write_all(self.module.to_string().as_bytes())?;
             }
         }
         Ok(())
@@ -2854,7 +2888,7 @@ impl Bindings {
 
     /// Gets the rustfmt path to rustfmt the generated bindings.
     fn rustfmt_path(&self) -> io::Result<Cow<PathBuf>> {
-        debug_assert!(self.options.rustfmt_bindings);
+        debug_assert!(matches!(self.options.formatter, Formatter::Rustfmt));
         if let Some(ref p) = self.options.rustfmt_path {
             return Ok(Cow::Borrowed(p));
         }
@@ -2875,15 +2909,21 @@ impl Bindings {
     }
 
     /// Checks if rustfmt_bindings is set and runs rustfmt on the string
-    fn rustfmt_generated_string<'a>(
+    fn format_tokens<'a>(
         &self,
-        source: &'a str,
-    ) -> io::Result<Cow<'a, str>> {
+        tokens: &proc_macro2::TokenStream,
+    ) -> io::Result<String> {
         let _t = time::Timer::new("rustfmt_generated_string")
             .with_output(self.options.time_phases);
 
-        if !self.options.rustfmt_bindings {
-            return Ok(Cow::Borrowed(source));
+        match self.options.formatter {
+            Formatter::None => return Ok(tokens.to_string()),
+
+            #[cfg(feature = "prettyplease")]
+            Formatter::Prettyplease => {
+                prettyplease::unparse(&syn::parse_quote!(#tokens));
+            }
+            Formatter::Rustfmt => (),
         }
 
         let rustfmt = self.rustfmt_path()?;
@@ -2904,7 +2944,7 @@ impl Bindings {
         let mut child_stdin = child.stdin.take().unwrap();
         let mut child_stdout = child.stdout.take().unwrap();
 
-        let source = source.to_owned();
+        let source = tokens.to_string();
 
         // Write to stdin in a new thread, so that we can read from stdout on this
         // thread. This keeps the child from blocking on writing to its stdout which
@@ -2925,21 +2965,21 @@ impl Bindings {
 
         match String::from_utf8(output) {
             Ok(bindings) => match status.code() {
-                Some(0) => Ok(Cow::Owned(bindings)),
+                Some(0) => Ok(bindings),
                 Some(2) => Err(io::Error::new(
                     io::ErrorKind::Other,
                     "Rustfmt parsing errors.".to_string(),
                 )),
                 Some(3) => {
                     warn!("Rustfmt could not format some lines.");
-                    Ok(Cow::Owned(bindings))
+                    Ok(bindings)
                 }
                 _ => Err(io::Error::new(
                     io::ErrorKind::Other,
                     "Internal rustfmt error".to_string(),
                 )),
             },
-            _ => Ok(Cow::Owned(source)),
+            _ => Ok(source),
         }
     }
 
