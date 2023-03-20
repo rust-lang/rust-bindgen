@@ -267,7 +267,7 @@ struct BindgenCommand {
     #[arg(long = "no-size_t-is-usize")]
     no_size_t_is_usize: bool,
     /// Which tool should be used to format the bindings
-    #[arg(long, value_name = "FORMATTER", default_value="rustfmt")]
+    #[arg(long, value_name = "FORMATTER", default_value = "rustfmt")]
     formatter: Formatter,
     /// The absolute path to the rustfmt configuration file. The configuration file will be used for formatting the bindings. This parameter sets `formatter` to `rustfmt`.
     #[arg(long, value_name = "PATH")]
