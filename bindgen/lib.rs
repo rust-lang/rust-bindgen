@@ -174,17 +174,22 @@ impl Default for CodegenConfig {
 }
 
 /// Formatting tools that can be used to format the bindings
-#[derive(Default, Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 #[non_exhaustive]
 pub enum Formatter {
     /// Do not format the bindings.
     None,
-    #[default]
     /// Use `rustfmt` to format the bindings.
     Rustfmt,
     #[cfg(feature = "prettyplease")]
     /// Use `prettyplease` to format the bindings.
     Prettyplease,
+}
+
+impl Default for Formatter {
+    fn default() -> Self {
+        Self::Rustfmt
+    }
 }
 
 impl FromStr for Formatter {
