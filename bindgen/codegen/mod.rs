@@ -20,6 +20,7 @@ use self::struct_layout::StructLayoutTracker;
 use super::BindgenOptions;
 
 use crate::callbacks::{DeriveInfo, TypeKind as DeriveTypeKind};
+use crate::diagnostics::{AnnotationType, Diagnostic, Slice};
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::{
     Annotations, FieldAccessorKind, FieldVisibilityKind,
@@ -58,6 +59,7 @@ use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::VecDeque;
 use std::fmt::{self, Write};
+use std::io::BufRead;
 use std::ops;
 use std::str::FromStr;
 
@@ -4213,23 +4215,43 @@ impl CodeGenerator for Function {
             ClangAbi::Known(Abi::ThisCall)
                 if !ctx.options().rust_features().thiscall_abi =>
             {
-                warn!("Skipping function with thiscall ABI that isn't supported by the configured Rust target");
+                unsupported_abi_diagnostic::<false>(
+                    name,
+                    item.location(),
+                    "thiscall",
+                    ctx,
+                );
                 return None;
             }
             ClangAbi::Known(Abi::Vectorcall)
                 if !ctx.options().rust_features().vectorcall_abi =>
             {
-                warn!("Skipping function with vectorcall ABI that isn't supported by the configured Rust target");
+                unsupported_abi_diagnostic::<false>(
+                    name,
+                    item.location(),
+                    "vectorcall",
+                    ctx,
+                );
                 return None;
             }
             ClangAbi::Known(Abi::CUnwind)
                 if !ctx.options().rust_features().c_unwind_abi =>
             {
-                warn!("Skipping function with C-unwind ABI that isn't supported by the configured Rust target");
+                unsupported_abi_diagnostic::<false>(
+                    name,
+                    item.location(),
+                    "C-unwind",
+                    ctx,
+                );
                 return None;
             }
             ClangAbi::Known(Abi::Win64) if signature.is_variadic() => {
-                warn!("Skipping variadic function with Win64 ABI that isn't supported");
+                unsupported_abi_diagnostic::<true>(
+                    name,
+                    item.location(),
+                    "Win64",
+                    ctx,
+                );
                 return None;
             }
             ClangAbi::Unknown(unknown_abi) => {
@@ -4313,6 +4335,60 @@ impl CodeGenerator for Function {
             result.push(tokens);
         }
         Some(times_seen)
+    }
+}
+
+fn unsupported_abi_diagnostic<const VARIADIC: bool>(
+    fn_name: &str,
+    location: Option<&crate::clang::SourceLocation>,
+    abi: &str,
+    ctx: &BindgenContext,
+) {
+    use std::fs::File;
+    use std::io::{self, BufReader};
+
+    warn!(
+        "Skipping {}function `{}` with the {} ABI that isn't supported by the configured Rust target",
+        if VARIADIC { "variadic " } else { "" },
+        fn_name,
+        abi
+    );
+
+    if ctx.options().emit_diagnostics {
+        let mut diag = Diagnostic::default();
+        diag
+        .with_title(format!(
+                "The `{}` {}function uses the {} ABI which is not supported by the configured Rust target",
+                fn_name,
+                if VARIADIC { "variadic " } else { "" },
+                abi), AnnotationType::Warning)
+        .add_annotation("No code will be generated for this function.", AnnotationType::Warning)
+        .add_annotation(format!("The configured Rust version is {}.", String::from(ctx.options().rust_target)), AnnotationType::Note);
+
+        if let Some(loc) = location {
+            let (file, line, col, _) = loc.location();
+            if let Some(name) = file.name() {
+                if let Ok(source) = (|| {
+                    let mut source = String::new();
+
+                    let file = BufReader::new(File::open(&name)?);
+                    if let Some(line) =
+                        file.lines().skip(line.wrapping_sub(1)).next()
+                    {
+                        let line = line?;
+                        source = line;
+                    }
+
+                    Ok::<String, io::Error>(source)
+                })() {
+                    let mut slice = Slice::default();
+                    slice.with_source(source).with_location(name, line, col);
+                    diag.add_slice(slice);
+                }
+            }
+        }
+
+        diag.display()
     }
 }
 
