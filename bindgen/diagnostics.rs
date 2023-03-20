@@ -3,6 +3,7 @@
 //! The entry point of this module is the [`Diagnostic`] type.
 
 use std::borrow::Cow;
+use std::fmt::Write;
 
 use annotate_snippets::{
     display_list::{DisplayList, FormatOptions},
@@ -78,8 +79,8 @@ impl<'a> Diagnostic<'a> {
             if let Some(source) = &slice.source {
                 slices.push(ExtSlice {
                     source: source.as_ref(),
-                    line_start: 0,
-                    origin: None,
+                    line_start: slice.line.unwrap_or_default(),
+                    origin: slice.filename.as_deref(), 
                     annotations: vec![],
                     fold: false,
                 })
@@ -98,9 +99,9 @@ impl<'a> Diagnostic<'a> {
         let dl = DisplayList::from(snippet);
 
         if INVOKED_BY_BUILD_SCRIPT.with(Clone::clone) {
-            println!("cargo:warning={}", dl);
+            println!("cargo:warning={}\n", dl);
         } else {
-            eprintln!("{}", dl);
+            eprintln!("{}\n", dl);
         }
     }
 }
@@ -109,6 +110,8 @@ impl<'a> Diagnostic<'a> {
 #[derive(Default)]
 pub(crate) struct Slice<'a> {
     source: Option<Cow<'a, str>>,
+    filename: Option<String>,
+    line: Option<usize>,
 }
 
 impl<'a> Slice<'a> {
@@ -120,4 +123,18 @@ impl<'a> Slice<'a> {
         self.source = Some(source.into());
         self
     }
+
+    /// Set the file, line and column.
+    pub(crate) fn with_location(
+        &mut self,
+        mut name: String, 
+        line: usize,
+        col: usize,
+    ) -> &mut Self {
+        write!(name, ":{}:{}", line, col).expect("Writing to a string cannot fail");
+        self.filename = Some(name);
+        self.line = Some(line);
+        self
+    }
+
 }
