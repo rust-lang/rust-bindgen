@@ -54,6 +54,13 @@ Note that these functions and methods are usually marked inline for a reason:
 they tend to be hot. The above workaround makes them an out-of-line call, which
 might not provide acceptable performance.
 
+As an alternative, you can invoke `bindgen` with either the
+`bindgen::Builder::wrap_static_fns` method or the `--wrap-static-fns` flag.
+Which generates a C source file that can be compiled against the input headers
+to produce Rust headers for `static` and `static inline` functions. See [How to
+handle `static inline` functions](https://github.com/rust-lang/rust-bindgen/discussions/2405)
+for further information.
+
 ### Does `bindgen` support the C++ Standard Template Library (STL)?
 
 Sort of. A little. Depends what you mean by "support".
