@@ -31,17 +31,6 @@ impl<'a> Diagnostic<'a> {
         self
     }
 
-    /// Add footer to the warning message;
-    /// helpful to display some metadata etc. as needed
-    pub(crate) fn add_footer(
-        &mut self,
-        msg: impl Into<Cow<'a, str>>,
-        ty: AnnotationType,
-    ) -> &mut Self {
-        self.footer.push((msg.into(), ty));
-        self
-    }
-
     /// Add a slice of source code to the diagnostic.
     pub(crate) fn add_slice(&mut self, slice: Slice<'a>) -> &mut Self {
         self.slices.push(slice);
