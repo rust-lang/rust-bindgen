@@ -4,7 +4,7 @@ extern crate cc;
 use bindgen::callbacks::{
     DeriveInfo, IntKind, MacroParsingBehavior, ParseCallbacks,
 };
-use bindgen::{Builder, CargoCallbacks, EnumVariation};
+use bindgen::{Builder, CargoCallbacks, EnumVariation, Formatter};
 use std::collections::HashSet;
 use std::env;
 use std::path::PathBuf;
@@ -166,7 +166,7 @@ fn setup_macro_test() {
     let out_dep_file = out_path.join("test.d");
 
     let bindings = Builder::default()
-        .rustfmt_bindings(false)
+        .formatter(Formatter::None)
         .enable_cxx_namespaces()
         .default_enum_style(EnumVariation::Rust {
             non_exhaustive: false,
