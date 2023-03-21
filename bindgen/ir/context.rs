@@ -2463,7 +2463,6 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let emit_diagnostics = self.options().emit_diagnostics;
 
         for item in self.options().allowlisted_functions.unmatched_items() {
-            warn!("unused option: --allowlist-function {}", item);
             unused_regex_diagnostic(
                 item,
                 "--allowlist-function",
@@ -2472,12 +2471,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         }
 
         for item in self.options().allowlisted_vars.unmatched_items() {
-            warn!("unused option: --allowlist-var {}", item);
             unused_regex_diagnostic(item, "--allowlist-var", emit_diagnostics);
         }
 
         for item in self.options().allowlisted_types.unmatched_items() {
-            warn!("unused option: --allowlist-type {}", item);
             unused_regex_diagnostic(item, "--allowlist-type", emit_diagnostics);
         }
     }
@@ -2971,6 +2968,7 @@ impl TemplateParameters for PartialType {
 }
 
 fn unused_regex_diagnostic(item: &str, name: &str, emit_diagnostics: bool) {
+    warn!("unused option: {} {}", name, item);
     if emit_diagnostics {
         let mut slice = Slice::default();
         slice.with_source(item);
