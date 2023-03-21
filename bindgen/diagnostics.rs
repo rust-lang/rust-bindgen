@@ -61,7 +61,7 @@ impl<'a> Diagnostic<'a> {
         let mut slices = vec![];
         if let Some((msg, ty)) = &self.title {
             title = Some(Annotation {
-                id: None,
+                id: Some("from bindgen"),
                 label: Some(msg.as_ref()),
                 annotation_type: *ty,
             })
@@ -69,7 +69,7 @@ impl<'a> Diagnostic<'a> {
 
         for (msg, ty) in &self.footer {
             footer.push(Annotation {
-                id: None,
+                id: Some("from bindgen"),
                 label: Some(msg.as_ref()),
                 annotation_type: *ty,
             });
