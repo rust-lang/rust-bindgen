@@ -2912,7 +2912,7 @@ impl Bindings {
         Ok(Cow::Owned("rustfmt".into()))
     }
 
-    /// Formats a token stream with the formatter set up in `BindgenOptions`. 
+    /// Formats a token stream with the formatter set up in `BindgenOptions`.
     fn format_tokens<'a>(
         &self,
         tokens: &proc_macro2::TokenStream,
