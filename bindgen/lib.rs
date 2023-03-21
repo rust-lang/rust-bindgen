@@ -2925,7 +2925,7 @@ impl Bindings {
 
             #[cfg(feature = "prettyplease")]
             Formatter::Prettyplease => {
-                prettyplease::unparse(&syn::parse_quote!(#tokens));
+                return Ok(prettyplease::unparse(&syn::parse_quote!(#tokens)));
             }
             Formatter::Rustfmt => (),
         }
