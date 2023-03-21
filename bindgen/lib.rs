@@ -2912,7 +2912,7 @@ impl Bindings {
         Ok(Cow::Owned("rustfmt".into()))
     }
 
-    /// Checks if rustfmt_bindings is set and runs rustfmt on the string
+    /// Formats a token stream with the formatter set up in `BindgenOptions`. 
     fn format_tokens<'a>(
         &self,
         tokens: &proc_macro2::TokenStream,
