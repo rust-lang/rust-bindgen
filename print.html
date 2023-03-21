@@ -1490,6 +1490,12 @@ the <code>bindgen::Builder::generate_inline_functions</code> method or the
 <p>Note that these functions and methods are usually marked inline for a reason:
 they tend to be hot. The above workaround makes them an out-of-line call, which
 might not provide acceptable performance.</p>
+<p>As an alternative, you can invoke <code>bindgen</code> with either the
+<code>bindgen::Builder::wrap_static_fns</code> method or the <code>--wrap-static-fns</code> flag.
+Which generates a C source file that can be compiled against the input headers
+to produce Rust headers for <code>static</code> and <code>static inline</code> functions. See <a href="https://github.com/rust-lang/rust-bindgen/discussions/2405">How to
+handle <code>static inline</code> functions</a>
+for further information.</p>
 <h3><a class="header" href="#does-bindgen-support-the-c-standard-template-library-stl" id="does-bindgen-support-the-c-standard-template-library-stl">Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</a></h3>
 <p>Sort of. A little. Depends what you mean by &quot;support&quot;.</p>
 <p>Most functions, methods, constructors, and destructors are inline in the
