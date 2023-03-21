@@ -130,7 +130,6 @@ bitflags! {
         /// Whether to generate constructors
         const CONSTRUCTORS = 1 << 4;
         /// Whether to generate destructors.
-        /// Whether to generate destructors.
         const DESTRUCTORS = 1 << 5;
     }
 }
