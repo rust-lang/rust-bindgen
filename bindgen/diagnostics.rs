@@ -31,6 +31,17 @@ impl<'a> Diagnostic<'a> {
         self
     }
 
+    /// Add footer to the warning message;
+    /// helpful to display some metadata etc. as needed
+    pub(crate) fn add_footer(
+        &mut self,
+        msg: impl Into<Cow<'a, str>>,
+        ty: AnnotationType,
+    ) -> &mut Self {
+        self.footer.push((msg.into(), ty));
+        self
+    }
+
     /// Add a slice of source code to the diagnostic.
     pub(crate) fn add_slice(&mut self, slice: Slice<'a>) -> &mut Self {
         self.slices.push(slice);
@@ -80,7 +91,7 @@ impl<'a> Diagnostic<'a> {
                 slices.push(ExtSlice {
                     source: source.as_ref(),
                     line_start: slice.line.unwrap_or_default(),
-                    origin: slice.filename.as_deref(), 
+                    origin: slice.filename.as_deref(),
                     annotations: vec![],
                     fold: false,
                 })
@@ -127,14 +138,14 @@ impl<'a> Slice<'a> {
     /// Set the file, line and column.
     pub(crate) fn with_location(
         &mut self,
-        mut name: String, 
+        mut name: String,
         line: usize,
         col: usize,
     ) -> &mut Self {
-        write!(name, ":{}:{}", line, col).expect("Writing to a string cannot fail");
+        write!(name, ":{}:{}", line, col)
+            .expect("Writing to a string cannot fail");
         self.filename = Some(name);
         self.line = Some(line);
         self
     }
-
 }
