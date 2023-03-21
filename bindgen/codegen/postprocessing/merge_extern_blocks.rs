@@ -32,6 +32,7 @@ fn visit_items(items: &mut Vec<Item>) {
             attrs,
             abi,
             brace_token,
+            unsafety,
             items: extern_block_items,
         }) = item
         {
@@ -53,6 +54,7 @@ fn visit_items(items: &mut Vec<Item>) {
                     attrs,
                     abi,
                     brace_token,
+                    unsafety,
                     items: extern_block_items,
                 });
             }

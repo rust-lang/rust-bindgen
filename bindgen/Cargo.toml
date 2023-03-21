@@ -32,7 +32,7 @@ lazycell = "1"
 lazy_static = "1"
 peeking_take_while = "0.1.2"
 quote = { version = "1", default-features = false }
-syn = { version = "1.0.99", features = ["full", "extra-traits", "visit-mut"]}
+syn = { version = "2.0", features = ["full", "extra-traits", "visit-mut"]}
 regex = { version = "1.5", default-features = false , features = ["std", "unicode"] }
 which = { version = "4.2.1", optional = true, default-features = false }
 shlex = "1"
