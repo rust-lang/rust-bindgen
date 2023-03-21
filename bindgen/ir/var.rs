@@ -224,12 +224,11 @@ impl ClangSubItemParser for Var {
 
                 if previously_defined {
                     let name = String::from_utf8(id).unwrap();
-                    let (file, line, _, _) = cursor.location().location();
+                    let (file, line, column, byte_offset) = cursor.location().location();
+                    println!("{} {} {} {}", file.name().unwrap(), line, column, byte_offset);
                     warn!("Duplicated macro definition: {}", name);
                     var_diagnostics(
                         &name,
-                        line,
-                        file.name().unwrap().as_str(),
                         "Duplicated macro definition",
                         "This macro had a duplicate",
                         true,
@@ -453,10 +452,10 @@ fn get_integer_literal_from_cursor(cursor: &clang::Cursor) -> Option<i64> {
     value
 }
 
-fn var_diagnostics(item: &str, line: usize, origin: &str, msg: &str, note: &str, emit_diagnostics: bool) {
+fn var_diagnostics(item: &str, msg: &str, note: &str, emit_diagnostics: bool) {
     if emit_diagnostics {
         let mut slice = crate::diagnostics::Slice::default();
-        slice.with_source(item).add_line_start(line).add_origin(origin);
+        slice.with_source(item);
         Diagnostic::default()
             .with_title(msg, AnnotationType::Warning)
             .add_slice(slice)

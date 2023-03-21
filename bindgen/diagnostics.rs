@@ -76,14 +76,10 @@ impl<'a> Diagnostic<'a> {
 
         for slice in &self.slices {
             if let Some(source) = &slice.source {
-                let line_start = match slice.line_start {
-                    Some(l) => l,
-                    None => 0, // for now, default is 0. perhaps a better way to set this
-                };
                 slices.push(ExtSlice {
                     source: source.as_ref(),
-                    line_start: line_start,
-                    origin: slice.origin,
+                    line_start: 0,
+                    origin: None,
                     annotations: vec![],
                     fold: false,
                 })
@@ -113,8 +109,6 @@ impl<'a> Diagnostic<'a> {
 #[derive(Default)]
 pub(crate) struct Slice<'a> {
     source: Option<Cow<'a, str>>,
-    line_start: Option<usize>,
-    origin: Option<&'a str>,
 }
 
 impl<'a> Slice<'a> {
@@ -124,16 +118,6 @@ impl<'a> Slice<'a> {
         source: impl Into<Cow<'a, str>>,
     ) -> &mut Self {
         self.source = Some(source.into());
-        self
-    }
-
-    pub(crate) fn add_origin(&mut self, origin: &'a str) -> &mut Self {
-        self.origin = Some(origin);
-        self
-    }
-
-    pub(crate) fn add_line_start(&mut self, line: usize) -> &mut Self {
-        self.line_start = Some(line);
         self
     }
 }
