@@ -41,6 +41,6 @@ fn visit_items(items: &mut [Item]) {
         Item::ExternCrate(_) => 13,
         Item::ForeignMod(_) => 14,
         Item::Macro(_) => 15,
-        _ => 18, 
+        _ => 18,
     });
 }
