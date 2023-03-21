@@ -71,11 +71,11 @@ These two methods also apply to any other toolchain available in your system.
 ## Using `prettyplease`
 
 The [`prettyplease`](https://github.com/dtolnay/prettyplease) crate is a
-minimal formatter for generated code. The `--formatter=prettyplease` flag and
-the `Builder::formatter(Formatter::Prettyplease)` method can be used to utilize
-this formatter instead of `rustfmt`. One of its advantages is that
-`prettyplease` can be used in minimal environments where the Rust toolchain is
-not installed.
+minimal formatter for generated code. To format bindings using `prettyplease`
+you have to invoke `bindgen` with either the `--formatter=prettyplease` flag or
+the the `bindgen::Builder::formatter(bindgen::Formatter::Prettyplease)`. One of
+its advantages is that `prettyplease` can be used in minimal environments where
+the Rust toolchain is not installed.
 
 ## How can I normalize `#[doc]` attributes?
 
