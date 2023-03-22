@@ -57,7 +57,7 @@ pub use ir::function::Abi;
 pub use regex_set::RegexSet;
 
 use codegen::CodegenError;
-use diagnostics::{Diagnostic, Slice};
+use diagnostics::{Diagnostic, Level, Slice};
 use features::RustFeatures;
 use ir::comment;
 use ir::context::{BindgenContext, ItemId};
@@ -77,8 +77,6 @@ use std::str::FromStr;
 // Some convenient typedefs for a fast hash map and hash set.
 type HashMap<K, V> = rustc_hash::FxHashMap<K, V>;
 type HashSet<K> = rustc_hash::FxHashSet<K>;
-
-use annotate_snippets::snippet::AnnotationType;
 
 /// Default prefix for the anon fields.
 pub const DEFAULT_ANON_FIELDS_PREFIX: &str = "__bindgen_anon_";
@@ -979,14 +977,11 @@ fn simple_format_failure_diagnostic(item: &str, emit_diagnostics: bool) {
         slice.with_source(item);
 
         Diagnostic::default()
-            .with_title(
-                "Rustfmt could not format some code",
-                AnnotationType::Warning,
-            )
+            .with_title("Rustfmt could not format some code", Level::Warn)
             .add_slice(slice)
             .add_annotation(
                 format!("The lines that could not be formatted: {}", item),
-                AnnotationType::Note,
+                Level::Note,
             )
             .display();
     }

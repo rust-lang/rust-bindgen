@@ -21,7 +21,7 @@ use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
 use crate::clang::{self, Cursor};
 use crate::codegen::CodegenError;
-use crate::diagnostics::{AnnotationType, Diagnostic, Slice};
+use crate::diagnostics::{Diagnostic, Level, Slice};
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 
@@ -2974,11 +2974,11 @@ fn unused_regex_diagnostic(item: &str, name: &str, emit_diagnostics: bool) {
         slice.with_source(item);
 
         Diagnostic::default()
-            .with_title("unused regular expression:", AnnotationType::Warning)
+            .with_title("unused regular expression:", Level::Warn)
             .add_slice(slice)
             .add_annotation(
                 format!("this regular expression was passed via `{}`", name),
-                AnnotationType::Note,
+                Level::Note,
             )
             .display();
     }

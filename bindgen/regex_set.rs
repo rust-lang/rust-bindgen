@@ -144,7 +144,7 @@ fn invalid_regex_warning(
     err: regex::Error,
     name: &'static str,
 ) {
-    use crate::diagnostics::{AnnotationType, Diagnostic, Slice};
+    use crate::diagnostics::{Diagnostic, Level, Slice};
 
     let mut diagnostic = Diagnostic::default();
 
@@ -167,40 +167,33 @@ fn invalid_regex_warning(
                     let error = "error: ";
                     if line.starts_with(error) {
                         let (_, msg) = line.split_at(error.len());
-                        diagnostic.add_annotation(
-                            msg.to_owned(),
-                            AnnotationType::Error,
-                        );
+                        diagnostic.add_annotation(msg.to_owned(), Level::Error);
                     } else {
-                        diagnostic.add_annotation(
-                            line.to_owned(),
-                            AnnotationType::Info,
-                        );
+                        diagnostic.add_annotation(line.to_owned(), Level::Info);
                     }
                 }
                 let mut slice = Slice::default();
                 slice.with_source(source);
                 diagnostic.add_slice(slice);
 
-                diagnostic
-                    .with_title("regex parse error:", AnnotationType::Warning);
+                diagnostic.with_title("regex parse error:", Level::Warn);
             } else {
-                diagnostic.with_title(string, AnnotationType::Warning);
+                diagnostic.with_title(string, Level::Warn);
             }
         }
         err => {
             let err = err.to_string();
-            diagnostic.with_title(err, AnnotationType::Warning);
+            diagnostic.with_title(err, Level::Warn);
         }
     }
 
     diagnostic.add_annotation(
         format!("this regular expression was passed via `{}`", name),
-        AnnotationType::Note,
+        Level::Note,
     );
 
     if set.items.iter().any(|item| item == "*") {
-        diagnostic.add_annotation("using wildcard patterns \"*\" is no longer considered valid. Consider using \".*\" instead", AnnotationType::Help);
+        diagnostic.add_annotation("using wildcard patterns \"*\" is no longer considered valid. Consider using \".*\" instead", Level::Help);
     }
     diagnostic.display();
 }

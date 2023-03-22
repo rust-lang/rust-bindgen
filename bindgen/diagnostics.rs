@@ -10,14 +10,35 @@ use annotate_snippets::{
     snippet::{Annotation, Slice as ExtSlice, Snippet},
 };
 
-pub(crate) use annotate_snippets::snippet::AnnotationType;
+use annotate_snippets::snippet::AnnotationType;
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) enum Level {
+    Error,
+    Warn,
+    Info,
+    Note,
+    Help,
+}
+
+impl From<Level> for AnnotationType {
+    fn from(level: Level) -> Self {
+        match level {
+            Level::Error => Self::Error,
+            Level::Warn => Self::Warning,
+            Level::Info => Self::Info,
+            Level::Note => Self::Note,
+            Level::Help => Self::Help,
+        }
+    }
+}
 
 /// A `bindgen` diagnostic.
 #[derive(Default)]
 pub(crate) struct Diagnostic<'a> {
-    title: Option<(Cow<'a, str>, AnnotationType)>,
+    title: Option<(Cow<'a, str>, Level)>,
     slices: Vec<Slice<'a>>,
-    footer: Vec<(Cow<'a, str>, AnnotationType)>,
+    footer: Vec<(Cow<'a, str>, Level)>,
 }
 
 impl<'a> Diagnostic<'a> {
@@ -25,9 +46,9 @@ impl<'a> Diagnostic<'a> {
     pub(crate) fn with_title(
         &mut self,
         title: impl Into<Cow<'a, str>>,
-        ty: AnnotationType,
+        level: Level,
     ) -> &mut Self {
-        self.title = Some((title.into(), ty));
+        self.title = Some((title.into(), level));
         self
     }
 
@@ -41,9 +62,9 @@ impl<'a> Diagnostic<'a> {
     pub(crate) fn add_annotation(
         &mut self,
         msg: impl Into<Cow<'a, str>>,
-        ty: AnnotationType,
+        level: Level,
     ) -> &mut Self {
-        self.footer.push((msg.into(), ty));
+        self.footer.push((msg.into(), level));
         self
     }
 
@@ -59,19 +80,19 @@ impl<'a> Diagnostic<'a> {
         let mut title = None;
         let mut footer = vec![];
         let mut slices = vec![];
-        if let Some((msg, ty)) = &self.title {
+        if let Some((msg, level)) = &self.title {
             title = Some(Annotation {
                 id: Some("bindgen"),
                 label: Some(msg.as_ref()),
-                annotation_type: *ty,
+                annotation_type: (*level).into(),
             })
         }
 
-        for (msg, ty) in &self.footer {
+        for (msg, level) in &self.footer {
             footer.push(Annotation {
-                id: None, 
+                id: None,
                 label: Some(msg.as_ref()),
-                annotation_type: *ty,
+                annotation_type: (*level).into(),
             });
         }
 

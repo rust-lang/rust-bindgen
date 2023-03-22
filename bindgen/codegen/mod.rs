@@ -20,7 +20,6 @@ use self::struct_layout::StructLayoutTracker;
 use super::BindgenOptions;
 
 use crate::callbacks::{DeriveInfo, TypeKind as DeriveTypeKind};
-use crate::diagnostics::{AnnotationType, Diagnostic, Slice};
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::{
     Annotations, FieldAccessorKind, FieldVisibilityKind,
@@ -4344,6 +4343,7 @@ fn unsupported_abi_diagnostic<const VARIADIC: bool>(
     abi: &str,
     ctx: &BindgenContext,
 ) {
+    use crate::diagnostics::{Diagnostic, Level, Slice};
     use std::fs::File;
     use std::io::{self, BufReader};
 
@@ -4361,9 +4361,9 @@ fn unsupported_abi_diagnostic<const VARIADIC: bool>(
                 "The `{}` {}function uses the {} ABI which is not supported by the configured Rust target",
                 fn_name,
                 if VARIADIC { "variadic " } else { "" },
-                abi), AnnotationType::Warning)
-            .add_annotation("No code will be generated for this function.", AnnotationType::Warning)
-            .add_annotation(format!("The configured Rust version is {}.", String::from(ctx.options().rust_target)), AnnotationType::Note);
+                abi), Level::Warn)
+            .add_annotation("No code will be generated for this function.", Level::Warn)
+            .add_annotation(format!("The configured Rust version is {}.", String::from(ctx.options().rust_target)), Level::Note);
 
         if let Some(loc) = location {
             let (file, line, col, _) = loc.location();
