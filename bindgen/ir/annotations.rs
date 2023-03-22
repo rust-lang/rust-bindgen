@@ -4,6 +4,8 @@
 //! replace other types with, mark as opaque, etc. This module deals with all of
 //! that stuff.
 
+use std::str::FromStr;
+
 use crate::clang;
 
 /// What kind of visibility modifer should be used for a struct or field?
@@ -15,6 +17,19 @@ pub enum FieldVisibilityKind {
     PublicCrate,
     /// Fields are marked as public, i.e., struct Foo {pub bar: bool}
     Public,
+}
+
+impl FromStr for FieldVisibilityKind {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "private" => Ok(Self::Private),
+            "crate" => Ok(Self::PublicCrate),
+            "public" => Ok(Self::Public),
+            _ => Err(format!("Invalid visibility kind: `{}`", s))
+        }
+    }
 }
 
 impl Default for FieldVisibilityKind {
