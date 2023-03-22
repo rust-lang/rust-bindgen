@@ -4372,9 +4372,7 @@ fn unsupported_abi_diagnostic<const VARIADIC: bool>(
                     let mut source = String::new();
 
                     let file = BufReader::new(File::open(&name)?);
-                    if let Some(line) =
-                        file.lines().skip(line.wrapping_sub(1)).next()
-                    {
+                    if let Some(line) = file.lines().nth(line.wrapping_sub(1)) {
                         let line = line?;
                         source = line;
                     }
