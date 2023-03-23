@@ -358,7 +358,8 @@ struct BindgenCommand {
     /// inline` functions.
     #[arg(long, requires = "experimental", value_name = "SUFFIX")]
     wrap_static_fns_suffix: Option<String>,
-    /// Sets the default visibility for fields.
+    /// Set the default visibility of fields, including bitfields and accessor methods for
+    /// bitfields. This flag is ignored if the `--respect-cxx-access-specs` flag is used.
     #[arg(long, value_name = "VISIBILITY")]
     default_visibility: Option<FieldVisibilityKind>,
     /// Enables experimental features.

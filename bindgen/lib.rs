@@ -1821,7 +1821,10 @@ impl Builder {
         self
     }
 
-    /// Mark struct fields as private by default.
+    /// Set the default visibility of fields, including bitfields and accessor methods for
+    /// bitfields.
+    ///
+    /// This option is ignored if the [`Builder::respect_cxx_access_specs`] method is enabled.
     pub fn default_visibility(
         mut self,
         visibility: FieldVisibilityKind,
