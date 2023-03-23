@@ -5,3 +5,8 @@ struct Point {
     int y;
 };
 
+struct Color {
+    char r :1;
+    char g :1;
+    char b :1;
+};
