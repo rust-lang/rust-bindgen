@@ -737,7 +737,6 @@ impl Builder {
             output_vector.push("--no-size_t-is-usize".into());
         }
 
-
         match formatter {
             Formatter::None => output_vector.push("--formatter=none".into()),
             Formatter::Rustfmt => (),
