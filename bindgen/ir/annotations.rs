@@ -4,7 +4,51 @@
 //! replace other types with, mark as opaque, etc. This module deals with all of
 //! that stuff.
 
+use std::str::FromStr;
+
 use crate::clang;
+
+/// What kind of visibility modifer should be used for a struct or field?
+#[derive(Copy, PartialEq, Eq, Clone, Debug)]
+pub enum FieldVisibilityKind {
+    /// Fields are marked as private, i.e., struct Foo {bar: bool}
+    Private,
+    /// Fields are marked as crate public, i.e., struct Foo {pub(crate) bar: bool}
+    PublicCrate,
+    /// Fields are marked as public, i.e., struct Foo {pub bar: bool}
+    Public,
+}
+
+impl FromStr for FieldVisibilityKind {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "private" => Ok(Self::Private),
+            "crate" => Ok(Self::PublicCrate),
+            "public" => Ok(Self::Public),
+            _ => Err(format!("Invalid visibility kind: `{}`", s)),
+        }
+    }
+}
+
+impl std::fmt::Display for FieldVisibilityKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            FieldVisibilityKind::Private => "private",
+            FieldVisibilityKind::PublicCrate => "crate",
+            FieldVisibilityKind::Public => "public",
+        };
+
+        s.fmt(f)
+    }
+}
+
+impl Default for FieldVisibilityKind {
+    fn default() -> Self {
+        FieldVisibilityKind::Public
+    }
+}
 
 /// What kind of accessor should we provide for a field?
 #[derive(Copy, PartialEq, Eq, Clone, Debug)]
@@ -41,9 +85,9 @@ pub(crate) struct Annotations {
     disallow_default: bool,
     /// Whether to add a #[must_use] annotation to this type.
     must_use_type: bool,
-    /// Whether fields should be marked as private or not. You can set this on
+    /// Visibility of struct fields. You can set this on
     /// structs (it will apply to all the fields), or individual fields.
-    private_fields: Option<bool>,
+    visibility_kind: Option<FieldVisibilityKind>,
     /// The kind of accessor this field will have. Also can be applied to
     /// structs so all the fields inside share it by default.
     accessor_kind: Option<FieldAccessorKind>,
@@ -150,9 +194,9 @@ impl Annotations {
         self.must_use_type
     }
 
-    /// Should the fields be private?
-    pub(crate) fn private_fields(&self) -> Option<bool> {
-        self.private_fields
+    /// What kind of accessors should we provide for this type's fields?
+    pub(crate) fn visibility_kind(&self) -> Option<FieldVisibilityKind> {
+        self.visibility_kind
     }
 
     /// What kind of accessors should we provide for this type's fields?
@@ -185,7 +229,11 @@ impl Annotations {
                     }
                     "derive" => self.derives.push(attr.value),
                     "private" => {
-                        self.private_fields = Some(attr.value != "false")
+                        self.visibility_kind = if attr.value != "false" {
+                            Some(FieldVisibilityKind::Private)
+                        } else {
+                            Some(FieldVisibilityKind::Public)
+                        };
                     }
                     "accessor" => {
                         self.accessor_kind = Some(parse_accessor(&attr.value))
