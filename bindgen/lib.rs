@@ -323,7 +323,11 @@ impl Builder {
             input_headers,
             // These cannot be added from the CLI.
             input_header_contents: _,
+            #[cfg(feature = "cli")]
             parse_callbacks,
+            // ParseCallbacks cannot represent CLI flags if the `"cli"` feature is disabled.
+            #[cfg(not(feature = "cli"))]
+            parse_callbacks: _,
             codegen_config,
             conservative_inline_namespaces,
             generate_comments,
