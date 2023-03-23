@@ -275,7 +275,7 @@ struct BindgenCommand {
     /// Avoid deriving PartialEq for types matching <REGEX>.
     #[arg(long, value_name = "REGEX")]
     no_partialeq: Vec<String>,
-    /// Avoid deriving Copy for types matching <REGEX>.
+    /// Avoid deriving Copy and Clone for types matching <REGEX>.
     #[arg(long, value_name = "REGEX")]
     no_copy: Vec<String>,
     /// Avoid deriving Debug for types matching <REGEX>.

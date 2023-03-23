@@ -1678,8 +1678,7 @@ impl Builder {
     }
 
     fn_with_regex_arg! {
-        /// Don't derive `Copy` for a given type. Regular
-        /// expressions are supported.
+        /// Don't derive `Copy` and `Clone` for a given type. Regular expressions are supported.
         pub fn no_copy<T: Into<String>>(mut self, arg: T) -> Self {
             self.options.no_copy_types.insert(arg.into());
             self
