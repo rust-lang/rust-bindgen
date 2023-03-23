@@ -383,7 +383,7 @@ fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
         "bindgen",
         // We format in `compare_generated_header` ourselves to have a little
         // more control.
-        "--no-rustfmt-bindings",
+        "--formatter=none",
         "--with-derive-default",
         "--disable-header-comment",
         "--vtable-generation",

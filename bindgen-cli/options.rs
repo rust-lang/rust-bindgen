@@ -1,8 +1,8 @@
 use bindgen::callbacks::TypeKind;
 use bindgen::{
     builder, AliasVariation, Builder, CodegenConfig, EnumVariation,
-    FieldVisibilityKind, MacroTypeVariation, NonCopyUnionStyle, RegexSet,
-    RustTarget, DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
+    FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
+    RegexSet, RustTarget, DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
 };
 use clap::Parser;
 use std::fs::File;
@@ -269,8 +269,15 @@ struct BindgenCommand {
     /// Do not format the generated bindings with rustfmt.
     #[arg(long)]
     no_rustfmt_bindings: bool,
-    /// The absolute path to the rustfmt configuration file. The configuration file will be used for formatting the bindings. This parameter is incompatible with --no-rustfmt-bindings.
-    #[arg(long, value_name = "PATH", conflicts_with("no_rustfmt_bindings"))]
+    /// Which tool should be used to format the bindings
+    #[arg(
+        long,
+        value_name = "FORMATTER",
+        conflicts_with = "no_rustfmt_bindings"
+    )]
+    formatter: Option<Formatter>,
+    /// The absolute path to the rustfmt configuration file. The configuration file will be used for formatting the bindings. This parameter sets `formatter` to `rustfmt`.
+    #[arg(long, value_name = "PATH", conflicts_with = "no_rustfmt_bindings")]
     rustfmt_configuration_file: Option<String>,
     /// Avoid deriving PartialEq for types matching <REGEX>.
     #[arg(long, value_name = "REGEX")]
@@ -457,6 +464,7 @@ where
         no_record_matches,
         no_size_t_is_usize,
         no_rustfmt_bindings,
+        formatter,
         rustfmt_configuration_file,
         no_partialeq,
         no_copy,
@@ -821,8 +829,13 @@ where
         builder = builder.size_t_is_usize(false);
     }
 
+    #[allow(deprecated)]
     if no_rustfmt_bindings {
         builder = builder.rustfmt_bindings(false);
+    }
+
+    if let Some(formatter) = formatter {
+        builder = builder.formatter(formatter);
     }
 
     if let Some(path_str) = rustfmt_configuration_file {

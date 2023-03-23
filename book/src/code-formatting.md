@@ -67,3 +67,38 @@ fn main() {
 ```
 
 These two methods also apply to any other toolchain available in your system.
+
+## Using `prettyplease`
+
+The [`prettyplease`](https://github.com/dtolnay/prettyplease) crate is a
+minimal formatter for generated code. To format bindings using `prettyplease`
+you have to invoke `bindgen` with either the `--formatter=prettyplease` flag or
+the the `bindgen::Builder::formatter(bindgen::Formatter::Prettyplease)`. One of
+its advantages is that `prettyplease` can be used in minimal environments where
+the Rust toolchain is not installed.
+
+## How can I normalize `#[doc]` attributes?
+
+`bindgen` emits all the documentation using `#[doc]` attributes by default. If
+you want to use the more user-friendly `///` syntax, you have two options:
+
+### Use `rustfmt`
+
+`rustfmt` can be configured to normalize documentation. To do so, you have to
+create a `rustfmt.toml` file with the following contents:
+
+```toml
+normalize_doc_attributes = true
+```
+
+Then, you have set up `bindgen` so it passes this file to `rustfmt`. Given that
+the `normalize_doc_attributes` option is
+[unstable](https://github.com/rust-lang/rustfmt/issues/3351), you also have to
+set up bindgen to use a `nightly` release of `rustfmt`.
+
+
+### Use `prettyplease`
+
+`prettyplease` normalizes documentation without any additional configuration.
+Then you just have to tell `bindgen` to use `prettyplease` as the code
+formatter.
