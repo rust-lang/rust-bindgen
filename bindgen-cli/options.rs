@@ -129,7 +129,7 @@ struct BindgenCommand {
     /// Derive Default on any type.
     #[arg(long)]
     with_derive_default: bool,
-    /// Derive Hash on any type.docstring
+    /// Derive Hash on any type.
     #[arg(long)]
     with_derive_hash: bool,
     /// Derive PartialEq on any type.
@@ -198,7 +198,7 @@ struct BindgenCommand {
     /// Suppress insertion of bindgen's version identifier into generated bindings.
     #[arg(long)]
     disable_header_comment: bool,
-    /// Do not generate bindings for functions or methods. This is useful when you only care about struct layouts.docstring
+    /// Do not generate bindings for functions or methods. This is useful when you only care about struct layouts.
     #[arg(long)]
     ignore_functions: bool,
     /// Generate only given items, split by commas. Valid values are `functions`,`types`, `vars`, `methods`, `constructors` and `destructors`.
