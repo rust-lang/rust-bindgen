@@ -173,7 +173,7 @@
  * The source file generated when the `--wrap-static-fns` flag no longer uses
    `asm` labeling and the link name of static wrapper functions is allowed to
    be mangled.
- * The documentation of the genreated `type` aliases now matches the comments
+ * The documentation of the generated `type` aliases now matches the comments
    of their `typedef` counterpart instead of using the comments of the aliased
    type. 
 ## Removed
