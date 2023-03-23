@@ -172,7 +172,6 @@
 <li><a href="#does-bindgen-support-the-c-standard-template-library-stl">Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</a></li>
 <li><a href="#how-to-deal-with-bindgen-generated-padding-fields">How to deal with bindgen generated padding fields?</a></li>
 <li><a href="#how-to-generate-bindings-for-a-custom-target">How to generate bindings for a custom target?</a></li>
-<li><a href="#how-can-i-normalize-doc-attributes">How can I normalize <code>#[doc]</code> attributes?</a></li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <h3><a class="header" href="#why-isnt-bindgen-generating-methods-for-this-allowlisted-class" id="why-isnt-bindgen-generating-methods-for-this-allowlisted-class">Why isn't <code>bindgen</code> generating methods for this allowlisted class?</a></h3>
@@ -254,17 +253,6 @@ like so:</p>
 </code></pre>
 <p>If you are using <code>bindgen</code> as a library, you should call
 <code>builder.clang_arg(&quot;--target=armv7a-none-eabi&quot;)</code> on your <code>builder</code>.</p>
-<h3><a class="header" href="#how-can-i-normalize-doc-attributes" id="how-can-i-normalize-doc-attributes">How can I normalize <code>#[doc]</code> attributes?</a></h3>
-<p><code>bindgen</code> emits all the documentation using <code>#[doc]</code> attributes by default. If
-you want to use the more user-friendly <code>///</code> syntax, you have to create a
-<code>rustfmt.toml</code> file with the following contents:</p>
-<pre><code class="language-toml">normalize_doc_attributes = true
-</code></pre>
-<p>Then, you have set up bindgen so it passes this file to <code>rustfmt</code>. Given that
-the <code>normalize_doc_attributes</code> option is
-<a href="https://github.com/rust-lang/rustfmt/issues/3351">unstable</a>, you also have to
-set up bindgen to use a <code>nightly</code> release of <code>rustfmt</code>. Please check the <a href="./code-formatting.html">code
-formatting</a> section for further information.</p>
 
                     </main>
 

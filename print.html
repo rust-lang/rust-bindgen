@@ -1037,6 +1037,29 @@ fn main() {
 }
 </code></pre>
 <p>These two methods also apply to any other toolchain available in your system.</p>
+<h2><a class="header" href="#using-prettyplease" id="using-prettyplease">Using <code>prettyplease</code></a></h2>
+<p>The <a href="https://github.com/dtolnay/prettyplease"><code>prettyplease</code></a> crate is a
+minimal formatter for generated code. To format bindings using <code>prettyplease</code>
+you have to invoke <code>bindgen</code> with either the <code>--formatter=prettyplease</code> flag or
+the the <code>bindgen::Builder::formatter(bindgen::Formatter::Prettyplease)</code>. One of
+its advantages is that <code>prettyplease</code> can be used in minimal environments where
+the Rust toolchain is not installed.</p>
+<h2><a class="header" href="#how-can-i-normalize-doc-attributes" id="how-can-i-normalize-doc-attributes">How can I normalize <code>#[doc]</code> attributes?</a></h2>
+<p><code>bindgen</code> emits all the documentation using <code>#[doc]</code> attributes by default. If
+you want to use the more user-friendly <code>///</code> syntax, you have two options:</p>
+<h3><a class="header" href="#use-rustfmt" id="use-rustfmt">Use <code>rustfmt</code></a></h3>
+<p><code>rustfmt</code> can be configured to normalize documentation. To do so, you have to
+create a <code>rustfmt.toml</code> file with the following contents:</p>
+<pre><code class="language-toml">normalize_doc_attributes = true
+</code></pre>
+<p>Then, you have set up <code>bindgen</code> so it passes this file to <code>rustfmt</code>. Given that
+the <code>normalize_doc_attributes</code> option is
+<a href="https://github.com/rust-lang/rustfmt/issues/3351">unstable</a>, you also have to
+set up bindgen to use a <code>nightly</code> release of <code>rustfmt</code>.</p>
+<h3><a class="header" href="#use-prettyplease" id="use-prettyplease">Use <code>prettyplease</code></a></h3>
+<p><code>prettyplease</code> normalizes documentation without any additional configuration.
+Then you just have to tell <code>bindgen</code> to use <code>prettyplease</code> as the code
+formatter.</p>
 <h1><a class="header" href="#generating-bindings-to-c" id="generating-bindings-to-c">Generating Bindings to C++</a></h1>
 <p><code>bindgen</code> can handle some C++ features, but not all of them. To set
 expectations: <code>bindgen</code> will give you the type definitions and FFI declarations
@@ -1455,7 +1478,6 @@ StructWithBitfields: a:1, b:1, c:0
 <li><a href="faq.html#does-bindgen-support-the-c-standard-template-library-stl">Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</a></li>
 <li><a href="faq.html#how-to-deal-with-bindgen-generated-padding-fields">How to deal with bindgen generated padding fields?</a></li>
 <li><a href="faq.html#how-to-generate-bindings-for-a-custom-target">How to generate bindings for a custom target?</a></li>
-<li><a href="faq.html#how-can-i-normalize-doc-attributes">How can I normalize <code>#[doc]</code> attributes?</a></li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <h3><a class="header" href="#why-isnt-bindgen-generating-methods-for-this-allowlisted-class" id="why-isnt-bindgen-generating-methods-for-this-allowlisted-class">Why isn't <code>bindgen</code> generating methods for this allowlisted class?</a></h3>
@@ -1537,17 +1559,6 @@ like so:</p>
 </code></pre>
 <p>If you are using <code>bindgen</code> as a library, you should call
 <code>builder.clang_arg(&quot;--target=armv7a-none-eabi&quot;)</code> on your <code>builder</code>.</p>
-<h3><a class="header" href="#how-can-i-normalize-doc-attributes" id="how-can-i-normalize-doc-attributes">How can I normalize <code>#[doc]</code> attributes?</a></h3>
-<p><code>bindgen</code> emits all the documentation using <code>#[doc]</code> attributes by default. If
-you want to use the more user-friendly <code>///</code> syntax, you have to create a
-<code>rustfmt.toml</code> file with the following contents:</p>
-<pre><code class="language-toml">normalize_doc_attributes = true
-</code></pre>
-<p>Then, you have set up bindgen so it passes this file to <code>rustfmt</code>. Given that
-the <code>normalize_doc_attributes</code> option is
-<a href="https://github.com/rust-lang/rustfmt/issues/3351">unstable</a>, you also have to
-set up bindgen to use a <code>nightly</code> release of <code>rustfmt</code>. Please check the <a href="./code-formatting.html">code
-formatting</a> section for further information.</p>
 
                     </main>
 

@@ -217,6 +217,29 @@ fn main() {
 }
 </code></pre>
 <p>These two methods also apply to any other toolchain available in your system.</p>
+<h2><a class="header" href="#using-prettyplease" id="using-prettyplease">Using <code>prettyplease</code></a></h2>
+<p>The <a href="https://github.com/dtolnay/prettyplease"><code>prettyplease</code></a> crate is a
+minimal formatter for generated code. To format bindings using <code>prettyplease</code>
+you have to invoke <code>bindgen</code> with either the <code>--formatter=prettyplease</code> flag or
+the the <code>bindgen::Builder::formatter(bindgen::Formatter::Prettyplease)</code>. One of
+its advantages is that <code>prettyplease</code> can be used in minimal environments where
+the Rust toolchain is not installed.</p>
+<h2><a class="header" href="#how-can-i-normalize-doc-attributes" id="how-can-i-normalize-doc-attributes">How can I normalize <code>#[doc]</code> attributes?</a></h2>
+<p><code>bindgen</code> emits all the documentation using <code>#[doc]</code> attributes by default. If
+you want to use the more user-friendly <code>///</code> syntax, you have two options:</p>
+<h3><a class="header" href="#use-rustfmt" id="use-rustfmt">Use <code>rustfmt</code></a></h3>
+<p><code>rustfmt</code> can be configured to normalize documentation. To do so, you have to
+create a <code>rustfmt.toml</code> file with the following contents:</p>
+<pre><code class="language-toml">normalize_doc_attributes = true
+</code></pre>
+<p>Then, you have set up <code>bindgen</code> so it passes this file to <code>rustfmt</code>. Given that
+the <code>normalize_doc_attributes</code> option is
+<a href="https://github.com/rust-lang/rustfmt/issues/3351">unstable</a>, you also have to
+set up bindgen to use a <code>nightly</code> release of <code>rustfmt</code>.</p>
+<h3><a class="header" href="#use-prettyplease" id="use-prettyplease">Use <code>prettyplease</code></a></h3>
+<p><code>prettyplease</code> normalizes documentation without any additional configuration.
+Then you just have to tell <code>bindgen</code> to use <code>prettyplease</code> as the code
+formatter.</p>
 
                     </main>
 
