@@ -1,8 +1,8 @@
 use bindgen::callbacks::TypeKind;
 use bindgen::{
     builder, AliasVariation, Builder, CodegenConfig, EnumVariation,
-    MacroTypeVariation, NonCopyUnionStyle, RegexSet, RustTarget,
-    DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS, FieldVisibilityKind,
+    FieldVisibilityKind, MacroTypeVariation, NonCopyUnionStyle, RegexSet,
+    RustTarget, DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
 };
 use clap::Parser;
 use std::fs::File;
