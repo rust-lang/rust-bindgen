@@ -261,27 +261,138 @@ impl Builder {
     pub fn command_line_flags(&self) -> Vec<String> {
         let mut output_vector: Vec<String> = Vec::new();
 
-        if let Some(header) = self.options.input_headers.last().cloned() {
+        // We should not forget to use any new options that can be represented as CLI flags.
+        #[deny(unused_variables)]
+        let BindgenOptions {
+            blocklisted_types,
+            blocklisted_functions,
+            blocklisted_items,
+            blocklisted_files,
+            opaque_types,
+            // The rustfmt path cannot be set from the CLI.
+            rustfmt_path: _,
+            depfile,
+            allowlisted_types,
+            allowlisted_functions,
+            allowlisted_vars,
+            allowlisted_files,
+            default_enum_style,
+            bitfield_enums,
+            newtype_enums,
+            newtype_global_enums,
+            rustified_enums,
+            rustified_non_exhaustive_enums,
+            constified_enum_modules,
+            constified_enums,
+            default_macro_constant_type,
+            default_alias_style,
+            type_alias,
+            new_type_alias,
+            new_type_alias_deref,
+            default_non_copy_union_style,
+            bindgen_wrapper_union,
+            manually_drop_union,
+            builtins,
+            emit_ast,
+            emit_ir,
+            emit_ir_graphviz,
+            enable_cxx_namespaces,
+            enable_function_attribute_detection,
+            disable_name_namespacing,
+            disable_nested_struct_naming,
+            disable_header_comment,
+            layout_tests,
+            impl_debug,
+            impl_partialeq,
+            derive_copy,
+            derive_debug,
+            derive_default,
+            derive_hash,
+            derive_partialord,
+            derive_ord,
+            derive_partialeq,
+            derive_eq,
+            use_core,
+            ctypes_prefix,
+            anon_fields_prefix,
+            time_phases,
+            convert_floats,
+            raw_lines,
+            module_lines,
+            clang_args,
+            input_headers,
+            // These cannot be added from the CLI.
+            input_header_contents: _,
+            parse_callbacks,
+            codegen_config,
+            conservative_inline_namespaces,
+            generate_comments,
+            generate_inline_functions,
+            allowlist_recursively,
+            objc_extern_crate,
+            generate_block,
+            block_extern_crate,
+            enable_mangling,
+            detect_include_paths,
+            fit_macro_constants,
+            prepend_enum_name,
+            rust_target,
+            rust_features,
+            record_matches,
+            size_t_is_usize,
+            rustfmt_bindings,
+            rustfmt_configuration_file,
+            no_partialeq_types,
+            no_copy_types,
+            no_debug_types,
+            no_default_types,
+            no_hash_types,
+            must_use_types,
+            array_pointers_in_arguments,
+            wasm_import_module_name,
+            dynamic_library_name,
+            dynamic_link_require_all,
+            respect_cxx_access_specs,
+            translate_enum_integer_types,
+            c_naming,
+            force_explicit_padding,
+            vtable_generation,
+            sort_semantically,
+            merge_extern_blocks,
+            abi_overrides,
+            wrap_unsafe_ops,
+            wrap_static_fns,
+            wrap_static_fns_suffix,
+            wrap_static_fns_path,
+            default_visibility,
+        } = &self.options;
+
+        if let Some(header) = input_headers.last().cloned() {
             // Positional argument 'header'
             output_vector.push(header);
         }
 
+        if let Some(depfile) = depfile {
+            output_vector.push("--depfile".into());
+            output_vector.push(depfile.depfile_path.display().to_string());
+        }
+
         output_vector.push("--rust-target".into());
-        output_vector.push(self.options.rust_target.into());
+        output_vector.push((*rust_target).into());
 
         // FIXME(emilio): This is a bit hacky, maybe we should stop re-using the
         // RustFeatures to store the "disable_untagged_union" call, and make it
         // a different flag that we check elsewhere / in generate().
-        if !self.options.rust_features.untagged_union &&
-            RustFeatures::from(self.options.rust_target).untagged_union
+        if !rust_features.untagged_union &&
+            RustFeatures::from(*rust_target).untagged_union
         {
             output_vector.push("--disable-untagged-union".into());
         }
 
-        if self.options.default_enum_style != Default::default() {
+        if *default_enum_style != Default::default() {
             output_vector.push("--default-enum-style".into());
             output_vector.push(
-                match self.options.default_enum_style {
+                match default_enum_style {
                     codegen::EnumVariation::Rust {
                         non_exhaustive: false,
                     } => "rust",
@@ -296,7 +407,7 @@ impl Builder {
                         is_bitfield: false,
                         is_global,
                     } => {
-                        if is_global {
+                        if *is_global {
                             "newtype_global"
                         } else {
                             "newtype"
@@ -309,62 +420,52 @@ impl Builder {
             )
         }
 
-        if self.options.default_macro_constant_type != Default::default() {
+        if *default_macro_constant_type != Default::default() {
             output_vector.push("--default-macro-constant-type".into());
-            output_vector
-                .push(self.options.default_macro_constant_type.as_str().into());
+            output_vector.push(default_macro_constant_type.as_str().into());
         }
 
-        if self.options.default_alias_style != Default::default() {
+        if *default_alias_style != Default::default() {
             output_vector.push("--default-alias-style".into());
-            output_vector
-                .push(self.options.default_alias_style.as_str().into());
+            output_vector.push(default_alias_style.as_str().into());
         }
 
-        if self.options.default_non_copy_union_style != Default::default() {
+        if *default_non_copy_union_style != Default::default() {
             output_vector.push("--default-non-copy-union-style".into());
-            output_vector.push(
-                self.options.default_non_copy_union_style.as_str().into(),
-            );
+            output_vector.push(default_non_copy_union_style.as_str().into());
         }
 
         let regex_sets = &[
-            (&self.options.bitfield_enums, "--bitfield-enum"),
-            (&self.options.newtype_enums, "--newtype-enum"),
-            (&self.options.newtype_global_enums, "--newtype-global-enum"),
-            (&self.options.rustified_enums, "--rustified-enum"),
+            (bitfield_enums, "--bitfield-enum"),
+            (newtype_enums, "--newtype-enum"),
+            (newtype_global_enums, "--newtype-global-enum"),
+            (rustified_enums, "--rustified-enum"),
             (
-                &self.options.rustified_non_exhaustive_enums,
+                rustified_non_exhaustive_enums,
                 "--rustified-enum-non-exhaustive",
             ),
-            (
-                &self.options.constified_enum_modules,
-                "--constified-enum-module",
-            ),
-            (&self.options.constified_enums, "--constified-enum"),
-            (&self.options.type_alias, "--type-alias"),
-            (&self.options.new_type_alias, "--new-type-alias"),
-            (&self.options.new_type_alias_deref, "--new-type-alias-deref"),
-            (
-                &self.options.bindgen_wrapper_union,
-                "--bindgen-wrapper-union",
-            ),
-            (&self.options.manually_drop_union, "--manually-drop-union"),
-            (&self.options.blocklisted_types, "--blocklist-type"),
-            (&self.options.blocklisted_functions, "--blocklist-function"),
-            (&self.options.blocklisted_items, "--blocklist-item"),
-            (&self.options.blocklisted_files, "--blocklist-file"),
-            (&self.options.opaque_types, "--opaque-type"),
-            (&self.options.allowlisted_functions, "--allowlist-function"),
-            (&self.options.allowlisted_types, "--allowlist-type"),
-            (&self.options.allowlisted_vars, "--allowlist-var"),
-            (&self.options.allowlisted_files, "--allowlist-file"),
-            (&self.options.no_partialeq_types, "--no-partialeq"),
-            (&self.options.no_copy_types, "--no-copy"),
-            (&self.options.no_debug_types, "--no-debug"),
-            (&self.options.no_default_types, "--no-default"),
-            (&self.options.no_hash_types, "--no-hash"),
-            (&self.options.must_use_types, "--must-use-type"),
+            (constified_enum_modules, "--constified-enum-module"),
+            (constified_enums, "--constified-enum"),
+            (type_alias, "--type-alias"),
+            (new_type_alias, "--new-type-alias"),
+            (new_type_alias_deref, "--new-type-alias-deref"),
+            (bindgen_wrapper_union, "--bindgen-wrapper-union"),
+            (manually_drop_union, "--manually-drop-union"),
+            (blocklisted_types, "--blocklist-type"),
+            (blocklisted_functions, "--blocklist-function"),
+            (blocklisted_items, "--blocklist-item"),
+            (blocklisted_files, "--blocklist-file"),
+            (opaque_types, "--opaque-type"),
+            (allowlisted_functions, "--allowlist-function"),
+            (allowlisted_types, "--allowlist-type"),
+            (allowlisted_vars, "--allowlist-var"),
+            (allowlisted_files, "--allowlist-file"),
+            (no_partialeq_types, "--no-partialeq"),
+            (no_copy_types, "--no-copy"),
+            (no_debug_types, "--no-debug"),
+            (no_default_types, "--no-default"),
+            (no_hash_types, "--no-hash"),
+            (must_use_types, "--must-use-type"),
         ];
 
         for (set, flag) in regex_sets {
@@ -374,126 +475,139 @@ impl Builder {
             }
         }
 
-        for (abi, set) in &self.options.abi_overrides {
+        for (abi, set) in abi_overrides {
             for item in set.get_items() {
                 output_vector.push("--override-abi".to_owned());
                 output_vector.push(format!("{}={}", item, abi));
             }
         }
 
-        if !self.options.layout_tests {
+        if !layout_tests {
             output_vector.push("--no-layout-tests".into());
         }
 
-        if self.options.impl_debug {
+        if *impl_debug {
             output_vector.push("--impl-debug".into());
         }
 
-        if self.options.impl_partialeq {
+        if *impl_partialeq {
             output_vector.push("--impl-partialeq".into());
         }
 
-        if !self.options.derive_copy {
+        if !derive_copy {
             output_vector.push("--no-derive-copy".into());
         }
 
-        if !self.options.derive_debug {
+        if !derive_debug {
             output_vector.push("--no-derive-debug".into());
         }
 
-        if !self.options.derive_default {
+        if !derive_default {
             output_vector.push("--no-derive-default".into());
         } else {
             output_vector.push("--with-derive-default".into());
         }
 
-        if self.options.derive_hash {
+        if *derive_hash {
             output_vector.push("--with-derive-hash".into());
         }
 
-        if self.options.derive_partialord {
+        if *derive_partialord {
             output_vector.push("--with-derive-partialord".into());
         }
 
-        if self.options.derive_ord {
+        if *derive_ord {
             output_vector.push("--with-derive-ord".into());
         }
 
-        if self.options.derive_partialeq {
+        if *derive_partialeq {
             output_vector.push("--with-derive-partialeq".into());
         }
 
-        if self.options.derive_eq {
+        if *derive_eq {
             output_vector.push("--with-derive-eq".into());
         }
 
-        if self.options.time_phases {
+        if *time_phases {
             output_vector.push("--time-phases".into());
         }
 
-        if !self.options.generate_comments {
+        if !generate_comments {
             output_vector.push("--no-doc-comments".into());
         }
 
-        if !self.options.allowlist_recursively {
+        if !allowlist_recursively {
             output_vector.push("--no-recursive-allowlist".into());
         }
 
-        if self.options.objc_extern_crate {
+        if *objc_extern_crate {
             output_vector.push("--objc-extern-crate".into());
         }
 
-        if self.options.generate_block {
+        if *generate_block {
             output_vector.push("--generate-block".into());
         }
 
-        if self.options.block_extern_crate {
+        if *block_extern_crate {
             output_vector.push("--block-extern-crate".into());
         }
 
-        if self.options.builtins {
+        if !enable_mangling {
+            output_vector.push("--distrust-clang-mangling".into());
+        }
+
+        if !detect_include_paths {
+            output_vector.push("--no-include-path-detection".into());
+        }
+
+        if *builtins {
             output_vector.push("--builtins".into());
         }
 
-        if let Some(ref prefix) = self.options.ctypes_prefix {
+        if let Some(prefix) = ctypes_prefix {
             output_vector.push("--ctypes-prefix".into());
             output_vector.push(prefix.clone());
         }
 
-        if self.options.anon_fields_prefix != DEFAULT_ANON_FIELDS_PREFIX {
+        if *anon_fields_prefix != DEFAULT_ANON_FIELDS_PREFIX {
             output_vector.push("--anon-fields-prefix".into());
-            output_vector.push(self.options.anon_fields_prefix.clone());
+            output_vector.push(anon_fields_prefix.clone());
         }
 
-        if self.options.emit_ast {
+        if *emit_ast {
             output_vector.push("--emit-clang-ast".into());
         }
 
-        if self.options.emit_ir {
+        if *emit_ir {
             output_vector.push("--emit-ir".into());
         }
-        if let Some(ref graph) = self.options.emit_ir_graphviz {
+
+        if let Some(graph) = emit_ir_graphviz {
             output_vector.push("--emit-ir-graphviz".into());
             output_vector.push(graph.clone())
         }
-        if self.options.enable_cxx_namespaces {
+
+        if *enable_cxx_namespaces {
             output_vector.push("--enable-cxx-namespaces".into());
         }
-        if self.options.enable_function_attribute_detection {
+
+        if *enable_function_attribute_detection {
             output_vector.push("--enable-function-attribute-detection".into());
         }
-        if self.options.disable_name_namespacing {
+
+        if *disable_name_namespacing {
             output_vector.push("--disable-name-namespacing".into());
         }
-        if self.options.disable_nested_struct_naming {
+
+        if *disable_nested_struct_naming {
             output_vector.push("--disable-nested-struct-naming".into());
         }
 
-        if self.options.disable_header_comment {
+        if *disable_header_comment {
             output_vector.push("--disable-header-comment".into());
         }
 
-        if !self.options.codegen_config.functions() {
+        if !codegen_config.functions() {
             output_vector.push("--ignore-functions".into());
         }
 
@@ -501,60 +615,63 @@ impl Builder {
 
         //Temporary placeholder for below 4 options
         let mut options: Vec<String> = Vec::new();
-        if self.options.codegen_config.functions() {
+        if codegen_config.functions() {
             options.push("functions".into());
         }
-        if self.options.codegen_config.types() {
+
+        if codegen_config.types() {
             options.push("types".into());
         }
-        if self.options.codegen_config.vars() {
+
+        if codegen_config.vars() {
             options.push("vars".into());
         }
-        if self.options.codegen_config.methods() {
+
+        if codegen_config.methods() {
             options.push("methods".into());
         }
-        if self.options.codegen_config.constructors() {
+
+        if codegen_config.constructors() {
             options.push("constructors".into());
         }
-        if self.options.codegen_config.destructors() {
+
+        if codegen_config.destructors() {
             options.push("destructors".into());
         }
 
         output_vector.push(options.join(","));
 
-        if !self.options.codegen_config.methods() {
+        if !codegen_config.methods() {
             output_vector.push("--ignore-methods".into());
         }
 
-        if !self.options.convert_floats {
+        if !convert_floats {
             output_vector.push("--no-convert-floats".into());
         }
 
-        if !self.options.prepend_enum_name {
+        if !prepend_enum_name {
             output_vector.push("--no-prepend-enum-name".into());
         }
 
-        if self.options.fit_macro_constants {
+        if *fit_macro_constants {
             output_vector.push("--fit-macro-constant-types".into());
         }
 
-        if self.options.array_pointers_in_arguments {
+        if *array_pointers_in_arguments {
             output_vector.push("--use-array-pointers-in-arguments".into());
         }
 
-        if let Some(ref wasm_import_module_name) =
-            self.options.wasm_import_module_name
-        {
+        if let Some(ref wasm_import_module_name) = wasm_import_module_name {
             output_vector.push("--wasm-import-module-name".into());
             output_vector.push(wasm_import_module_name.clone());
         }
 
-        for line in &self.options.raw_lines {
+        for line in raw_lines {
             output_vector.push("--raw-line".into());
             output_vector.push(line.clone());
         }
 
-        for (module, lines) in &self.options.module_lines {
+        for (module, lines) in module_lines {
             for line in lines.iter() {
                 output_vector.push("--module-raw-line".into());
                 output_vector.push(module.clone());
@@ -562,102 +679,100 @@ impl Builder {
             }
         }
 
-        if self.options.use_core {
+        if *use_core {
             output_vector.push("--use-core".into());
         }
 
-        if self.options.conservative_inline_namespaces {
+        if *conservative_inline_namespaces {
             output_vector.push("--conservative-inline-namespaces".into());
         }
 
-        if self.options.generate_inline_functions {
+        if *generate_inline_functions {
             output_vector.push("--generate-inline-functions".into());
         }
 
-        if !self.options.record_matches {
+        if !record_matches {
             output_vector.push("--no-record-matches".into());
         }
 
-        if !self.options.size_t_is_usize {
+        if !size_t_is_usize {
             output_vector.push("--no-size_t-is-usize".into());
         }
 
-        if !self.options.rustfmt_bindings {
+        if !rustfmt_bindings {
             output_vector.push("--no-rustfmt-bindings".into());
         }
 
-        if let Some(path) = self
-            .options
-            .rustfmt_configuration_file
-            .as_ref()
-            .and_then(|f| f.to_str())
+        if let Some(path) =
+            rustfmt_configuration_file.as_ref().and_then(|f| f.to_str())
         {
             output_vector.push("--rustfmt-configuration-file".into());
             output_vector.push(path.into());
         }
 
-        if let Some(ref name) = self.options.dynamic_library_name {
+        if let Some(ref name) = dynamic_library_name {
             output_vector.push("--dynamic-loading".into());
             output_vector.push(name.clone());
         }
 
-        if self.options.dynamic_link_require_all {
+        if *dynamic_link_require_all {
             output_vector.push("--dynamic-link-require-all".into());
         }
 
-        if self.options.respect_cxx_access_specs {
+        if *respect_cxx_access_specs {
             output_vector.push("--respect-cxx-access-specs".into());
         }
 
-        if self.options.translate_enum_integer_types {
+        if *translate_enum_integer_types {
             output_vector.push("--translate-enum-integer-types".into());
         }
 
-        if self.options.c_naming {
+        if *c_naming {
             output_vector.push("--c-naming".into());
         }
 
-        if self.options.force_explicit_padding {
+        if *force_explicit_padding {
             output_vector.push("--explicit-padding".into());
         }
 
-        if self.options.vtable_generation {
+        if *vtable_generation {
             output_vector.push("--vtable-generation".into());
         }
 
-        if self.options.sort_semantically {
+        if *sort_semantically {
             output_vector.push("--sort-semantically".into());
         }
 
-        if self.options.merge_extern_blocks {
+        if *merge_extern_blocks {
             output_vector.push("--merge-extern-blocks".into());
         }
 
-        if self.options.wrap_unsafe_ops {
+        if *wrap_unsafe_ops {
             output_vector.push("--wrap-unsafe-ops".into());
         }
 
         #[cfg(feature = "cli")]
-        for callbacks in &self.options.parse_callbacks {
+        for callbacks in parse_callbacks {
             output_vector.extend(callbacks.cli_args());
         }
-        if self.options.wrap_static_fns {
+
+        if *wrap_static_fns {
             output_vector.push("--wrap-static-fns".into())
         }
 
-        if let Some(ref path) = self.options.wrap_static_fns_path {
+        if let Some(path) = wrap_static_fns_path {
             output_vector.push("--wrap-static-fns-path".into());
             output_vector.push(path.display().to_string());
         }
 
-        if let Some(ref suffix) = self.options.wrap_static_fns_suffix {
+        if let Some(suffix) = wrap_static_fns_suffix {
             output_vector.push("--wrap-static-fns-suffix".into());
             output_vector.push(suffix.clone());
         }
 
-        if self.options.default_visibility != FieldVisibilityKind::Public {
+        if *default_visibility != FieldVisibilityKind::Public {
             output_vector.push("--default-visibility".into());
-            output_vector.push(self.options.default_visibility.to_string());
+            output_vector.push(default_visibility.to_string());
         }
 
         if cfg!(feature = "experimental") {
@@ -668,15 +783,13 @@ impl Builder {
 
         output_vector.push("--".into());
 
-        if !self.options.clang_args.is_empty() {
-            output_vector.extend(self.options.clang_args.iter().cloned());
+        if !clang_args.is_empty() {
+            output_vector.extend(clang_args.iter().cloned());
         }
 
         // To pass more than one header, we need to pass all but the last
         // header via the `-include` clang arg
-        for header in &self.options.input_headers
-            [..self.options.input_headers.len().saturating_sub(1)]
-        {
+        for header in &input_headers[..input_headers.len().saturating_sub(1)] {
             output_vector.push("-include".to_string());
             output_vector.push(header.clone());
         }
