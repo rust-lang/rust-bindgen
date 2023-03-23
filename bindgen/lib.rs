@@ -1678,8 +1678,7 @@ impl Builder {
     }
 
     fn_with_regex_arg! {
-        /// Don't derive `Copy` for a given type. Regular
-        /// expressions are supported.
+        /// Don't derive `Copy` and `Clone` for a given type. Regular expressions are supported.
         pub fn no_copy<T: Into<String>>(mut self, arg: T) -> Self {
             self.options.no_copy_types.insert(arg.into());
             self
@@ -1779,14 +1778,16 @@ impl Builder {
         self
     }
 
-    /// Override the ABI of a given function. Regular expressions are supported.
-    pub fn override_abi<T: Into<String>>(mut self, abi: Abi, arg: T) -> Self {
-        self.options
-            .abi_overrides
-            .entry(abi)
-            .or_default()
-            .insert(arg.into());
-        self
+    fn_with_regex_arg! {
+        /// Override the ABI of a given function. Regular expressions are supported.
+        pub fn override_abi<T: Into<String>>(mut self, abi: Abi, arg: T) -> Self {
+            self.options
+                .abi_overrides
+                .entry(abi)
+                .or_default()
+                .insert(arg.into());
+            self
+        }
     }
 
     /// If true, wraps unsafe operations in unsafe blocks.
