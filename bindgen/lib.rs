@@ -2923,7 +2923,7 @@ impl Bindings {
     }
 
     /// Formats a token stream with the formatter set up in `BindgenOptions`.
-    fn format_tokens<'a>(
+    fn format_tokens(
         &self,
         tokens: &proc_macro2::TokenStream,
     ) -> io::Result<String> {
