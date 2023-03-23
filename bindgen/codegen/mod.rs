@@ -21,7 +21,9 @@ use super::BindgenOptions;
 
 use crate::callbacks::{DeriveInfo, TypeKind as DeriveTypeKind};
 use crate::ir::analysis::{HasVtable, Sizedness};
-use crate::ir::annotations::FieldAccessorKind;
+use crate::ir::annotations::{
+    Annotations, FieldAccessorKind, FieldVisibilityKind,
+};
 use crate::ir::comp::{
     Bitfield, BitfieldUnit, CompInfo, CompKind, Field, FieldData, FieldMethods,
     Method, MethodKind,
@@ -1038,13 +1040,15 @@ impl CodeGenerator for Type {
                     });
                 }
 
+                let access_spec =
+                    access_specifier(ctx.options().default_visibility);
                 tokens.append_all(match alias_style {
                     AliasVariation::TypeAlias => quote! {
                         = #inner_rust_type ;
                     },
                     AliasVariation::NewType | AliasVariation::NewTypeDeref => {
                         quote! {
-                            (pub #inner_rust_type) ;
+                            (#access_spec #inner_rust_type) ;
                         }
                     }
                 });
@@ -1275,7 +1279,7 @@ trait FieldCodegen<'a> {
     fn codegen<F, M>(
         &self,
         ctx: &BindgenContext,
-        fields_should_be_private: bool,
+        visibility_kind: FieldVisibilityKind,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         result: &mut CodegenResult,
@@ -1294,7 +1298,7 @@ impl<'a> FieldCodegen<'a> for Field {
     fn codegen<F, M>(
         &self,
         ctx: &BindgenContext,
-        fields_should_be_private: bool,
+        visibility_kind: FieldVisibilityKind,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         result: &mut CodegenResult,
@@ -1310,7 +1314,7 @@ impl<'a> FieldCodegen<'a> for Field {
             Field::DataMember(ref data) => {
                 data.codegen(
                     ctx,
-                    fields_should_be_private,
+                    visibility_kind,
                     accessor_kind,
                     parent,
                     result,
@@ -1323,7 +1327,7 @@ impl<'a> FieldCodegen<'a> for Field {
             Field::Bitfields(ref unit) => {
                 unit.codegen(
                     ctx,
-                    fields_should_be_private,
+                    visibility_kind,
                     accessor_kind,
                     parent,
                     result,
@@ -1372,7 +1376,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
     fn codegen<F, M>(
         &self,
         ctx: &BindgenContext,
-        fields_should_be_private: bool,
+        parent_visibility_kind: FieldVisibilityKind,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         result: &mut CodegenResult,
@@ -1435,23 +1439,31 @@ impl<'a> FieldCodegen<'a> for FieldData {
             fields.extend(Some(padding_field));
         }
 
-        let is_private = (!self.is_public() &&
-            ctx.options().respect_cxx_access_specs) ||
-            self.annotations()
-                .private_fields()
-                .unwrap_or(fields_should_be_private);
-
+        let visibility = compute_visibility(
+            ctx,
+            self.is_public(),
+            Some(self.annotations()),
+            parent_visibility_kind,
+        );
         let accessor_kind =
             self.annotations().accessor_kind().unwrap_or(accessor_kind);
 
-        if is_private {
-            field.append_all(quote! {
-                #field_ident : #ty ,
-            });
-        } else {
-            field.append_all(quote! {
-                pub #field_ident : #ty ,
-            });
+        match visibility {
+            FieldVisibilityKind::Private => {
+                field.append_all(quote! {
+                    #field_ident : #ty ,
+                });
+            }
+            FieldVisibilityKind::PublicCrate => {
+                field.append_all(quote! {
+                    pub(crate) #field_ident : #ty ,
+                });
+            }
+            FieldVisibilityKind::Public => {
+                field.append_all(quote! {
+                    pub #field_ident : #ty ,
+                });
+            }
         }
 
         fields.extend(Some(field));
@@ -1561,13 +1573,48 @@ impl Bitfield {
 }
 
 fn access_specifier(
-    ctx: &BindgenContext,
-    is_pub: bool,
+    visibility: FieldVisibilityKind,
 ) -> proc_macro2::TokenStream {
-    if is_pub || !ctx.options().respect_cxx_access_specs {
-        quote! { pub }
-    } else {
-        quote! {}
+    match visibility {
+        FieldVisibilityKind::Private => quote! {},
+        FieldVisibilityKind::PublicCrate => quote! { pub(crate) },
+        FieldVisibilityKind::Public => quote! { pub },
+    }
+}
+
+/// Compute a fields or structs visibility based on multiple conditions.
+/// 1. If the element was declared public, and we respect such CXX accesses specs
+/// (context option) => By default Public, but this can be overruled by an `annotation`.
+///
+/// 2. If the element was declared private, and we respect such CXX accesses specs
+/// (context option) => By default Private, but this can be overruled by an `annotation`.
+///
+/// 3. If we do not respect visibility modifiers, the result depends on the `annotation`,
+/// if any, or the passed `default_kind`.
+///
+fn compute_visibility(
+    ctx: &BindgenContext,
+    is_declared_public: bool,
+    annotations: Option<&Annotations>,
+    default_kind: FieldVisibilityKind,
+) -> FieldVisibilityKind {
+    match (
+        is_declared_public,
+        ctx.options().respect_cxx_access_specs,
+        annotations.and_then(|e| e.visibility_kind()),
+    ) {
+        (true, true, annotated_visibility) => {
+            // declared as public, cxx specs are respected
+            annotated_visibility.unwrap_or(FieldVisibilityKind::Public)
+        }
+        (false, true, annotated_visibility) => {
+            // declared as private, cxx specs are respected
+            annotated_visibility.unwrap_or(FieldVisibilityKind::Private)
+        }
+        (_, false, annotated_visibility) => {
+            // cxx specs are not respected, declaration does not matter.
+            annotated_visibility.unwrap_or(default_kind)
+        }
     }
 }
 
@@ -1577,7 +1624,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
     fn codegen<F, M>(
         &self,
         ctx: &BindgenContext,
-        fields_should_be_private: bool,
+        visibility_kind: FieldVisibilityKind,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         result: &mut CodegenResult,
@@ -1618,8 +1665,9 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 2 => quote! { u16 },
                 _ => quote! { u8  },
             };
+            let access_spec = access_specifier(visibility_kind);
             let align_field = quote! {
-                pub #align_field_ident: [#align_ty; 0],
+                #access_spec #align_field_ident: [#align_ty; 0],
             };
             fields.extend(Some(align_field));
         }
@@ -1638,7 +1686,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         // the 32 items limitation.
         let mut generate_ctor = layout.size <= RUST_DERIVE_IN_ARRAY_LIMIT;
 
-        let mut access_spec = !fields_should_be_private;
+        let mut all_fields_declared_as_public = true;
         for bf in self.bitfields() {
             // Codegen not allowed for anonymous bitfields
             if bf.name().is_none() {
@@ -1651,12 +1699,11 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 continue;
             }
 
-            access_spec &= bf.is_public();
+            all_fields_declared_as_public &= bf.is_public();
             let mut bitfield_representable_as_int = true;
-
             bf.codegen(
                 ctx,
-                fields_should_be_private,
+                visibility_kind,
                 accessor_kind,
                 parent,
                 result,
@@ -1684,7 +1731,13 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
             ctor_impl = bf.extend_ctor_impl(ctx, param_name, ctor_impl);
         }
 
-        let access_spec = access_specifier(ctx, access_spec);
+        let visibility_kind = compute_visibility(
+            ctx,
+            all_fields_declared_as_public,
+            None,
+            visibility_kind,
+        );
+        let access_spec = access_specifier(visibility_kind);
 
         let field = quote! {
             #access_spec #unit_field_ident : #field_ty ,
@@ -1730,7 +1783,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
     fn codegen<F, M>(
         &self,
         ctx: &BindgenContext,
-        fields_should_be_private: bool,
+        visibility_kind: FieldVisibilityKind,
         _accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         _result: &mut CodegenResult,
@@ -1770,10 +1823,14 @@ impl<'a> FieldCodegen<'a> for Bitfield {
 
         let offset = self.offset_into_unit();
         let width = self.width() as u8;
-        let access_spec = access_specifier(
+
+        let visibility_kind = compute_visibility(
             ctx,
-            self.is_public() && !fields_should_be_private,
+            self.is_public(),
+            Some(self.annotations()),
+            visibility_kind,
         );
+        let access_spec = access_specifier(visibility_kind);
 
         if parent.is_union() && !struct_layout.is_rust_union() {
             methods.extend(Some(quote! {
@@ -1899,7 +1956,16 @@ impl CodeGenerator for CompInfo {
 
                 struct_layout.saw_base(inner_item.expect_type());
 
-                let access_spec = access_specifier(ctx, base.is_public());
+                let visibility = match (
+                    base.is_public(),
+                    ctx.options().respect_cxx_access_specs,
+                ) {
+                    (true, true) => FieldVisibilityKind::Public,
+                    (false, true) => FieldVisibilityKind::Private,
+                    _ => ctx.options().default_visibility,
+                };
+
+                let access_spec = access_specifier(visibility);
                 fields.push(quote! {
                     #access_spec #field_name: #inner,
                 });
@@ -1908,8 +1974,10 @@ impl CodeGenerator for CompInfo {
 
         let mut methods = vec![];
         if !is_opaque {
-            let fields_should_be_private =
-                item.annotations().private_fields().unwrap_or(false);
+            let visibility = item
+                .annotations()
+                .visibility_kind()
+                .unwrap_or(ctx.options().default_visibility);
             let struct_accessor_kind = item
                 .annotations()
                 .accessor_kind()
@@ -1917,7 +1985,7 @@ impl CodeGenerator for CompInfo {
             for field in self.fields() {
                 field.codegen(
                     ctx,
-                    fields_should_be_private,
+                    visibility,
                     struct_accessor_kind,
                     self,
                     result,

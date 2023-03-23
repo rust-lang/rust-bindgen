@@ -162,7 +162,8 @@
 # Unreleased
 
 ## Added
-
+ * Added the `Bindgen::default_visibility` nethod and the
+   `--default-visibility` flag to set the default visibility of fields.
 ## Changed
  * Static functions with no arguments use `void` as their single argument
    instead of having no arguments when the `--wrap-static-fns` flag is used.

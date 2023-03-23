@@ -1,8 +1,8 @@
 use bindgen::callbacks::TypeKind;
 use bindgen::{
     builder, AliasVariation, Builder, CodegenConfig, EnumVariation,
-    MacroTypeVariation, NonCopyUnionStyle, RegexSet, RustTarget,
-    DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
+    FieldVisibilityKind, MacroTypeVariation, NonCopyUnionStyle, RegexSet,
+    RustTarget, DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
 };
 use clap::Parser;
 use std::fs::File;
@@ -358,6 +358,10 @@ struct BindgenCommand {
     /// inline` functions.
     #[arg(long, requires = "experimental", value_name = "SUFFIX")]
     wrap_static_fns_suffix: Option<String>,
+    /// Set the default visibility of fields, including bitfields and accessor methods for
+    /// bitfields. This flag is ignored if the `--respect-cxx-access-specs` flag is used.
+    #[arg(long, value_name = "VISIBILITY")]
+    default_visibility: Option<FieldVisibilityKind>,
     /// Enables experimental features.
     #[arg(long)]
     experimental: bool,
@@ -482,6 +486,7 @@ where
         wrap_static_fns,
         wrap_static_fns_path,
         wrap_static_fns_suffix,
+        default_visibility,
         experimental: _,
         version,
         clang_args,
@@ -1013,6 +1018,10 @@ where
 
     if let Some(suffix) = wrap_static_fns_suffix {
         builder = builder.wrap_static_fns_suffix(suffix);
+    }
+
+    if let Some(visibility) = default_visibility {
+        builder = builder.default_visibility(visibility);
     }
 
     Ok((builder, output, verbose))
