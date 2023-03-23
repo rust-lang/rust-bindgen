@@ -1601,7 +1601,7 @@ fn compute_visibility(
     match (
         is_declared_public,
         ctx.options().respect_cxx_access_specs,
-        annotations.and_then(|e| e.visibility_kind())
+        annotations.and_then(|e| e.visibility_kind()),
     ) {
         (true, true, annotated_visibility) => {
             // declared as public, cxx specs are respected

@@ -27,8 +27,20 @@ impl FromStr for FieldVisibilityKind {
             "private" => Ok(Self::Private),
             "crate" => Ok(Self::PublicCrate),
             "public" => Ok(Self::Public),
-            _ => Err(format!("Invalid visibility kind: `{}`", s))
+            _ => Err(format!("Invalid visibility kind: `{}`", s)),
         }
+    }
+}
+
+impl std::fmt::Display for FieldVisibilityKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            FieldVisibilityKind::Private => "private",
+            FieldVisibilityKind::PublicCrate => "crate",
+            FieldVisibilityKind::Public => "public",
+        };
+
+        s.fmt(f)
     }
 }
 

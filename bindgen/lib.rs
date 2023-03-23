@@ -655,6 +655,11 @@ impl Builder {
             output_vector.push(suffix.clone());
         }
 
+        if self.options.default_visibility != FieldVisibilityKind::Public {
+            output_vector.push("--default-visibility".into());
+            output_vector.push(self.options.default_visibility.to_string());
+        }
+
         if cfg!(feature = "experimental") {
             output_vector.push("--experimental".into());
         }
