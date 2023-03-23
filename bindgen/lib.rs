@@ -1655,6 +1655,17 @@ impl Builder {
         self
     }
 
+    #[cfg_attr(feature = "prettyplease", deprecated)]
+    /// Set whether rustfmt should format the generated bindings.
+    pub fn rustfmt_bindings(mut self, doit: bool) -> Self {
+        self.options.formatter = if doit {
+            Formatter::Rustfmt
+        } else {
+            Formatter::None
+        };
+        self
+    }
+
     /// Set which tool should be used to format the generated bindings.
     pub fn formatter(mut self, formatter: Formatter) -> Self {
         self.options.formatter = formatter;

@@ -266,11 +266,18 @@ struct BindgenCommand {
     /// Do not bind size_t as usize (useful on platforms where those types are incompatible).
     #[arg(long = "no-size_t-is-usize")]
     no_size_t_is_usize: bool,
+    /// Do not format the generated bindings with rustfmt.
+    #[arg(long)]
+    no_rustfmt_bindings: bool,
     /// Which tool should be used to format the bindings
-    #[arg(long, value_name = "FORMATTER", default_value = "rustfmt")]
-    formatter: Formatter,
+    #[arg(
+        long,
+        value_name = "FORMATTER",
+        conflicts_with = "no_rustfmt_bindings"
+    )]
+    formatter: Option<Formatter>,
     /// The absolute path to the rustfmt configuration file. The configuration file will be used for formatting the bindings. This parameter sets `formatter` to `rustfmt`.
-    #[arg(long, value_name = "PATH")]
+    #[arg(long, value_name = "PATH", conflicts_with = "no_rustfmt_bindings")]
     rustfmt_configuration_file: Option<String>,
     /// Avoid deriving PartialEq for types matching <REGEX>.
     #[arg(long, value_name = "REGEX")]
@@ -456,6 +463,7 @@ where
         dump_preprocessed_input,
         no_record_matches,
         no_size_t_is_usize,
+        no_rustfmt_bindings,
         formatter,
         rustfmt_configuration_file,
         no_partialeq,
@@ -821,7 +829,14 @@ where
         builder = builder.size_t_is_usize(false);
     }
 
-    builder = builder.formatter(formatter);
+    #[allow(deprecated)]
+    if no_rustfmt_bindings {
+        builder = builder.rustfmt_bindings(false);
+    }
+
+    if let Some(formatter) = formatter {
+        builder = builder.formatter(formatter);
+    }
 
     if let Some(path_str) = rustfmt_configuration_file {
         let path = PathBuf::from(path_str);
