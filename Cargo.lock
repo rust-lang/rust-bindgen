@@ -22,12 +22,13 @@ dependencies = [
  "lazycell",
  "log",
  "peeking_take_while",
+ "prettyplease",
  "proc-macro2",
  "quote",
  "regex",
  "rustc-hash",
  "shlex",
- "syn 2.0.4",
+ "syn 2.0.7",
  "which",
 ]
 
@@ -378,6 +379,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "19b17cddbe7ec3f8bc800887bab5e717348c95ea2ca0b1bf0837fb964dc67099"
 
 [[package]]
+name = "prettyplease"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4508c0eff4d1e708551034de4bddd61bf8bda8c7b5ae72bd844cf68ea21117ac"
+dependencies = [
+ "proc-macro2",
+ "syn 2.0.7",
+]
+
+[[package]]
 name = "proc-macro-error"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -529,9 +540,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.4"
+version = "2.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c622ae390c9302e214c31013517c2061ecb2699935882c60a9b37f82f8625ae"
+checksum = "9a9a90d19f27bb60792270bb90225f96d97fc5705395134b2ca1dcbb3acc27f4"
 dependencies = [
  "proc-macro2",
  "quote",
