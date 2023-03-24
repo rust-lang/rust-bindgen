@@ -21,7 +21,7 @@ path = "main.rs"
 name = "bindgen"
 
 [dependencies]
-bindgen = { path = "../bindgen", version = "=0.64.0", features = ["cli", "experimental"] }
+bindgen = { path = "../bindgen", version = "=0.64.0", features = ["__cli", "experimental"] }
 shlex = "1"
 clap = { version = "4", features = ["derive"] }
 env_logger = { version = "0.10.0", optional = true }
