@@ -48,7 +48,7 @@ static = ["clang-sys/static"]
 runtime = ["clang-sys/runtime"]
 # Dynamically discover a `rustfmt` binary using the `which` crate
 which-rustfmt = ["which"]
-cli = []
+__cli = []
 experimental = []
 
 # These features only exist for CI testing -- don't use them if you're not hacking

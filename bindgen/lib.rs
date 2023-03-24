@@ -357,10 +357,10 @@ impl Builder {
             input_headers,
             // These cannot be added from the CLI.
             input_header_contents: _,
-            #[cfg(feature = "cli")]
+            #[cfg(feature = "__cli")]
             parse_callbacks,
-            // ParseCallbacks cannot represent CLI flags if the `"cli"` feature is disabled.
-            #[cfg(not(feature = "cli"))]
+            // ParseCallbacks cannot represent CLI flags if the `"__cli"` feature is disabled.
+            #[cfg(not(feature = "__cli"))]
                 parse_callbacks: _,
             codegen_config,
             conservative_inline_namespaces,
@@ -794,7 +794,7 @@ impl Builder {
             output_vector.push("--wrap-unsafe-ops".into());
         }
 
-        #[cfg(feature = "cli")]
+        #[cfg(feature = "__cli")]
         for callbacks in parse_callbacks {
             output_vector.extend(callbacks.cli_args());
         }
