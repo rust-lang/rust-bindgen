@@ -46,6 +46,7 @@ default = ["logging", "runtime", "which-rustfmt"]
 logging = ["log"]
 static = ["clang-sys/static"]
 runtime = ["clang-sys/runtime"]
+prettyplease = ["dep:prettyplease"]
 # Dynamically discover a `rustfmt` binary using the `which` crate
 which-rustfmt = ["which"]
 __cli = []
