@@ -166,7 +166,13 @@
 
 ## Added
 
+* Added the `--generate-cstr` CLI flag to generate string constants as `&CStr`
+  instead of `&[u8]`. (Requires Rust 1.59 or higher.)
+
 ## Changed
+
+* Non-UTF-8 string constants are now generated as references (`&[u8; SIZE]`)
+  instead of arrays (`[u8; SIZE]`) to match UTF-8 strings.
 * Wrappers for static functions that return `void` no longer contain a `return`
   statement and only call the static function instead.
    
@@ -252,7 +258,7 @@
  * The return type is now ommited in signatures of functions returning `void`.
  * Updated the `clap` dependency for `bindgen-cli` to 4.
  * Rewrote the `bindgen-cli` argument parser which could introduce unexpected
-   behavior changes. 
+   behavior changes.
  * The `ParseCallbacks::add_derives` method now receives `DeriveInfo<'_>` as
    argument instead of a `&str`. This type also includes the kind of target type.
 
