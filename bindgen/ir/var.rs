@@ -12,7 +12,6 @@ use crate::clang;
 use crate::clang::ClangToken;
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 
-use crate::diagnostics::{Diagnostic, Level};
 use std::io;
 use std::num::Wrapping;
 
@@ -224,14 +223,12 @@ impl ClangSubItemParser for Var {
                 if previously_defined {
                     let name = String::from_utf8(id).unwrap();
                     let (file, line, column, _) = cursor.location().location();
-                    var_diagnostics(
+                    duplicated_macro_diagnostic(
                         &name,
                         file.name().unwrap(),
                         line,
                         column,
-                        "Duplicated macro definition",
-                        "This macro had a duplicate",
-                        true,
+                        ctx.options().emit_diagnostics,
                     );
                     return Err(ParseError::Continue);
                 }
@@ -451,26 +448,27 @@ fn get_integer_literal_from_cursor(cursor: &clang::Cursor) -> Option<i64> {
     value
 }
 
-fn var_diagnostics(
+fn duplicated_macro_diagnostic(
     item: &str,
     file_name: String,
-    line_num: usize,
+    line: usize,
     column: usize,
-    msg: &str,
-    note: &str,
     emit_diagnostics: bool,
 ) {
+    use crate::diagnostics::{Diagnostic, Level, Slice};
+
     warn!("Duplicated macro definition: {}", item);
 
     if emit_diagnostics {
-        let mut slice = crate::diagnostics::Slice::default();
+        let mut slice = Slice::default();
         slice
             .with_source(item)
-            .with_location(file_name, line_num, column);
+            .with_location(file_name, line, column);
+
         Diagnostic::default()
-            .with_title(msg, Level::Warn)
+            .with_title("Duplicated macro definition", Level::Warn)
             .add_slice(slice)
-            .add_annotation(note, Level::Note)
+            .add_annotation("This macro had a duplicate", Level::Note)
             .display();
     }
 }
