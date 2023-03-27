@@ -1628,7 +1628,7 @@ impl Item {
         let comment = location
             .raw_comment()
             .or_else(|| decl.raw_comment())
-            .or_else(|| dbg!(location.raw_comment()));
+            .or_else(|| location.raw_comment());
 
         let annotations =
             Annotations::new(&decl).or_else(|| Annotations::new(&location));

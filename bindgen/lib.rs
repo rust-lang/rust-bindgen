@@ -1667,6 +1667,9 @@ impl Builder {
     }
 
     /// Set which tool should be used to format the generated bindings.
+    ///
+    /// To be able to choose `prettyplease` as a formatter, the `"prettyplease"` feature must be
+    /// enabled.
     pub fn formatter(mut self, formatter: Formatter) -> Self {
         self.options.formatter = formatter;
         self
