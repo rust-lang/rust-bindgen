@@ -58,7 +58,6 @@ use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::VecDeque;
 use std::fmt::{self, Write};
-use std::io::BufRead;
 use std::ops;
 use std::str::FromStr;
 
@@ -4343,9 +4342,7 @@ fn unsupported_abi_diagnostic<const VARIADIC: bool>(
     abi: &str,
     ctx: &BindgenContext,
 ) {
-    use crate::diagnostics::{Diagnostic, Level, Slice};
-    use std::fs::File;
-    use std::io::{self, BufReader};
+    use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
 
     warn!(
         "Skipping {}function `{}` with the {} ABI that isn't supported by the configured Rust target",
@@ -4367,20 +4364,13 @@ fn unsupported_abi_diagnostic<const VARIADIC: bool>(
 
         if let Some(loc) = location {
             let (file, line, col, _) = loc.location();
-            if let Some(name) = file.name() {
-                if let Ok(source) = (|| {
-                    let mut source = String::new();
 
-                    let file = BufReader::new(File::open(&name)?);
-                    if let Some(line) = file.lines().nth(line.wrapping_sub(1)) {
-                        let line = line?;
-                        source = line;
-                    }
-
-                    Ok::<String, io::Error>(source)
-                })() {
+            if let Some(filename) = file.name() {
+                if let Ok(Some(source)) = get_line(&filename, line) {
                     let mut slice = Slice::default();
-                    slice.with_source(source).with_location(name, line, col);
+                    slice
+                        .with_source(source)
+                        .with_location(filename, line, col);
                     diag.add_slice(slice);
                 }
             }

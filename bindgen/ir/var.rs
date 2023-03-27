@@ -222,14 +222,7 @@ impl ClangSubItemParser for Var {
 
                 if previously_defined {
                     let name = String::from_utf8(id).unwrap();
-                    let (file, line, column, _) = cursor.location().location();
-                    duplicated_macro_diagnostic(
-                        &name,
-                        file.name().unwrap(),
-                        line,
-                        column,
-                        ctx.options().emit_diagnostics,
-                    );
+                    duplicated_macro_diagnostic(&name, cursor.location(), ctx);
                     return Err(ParseError::Continue);
                 }
 
@@ -449,21 +442,28 @@ fn get_integer_literal_from_cursor(cursor: &clang::Cursor) -> Option<i64> {
 }
 
 fn duplicated_macro_diagnostic(
-    item: &str,
-    file_name: String,
-    line: usize,
-    column: usize,
-    emit_diagnostics: bool,
+    macro_name: &str,
+    location: crate::clang::SourceLocation,
+    ctx: &BindgenContext,
 ) {
-    use crate::diagnostics::{Diagnostic, Level, Slice};
+    use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
+    use std::borrow::Cow;
 
-    warn!("Duplicated macro definition: {}", item);
+    warn!("Duplicated macro definition: {}", macro_name);
 
-    if emit_diagnostics {
+    if ctx.options().emit_diagnostics {
         let mut slice = Slice::default();
-        slice
-            .with_source(item)
-            .with_location(file_name, line, column);
+        let mut source = Cow::from(macro_name);
+
+        let (file, line, col, _) = location.location();
+        if let Some(filename) = file.name() {
+            if let Ok(Some(code)) = get_line(&filename, line) {
+                source = code.into();
+            }
+            slice.with_location(filename, line, col);
+        }
+
+        slice.with_source(source);
 
         Diagnostic::default()
             .with_title("Duplicated macro definition", Level::Warn)
