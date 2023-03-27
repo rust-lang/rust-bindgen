@@ -57,7 +57,6 @@ pub use ir::function::Abi;
 pub use regex_set::RegexSet;
 
 use codegen::CodegenError;
-use diagnostics::{Diagnostic, Level, Slice};
 use features::RustFeatures;
 use ir::comment;
 use ir::context::{BindgenContext, ItemId};
@@ -957,8 +956,10 @@ impl Bindings {
                     "Rustfmt parsing errors.".to_string(),
                 )),
                 Some(3) => {
-                    warn!("Rustfmt could not format some lines.");
-                    simple_format_failure_diagnostic(&bindings, true);
+                    rustfmt_non_fatal_error_diagnostic(
+                        "Rustfmt could not format some lines",
+                        self.options.emit_diagnostics,
+                    );
                     Ok(bindings)
                 }
                 _ => Err(io::Error::new(
@@ -971,16 +972,16 @@ impl Bindings {
     }
 }
 
-fn simple_format_failure_diagnostic(item: &str, emit_diagnostics: bool) {
-    if emit_diagnostics {
-        let mut slice = Slice::default();
-        slice.with_source(item);
+fn rustfmt_non_fatal_error_diagnostic(msg: &str, emit_diagnostics: bool) {
+    use crate::diagnostics::{Diagnostic, Level};
 
+    warn!("{}", msg);
+
+    if emit_diagnostics {
         Diagnostic::default()
-            .with_title("Rustfmt could not format some code", Level::Warn)
-            .add_slice(slice)
+            .with_title(msg, Level::Warn)
             .add_annotation(
-                format!("The lines that could not be formatted: {}", item),
+                "The bindings will be generated but not formatted",
                 Level::Note,
             )
             .display();
