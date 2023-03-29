@@ -99,4 +99,12 @@ impl RegexSet {
 
         true
     }
+
+    /// Generate CLI args for this set.
+    pub(crate) fn as_args(&self, args: &mut Vec<String>, flag: &str) {
+        for item in self.get_items() {
+            args.push(flag.to_owned());
+            args.push(item.to_owned());
+        }
+    }
 }
