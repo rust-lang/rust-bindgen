@@ -37,11 +37,13 @@ macro_rules! default {
 macro_rules! fn_with_regex_arg {
     ($(#[$attrs:meta])* pub fn $($tokens:tt)*) => {
         $(#[$attrs])*
-        /// Check the [regular expression arguments] section and the [regex] crate
-        /// documentation for further information.
         ///
-        /// [regular expression arguments]: ./struct.Builder.html#regular-expression-arguments
-        /// [regex]: <https://docs.rs/regex>
+        /// Regular expressions are supported. To match any items that starts with `prefix` use the
+        /// `"prefix.*"` regular expression. 
+        ///
+        /// Check the [regular expression arguments](./struct.Builder.html#regular-expression-arguments)
+        /// section and the [regex](https://docs.rs/regex) crate documentation for further
+        /// information.
         pub fn $($tokens)*
     };
 }
@@ -123,10 +125,7 @@ options! {
         ty: RegexSet,
         methods: {
             fn_with_regex_arg! {
-                /// Hide the given type from the generated bindings. Regular expressions are
-                /// supported.
-                ///
-                /// To blocklist types prefixed with `mylib` use `mylib_.*`.
+                /// Hide the given type from the generated bindings.
                 pub fn blocklist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_types.insert(arg);
                     self
@@ -141,14 +140,11 @@ options! {
         ty: RegexSet,
         methods : {
             fn_with_regex_arg! {
-                /// Hide the given function from the generated bindings. Regular expressions are
-                /// supported.
+                /// Hide the given function from the generated bindings.
                 ///
                 /// Methods can be blocklisted by prefixing the name of the type implementing them
                 /// followed by an underscore. So if `Foo` has a method `bar`, it can be
                 /// blocklisted as `Foo_bar`.
-                ///
-                /// To blocklist functions prefixed with `mylib` use `mylib_.*`.
                 pub fn blocklist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_functions.insert(arg);
                     self
@@ -162,10 +158,8 @@ options! {
         ty: RegexSet,
         methods: {
             fn_with_regex_arg! {
-                /// Hide the given item from the generated bindings, regardless of whether it's a
-                /// type, function, module, etc. Regular expressions are supported.
-                ///
-                /// To blocklist items prefixed with "mylib" use `"mylib_.*"`.
+                /// Hide the given item from the generated bindings, regardless of whether it is a
+                /// type, function, module, etc.
                 pub fn blocklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_items.insert(arg);
                     self
@@ -181,7 +175,7 @@ options! {
         methods: {
             fn_with_regex_arg! {
                 /// Hide any contents of the given file from the generated bindings, regardless of
-                /// whether it's a type, function, module etc.
+                /// whether the contents of the file are types, functions, modules etc.
                 pub fn blocklist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_files.insert(arg);
                     self
@@ -195,10 +189,7 @@ options! {
         ty: RegexSet,
         methods: {
             fn_with_regex_arg! {
-                /// Treat the given type as opaque in the generated bindings. Regular expressions
-                /// are supported.
-                ///
-                /// To mark types prefixed with `mylib` as opaque, use `mylib_.*`.
+                /// Treat the given type as opaque in the generated bindings.
                 pub fn opaque_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.opaque_types.insert(arg);
                     self
@@ -258,9 +249,7 @@ options! {
         methods: {
             fn_with_regex_arg! {
                 /// Allowlist the given type so that it (and all types that it transitively refers
-                /// to) appears in the generated bindings. Regular expressions are supported.
-                ///
-                /// To allowlist types prefixed with `mylib` use `mylib_.*`.
+                /// to) appears in the generated bindings.
                 pub fn allowlist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.allowlisted_types.insert(arg);
                     self
@@ -275,14 +264,11 @@ options! {
         methods: {
             fn_with_regex_arg! {
                 /// Allowlist the given function so that it (and all types that it transitively
-                /// refers to) appears in the generated bindings. Regular expressions are
-                /// supported.
+                /// refers to) appears in the generated bindings.
                 ///
                 /// Methods can be allowlisted by prefixing the name of the type implementing them
                 /// followed by an underscore. So if `Foo` has a method `bar`, it can be
                 /// allowlisted as `Foo_bar`.
-                ///
-                /// To allowlist functions prefixed with `mylib` use `mylib_.*`.
                 pub fn allowlist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.allowlisted_functions.insert(arg);
                     self
@@ -297,10 +283,7 @@ options! {
         methods: {
             fn_with_regex_arg! {
                 /// Allowlist the given variable so that it (and all types that it transitively
-                /// refers to) appears in the generated bindings. Regular expressions are
-                /// supported.
-                ///
-                /// To allowlist variables prefixed with "mylib" use `"mylib_.*"`.
+                /// refers to) appears in the generated bindings.
                 pub fn allowlist_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.allowlisted_vars.insert(arg);
                     self
@@ -356,8 +339,7 @@ options! {
         ty: RegexSet,
         methods: {
             fn_with_regex_arg! {
-                /// Mark the given `enum` as being bitfield-like. Regular expressions are
-                /// supported.
+                /// Mark the given `enum` as being bitfield-like.
                 ///
                 /// This is similar to the [`Builder::newtype_enum`] style, but with the bitwise
                 /// operators implemented.
@@ -374,8 +356,7 @@ options! {
         ty: RegexSet,
         methods: {
             fn_with_regex_arg! {
-                /// Mark the given `enum` (or set of enums, if using a pattern) as a newtype instead
-                /// of a Rust `enum`. Regular expressions are supported.
+                /// Mark the given `enum`  as a newtype instead of a Rust `enum`.
                 pub fn newtype_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.newtype_enums.insert(arg);
                     self
@@ -390,7 +371,7 @@ options! {
         methods: {
             fn_with_regex_arg! {
                 /// Mark the given `enum` as a newtype whose variants are exposed as global
-                /// constants instead of a Rust `enum`. Regular expressions are supported.
+                /// constants instead of a Rust `enum`.
                 pub fn newtype_global_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.newtype_global_enums.insert(arg);
                     self
@@ -405,7 +386,7 @@ options! {
         methods: {
             fn_with_regex_arg! {
                 /// Mark the given `enum` as a Rust `enum`. This makes `bindgen` generate `enum`
-                /// variants instead of constants. Regular expressions are supported.
+                /// variants instead of constants.
                 ///
                 /// **Use this with caution**, creating this in unsafe code (including FFI) with an
                 /// invalid value will invoke undefined behaviour. To avoid this, use
@@ -424,7 +405,6 @@ options! {
         methods: {
             fn_with_regex_arg! {
                 /// Mark the given `enum` as a Rust `enum` with the `#[non_exhaustive]` attribute.
-                /// Regular expressions are supported.
                 ///
                 /// This is similar to the [`Builder::rustified_enum`] style.
                 pub fn rustified_non_exhaustive_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
@@ -441,9 +421,8 @@ options! {
         methods: {
             fn_with_regex_arg! {
                 /// Mark the given `enum` as a set of constants that should be put into a module.
-                /// Regular expressions are supported.
                 ///
-                /// This makes bindgen generate modules containing constants instead of just
+                /// This makes `bindgen` generate modules containing constants instead of just
                 /// constants.
                 pub fn constified_enum_module<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.constified_enum_modules.insert(arg);
@@ -459,7 +438,7 @@ options! {
         methods: {
             fn_with_regex_arg! {
                 /// Mark the given `enum` as a set of constants that are not to be put into a
-                /// module. Regular expressions are supported.
+                /// module.
                 ///
                 /// This is similar to the [`Builder::constified_enum_module`] style.
                 pub fn constified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
@@ -596,7 +575,7 @@ options! {
         methods: {
             fn_with_regex_arg! {
                 /// Mark the given `union` to use a `bindgen`-generated wrapper for its members if at
-                /// least one them is not `Copy`. Regular expressions are supported.
+                /// least one them is not `Copy`.
                 pub fn bindgen_wrapper_union<T: AsRef<str>>(mut self, arg: T) -> Self {
                     self.options.bindgen_wrapper_union.insert(arg);
                     self
@@ -611,10 +590,10 @@ options! {
         methods: {
             fn_with_regex_arg! {
                 /// Mark the given `union` to use [`::core::mem::ManuallyDrop`] for its members if
-                /// at least one of them is not `Copy`. Regular expressions are supported.
+                /// at least one of them is not `Copy`.
                 ///
-                /// Note: `ManuallyDrop` was stabilized in Rust 1.20.0, do not use it if your MSRV
-                /// is lower.
+                /// Note: `ManuallyDrop` was stabilized in Rust 1.20.0, do not use this option if
+                /// your MSRV is lower.
                 pub fn manually_drop_union<T: AsRef<str>>(mut self, arg: T) -> Self {
                     self.options.manually_drop_union.insert(arg);
                     self
@@ -1679,8 +1658,7 @@ options! {
         ty: RegexSet,
         methods: {
             fn_with_regex_arg! {
-                /// Don't derive `PartialEq` for a given type. Regular
-                /// expressions are supported.
+                /// Do not derive `PartialEq` for a given type.
                 pub fn no_partialeq<T: Into<String>>(mut self, arg: T) -> Builder {
                     self.options.no_partialeq_types.insert(arg.into());
                     self
@@ -1694,8 +1672,7 @@ options! {
         ty: RegexSet,
         methods: {
             fn_with_regex_arg! {
-                /// Don't derive `Copy` and `Clone` for a given type. Regular expressions are
-                /// supported.
+                /// Do not derive `Copy` and `Clone` for a given type.
                 pub fn no_copy<T: Into<String>>(mut self, arg: T) -> Self {
                     self.options.no_copy_types.insert(arg.into());
                     self
@@ -1709,7 +1686,7 @@ options! {
         ty: RegexSet,
         methods: {
             fn_with_regex_arg! {
-                /// Don't derive `Debug` for a given type. Regular expressions are supported.
+                /// Do not derive `Debug` for a given type.
                 pub fn no_debug<T: Into<String>>(mut self, arg: T) -> Self {
                     self.options.no_debug_types.insert(arg.into());
                     self
@@ -1723,8 +1700,7 @@ options! {
         ty: RegexSet,
         methods: {
             fn_with_regex_arg! {
-                /// Don't derive or implement `Default` for a given type. Regular expressions are
-                /// supported.
+                /// Do not derive or implement `Default` for a given type.
                 pub fn no_default<T: Into<String>>(mut self, arg: T) -> Self {
                     self.options.no_default_types.insert(arg.into());
                     self
@@ -1738,7 +1714,7 @@ options! {
         ty: RegexSet,
         methods: {
             fn_with_regex_arg! {
-                /// Don't derive `Hash` for a given type. Regular expressions are supported.
+                /// Do not derive `Hash` for a given type.
                 pub fn no_hash<T: Into<String>>(mut self, arg: T) -> Builder {
                     self.options.no_hash_types.insert(arg.into());
                     self
@@ -1752,7 +1728,7 @@ options! {
         ty: RegexSet,
         methods: {
             fn_with_regex_arg! {
-                /// Mark the given type as `#[must_use]`. Regular expressions are supported.
+                /// Annotate the given type with the `#[must_use]` attribute.
                 pub fn must_use_type<T: Into<String>>(mut self, arg: T) -> Builder {
                     self.options.must_use_types.insert(arg.into());
                     self
@@ -1973,7 +1949,7 @@ options! {
         ty: HashMap<Abi, RegexSet>,
         methods: {
             fn_with_regex_arg! {
-                /// Override the ABI of a given function. Regular expressions are supported.
+                /// Override the ABI of a given function.
                 pub fn override_abi<T: Into<String>>(mut self, abi: Abi, arg: T) -> Self {
                     self.options
                         .abi_overrides
