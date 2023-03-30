@@ -54,9 +54,9 @@ macro_rules! options {
         $field:ident: {
             ty: $ty:ty,
             $(default: $default:expr,)?
-            methods: {$($methods_tokens:tt)*},
-            as_args: $func:expr,
-        },
+            methods: {$($methods_tokens:tt)*}$(,)?
+            as_args: $func:expr$(,)?
+        }$(,)?
     )*) => {
         #[derive(Debug, Clone)]
         pub(crate) struct BindgenOptions {
