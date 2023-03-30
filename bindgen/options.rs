@@ -89,7 +89,6 @@ macro_rules! regex_option {
 ///   option and a custom behavior must be taken into account.
 ///   - The `ignore` literal, which does not emit any CLI arguments for this field. This is useful
 ///   if the field cannot be used from the `bindgen` CLI.
-/// ```
 ///
 /// As an example, this would be the declaration of a `bool` field called `be_fun` whose default
 /// value is `false` (the `Default` value for `bool`):
@@ -196,13 +195,12 @@ macro_rules! options {
 }
 
 options! {
-    /// The set of types that have been blocklisted and should not appear anywhere in the generated
-    /// code.
+    /// Types that have been blocklisted and should not appear anywhere in the generated code.
     blocklisted_types: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Hide the given type from the generated bindings.
+                /// Do not generate any bindings for the given type.
                 pub fn blocklist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_types.insert(arg);
                     self
@@ -211,16 +209,15 @@ options! {
         },
         as_args: "--blocklist-type",
     },
-    /// The set of functions that have been blocklisted and should not appear in the generated
-    /// code.
+    /// Functions that have been blocklisted and should not appear in the generated code.
     blocklisted_functions: {
         ty: RegexSet,
         methods : {
             regex_option! {
-                /// Hide the given function from the generated bindings.
+                /// Do not generate any bindings for the given function.
                 ///
-                /// Methods can be blocklisted by prefixing the name of the type implementing them
-                /// followed by an underscore. So if `Foo` has a method `bar`, it can be
+                /// Methods can be blocklisted by prefixing the name of the type where they belong
+                /// followed by an underscore. So if the type `Foo` has a method `bar`, it can be
                 /// blocklisted as `Foo_bar`.
                 pub fn blocklist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_functions.insert(arg);
@@ -230,12 +227,12 @@ options! {
         },
         as_args: "--blocklist-function",
     },
-    /// The set of items that have been blocklisted and should not appear in the generated code.
+    /// Items that have been blocklisted and should not appear in the generated code.
     blocklisted_items: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Hide the given item from the generated bindings, regardless of whether it is a
+                /// Do not generate any bindings for the given item, regardless of whether it is a
                 /// type, function, module, etc.
                 pub fn blocklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_items.insert(arg);
@@ -245,13 +242,12 @@ options! {
         },
         as_args: "--blocklist-item",
     },
-    /// The set of files whose contents should be blocklisted and should not appear in the
-    /// generated code.
+    /// Files whose contents should be blocklisted and should not appear in the generated code.
     blocklisted_files: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Hide any contents of the given file from the generated bindings, regardless of
+                /// Do not generate any bindings for the contents of the given file, regardless of
                 /// whether the contents of the file are types, functions, modules etc.
                 pub fn blocklist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_files.insert(arg);
@@ -261,12 +257,16 @@ options! {
         },
         as_args: "--blocklist-file",
     },
-    /// The set of types that should be treated as opaque structures in the generated code.
+    /// Types that should be treated as opaque structures in the generated code.
     opaque_types: {
         ty: RegexSet,
         methods: {
             regex_option! {
                 /// Treat the given type as opaque in the generated bindings.
+                ///
+                /// Opaque in this context means that none of the generated bindings will contain
+                /// information about the inner representation of the type and the type itself will
+                /// be represented as a chunk of bytes with the alignment and size of the type.
                 pub fn opaque_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.opaque_types.insert(arg);
                     self
@@ -275,15 +275,15 @@ options! {
         },
         as_args: "--opaque-type",
     },
-    /// The explicit rustfmt path.
+    /// The explicit `rustfmt` path.
     rustfmt_path: {
         ty: Option<PathBuf>,
         methods: {
-            /// Sets an explicit path to `rustfmt`.
+            /// Set an explicit path to the `rustfmt` binary.
             ///
-            /// This option only makes sense if the [`Builder::formatter`] method is used with
-            /// [`Formatter::Rustfmt`] or if the [`Builder::rustfmt_bindings`] method is used with
-            /// `true`.
+            /// This option only comes into effect if `rustfmt` is set to be the formatter used by
+            /// `bindgen`. Check the documentation of the [`Builder::formatter`] method for more
+            /// information. 
             pub fn with_rustfmt<P: Into<PathBuf>>(mut self, path: P) -> Self {
                 self.options.rustfmt_path = Some(path.into());
                 self
@@ -316,17 +316,15 @@ options! {
             }
         },
     },
-    /// The set of types that we should have bindings for in the generated code.
-    ///
-    /// This includes all types transitively reachable from any type in this set. One might think
-    /// of allowlisted types/vars/functions as GC roots, and the generated Rust code as including
-    /// everything that gets marked.
+    /// Types that have been allowlisted and should appear in the generated code. 
     allowlisted_types: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Allowlist the given type so that it (and all types that it transitively refers
-                /// to) appears in the generated bindings.
+                /// Generate bindings for the given type.
+                ///
+                /// This option is transitive by default. Check the documentation of the
+                /// [`Builder::allowlist_recursively`] method for further information.
                 pub fn allowlist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.allowlisted_types.insert(arg);
                     self
@@ -335,17 +333,19 @@ options! {
         },
         as_args: "--allowlist-type",
     },
-   /// Allowlisted functions. See docs for `allowlisted_types` for more.
+    /// Functions that have been allowlisted and should appear in the generated code. 
     allowlisted_functions: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Allowlist the given function so that it (and all types that it transitively
-                /// refers to) appears in the generated bindings.
+                /// Generate bindings for the given function. 
                 ///
-                /// Methods can be allowlisted by prefixing the name of the type implementing them
-                /// followed by an underscore. So if `Foo` has a method `bar`, it can be
+                /// Methods can be allowlisted by prefixing the name of the type where they belong
+                /// followed by an underscore. So if the type `Foo` has a method `bar`, it can be
                 /// allowlisted as `Foo_bar`.
+                ///
+                /// This option is transitive by default. Check the documentation of the
+                /// [`Builder::allowlist_recursively`] method for further information.
                 pub fn allowlist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.allowlisted_functions.insert(arg);
                     self
@@ -354,13 +354,15 @@ options! {
         },
         as_args: "--allowlist-function",
     },
-    /// Allowlisted variables. See docs for `allowlisted_types` for more.
+    /// Variables that have been allowlisted and should appear in the generated code. 
     allowlisted_vars: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Allowlist the given variable so that it (and all types that it transitively
-                /// refers to) appears in the generated bindings.
+                /// Generate bindings for the given variable.
+                ///
+                /// This option is transitive by default. Check the documentation of the
+                /// [`Builder::allowlist_recursively`] method for further information.
                 pub fn allowlist_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.allowlisted_vars.insert(arg);
                     self
@@ -369,12 +371,15 @@ options! {
         },
         as_args: "--allowlist-var",
     },
-    /// The set of files whose contents should be allowlisted.
+    /// Files whose contents have been allowlisted and should appear in the generated code. 
     allowlisted_files: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Allowlist the given file so that its contents appear in the generated bindings.
+                /// Generate bindings for the content of the given file.
+                ///
+                /// This option is transitive by default. Check the documentation of the
+                /// [`Builder::allowlist_recursively`] method for further information.
                 pub fn allowlist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.allowlisted_files.insert(arg);
                     self
@@ -383,19 +388,19 @@ options! {
         },
         as_args: "--allowlist-file",
     },
-    /// The default style of code to generate for `enum`s.
+    /// The default style of for generated `enum`s.
     default_enum_style: {
         ty: EnumVariation,
         methods: {
-            /// Set the default style of code to generate for `enum`s.
+            /// Set the default style for generated `enum`s.
             ///
-            /// If this method is not called the [`EnumVariation::Consts`] style will be used by
+            /// If this method is not called, the [`EnumVariation::Consts`] style will be used by
             /// default.
             ///
             /// To set the style for individual `enum`s, use [`Builder::bitfield_enum`],
             /// [`Builder::newtype_enum`], [`Builder::newtype_global_enum`],
-            /// [`Builder::rustified_enums`], [`Builder::rustified_non_exhaustive_enums`],
-            /// [`Builder::constified_enum_modules`] or [`Builder::constified_enums`].
+            /// [`Builder::rustified_enum`], [`Builder::rustified_non_exhaustive_enum`],
+            /// [`Builder::constified_enum_module`] or [`Builder::constified_enum`].
             pub fn default_enum_style(
                 mut self,
                 arg: EnumVariation,
@@ -411,7 +416,7 @@ options! {
             }
         },
     },
-    /// The `enum` patterns to mark an `enum` as a bitfield (newtype with bitwise operations).
+    /// `enum`s marked as bitfield-like. This is, newtypes with bitwise operations.
     bitfield_enums: {
         ty: RegexSet,
         methods: {
@@ -428,12 +433,16 @@ options! {
         },
         as_args: "--bitfield-enum",
     },
-    /// The `enum` patterns to mark an `enum` as a newtype.
+    /// `enum`s marked as newtypes.
     newtype_enums: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Mark the given `enum`  as a newtype instead of a Rust `enum`.
+                /// Mark the given `enum` as a newtype.
+                ///
+                /// This means that an integer newtype will be declared to represent the `enum`
+                /// type and its variants will be represented as constants inside of this type's
+                /// `impl` block.
                 pub fn newtype_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.newtype_enums.insert(arg);
                     self
@@ -442,13 +451,16 @@ options! {
         },
         as_args: "--newtype-enum",
     },
-    /// The `enum` patterns to mark an `enum` as a global newtype.
+    /// `enum`s marked as global newtypes .
     newtype_global_enums: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Mark the given `enum` as a newtype whose variants are exposed as global
-                /// constants instead of a Rust `enum`.
+                /// Mark the given `enum` as a global newtype.
+                ///
+                /// This is similar to the [`Builder::newtype_enum`] style, but the constants for
+                /// each variant are free constants instead of being declared inside an `impl`
+                /// block for the newtype. 
                 pub fn newtype_global_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.newtype_global_enums.insert(arg);
                     self
@@ -457,17 +469,19 @@ options! {
         },
         as_args: "--newtype-global-enum",
     },
-    /// The `enum` patterns to mark an `enum` as a Rust enum.
+    /// `enum`s marked as Rust `enum`s.
     rustified_enums: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Mark the given `enum` as a Rust `enum`. This makes `bindgen` generate `enum`
-                /// variants instead of constants.
+                /// Mark the given `enum` as a Rust `enum`. 
                 ///
-                /// **Use this with caution**, creating this in unsafe code (including FFI) with an
-                /// invalid value will invoke undefined behaviour. To avoid this, use
-                /// [`Builder::newtype_enum`] instead.
+                /// This means that each variant of the `enum` will be represented as a Rust `enum
+                /// variant.
+                ///
+                /// **Use this with caution**, creating an instance of a Rust `enum` with an
+                /// invalid value will cause undefined behaviour. To avoid this, use the
+                /// [`Builder::newtype_enum`] style instead.
                 pub fn rustified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.rustified_enums.insert(arg);
                     self
@@ -476,14 +490,15 @@ options! {
         },
         as_args: "--rustified-enum",
     },
-    /// The `enum` patterns to mark an `enum` as a non-exhaustive Rust `enum`.
+    /// `enum`s marked as non-exhaustive Rust `enum`s. 
     rustified_non_exhaustive_enums: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Mark the given `enum` as a Rust `enum` with the `#[non_exhaustive]` attribute.
+                /// Mark the given `enum` as a non-exhaustive Rust `enum`.
                 ///
-                /// This is similar to the [`Builder::rustified_enum`] style.
+                /// This is similar to the [`Builder::rustified_enum`] style, but the `enum` is
+                /// tagged with the `#[non_exhaustive]` attribute.
                 pub fn rustified_non_exhaustive_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.rustified_non_exhaustive_enums.insert(arg);
                     self
@@ -492,15 +507,12 @@ options! {
         },
         as_args: "--rustified-non-exhaustive-enums",
     },
-    /// The `enum` patterns to mark an `enum` as a module of constants.
+    /// `enum`s marked as modules of constants.
     constified_enum_modules: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Mark the given `enum` as a set of constants that should be put into a module.
-                ///
-                /// This makes `bindgen` generate modules containing constants instead of just
-                /// constants.
+                /// Mark the given `enum` as a module with a set of integer constants.
                 pub fn constified_enum_module<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.constified_enum_modules.insert(arg);
                     self
@@ -509,15 +521,15 @@ options! {
         },
         as_args: "--constified-enum-module",
     },
-    /// The `enum` patterns to mark an `enum` as a set of constants.
+    /// `enum`s marked as a set of constants.
     constified_enums: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Mark the given `enum` as a set of constants that are not to be put into a
-                /// module.
+                /// Mark the given `enum` as a set o integer constants.
                 ///
-                /// This is similar to the [`Builder::constified_enum_module`] style.
+                /// This is similar to the [`Builder::constified_enum_module`] style, but the
+                /// constants are generated in the current module instead of in a new module.
                 pub fn constified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.constified_enums.insert(arg);
                     self
@@ -534,7 +546,8 @@ options! {
             ///
             /// If this method is not called, [`MacroTypeVariation::Unsigned`] is used by default.
             ///
-            /// To set the type for individual macro constants, use [`ParseCallbacks::int_macro`].
+            /// To set the type for individual macro constants, use the
+            /// [`ParseCallbacks::int_macro`] method.
             pub fn default_macro_constant_type(mut self, arg: MacroTypeVariation) -> Builder {
                 self.options.default_macro_constant_type = arg;
                 self
@@ -548,11 +561,11 @@ options! {
             }
         },
     },
-    /// The default style of code to generate for `typedef`s.
+    /// The default style of code generation for `typedef`s.
     default_alias_style: {
         ty: AliasVariation,
         methods: {
-            /// Set the default style of code to generate for `typedef`s.
+            /// Set the default style of code generation for `typedef`s.
             ///
             /// If this method is not called, the [`AliasVaration::TypeAlias`] style is used by
             /// default.
@@ -579,11 +592,11 @@ options! {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Mark the given `typedef` to use regular Rust type aliasing.
+                /// Mark the given `typedef` as a regular Rust `type` alias.
                 ///
-                /// This is the default behavior, meaning that this method should only be used if
-                /// [`Builder::default_alias_style`] was called with a different style than
-                /// [`AliasVariation::TypeAlias`].
+                /// This is the default behavior, meaning that this method should only be used if a
+                /// style different from [`AliasVariation::TypeAlias`] was passed to the
+                /// [`Builder::default_alias_style`] method. 
                 pub fn type_alias<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.type_alias.insert(arg);
                     self
@@ -592,12 +605,12 @@ options! {
         },
         as_args: "--type-alias",
     },
-    /// `typedef` patterns that will be aliased by creating a new `struct`.
+    /// `typedef` patterns that will be aliased by creating a newtype.
     new_type_alias: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Mark the given `typedef` to be generated as a new type by having the aliased
+                /// Mark the given `typedef` as a `Rust` new type by having the aliased
                 /// type be wrapped in a `struct` with `#[repr(transparent)]`.
                 ///
                 /// This method can be used to enforce stricter type checking.
@@ -609,15 +622,15 @@ options! {
         },
         as_args: "--new-type-alias",
     },
-    /// `typedef` patterns that will be wrapped in a new `struct` and implement `Deref` and
-    /// `DerefMut`.
+    /// `typedef` patterns that will be wrapped in a newtype implementing `Deref` and `DerefMut`.
     new_type_alias_deref: {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Mark the given `typedef` to be generated as a new type by having the aliased
-                /// type be wrapped in a `struct` with `#[repr(transparent)]` that also implements
-                /// `Deref` and `DerefMut` with the aliased type as a target.
+                /// Mark the given `typedef` to be generated as a newtype that can be dereferenced.
+                ///
+                /// This is similar to the [`Builder:new_type_alias`] style, but the newtype
+                /// implements `Deref` and `DerefMut` with the aliased type as a target.
                 pub fn new_type_alias_deref<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.new_type_alias_deref.insert(arg);
                     self
@@ -630,7 +643,10 @@ options! {
     default_non_copy_union_style: {
         ty: NonCopyUnionStyle,
         methods: {
-            /// Set the default style of code to generate for `union`s with a non-`Copy` member.
+            /// Set the default style of code to generate for `union`s with non-`Copy` members.
+            ///
+            /// If this method is not called, the [`NonCopyUnionStyle::BindgenWrapper`] style is
+            /// used by default.
             ///
             /// To set the style for individual `union`s, use [`Builder::bindgen_wrapper_union`] or
             /// [`Builder::manually_drop_union`].
@@ -653,6 +669,10 @@ options! {
             regex_option! {
                 /// Mark the given `union` to use a `bindgen`-generated wrapper for its members if at
                 /// least one them is not `Copy`.
+                ///
+                /// This is the default behavior, meaning that this method should only be used if a
+                /// style different from [`NonCopyUnionStyle::BindgenWrapper`] was passed to the
+                /// [`Builder::default_non_copy_union_style`] method. 
                 pub fn bindgen_wrapper_union<T: AsRef<str>>(mut self, arg: T) -> Self {
                     self.options.bindgen_wrapper_union.insert(arg);
                     self
@@ -661,7 +681,7 @@ options! {
         },
         as_args: "--bindgen-wrapper-union",
     },
-    /// The patterns marking non-`Copy` `union`s as using the `::core::mem::ManuallyDrop` wrapper.
+    /// The patterns marking non-`Copy` `union`s as using the `ManuallyDrop` wrapper.
     manually_drop_union: {
         ty: RegexSet,
         methods: {
@@ -669,8 +689,8 @@ options! {
                 /// Mark the given `union` to use [`::core::mem::ManuallyDrop`] for its members if
                 /// at least one of them is not `Copy`.
                 ///
-                /// Note: `ManuallyDrop` was stabilized in Rust 1.20.0, do not use this option if
-                /// your MSRV is lower.
+                /// The `ManuallyDrop` type was stabilized in Rust 1.20.0, do not use this option
+                /// if your target version is lower than this.
                 pub fn manually_drop_union<T: AsRef<str>>(mut self, arg: T) -> Self {
                     self.options.manually_drop_union.insert(arg);
                     self
@@ -682,13 +702,12 @@ options! {
     },
 
 
-    /// Whether we should generate builtins.
+    /// Whether we should generate built-in definitions.
     builtins: {
         ty: bool,
         methods: {
-            /// Emit bindings for built-in definitions (for example `__builtin_va_list`) in the
-            /// generated Rust code.
-            ///
+            /// Generate Rust bindings for built-in definitions (for example `__builtin_va_list`).
+            /// 
             /// Bindings for built-in definitions are not emitted by default.
             pub fn emit_builtins(mut self) -> Builder {
                 self.options.builtins = true;
@@ -703,7 +722,7 @@ options! {
         methods: {
             /// Emit the Clang AST to `stdout` for debugging purposes.
             ///
-            /// This option is disabled by default.
+            /// The Clang AST is not emitted by default.
             pub fn emit_clang_ast(mut self) -> Builder {
                 self.options.emit_ast = true;
                 self
@@ -717,7 +736,7 @@ options! {
         methods: {
             /// Emit the `bindgen` internal representation to `stdout` for debugging purposes.
             ///
-            /// This option is disabled by default.
+            /// This internal representation is not emitted by default.
             pub fn emit_ir(mut self) -> Builder {
                 self.options.emit_ir = true;
                 self
@@ -725,12 +744,12 @@ options! {
         },
         as_args: "--emit-ir",
     },
-    /// Output path for the graphviz dot file.
+    /// Output path for the `graphviz` DOT file.
     emit_ir_graphviz: {
         ty: Option<String>,
         methods: {
             /// Set the path for the file where the`bindgen` internal representation will be
-            /// emitted as a graph using the graphviz DOT language.
+            /// emitted as a graph using the `graphviz` DOT language.
             ///
             /// This graph representation is not emitted by default.
             pub fn emit_ir_graphviz<T: Into<String>>(mut self, path: T) -> Builder {
@@ -748,7 +767,7 @@ options! {
         methods: {
             /// Emulate C++ namespaces using Rust modules in the generated bindings.
             ///
-            /// This option is not enabled by default.
+            /// C++ namespaces are not emulated by default. 
             pub fn enable_cxx_namespaces(mut self) -> Builder {
                 self.options.enable_cxx_namespaces = true;
                 self
@@ -764,11 +783,11 @@ options! {
             ///
             /// This enables the following features:
             /// - Add `#[must_use]` attributes to Rust items whose C counterparts are marked as so.
-            /// This feature also requires that the Rust target version supports these attributes.
+            /// This feature also requires that the Rust target version supports the attribute.
             /// - Set `!` as the return type for Rust functions whose C counterparts are marked as
             /// diverging.
             ///
-            /// This option can be quite slow in some cases (see [#1465]), so it is disabled by
+            /// This option can be quite slow in some cases (check [#1465]), so it is disabled by
             /// default.
             ///
             /// [#1465]: https://github.com/rust-lang/rust-bindgen/issues/1465
@@ -789,9 +808,9 @@ options! {
             /// By default, `bindgen` mangles names like `foo::bar::Baz` to look like `foo_bar_Baz`
             /// instead of just `Baz`. This method disables that behavior.
             ///
-            /// Note that this intentionally does not change the names used for allowlisting and
-            /// blocklisting, which should still be mangled with the namespaces. Additionally, this
-            /// option may cause `bindgen` to generate duplicate names.
+            /// Note that this does not change the names used for allowlisting and blocklisting,
+            /// which should still be mangled with the namespaces. Additionally, this option may
+            /// cause `bindgen` to generate duplicate names.
             pub fn disable_name_namespacing(mut self) -> Builder {
                 self.options.disable_name_namespacing = true;
                 self
@@ -815,11 +834,11 @@ options! {
             /// };
             /// ```
             ///
-            /// `bindgen` tries to avoid duplicate names by default so it follows the C++ naming
+            /// `bindgen` tries to avoid duplicate names by default, so it follows the C++ naming
             /// convention and it generates `foo` and `foo_bar` instead of just `foo` and `bar`.
             ///
             /// This method disables this behavior and it is indented to be used only for headers
-            /// that were written for C.
+            /// that were written in C.
             pub fn disable_nested_struct_naming(mut self) -> Builder {
                 self.options.disable_nested_struct_naming = true;
                 self
@@ -832,6 +851,8 @@ options! {
         ty: bool,
         methods: {
             /// Do not insert the `bindgen` version identifier into the generated bindings.
+            ///
+            /// This identifier is inserted by default.
             pub fn disable_header_comment(mut self) -> Self {
                 self.options.disable_header_comment = true;
                 self
@@ -889,9 +910,9 @@ options! {
         ty: bool,
         default: true,
         methods: {
-            /// Set whether `Copy` should be derived by default.
+            /// Set whether the `Copy` trait should be derived when possible.
             ///
-            /// This option is enabled by default.
+            /// `Copy` is derived by default.
             pub fn derive_copy(mut self, doit: bool) -> Self {
                 self.options.derive_copy = doit;
                 self
@@ -905,9 +926,12 @@ options! {
         ty: bool,
         default: true,
         methods: {
-            /// Set whether `Debug` should be derived by default.
+            /// Set whether the `Debug` trait should be derived when possible.
             ///
-            /// This option is enabled by default.
+            /// The [`Builder::impl_debug`] method can be used to implement `Debug` for types that
+            /// cannot derive it.
+            /// 
+            /// `Debug` is derived by default.
             pub fn derive_debug(mut self, doit: bool) -> Self {
                 self.options.derive_debug = doit;
                 self
@@ -920,9 +944,9 @@ options! {
     derive_default: {
         ty: bool,
         methods: {
-            /// Set whether `Default` should be derived by default.
+            /// Set whether the `Default` trait should be derived when possible.
             ///
-            /// This option is disabled by default.
+            /// `Default` is not derived by default.
             pub fn derive_default(mut self, doit: bool) -> Self {
                 self.options.derive_default = doit;
                 self
@@ -942,9 +966,9 @@ options! {
     derive_hash: {
         ty: bool,
         methods: {
-            /// Set whether `Hash` should be derived by default.
+            /// Set whether the `Hash` trait should be derived when possible.
             ///
-            /// This option is disabled by default.
+            /// `Hash` is not derived by default. 
             pub fn derive_hash(mut self, doit: bool) -> Self {
                 self.options.derive_hash = doit;
                 self
@@ -956,13 +980,13 @@ options! {
     derive_partialord: {
         ty: bool,
         methods: {
-            /// Set whether `PartialOrd` should be derived by default.
+            /// Set whether the `PartialOrd` trait should be derived when possible.
             ///
             /// Take into account that `Ord` cannot be derived for a type that does not implement
             /// `PartialOrd`. For this reason, setting this method to `false` also sets
             /// automatically [`Builder::derive_ord`] to `false`.
             ///
-            /// This option is disabled by default.
+            /// `PartialOrd` is not derived by default.
             pub fn derive_partialord(mut self, doit: bool) -> Self {
                 self.options.derive_partialord = doit;
                 if !doit {
@@ -977,13 +1001,13 @@ options! {
     derive_ord: {
         ty: bool,
         methods: {
-            /// Set whether `Ord` should be derived by default.
+            /// Set whether the `Ord` trait should be derived when possible.
             ///
             /// Take into account that `Ord` cannot be derived for a type that does not implement
             /// `PartialOrd`. For this reason, the value set with this method will also be set
             /// automatically for [`Builder::derive_partialord`].
             ///
-            /// This option is disabled by default.
+            /// `Ord` is not derived by default. 
             pub fn derive_ord(mut self, doit: bool) -> Self {
                 self.options.derive_ord = doit;
                 self.options.derive_partialord = doit;
@@ -996,13 +1020,16 @@ options! {
     derive_partialeq: {
         ty: bool,
         methods: {
-            /// Set whether `PartialEq` should be derived by default.
+            /// Set whether the `PartialEq` trait should be derived when possible.
             ///
             /// Take into account that `Eq` cannot be derived for a type that does not implement
             /// `PartialEq`. For this reason, setting this method to `false` also sets
             /// automatically [`Builder::derive_eq`] to `false`.
             ///
-            /// This option is disabled by default.
+            /// The [`Builder::impl_partialeq`] method can be used to implement `PartialEq` for
+            /// types that cannot derive it.
+            ///
+            /// `PartialEq` is not derived by default. 
             pub fn derive_partialeq(mut self, doit: bool) -> Self {
                 self.options.derive_partialeq = doit;
                 if !doit {
@@ -1017,13 +1044,13 @@ options! {
     derive_eq: {
         ty: bool,
         methods: {
-            /// Set whether `Eq` should be derived by default.
+            /// Set whether the `Eq` trait should be derived when possible.
             ///
             /// Take into account that `Eq` cannot be derived for a type that does not implement
             /// `PartialEq`. For this reason, the value set with this method will also be set
             /// automatically for [`Builder::derive_partialeq`].
             ///
-            /// This option is disabled by default.
+            /// `Eq` is not derived by default.
             pub fn derive_eq(mut self, doit: bool) -> Self {
                 self.options.derive_eq = doit;
                 if doit {
@@ -1043,7 +1070,7 @@ options! {
         methods: {
             /// Use `core` instead of `std` in the generated bindings.
             ///
-            /// This option is disabled by default.
+            /// `std` is used by default. 
             pub fn use_core(mut self) -> Builder {
                 self.options.use_core = true;
                 self
@@ -1056,9 +1083,10 @@ options! {
     ctypes_prefix: {
         ty: Option<String>,
         methods: {
-            /// Use the given prefix for the raw types instead of `::std::os::raw`.
+            /// Use the given prefix for the C platform-specific types instead of `::std::os::raw`.
             ///
-            /// To use `::core::ffi` or `::core::os::raw` see [`Bulider::use_core`].
+            /// Alternatively, the [`Builder::use_core`] method can be used to set the prefix to
+            /// `::core::ffi` or `::core::os::raw`.
             pub fn ctypes_prefix<T: Into<String>>(mut self, prefix: T) -> Builder {
                 self.options.ctypes_prefix = Some(prefix.into());
                 self
@@ -1073,8 +1101,6 @@ options! {
         methods: {
             /// Use the given prefix for the anonymous fields.
             ///
-            /// The default prefix is `__bindgen_anon_`.")]
-            ///
             /// An anonymous field, is a field of a C/C++ type that does not have a name. For
             /// example, in the following C code:
             /// ```c
@@ -1087,6 +1113,8 @@ options! {
             ///
             /// The only field of the `integer` `struct` is an anonymous field and its Rust
             /// representation will be named using this prefix followed by an integer identifier.
+            ///
+            /// The default prefix is `__bindgen_anon_`.
             pub fn anon_fields_prefix<T: Into<String>>(mut self, prefix: T) -> Builder {
                 self.options.anon_fields_prefix = prefix.into();
                 self
@@ -1106,7 +1134,7 @@ options! {
             /// Set whether to measure the elapsed time for each one of the `bindgen` phases. This
             /// information is printed to `stderr`.
             ///
-            /// This option is disabled by default.
+            /// The elapsed time is not measured by default. 
             pub fn time_phases(mut self, doit: bool) -> Self {
                 self.options.time_phases = doit;
                 self
@@ -1119,7 +1147,7 @@ options! {
         ty: bool,
         default: true,
         methods: {
-            /// Avoid converting C float types to `f32` and `f64` by default.
+            /// Avoid converting C float types to `f32` and `f64`.
             pub fn no_convert_floats(mut self) -> Self {
                 self.options.convert_floats = false;
                 self
@@ -1151,8 +1179,8 @@ options! {
         methods: {
             /// Add a given line to the beginning of a given module.
             ///
-            /// This option only makes sense if the [`Builder::enable_cxx_namespaces`] option is
-            /// enabled.
+            /// This option only comes into effect if the [`Builder::enable_cxx_namespaces`] method
+            /// is also being called.
             pub fn module_raw_line<T, U>(mut self, module: T, line: U) -> Self
             where
                 T: Into<String>,
@@ -1239,7 +1267,7 @@ options! {
             /// Add `contents` as an input C/C++ header named `name`.
             ///
             /// This can be used to inject additional C/C++ code as an input without having to
-            /// create a header file.
+            /// create additional header files.
             pub fn header_contents(mut self, name: &str, contents: &str) -> Builder {
                 // Apparently clang relies on having virtual FS correspondent to
                 // the real one, so we need absolute paths here
@@ -1282,7 +1310,7 @@ options! {
         methods: {
             /// Do not generate any functions.
             ///
-            /// This option is disabled by default.
+            /// Functions are generated by default. 
             pub fn ignore_functions(mut self) -> Builder {
                 self.options.codegen_config.remove(CodegenConfig::FUNCTIONS);
                 self
@@ -1290,7 +1318,7 @@ options! {
 
             /// Do not generate any methods.
             ///
-            /// This option is disabled by default.
+            /// Methods are generated by default. 
             pub fn ignore_methods(mut self) -> Builder {
                 self.options.codegen_config.remove(CodegenConfig::METHODS);
                 self
@@ -1314,7 +1342,7 @@ options! {
 
             args.push("--generate".to_owned());
 
-            //Temporary placeholder for below 4 options
+            //Temporary placeholder for the 4 options below.
             let mut options: Vec<String> = Vec::new();
             if codegen_config.functions() {
                 options.push("functions".to_owned());
@@ -1365,20 +1393,19 @@ options! {
             ///
             /// Even though referencing `Bar` is a compiler error.
             ///
-            /// We want to support this (arguably esoteric) use case, but we don't want
-            /// to make the rest of `bindgen` users pay an usability penalty for that.
+            /// We want to support this (arguably esoteric) use case, but we do not want to make
+            /// the rest of `bindgen` users pay an usability penalty for that.
             ///
-            /// To support this, we need to keep all the inline namespaces around, but
-            /// then bindgen usage is a bit more difficult, because you cannot
-            /// reference, e.g., `std::string` (you'd need to use the proper inline
-            /// namespace).
+            /// To support this, we need to keep all the inline namespaces around, but then using
+            /// `bindgen` becomes a bit more difficult, because you cannot reference paths like
+            /// `std::string` (you'd need to use the proper inline namespace).
             ///
-            /// We could complicate a lot of the logic to detect name collisions, and if
-            /// not detected generate a `pub use inline_ns::*` or something like that.
+            /// We could complicate a lot of the logic to detect name collisions and, in the
+            /// absence of collisions, generate a `pub use inline_ns::*` or something like that.
             ///
-            /// That's probably something we can do if we see this option is needed in a
-            /// lot of cases, to improve it's usability, but my guess is that this is
-            /// not going to be too useful.
+            /// That is probably something we can do to improve the usability of this option if we
+            /// realize it is needed way more often. Our guess is that this extra logic is not
+            /// going to be very useful.
             ///
             /// This option is disabled by default.
             pub fn conservative_inline_namespaces(mut self) -> Builder {
@@ -1393,17 +1420,18 @@ options! {
         ty: bool,
         default: true,
         methods: {
-            /// Set whether the generated bindings should contain documentation comments (docstrings)
-            ///.
+            /// Set whether the generated bindings should contain documentation comments.
             ///
-            /// This option is enabled by default.
+            /// Documentation comments are included by default.
             ///
-            /// Note that clang by default excludes comments from system headers, pass
-            /// `-fretain-comments-from-system-headers` as [`clang_arg`][Builder::clang_arg] to
-            /// include them. It can also be told to process all comments (not just documentation
-            /// ones) using the `-fparse-all-comments` flag. See [slides on clang comment parsing](
-            /// https://llvm.org/devmtg/2012-11/Gribenko_CommentParsing.pdf) for background and
-            /// examples.
+            /// Note that clang excludes comments from system headers by default, pass
+            /// `"-fretain-comments-from-system-headers"` to the [`Builder::clang_arg`] method to
+            /// include them. 
+            ///
+            /// It is also possible to process all comments and not just documentation using the
+            /// `"-fparse-all-comments"` flag. Check [these slides on clang comment parsing](
+            /// https://llvm.org/devmtg/2012-11/Gribenko_CommentParsing.pdf) for more information
+            /// and examples.
             pub fn generate_comments(mut self, doit: bool) -> Self {
                 self.options.generate_comments = doit;
                 self
@@ -1421,7 +1449,11 @@ options! {
             ///
             /// Note that they will usually not work. However you can use `-fkeep-inline-functions`
             /// or `-fno-inline-functions` if you are responsible of compiling the library to make
-            /// them callable. See [`Builder::wrap_static_fns`] for an alternative.
+            /// them callable. 
+            #[cfg_attr(
+                features = "experimental", 
+                doc = "\nCheck the [`Builder::wrap_static_fns`] method for an alternative."
+            )]
             pub fn generate_inline_functions(mut self, doit: bool) -> Self {
                 self.options.generate_inline_functions = doit;
                 self
@@ -1434,11 +1466,11 @@ options! {
         ty: bool,
         default: true,
         methods: {
-            /// Set whether to allowlist recursively.
+            /// Set whether to recursively allowlist items.
             ///
-            /// This option is enabled by default.
+            /// Items are allowlisted recursively by default.
             ///
-            /// Given that we have explicitly allowlisted the "initiate_dance_party" function in
+            /// Given that we have explicitly allowlisted the `initiate_dance_party` function in
             /// this C header:
             ///
             /// ```c
@@ -1450,17 +1482,17 @@ options! {
             /// ```
             ///
             /// We would normally generate bindings to both the `initiate_dance_party` function and
-            /// the `MoonBoots` struct that it transitively references. By configuring with
-            /// `allowlist_recursively(false)`, `bindgen` will not emit bindings for anything
-            /// except the explicitly allowlisted items, and there would be no emitted struct
-            /// definition for `MoonBoots`. However, the `initiate_dance_party` function would
-            /// still reference `MoonBoots`!
+            /// the `MoonBoots` type that it transitively references. If `false` is passed to this
+            /// method, `bindgen` will not emit bindings for anything except the explicitly
+            /// allowlisted items, meaning that the definition for `MoonBoots` would not be
+            /// generated. However, the `initiate_dance_party` function would still reference
+            /// `MoonBoots`!
             ///
             /// **Disabling this feature will almost certainly cause `bindgen` to emit bindings
             /// that will not compile!** If you disable this feature, then it is *your*
             /// responsibility to provide definitions for every type that is referenced from an
-            /// explicitly allowlisted item. One way to provide the definitions is by using the
-            /// [`Builder::raw_line`] method, another would be to define them in Rust and then
+            /// explicitly allowlisted item. One way to provide the missing definitions is by using
+            /// the [`Builder::raw_line`] method, another would be to define them in Rust and then
             /// `include!(...)` the bindings immediately afterwards.
             pub fn allowlist_recursively(mut self, doit: bool) -> Self {
                 self.options.allowlist_recursively = doit;
@@ -1469,15 +1501,15 @@ options! {
         },
         as_args: |value, args| (!value).as_args(args, "--no-recursive-allowlist"),
     },
-    /// Instead of emitting 'use objc;' to files generated from objective c files,
-    /// generate '#[macro_use] extern crate objc;'
+    /// Whether to emit `#[macro_use] extern crate objc;` instead of `use objc;` in the prologue of
+    /// the files generated from objective-c files.
     objc_extern_crate: {
         ty: bool,
         methods: {
             /// Emit `#[macro_use] extern crate objc;` instead of `use objc;` in the prologue of
             /// the files generated from objective-c files.
             ///
-            /// This option is disabled by default.
+            /// `use objc;` is emitted by default.
             pub fn objc_extern_crate(mut self, doit: bool) -> Self {
                 self.options.objc_extern_crate = doit;
                 self
@@ -1485,13 +1517,13 @@ options! {
         },
         as_args: "--objc-extern-crate",
     },
-    /// Whether to generate proper block signatures instead of void pointers.
+    /// Whether to generate proper block signatures instead of `void` pointers.
     generate_block: {
         ty: bool,
         methods: {
-            /// Generate proper block signatures instead of void pointers.
+            /// Generate proper block signatures instead of `void` pointers.
             ///
-            /// This option is disabled by default.
+            /// `void` pointers are used by default.
             pub fn generate_block(mut self, doit: bool) -> Self {
                 self.options.generate_block = doit;
                 self
@@ -1499,15 +1531,15 @@ options! {
         },
         as_args: "--generate-block",
     },
-    /// Instead of emitting 'use block;' to files generated from objective c files,
-    /// generate '#[macro_use] extern crate block;'
+    /// Whether to emit `#[macro_use] extern crate block;` instead of `use block;` in the prologue
+    /// of the files generated from apple block files.
     block_extern_crate: {
         ty: bool,
         methods: {
-            /// Generate `#[macro_use] extern crate block;` instead of `use block;`
-            /// in the prologue of the files generated from apple block files.
+            /// Emit `#[macro_use] extern crate block;` instead of `use block;` in the prologue of
+            /// the files generated from apple block files.
             ///
-            /// This option is disabled by default.
+            /// `use block;` is emitted by default. 
             pub fn block_extern_crate(mut self, doit: bool) -> Self {
                 self.options.block_extern_crate = doit;
                 self
@@ -1520,12 +1552,14 @@ options! {
         ty: bool,
         default: true,
         methods: {
-            /// Whether to use the clang-provided name mangling. This is probably needed for C++ features.
+            /// Set whether to use the clang-provided name mangling. This is probably needed for
+            /// C++ features.
             ///
-            /// This option is enabled by default.
+            /// The mangling provided by clang is used by default. 
             ///
             /// We allow disabling this option because some old `libclang` versions seem to return
-            /// incorrect results in some cases for non-mangled functions, see [#528].
+            /// incorrect results in some cases for non-mangled functions, check [#528] for more
+            /// information.
             ///
             /// [#528]: https://github.com/rust-lang/rust-bindgen/issues/528
             pub fn trust_clang_mangling(mut self, doit: bool) -> Self {
@@ -1541,9 +1575,9 @@ options! {
         ty: bool,
         default: true,
         methods: {
-            /// Whether to detect include paths using `clang_sys`.
+            /// Set whether to detect include paths using `clang_sys`.
             ///
-            /// This option is enabled by default.
+            /// `clang_sys` is used to detect include paths by default. 
             pub fn detect_include_paths(mut self, doit: bool) -> Self {
                 self.options.detect_include_paths = doit;
                 self
@@ -1551,11 +1585,12 @@ options! {
         },
         as_args: |value, args| (!value).as_args(args, "--no-include-path-detection"),
     },
-    /// Whether to try to fit macro constants into types smaller than `u32` and `i32`.
+    /// Whether we should try to fit macro constants into types smaller than `u32` and `i32`.
     fit_macro_constants: {
         ty: bool,
         methods: {
-            /// Whether to try to fit macro constants to types smaller than `u32` and `i32`.
+            /// Set whether `bindgen` should try to fit macro constants into types smaller than `u32`
+            /// and `i32`.
             ///
             /// This option is disabled by default.
             pub fn fit_macro_constants(mut self, doit: bool) -> Self {
@@ -1565,14 +1600,14 @@ options! {
         },
         as_args: "--fit-macro-constant-types",
     },
-    /// Whether to prepend the enum name to constant or newtype variants.
+    /// Whether to prepend the `enum` name to constant or newtype variants.
     prepend_enum_name: {
         ty: bool,
         default: true,
         methods: {
-            /// Prepend the enum name to constant or newtype variants.
+            /// Set whether to prepend the `enum` name to constant or newtype variants.
             ///
-            /// This option is enabled by default.
+            /// The `enum` name is prepended by default. 
             pub fn prepend_enum_name(mut self, doit: bool) -> Self {
                 self.options.prepend_enum_name = doit;
                 self
@@ -1634,7 +1669,7 @@ options! {
         methods: {
             /// Set whether we should record which items in our regex sets did match any C items.
             ///
-            /// This option is enabled by default
+            /// Matches are recorded by default. 
             pub fn record_matches(mut self, doit: bool) -> Self {
                 self.options.record_matches = doit;
                 self
@@ -1648,9 +1683,9 @@ options! {
         ty: bool,
         default: true,
         methods: {
-            /// Set whether `size_t` should be translated to `usize` automatically.
+            /// Set whether `size_t` should be translated to `usize`.
             ///
-            /// This option is enabled by default
+            /// `size_t` is translated to `usize` by default.
             pub fn size_t_is_usize(mut self, is: bool) -> Self {
                 self.options.size_t_is_usize = is;
                 self
@@ -1663,12 +1698,12 @@ options! {
         ty: Formatter,
         methods: {
             #[cfg_attr(feature = "prettyplease", deprecated)]
-            /// Set whether rustfmt should format the generated bindings.
+            /// Set whether `rustfmt` should be used to format the generated bindings.
             ///
-            /// This option is enabled by default.
+            /// `rustfmt` is used by default.
             ///
             /// This method overlaps in functionality with the more general [`Builder::formatter`].
-            /// Thus, the latter should be prefered.
+            /// Thus, the latter should be preferred.
             pub fn rustfmt_bindings(mut self, doit: bool) -> Self {
                 self.options.formatter = if doit {
                     Formatter::Rustfmt
@@ -1682,8 +1717,8 @@ options! {
             ///
             /// The default formatter is [`Formatter::Rustfmt`].
             ///
-            /// To be able to choose `prettyplease` as a formatter, the `"prettyplease"` feature
-            /// for `bindgen` must be enabled in the Cargo manifest.
+            /// To be able to use `prettyplease` as a formatter, the `"prettyplease"` feature for
+            /// `bindgen` must be enabled in the Cargo manifest.
             pub fn formatter(mut self, formatter: Formatter) -> Self {
                 self.options.formatter = formatter;
                 self
@@ -1696,13 +1731,13 @@ options! {
             }
         },
     },
-    /// The absolute path to the rustfmt configuration file.
+    /// The absolute path to the `rustfmt` configuration file.
     rustfmt_configuration_file: {
         ty: Option<PathBuf>,
         methods: {
-            /// Set the absolute path to the rustfmt configuration file.
+            /// Set the absolute path to the `rustfmt` configuration file.
             ///
-            /// The default `rustfmt` options are used if this method is called with `None` or if
+            /// The default `rustfmt` options are used if `None` is passed to this method or if
             /// this method is not called at all.
             ///
             /// Calling this method will set the [`Bindings::rustfmt_bindings`] option to `true`
@@ -1715,7 +1750,7 @@ options! {
         },
         as_args: "--rustfmt-configuration-file",
     },
-    /// The set of types that should not derive `PartialEq`.
+    /// Types that should not derive `PartialEq`.
     no_partialeq_types: {
         ty: RegexSet,
         methods: {
@@ -1729,7 +1764,7 @@ options! {
         },
         as_args: "--no-partialeq",
     },
-    /// The set of types that should not derive `Copy`.
+    /// Types that should not derive `Copy`.
     no_copy_types: {
         ty: RegexSet,
         methods: {
@@ -1743,7 +1778,7 @@ options! {
         },
         as_args: "--no-copy",
     },
-    /// The set of types that should not derive `Debug`.
+    /// Types that should not derive `Debug`.
     no_debug_types: {
         ty: RegexSet,
         methods: {
@@ -1757,7 +1792,7 @@ options! {
         },
         as_args: "--no-debug",
     },
-    /// The set of types that should not derive or implement `Default`.
+    /// Types that should not derive or implement `Default`.
     no_default_types: {
         ty: RegexSet,
         methods: {
@@ -1771,7 +1806,7 @@ options! {
         },
         as_args: "--no-default",
     },
-    /// The set of types that should not derive `Hash`.
+    /// Types that should not derive `Hash`.
     no_hash_types: {
         ty: RegexSet,
         methods: {
@@ -1785,7 +1820,7 @@ options! {
         },
         as_args: "--no-hash",
     },
-    /// The set of types that should be annotated with `#[must_use]`.
+    /// Types that should be annotated with `#[must_use]`.
     must_use_types: {
         ty: RegexSet,
         methods: {
@@ -1799,13 +1834,14 @@ options! {
         },
         as_args: "--must-use-type",
     },
-    /// Decide if C arrays should be regular pointers in rust or array pointers
+    /// Whether C arrays should be regular pointers in rust or array pointers
     array_pointers_in_arguments: {
         ty: bool,
         methods: {
             /// Translate arrays `T arr[size]` into array pointers `*mut [T; size]` instead of
-            /// translating them as `*mut T` which is the default. The same is done for `*const`
-            /// pointers.
+            /// translating them as `*mut T` which is the default.
+            ///
+            /// The same is done for `*const` pointers.
             pub fn array_pointers_in_arguments(mut self, doit: bool) -> Self {
                 self.options.array_pointers_in_arguments = doit;
                 self
@@ -1814,14 +1850,14 @@ options! {
         },
         as_args: "--use-array-pointers-in-arguments",
     },
-    /// Wasm import module name.
+    /// The name of the `wasm_import_module`.
     wasm_import_module_name: {
         ty: Option<String>,
         methods: {
             /// Adds the `#[link(wasm_import_module = import_name)]` attribute to all the `extern`
             /// blocks generated by `bindgen`.
             ///
-            /// This option is disabled by default.
+            /// This attribute is not added by default.
             pub fn wasm_import_module_name<T: Into<String>>(
                 mut self,
                 import_name: T,
@@ -1849,15 +1885,16 @@ options! {
         },
         as_args: "--dynamic-loading",
     },
-    /// Require successful linkage for all routines in a shared library.
+    /// Whether to equire successful linkage for all routines in a shared library.
     dynamic_link_require_all: {
         ty: bool,
         methods: {
-            /// Require successful linkage for all routines in a shared library. This allows us to
-            /// optimize function calls by being able to safely assume function pointers are valid.
+            /// Set whether to require successful linkage for all routines in a shared library.
+            /// This allows us to optimize function calls by being able to safely assume function
+            /// pointers are valid.
             ///
-            /// This option has no effect if the [`Builder::dynamic_library_name`] option is not
-            /// set.
+            /// This option only comes into effect if the [`Builder::dynamic_library_name`] option
+            /// is set.
             ///
             /// This option is disabled by default.
             pub fn dynamic_link_require_all(mut self, req: bool) -> Self {
@@ -1867,14 +1904,16 @@ options! {
         },
         as_args: "--dynamic-link-require-all",
     },
-    /// Only make generated bindings `pub` if the items would be publically accessible by C++.
+    /// Whether to only make generated bindings `pub` if the items would be publicly accessible by
+    /// C++.
     respect_cxx_access_specs: {
         ty: bool,
         methods: {
-            /// Set the visibility of the Rust items in the generated bindings as `pub` only if the
-            /// corresponding C++ item is publically accessible.
+            /// Set whether to respect the C++ access specifications.
             ///
-            /// This option is disabled by default.
+            /// Passing `true` to this method will set the visibility of the generated Rust items
+            /// as `pub` only if the corresponding C++ items are publicly accessible instead of
+            /// marking all the items as public, which is the default.
             pub fn respect_cxx_access_specs(mut self, doit: bool) -> Self {
                 self.options.respect_cxx_access_specs = doit;
                 self
@@ -1883,17 +1922,15 @@ options! {
         },
         as_args: "--respect-cxx-access-specs",
     },
-    /// Always translate `enum` integer types to native Rust integer types.
+    /// Whether to translate `enum` integer types to native Rust integer types.
     translate_enum_integer_types: {
         ty: bool,
         methods: {
-            /// Always translate `enum` integer types to native Rust integer types.
+            /// Set whether to always translate `enum` integer types to native Rust integer types.
             ///
-            /// This will result in `enum`s having types such as `u32` and `i16` instead of
-            /// `c_uint` and `c_short`. The `#[repr]` types of Rustified `enum`s are always
-            /// translated to Rust integer types.
-            ///
-            /// This option is disabled by default.
+            /// Passing `true` to this method will result in `enum`s having types such as `u32` and
+            /// `i16` instead of `c_uint` and `c_short` which is the default. The `#[repr]` types
+            /// of Rust `enum`s are always translated to Rust integer types.
             pub fn translate_enum_integer_types(mut self, doit: bool) -> Self {
                 self.options.translate_enum_integer_types = doit;
                 self
@@ -1901,17 +1938,15 @@ options! {
         },
         as_args: "--translate-enum-integer-types",
     },
-    /// Generate types with C style naming.
+    /// Whether to generate types with C style naming.
     c_naming: {
         ty: bool,
         methods: {
-            /// Generate types with C style naming.
+            /// Set whether to generate types with C style naming.
             ///
-            /// This will add prefixes to the generated type names. For example, instead of a
-            /// `struct` with name `A` we will generate a `struct` with `struct_A`. Currently
-            /// applies to `struct`s, `union`s, and `enum`s.
-            ///
-            /// This option is disabled by default.
+            /// Passing `true` to this method will add prefixes to the generated type names. For
+            /// example, instead of a `struct` with name `A` we will generate a `struct` with
+            /// `struct_A`. Currently applies to `struct`s, `union`s, and `enum`s.
             pub fn c_naming(mut self, doit: bool) -> Self {
                 self.options.c_naming = doit;
                 self
@@ -1919,7 +1954,7 @@ options! {
         },
         as_args: "--c-naming",
     },
-    /// Always output explicit padding fields
+    /// Wether to always emit explicit padding fields.
     force_explicit_padding: {
         ty: bool,
         methods: {
@@ -1928,9 +1963,9 @@ options! {
             /// This option should be enabled if a `struct` needs to be serialized in its native
             /// format (padding bytes and all). This could be required if such `struct` will be
             /// written to a file or sent over the network, as anything reading the padding bytes
-            /// of a struct may lead to Undefined Behavior.
+            /// of a struct may cause undefined behavior.
             ///
-            /// This option is disabled by default.
+            /// Padding fields are not emitted by default. 
             pub fn explicit_padding(mut self, doit: bool) -> Self {
                 self.options.force_explicit_padding = doit;
                 self
@@ -1938,15 +1973,15 @@ options! {
         },
         as_args: "--explicit-padding",
     },
-    /// Emit vtable functions.
+    /// Whether to emit vtable functions.
     vtable_generation: {
         ty: bool,
         methods: {
-            /// Set whether to enable experimental support to generate vtable functions.
+            /// Set whether to enable experimental support to generate virtual table functions.
             ///
             /// This option should mostly work, though some edge cases are likely to be broken.
             ///
-            /// This option is disabled by default.
+            /// Virtual table generation is disabled by default.
             pub fn vtable_generation(mut self, doit: bool) -> Self {
                 self.options.vtable_generation = doit;
                 self
@@ -1954,13 +1989,13 @@ options! {
         },
         as_args: "--vtable-generation",
     },
-    /// Sort the generated Rust items.
+    /// Whether to sort the generated Rust items.
     sort_semantically: {
         ty: bool,
         methods: {
             /// Set whether to sort the generated Rust items in a predefined manner.
             ///
-            /// This option is disabled by default.
+            /// Items are not ordered by default. 
             pub fn sort_semantically(mut self, doit: bool) -> Self {
                 self.options.sort_semantically = doit;
                 self
@@ -1974,7 +2009,7 @@ options! {
         methods: {
             /// Merge all extern blocks under the same module into a single one.
             ///
-            /// This option is disabled by default.
+            /// Extern blocks are not merged by default. 
             pub fn merge_extern_blocks(mut self, doit: bool) -> Self {
                 self.options.merge_extern_blocks = doit;
                 self
@@ -1988,7 +2023,7 @@ options! {
         methods: {
             /// Wrap all unsafe operations in unsafe blocks.
             ///
-            /// This option is disabled by default
+            /// Unsafe operations are not wrapped by default. 
             pub fn wrap_unsafe_ops(mut self, doit: bool) -> Self {
                 self.options.wrap_unsafe_ops = doit;
                 self
@@ -2021,13 +2056,19 @@ options! {
             }
         },
     },
-    /// If true, generate function wrappers for `static` C functions.
+    /// Whether to generate wrappers for `static` functions.
     wrap_static_fns: {
         ty: bool,
         methods: {
             #[cfg(feature = "experimental")]
-            /// Whether to generate extern wrappers for `static` and `static inline` functions.
-            /// Defaults to `false`.
+            /// Set whether to generate wrappers for `static`` functions.
+            ///
+            /// Passing `true` to this method will generate a C source file with non-`static`
+            /// functions that call the `static` functions found in the input headers and can be
+            /// called from Rust once the source file is compiled.
+            ///
+            /// The path of this source file can be set using the [`Builder::wrap_static_fns_path`]
+            /// method. 
             pub fn wrap_static_fns(mut self, doit: bool) -> Self {
                 self.options.wrap_static_fns = doit;
                 self
@@ -2040,8 +2081,12 @@ options! {
         ty: Option<String>,
         methods: {
             #[cfg(feature = "experimental")]
-            /// Set the suffix added to the extern wrapper functions generated for `static` and `static
-            /// inline` functions.
+            /// Set the suffix added to the wrappers for `static` functions.
+            ///
+            /// This option only comes into effect if `true` is passed to the
+            /// [`Builder::wrap_static_fns`] method.
+            ///
+            /// The default suffix is `__extern`.
             pub fn wrap_static_fns_suffix<T: AsRef<str>>(mut self, suffix: T) -> Self {
                 self.options.wrap_static_fns_suffix = Some(suffix.as_ref().to_owned());
                 self
@@ -2049,15 +2094,22 @@ options! {
         },
         as_args: "--wrap-static-fns-suffix",
     },
-    /// The path of the file where the function wrappers for `static` functions will be emitted.
+    /// The path of the file where the wrappers for `static` functions will be emitted.
     wrap_static_fns_path: {
         ty: Option<PathBuf>,
         methods: {
             #[cfg(feature = "experimental")]
-            /// Set the path for the source code file that would be created if any wrapper functions must
-            /// be generated due to the presence of static functions.
+            /// Set the path for the source code file that would be created if any wrapper
+            /// functions must be generated due to the presence of `static` functions.
             ///
-            /// Bindgen will automatically add the right extension to the header and source code files.
+            /// `bindgen` will automatically add the right extension to the header and source code
+            /// files.
+            ///
+            /// This option only comes into effect if `true` is passed to the
+            /// [`Builder::wrap_static_fns`] method.
+            ///
+            /// The default path is `temp_dir/bindgen/extern`, where `temp_dir` is the path
+            /// returned by [`std::fs::temp_dir`] . 
             pub fn wrap_static_fns_path<T: AsRef<Path>>(mut self, path: T) -> Self {
                 self.options.wrap_static_fns_path = Some(path.as_ref().to_owned());
                 self
@@ -2065,14 +2117,15 @@ options! {
         },
         as_args: "--wrap-static-fns-path",
     },
-    /// Default visibility of structs and their fields.
+    /// Default visibility of fields.
     default_visibility: {
         ty: FieldVisibilityKind,
         methods: {
             /// Set the default visibility of fields, including bitfields and accessor methods for
             /// bitfields.
             ///
-            /// This option is ignored if the [`Builder::respect_cxx_access_specs`] method is enabled.
+            /// This option only comes into effect if the [`Builder::respect_cxx_access_specs`]
+            /// option is disabled.
             pub fn default_visibility(
                 mut self,
                 visibility: FieldVisibilityKind,
