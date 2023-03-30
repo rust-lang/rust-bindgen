@@ -1,3 +1,6 @@
+//! Declarations and setter methods for `bindgen` options.
+//!
+//! The main entry point of this module is the [`options`] macro.
 use crate::callbacks::ParseCallbacks;
 use crate::codegen::{
     AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle,
@@ -17,6 +20,10 @@ use std::env;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
+/// Helper macro to set the default value of each option.
+///
+/// This macro is an internal implementation detail of the `options` macro and should not be used
+/// directly.
 macro_rules! default {
     () => {
         Default::default()
@@ -26,6 +33,10 @@ macro_rules! default {
     };
 }
 
+/// Helper macro to set the conversion to CLI arguments for each option.
+///
+/// This macro is an internal implementation detail of the `options` macro and should not be used
+/// directly.
 macro_rules! as_args {
     ($flag:literal) => {
         |field, args| AsArgs::as_args(field, args, $flag)
@@ -35,8 +46,13 @@ macro_rules! as_args {
     };
 }
 
+/// Helper function to ignore an option when converting it into CLI arguments.
+///
+/// This function is only used inside `options` and should not be used in other contexts.
 fn ignore<T>(_: &T, _: &mut Vec<String>) {}
 
+/// Helper function that appends extra documentation to [`Builder`] methods that support regular
+/// expressions in their input. 
 macro_rules! regex_option {
     ($(#[$attrs:meta])* pub fn $($tokens:tt)*) => {
         $(#[$attrs])*
