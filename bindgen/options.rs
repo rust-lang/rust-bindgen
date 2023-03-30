@@ -51,6 +51,64 @@ macro_rules! regex_option {
     };
 }
 
+/// Macro used to generate the [`BindgenOptions`] type and the [`Builder`] setter methods for each
+/// one of the fields of `BindgenOptions`.
+///
+/// The input format of this macro resembles a `struct` pattern. Each field of the `BindgenOptions`
+/// type is declared using 4 items:
+///
+/// - `ty`: The type of the field.
+/// - `default`: The default value for the field. If this item is omitted, `Default::default()` is
+/// used instead, meaning that the type of the field must implement `Default`.
+/// - `methods`: A block of code containing methods for the `Builder` type. These methods should be
+/// related to the field being declared.
+/// - `as_args`: This item declares how the field should be converted into a valid CLI argument for
+/// `bindgen` and is used in the [`Builder::command_line_flags`] method which is used to do a
+/// roundtrip test of the CLI args in the `bindgen-test` crate. This item can take one of the
+/// following:
+///   - A string literal with the flag if the type of the field implements the [`AsArgs`] trait.
+///   - A closure with the signature `|field, args: &mut Vec<String>| -> ()` that pushes arguments
+///   into the `args` buffer based on the value of the field. This is used if the field does not
+///   implement `AsArgs` or if the implementation of the trait is not logically correct for the
+///   option and a custom behavior must be taken into account.
+///   - The `ignore` literal, which does not emit any CLI arguments for this field. This is useful
+///   if the field cannot be used from the `bindgen` CLI.
+/// ```
+///
+/// As an example, this would be the declaration of a `bool` field called `be_fun` whose default
+/// value is `false` (the `Default` value for `bool`):
+/// ```rust,ignore
+/// be_fun: {
+///    ty: bool,
+///    methods: {
+///        /// Ask bindgen to be fun. This option is disabled by default.
+///        fn be_fun(mut self, doit: bool) -> Self {
+///            self.options.be_fun = doit;
+///            self
+///        }
+///    },
+///    as_args: "--be-fun",
+/// }
+/// ```
+///
+/// However, we could also set the `be_fun` field to `true` by default and use a `--not-fun` flag
+/// instead. This means that we have to add the `default` item and use a closure in the `as_args`
+/// item:
+/// ```rust,ignore
+/// be_fun: {
+///    ty: bool,
+///    default: true,
+///    methods: {
+///        /// Ask bindgen to be fun. This option is enabled by default.
+///        fn be_fun(mut self, doit: bool) -> Self {
+///            self.options.be_fun = doit;
+///            self
+///        }
+///    },
+///    as_args: |be_fun, args| (!be_fun).as_args(args, "--not-fun"),
+/// }
+/// ```
+/// More complex examples can be found in the sole invocation of this macro.
 macro_rules! options {
     ($(
         $(#[doc = $docs:literal])+
