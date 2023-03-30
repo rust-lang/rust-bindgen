@@ -38,7 +38,7 @@ macro_rules! regex_option {
     ($(#[$attrs:meta])* pub fn $($tokens:tt)*) => {
         $(#[$attrs])*
         ///
-        /// Regular expressions are supported. To match any items that starts with `prefix` use the
+        /// Regular expressions are supported. To match any items that start with `prefix` use the
         /// `"prefix.*"` regular expression. 
         ///
         /// Check the [regular expression arguments](./struct.Builder.html#regular-expression-arguments)
