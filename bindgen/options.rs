@@ -17,14 +17,6 @@ use std::env;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
-fn bool_as_arg(value: bool, args: &mut Vec<String>, flag: &str) {
-    if value {
-        args.push(flag.to_owned());
-    }
-}
-
-fn ignore<T>(_: &T, _: &mut Vec<String>) {}
-
 macro_rules! default {
     () => {
         Default::default()
@@ -34,12 +26,23 @@ macro_rules! default {
     };
 }
 
+macro_rules! as_args {
+    ($flag:literal) => {
+        |field, args| AsArgs::as_args(field, args, $flag)
+    };
+    ($expr:expr) => {
+        $expr
+    };
+}
+
+fn ignore<T>(_: &T, _: &mut Vec<String>) {}
+
 macro_rules! regex_option {
     ($(#[$attrs:meta])* pub fn $($tokens:tt)*) => {
         $(#[$attrs])*
         ///
         /// Regular expressions are supported. To match any items that start with `prefix` use the
-        /// `"prefix.*"` regular expression. 
+        /// `"prefix.*"` regular expression.
         ///
         /// Check the [regular expression arguments](./struct.Builder.html#regular-expression-arguments)
         /// section and the [regex](https://docs.rs/regex) crate documentation for further
@@ -55,7 +58,7 @@ macro_rules! options {
             ty: $ty:ty,
             $(default: $default:expr,)?
             methods: {$($methods_tokens:tt)*}$(,)?
-            as_args: $func:expr$(,)?
+            as_args: $as_args:expr$(,)?
         }$(,)?
     )*) => {
         #[derive(Debug, Clone)]
@@ -87,7 +90,7 @@ macro_rules! options {
 
                 $({
                     eprintln!("doing {}", stringify!($field));
-                    let func: fn(&$ty, &mut Vec<String>) = $func;
+                    let func: fn(&$ty, &mut Vec<String>) = as_args!($as_args);
                     func(&self.options.$field, &mut args);
                 })*
 
@@ -132,7 +135,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--blocklist-type"),
+        as_args: "--blocklist-type",
     },
     /// The set of functions that have been blocklisted and should not appear in the generated
     /// code.
@@ -151,7 +154,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--blocklist-function"),
+        as_args: "--blocklist-function",
     },
     /// The set of items that have been blocklisted and should not appear in the generated code.
     blocklisted_items: {
@@ -166,7 +169,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--blocklist-item"),
+        as_args: "--blocklist-item",
     },
     /// The set of files whose contents should be blocklisted and should not appear in the
     /// generated code.
@@ -182,7 +185,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--blocklist-file"),
+        as_args: "--blocklist-file",
     },
     /// The set of types that should be treated as opaque structures in the generated code.
     opaque_types: {
@@ -196,7 +199,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--opaque-type"),
+        as_args: "--opaque-type",
     },
     /// The explicit rustfmt path.
     rustfmt_path: {
@@ -256,7 +259,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--allowlist-type"),
+        as_args: "--allowlist-type",
     },
    /// Allowlisted functions. See docs for `allowlisted_types` for more.
     allowlisted_functions: {
@@ -275,7 +278,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--allowlist-function"),
+        as_args: "--allowlist-function",
     },
     /// Allowlisted variables. See docs for `allowlisted_types` for more.
     allowlisted_vars: {
@@ -290,7 +293,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--allowlist-var"),
+        as_args: "--allowlist-var",
     },
     /// The set of files whose contents should be allowlisted.
     allowlisted_files: {
@@ -304,7 +307,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--allowlist-file"),
+        as_args: "--allowlist-file",
     },
     /// The default style of code to generate for `enum`s.
     default_enum_style: {
@@ -349,7 +352,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--bitfield-enum"),
+        as_args: "--bitfield-enum",
     },
     /// The `enum` patterns to mark an `enum` as a newtype.
     newtype_enums: {
@@ -363,7 +366,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--newtype-enum"),
+        as_args: "--newtype-enum",
     },
     /// The `enum` patterns to mark an `enum` as a global newtype.
     newtype_global_enums: {
@@ -378,7 +381,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--newtype-global-enum"),
+        as_args: "--newtype-global-enum",
     },
     /// The `enum` patterns to mark an `enum` as a Rust enum.
     rustified_enums: {
@@ -397,7 +400,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--rustified-enum"),
+        as_args: "--rustified-enum",
     },
     /// The `enum` patterns to mark an `enum` as a non-exhaustive Rust `enum`.
     rustified_non_exhaustive_enums: {
@@ -413,7 +416,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--rustified-non-exhaustive-enums"),
+        as_args: "--rustified-non-exhaustive-enums",
     },
     /// The `enum` patterns to mark an `enum` as a module of constants.
     constified_enum_modules: {
@@ -430,7 +433,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--constified-enum-module"),
+        as_args: "--constified-enum-module",
     },
     /// The `enum` patterns to mark an `enum` as a set of constants.
     constified_enums: {
@@ -447,7 +450,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--constified-enum"),
+        as_args: "--constified-enum",
     },
     /// The default type signedness for C macro constants.
     default_macro_constant_type: {
@@ -513,7 +516,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--type-alias"),
+        as_args: "--type-alias",
     },
     /// `typedef` patterns that will be aliased by creating a new `struct`.
     new_type_alias: {
@@ -530,7 +533,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--new-type-alias"),
+        as_args: "--new-type-alias",
     },
     /// `typedef` patterns that will be wrapped in a new `struct` and implement `Deref` and
     /// `DerefMut`.
@@ -547,7 +550,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--new-type-alias-deref"),
+        as_args: "--new-type-alias-deref",
     },
     /// The default style of code to generate for `union`s containing non-`Copy` members.
     default_non_copy_union_style: {
@@ -582,7 +585,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--bindgen-wrapper-union"),
+        as_args: "--bindgen-wrapper-union",
     },
     /// The patterns marking non-`Copy` `union`s as using the `::core::mem::ManuallyDrop` wrapper.
     manually_drop_union: {
@@ -601,7 +604,7 @@ options! {
             }
 
         },
-        as_args: |set, args| set.as_args(args, "--manually-drop-union"),
+        as_args: "--manually-drop-union",
     },
 
 
@@ -618,7 +621,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--builtins"),
+        as_args: "--builtins",
     },
     /// Whether we should dump the Clang AST for debugging purposes.
     emit_ast: {
@@ -632,7 +635,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--emit-clang-ast"),
+        as_args: "--emit-clang-ast",
     },
     /// Whether we should dump our IR for debugging purposes.
     emit_ir: {
@@ -646,7 +649,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--emit-ir"),
+        as_args: "--emit-ir",
     },
     /// Output path for the graphviz dot file.
     emit_ir_graphviz: {
@@ -662,12 +665,7 @@ options! {
                 self
             }
         },
-        as_args: |path, args| {
-            if let Some(path) = path {
-                args.push("--emit-ir-graphviz".to_owned());
-                args.push(path.clone());
-            }
-        },
+        as_args: "--emit-ir-graphviz",
     },
 
     /// Whether we should emulate C++ namespaces with Rust modules.
@@ -682,7 +680,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--enable-cxx-namespaces"),
+        as_args: "--enable-cxx-namespaces",
     },
     /// Whether we should try to find unexposed attributes in functions.
     enable_function_attribute_detection: {
@@ -706,7 +704,7 @@ options! {
             }
 
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--enable-function-attribute-detection"),
+        as_args: "--enable-function-attribute-detection",
     },
     /// Whether we should avoid mangling names with namespaces.
     disable_name_namespacing: {
@@ -725,7 +723,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--disable-name-namespacing"),
+        as_args: "--disable-name-namespacing",
     },
     /// Whether we should avoid generating nested `struct` names.
     disable_nested_struct_naming: {
@@ -753,7 +751,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--disable-nested-struct-naming"),
+        as_args: "--disable-nested-struct-naming",
     },
     /// Whether we should avoid embedding version identifiers into source code.
     disable_header_comment: {
@@ -766,7 +764,7 @@ options! {
             }
 
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--disable-header-comment"),
+        as_args: "--disable-header-comment",
     },
     /// Whether we should generate layout tests for generated `struct`s.
     layout_tests: {
@@ -781,7 +779,7 @@ options! {
                 self
             }
         },
-        as_args: |value, args| bool_as_arg(!value, args, "--no-layout-tests"),
+        as_args: |value, args| (!value).as_args(args, "--no-layout-tests"),
     },
     /// Whether we should implement `Debug` for types that cannot derive it.
     impl_debug: {
@@ -796,7 +794,7 @@ options! {
             }
 
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--impl-debug"),
+        as_args: "--impl-debug",
     },
     /// Whether we should implement `PartialEq` types that cannot derive it.
     impl_partialeq: {
@@ -810,7 +808,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--impl-partialeq"),
+        as_args: "--impl-partialeq",
     },
     /// Whether we should derive `Copy` when possible.
     derive_copy: {
@@ -825,7 +823,7 @@ options! {
                 self
             }
         },
-        as_args: |value, args| bool_as_arg(!value, args, "--no-derive-copy"),
+        as_args: |value, args| (!value).as_args(args, "--no-derive-copy"),
     },
 
     /// Whether we should derive `Debug` when possible.
@@ -841,7 +839,7 @@ options! {
                 self
             }
         },
-        as_args: |value, args| bool_as_arg(!value, args, "--no-derive-debug"),
+        as_args: |value, args| (!value).as_args(args, "--no-derive-debug"),
     },
 
     /// Whether we should derive `Default` when possible.
@@ -878,7 +876,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--with-derive-hash"),
+        as_args: "--with-derive-hash",
     },
     /// Whether we should derive `PartialOrd` when possible.
     derive_partialord: {
@@ -899,7 +897,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--with-derive-partialord"),
+        as_args: "--with-derive-partialord",
     },
     /// Whether we should derive `Ord` when possible.
     derive_ord: {
@@ -918,7 +916,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--with-derive-ord"),
+        as_args: "--with-derive-ord",
     },
     /// Whether we should derive `PartialEq` when possible.
     derive_partialeq: {
@@ -939,7 +937,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--with-derive-partialeq"),
+        as_args: "--with-derive-partialeq",
     },
     /// Whether we should derive `Eq` when possible.
     derive_eq: {
@@ -960,7 +958,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--with-derive-eq"),
+        as_args: "--with-derive-eq",
     },
     /// Whether we should use `core` instead of `std`.
     ///
@@ -978,7 +976,7 @@ options! {
             }
 
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--use-core"),
+        as_args: "--use-core",
     },
     /// An optional prefix for the C platform-specific types.
     ctypes_prefix: {
@@ -992,12 +990,7 @@ options! {
                 self
             }
         },
-        as_args: |prefix, args| {
-            if let Some(prefix) = prefix {
-                args.push("--ctypes-prefix".to_owned());
-                args.push(prefix.clone());
-            }
-        },
+        as_args: "--ctypes-prefix",
     },
     /// The prefix for anonymous fields.
     anon_fields_prefix: {
@@ -1045,7 +1038,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--time-phases"),
+        as_args: "--time-phases",
     },
     /// Whether to convert C float types to `f32` and `f64`.
     convert_floats: {
@@ -1058,7 +1051,7 @@ options! {
                 self
             }
         },
-        as_args: |value, args| bool_as_arg(!value, args, "--no-convert-floats"),
+        as_args: |value, args| (!value).as_args(args, "--no-convert-floats"),
     },
     /// The set of raw lines to be prepended to the top-level module of the generated Rust code.
     raw_lines: {
@@ -1319,7 +1312,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--conservative-inline-namespaces"),
+        as_args: "--conservative-inline-namespaces",
     },
     /// Whether to keep documentation comments in the generated output.
     generate_comments: {
@@ -1342,7 +1335,7 @@ options! {
                 self
             }
         },
-        as_args: |value, args| bool_as_arg(!value, args, "--no-doc-comments"),
+        as_args: |value, args| (!value).as_args(args, "--no-doc-comments"),
     },
     /// Whether to generate inline functions.
     generate_inline_functions: {
@@ -1360,7 +1353,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--generate-inline-functions"),
+        as_args: "--generate-inline-functions",
     },
     /// Whether to allowlist types recursively.
     allowlist_recursively: {
@@ -1400,7 +1393,7 @@ options! {
                 self
             }
         },
-        as_args: |value, args| bool_as_arg(!value, args, "--no-recursive-allowlist"),
+        as_args: |value, args| (!value).as_args(args, "--no-recursive-allowlist"),
     },
     /// Instead of emitting 'use objc;' to files generated from objective c files,
     /// generate '#[macro_use] extern crate objc;'
@@ -1416,7 +1409,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--objc-extern-crate"),
+        as_args: "--objc-extern-crate",
     },
     /// Whether to generate proper block signatures instead of void pointers.
     generate_block: {
@@ -1430,7 +1423,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--generate-block"),
+        as_args: "--generate-block",
     },
     /// Instead of emitting 'use block;' to files generated from objective c files,
     /// generate '#[macro_use] extern crate block;'
@@ -1446,7 +1439,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--block-extern-crate"),
+        as_args: "--block-extern-crate",
     },
     /// Whether to use the clang-provided name mangling.
     enable_mangling: {
@@ -1467,7 +1460,7 @@ options! {
             }
 
         },
-        as_args: |value, args| bool_as_arg(!value, args, "--distrust-clang-mangling"),
+        as_args: |value, args| (!value).as_args(args, "--distrust-clang-mangling"),
     },
     /// Whether to detect include paths using `clang_sys`.
     detect_include_paths: {
@@ -1482,7 +1475,7 @@ options! {
                 self
             }
         },
-        as_args: |value, args| bool_as_arg(!value, args, "--no-include-path-detection"),
+        as_args: |value, args| (!value).as_args(args, "--no-include-path-detection"),
     },
     /// Whether to try to fit macro constants into types smaller than `u32` and `i32`.
     fit_macro_constants: {
@@ -1496,7 +1489,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--fit-macro-constant-types"),
+        as_args: "--fit-macro-constant-types",
     },
     /// Whether to prepend the enum name to constant or newtype variants.
     prepend_enum_name: {
@@ -1511,7 +1504,7 @@ options! {
                 self
             }
         },
-        as_args: |value, args| bool_as_arg(!value, args, "--no-prepend-enum-name"),
+        as_args: |value, args| (!value).as_args(args, "--no-prepend-enum-name"),
     },
     /// Version of the Rust compiler to target.
     rust_target: {
@@ -1574,7 +1567,7 @@ options! {
             }
 
         },
-        as_args: |value, args| bool_as_arg(!value, args, "--no-record-matches"),
+        as_args: |value, args| (!value).as_args(args, "--no-record-matches"),
     },
     /// Whether `size_t` should be translated to `usize` automatically.
     size_t_is_usize: {
@@ -1589,7 +1582,7 @@ options! {
                 self
             }
         },
-        as_args: |value, args| bool_as_arg(!value, args, "--no-size_t-is-usize"),
+        as_args: |value, args| (!value).as_args(args, "--no-size_t-is-usize"),
     },
     /// The tool that should be used to format the generated bindings.
     formatter: {
@@ -1646,12 +1639,7 @@ options! {
                 self
             }
         },
-        as_args: |path, args| {
-            if let Some(path) = path {
-                args.push("--rustfmt-configuration-file".to_owned());
-                args.push(path.display().to_string());
-            }
-        },
+        as_args: "--rustfmt-configuration-file",
     },
     /// The set of types that should not derive `PartialEq`.
     no_partialeq_types: {
@@ -1665,7 +1653,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--no-partialeq"),
+        as_args: "--no-partialeq",
     },
     /// The set of types that should not derive `Copy`.
     no_copy_types: {
@@ -1679,7 +1667,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--no-copy"),
+        as_args: "--no-copy",
     },
     /// The set of types that should not derive `Debug`.
     no_debug_types: {
@@ -1693,7 +1681,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--no-debug"),
+        as_args: "--no-debug",
     },
     /// The set of types that should not derive or implement `Default`.
     no_default_types: {
@@ -1707,7 +1695,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--no-default"),
+        as_args: "--no-default",
     },
     /// The set of types that should not derive `Hash`.
     no_hash_types: {
@@ -1721,7 +1709,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--no-hash"),
+        as_args: "--no-hash",
     },
     /// The set of types that should be annotated with `#[must_use]`.
     must_use_types: {
@@ -1735,7 +1723,7 @@ options! {
                 }
             }
         },
-        as_args: |set, args| set.as_args(args, "--must-use-type"),
+        as_args: "--must-use-type",
     },
     /// Decide if C arrays should be regular pointers in rust or array pointers
     array_pointers_in_arguments: {
@@ -1750,7 +1738,7 @@ options! {
             }
 
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--use-array-pointers-in-arguments"),
+        as_args: "--use-array-pointers-in-arguments",
     },
     /// Wasm import module name.
     wasm_import_module_name: {
@@ -1768,12 +1756,7 @@ options! {
                 self
             }
         },
-        as_args: |name, args| {
-            if let Some(ref name) = name {
-                args.push("--wasm-import-module-name".to_owned());
-                args.push(name.clone());
-            }
-        },
+        as_args: "--wasm-import-module-name",
     },
     /// The name of the dynamic library (if we are generating bindings for a shared library).
     dynamic_library_name: {
@@ -1790,12 +1773,7 @@ options! {
                 self
             }
         },
-        as_args: |name, args| {
-            if let Some(ref name) = name {
-                args.push("--dynamic-loading".to_owned());
-                args.push(name.clone());
-            }
-        },
+        as_args: "--dynamic-loading",
     },
     /// Require successful linkage for all routines in a shared library.
     dynamic_link_require_all: {
@@ -1813,7 +1791,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--dynamic-link-require-all"),
+        as_args: "--dynamic-link-require-all",
     },
     /// Only make generated bindings `pub` if the items would be publically accessible by C++.
     respect_cxx_access_specs: {
@@ -1829,7 +1807,7 @@ options! {
             }
 
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--respect-cxx-access-specs"),
+        as_args: "--respect-cxx-access-specs",
     },
     /// Always translate `enum` integer types to native Rust integer types.
     translate_enum_integer_types: {
@@ -1847,7 +1825,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--translate-enum-integer-types"),
+        as_args: "--translate-enum-integer-types",
     },
     /// Generate types with C style naming.
     c_naming: {
@@ -1865,7 +1843,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--c-naming"),
+        as_args: "--c-naming",
     },
     /// Always output explicit padding fields
     force_explicit_padding: {
@@ -1884,7 +1862,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--explicit-padding"),
+        as_args: "--explicit-padding",
     },
     /// Emit vtable functions.
     vtable_generation: {
@@ -1900,7 +1878,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--vtable-generation"),
+        as_args: "--vtable-generation",
     },
     /// Sort the generated Rust items.
     sort_semantically: {
@@ -1914,7 +1892,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--sort-semantically"),
+        as_args: "--sort-semantically",
     },
     /// Whether to deduplicate `extern` blocks.
     merge_extern_blocks: {
@@ -1928,7 +1906,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--merge-extern-blocks"),
+        as_args: "--merge-extern-blocks",
     },
     /// Whether to wrap unsafe operations in unsafe blocks.
     wrap_unsafe_ops: {
@@ -1942,7 +1920,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--wrap-unsafe-ops"),
+        as_args: "--wrap-unsafe-ops",
     },
     /// Patterns for functions whose ABI should be overriden.
     abi_overrides: {
@@ -1981,7 +1959,7 @@ options! {
                 self
             }
         },
-        as_args: |&value, args| bool_as_arg(value, args, "--wrap-static-fns"),
+        as_args: "--wrap-static-fns",
     },
     /// The suffix to be added to the function wrappers for `static` functions.
     wrap_static_fns_suffix: {
@@ -1995,12 +1973,7 @@ options! {
                 self
             }
         },
-        as_args: |suffix, args| {
-            if let Some(suffix) = suffix {
-                args.push("--wrap-static-fns-suffix".to_owned());
-                args.push(suffix.clone());
-            }
-        },
+        as_args: "--wrap-static-fns-suffix",
     },
     /// The path of the file where the function wrappers for `static` functions will be emitted.
     wrap_static_fns_path: {
@@ -2016,12 +1989,7 @@ options! {
                 self
             }
         },
-        as_args: |path, args| {
-            if let Some(path) = path {
-                args.push("--wrap-static-fns-path".to_owned());
-                args.push(path.display().to_string());
-            }
-        },
+        as_args: "--wrap-static-fns-path",
     },
     /// Default visibility of structs and their fields.
     default_visibility: {
@@ -2046,4 +2014,53 @@ options! {
             }
         },
     },
+}
+
+/// Trait used to turn [`BindgenOptions`] fields into CLI args.
+trait AsArgs {
+    fn as_args(&self, args: &mut Vec<String>, flag: &str);
+}
+
+/// If the `bool` is `true`, `flag` is pushed into `args`.
+///
+/// be careful about the truth value of the field as some options, like `--no-layout-tests`, are
+/// actually negations of the fields.
+impl AsArgs for bool {
+    fn as_args(&self, args: &mut Vec<String>, flag: &str) {
+        if *self {
+            args.push(flag.to_string());
+        }
+    }
+}
+
+/// Iterate over all the items of the `RegexSet` and push `flag` followed by the item into `args`
+/// for each item.
+impl AsArgs for RegexSet {
+    fn as_args(&self, args: &mut Vec<String>, flag: &str) {
+        for item in self.get_items() {
+            args.extend_from_slice(&[flag.to_owned(), item.clone()]);
+        }
+    }
+}
+
+/// If the `Option` is `Some(value)`, push `flag` followed by `value`.
+impl AsArgs for Option<String> {
+    fn as_args(&self, args: &mut Vec<String>, flag: &str) {
+        if let Some(string) = self {
+            args.extend_from_slice(&[flag.to_owned(), string.clone()]);
+        }
+    }
+}
+
+/// If the `Option` is `Some(path)`, push `flag` followed by the [`PathBuf::display`]
+/// representation of `path`.
+impl AsArgs for Option<PathBuf> {
+    fn as_args(&self, args: &mut Vec<String>, flag: &str) {
+        if let Some(path) = self {
+            args.extend_from_slice(&[
+                flag.to_owned(),
+                path.display().to_string(),
+            ]);
+        }
+    }
 }
