@@ -1055,7 +1055,7 @@ where
     }
 
     if emit_diagnostics {
-        builder = builder.emit_diagnostics(true);
+        builder = builder.emit_diagnostics();
     }
 
     Ok((builder, output, verbose))

@@ -2019,9 +2019,9 @@ impl Builder {
     }
 
     #[cfg(feature = "experimental")]
-    /// Whether to emit diagnostics or not.
-    pub fn emit_diagnostics(mut self, doit: bool) -> Self {
-        self.options.emit_diagnostics = doit;
+    /// Enable diagnostic emission.
+    pub fn emit_diagnostics(mut self) -> Self {
+        self.options.emit_diagnostics = true;
         self
     }
 }
