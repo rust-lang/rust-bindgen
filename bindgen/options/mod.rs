@@ -1,6 +1,10 @@
 //! Declarations and setter methods for `bindgen` options.
 //!
 //! The main entry point of this module is the [`options`] macro.
+#[macro_use]
+mod helpers;
+mod as_args;
+
 use crate::callbacks::ParseCallbacks;
 use crate::codegen::{
     AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle,
@@ -20,52 +24,8 @@ use std::env;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
-/// Helper macro to set the default value of each option.
-///
-/// This macro is an internal implementation detail of the `options` macro and should not be used
-/// directly.
-macro_rules! default {
-    () => {
-        Default::default()
-    };
-    ($expr:expr) => {
-        $expr
-    };
-}
-
-/// Helper macro to set the conversion to CLI arguments for each option.
-///
-/// This macro is an internal implementation detail of the `options` macro and should not be used
-/// directly.
-macro_rules! as_args {
-    ($flag:literal) => {
-        |field, args| AsArgs::as_args(field, args, $flag)
-    };
-    ($expr:expr) => {
-        $expr
-    };
-}
-
-/// Helper function to ignore an option when converting it into CLI arguments.
-///
-/// This function is only used inside `options` and should not be used in other contexts.
-fn ignore<T>(_: &T, _: &mut Vec<String>) {}
-
-/// Helper function that appends extra documentation to [`Builder`] methods that support regular
-/// expressions in their input.
-macro_rules! regex_option {
-    ($(#[$attrs:meta])* pub fn $($tokens:tt)*) => {
-        $(#[$attrs])*
-        ///
-        /// Regular expressions are supported. To match any items that start with `prefix` use the
-        /// `"prefix.*"` regular expression.
-        ///
-        /// Check the [regular expression arguments](./struct.Builder.html#regular-expression-arguments)
-        /// section and the [regex](https://docs.rs/regex) crate documentation for further
-        /// information.
-        pub fn $($tokens)*
-    };
-}
+use helpers::ignore;
+use as_args::AsArgs;
 
 /// Macro used to generate the [`BindgenOptions`] type and the [`Builder`] setter methods for each
 /// one of the fields of `BindgenOptions`.
@@ -2141,53 +2101,4 @@ options! {
             }
         },
     },
-}
-
-/// Trait used to turn [`BindgenOptions`] fields into CLI args.
-trait AsArgs {
-    fn as_args(&self, args: &mut Vec<String>, flag: &str);
-}
-
-/// If the `bool` is `true`, `flag` is pushed into `args`.
-///
-/// be careful about the truth value of the field as some options, like `--no-layout-tests`, are
-/// actually negations of the fields.
-impl AsArgs for bool {
-    fn as_args(&self, args: &mut Vec<String>, flag: &str) {
-        if *self {
-            args.push(flag.to_string());
-        }
-    }
-}
-
-/// Iterate over all the items of the `RegexSet` and push `flag` followed by the item into `args`
-/// for each item.
-impl AsArgs for RegexSet {
-    fn as_args(&self, args: &mut Vec<String>, flag: &str) {
-        for item in self.get_items() {
-            args.extend_from_slice(&[flag.to_owned(), item.clone()]);
-        }
-    }
-}
-
-/// If the `Option` is `Some(value)`, push `flag` followed by `value`.
-impl AsArgs for Option<String> {
-    fn as_args(&self, args: &mut Vec<String>, flag: &str) {
-        if let Some(string) = self {
-            args.extend_from_slice(&[flag.to_owned(), string.clone()]);
-        }
-    }
-}
-
-/// If the `Option` is `Some(path)`, push `flag` followed by the [`PathBuf::display`]
-/// representation of `path`.
-impl AsArgs for Option<PathBuf> {
-    fn as_args(&self, args: &mut Vec<String>, flag: &str) {
-        if let Some(path) = self {
-            args.extend_from_slice(&[
-                flag.to_owned(),
-                path.display().to_string(),
-            ]);
-        }
-    }
 }
