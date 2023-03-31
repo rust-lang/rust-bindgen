@@ -96,9 +96,9 @@ macro_rules! regex_option {
 /// be_fun: {
 ///    ty: bool,
 ///    methods: {
-///        /// Ask bindgen to be fun. This option is disabled by default.
-///        fn be_fun(mut self, doit: bool) -> Self {
-///            self.options.be_fun = doit;
+///        /// Ask `bindgen` to be fun. This option is disabled by default.
+///        fn be_fun(mut self) -> Self {
+///            self.options.be_fun = true;
 ///            self
 ///        }
 ///    },
@@ -114,9 +114,9 @@ macro_rules! regex_option {
 ///    ty: bool,
 ///    default: true,
 ///    methods: {
-///        /// Ask bindgen to be fun. This option is enabled by default.
-///        fn be_fun(mut self, doit: bool) -> Self {
-///            self.options.be_fun = doit;
+///        /// Ask `bindgen` to not be fun. `bindgen` is fun by default.
+///        fn not_fun(mut self) -> Self {
+///            self.options.be_fun = false;
 ///            self
 ///        }
 ///    },
