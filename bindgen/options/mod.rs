@@ -24,8 +24,8 @@ use std::env;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
-use helpers::ignore;
 use as_args::AsArgs;
+use helpers::ignore;
 
 /// Macro used to generate the [`BindgenOptions`] type and the [`Builder`] setter methods for each
 /// one of the fields of `BindgenOptions`.
