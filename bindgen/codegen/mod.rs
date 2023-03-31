@@ -4342,8 +4342,6 @@ fn unsupported_abi_diagnostic<const VARIADIC: bool>(
     abi: &str,
     ctx: &BindgenContext,
 ) {
-    use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
-
     warn!(
         "Skipping {}function `{}` with the {} ABI that isn't supported by the configured Rust target",
         if VARIADIC { "variadic " } else { "" },
@@ -4351,7 +4349,10 @@ fn unsupported_abi_diagnostic<const VARIADIC: bool>(
         abi
     );
 
+    #[cfg(feature = "experimental")]
     if ctx.options().emit_diagnostics {
+        use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
+
         let mut diag = Diagnostic::default();
         diag
         .with_title(format!(

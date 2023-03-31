@@ -446,12 +446,13 @@ fn duplicated_macro_diagnostic(
     location: crate::clang::SourceLocation,
     ctx: &BindgenContext,
 ) {
-    use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
-    use std::borrow::Cow;
-
     warn!("Duplicated macro definition: {}", macro_name);
 
+    #[cfg(feature = "experimental")]
     if ctx.options().emit_diagnostics {
+        use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
+        use std::borrow::Cow;
+
         let mut slice = Slice::default();
         let mut source = Cow::from(macro_name);
 

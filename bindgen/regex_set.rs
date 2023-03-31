@@ -63,7 +63,7 @@ impl RegexSet {
         self.build_inner(record_matches, None)
     }
 
-    #[cfg(feature = "__cli")]
+    #[cfg(all(feature = "__cli", feature = "experimental"))]
     /// Construct a RegexSet from the set of entries we've accumulated and emit diagnostics if the
     /// name of the regex set is passed to it.
     ///
@@ -78,7 +78,7 @@ impl RegexSet {
         self.build_inner(record_matches, name)
     }
 
-    #[cfg(not(feature = "__cli"))]
+    #[cfg(all(not(feature = "__cli"), feature = "experimental"))]
     /// Construct a RegexSet from the set of entries we've accumulated and emit diagnostics if the
     /// name of the regex set is passed to it.
     ///
@@ -105,6 +105,7 @@ impl RegexSet {
             Err(e) => {
                 warn!("Invalid regex in {:?}: {:?}", self.items, e);
                 if let Some(name) = name {
+                    #[cfg(feature = "experimental")]
                     invalid_regex_warning(self, e, name);
                 }
                 None
@@ -139,6 +140,7 @@ impl RegexSet {
     }
 }
 
+#[cfg(feature = "experimental")]
 fn invalid_regex_warning(
     set: &RegexSet,
     err: regex::Error,

@@ -21,7 +21,6 @@ use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
 use crate::clang::{self, Cursor};
 use crate::codegen::CodegenError;
-use crate::diagnostics::{Diagnostic, Level, Slice};
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 
@@ -2460,22 +2459,16 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.allowlisted = Some(allowlisted);
         self.codegen_items = Some(codegen_items);
 
-        let emit_diagnostics = self.options().emit_diagnostics;
-
         for item in self.options().allowlisted_functions.unmatched_items() {
-            unused_regex_diagnostic(
-                item,
-                "--allowlist-function",
-                emit_diagnostics,
-            );
+            unused_regex_diagnostic(item, "--allowlist-function", self);
         }
 
         for item in self.options().allowlisted_vars.unmatched_items() {
-            unused_regex_diagnostic(item, "--allowlist-var", emit_diagnostics);
+            unused_regex_diagnostic(item, "--allowlist-var", self);
         }
 
         for item in self.options().allowlisted_types.unmatched_items() {
-            unused_regex_diagnostic(item, "--allowlist-type", emit_diagnostics);
+            unused_regex_diagnostic(item, "--allowlist-type", self);
         }
     }
 
@@ -2967,9 +2960,13 @@ impl TemplateParameters for PartialType {
     }
 }
 
-fn unused_regex_diagnostic(item: &str, name: &str, emit_diagnostics: bool) {
+fn unused_regex_diagnostic(item: &str, name: &str, ctx: &BindgenContext) {
     warn!("unused option: {} {}", name, item);
-    if emit_diagnostics {
+
+    #[cfg(feature = "experimental")]
+    if ctx.options().emit_diagnostics {
+        use crate::diagnostics::{Diagnostic, Level, Slice};
+
         let mut slice = Slice::default();
         slice.with_source(item);
 

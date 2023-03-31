@@ -173,7 +173,6 @@
    `"prettyplease"` feature is enabled. 
  * Added the `--emit-diagnostics` flag to emit diagnostic messages.
 
->>>>>>> 04fba531 (Add the `--emit-diagnostics` flag)
 ## Changed
  * Static functions with no arguments use `void` as their single argument
    instead of having no arguments when the `--wrap-static-fns` flag is used.
