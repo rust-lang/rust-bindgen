@@ -248,7 +248,7 @@ options! {
         methods: {
             regex_option! {
                 /// Do not generate any bindings for the contents of the given file, regardless of
-                /// whether the contents of the file are types, functions, modules etc.
+                /// whether the contents of the file are types, functions, modules, etc.
                 pub fn blocklist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_files.insert(arg);
                     self
@@ -594,8 +594,8 @@ options! {
             regex_option! {
                 /// Mark the given `typedef` as a regular Rust `type` alias.
                 ///
-                /// This is the default behavior, meaning that this method should only be used if a
-                /// style different from [`AliasVariation::TypeAlias`] was passed to the
+                /// This is the default behavior, meaning that this method only comes into effect
+                /// if a style different from [`AliasVariation::TypeAlias`] was passed to the
                 /// [`Builder::default_alias_style`] method.
                 pub fn type_alias<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.type_alias.insert(arg);
@@ -610,7 +610,7 @@ options! {
         ty: RegexSet,
         methods: {
             regex_option! {
-                /// Mark the given `typedef` as a `Rust` new type by having the aliased
+                /// Mark the given `typedef` as a Rust newtype by having the aliased
                 /// type be wrapped in a `struct` with `#[repr(transparent)]`.
                 ///
                 /// This method can be used to enforce stricter type checking.
@@ -670,9 +670,9 @@ options! {
                 /// Mark the given `union` to use a `bindgen`-generated wrapper for its members if at
                 /// least one them is not `Copy`.
                 ///
-                /// This is the default behavior, meaning that this method should only be used if a
-                /// style different from [`NonCopyUnionStyle::BindgenWrapper`] was passed to the
-                /// [`Builder::default_non_copy_union_style`] method.
+                /// This is the default behavior, meaning that this method only comes into effect
+                /// if a style different from [`NonCopyUnionStyle::BindgenWrapper`] was passed to
+                /// the [`Builder::default_non_copy_union_style`] method.
                 pub fn bindgen_wrapper_union<T: AsRef<str>>(mut self, arg: T) -> Self {
                     self.options.bindgen_wrapper_union.insert(arg);
                     self
@@ -824,8 +824,8 @@ options! {
         methods: {
             /// Disable nested `struct` naming.
             ///
-            /// The following structs have different names for C and C++. In C, they are visible as
-            /// `foo` and `bar`. In C++, they are visible as `foo` and `foo::bar`.
+            /// The following `struct`s have different names for C and C++. In C, they are visible
+            /// as `foo` and `bar`. In C++, they are visible as `foo` and `foo::bar`.
             ///
             /// ```c
             /// struct foo {
