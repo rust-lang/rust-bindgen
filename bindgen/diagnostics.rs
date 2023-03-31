@@ -129,7 +129,10 @@ impl<'a> Diagnostic<'a> {
         let dl = DisplayList::from(snippet);
 
         if INVOKED_BY_BUILD_SCRIPT.with(Clone::clone) {
-            println!("cargo:warning={}\n", dl);
+            let string = dl.to_string();
+            for line in string.lines() {
+                println!("cargo:warning={}\n", line);
+            }
         } else {
             eprintln!("{}\n", dl);
         }
