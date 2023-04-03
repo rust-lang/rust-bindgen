@@ -42,6 +42,8 @@ mod time;
 pub mod callbacks;
 
 mod clang;
+#[cfg(feature = "experimental")]
+mod diagnostics;
 mod features;
 mod ir;
 mod parse;
@@ -404,7 +406,10 @@ impl Builder {
 
 impl BindgenOptions {
     fn build(&mut self) {
-        let regex_sets = [
+        const REGEX_SETS_LEN: usize = 27;
+        let sets_len = REGEX_SETS_LEN + self.abi_overrides.len();
+
+        let regex_sets: [_; REGEX_SETS_LEN] = [
             &mut self.allowlisted_vars,
             &mut self.allowlisted_types,
             &mut self.allowlisted_functions,
@@ -433,9 +438,62 @@ impl BindgenOptions {
             &mut self.no_hash_types,
             &mut self.must_use_types,
         ];
+
         let record_matches = self.record_matches;
+        #[cfg(feature = "experimental")]
+        {
+            let names = if self.emit_diagnostics {
+                <[&str; 27]>::into_iter([
+                    "--blocklist-type",
+                    "--blocklist-function",
+                    "--blocklist-item",
+                    "--blocklist-file",
+                    "--opaque-type",
+                    "--allowlist-type",
+                    "--allowlist-function",
+                    "--allowlist-var",
+                    "--allowlist-file",
+                    "--bitfield-enum",
+                    "--newtype-enum",
+                    "--newtype-global-enum",
+                    "--rustified-enum",
+                    "--rustified-enum-non-exhaustive",
+                    "--constified-enum-module",
+                    "--constified-enum",
+                    "--type-alias",
+                    "--new-type-alias",
+                    "--new-type-alias-deref",
+                    "--bindgen-wrapper-union",
+                    "--manually-drop-union",
+                    "--no-partialeq",
+                    "--no-copy",
+                    "--no-debug",
+                    "--no-default",
+                    "--no-hash",
+                    "--must-use",
+                ])
+                .chain((0..self.abi_overrides.len()).map(|_| "--override-abi"))
+                .map(Some)
+                .collect()
+            } else {
+                vec![None; sets_len]
+            };
+
+            for (regex_set, name) in
+                self.abi_overrides.values_mut().chain(regex_sets).zip(names)
+            {
+                regex_set.build_with_diagnostics(record_matches, name);
+            }
+        }
+        #[cfg(not(feature = "experimental"))]
         for regex_set in self.abi_overrides.values_mut().chain(regex_sets) {
             regex_set.build(record_matches);
+        }
+
+        let rust_target = self.rust_target;
+        #[allow(deprecated)]
+        if rust_target <= RustTarget::Stable_1_30 {
+            deprecated_target_diagnostic(rust_target, self);
         }
     }
 
@@ -478,6 +536,28 @@ impl BindgenOptions {
             .last()
             .and_then(|cb| cb.process_comment(&comment))
             .unwrap_or(comment)
+    }
+}
+
+fn deprecated_target_diagnostic(target: RustTarget, options: &BindgenOptions) {
+    let target = String::from(target);
+    warn!("The {} Rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues", target,);
+
+    #[cfg(feature = "experimental")]
+    if options.emit_diagnostics {
+        use crate::diagnostics::{Diagnostic, Level};
+
+        let mut diagnostic = Diagnostic::default();
+        diagnostic.with_title(
+            format!("The {} Rust target is deprecated.", target),
+            Level::Warn,
+        );
+        diagnostic.add_annotation(
+            "This Rust target was passed as an argument to `--rust-target`",
+            Level::Info,
+        );
+        diagnostic.add_annotation("If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues", Level::Help);
+        diagnostic.display();
     }
 }
 
@@ -551,7 +631,6 @@ impl std::error::Error for BindgenError {}
 #[derive(Debug)]
 pub struct Bindings {
     options: BindgenOptions,
-    warnings: Vec<String>,
     module: proc_macro2::TokenStream,
 }
 
@@ -776,14 +855,10 @@ impl Bindings {
             parse(&mut context)?;
         }
 
-        let (module, options, warnings) =
+        let (module, options) =
             codegen::codegen(context).map_err(BindgenError::Codegen)?;
 
-        Ok(Bindings {
-            options,
-            warnings,
-            module,
-        })
+        Ok(Bindings { options, module })
     }
 
     /// Write these bindings as source text to a file.
@@ -917,7 +992,10 @@ impl Bindings {
                     "Rustfmt parsing errors.".to_string(),
                 )),
                 Some(3) => {
-                    warn!("Rustfmt could not format some lines.");
+                    rustfmt_non_fatal_error_diagnostic(
+                        "Rustfmt could not format some lines",
+                        &self.options,
+                    );
                     Ok(bindings)
                 }
                 _ => Err(io::Error::new(
@@ -928,22 +1006,22 @@ impl Bindings {
             _ => Ok(source),
         }
     }
+}
 
-    /// Emit all the warning messages raised while generating the bindings in a build script.
-    ///
-    /// If you are using `bindgen` outside of a build script you should use [`Bindings::warnings`]
-    /// and handle the messages accordingly instead.
-    #[inline]
-    pub fn emit_warnings(&self) {
-        for message in &self.warnings {
-            println!("cargo:warning={}", message);
-        }
-    }
+fn rustfmt_non_fatal_error_diagnostic(msg: &str, options: &BindgenOptions) {
+    warn!("{}", msg);
 
-    /// Return all the warning messages raised while generating the bindings.
-    #[inline]
-    pub fn warnings(&self) -> &[String] {
-        &self.warnings
+    #[cfg(feature = "experimental")]
+    if options.emit_diagnostics {
+        use crate::diagnostics::{Diagnostic, Level};
+
+        Diagnostic::default()
+            .with_title(msg, Level::Warn)
+            .add_annotation(
+                "The bindings will be generated but not formatted",
+                Level::Note,
+            )
+            .display();
     }
 }
 
