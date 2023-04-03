@@ -171,7 +171,8 @@
    which tool will be used to format the bindings. The
    `Formatter::Prettyplease`   variant is only available if the
    `"prettyplease"` feature is enabled. 
- * Added the `--emit-diagnostics` flag to emit diagnostic messages.
+ * Added the `Builder::emit_diagnostics` method and the  `--emit-diagnostics`
+   flag to enable emission of diagnostic messages.
 
 ## Changed
  * Static functions with no arguments use `void` as their single argument
