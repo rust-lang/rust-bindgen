@@ -480,9 +480,9 @@ fn duplicated_macro_diagnostic(
         slice.with_source(source);
 
         Diagnostic::default()
-            .with_title("Duplicated macro definition", Level::Warn)
+            .with_title("Duplicated macro definition.", Level::Warn)
             .add_slice(slice)
-            .add_annotation("This macro had a duplicate", Level::Note)
+            .add_annotation("This macro had a duplicate.", Level::Note)
             .display();
     }
 }

@@ -131,6 +131,7 @@ impl<'a> Diagnostic<'a> {
         if INVOKED_BY_BUILD_SCRIPT.with(Clone::clone) {
             // This is just a hack which hides the `warning:` added by cargo at the beginning of
             // every line. This should be fine as our diagnostics already have a colorful title.
+            // FIXME (pvdrz): Could it be that this doesn't work in other languages?
             let hide_warning = "\r        \r";
             let string = dl.to_string();
             for line in string.lines() {

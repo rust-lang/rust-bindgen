@@ -4356,7 +4356,7 @@ fn unsupported_abi_diagnostic<const VARIADIC: bool>(
         let mut diag = Diagnostic::default();
         diag
         .with_title(format!(
-                "The `{}` {}function uses the {} ABI which is not supported by the configured Rust target",
+                "The `{}` {}function uses the {} ABI which is not supported by the configured Rust target.",
                 fn_name,
                 if VARIADIC { "variadic " } else { "" },
                 abi), Level::Warn)
