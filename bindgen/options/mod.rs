@@ -2102,7 +2102,7 @@ options! {
             /// Emit diagnostics.
             ///
             /// These diagnostics are emitted to `stderr` if you are using `bindgen-cli` or printed
-            /// using `cargo:warning=` if you are using `bindgen` as a `build-dependency`. 
+            /// using `cargo:warning=` if you are using `bindgen` as a `build-dependency`.
             ///
             /// Diagnostics are not emitted by default.
             ///
