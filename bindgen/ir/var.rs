@@ -449,7 +449,19 @@ fn duplicated_macro_diagnostic(
     warn!("Duplicated macro definition: {}", macro_name);
 
     #[cfg(feature = "experimental")]
-    if ctx.options().emit_diagnostics {
+    // FIXME (pvdrz & amanjeev): This diagnostic message shows way too often to be actually
+    // useful. We have to change the logic where this function is called to be able to emit this
+    // message only when the duplication is an actuall issue.
+    //
+    // If I understood correctly, `bindgen` ignores all `#undef` directives. Meaning that this:
+    // ```c
+    // #define FOO 1
+    // #undef FOO
+    // #define FOO 2
+    // ```
+    //
+    // Will trigger this message even though there's nothing wrong with it.
+    if false && ctx.options().emit_diagnostics {
         use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
         use std::borrow::Cow;
 
