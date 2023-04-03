@@ -2100,6 +2100,14 @@ options! {
         methods: {
             #[cfg(feature = "experimental")]
             /// Emit diagnostics.
+            ///
+            /// These diagnostics are emitted to `stderr` if you are using `bindgen-cli` or printed
+            /// using `cargo:warning=` if you are using `bindgen` as a `build-dependency`. 
+            ///
+            /// Diagnostics are not emitted by default.
+            ///
+            /// The layout and contents of these diagnostic messages are not covered by versioning
+            /// and can change without notice.
             pub fn emit_diagnostics(mut self) -> Self {
                 self.options.emit_diagnostics = true;
                 self
