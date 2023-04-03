@@ -370,7 +370,7 @@ struct BindgenCommand {
     #[arg(long, value_name = "VISIBILITY")]
     default_visibility: Option<FieldVisibilityKind>,
     /// Whether to emit diagnostics or not.
-    #[arg(long)]
+    #[arg(long, requires = "experimental")]
     emit_diagnostics: bool,
     /// Enables experimental features.
     #[arg(long)]

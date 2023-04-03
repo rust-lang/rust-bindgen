@@ -2105,9 +2105,10 @@ options! {
     emit_diagnostics: {
         ty: bool,
         methods: {
-            /// Set whether to emit diagnostics.
-            pub fn emit_diagnostics(mut self, doit: bool) -> Self {
-                self.options.emit_diagnostics = doit;
+            #[cfg(feature = "experimental")]
+            /// Emit diagnostics.
+            pub fn emit_diagnostics(mut self) -> Self {
+                self.options.emit_diagnostics = true;
                 self
             }
         },
