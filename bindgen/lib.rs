@@ -493,7 +493,7 @@ impl BindgenOptions {
         let rust_target = self.rust_target;
         #[allow(deprecated)]
         if rust_target <= RustTarget::Stable_1_30 {
-            deprecated_target_diagnostic(rust_target, &self);
+            deprecated_target_diagnostic(rust_target, self);
         }
     }
 

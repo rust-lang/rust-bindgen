@@ -461,6 +461,7 @@ fn duplicated_macro_diagnostic(
     // ```
     //
     // Will trigger this message even though there's nothing wrong with it.
+    #[allow(clippy::overly_complex_bool_expr)]
     if false && ctx.options().emit_diagnostics {
         use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
         use std::borrow::Cow;
