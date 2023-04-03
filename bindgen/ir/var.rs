@@ -222,7 +222,7 @@ impl ClangSubItemParser for Var {
 
                 if previously_defined {
                     let name = String::from_utf8(id).unwrap();
-                    warn!("Duplicated macro definition: {}", name);
+                    duplicated_macro_diagnostic(&name, cursor.location(), ctx);
                     return Err(ParseError::Continue);
                 }
 
@@ -439,4 +439,50 @@ fn get_integer_literal_from_cursor(cursor: &clang::Cursor) -> Option<i64> {
         }
     });
     value
+}
+
+fn duplicated_macro_diagnostic(
+    macro_name: &str,
+    location: crate::clang::SourceLocation,
+    ctx: &BindgenContext,
+) {
+    warn!("Duplicated macro definition: {}", macro_name);
+
+    #[cfg(feature = "experimental")]
+    // FIXME (pvdrz & amanjeev): This diagnostic message shows way too often to be actually
+    // useful. We have to change the logic where this function is called to be able to emit this
+    // message only when the duplication is an actuall issue.
+    //
+    // If I understood correctly, `bindgen` ignores all `#undef` directives. Meaning that this:
+    // ```c
+    // #define FOO 1
+    // #undef FOO
+    // #define FOO 2
+    // ```
+    //
+    // Will trigger this message even though there's nothing wrong with it.
+    #[allow(clippy::overly_complex_bool_expr)]
+    if false && ctx.options().emit_diagnostics {
+        use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
+        use std::borrow::Cow;
+
+        let mut slice = Slice::default();
+        let mut source = Cow::from(macro_name);
+
+        let (file, line, col, _) = location.location();
+        if let Some(filename) = file.name() {
+            if let Ok(Some(code)) = get_line(&filename, line) {
+                source = code.into();
+            }
+            slice.with_location(filename, line, col);
+        }
+
+        slice.with_source(source);
+
+        Diagnostic::default()
+            .with_title("Duplicated macro definition", Level::Warn)
+            .add_slice(slice)
+            .add_annotation("This macro had a duplicate", Level::Note)
+            .display();
+    }
 }

@@ -171,6 +171,9 @@
    which tool will be used to format the bindings. The
    `Formatter::Prettyplease`   variant is only available if the
    `"prettyplease"` feature is enabled. 
+ * Added the `Builder::emit_diagnostics` method and the  `--emit-diagnostics`
+   flag to enable emission of diagnostic messages.
+
 ## Changed
  * Static functions with no arguments use `void` as their single argument
    instead of having no arguments when the `--wrap-static-fns` flag is used.
@@ -187,6 +190,8 @@
  * The following deprecated flags were removed: `--use-msvc-mangling`,
    `--rustfmt-bindings` and `--size_t-is-usize`.
  * The `--no-rustfmt-bindings` flag was removed in favor of `--formatter=none`.
+ * The `Bindings::emit_warnings` and `Bindings::warnings` methods were removed
+   in favor of `--emit-diagnostics`.
 
 ## Fixed
 

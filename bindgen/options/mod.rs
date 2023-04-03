@@ -1583,13 +1583,6 @@ options! {
             ///
             /// The default target is the latest stable Rust version.
             pub fn rust_target(mut self, rust_target: RustTarget) -> Self {
-                #[allow(deprecated)]
-                if rust_target <= RustTarget::Stable_1_30 {
-                    warn!(
-                        "The {} rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues",
-                        String::from(rust_target)
-                    );
-                }
                 self.options.set_rust_target(rust_target);
                 self
             }
@@ -2101,4 +2094,25 @@ options! {
             }
         },
     },
+    /// Whether to emit diagnostics or not.
+    emit_diagnostics: {
+        ty: bool,
+        methods: {
+            #[cfg(feature = "experimental")]
+            /// Emit diagnostics.
+            ///
+            /// These diagnostics are emitted to `stderr` if you are using `bindgen-cli` or printed
+            /// using `cargo:warning=` if you are using `bindgen` as a `build-dependency`.
+            ///
+            /// Diagnostics are not emitted by default.
+            ///
+            /// The layout and contents of these diagnostic messages are not covered by versioning
+            /// and can change without notice.
+            pub fn emit_diagnostics(mut self) -> Self {
+                self.options.emit_diagnostics = true;
+                self
+            }
+        },
+        as_args: "--emit-diagnostics",
+    }
 }

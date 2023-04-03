@@ -4213,23 +4213,43 @@ impl CodeGenerator for Function {
             ClangAbi::Known(Abi::ThisCall)
                 if !ctx.options().rust_features().thiscall_abi =>
             {
-                warn!("Skipping function with thiscall ABI that isn't supported by the configured Rust target");
+                unsupported_abi_diagnostic::<false>(
+                    name,
+                    item.location(),
+                    "thiscall",
+                    ctx,
+                );
                 return None;
             }
             ClangAbi::Known(Abi::Vectorcall)
                 if !ctx.options().rust_features().vectorcall_abi =>
             {
-                warn!("Skipping function with vectorcall ABI that isn't supported by the configured Rust target");
+                unsupported_abi_diagnostic::<false>(
+                    name,
+                    item.location(),
+                    "vectorcall",
+                    ctx,
+                );
                 return None;
             }
             ClangAbi::Known(Abi::CUnwind)
                 if !ctx.options().rust_features().c_unwind_abi =>
             {
-                warn!("Skipping function with C-unwind ABI that isn't supported by the configured Rust target");
+                unsupported_abi_diagnostic::<false>(
+                    name,
+                    item.location(),
+                    "C-unwind",
+                    ctx,
+                );
                 return None;
             }
             ClangAbi::Known(Abi::Win64) if signature.is_variadic() => {
-                warn!("Skipping variadic function with Win64 ABI that isn't supported");
+                unsupported_abi_diagnostic::<true>(
+                    name,
+                    item.location(),
+                    "Win64",
+                    ctx,
+                );
                 return None;
             }
             ClangAbi::Unknown(unknown_abi) => {
@@ -4313,6 +4333,51 @@ impl CodeGenerator for Function {
             result.push(tokens);
         }
         Some(times_seen)
+    }
+}
+
+fn unsupported_abi_diagnostic<const VARIADIC: bool>(
+    fn_name: &str,
+    location: Option<&crate::clang::SourceLocation>,
+    abi: &str,
+    ctx: &BindgenContext,
+) {
+    warn!(
+        "Skipping {}function `{}` with the {} ABI that isn't supported by the configured Rust target",
+        if VARIADIC { "variadic " } else { "" },
+        fn_name,
+        abi
+    );
+
+    #[cfg(feature = "experimental")]
+    if ctx.options().emit_diagnostics {
+        use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
+
+        let mut diag = Diagnostic::default();
+        diag
+        .with_title(format!(
+                "The `{}` {}function uses the {} ABI which is not supported by the configured Rust target",
+                fn_name,
+                if VARIADIC { "variadic " } else { "" },
+                abi), Level::Warn)
+            .add_annotation("No code will be generated for this function.", Level::Warn)
+            .add_annotation(format!("The configured Rust version is {}.", String::from(ctx.options().rust_target)), Level::Note);
+
+        if let Some(loc) = location {
+            let (file, line, col, _) = loc.location();
+
+            if let Some(filename) = file.name() {
+                if let Ok(Some(source)) = get_line(&filename, line) {
+                    let mut slice = Slice::default();
+                    slice
+                        .with_source(source)
+                        .with_location(filename, line, col);
+                    diag.add_slice(slice);
+                }
+            }
+        }
+
+        diag.display()
     }
 }
 
@@ -4586,8 +4651,7 @@ impl CodeGenerator for ObjCInterface {
 
 pub(crate) fn codegen(
     context: BindgenContext,
-) -> Result<(proc_macro2::TokenStream, BindgenOptions, Vec<String>), CodegenError>
-{
+) -> Result<(proc_macro2::TokenStream, BindgenOptions), CodegenError> {
     context.gen(|context| {
         let _t = context.timer("codegen");
         let counter = Cell::new(0);
