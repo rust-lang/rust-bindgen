@@ -31,9 +31,9 @@ use helpers::ignore;
 /// one of the fields of `BindgenOptions`.
 ///
 /// The input format of this macro resembles a `struct` pattern. Each field of the `BindgenOptions`
-/// type is declared using 4 items:
+/// type is declared by adding the name of the field and its type using the `name: type` syntax and
+/// a block of code with the following items:
 ///
-/// - `ty`: The type of the field.
 /// - `default`: The default value for the field. If this item is omitted, `Default::default()` is
 /// used instead, meaning that the type of the field must implement `Default`.
 /// - `methods`: A block of code containing methods for the `Builder` type. These methods should be
@@ -53,8 +53,7 @@ use helpers::ignore;
 /// As an example, this would be the declaration of a `bool` field called `be_fun` whose default
 /// value is `false` (the `Default` value for `bool`):
 /// ```rust,ignore
-/// be_fun: {
-///    ty: bool,
+/// be_fun: bool {
 ///    methods: {
 ///        /// Ask `bindgen` to be fun. This option is disabled by default.
 ///        fn be_fun(mut self) -> Self {
@@ -70,8 +69,7 @@ use helpers::ignore;
 /// instead. This means that we have to add the `default` item and use a closure in the `as_args`
 /// item:
 /// ```rust,ignore
-/// be_fun: {
-///    ty: bool,
+/// be_fun: bool {
 ///    default: true,
 ///    methods: {
 ///        /// Ask `bindgen` to not be fun. `bindgen` is fun by default.
@@ -87,8 +85,7 @@ use helpers::ignore;
 macro_rules! options {
     ($(
         $(#[doc = $docs:literal])+
-        $field:ident: {
-            ty: $ty:ty,
+        $field:ident: $ty:ty {
             $(default: $default:expr,)?
             methods: {$($methods_tokens:tt)*}$(,)?
             as_args: $as_args:expr$(,)?
@@ -156,8 +153,7 @@ macro_rules! options {
 
 options! {
     /// Types that have been blocklisted and should not appear anywhere in the generated code.
-    blocklisted_types: {
-        ty: RegexSet,
+    blocklisted_types: RegexSet {
         methods: {
             regex_option! {
                 /// Do not generate any bindings for the given type.
@@ -170,9 +166,8 @@ options! {
         as_args: "--blocklist-type",
     },
     /// Functions that have been blocklisted and should not appear in the generated code.
-    blocklisted_functions: {
-        ty: RegexSet,
-        methods : {
+    blocklisted_functions: RegexSet {
+        methods: {
             regex_option! {
                 /// Do not generate any bindings for the given function.
                 ///
@@ -188,8 +183,7 @@ options! {
         as_args: "--blocklist-function",
     },
     /// Items that have been blocklisted and should not appear in the generated code.
-    blocklisted_items: {
-        ty: RegexSet,
+    blocklisted_items: RegexSet {
         methods: {
             regex_option! {
                 /// Do not generate any bindings for the given item, regardless of whether it is a
@@ -203,8 +197,7 @@ options! {
         as_args: "--blocklist-item",
     },
     /// Files whose contents should be blocklisted and should not appear in the generated code.
-    blocklisted_files: {
-        ty: RegexSet,
+    blocklisted_files: RegexSet {
         methods: {
             regex_option! {
                 /// Do not generate any bindings for the contents of the given file, regardless of
@@ -218,8 +211,7 @@ options! {
         as_args: "--blocklist-file",
     },
     /// Types that should be treated as opaque structures in the generated code.
-    opaque_types: {
-        ty: RegexSet,
+    opaque_types: RegexSet {
         methods: {
             regex_option! {
                 /// Treat the given type as opaque in the generated bindings.
@@ -236,8 +228,7 @@ options! {
         as_args: "--opaque-type",
     },
     /// The explicit `rustfmt` path.
-    rustfmt_path: {
-        ty: Option<PathBuf>,
+    rustfmt_path: Option<PathBuf> {
         methods: {
             /// Set an explicit path to the `rustfmt` binary.
             ///
@@ -253,8 +244,7 @@ options! {
         as_args: ignore,
     },
     /// The path to which we should write a Makefile-syntax depfile (if any).
-    depfile: {
-        ty: Option<DepfileSpec>,
+    depfile: Option<DepfileSpec> {
         methods: {
             /// Add a depfile output which will be written alongside the generated bindings.
             pub fn depfile<H: Into<String>, D: Into<PathBuf>>(
@@ -277,8 +267,7 @@ options! {
         },
     },
     /// Types that have been allowlisted and should appear in the generated code.
-    allowlisted_types: {
-        ty: RegexSet,
+    allowlisted_types: RegexSet {
         methods: {
             regex_option! {
                 /// Generate bindings for the given type.
@@ -294,8 +283,7 @@ options! {
         as_args: "--allowlist-type",
     },
     /// Functions that have been allowlisted and should appear in the generated code.
-    allowlisted_functions: {
-        ty: RegexSet,
+    allowlisted_functions: RegexSet {
         methods: {
             regex_option! {
                 /// Generate bindings for the given function.
@@ -315,8 +303,7 @@ options! {
         as_args: "--allowlist-function",
     },
     /// Variables that have been allowlisted and should appear in the generated code.
-    allowlisted_vars: {
-        ty: RegexSet,
+    allowlisted_vars: RegexSet {
         methods: {
             regex_option! {
                 /// Generate bindings for the given variable.
@@ -332,8 +319,7 @@ options! {
         as_args: "--allowlist-var",
     },
     /// Files whose contents have been allowlisted and should appear in the generated code.
-    allowlisted_files: {
-        ty: RegexSet,
+    allowlisted_files: RegexSet {
         methods: {
             regex_option! {
                 /// Generate bindings for the content of the given file.
@@ -349,8 +335,7 @@ options! {
         as_args: "--allowlist-file",
     },
     /// The default style of for generated `enum`s.
-    default_enum_style: {
-        ty: EnumVariation,
+    default_enum_style: EnumVariation {
         methods: {
             /// Set the default style for generated `enum`s.
             ///
@@ -377,8 +362,7 @@ options! {
         },
     },
     /// `enum`s marked as bitfield-like. This is, newtypes with bitwise operations.
-    bitfield_enums: {
-        ty: RegexSet,
+    bitfield_enums: RegexSet {
         methods: {
             regex_option! {
                 /// Mark the given `enum` as being bitfield-like.
@@ -394,8 +378,7 @@ options! {
         as_args: "--bitfield-enum",
     },
     /// `enum`s marked as newtypes.
-    newtype_enums: {
-        ty: RegexSet,
+    newtype_enums: RegexSet {
         methods: {
             regex_option! {
                 /// Mark the given `enum` as a newtype.
@@ -412,8 +395,7 @@ options! {
         as_args: "--newtype-enum",
     },
     /// `enum`s marked as global newtypes .
-    newtype_global_enums: {
-        ty: RegexSet,
+    newtype_global_enums: RegexSet {
         methods: {
             regex_option! {
                 /// Mark the given `enum` as a global newtype.
@@ -430,8 +412,7 @@ options! {
         as_args: "--newtype-global-enum",
     },
     /// `enum`s marked as Rust `enum`s.
-    rustified_enums: {
-        ty: RegexSet,
+    rustified_enums: RegexSet {
         methods: {
             regex_option! {
                 /// Mark the given `enum` as a Rust `enum`.
@@ -451,8 +432,7 @@ options! {
         as_args: "--rustified-enum",
     },
     /// `enum`s marked as non-exhaustive Rust `enum`s.
-    rustified_non_exhaustive_enums: {
-        ty: RegexSet,
+    rustified_non_exhaustive_enums: RegexSet {
         methods: {
             regex_option! {
                 /// Mark the given `enum` as a non-exhaustive Rust `enum`.
@@ -468,8 +448,7 @@ options! {
         as_args: "--rustified-non-exhaustive-enums",
     },
     /// `enum`s marked as modules of constants.
-    constified_enum_modules: {
-        ty: RegexSet,
+    constified_enum_modules: RegexSet {
         methods: {
             regex_option! {
                 /// Mark the given `enum` as a module with a set of integer constants.
@@ -482,8 +461,7 @@ options! {
         as_args: "--constified-enum-module",
     },
     /// `enum`s marked as a set of constants.
-    constified_enums: {
-        ty: RegexSet,
+    constified_enums: RegexSet {
         methods: {
             regex_option! {
                 /// Mark the given `enum` as a set o integer constants.
@@ -499,8 +477,7 @@ options! {
         as_args: "--constified-enum",
     },
     /// The default type signedness for C macro constants.
-    default_macro_constant_type: {
-        ty: MacroTypeVariation,
+    default_macro_constant_type: MacroTypeVariation {
         methods: {
             /// Set the default type signedness to be used for macro constants.
             ///
@@ -522,8 +499,7 @@ options! {
         },
     },
     /// The default style of code generation for `typedef`s.
-    default_alias_style: {
-        ty: AliasVariation,
+    default_alias_style: AliasVariation {
         methods: {
             /// Set the default style of code generation for `typedef`s.
             ///
@@ -548,8 +524,7 @@ options! {
         },
     },
     /// `typedef` patterns that will use regular type aliasing.
-    type_alias: {
-        ty: RegexSet,
+    type_alias: RegexSet {
         methods: {
             regex_option! {
                 /// Mark the given `typedef` as a regular Rust `type` alias.
@@ -566,8 +541,7 @@ options! {
         as_args: "--type-alias",
     },
     /// `typedef` patterns that will be aliased by creating a newtype.
-    new_type_alias: {
-        ty: RegexSet,
+    new_type_alias: RegexSet {
         methods: {
             regex_option! {
                 /// Mark the given `typedef` as a Rust newtype by having the aliased
@@ -583,8 +557,7 @@ options! {
         as_args: "--new-type-alias",
     },
     /// `typedef` patterns that will be wrapped in a newtype implementing `Deref` and `DerefMut`.
-    new_type_alias_deref: {
-        ty: RegexSet,
+    new_type_alias_deref: RegexSet {
         methods: {
             regex_option! {
                 /// Mark the given `typedef` to be generated as a newtype that can be dereferenced.
@@ -600,8 +573,7 @@ options! {
         as_args: "--new-type-alias-deref",
     },
     /// The default style of code to generate for `union`s containing non-`Copy` members.
-    default_non_copy_union_style: {
-        ty: NonCopyUnionStyle,
+    default_non_copy_union_style: NonCopyUnionStyle {
         methods: {
             /// Set the default style of code to generate for `union`s with non-`Copy` members.
             ///
@@ -623,8 +595,7 @@ options! {
         },
     },
     /// The patterns marking non-`Copy` `union`s as using the `bindgen` generated wrapper.
-    bindgen_wrapper_union: {
-        ty: RegexSet,
+    bindgen_wrapper_union: RegexSet {
         methods: {
             regex_option! {
                 /// Mark the given `union` to use a `bindgen`-generated wrapper for its members if at
@@ -642,8 +613,7 @@ options! {
         as_args: "--bindgen-wrapper-union",
     },
     /// The patterns marking non-`Copy` `union`s as using the `ManuallyDrop` wrapper.
-    manually_drop_union: {
-        ty: RegexSet,
+    manually_drop_union: RegexSet {
         methods: {
             regex_option! {
                 /// Mark the given `union` to use [`::core::mem::ManuallyDrop`] for its members if
@@ -663,8 +633,7 @@ options! {
 
 
     /// Whether we should generate built-in definitions.
-    builtins: {
-        ty: bool,
+    builtins: bool {
         methods: {
             /// Generate Rust bindings for built-in definitions (for example `__builtin_va_list`).
             ///
@@ -677,8 +646,7 @@ options! {
         as_args: "--builtins",
     },
     /// Whether we should dump the Clang AST for debugging purposes.
-    emit_ast: {
-        ty: bool,
+    emit_ast: bool {
         methods: {
             /// Emit the Clang AST to `stdout` for debugging purposes.
             ///
@@ -691,8 +659,7 @@ options! {
         as_args: "--emit-clang-ast",
     },
     /// Whether we should dump our IR for debugging purposes.
-    emit_ir: {
-        ty: bool,
+    emit_ir: bool {
         methods: {
             /// Emit the `bindgen` internal representation to `stdout` for debugging purposes.
             ///
@@ -705,8 +672,7 @@ options! {
         as_args: "--emit-ir",
     },
     /// Output path for the `graphviz` DOT file.
-    emit_ir_graphviz: {
-        ty: Option<String>,
+    emit_ir_graphviz: Option<String> {
         methods: {
             /// Set the path for the file where the`bindgen` internal representation will be
             /// emitted as a graph using the `graphviz` DOT language.
@@ -722,8 +688,7 @@ options! {
     },
 
     /// Whether we should emulate C++ namespaces with Rust modules.
-    enable_cxx_namespaces: {
-        ty: bool,
+    enable_cxx_namespaces: bool {
         methods: {
             /// Emulate C++ namespaces using Rust modules in the generated bindings.
             ///
@@ -736,8 +701,7 @@ options! {
         as_args: "--enable-cxx-namespaces",
     },
     /// Whether we should try to find unexposed attributes in functions.
-    enable_function_attribute_detection: {
-        ty: bool,
+    enable_function_attribute_detection: bool {
         methods: {
             /// Enable detecting function attributes on C functions.
             ///
@@ -760,8 +724,7 @@ options! {
         as_args: "--enable-function-attribute-detection",
     },
     /// Whether we should avoid mangling names with namespaces.
-    disable_name_namespacing: {
-        ty: bool,
+    disable_name_namespacing: bool {
         methods: {
             /// Disable name auto-namespacing.
             ///
@@ -779,8 +742,7 @@ options! {
         as_args: "--disable-name-namespacing",
     },
     /// Whether we should avoid generating nested `struct` names.
-    disable_nested_struct_naming: {
-        ty: bool,
+    disable_nested_struct_naming: bool {
         methods: {
             /// Disable nested `struct` naming.
             ///
@@ -807,8 +769,7 @@ options! {
         as_args: "--disable-nested-struct-naming",
     },
     /// Whether we should avoid embedding version identifiers into source code.
-    disable_header_comment: {
-        ty: bool,
+    disable_header_comment: bool {
         methods: {
             /// Do not insert the `bindgen` version identifier into the generated bindings.
             ///
@@ -822,8 +783,7 @@ options! {
         as_args: "--disable-header-comment",
     },
     /// Whether we should generate layout tests for generated `struct`s.
-    layout_tests: {
-        ty: bool,
+    layout_tests: bool {
         default: true,
         methods: {
             /// Set whether layout tests should be generated.
@@ -837,8 +797,7 @@ options! {
         as_args: |value, args| (!value).as_args(args, "--no-layout-tests"),
     },
     /// Whether we should implement `Debug` for types that cannot derive it.
-    impl_debug: {
-        ty: bool,
+    impl_debug: bool {
         methods: {
             /// Set whether `Debug` should be implemented for types that cannot derive it.
             ///
@@ -852,8 +811,7 @@ options! {
         as_args: "--impl-debug",
     },
     /// Whether we should implement `PartialEq` types that cannot derive it.
-    impl_partialeq: {
-        ty: bool,
+    impl_partialeq: bool {
         methods: {
             /// Set whether `PartialEq` should be implemented for types that cannot derive it.
             ///
@@ -866,8 +824,7 @@ options! {
         as_args: "--impl-partialeq",
     },
     /// Whether we should derive `Copy` when possible.
-    derive_copy: {
-        ty: bool,
+    derive_copy: bool {
         default: true,
         methods: {
             /// Set whether the `Copy` trait should be derived when possible.
@@ -882,8 +839,7 @@ options! {
     },
 
     /// Whether we should derive `Debug` when possible.
-    derive_debug: {
-        ty: bool,
+    derive_debug: bool {
         default: true,
         methods: {
             /// Set whether the `Debug` trait should be derived when possible.
@@ -901,8 +857,7 @@ options! {
     },
 
     /// Whether we should derive `Default` when possible.
-    derive_default: {
-        ty: bool,
+    derive_default: bool {
         methods: {
             /// Set whether the `Default` trait should be derived when possible.
             ///
@@ -923,8 +878,7 @@ options! {
         },
     },
     /// Whether we should derive `Hash` when possible.
-    derive_hash: {
-        ty: bool,
+    derive_hash: bool {
         methods: {
             /// Set whether the `Hash` trait should be derived when possible.
             ///
@@ -937,8 +891,7 @@ options! {
         as_args: "--with-derive-hash",
     },
     /// Whether we should derive `PartialOrd` when possible.
-    derive_partialord: {
-        ty: bool,
+    derive_partialord: bool {
         methods: {
             /// Set whether the `PartialOrd` trait should be derived when possible.
             ///
@@ -958,8 +911,7 @@ options! {
         as_args: "--with-derive-partialord",
     },
     /// Whether we should derive `Ord` when possible.
-    derive_ord: {
-        ty: bool,
+    derive_ord: bool {
         methods: {
             /// Set whether the `Ord` trait should be derived when possible.
             ///
@@ -977,8 +929,7 @@ options! {
         as_args: "--with-derive-ord",
     },
     /// Whether we should derive `PartialEq` when possible.
-    derive_partialeq: {
-        ty: bool,
+    derive_partialeq: bool {
         methods: {
             /// Set whether the `PartialEq` trait should be derived when possible.
             ///
@@ -1001,8 +952,7 @@ options! {
         as_args: "--with-derive-partialeq",
     },
     /// Whether we should derive `Eq` when possible.
-    derive_eq: {
-        ty: bool,
+    derive_eq: bool {
         methods: {
             /// Set whether the `Eq` trait should be derived when possible.
             ///
@@ -1025,8 +975,7 @@ options! {
     ///
     /// If this option is enabled and the Rust target version is greater than 1.64, the prefix for
     /// C platform-specific types will be `::core::ffi` instead of `::core::os::raw`.
-    use_core: {
-        ty: bool,
+    use_core: bool {
         methods: {
             /// Use `core` instead of `std` in the generated bindings.
             ///
@@ -1040,8 +989,7 @@ options! {
         as_args: "--use-core",
     },
     /// An optional prefix for the C platform-specific types.
-    ctypes_prefix: {
-        ty: Option<String>,
+    ctypes_prefix: Option<String> {
         methods: {
             /// Use the given prefix for the C platform-specific types instead of `::std::os::raw`.
             ///
@@ -1055,8 +1003,7 @@ options! {
         as_args: "--ctypes-prefix",
     },
     /// The prefix for anonymous fields.
-    anon_fields_prefix: {
-        ty: String,
+    anon_fields_prefix: String {
         default: DEFAULT_ANON_FIELDS_PREFIX.into(),
         methods: {
             /// Use the given prefix for the anonymous fields.
@@ -1088,8 +1035,7 @@ options! {
         },
     },
     /// Whether to measure the time for each one of the `bindgen` phases.
-    time_phases: {
-        ty: bool,
+    time_phases: bool {
         methods: {
             /// Set whether to measure the elapsed time for each one of the `bindgen` phases. This
             /// information is printed to `stderr`.
@@ -1103,8 +1049,7 @@ options! {
         as_args: "--time-phases",
     },
     /// Whether to convert C float types to `f32` and `f64`.
-    convert_floats: {
-        ty: bool,
+    convert_floats: bool {
         default: true,
         methods: {
             /// Avoid converting C float types to `f32` and `f64`.
@@ -1116,8 +1061,7 @@ options! {
         as_args: |value, args| (!value).as_args(args, "--no-convert-floats"),
     },
     /// The set of raw lines to be prepended to the top-level module of the generated Rust code.
-    raw_lines: {
-        ty: Vec<String>,
+    raw_lines: Vec<String> {
         methods: {
             /// Add a line of Rust code at the beginning of the generated bindings. The string is
             /// passed through without any modification.
@@ -1134,8 +1078,7 @@ options! {
         },
     },
     /// The set of raw lines to prepend to different modules.
-    module_lines: {
-        ty: HashMap<String, Vec<String>>,
+    module_lines: HashMap<String, Vec<String>> {
         methods: {
             /// Add a given line to the beginning of a given module.
             ///
@@ -1165,8 +1108,7 @@ options! {
         },
     },
     /// The input header files.
-    input_headers: {
-        ty:  Vec<String>,
+    input_headers:  Vec<String> {
         methods: {
             /// Add an input C/C++ header to generate bindings for.
             ///
@@ -1198,8 +1140,7 @@ options! {
         as_args: ignore,
     },
     /// The set of arguments to be passed straight through to Clang.
-    clang_args: {
-        ty: Vec<String>,
+    clang_args: Vec<String> {
         methods: {
             /// Add an argument to be passed straight through to Clang.
             pub fn clang_arg<T: Into<String>>(self, arg: T) -> Builder {
@@ -1221,8 +1162,7 @@ options! {
         as_args: ignore,
     },
     /// Tuples of unsaved file contents of the form (name, contents).
-    input_header_contents: {
-        ty: Vec<(String, String)>,
+    input_header_contents: Vec<(String, String)> {
         methods: {
             /// Add `contents` as an input C/C++ header named `name`.
             ///
@@ -1247,8 +1187,7 @@ options! {
         as_args: ignore,
     },
     /// A user-provided visitor to allow customizing different kinds of situations.
-    parse_callbacks: {
-        ty: Vec<Rc<dyn ParseCallbacks>>,
+    parse_callbacks: Vec<Rc<dyn ParseCallbacks>> {
         methods: {
             /// Add a new [`ParseCallbacks`] instance to configure types in different situations.
             pub fn parse_callbacks(mut self, cb: Box<dyn ParseCallbacks>) -> Self {
@@ -1264,8 +1203,7 @@ options! {
         },
     },
     /// Which kind of items should we generate. We generate all of them by default.
-    codegen_config: {
-        ty: CodegenConfig,
+    codegen_config: CodegenConfig {
         default: CodegenConfig::all(),
         methods: {
             /// Do not generate any functions.
@@ -1336,8 +1274,7 @@ options! {
         },
     },
     /// Whether to treat inline namespaces conservatively.
-    conservative_inline_namespaces: {
-        ty: bool,
+    conservative_inline_namespaces: bool {
         methods: {
             /// Treat inline namespaces conservatively.
             ///
@@ -1376,8 +1313,7 @@ options! {
         as_args: "--conservative-inline-namespaces",
     },
     /// Whether to keep documentation comments in the generated output.
-    generate_comments: {
-        ty: bool,
+    generate_comments: bool {
         default: true,
         methods: {
             /// Set whether the generated bindings should contain documentation comments.
@@ -1400,8 +1336,7 @@ options! {
         as_args: |value, args| (!value).as_args(args, "--no-doc-comments"),
     },
     /// Whether to generate inline functions.
-    generate_inline_functions: {
-        ty: bool,
+    generate_inline_functions: bool {
         methods: {
             /// Set whether to generate inline functions.
             ///
@@ -1422,8 +1357,7 @@ options! {
         as_args: "--generate-inline-functions",
     },
     /// Whether to allowlist types recursively.
-    allowlist_recursively: {
-        ty: bool,
+    allowlist_recursively: bool {
         default: true,
         methods: {
             /// Set whether to recursively allowlist items.
@@ -1463,8 +1397,7 @@ options! {
     },
     /// Whether to emit `#[macro_use] extern crate objc;` instead of `use objc;` in the prologue of
     /// the files generated from objective-c files.
-    objc_extern_crate: {
-        ty: bool,
+    objc_extern_crate: bool {
         methods: {
             /// Emit `#[macro_use] extern crate objc;` instead of `use objc;` in the prologue of
             /// the files generated from objective-c files.
@@ -1478,8 +1411,7 @@ options! {
         as_args: "--objc-extern-crate",
     },
     /// Whether to generate proper block signatures instead of `void` pointers.
-    generate_block: {
-        ty: bool,
+    generate_block: bool {
         methods: {
             /// Generate proper block signatures instead of `void` pointers.
             ///
@@ -1493,8 +1425,7 @@ options! {
     },
     /// Whether to emit `#[macro_use] extern crate block;` instead of `use block;` in the prologue
     /// of the files generated from apple block files.
-    block_extern_crate: {
-        ty: bool,
+    block_extern_crate: bool {
         methods: {
             /// Emit `#[macro_use] extern crate block;` instead of `use block;` in the prologue of
             /// the files generated from apple block files.
@@ -1508,8 +1439,7 @@ options! {
         as_args: "--block-extern-crate",
     },
     /// Whether to use the clang-provided name mangling.
-    enable_mangling: {
-        ty: bool,
+    enable_mangling: bool {
         default: true,
         methods: {
             /// Set whether to use the clang-provided name mangling. This is probably needed for
@@ -1531,8 +1461,7 @@ options! {
         as_args: |value, args| (!value).as_args(args, "--distrust-clang-mangling"),
     },
     /// Whether to detect include paths using `clang_sys`.
-    detect_include_paths: {
-        ty: bool,
+    detect_include_paths: bool {
         default: true,
         methods: {
             /// Set whether to detect include paths using `clang_sys`.
@@ -1546,8 +1475,7 @@ options! {
         as_args: |value, args| (!value).as_args(args, "--no-include-path-detection"),
     },
     /// Whether we should try to fit macro constants into types smaller than `u32` and `i32`.
-    fit_macro_constants: {
-        ty: bool,
+    fit_macro_constants: bool {
         methods: {
             /// Set whether `bindgen` should try to fit macro constants into types smaller than `u32`
             /// and `i32`.
@@ -1561,8 +1489,7 @@ options! {
         as_args: "--fit-macro-constant-types",
     },
     /// Whether to prepend the `enum` name to constant or newtype variants.
-    prepend_enum_name: {
-        ty: bool,
+    prepend_enum_name: bool {
         default: true,
         methods: {
             /// Set whether to prepend the `enum` name to constant or newtype variants.
@@ -1576,8 +1503,7 @@ options! {
         as_args: |value, args| (!value).as_args(args, "--no-prepend-enum-name"),
     },
     /// Version of the Rust compiler to target.
-    rust_target: {
-        ty: RustTarget,
+    rust_target: RustTarget {
         methods: {
             /// Specify the Rust target version.
             ///
@@ -1593,16 +1519,14 @@ options! {
         },
     },
     /// Features to be enabled. They are derived from `rust_target`.
-    rust_features: {
-        ty: RustFeatures,
+    rust_features: RustFeatures {
         default: RustTarget::default().into(),
         methods: {},
         // This field cannot be set from the CLI,
         as_args: ignore,
     },
     /// Enable support for native Rust unions if they are supported.
-    untagged_union: {
-        ty: bool,
+    untagged_union: bool {
         default: true,
         methods: {
             /// Disable support for native Rust unions, if supported.
@@ -1617,8 +1541,7 @@ options! {
         as_args: |value, args| (!value).as_args(args, "--disable-untagged-union"),
     },
     /// Whether we should record which items in the regex sets did match any C items.
-    record_matches: {
-        ty: bool,
+    record_matches: bool {
         default: true,
         methods: {
             /// Set whether we should record which items in our regex sets did match any C items.
@@ -1633,8 +1556,7 @@ options! {
         as_args: |value, args| (!value).as_args(args, "--no-record-matches"),
     },
     /// Whether `size_t` should be translated to `usize` automatically.
-    size_t_is_usize: {
-        ty: bool,
+    size_t_is_usize: bool {
         default: true,
         methods: {
             /// Set whether `size_t` should be translated to `usize`.
@@ -1648,8 +1570,7 @@ options! {
         as_args: |value, args| (!value).as_args(args, "--no-size_t-is-usize"),
     },
     /// The tool that should be used to format the generated bindings.
-    formatter: {
-        ty: Formatter,
+    formatter: Formatter {
         methods: {
             #[cfg_attr(feature = "prettyplease", deprecated)]
             /// Set whether `rustfmt` should be used to format the generated bindings.
@@ -1686,8 +1607,7 @@ options! {
         },
     },
     /// The absolute path to the `rustfmt` configuration file.
-    rustfmt_configuration_file: {
-        ty: Option<PathBuf>,
+    rustfmt_configuration_file: Option<PathBuf> {
         methods: {
             /// Set the absolute path to the `rustfmt` configuration file.
             ///
@@ -1705,8 +1625,7 @@ options! {
         as_args: "--rustfmt-configuration-file",
     },
     /// Types that should not derive `PartialEq`.
-    no_partialeq_types: {
-        ty: RegexSet,
+    no_partialeq_types: RegexSet {
         methods: {
             regex_option! {
                 /// Do not derive `PartialEq` for a given type.
@@ -1719,8 +1638,7 @@ options! {
         as_args: "--no-partialeq",
     },
     /// Types that should not derive `Copy`.
-    no_copy_types: {
-        ty: RegexSet,
+    no_copy_types: RegexSet {
         methods: {
             regex_option! {
                 /// Do not derive `Copy` and `Clone` for a given type.
@@ -1733,8 +1651,7 @@ options! {
         as_args: "--no-copy",
     },
     /// Types that should not derive `Debug`.
-    no_debug_types: {
-        ty: RegexSet,
+    no_debug_types: RegexSet {
         methods: {
             regex_option! {
                 /// Do not derive `Debug` for a given type.
@@ -1747,8 +1664,7 @@ options! {
         as_args: "--no-debug",
     },
     /// Types that should not derive or implement `Default`.
-    no_default_types: {
-        ty: RegexSet,
+    no_default_types: RegexSet {
         methods: {
             regex_option! {
                 /// Do not derive or implement `Default` for a given type.
@@ -1761,8 +1677,7 @@ options! {
         as_args: "--no-default",
     },
     /// Types that should not derive `Hash`.
-    no_hash_types: {
-        ty: RegexSet,
+    no_hash_types: RegexSet {
         methods: {
             regex_option! {
                 /// Do not derive `Hash` for a given type.
@@ -1775,8 +1690,7 @@ options! {
         as_args: "--no-hash",
     },
     /// Types that should be annotated with `#[must_use]`.
-    must_use_types: {
-        ty: RegexSet,
+    must_use_types: RegexSet {
         methods: {
             regex_option! {
                 /// Annotate the given type with the `#[must_use]` attribute.
@@ -1789,8 +1703,7 @@ options! {
         as_args: "--must-use-type",
     },
     /// Whether C arrays should be regular pointers in rust or array pointers
-    array_pointers_in_arguments: {
-        ty: bool,
+    array_pointers_in_arguments: bool {
         methods: {
             /// Translate arrays `T arr[size]` into array pointers `*mut [T; size]` instead of
             /// translating them as `*mut T` which is the default.
@@ -1805,8 +1718,7 @@ options! {
         as_args: "--use-array-pointers-in-arguments",
     },
     /// The name of the `wasm_import_module`.
-    wasm_import_module_name: {
-        ty: Option<String>,
+    wasm_import_module_name: Option<String> {
         methods: {
             /// Adds the `#[link(wasm_import_module = import_name)]` attribute to all the `extern`
             /// blocks generated by `bindgen`.
@@ -1823,8 +1735,7 @@ options! {
         as_args: "--wasm-import-module-name",
     },
     /// The name of the dynamic library (if we are generating bindings for a shared library).
-    dynamic_library_name: {
-        ty: Option<String>,
+    dynamic_library_name: Option<String> {
         methods: {
             /// Generate bindings for a shared library with the given name.
             ///
@@ -1840,8 +1751,7 @@ options! {
         as_args: "--dynamic-loading",
     },
     /// Whether to equire successful linkage for all routines in a shared library.
-    dynamic_link_require_all: {
-        ty: bool,
+    dynamic_link_require_all: bool {
         methods: {
             /// Set whether to require successful linkage for all routines in a shared library.
             /// This allows us to optimize function calls by being able to safely assume function
@@ -1860,8 +1770,7 @@ options! {
     },
     /// Whether to only make generated bindings `pub` if the items would be publicly accessible by
     /// C++.
-    respect_cxx_access_specs: {
-        ty: bool,
+    respect_cxx_access_specs: bool {
         methods: {
             /// Set whether to respect the C++ access specifications.
             ///
@@ -1877,8 +1786,7 @@ options! {
         as_args: "--respect-cxx-access-specs",
     },
     /// Whether to translate `enum` integer types to native Rust integer types.
-    translate_enum_integer_types: {
-        ty: bool,
+    translate_enum_integer_types: bool {
         methods: {
             /// Set whether to always translate `enum` integer types to native Rust integer types.
             ///
@@ -1893,8 +1801,7 @@ options! {
         as_args: "--translate-enum-integer-types",
     },
     /// Whether to generate types with C style naming.
-    c_naming: {
-        ty: bool,
+    c_naming: bool {
         methods: {
             /// Set whether to generate types with C style naming.
             ///
@@ -1909,8 +1816,7 @@ options! {
         as_args: "--c-naming",
     },
     /// Wether to always emit explicit padding fields.
-    force_explicit_padding: {
-        ty: bool,
+    force_explicit_padding: bool {
         methods: {
             /// Set whether to always emit explicit padding fields.
             ///
@@ -1928,8 +1834,7 @@ options! {
         as_args: "--explicit-padding",
     },
     /// Whether to emit vtable functions.
-    vtable_generation: {
-        ty: bool,
+    vtable_generation: bool {
         methods: {
             /// Set whether to enable experimental support to generate virtual table functions.
             ///
@@ -1944,8 +1849,7 @@ options! {
         as_args: "--vtable-generation",
     },
     /// Whether to sort the generated Rust items.
-    sort_semantically: {
-        ty: bool,
+    sort_semantically: bool {
         methods: {
             /// Set whether to sort the generated Rust items in a predefined manner.
             ///
@@ -1958,8 +1862,7 @@ options! {
         as_args: "--sort-semantically",
     },
     /// Whether to deduplicate `extern` blocks.
-    merge_extern_blocks: {
-        ty: bool,
+    merge_extern_blocks: bool {
         methods: {
             /// Merge all extern blocks under the same module into a single one.
             ///
@@ -1972,8 +1875,7 @@ options! {
         as_args: "--merge-extern-blocks",
     },
     /// Whether to wrap unsafe operations in unsafe blocks.
-    wrap_unsafe_ops: {
-        ty: bool,
+    wrap_unsafe_ops: bool {
         methods: {
             /// Wrap all unsafe operations in unsafe blocks.
             ///
@@ -1986,8 +1888,7 @@ options! {
         as_args: "--wrap-unsafe-ops",
     },
     /// Patterns for functions whose ABI should be overriden.
-    abi_overrides: {
-        ty: HashMap<Abi, RegexSet>,
+    abi_overrides: HashMap<Abi, RegexSet> {
         methods: {
             regex_option! {
                 /// Override the ABI of a given function.
@@ -2011,8 +1912,7 @@ options! {
         },
     },
     /// Whether to generate wrappers for `static` functions.
-    wrap_static_fns: {
-        ty: bool,
+    wrap_static_fns: bool {
         methods: {
             #[cfg(feature = "experimental")]
             /// Set whether to generate wrappers for `static`` functions.
@@ -2031,8 +1931,7 @@ options! {
         as_args: "--wrap-static-fns",
     },
     /// The suffix to be added to the function wrappers for `static` functions.
-    wrap_static_fns_suffix: {
-        ty: Option<String>,
+    wrap_static_fns_suffix: Option<String> {
         methods: {
             #[cfg(feature = "experimental")]
             /// Set the suffix added to the wrappers for `static` functions.
@@ -2049,8 +1948,7 @@ options! {
         as_args: "--wrap-static-fns-suffix",
     },
     /// The path of the file where the wrappers for `static` functions will be emitted.
-    wrap_static_fns_path: {
-        ty: Option<PathBuf>,
+    wrap_static_fns_path: Option<PathBuf> {
         methods: {
             #[cfg(feature = "experimental")]
             /// Set the path for the source code file that would be created if any wrapper
@@ -2072,8 +1970,7 @@ options! {
         as_args: "--wrap-static-fns-path",
     },
     /// Default visibility of fields.
-    default_visibility: {
-        ty: FieldVisibilityKind,
+    default_visibility: FieldVisibilityKind {
         methods: {
             /// Set the default visibility of fields, including bitfields and accessor methods for
             /// bitfields.
@@ -2096,8 +1993,7 @@ options! {
         },
     },
     /// Whether to emit diagnostics or not.
-    emit_diagnostics: {
-        ty: bool,
+    emit_diagnostics: bool {
         methods: {
             #[cfg(feature = "experimental")]
             /// Emit diagnostics.
