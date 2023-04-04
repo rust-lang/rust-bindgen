@@ -178,7 +178,10 @@ fn invalid_regex_warning(
                 slice.with_source(source);
                 diagnostic.add_slice(slice);
 
-                diagnostic.with_title("regex parse error:", Level::Warn);
+                diagnostic.with_title(
+                    "Error while parsing a regular expression.",
+                    Level::Warn,
+                );
             } else {
                 diagnostic.with_title(string, Level::Warn);
             }
@@ -190,12 +193,12 @@ fn invalid_regex_warning(
     }
 
     diagnostic.add_annotation(
-        format!("this regular expression was passed via `{}`", name),
+        format!("This regular expression was passed via `{}`.", name),
         Level::Note,
     );
 
     if set.items.iter().any(|item| item == "*") {
-        diagnostic.add_annotation("using wildcard patterns \"*\" is no longer considered valid. Consider using \".*\" instead", Level::Help);
+        diagnostic.add_annotation("Wildcard patterns \"*\" are no longer considered valid. Use \".*\" instead.", Level::Help);
     }
     diagnostic.display();
 }

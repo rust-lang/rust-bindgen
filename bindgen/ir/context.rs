@@ -2965,16 +2965,15 @@ fn unused_regex_diagnostic(item: &str, name: &str, ctx: &BindgenContext) {
 
     #[cfg(feature = "experimental")]
     if ctx.options().emit_diagnostics {
-        use crate::diagnostics::{Diagnostic, Level, Slice};
-
-        let mut slice = Slice::default();
-        slice.with_source(item);
+        use crate::diagnostics::{Diagnostic, Level};
 
         Diagnostic::default()
-            .with_title("unused regular expression:", Level::Warn)
-            .add_slice(slice)
+            .with_title(
+                format!("Unused regular expression: `{}`.", item),
+                Level::Warn,
+            )
             .add_annotation(
-                format!("this regular expression was passed via `{}`", name),
+                format!("This regular expression was passed to `{}`.", name),
                 Level::Note,
             )
             .display();
