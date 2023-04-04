@@ -1680,7 +1680,7 @@ impl CompInfo {
             return (false, false);
         }
 
-        if !ctx.options().rust_features().untagged_union {
+        if !ctx.options().untagged_union {
             return (false, false);
         }
 

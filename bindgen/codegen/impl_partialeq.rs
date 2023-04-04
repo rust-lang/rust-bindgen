@@ -18,7 +18,7 @@ pub(crate) fn gen_partialeq_impl(
             &self._bindgen_opaque_blob[..] == &other._bindgen_opaque_blob[..]
         });
     } else if comp_info.kind() == CompKind::Union {
-        assert!(!ctx.options().rust_features().untagged_union);
+        assert!(!ctx.options().untagged_union);
         tokens.push(quote! {
             &self.bindgen_union_field[..] == &other.bindgen_union_field[..]
         });

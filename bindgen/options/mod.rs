@@ -1596,24 +1596,25 @@ options! {
     rust_features: {
         ty: RustFeatures,
         default: RustTarget::default().into(),
+        methods: {},
+        // This field cannot be set from the CLI,
+        as_args: ignore,
+    },
+    /// Enable support for native Rust unions if they are supported.
+    untagged_union: {
+        ty: bool,
+        default: true,
         methods: {
             /// Disable support for native Rust unions, if supported.
             ///
             /// The default value of this option is set based on the value passed to
             /// [`Builder::rust_target`].
             pub fn disable_untagged_union(mut self) -> Self {
-                self.options.rust_features.untagged_union = false;
+                self.options.untagged_union = false;
                 self
             }
-        },
-        as_args: |features, args| {
-            // FIXME(emilio): This is a bit hacky, maybe we should stop re-using the
-            // RustFeatures to store the "disable_untagged_union" call, and make it
-            // a different flag that we check elsewhere / in generate().
-            if !features.untagged_union {
-                args.push("--disable-untagged-union".to_owned());
-            }
-        },
+        }
+        as_args: |value, args| (!value).as_args(args, "--disable-untagged-union"),
     },
     /// Whether we should record which items in the regex sets did match any C items.
     record_matches: {
