@@ -553,7 +553,7 @@ fn deprecated_target_diagnostic(target: RustTarget, options: &BindgenOptions) {
             Level::Warn,
         );
         diagnostic.add_annotation(
-            "This Rust target was passed as an argument to `--rust-target`",
+            "This Rust target was passed to `--rust-target`",
             Level::Info,
         );
         diagnostic.add_annotation("If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues", Level::Help);
@@ -1018,7 +1018,7 @@ fn rustfmt_non_fatal_error_diagnostic(msg: &str, options: &BindgenOptions) {
         Diagnostic::default()
             .with_title(msg, Level::Warn)
             .add_annotation(
-                "The bindings will be generated but not formatted",
+                "The bindings will be generated but not formatted.",
                 Level::Note,
             )
             .display();
