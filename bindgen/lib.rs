@@ -495,6 +495,11 @@ impl BindgenOptions {
         if rust_target <= RustTarget::Stable_1_30 {
             deprecated_target_diagnostic(rust_target, self);
         }
+
+        // Disable `untagged_union` if the target does not support it.
+        if !self.rust_features.untagged_union {
+            self.untagged_union = false;
+        }
     }
 
     /// Update rust target version

@@ -172,7 +172,7 @@ impl<'ctx> CannotDerive<'ctx> {
         if item.is_opaque(self.ctx, &()) {
             if !self.derive_trait.can_derive_union() &&
                 ty.is_union() &&
-                self.ctx.options().rust_features().untagged_union
+                self.ctx.options().untagged_union
             {
                 trace!(
                     "    cannot derive {} for Rust unions",
@@ -322,7 +322,7 @@ impl<'ctx> CannotDerive<'ctx> {
 
                 if info.kind() == CompKind::Union {
                     if self.derive_trait.can_derive_union() {
-                        if self.ctx.options().rust_features().untagged_union &&
+                        if self.ctx.options().untagged_union &&
                            // https://github.com/rust-lang/rust/issues/36640
                            (!info.self_template_params(self.ctx).is_empty() ||
                             !item.all_template_params(self.ctx).is_empty())
@@ -334,7 +334,7 @@ impl<'ctx> CannotDerive<'ctx> {
                         }
                     // fall through to be same as non-union handling
                     } else {
-                        if self.ctx.options().rust_features().untagged_union {
+                        if self.ctx.options().untagged_union {
                             trace!(
                                 "    cannot derive {} for Rust unions",
                                 self.derive_trait
