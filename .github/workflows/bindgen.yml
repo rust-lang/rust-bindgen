@@ -69,7 +69,7 @@ jobs:
           override: true
 
       - name: Check without default features 
-        run: cargo check -p bindgen --no-default-features 
+        run: cargo check -p bindgen --no-default-features --features=runtime 
 
   quickchecking:
     runs-on: ubuntu-latest
