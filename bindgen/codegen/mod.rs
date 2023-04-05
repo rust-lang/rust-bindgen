@@ -2566,6 +2566,9 @@ impl Method {
             ClangAbi::Known(Abi::CUnwind) => {
                 ctx.options().rust_features().c_unwind_abi
             }
+            ClangAbi::Known(Abi::EfiApi) => {
+                ctx.options().rust_features().abi_efiapi
+            }
             _ => true,
         };
 
@@ -4089,9 +4092,8 @@ impl TryToRustTy for FunctionSig {
         // TODO: we might want to consider ignoring the reference return value.
         let ret = utils::fnsig_return_ty(ctx, self);
         let arguments = utils::fnsig_arguments(ctx, self);
-        let abi = self.abi(ctx, None);
 
-        match abi {
+        match self.abi(ctx, None) {
             ClangAbi::Known(Abi::ThisCall)
                 if !ctx.options().rust_features().thiscall_abi =>
             {
@@ -4110,7 +4112,13 @@ impl TryToRustTy for FunctionSig {
                 warn!("Skipping function with C-unwind ABI that isn't supported by the configured Rust target");
                 Ok(proc_macro2::TokenStream::new())
             }
-            _ => Ok(quote! {
+            ClangAbi::Known(Abi::EfiApi)
+                if !ctx.options().rust_features().abi_efiapi =>
+            {
+                warn!("Skipping function with efiapi ABI that isn't supported by the configured Rust target");
+                Ok(proc_macro2::TokenStream::new())
+            }
+            abi => Ok(quote! {
                 unsafe extern #abi fn ( #( #arguments ),* ) #ret
             }),
         }
@@ -4239,6 +4247,17 @@ impl CodeGenerator for Function {
                     name,
                     item.location(),
                     "C-unwind",
+                    ctx,
+                );
+                return None;
+            }
+            ClangAbi::Known(Abi::EfiApi)
+                if !ctx.options().rust_features().abi_efiapi =>
+            {
+                unsupported_abi_diagnostic::<true>(
+                    name,
+                    item.location(),
+                    "efiapi",
                     ctx,
                 );
                 return None;
