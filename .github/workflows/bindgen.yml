@@ -54,6 +54,23 @@ jobs:
       - name: Build with msrv
         run: rm Cargo.lock && cargo +1.60.0 build --lib
 
+  minimal:
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: -D warnings
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install stable
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Check without default features 
+        run: cargo check -p bindgen --no-default-features --features=runtime 
+
   quickchecking:
     runs-on: ubuntu-latest
     steps:
