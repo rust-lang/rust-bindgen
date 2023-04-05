@@ -21,9 +21,9 @@ use crate::HashMap;
 use crate::DEFAULT_ANON_FIELDS_PREFIX;
 
 use std::env;
-use std::path::PathBuf;
-#[cfg(feature = "experimenal")]
+#[cfg(feature = "experimental")]
 use std::path::Path;
+use std::path::PathBuf;
 use std::rc::Rc;
 
 use as_args::AsArgs;
