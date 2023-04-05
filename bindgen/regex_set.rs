@@ -96,7 +96,7 @@ impl RegexSet {
     fn build_inner(
         &mut self,
         record_matches: bool,
-        name: Option<&'static str>,
+        _name: Option<&'static str>,
     ) {
         let items = self.items.iter().map(|item| format!("^({})$", item));
         self.record_matches = record_matches;
@@ -104,8 +104,8 @@ impl RegexSet {
             Ok(x) => Some(x),
             Err(e) => {
                 warn!("Invalid regex in {:?}: {:?}", self.items, e);
-                if let Some(name) = name {
-                    #[cfg(feature = "experimental")]
+                #[cfg(feature = "experimental")]
+                if let Some(name) = _name {
                     invalid_regex_warning(self, e, name);
                 }
                 None

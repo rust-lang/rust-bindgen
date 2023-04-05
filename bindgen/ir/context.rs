@@ -2960,11 +2960,11 @@ impl TemplateParameters for PartialType {
     }
 }
 
-fn unused_regex_diagnostic(item: &str, name: &str, ctx: &BindgenContext) {
+fn unused_regex_diagnostic(item: &str, name: &str, _ctx: &BindgenContext) {
     warn!("unused option: {} {}", name, item);
 
     #[cfg(feature = "experimental")]
-    if ctx.options().emit_diagnostics {
+    if _ctx.options().emit_diagnostics {
         use crate::diagnostics::{Diagnostic, Level};
 
         Diagnostic::default()
