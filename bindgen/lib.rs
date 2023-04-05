@@ -407,7 +407,6 @@ impl Builder {
 impl BindgenOptions {
     fn build(&mut self) {
         const REGEX_SETS_LEN: usize = 27;
-        let sets_len = REGEX_SETS_LEN + self.abi_overrides.len();
 
         let regex_sets: [_; REGEX_SETS_LEN] = [
             &mut self.allowlisted_vars,
@@ -442,8 +441,9 @@ impl BindgenOptions {
         let record_matches = self.record_matches;
         #[cfg(feature = "experimental")]
         {
+            let sets_len = REGEX_SETS_LEN + self.abi_overrides.len();
             let names = if self.emit_diagnostics {
-                <[&str; 27]>::into_iter([
+                <[&str; REGEX_SETS_LEN]>::into_iter([
                     "--blocklist-type",
                     "--blocklist-function",
                     "--blocklist-item",
@@ -544,12 +544,12 @@ impl BindgenOptions {
     }
 }
 
-fn deprecated_target_diagnostic(target: RustTarget, options: &BindgenOptions) {
+fn deprecated_target_diagnostic(target: RustTarget, _options: &BindgenOptions) {
     let target = String::from(target);
     warn!("The {} Rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues", target,);
 
     #[cfg(feature = "experimental")]
-    if options.emit_diagnostics {
+    if _options.emit_diagnostics {
         use crate::diagnostics::{Diagnostic, Level};
 
         let mut diagnostic = Diagnostic::default();
@@ -1013,11 +1013,11 @@ impl Bindings {
     }
 }
 
-fn rustfmt_non_fatal_error_diagnostic(msg: &str, options: &BindgenOptions) {
+fn rustfmt_non_fatal_error_diagnostic(msg: &str, _options: &BindgenOptions) {
     warn!("{}", msg);
 
     #[cfg(feature = "experimental")]
-    if options.emit_diagnostics {
+    if _options.emit_diagnostics {
         use crate::diagnostics::{Diagnostic, Level};
 
         Diagnostic::default()

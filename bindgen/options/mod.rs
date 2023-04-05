@@ -21,7 +21,9 @@ use crate::HashMap;
 use crate::DEFAULT_ANON_FIELDS_PREFIX;
 
 use std::env;
-use std::path::{Path, PathBuf};
+#[cfg(feature = "experimental")]
+use std::path::Path;
+use std::path::PathBuf;
 use std::rc::Rc;
 
 use as_args::AsArgs;
@@ -1195,10 +1197,10 @@ options! {
                 self
             }
         },
-        as_args: |parse_callbacks, args| {
+        as_args: |_callbacks, _args| {
             #[cfg(feature = "__cli")]
-            for callbacks in parse_callbacks {
-                args.extend(callbacks.cli_args());
+            for cb in _callbacks {
+                _args.extend(cb.cli_args());
             }
         },
     },
