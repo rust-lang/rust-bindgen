@@ -4338,9 +4338,9 @@ impl CodeGenerator for Function {
 
 fn unsupported_abi_diagnostic<const VARIADIC: bool>(
     fn_name: &str,
-    location: Option<&crate::clang::SourceLocation>,
+    _location: Option<&crate::clang::SourceLocation>,
     abi: &str,
-    ctx: &BindgenContext,
+    _ctx: &BindgenContext,
 ) {
     warn!(
         "Skipping {}function `{}` with the {} ABI that isn't supported by the configured Rust target",
@@ -4350,7 +4350,7 @@ fn unsupported_abi_diagnostic<const VARIADIC: bool>(
     );
 
     #[cfg(feature = "experimental")]
-    if ctx.options().emit_diagnostics {
+    if _ctx.options().emit_diagnostics {
         use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
 
         let mut diag = Diagnostic::default();
@@ -4361,9 +4361,9 @@ fn unsupported_abi_diagnostic<const VARIADIC: bool>(
                 if VARIADIC { "variadic " } else { "" },
                 abi), Level::Warn)
             .add_annotation("No code will be generated for this function.", Level::Warn)
-            .add_annotation(format!("The configured Rust version is {}.", String::from(ctx.options().rust_target)), Level::Note);
+            .add_annotation(format!("The configured Rust version is {}.", String::from(_ctx.options().rust_target)), Level::Note);
 
-        if let Some(loc) = location {
+        if let Some(loc) = _location {
             let (file, line, col, _) = loc.location();
 
             if let Some(filename) = file.name() {
