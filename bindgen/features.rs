@@ -131,6 +131,9 @@ macro_rules! rust_target_base {
             /// Rust stable 1.64
             ///  * `core_ffi_c` ([Tracking issue](https://github.com/rust-lang/rust/issues/94501))
             => Stable_1_64 => 1.64;
+            /// Rust stable 1.68
+            ///  * `abi_efiapi` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/65815))
+            => Stable_1_68 => 1.68;
             /// Nightly rust
             ///  * `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))
             ///  * `vectorcall` calling convention (no tracking issue)
@@ -144,7 +147,7 @@ rust_target_base!(rust_target_def);
 rust_target_base!(rust_target_values_def);
 
 /// Latest stable release of Rust
-pub const LATEST_STABLE_RUST: RustTarget = RustTarget::Stable_1_64;
+pub const LATEST_STABLE_RUST: RustTarget = RustTarget::Stable_1_68;
 
 /// Create RustFeatures struct definition, new(), and a getter for each field
 macro_rules! rust_feature_def {
@@ -240,6 +243,9 @@ rust_feature_def!(
     }
     Stable_1_64 {
         => core_ffi_c;
+    }
+    Stable_1_68 {
+        => abi_efiapi;
     }
     Nightly {
         => thiscall_abi;
