@@ -2104,6 +2104,7 @@ pub(crate) fn extract_clang_version() -> String {
 #[derive(Debug)]
 pub(crate) struct EvalResult {
     x: CXEvalResult,
+    ty: Type,
 }
 
 impl EvalResult {
@@ -2131,6 +2132,7 @@ impl EvalResult {
         }
         Some(EvalResult {
             x: unsafe { clang_Cursor_Evaluate(cursor.x) },
+            ty: cursor.cur_type().canonical_type(),
         })
     }
 
@@ -2177,13 +2179,22 @@ impl EvalResult {
     /// Evaluates the expression as a literal string, that may or may not be
     /// valid utf-8.
     pub(crate) fn as_literal_string(&self) -> Option<Vec<u8>> {
-        match self.kind() {
-            CXEval_StrLiteral => {
+        if self.kind() != CXEval_StrLiteral {
+            return None;
+        }
+
+        let char_ty = self.ty.pointee_type().or_else(|| self.ty.elem_type())?;
+        match char_ty.kind() {
+            CXType_Char_S | CXType_SChar | CXType_Char_U | CXType_UChar => {
                 let ret = unsafe {
                     CStr::from_ptr(clang_EvalResult_getAsStr(self.x))
                 };
                 Some(ret.to_bytes().to_vec())
             }
+            // FIXME: Support generating these.
+            CXType_Char16 => None,
+            CXType_Char32 => None,
+            CXType_WChar => None,
             _ => None,
         }
     }
