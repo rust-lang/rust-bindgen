@@ -163,41 +163,46 @@
 
 ## Added
  * Added the `Builder::default_visibility` method and the
-   `--default-visibility` flag to set the default visibility of fields.
+   `--default-visibility` flag to set the default visibility of fields. (#2338)
  * Added the `--formatter` CLI flag with the values `none`, `rustfmt` and
    `prettyplease` to select which tool will be used to format the bindings. The
-   default value is `rustfmt`. 
+   default value is `rustfmt`. (#2453)
  * Added the `Builder::formatter` method and the `Formatter` type to select
-   which tool will be used to format the bindings.
+   which tool will be used to format the bindings. (#2453)
  * Added the `Builder::emit_diagnostics` method and the  `--emit-diagnostics`
    flag to enable emission of diagnostic messages under the `experimental`
-   feature.
- * Added support for the `"efiapi"` calling convention.
+   feature. (#2436)
+ * Added support for the `"efiapi"` calling convention (#2490).
  * Added the `ParseCallbacks::read_env_var` method which runs everytime
-   `bindgen` reads and environment variable.
+   `bindgen` reads and environment variable. (#2400)
+ * Added the `ParseCallbacks::generated_link_name_override` method which allow
+   overriding the link name of items. (#2425)
+ * Add support for C `enums` when generating code while using the
+   `--wrap-static-fns` feature. (#2415)
 
 ## Changed
  * Static functions with no arguments use `void` as their single argument
    instead of having no arguments when the `--wrap-static-fns` flag is used.
+   (#2443)
  * The source file generated when the `--wrap-static-fns` flag is enabled now
    contains `#include` directives with all the input headers and all the source
-   code added with the `header_contents` method.
+   code added with the `header_contents` method. (#2447)
  * The source file generated when the `--wrap-static-fns` flag no longer uses
    `asm` labeling and the link name of static wrapper functions is allowed to
-   be mangled.
+   be mangled. (#2448)
  * The documentation of the generated `type` aliases now matches the comments
    of their `typedef` counterparts instead of using the comments of the aliased
-   types. 
+   types. (#2463)
  * The `Builder::rustfmt_bindings` methods and the `--no-rustfmt-bindings` flag
-   are now deprecated in favor of the formatter API.
+   are now deprecated in favor of the formatter API. (#2453)
    
 ## Removed
  * The following deprecated flags were removed: `--use-msvc-mangling`,
-   `--rustfmt-bindings` and `--size_t-is-usize`.
+   `--rustfmt-bindings` and `--size_t-is-usize`. (#2408)
  * The `Bindings::emit_warnings` and `Bindings::warnings` methods were removed
-   in favor of `--emit-diagnostics`.
+   in favor of `--emit-diagnostics`. (#2436)
  * Bindgen no longer generates C string constants that cannot be represented as
-   byte slices.
+   byte slices. (#2487)
 
 ## Fixed
 
