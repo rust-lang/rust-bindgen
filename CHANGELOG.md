@@ -65,7 +65,7 @@
   - [Fixed](#fixed-13)
 - [0.54.1](#0541)
   - [Added](#added-12)
-  - [Changed](#changed-10)
+  - [Changed](#chainged-10)
   - [Fixed](#fixed-14)
 - [0.54.0](#0540)
   - [Added](#added-13)
@@ -174,6 +174,8 @@
  * Added the `Builder::emit_diagnostics` method and the  `--emit-diagnostics`
    flag to enable emission of diagnostic messages.
  * Added support for the `"efiapi"` calling convention.
+ * Added the `ParseCallbacks::read_env_var` method which runs everytime
+   `bindgen` reads and environment variable.
 
 ## Changed
  * Static functions with no arguments use `void` as their single argument
