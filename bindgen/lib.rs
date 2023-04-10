@@ -267,9 +267,22 @@ impl std::fmt::Display for Formatter {
 /// in `^` and `$`. So if `<regex>` is passed as argument, the regular expression to be stored will
 /// be `^(<regex>)$`.
 ///
+/// As a consequence, regular expressions passed to `bindgen` will try to match the whole name of
+/// an item instead of a section of it. Meaning that to match any items with the prefix `prefix`,
+/// the `prefix.*` regular expression must be used.
+///
+/// Certain methods, like [`Builder::allowlist_function`], use regular expressions over function
+/// names. C++ methods can be matched by prefixing the name of the type where they belong followed
+/// by an underscore. So if the type `Foo` has a method `bar`, it can be matched with the `Foo_bar`
+/// regular expression.
+///
+/// Additionally, Objective-C interfaces can be matched by prefixing `I` to the regular expression.
+/// As an example, the `IFoo` regular expression matches the `Foo` interface and the `IFoo_foo`
+/// regular expression matches the `foo` method of the `Foo` interface.
+///
 /// Releases of `bindgen` with a version lesser or equal to `0.62.0` used to accept the wildcard
 /// pattern `*` as a valid regular expression. This behavior has been deprecated and the `.*`
-/// pattern must be used instead.
+/// regular expression must be used instead.
 #[derive(Debug, Default, Clone)]
 pub struct Builder {
     options: BindgenOptions,

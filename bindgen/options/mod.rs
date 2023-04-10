@@ -171,10 +171,6 @@ options! {
         methods: {
             regex_option! {
                 /// Do not generate any bindings for the given function.
-                ///
-                /// Methods can be blocklisted by prefixing the name of the type where they belong
-                /// followed by an underscore. So if the type `Foo` has a method `bar`, it can be
-                /// blocklisted as `Foo_bar`.
                 pub fn blocklist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_functions.insert(arg);
                     self
@@ -288,10 +284,6 @@ options! {
         methods: {
             regex_option! {
                 /// Generate bindings for the given function.
-                ///
-                /// Methods can be allowlisted by prefixing the name of the type where they belong
-                /// followed by an underscore. So if the type `Foo` has a method `bar`, it can be
-                /// allowlisted as `Foo_bar`.
                 ///
                 /// This option is transitive by default. Check the documentation of the
                 /// [`Builder::allowlist_recursively`] method for further information.
@@ -418,7 +410,7 @@ options! {
             regex_option! {
                 /// Mark the given `enum` as a Rust `enum`.
                 ///
-                /// This means that each variant of the `enum` will be represented as a Rust `enum
+                /// This means that each variant of the `enum` will be represented as a Rust `enum`
                 /// variant.
                 ///
                 /// **Use this with caution**, creating an instance of a Rust `enum` with an
