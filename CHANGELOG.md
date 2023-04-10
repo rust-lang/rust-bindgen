@@ -173,6 +173,7 @@
    `"prettyplease"` feature is enabled. 
  * Added the `Builder::emit_diagnostics` method and the  `--emit-diagnostics`
    flag to enable emission of diagnostic messages.
+ * Added support for the `"efiapi"` calling convention.
 
 ## Changed
  * Static functions with no arguments use `void` as their single argument
