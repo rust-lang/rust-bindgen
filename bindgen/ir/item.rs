@@ -1749,9 +1749,8 @@ impl Item {
         ret
     }
 
-    /// A named type is a template parameter, e.g., the "T" in Foo<T>. They're
-    /// always local so it's the only exception when there's no declaration for
-    /// a type.
+    /// A named type is a template parameter, e.g., the `T` in `Foo<T>`. They're always local so
+    /// it's the only exception when there's no declaration for a type.
     pub(crate) fn type_param(
         with_id: Option<ItemId>,
         location: clang::Cursor,
