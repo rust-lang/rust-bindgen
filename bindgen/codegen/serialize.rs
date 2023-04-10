@@ -118,7 +118,7 @@ impl<'a> CSerialize<'a> for Function {
         // Write `wrap_name(args`.
         write!(writer, " {}(", wrap_name)?;
         serialize_args(&args, ctx, writer)?;
-        
+
         // Write `) { name(` if the function returns void and `) { return name(` if it does not.
         if ret_ty.is_void() {
             write!(writer, ") {{ {}(", name)?;
