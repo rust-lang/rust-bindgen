@@ -266,7 +266,8 @@ struct BindgenCommand {
     /// Do not bind size_t as usize (useful on platforms where those types are incompatible).
     #[arg(long = "no-size_t-is-usize")]
     no_size_t_is_usize: bool,
-    /// Do not format the generated bindings with rustfmt.
+    /// Do not format the generated bindings with rustfmt. This option is deprecated, please use
+    /// `--formatter=none` instead.
     #[arg(long)]
     no_rustfmt_bindings: bool,
     /// Which tool should be used to format the bindings
@@ -833,9 +834,8 @@ where
         builder = builder.size_t_is_usize(false);
     }
 
-    #[allow(deprecated)]
     if no_rustfmt_bindings {
-        builder = builder.rustfmt_bindings(false);
+        builder = builder.formatter(Formatter::None);
     }
 
     if let Some(formatter) = formatter {

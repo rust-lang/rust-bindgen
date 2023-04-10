@@ -168,9 +168,7 @@
    `prettyplease` to select which tool will be used to format the bindings. The
    default value is `rustfmt`. 
  * Added the `Builder::formatter` method and the `Formatter` type to select
-   which tool will be used to format the bindings. The
-   `Formatter::Prettyplease`   variant is only available if the
-   `"prettyplease"` feature is enabled. 
+   which tool will be used to format the bindings.
  * Added the `Builder::emit_diagnostics` method and the  `--emit-diagnostics`
    flag to enable emission of diagnostic messages.
  * Added support for the `"efiapi"` calling convention.

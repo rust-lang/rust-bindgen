@@ -1574,13 +1574,13 @@ options! {
     /// The tool that should be used to format the generated bindings.
     formatter: Formatter {
         methods: {
-            #[cfg_attr(feature = "prettyplease", deprecated)]
             /// Set whether `rustfmt` should be used to format the generated bindings.
             ///
             /// `rustfmt` is used by default.
             ///
             /// This method overlaps in functionality with the more general [`Builder::formatter`].
             /// Thus, the latter should be preferred.
+            #[cfg(deprecated)]
             pub fn rustfmt_bindings(mut self, doit: bool) -> Self {
                 self.options.formatter = if doit {
                     Formatter::Rustfmt

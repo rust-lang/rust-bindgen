@@ -28,10 +28,9 @@ env_logger = { version = "0.10.0", optional = true }
 log = { version = "0.4", optional = true }
 
 [features]
-default = ["logging", "runtime", "which-rustfmt", "prettyplease"]
+default = ["logging", "runtime", "which-rustfmt"]
 logging = ["bindgen/logging", "env_logger", "log"]
 static = ["bindgen/static"]
 runtime = ["bindgen/runtime"]
 # Dynamically discover a `rustfmt` binary using the `which` crate
 which-rustfmt = ["bindgen/which-rustfmt"]
-prettyplease = ["bindgen/prettyplease"]
