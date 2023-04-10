@@ -40,3 +40,7 @@ enum foo {
 static inline enum foo takes_enum(const enum foo f) {
     return f;
 }
+
+static inline void nevermore() {
+    while (1) { }
+}

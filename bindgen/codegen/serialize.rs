@@ -102,14 +102,31 @@ impl<'a> CSerialize<'a> for Function {
 
         // The name used for the wrapper self.
         let wrap_name = format!("{}{}", name, ctx.wrap_static_fns_suffix());
-        // The function's return type
-        let ret_ty = signature.return_type();
 
-        // Write `ret_ty wrap_name(args) { return name(arg_names)' }`
-        ret_ty.serialize(ctx, (), stack, writer)?;
+        // The function's return type
+        let ret_ty = {
+            let type_id = signature.return_type();
+            let item = ctx.resolve_item(type_id);
+            let ret_ty = item.expect_type();
+
+            // Write `ret_ty`.
+            ret_ty.serialize(ctx, item, stack, writer)?;
+
+            ret_ty
+        };
+
+        // Write `wrap_name(args`.
         write!(writer, " {}(", wrap_name)?;
         serialize_args(&args, ctx, writer)?;
-        write!(writer, ") {{ return {}(", name)?;
+        
+        // Write `) { name(` if the function returns void and `) { return name(` if it does not.
+        if ret_ty.is_void() {
+            write!(writer, ") {{ {}(", name)?;
+        } else {
+            write!(writer, ") {{ return {}(", name)?;
+        }
+
+        // Write `arg_names); }`.
         serialize_sep(", ", args.iter(), ctx, writer, |(name, _), _, buf| {
             write!(buf, "{}", name).map_err(From::from)
         })?;
