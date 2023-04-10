@@ -121,7 +121,6 @@ macro_rules! options {
                 };
 
                 $({
-                    eprintln!("doing {}", stringify!($field));
                     let func: fn(&$ty, &mut Vec<String>) = as_args!($as_args);
                     func(&self.options.$field, &mut args);
                 })*
