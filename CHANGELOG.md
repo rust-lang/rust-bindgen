@@ -186,12 +186,15 @@
  * The documentation of the generated `type` aliases now matches the comments
    of their `typedef` counterparts instead of using the comments of the aliased
    types. 
+   
 ## Removed
  * The following deprecated flags were removed: `--use-msvc-mangling`,
    `--rustfmt-bindings` and `--size_t-is-usize`.
  * The `--no-rustfmt-bindings` flag was removed in favor of `--formatter=none`.
  * The `Bindings::emit_warnings` and `Bindings::warnings` methods were removed
    in favor of `--emit-diagnostics`.
+ * Bindgen no longer generates C string constants that cannot be represented as
+   byte slices.
 
 ## Fixed
 
