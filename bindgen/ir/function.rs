@@ -650,9 +650,9 @@ impl FunctionSig {
     ///
     /// For more details, see:
     ///
-    /// * https://github.com/rust-lang/rust-bindgen/issues/547,
-    /// * https://github.com/rust-lang/rust/issues/38848,
-    /// * and https://github.com/rust-lang/rust/issues/40158
+    /// * <https://github.com/rust-lang/rust-bindgen/issues/547>,
+    /// * <https://github.com/rust-lang/rust/issues/38848>,
+    /// * and <https://github.com/rust-lang/rust/issues/40158>
     pub(crate) fn function_pointers_can_derive(&self) -> bool {
         if self.argument_types.len() > RUST_DERIVE_FUNPTR_LIMIT {
             return false;

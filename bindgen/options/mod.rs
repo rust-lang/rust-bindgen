@@ -1,6 +1,6 @@
 //! Declarations and setter methods for `bindgen` options.
 //!
-//! The main entry point of this module is the [`options`] macro.
+//! The main entry point of this module is the `options` macro.
 #[macro_use]
 mod helpers;
 mod as_args;
@@ -504,7 +504,7 @@ options! {
         methods: {
             /// Set the default style of code generation for `typedef`s.
             ///
-            /// If this method is not called, the [`AliasVaration::TypeAlias`] style is used by
+            /// If this method is not called, the [`AliasVariation::TypeAlias`] style is used by
             /// default.
             ///
             /// To set the style for individual `typedefs`s, use [`Builder::type_alias`],
@@ -563,7 +563,7 @@ options! {
             regex_option! {
                 /// Mark the given `typedef` to be generated as a newtype that can be dereferenced.
                 ///
-                /// This is similar to the [`Builder:new_type_alias`] style, but the newtype
+                /// This is similar to the [`Builder::new_type_alias`] style, but the newtype
                 /// implements `Deref` and `DerefMut` with the aliased type as a target.
                 pub fn new_type_alias_deref<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.new_type_alias_deref.insert(arg);
@@ -1579,7 +1579,7 @@ options! {
             ///
             /// This method overlaps in functionality with the more general [`Builder::formatter`].
             /// Thus, the latter should be preferred.
-            #[cfg(deprecated)]
+            #[deprecated]
             pub fn rustfmt_bindings(mut self, doit: bool) -> Self {
                 self.options.formatter = if doit {
                     Formatter::Rustfmt
@@ -1615,8 +1615,8 @@ options! {
             /// The default `rustfmt` options are used if `None` is passed to this method or if
             /// this method is not called at all.
             ///
-            /// Calling this method will set the [`Bindings::rustfmt_bindings`] option to `true`
-            /// and the [`Bindings::formatter`] option to [`Formatter::Rustfmt`].
+            /// Calling this method will set the [`Builder::rustfmt_bindings`] option to `true`
+            /// and the [`Builder::formatter`] option to [`Formatter::Rustfmt`].
             pub fn rustfmt_configuration_file(mut self, path: Option<PathBuf>) -> Self {
                 self = self.formatter(Formatter::Rustfmt);
                 self.options.rustfmt_configuration_file = path;
@@ -1962,7 +1962,7 @@ options! {
             /// [`Builder::wrap_static_fns`] method.
             ///
             /// The default path is `temp_dir/bindgen/extern`, where `temp_dir` is the path
-            /// returned by [`std::fs::temp_dir`] .
+            /// returned by [`std::env::temp_dir`] .
             pub fn wrap_static_fns_path<T: AsRef<Path>>(mut self, path: T) -> Self {
                 self.options.wrap_static_fns_path = Some(path.as_ref().to_owned());
                 self
