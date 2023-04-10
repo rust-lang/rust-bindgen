@@ -1019,7 +1019,7 @@ where
             "--with-derive-custom-union",
         ),
     ] {
-        let name = emit_diagnostics.then(|| name);
+        let name = emit_diagnostics.then_some(name);
         for custom_derive in custom_derives {
             let (regex, derives) = custom_derive
                 .rsplit_once('=')
