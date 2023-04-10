@@ -83,7 +83,7 @@ pub(crate) struct Annotations {
     disallow_debug: bool,
     /// Manually disable deriving/implement default on this type.
     disallow_default: bool,
-    /// Whether to add a #[must_use] annotation to this type.
+    /// Whether to add a `#[must_use]` annotation to this type.
     must_use_type: bool,
     /// Visibility of struct fields. You can set this on
     /// structs (it will apply to all the fields), or individual fields.

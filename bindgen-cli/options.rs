@@ -144,7 +144,7 @@ struct BindgenCommand {
     /// Derive Ord on any type.
     #[arg(long)]
     with_derive_ord: bool,
-    /// Avoid including doc comments in the output, see: https://github.com/rust-lang/rust-bindgen/issues/426
+    /// Avoid including doc comments in the output, see: <https://github.com/rust-lang/rust-bindgen/issues/426>
     #[arg(long)]
     no_doc_comments: bool,
     /// Disable allowlisting types recursively. This will cause bindgen to emit Rust code that won't compile! See the `bindgen::Builder::allowlist_recursively` method's documentation for details.
@@ -295,10 +295,10 @@ struct BindgenCommand {
     /// Avoid deriving Hash for types matching <REGEX>.
     #[arg(long, value_name = "REGEX")]
     no_hash: Vec<String>,
-    /// Add #[must_use] annotation to types matching <REGEX>.
+    /// Add `#[must_use]` annotation to types matching <REGEX>.
     #[arg(long, value_name = "REGEX")]
     must_use_type: Vec<String>,
-    /// Enables detecting unexposed attributes in functions (slow). Used to generate #[must_use] annotations.
+    /// Enables detecting unexposed attributes in functions (slow). Used to generate `#[must_use]` annotations.
     #[arg(long)]
     enable_function_attribute_detection: bool,
     /// Use `*const [T; size]` instead of `*const T` for C arrays

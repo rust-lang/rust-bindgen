@@ -1096,7 +1096,7 @@ impl Item {
         })
     }
 
-    /// Whether this is a #[must_use] type.
+    /// Whether this is a `#[must_use]` type.
     pub(crate) fn must_use(&self, ctx: &BindgenContext) -> bool {
         self.annotations().must_use_type() || ctx.must_use_type_by_name(self)
     }

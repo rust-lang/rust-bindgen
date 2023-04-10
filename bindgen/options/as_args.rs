@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use crate::RegexSet;
 
-/// Trait used to turn [`BindgenOptions`] fields into CLI args.
+/// Trait used to turn [`crate::BindgenOptions`] fields into CLI args.
 pub(super) trait AsArgs {
     fn as_args(&self, args: &mut Vec<String>, flag: &str);
 }
@@ -38,7 +38,7 @@ impl AsArgs for Option<String> {
     }
 }
 
-/// If the `Option` is `Some(path)`, push `flag` followed by the [`PathBuf::display`]
+/// If the `Option` is `Some(path)`, push `flag` followed by the [`std::path::Path::display`]
 /// representation of `path`.
 impl AsArgs for Option<PathBuf> {
     fn as_args(&self, args: &mut Vec<String>, flag: &str) {

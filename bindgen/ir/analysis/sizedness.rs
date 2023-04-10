@@ -52,7 +52,7 @@ pub(crate) enum SizednessResult {
     /// have an `_address` byte inserted.
     ///
     /// We don't properly handle this situation correctly right now:
-    /// https://github.com/rust-lang/rust-bindgen/issues/586
+    /// <https://github.com/rust-lang/rust-bindgen/issues/586>
     DependsOnTypeParam,
 
     /// Has some size that is known to be greater than zero. That doesn't mean
