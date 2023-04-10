@@ -162,7 +162,7 @@
 # Unreleased
 
 ## Added
- * Added the `Bindgen::default_visibility` nethod and the
+ * Added the `Bindgen::default_visibility` method and the
    `--default-visibility` flag to set the default visibility of fields.
  * Added the `--formatter` CLI flag with the values `none`, `rustfmt` and
    `prettyplease` to select which tool will be used to format the bindings. The
