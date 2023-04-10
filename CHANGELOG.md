@@ -162,7 +162,7 @@
 # Unreleased
 
 ## Added
- * Added the `Bindgen::default_visibility` method and the
+ * Added the `Builder::default_visibility` method and the
    `--default-visibility` flag to set the default visibility of fields.
  * Added the `--formatter` CLI flag with the values `none`, `rustfmt` and
    `prettyplease` to select which tool will be used to format the bindings. The
@@ -170,7 +170,8 @@
  * Added the `Builder::formatter` method and the `Formatter` type to select
    which tool will be used to format the bindings.
  * Added the `Builder::emit_diagnostics` method and the  `--emit-diagnostics`
-   flag to enable emission of diagnostic messages.
+   flag to enable emission of diagnostic messages under the `experimental`
+   feature.
  * Added support for the `"efiapi"` calling convention.
  * Added the `ParseCallbacks::read_env_var` method which runs everytime
    `bindgen` reads and environment variable.
@@ -187,11 +188,12 @@
  * The documentation of the generated `type` aliases now matches the comments
    of their `typedef` counterparts instead of using the comments of the aliased
    types. 
+ * The `Builder::rustfmt_bindings` methods and the `--no-rustfmt-bindings` flag
+   are now deprecated in favor of the formatter API.
    
 ## Removed
  * The following deprecated flags were removed: `--use-msvc-mangling`,
    `--rustfmt-bindings` and `--size_t-is-usize`.
- * The `--no-rustfmt-bindings` flag was removed in favor of `--formatter=none`.
  * The `Bindings::emit_warnings` and `Bindings::warnings` methods were removed
    in favor of `--emit-diagnostics`.
  * Bindgen no longer generates C string constants that cannot be represented as
