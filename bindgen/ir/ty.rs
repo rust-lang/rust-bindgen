@@ -124,6 +124,10 @@ impl Type {
         matches!(self.kind, TypeKind::Enum(..))
     }
 
+    /// Is this void?
+    pub(crate) fn is_void(&self) -> bool {
+        matches!(self.kind, TypeKind::Void)
+    }
     /// Is this either a builtin or named type?
     pub(crate) fn is_builtin_or_type_param(&self) -> bool {
         matches!(
