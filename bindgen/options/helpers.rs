@@ -1,4 +1,4 @@
-/// Helper function that appends extra documentation to [`Builder`] methods that support regular
+/// Helper function that appends extra documentation to [`crate::Builder`] methods that support regular
 /// expressions in their input.
 macro_rules! regex_option {
     ($(#[$attrs:meta])* pub fn $($tokens:tt)*) => {
