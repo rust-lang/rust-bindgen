@@ -102,8 +102,8 @@ pub trait ParseCallbacks: fmt::Debug {
     /// This will be called on every file inclusion, with the full path of the included file.
     fn include_file(&self, _filename: &str) {}
 
-    /// This will be called every time an environment variable is read (whether or not it has any
-    /// content), with the name of the env variable.
+    /// This will be called every time `bindgen` reads an environment variable whether it has any
+    /// content or not.
     fn read_env_var(&self, _key: &str) {}
 
     /// This will be called to determine whether a particular blocklisted type
