@@ -167,6 +167,8 @@
 ## Added
 
 ## Changed
+* Wrappers for static functions that return `void` no longer contain a `return`
+  statement and only call the static function instead.
    
 ## Removed
 

@@ -56,3 +56,7 @@ extern "C" {
     #[link_name = "takes_enum__extern"]
     pub fn takes_enum(f: foo) -> foo;
 }
+extern "C" {
+    #[link_name = "nevermore__extern"]
+    pub fn nevermore();
+}
