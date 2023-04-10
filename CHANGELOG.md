@@ -193,7 +193,7 @@
    `bindgen` reads and environment variable. (#2400)
  * Added the `ParseCallbacks::generated_link_name_override` method which allow
    overriding the link name of items. (#2425)
- * Add support for C `enums` when generating code while using the
+ * Add support for C `enum`s when generating code while using the
    `--wrap-static-fns` feature. (#2415)
 
 ## Changed
