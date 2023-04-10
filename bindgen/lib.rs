@@ -73,8 +73,8 @@ use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::str::FromStr;
 use std::rc::Rc;
+use std::str::FromStr;
 
 // Some convenient typedefs for a fast hash map and hash set.
 type HashMap<K, V> = rustc_hash::FxHashMap<K, V>;
