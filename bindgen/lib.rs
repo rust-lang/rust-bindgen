@@ -268,8 +268,8 @@ impl std::fmt::Display for Formatter {
 /// be `^(<regex>)$`.
 ///
 /// As a consequence, regular expressions passed to `bindgen` will try to match the whole name of
-/// an item instead of a section of it. Meaning that, to match any items with the prefix `prefix`,
-/// the `prefix.*` regular expression must be used.
+/// an item instead of a section of it, which means that to match any items with the prefix
+/// `prefix`, the `prefix.*` regular expression must be used.
 ///
 /// Certain methods, like [`Builder::allowlist_function`], use regular expressions over function
 /// names. C++ methods can be matched by prefixing the name of the type where they belong followed
