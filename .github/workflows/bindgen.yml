@@ -86,7 +86,7 @@ jobs:
           override: true
 
       - name: Generate documentation 
-        run: cargo doc 
+        run: cargo doc --document-private-items 
 
   quickchecking:
     runs-on: ubuntu-latest
