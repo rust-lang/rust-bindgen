@@ -176,6 +176,8 @@ pub enum Abi {
     C,
     /// The "stdcall" ABI.
     Stdcall,
+    /// The "efiapi" ABI.
+    EfiApi,
     /// The "fastcall" ABI.
     Fastcall,
     /// The "thiscall" ABI.
@@ -197,6 +199,7 @@ impl FromStr for Abi {
         match s {
             "C" => Ok(Self::C),
             "stdcall" => Ok(Self::Stdcall),
+            "efiapi" => Ok(Self::EfiApi),
             "fastcall" => Ok(Self::Fastcall),
             "thiscall" => Ok(Self::ThisCall),
             "vectorcall" => Ok(Self::Vectorcall),
@@ -213,6 +216,7 @@ impl std::fmt::Display for Abi {
         let s = match *self {
             Self::C => "C",
             Self::Stdcall => "stdcall",
+            Self::EfiApi => "efiapi",
             Self::Fastcall => "fastcall",
             Self::ThisCall => "thiscall",
             Self::Vectorcall => "vectorcall",
@@ -263,6 +267,9 @@ impl quote::ToTokens for ClangAbi {
 /// A function signature.
 #[derive(Debug)]
 pub(crate) struct FunctionSig {
+    /// The name of this function signature.
+    name: String,
+
     /// The return type of the function.
     return_type: TypeId,
 
@@ -572,7 +579,8 @@ impl FunctionSig {
             warn!("Unknown calling convention: {:?}", call_conv);
         }
 
-        Ok(FunctionSig {
+        Ok(Self {
+            name: spelling,
             return_type: ret,
             argument_types: args,
             is_variadic: ty.is_variadic(),
@@ -611,6 +619,13 @@ impl FunctionSig {
             } else {
                 self.abi
             }
+        } else if let Some((abi, _)) = ctx
+            .options()
+            .abi_overrides
+            .iter()
+            .find(|(_, regex_set)| regex_set.matches(&self.name))
+        {
+            ClangAbi::Known(*abi)
         } else {
             self.abi
         }

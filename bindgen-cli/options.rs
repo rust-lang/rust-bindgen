@@ -336,7 +336,7 @@ struct BindgenCommand {
     /// Deduplicates extern blocks.
     #[arg(long)]
     merge_extern_blocks: bool,
-    /// Overrides the ABI of functions matching <regex>. The <OVERRIDE> value must be of the shape <REGEX>=<ABI> where <ABI> can be one of C, stdcall, fastcall, thiscall, aapcs, win64 or C-unwind.
+    /// Overrides the ABI of functions matching <regex>. The <OVERRIDE> value must be of the shape <REGEX>=<ABI> where <ABI> can be one of C, stdcall, efiapi, fastcall, thiscall, aapcs, win64 or C-unwind.
     #[arg(long, value_name = "OVERRIDE")]
     override_abi: Vec<String>,
     /// Wrap unsafe operations in unsafe blocks.

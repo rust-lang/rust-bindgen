@@ -14,3 +14,5 @@ extern "stdcall" {
 extern "C" {
     pub fn baz();
 }
+pub type boo = ::std::option::Option<unsafe extern "efiapi" fn()>;
+pub type foobar = ::std::option::Option<unsafe extern "efiapi" fn(boo: boo)>;
