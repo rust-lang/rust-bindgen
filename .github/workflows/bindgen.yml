@@ -133,7 +133,7 @@ jobs:
           - debian: null
             cross: null
             rust: null
-        llvm_version: ["5.0", "9.0"]
+        llvm_version: ["5.0", "9.0", "16.0"]
         main_tests: [1]
         release_build: [0, 1]
         no_default_features: [0, 1]
