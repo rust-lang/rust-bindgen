@@ -4143,10 +4143,26 @@ impl CodeGenerator for Function {
 
         let is_internal = matches!(self.linkage(), Linkage::Internal);
 
-        if is_internal && !ctx.options().wrap_static_fns {
-            // We can't do anything with Internal functions if we are not wrapping them so just
-            // avoid generating anything for them.
-            return None;
+        let signature_item = ctx.resolve_item(self.signature());
+        let signature = signature_item.kind().expect_type().canonical_type(ctx);
+        let signature = match *signature.kind() {
+            TypeKind::Function(ref sig) => sig,
+            _ => panic!("Signature kind is not a Function: {:?}", signature),
+        };
+
+        if is_internal {
+            if ctx.options().wrap_static_fns {
+                if signature.is_variadic() {
+                    // We cannot generate wrappers for variadic static functions so we avoid
+                    // generating any code for them.
+                    variadic_fn_diagnostic(self.name(), item.location(), ctx);
+                    return None;
+                }
+            } else {
+                // We cannott do anything with internal functions if we are not wrapping them so
+                // just avoid generating anything for them.
+                return None;
+            }
         }
 
         // Pure virtual methods have no actual symbol, so we can't generate
@@ -4185,13 +4201,6 @@ impl CodeGenerator for Function {
             }
             result.saw_function(seen_symbol_name);
         }
-
-        let signature_item = ctx.resolve_item(self.signature());
-        let signature = signature_item.kind().expect_type().canonical_type(ctx);
-        let signature = match *signature.kind() {
-            TypeKind::Function(ref sig) => sig,
-            _ => panic!("Signature kind is not a Function: {:?}", signature),
-        };
 
         let args = utils::fnsig_arguments(ctx, signature);
         let ret = utils::fnsig_return_ty(ctx, signature);
@@ -4381,6 +4390,44 @@ fn unsupported_abi_diagnostic<const VARIADIC: bool>(
                 abi), Level::Warn)
             .add_annotation("No code will be generated for this function.", Level::Warn)
             .add_annotation(format!("The configured Rust version is {}.", String::from(_ctx.options().rust_target)), Level::Note);
+
+        if let Some(loc) = _location {
+            let (file, line, col, _) = loc.location();
+
+            if let Some(filename) = file.name() {
+                if let Ok(Some(source)) = get_line(&filename, line) {
+                    let mut slice = Slice::default();
+                    slice
+                        .with_source(source)
+                        .with_location(filename, line, col);
+                    diag.add_slice(slice);
+                }
+            }
+        }
+
+        diag.display()
+    }
+}
+
+fn variadic_fn_diagnostic(
+    fn_name: &str,
+    _location: Option<&crate::clang::SourceLocation>,
+    _ctx: &BindgenContext,
+) {
+    warn!(
+        "Cannot generate wrapper for the static variadic function `{}`.",
+        fn_name,
+    );
+
+    #[cfg(feature = "experimental")]
+    if _ctx.options().emit_diagnostics {
+        use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
+
+        let mut diag = Diagnostic::default();
+
+        diag.with_title(format!("Cannot generate wrapper for the static function `{}`.", fn_name), Level::Warn)
+            .add_annotation("The `--wrap-static-fns` feature does not support variadic functions.", Level::Note)
+            .add_annotation("No code will be generated for this function.", Level::Note);
 
         if let Some(loc) = _location {
             let (file, line, col, _) = loc.location();

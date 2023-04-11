@@ -77,6 +77,8 @@ impl<'a> CSerialize<'a> for Function {
             _ => unreachable!(),
         };
 
+        assert!(!signature.is_variadic());
+
         let name = self.name();
 
         // Function argoments stored as `(name, type_id)` tuples.
