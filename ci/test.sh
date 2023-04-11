@@ -10,8 +10,8 @@ set -o pipefail
 
 function llvm_linux_target_triple() {
   case "$1" in
-   16.0)    echo "x86_64-linux-gnu-ubuntu-18.04" ;;
-   *)       echo "x86_64-linux-gnu-ubuntu-16.04" ;;
+   16.0.0)    echo "x86_64-linux-gnu-ubuntu-18.04" ;;
+   *)         echo "x86_64-linux-gnu-ubuntu-16.04" ;;
   esac
 }
 
