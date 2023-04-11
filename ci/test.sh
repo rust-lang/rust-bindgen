@@ -9,7 +9,10 @@ set -x
 set -o pipefail
 
 function llvm_linux_target_triple() {
-  echo "x86_64-linux-gnu-ubuntu-16.04"
+  case "$1" in
+   16.0)    echo "x86_64-linux-gnu-ubuntu-18.04" ;;
+   *)       echo "x86_64-linux-gnu-ubuntu-16.04" ;;
+  esac
 }
 
 function llvm_macos_target_triple() {
