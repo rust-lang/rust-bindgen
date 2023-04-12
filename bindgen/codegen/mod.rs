@@ -5260,16 +5260,18 @@ pub(crate) mod utils {
         fnsig_return_ty_internal(ctx, sig, /* include_arrow = */ true)
     }
 
-    pub(crate) fn fnsig_arguments(
+    pub(crate) fn fnsig_arguments_iter<
+        'a,
+        I: Iterator<Item = &'a (Option<String>, crate::ir::context::TypeId)>,
+    >(
         ctx: &BindgenContext,
-        sig: &FunctionSig,
+        args_iter: I,
+        is_variadic: bool,
     ) -> Vec<proc_macro2::TokenStream> {
         use super::ToPtr;
 
         let mut unnamed_arguments = 0;
-        let mut args = sig
-            .argument_types()
-            .iter()
+        let mut args = args_iter
             .map(|&(ref name, ty)| {
                 let arg_item = ctx.resolve_item(ty);
                 let arg_ty = arg_item.kind().expect_type();
@@ -5326,11 +5328,22 @@ pub(crate) mod utils {
             })
             .collect::<Vec<_>>();
 
-        if sig.is_variadic() {
+        if is_variadic {
             args.push(quote! { ... })
         }
 
         args
+    }
+
+    pub(crate) fn fnsig_arguments(
+        ctx: &BindgenContext,
+        sig: &FunctionSig,
+    ) -> Vec<proc_macro2::TokenStream> {
+        fnsig_arguments_iter(
+            ctx,
+            sig.argument_types().iter(),
+            sig.is_variadic(),
+        )
     }
 
     pub(crate) fn fnsig_argument_identifiers(
