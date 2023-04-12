@@ -169,6 +169,8 @@
 ## Changed
 * Wrappers for static functions that return `void` no longer contain a `return`
   statement and only call the static function instead.
+* The `--wrap-static-fns` option no longer emits wrappers for static variadic
+  functions.
    
 ## Removed
 
