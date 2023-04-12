@@ -4151,16 +4151,16 @@ impl CodeGenerator for Function {
         };
 
         if is_internal {
-            if ctx.options().wrap_static_fns {
-                if signature.is_variadic() {
-                    // We cannot generate wrappers for variadic static functions so we avoid
-                    // generating any code for them.
-                    variadic_fn_diagnostic(self.name(), item.location(), ctx);
-                    return None;
-                }
-            } else {
-                // We cannott do anything with internal functions if we are not wrapping them so
+            if !ctx.options().wrap_static_fns {
+                // We cannot do anything with internal functions if we are not wrapping them so
                 // just avoid generating anything for them.
+                return None;
+            }
+            
+            if signature.is_variadic() {
+                // We cannot generate wrappers for variadic static functions so we avoid
+                // generating any code for them.
+                variadic_fn_diagnostic(self.name(), item.location(), ctx);
                 return None;
             }
         }
