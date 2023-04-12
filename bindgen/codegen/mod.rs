@@ -4156,7 +4156,7 @@ impl CodeGenerator for Function {
                 // just avoid generating anything for them.
                 return None;
             }
-            
+
             if signature.is_variadic() {
                 // We cannot generate wrappers for variadic static functions so we avoid
                 // generating any code for them.
