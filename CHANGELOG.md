@@ -177,6 +177,10 @@
   statement and only call the static function instead.
 * The `--wrap-static-fns` option no longer emits wrappers for static variadic
   functions.
+* Depfiles generated with `--depfile` or `Builder::depfile` will now be
+  properly generate module names and paths that include spaces by escaping
+  them. To make the escaping clear and consistent, backslashes are also
+  escaped.
    
 ## Removed
 
