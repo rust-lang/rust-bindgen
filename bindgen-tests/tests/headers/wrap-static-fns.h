@@ -44,3 +44,7 @@ static inline enum foo takes_enum(const enum foo f) {
 static inline void nevermore() {
     while (1) { }
 }
+
+static inline int variadic(int x, ...) {
+    return x;
+}
