@@ -249,12 +249,6 @@ pub(crate) mod ast_ty {
         quote!(#val)
     }
 
-    pub(crate) fn byte_array_expr(bytes: &[u8]) -> TokenStream {
-        let mut bytes: Vec<_> = bytes.to_vec();
-        bytes.push(0);
-        quote! { [ #(#bytes),* ] }
-    }
-
     pub(crate) fn cstr_expr(mut string: String) -> TokenStream {
         string.push('\0');
         let b = proc_macro2::Literal::byte_string(string.as_bytes());

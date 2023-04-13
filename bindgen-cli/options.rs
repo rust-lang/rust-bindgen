@@ -156,6 +156,9 @@ struct BindgenCommand {
     /// Generate block signatures instead of void pointers.
     #[arg(long)]
     generate_block: bool,
+    /// Generate string constants as `&CStr` instead of `&[u8]`.
+    #[arg(long)]
+    generate_cstr: bool,
     /// Use extern crate instead of use for block.
     #[arg(long)]
     block_extern_crate: bool,
@@ -430,6 +433,7 @@ where
         no_recursive_allowlist,
         objc_extern_crate,
         generate_block,
+        generate_cstr,
         block_extern_crate,
         distrust_clang_mangling,
         builtins,
@@ -753,6 +757,10 @@ where
 
     if generate_block {
         builder = builder.generate_block(true);
+    }
+
+    if generate_cstr {
+        builder = builder.generate_cstr(true);
     }
 
     if block_extern_crate {
