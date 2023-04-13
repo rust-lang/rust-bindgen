@@ -21,5 +21,5 @@ pub const BAZ: ::std::os::raw::c_longlong = 24;
 pub const fuzz: f64 = 51.0;
 pub const BAZZ: ::std::os::raw::c_char = 53;
 pub const WAT: ::std::os::raw::c_char = 0;
-pub const bytestring: &[u8; 4usize] = b"Foo\0";
-pub const NOT_UTF8: [u8; 5usize] = [240u8, 40u8, 140u8, 40u8, 0u8];
+pub const bytestring: &[u8; 4] = b"Foo\0";
+pub const NOT_UTF8: &[u8; 5] = b"\xF0(\x8C(\0";

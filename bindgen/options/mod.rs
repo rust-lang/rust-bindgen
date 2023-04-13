@@ -1416,6 +1416,23 @@ options! {
         },
         as_args: "--generate-block",
     },
+    /// Whether to generate strings as `CStr`.
+    generate_cstr: bool {
+        methods: {
+            /// Set whether string constants should be generated as `&CStr` instead of `&[u8]`.
+            ///
+            /// A minimum Rust target of 1.59 is required for this to have any effect as support
+            /// for `CStr::from_bytes_with_nul_unchecked` in `const` contexts is needed.
+            ///
+            /// This option is disabled by default but will become enabled by default in a future
+            /// release, so enabling this is recommended.
+            pub fn generate_cstr(mut self, doit: bool) -> Self {
+                self.options.generate_cstr = doit;
+                self
+            }
+        },
+        as_args: "--generate-cstr",
+    },
     /// Whether to emit `#[macro_use] extern crate block;` instead of `use block;` in the prologue
     /// of the files generated from apple block files.
     block_extern_crate: bool {

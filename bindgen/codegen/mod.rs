@@ -57,9 +57,10 @@ use crate::{Entry, HashMap, HashSet};
 use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::VecDeque;
+use std::ffi::CStr;
 use std::fmt::{self, Write};
 use std::ops;
-use std::str::FromStr;
+use std::str::{self, FromStr};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum CodegenError {
@@ -692,41 +693,48 @@ impl CodeGenerator for Var {
                     });
                 }
                 VarType::String(ref bytes) => {
-                    // Account the trailing zero.
-                    //
+                    let prefix = ctx.trait_prefix();
+
+                    let options = ctx.options();
+                    let rust_features = options.rust_features;
+
+                    let mut cstr_bytes = bytes.clone();
+                    cstr_bytes.push(0);
+                    let len = proc_macro2::Literal::usize_unsuffixed(
+                        cstr_bytes.len(),
+                    );
+                    let cstr = CStr::from_bytes_with_nul(&cstr_bytes).unwrap();
+
                     // TODO: Here we ignore the type we just made up, probably
                     // we should refactor how the variable type and ty ID work.
-                    let len = bytes.len() + 1;
-                    let ty = quote! {
-                        [u8; #len]
-                    };
+                    let array_ty = quote! { [u8; #len] };
+                    let cstr_ty = quote! { ::#prefix::ffi::CStr };
 
-                    match String::from_utf8(bytes.clone()) {
-                        Ok(string) => {
-                            let cstr = helpers::ast_ty::cstr_expr(string);
-                            if ctx
-                                .options()
-                                .rust_features
-                                .static_lifetime_elision
-                            {
-                                result.push(quote! {
-                                    #(#attrs)*
-                                    pub const #canonical_ident : &#ty = #cstr ;
-                                });
-                            } else {
-                                result.push(quote! {
-                                    #(#attrs)*
-                                    pub const #canonical_ident : &'static #ty = #cstr ;
-                                });
-                            }
+                    let bytes = proc_macro2::Literal::byte_string(
+                        cstr.to_bytes_with_nul(),
+                    );
+
+                    if rust_features.const_cstr && options.generate_cstr {
+                        result.push(quote! {
+                            #(#attrs)*
+                            #[allow(unsafe_code)]
+                            pub const #canonical_ident: &#cstr_ty = unsafe {
+                                #cstr_ty::from_bytes_with_nul_unchecked(#bytes)
+                            };
+                        });
+                    } else {
+                        let lifetime = if rust_features.static_lifetime_elision
+                        {
+                            None
+                        } else {
+                            Some(quote! { 'static })
                         }
-                        Err(..) => {
-                            let bytes = helpers::ast_ty::byte_array_expr(bytes);
-                            result.push(quote! {
-                                #(#attrs)*
-                                pub const #canonical_ident : #ty = #bytes ;
-                            });
-                        }
+                        .into_iter();
+
+                        result.push(quote! {
+                            #(#attrs)*
+                            pub const #canonical_ident: &#(#lifetime )*#array_ty = #bytes ;
+                        });
                     }
                 }
                 VarType::Float(f) => {
