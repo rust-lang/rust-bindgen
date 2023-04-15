@@ -171,7 +171,6 @@ pub enum Formatter {
     None,
     /// Use `rustfmt` to format the bindings.
     Rustfmt,
-    #[cfg(feature = "prettyplease")]
     /// Use `prettyplease` to format the bindings.
     Prettyplease,
 }
