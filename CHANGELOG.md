@@ -168,6 +168,8 @@
 
 * Added the `--generate-cstr` CLI flag to generate string constants as `&CStr`
   instead of `&[u8]`. (Requires Rust 1.59 or higher.)
+* Added the `--generate-shell-completions` CLI flag to generate completions for
+  different shells.
 
 ## Changed
 
