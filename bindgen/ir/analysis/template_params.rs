@@ -459,7 +459,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             }
         }
 
-        if cfg!(feature = "testing_only_extra_assertions") {
+        if cfg!(feature = "__testing_only_extra_assertions") {
             // Invariant: The `used` map has an entry for every allowlisted
             // item, as well as all explicitly blocklisted items that are
             // reachable from allowlisted items.

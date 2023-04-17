@@ -36,6 +36,6 @@ which-rustfmt = ["bindgen/which-rustfmt"]
 
 # These features only exist for CI testing -- don't use them if you're not hacking
 # on bindgen!
-testing_only_extra_assertions = ["bindgen/testing_only_extra_assertions"]
-testing_only_libclang_9 = ["bindgen/testing_only_libclang_9"]
-testing_only_libclang_5 = ["bindgen/testing_only_libclang_5"]
+__testing_only_extra_assertions = ["bindgen/__testing_only_extra_assertions"]
+__testing_only_libclang_9 = ["bindgen/__testing_only_libclang_9"]
+__testing_only_libclang_5 = ["bindgen/__testing_only_libclang_5"]

@@ -29,10 +29,10 @@ findstr /r /c:"#include *<.*>" tests\headers\* >nul 2>&1 && (
 cargo test --features "%BINDGEN_FEATURES%" || exit /b 1
 call .\ci\assert-no-diff.bat
 
-cargo test --features "%BINDGEN_FEATURES% testing_only_extra_assertions" || exit /b 1
+cargo test --features "%BINDGEN_FEATURES% __testing_only_extra_assertions" || exit /b 1
 call .\ci\assert-no-diff.bat
 
-cargo test --release --features "%BINDGEN_FEATURES% testing_only_extra_assertions" || exit /b 1
+cargo test --release --features "%BINDGEN_FEATURES% __testing_only_extra_assertions" || exit /b 1
 call .\ci\assert-no-diff.bat
 
 ::Now test the expectations' size and alignment tests.
