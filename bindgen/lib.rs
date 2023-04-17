@@ -963,8 +963,6 @@ impl Bindings {
 
         match self.options.formatter {
             Formatter::None => return Ok(tokens.to_string()),
-
-            #[cfg(feature = "prettyplease")]
             Formatter::Prettyplease => {
                 return Ok(prettyplease::unparse(&syn::parse_quote!(#tokens)));
             }
