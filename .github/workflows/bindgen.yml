@@ -214,6 +214,21 @@ jobs:
           BINDGEN_NO_DEFAULT_FEATURES: ${{matrix.no_default_features}}
         run: ./ci/test.sh
 
+  check-cfg:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install nightly
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+      
+      - name: Check cfg
+        run: cargo check -Z unstable-options -Z check-cfg=features
+
   test-book:
     runs-on: ubuntu-latest
     steps:
