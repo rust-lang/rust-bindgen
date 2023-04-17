@@ -13,9 +13,9 @@ use crate::options::builder_from_flags;
 #[cfg(feature = "logging")]
 fn clang_version_check() {
     let version = bindgen::clang_version();
-    let expected_version = if cfg!(feature = "testing_only_libclang_9") {
+    let expected_version = if cfg!(feature = "__testing_only_libclang_9") {
         Some((9, 0))
-    } else if cfg!(feature = "testing_only_libclang_5") {
+    } else if cfg!(feature = "__testing_only_libclang_5") {
         Some((5, 0))
     } else {
         None

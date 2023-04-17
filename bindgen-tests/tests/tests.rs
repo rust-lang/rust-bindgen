@@ -194,9 +194,9 @@ fn compare_generated_header(
     {
         let mut expectation = expectation.clone();
 
-        if cfg!(feature = "testing_only_libclang_9") {
+        if cfg!(feature = "__testing_only_libclang_9") {
             expectation.push("libclang-9");
-        } else if cfg!(feature = "testing_only_libclang_5") {
+        } else if cfg!(feature = "__testing_only_libclang_5") {
             expectation.push("libclang-5");
         } else {
             match clang_version().parsed {
@@ -237,7 +237,7 @@ fn compare_generated_header(
             BufReader::new(f).read_to_string(&mut expected)?;
         }
         None => panic!(
-            "missing test expectation file and/or 'testing_only_libclang_$VERSION' \
+            "missing test expectation file and/or '__testing_only_libclang_$VERSION' \
              feature for header '{}'; looking for expectation file at '{:?}'",
             header.display(),
             looked_at,
