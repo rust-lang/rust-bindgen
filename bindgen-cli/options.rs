@@ -4,10 +4,11 @@ use bindgen::{
     FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
     RegexSet, RustTarget, DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
 };
-use clap::Parser;
+use clap::{CommandFactory, Parser};
 use std::fs::File;
 use std::io::{self, Error, ErrorKind};
 use std::path::PathBuf;
+use std::process::exit;
 
 fn rust_target_help() -> String {
     format!(
@@ -376,6 +377,9 @@ struct BindgenCommand {
     /// Whether to emit diagnostics or not.
     #[arg(long, requires = "experimental")]
     emit_diagnostics: bool,
+    /// Generates completions for the specified SHELL, sends them to `stdout` and exits.
+    #[arg(long, value_name = "SHELL")]
+    generate_shell_completions: Option<clap_complete::Shell>,
     /// Enables experimental features.
     #[arg(long)]
     experimental: bool,
@@ -504,10 +508,22 @@ where
         wrap_static_fns_suffix,
         default_visibility,
         emit_diagnostics,
+        generate_shell_completions,
         experimental: _,
         version,
         clang_args,
     } = command;
+
+    if let Some(shell) = generate_shell_completions {
+        clap_complete::generate(
+            shell,
+            &mut BindgenCommand::command(),
+            "bindgen",
+            &mut std::io::stdout(),
+        );
+
+        exit(0);
+    }
 
     if version {
         println!(
