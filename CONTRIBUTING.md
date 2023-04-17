@@ -222,7 +222,7 @@ have. If for some reason it can't, you can force a specific `libclang` version
 to check the bindings against with a cargo feature:
 
 ```
-$ cargo test --features testing_only_libclang_$VERSION
+$ cargo test --features __testing_only_libclang_$VERSION
 ```
 
 Where `$VERSION` is one of:

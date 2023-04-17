@@ -1193,11 +1193,11 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         Ok((ret, self.options))
     }
 
-    /// When the `testing_only_extra_assertions` feature is enabled, this
+    /// When the `__testing_only_extra_assertions` feature is enabled, this
     /// function walks the IR graph and asserts that we do not have any edges
     /// referencing an ItemId for which we do not have an associated IR item.
     fn assert_no_dangling_references(&self) {
-        if cfg!(feature = "testing_only_extra_assertions") {
+        if cfg!(feature = "__testing_only_extra_assertions") {
             for _ in self.assert_no_dangling_item_traversal() {
                 // The iterator's next method does the asserting for us.
             }
@@ -1218,11 +1218,11 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         )
     }
 
-    /// When the `testing_only_extra_assertions` feature is enabled, walk over
+    /// When the `__testing_only_extra_assertions` feature is enabled, walk over
     /// every item and ensure that it is in the children set of one of its
     /// module ancestors.
     fn assert_every_item_in_a_module(&self) {
-        if cfg!(feature = "testing_only_extra_assertions") {
+        if cfg!(feature = "__testing_only_extra_assertions") {
             assert!(self.in_codegen_phase());
             assert!(self.current_module == self.root_module);
 

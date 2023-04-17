@@ -4,16 +4,16 @@ environment:
   matrix:
   - TARGET: gnu
     LLVM_VERSION: 5.0.0-1
-    BINDGEN_FEATURES: testing_only_libclang_5
+    BINDGEN_FEATURES: __testing_only_libclang_5
   - TARGET: gnu
     LLVM_VERSION: 9.0.0-1
-    BINDGEN_FEATURES: testing_only_libclang_9
+    BINDGEN_FEATURES: __testing_only_libclang_9
   - TARGET: msvc
     LLVM_VERSION: 5.0.0
-    BINDGEN_FEATURES: testing_only_libclang_5
+    BINDGEN_FEATURES: __testing_only_libclang_5
   - TARGET: msvc
     LLVM_VERSION: 9.0.0
-    BINDGEN_FEATURES: testing_only_libclang_9
+    BINDGEN_FEATURES: __testing_only_libclang_9
 
 configuration:
 - stable
