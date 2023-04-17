@@ -186,6 +186,8 @@
 
 ## Fixed
 
+* Prettyplease is available as a `Formatter` variant now.
+
 ## Security
 
 # 0.65.1
