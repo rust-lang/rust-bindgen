@@ -216,6 +216,8 @@ jobs:
 
   check-cfg:
     runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: -D warnings
     steps:
       - uses: actions/checkout@v3
       
