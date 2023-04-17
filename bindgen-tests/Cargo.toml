@@ -9,6 +9,7 @@ bindgen = { path = "../bindgen", features = ["__cli", "experimental"] }
 diff = "0.1"
 shlex = "1"
 clap = { version = "4", features = ["derive"] }
+clap_complete = "4"
 tempfile = "3"
 
 [features]
