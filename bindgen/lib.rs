@@ -188,7 +188,6 @@ impl FromStr for Formatter {
         match s {
             "none" => Ok(Self::None),
             "rustfmt" => Ok(Self::Rustfmt),
-            #[cfg(feature = "prettyplease")]
             "prettyplease" => Ok(Self::Prettyplease),
             _ => Err(format!("`{}` is not a valid formatter", s)),
         }
@@ -200,7 +199,6 @@ impl std::fmt::Display for Formatter {
         let s = match self {
             Self::None => "none",
             Self::Rustfmt => "rustfmt",
-            #[cfg(feature = "prettyplease")]
             Self::Prettyplease => "prettyplease",
         };
 
