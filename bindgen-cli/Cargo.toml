@@ -33,3 +33,9 @@ static = ["bindgen/static"]
 runtime = ["bindgen/runtime"]
 # Dynamically discover a `rustfmt` binary using the `which` crate
 which-rustfmt = ["bindgen/which-rustfmt"]
+
+# These features only exist for CI testing -- don't use them if you're not hacking
+# on bindgen!
+testing_only_extra_assertions = ["bindgen/testing_only_extra_assertions"]
+testing_only_libclang_9 = ["bindgen/testing_only_libclang_9"]
+testing_only_libclang_5 = ["bindgen/testing_only_libclang_5"]
