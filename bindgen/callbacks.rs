@@ -146,6 +146,16 @@ pub trait ParseCallbacks: fmt::Debug {
     ) -> Option<crate::FieldVisibilityKind> {
         None
     }
+
+    /// Process a function name that as exactly one `va_list` argument
+    /// to be wrapped as a variadic function with the wrapped static function
+    /// feature.
+    ///
+    /// The returned string is new function name.
+    #[cfg(feature = "experimental")]
+    fn wrap_as_variadic_fn(&self, _name: &str) -> Option<String> {
+        None
+    }
 }
 
 /// Relevant information about a type to which new derive attributes will be added using

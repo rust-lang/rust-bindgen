@@ -10,7 +10,7 @@ use crate::ir::item::ItemCanonicalName;
 use crate::ir::item_kind::ItemKind;
 use crate::ir::ty::{FloatKind, Type, TypeKind};
 
-use super::CodegenError;
+use super::{CodegenError, WrapAsVariadic};
 
 fn get_loc(item: &Item) -> String {
     item.location()
@@ -18,7 +18,7 @@ fn get_loc(item: &Item) -> String {
         .unwrap_or_else(|| "unknown".to_owned())
 }
 
-pub(crate) trait CSerialize<'a> {
+pub(super) trait CSerialize<'a> {
     type Extra;
 
     fn serialize<W: Write>(
@@ -31,18 +31,18 @@ pub(crate) trait CSerialize<'a> {
 }
 
 impl<'a> CSerialize<'a> for Item {
-    type Extra = ();
+    type Extra = &'a Option<WrapAsVariadic>;
 
     fn serialize<W: Write>(
         &self,
         ctx: &BindgenContext,
-        (): Self::Extra,
+        extra: Self::Extra,
         stack: &mut Vec<String>,
         writer: &mut W,
     ) -> Result<(), CodegenError> {
         match self.kind() {
             ItemKind::Function(func) => {
-                func.serialize(ctx, self, stack, writer)
+                func.serialize(ctx, (self, extra), stack, writer)
             }
             kind => Err(CodegenError::Serialize {
                 msg: format!("Cannot serialize item kind {:?}", kind),
@@ -53,12 +53,12 @@ impl<'a> CSerialize<'a> for Item {
 }
 
 impl<'a> CSerialize<'a> for Function {
-    type Extra = &'a Item;
+    type Extra = (&'a Item, &'a Option<WrapAsVariadic>);
 
     fn serialize<W: Write>(
         &self,
         ctx: &BindgenContext,
-        item: Self::Extra,
+        (item, wrap_as_variadic): Self::Extra,
         stack: &mut Vec<String>,
         writer: &mut W,
     ) -> Result<(), CodegenError> {
@@ -85,19 +85,30 @@ impl<'a> CSerialize<'a> for Function {
         let args = {
             let mut count = 0;
 
+            let idx_to_prune = wrap_as_variadic.as_ref().map(
+                |WrapAsVariadic {
+                     idx_of_va_list_arg, ..
+                 }| *idx_of_va_list_arg,
+            );
+
             signature
                 .argument_types()
                 .iter()
                 .cloned()
-                .map(|(opt_name, type_id)| {
-                    (
-                        opt_name.unwrap_or_else(|| {
-                            let name = format!("arg_{}", count);
-                            count += 1;
-                            name
-                        }),
-                        type_id,
-                    )
+                .enumerate()
+                .filter_map(|(idx, (opt_name, type_id))| {
+                    if Some(idx) == idx_to_prune {
+                        None
+                    } else {
+                        Some((
+                            opt_name.unwrap_or_else(|| {
+                                let name = format!("arg_{}", count);
+                                count += 1;
+                                name
+                            }),
+                            type_id,
+                        ))
+                    }
                 })
                 .collect::<Vec<_>>()
         };
@@ -106,33 +117,82 @@ impl<'a> CSerialize<'a> for Function {
         let wrap_name = format!("{}{}", name, ctx.wrap_static_fns_suffix());
 
         // The function's return type
-        let ret_ty = {
+        let (ret_item, ret_ty) = {
             let type_id = signature.return_type();
-            let item = ctx.resolve_item(type_id);
-            let ret_ty = item.expect_type();
+            let ret_item = ctx.resolve_item(type_id);
+            let ret_ty = ret_item.expect_type();
 
             // Write `ret_ty`.
-            ret_ty.serialize(ctx, item, stack, writer)?;
+            ret_ty.serialize(ctx, ret_item, stack, writer)?;
 
-            ret_ty
+            (ret_item, ret_ty)
         };
+
+        const INDENT: &str = "    ";
 
         // Write `wrap_name(args`.
         write!(writer, " {}(", wrap_name)?;
         serialize_args(&args, ctx, writer)?;
 
-        // Write `) { name(` if the function returns void and `) { return name(` if it does not.
-        if ret_ty.is_void() {
-            write!(writer, ") {{ {}(", name)?;
+        if wrap_as_variadic.is_none() {
+            // Write `) { name(` if the function returns void and `) { return name(` if it does not.
+            if ret_ty.is_void() {
+                write!(writer, ") {{ {}(", name)?;
+            } else {
+                write!(writer, ") {{ return {}(", name)?;
+            }
         } else {
-            write!(writer, ") {{ return {}(", name)?;
+            // Write `, ...) {`
+            writeln!(writer, ", ...) {{")?;
+
+            // Declare the return type `RET_TY ret;` if their is a need to do so
+            if !ret_ty.is_void() {
+                write!(writer, "{INDENT}")?;
+                ret_ty.serialize(ctx, ret_item, stack, writer)?;
+                writeln!(writer, " ret;")?;
+            }
+
+            // Setup va_list
+            writeln!(writer, "{INDENT}va_list ap;\n")?;
+            writeln!(
+                writer,
+                "{INDENT}va_start(ap, {});",
+                args.last().unwrap().0
+            )?;
+
+            write!(writer, "{INDENT}")?;
+            // Write `ret = name(` or `name(` depending if the function returns something
+            if !ret_ty.is_void() {
+                write!(writer, "ret = ")?;
+            }
+            write!(writer, "{}(", name)?;
         }
 
-        // Write `arg_names); }`.
-        serialize_sep(", ", args.iter(), ctx, writer, |(name, _), _, buf| {
+        // Get the arguments names and insert at the right place if necessary `ap`
+        let mut args: Vec<_> = args.into_iter().map(|(name, _)| name).collect();
+        if let Some(WrapAsVariadic {
+            idx_of_va_list_arg, ..
+        }) = wrap_as_variadic
+        {
+            args.insert(*idx_of_va_list_arg, "ap".to_owned());
+        }
+
+        // Write `arg_names);`.
+        serialize_sep(", ", args.iter(), ctx, writer, |name, _, buf| {
             write!(buf, "{}", name).map_err(From::from)
         })?;
-        writeln!(writer, "); }}")?;
+        #[rustfmt::skip]
+        write!(writer, ");{}", if wrap_as_variadic.is_none() { " " } else { "\n" })?;
+
+        if wrap_as_variadic.is_some() {
+            // End va_list and return the result if their is one
+            writeln!(writer, "{INDENT}va_end(ap);")?;
+            if !ret_ty.is_void() {
+                writeln!(writer, "{INDENT}return ret;")?;
+            }
+        }
+
+        writeln!(writer, "}}")?;
 
         Ok(())
     }
