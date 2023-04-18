@@ -1,4 +1,5 @@
 // bindgen-flags: --experimental --wrap-static-fns
+// bindgen-parse-callbacks: wrap-as-variadic-fn
 
 static inline int foo() {
     return 11;
@@ -48,3 +49,15 @@ static inline void nevermore() {
 static inline int variadic(int x, ...) {
     return x;
 }
+
+static inline void no_extra_argument(__builtin_va_list va) {}
+
+static inline int many_va_list(int i, __builtin_va_list va1, __builtin_va_list va2) {
+    return i;
+}
+
+static inline int wrap_as_variadic_fn1(int i, __builtin_va_list va) {
+    return i;
+}
+
+static inline void wrap_as_variadic_fn2(int i, __builtin_va_list va) {}
