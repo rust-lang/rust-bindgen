@@ -35,7 +35,7 @@ runtime = ["bindgen/runtime"]
 # Dynamically discover a `rustfmt` binary using the `which` crate
 which-rustfmt = ["bindgen/which-rustfmt"]
 
-## The following features are for intearnal use and they shouldn't be used if
+## The following features are for internal use and they shouldn't be used if
 ## you're not hacking on bindgen
 # Features used for CI testing 
 __testing_only_extra_assertions = ["bindgen/__testing_only_extra_assertions"]
