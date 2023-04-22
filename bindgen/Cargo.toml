@@ -51,7 +51,7 @@ runtime = ["clang-sys/runtime"]
 which-rustfmt = ["which"]
 experimental = ["annotate-snippets"]
 
-## The following features are for intearnal use and they shouldn't be used if
+## The following features are for internal use and they shouldn't be used if
 ## you're not hacking on bindgen
 # Features used by `bindgen-cli` 
 __cli = []
