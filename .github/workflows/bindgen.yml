@@ -85,8 +85,11 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Generate documentation 
+      - name: Generate documentation for `bindgen` 
         run: cargo doc --document-private-items --no-deps -p bindgen 
+
+      - name: Generate documentation for `bindgen-cli` 
+        run: cargo doc --document-private-items --no-deps -p bindgen-cli
 
   quickchecking:
     runs-on: ubuntu-latest
