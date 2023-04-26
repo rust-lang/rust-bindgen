@@ -183,6 +183,7 @@
   properly generate module names and paths that include spaces by escaping
   them. To make the escaping clear and consistent, backslashes are also
   escaped.
+* Updated `bitflags` dependency to 2.2.1. This changes the API of `CodegenConfig`.
    
 ## Removed
 
