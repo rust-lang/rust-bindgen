@@ -25,7 +25,7 @@ name = "bindgen"
 path = "lib.rs"
 
 [dependencies]
-bitflags = "1.0.3"
+bitflags = "2.2.1"
 cexpr = "0.6"
 clang-sys = { version = "1", features = ["clang_6_0"] }
 lazycell = "1"

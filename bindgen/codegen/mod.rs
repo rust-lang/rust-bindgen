@@ -126,6 +126,7 @@ fn root_import(
 }
 
 bitflags! {
+    #[derive(Copy, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     struct DerivableTraits: u16 {
         const DEBUG       = 1 << 0;
         const DEFAULT     = 1 << 1;
