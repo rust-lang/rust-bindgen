@@ -573,3 +573,6 @@ $ pushd bindgen && cargo publish && popd
 $ pushd bindgen-cli && cargo publish && popd
 $ git push --tags upstream # To publish the tag
 ```
+### Create a new release on Github
+
+See [Releasing projects on Github](https://docs.github.com/en/repositories/releasing-projects-on-github)
