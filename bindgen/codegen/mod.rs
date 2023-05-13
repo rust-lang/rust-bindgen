@@ -1813,7 +1813,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         _fields: &mut F,
         methods: &mut M,
         (unit_field_name, bitfield_representable_as_int): (&'a str, &mut bool),
-        parent_name: &str,
+        _parent_name: &str,
     ) where
         F: Extend<proc_macro2::TokenStream>,
         M: Extend<proc_macro2::TokenStream>,
