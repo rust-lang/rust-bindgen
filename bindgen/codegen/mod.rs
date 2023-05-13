@@ -1296,6 +1296,7 @@ trait FieldCodegen<'a> {
         fields: &mut F,
         methods: &mut M,
         extra: Self::Extra,
+        parent_name: &str,
     ) where
         F: Extend<proc_macro2::TokenStream>,
         M: Extend<proc_macro2::TokenStream>;
@@ -1315,6 +1316,7 @@ impl<'a> FieldCodegen<'a> for Field {
         fields: &mut F,
         methods: &mut M,
         _: (),
+        parent_name: &str,
     ) where
         F: Extend<proc_macro2::TokenStream>,
         M: Extend<proc_macro2::TokenStream>,
@@ -1331,6 +1333,7 @@ impl<'a> FieldCodegen<'a> for Field {
                     fields,
                     methods,
                     (),
+                    parent_name,
                 );
             }
             Field::Bitfields(ref unit) => {
@@ -1344,6 +1347,7 @@ impl<'a> FieldCodegen<'a> for Field {
                     fields,
                     methods,
                     (),
+                    parent_name,
                 );
             }
         }
@@ -1393,6 +1397,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
         fields: &mut F,
         methods: &mut M,
         _: (),
+        parent_name: &str,
     ) where
         F: Extend<proc_macro2::TokenStream>,
         M: Extend<proc_macro2::TokenStream>,
@@ -1438,9 +1443,15 @@ impl<'a> FieldCodegen<'a> for FieldData {
 
         let field_name = self
             .name()
-            .map(|name| ctx.rust_mangle(name).into_owned())
+            .map(|name| {
+                let name = ctx.rust_mangle(name);
+                ctx.options()
+                    .process_field_name(&parent_name, &name)
+                    .map(|name| Cow::Owned(name))
+                    .unwrap_or(name.to_owned())
+            })
             .expect("Each field should have a name in codegen!");
-        let field_ident = ctx.rust_ident_raw(field_name.as_str());
+        let field_ident = ctx.rust_ident_raw(&field_name);
 
         if let Some(padding_field) =
             struct_layout.saw_field(&field_name, field_ty, self.offset())
@@ -1641,6 +1652,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         fields: &mut F,
         methods: &mut M,
         _: (),
+        parent_name: &str,
     ) where
         F: Extend<proc_macro2::TokenStream>,
         M: Extend<proc_macro2::TokenStream>,
@@ -1720,6 +1732,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 fields,
                 methods,
                 (&unit_field_name, &mut bitfield_representable_as_int),
+                parent_name,
             );
 
             // Generating a constructor requires the bitfield to be representable as an integer.
@@ -1800,6 +1813,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         _fields: &mut F,
         methods: &mut M,
         (unit_field_name, bitfield_representable_as_int): (&'a str, &mut bool),
+        parent_name: &str,
     ) where
         F: Extend<proc_macro2::TokenStream>,
         M: Extend<proc_macro2::TokenStream>,
@@ -2002,6 +2016,7 @@ impl CodeGenerator for CompInfo {
                     &mut fields,
                     &mut methods,
                     (),
+                    &canonical_name,
                 );
             }
             // Check whether an explicit padding field is needed

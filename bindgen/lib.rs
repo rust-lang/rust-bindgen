@@ -562,6 +562,16 @@ impl BindgenOptions {
             .and_then(|cb| cb.process_comment(&comment))
             .unwrap_or(comment)
     }
+
+    fn process_field_name(
+        &self,
+        parent_name: &str,
+        name: &str,
+    ) -> Option<String> {
+        self.parse_callbacks
+            .last()
+            .and_then(|cb| cb.process_field_name(parent_name, name))
+    }
 }
 
 fn deprecated_target_diagnostic(target: RustTarget, _options: &BindgenOptions) {
