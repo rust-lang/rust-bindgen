@@ -6,6 +6,7 @@ use crate::ir::comp::CompInfo;
 use crate::ir::context::BindgenContext;
 use crate::ir::layout::Layout;
 use crate::ir::ty::{Type, TypeKind};
+use crate::FieldVisibilityKind;
 use proc_macro2::{self, Ident, Span};
 use std::cmp;
 
@@ -26,6 +27,7 @@ pub(crate) struct StructLayoutTracker<'a> {
     latest_field_layout: Option<Layout>,
     max_field_align: usize,
     last_field_was_bitfield: bool,
+    visibility: FieldVisibilityKind,
 }
 
 /// Returns a size aligned to a given value.
@@ -88,6 +90,7 @@ impl<'a> StructLayoutTracker<'a> {
         comp: &'a CompInfo,
         ty: &'a Type,
         name: &'a str,
+        visibility: FieldVisibilityKind,
     ) -> Self {
         let known_type_layout = ty.layout(ctx);
         let is_packed = comp.is_packed(ctx, known_type_layout.as_ref());
@@ -97,6 +100,7 @@ impl<'a> StructLayoutTracker<'a> {
             name,
             ctx,
             comp,
+            visibility,
             is_packed,
             known_type_layout,
             is_rust_union,
@@ -397,8 +401,10 @@ impl<'a> StructLayoutTracker<'a> {
 
         self.max_field_align = cmp::max(self.max_field_align, layout.align);
 
+        let vis = super::access_specifier(self.visibility);
+
         quote! {
-            pub #padding_field_name : #ty ,
+            #vis #padding_field_name : #ty ,
         }
     }
 

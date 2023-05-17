@@ -1933,8 +1933,17 @@ impl CodeGenerator for CompInfo {
         // the parent too.
         let is_opaque = item.is_opaque(ctx, &());
         let mut fields = vec![];
-        let mut struct_layout =
-            StructLayoutTracker::new(ctx, self, ty, &canonical_name);
+        let visibility = item
+            .annotations()
+            .visibility_kind()
+            .unwrap_or(ctx.options().default_visibility);
+        let mut struct_layout = StructLayoutTracker::new(
+            ctx,
+            self,
+            ty,
+            &canonical_name,
+            visibility,
+        );
 
         if !is_opaque {
             if item.has_vtable_ptr(ctx) {
@@ -1983,10 +1992,6 @@ impl CodeGenerator for CompInfo {
 
         let mut methods = vec![];
         if !is_opaque {
-            let visibility = item
-                .annotations()
-                .visibility_kind()
-                .unwrap_or(ctx.options().default_visibility);
             let struct_accessor_kind = item
                 .annotations()
                 .accessor_kind()
