@@ -490,7 +490,7 @@ pub struct Override {
     /// <div rustbindgen private></div>
     b: ::std::os::raw::c_uint,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }
 #[test]
@@ -538,7 +538,7 @@ impl Override {
         }
     }
     #[inline]
-    pub fn new_bitfield_1(
+    fn new_bitfield_1(
         bf_a: ::std::os::raw::c_uint,
         bf_b: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {

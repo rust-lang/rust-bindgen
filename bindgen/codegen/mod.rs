@@ -1451,7 +1451,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
         let visibility = compute_visibility(
             ctx,
             self.is_public(),
-            Some(self.annotations()),
+            self.annotations(),
             parent_visibility_kind,
         );
         let accessor_kind =
@@ -1604,13 +1604,13 @@ fn access_specifier(
 fn compute_visibility(
     ctx: &BindgenContext,
     is_declared_public: bool,
-    annotations: Option<&Annotations>,
+    annotations: &Annotations,
     default_kind: FieldVisibilityKind,
 ) -> FieldVisibilityKind {
     match (
         is_declared_public,
         ctx.options().respect_cxx_access_specs,
-        annotations.and_then(|e| e.visibility_kind()),
+        annotations.visibility_kind(),
     ) {
         (true, true, annotated_visibility) => {
             // declared as public, cxx specs are respected
@@ -1695,7 +1695,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         // the 32 items limitation.
         let mut generate_ctor = layout.size <= RUST_DERIVE_IN_ARRAY_LIMIT;
 
-        let mut all_fields_declared_as_public = true;
+        let mut unit_visibility = visibility_kind;
         for bf in self.bitfields() {
             // Codegen not allowed for anonymous bitfields
             if bf.name().is_none() {
@@ -1708,8 +1708,8 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 continue;
             }
 
-            all_fields_declared_as_public &= bf.is_public();
             let mut bitfield_representable_as_int = true;
+            let mut bitfield_visibility = visibility_kind;
             bf.codegen(
                 ctx,
                 visibility_kind,
@@ -1719,8 +1719,15 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 struct_layout,
                 fields,
                 methods,
-                (&unit_field_name, &mut bitfield_representable_as_int),
+                (
+                    &unit_field_name,
+                    &mut bitfield_representable_as_int,
+                    &mut bitfield_visibility,
+                ),
             );
+            if bitfield_visibility < unit_visibility {
+                unit_visibility = bitfield_visibility;
+            }
 
             // Generating a constructor requires the bitfield to be representable as an integer.
             if !bitfield_representable_as_int {
@@ -1740,13 +1747,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
             ctor_impl = bf.extend_ctor_impl(ctx, param_name, ctor_impl);
         }
 
-        let visibility_kind = compute_visibility(
-            ctx,
-            all_fields_declared_as_public,
-            None,
-            visibility_kind,
-        );
-        let access_spec = access_specifier(visibility_kind);
+        let access_spec = access_specifier(unit_visibility);
 
         let field = quote! {
             #access_spec #unit_field_ident : #field_ty ,
@@ -1787,7 +1788,7 @@ fn bitfield_setter_name(
 }
 
 impl<'a> FieldCodegen<'a> for Bitfield {
-    type Extra = (&'a str, &'a mut bool);
+    type Extra = (&'a str, &'a mut bool, &'a mut FieldVisibilityKind);
 
     fn codegen<F, M>(
         &self,
@@ -1799,7 +1800,11 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         struct_layout: &mut StructLayoutTracker,
         _fields: &mut F,
         methods: &mut M,
-        (unit_field_name, bitfield_representable_as_int): (&'a str, &mut bool),
+        (unit_field_name, bitfield_representable_as_int, bitfield_visibility): (
+            &'a str,
+            &mut bool,
+            &'a mut FieldVisibilityKind,
+        ),
     ) where
         F: Extend<proc_macro2::TokenStream>,
         M: Extend<proc_macro2::TokenStream>,
@@ -1833,13 +1838,13 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         let offset = self.offset_into_unit();
         let width = self.width() as u8;
 
-        let visibility_kind = compute_visibility(
+        *bitfield_visibility = compute_visibility(
             ctx,
             self.is_public(),
-            Some(self.annotations()),
+            self.annotations(),
             visibility_kind,
         );
-        let access_spec = access_specifier(visibility_kind);
+        let access_spec = access_specifier(*bitfield_visibility);
 
         if parent.is_union() && !struct_layout.is_rust_union() {
             methods.extend(Some(quote! {

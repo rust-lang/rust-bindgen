@@ -93,7 +93,7 @@ pub struct Point {
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Color {
     _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
 }
 impl Color {
     #[inline]
@@ -130,7 +130,7 @@ impl Color {
         }
     }
     #[inline]
-    pub fn new_bitfield_1(
+    fn new_bitfield_1(
         r: ::std::os::raw::c_char,
         g: ::std::os::raw::c_char,
         b: ::std::os::raw::c_char,
