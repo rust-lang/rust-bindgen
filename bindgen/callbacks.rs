@@ -135,6 +135,17 @@ pub trait ParseCallbacks: fmt::Debug {
     fn process_comment(&self, _comment: &str) -> Option<String> {
         None
     }
+
+    /// Potentially override the visibility of a composite type field.
+    ///
+    /// Caution: This allows overriding standard C++ visibility inferred by
+    /// `respect_cxx_access_specs`.
+    fn field_visibility(
+        &self,
+        _info: FieldInfo<'_>,
+    ) -> Option<crate::FieldVisibilityKind> {
+        None
+    }
 }
 
 /// Relevant information about a type to which new derive attributes will be added using
@@ -175,4 +186,15 @@ pub enum ItemKind {
     Function,
     /// A Variable
     Var,
+}
+
+/// Relevant information about a field for which visibility can be determined using
+/// [`ParseCallbacks::field_visibility`].
+#[derive(Debug)]
+#[non_exhaustive]
+pub struct FieldInfo<'a> {
+    /// The name of the type.
+    pub type_name: &'a str,
+    /// The name of the field.
+    pub field_name: &'a str,
 }

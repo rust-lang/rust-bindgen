@@ -19,7 +19,7 @@ use self::struct_layout::StructLayoutTracker;
 
 use super::BindgenOptions;
 
-use crate::callbacks::{DeriveInfo, TypeKind as DeriveTypeKind};
+use crate::callbacks::{DeriveInfo, FieldInfo, TypeKind as DeriveTypeKind};
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::{
     Annotations, FieldAccessorKind, FieldVisibilityKind,
@@ -1291,6 +1291,7 @@ trait FieldCodegen<'a> {
         visibility_kind: FieldVisibilityKind,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
+        parent_item: &Item,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1310,6 +1311,7 @@ impl<'a> FieldCodegen<'a> for Field {
         visibility_kind: FieldVisibilityKind,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
+        parent_item: &Item,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1326,6 +1328,7 @@ impl<'a> FieldCodegen<'a> for Field {
                     visibility_kind,
                     accessor_kind,
                     parent,
+                    parent_item,
                     result,
                     struct_layout,
                     fields,
@@ -1339,6 +1342,7 @@ impl<'a> FieldCodegen<'a> for Field {
                     visibility_kind,
                     accessor_kind,
                     parent,
+                    parent_item,
                     result,
                     struct_layout,
                     fields,
@@ -1388,6 +1392,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
         parent_visibility_kind: FieldVisibilityKind,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
+        parent_item: &Item,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1440,10 +1445,11 @@ impl<'a> FieldCodegen<'a> for FieldData {
             .name()
             .map(|name| ctx.rust_mangle(name).into_owned())
             .expect("Each field should have a name in codegen!");
-        let field_ident = ctx.rust_ident_raw(field_name.as_str());
+        let field_name = field_name.as_str();
+        let field_ident = ctx.rust_ident_raw(field_name);
 
         if let Some(padding_field) =
-            struct_layout.saw_field(&field_name, field_ty, self.offset())
+            struct_layout.saw_field(field_name, field_ty, self.offset())
         {
             fields.extend(Some(padding_field));
         }
@@ -1451,6 +1457,12 @@ impl<'a> FieldCodegen<'a> for FieldData {
         let visibility = compute_visibility(
             ctx,
             self.is_public(),
+            ctx.options().last_callback(|cb| {
+                cb.field_visibility(FieldInfo {
+                    type_name: &parent_item.canonical_name(ctx),
+                    field_name,
+                })
+            }),
             self.annotations(),
             parent_visibility_kind,
         );
@@ -1485,7 +1497,6 @@ impl<'a> FieldCodegen<'a> for FieldData {
         let getter_name = ctx.rust_ident_raw(format!("get_{}", field_name));
         let mutable_getter_name =
             ctx.rust_ident_raw(format!("get_{}_mut", field_name));
-        let field_name = ctx.rust_ident_raw(field_name);
 
         methods.extend(Some(match accessor_kind {
             FieldAccessorKind::None => unreachable!(),
@@ -1493,12 +1504,12 @@ impl<'a> FieldCodegen<'a> for FieldData {
                 quote! {
                     #[inline]
                     pub fn #getter_name(&self) -> & #ty {
-                        &self.#field_name
+                        &self.#field_ident
                     }
 
                     #[inline]
                     pub fn #mutable_getter_name(&mut self) -> &mut #ty {
-                        &mut self.#field_name
+                        &mut self.#field_ident
                     }
                 }
             }
@@ -1506,12 +1517,12 @@ impl<'a> FieldCodegen<'a> for FieldData {
                 quote! {
                     #[inline]
                     pub unsafe fn #getter_name(&self) -> & #ty {
-                        &self.#field_name
+                        &self.#field_ident
                     }
 
                     #[inline]
                     pub unsafe fn #mutable_getter_name(&mut self) -> &mut #ty {
-                        &mut self.#field_name
+                        &mut self.#field_ident
                     }
                 }
             }
@@ -1519,7 +1530,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
                 quote! {
                     #[inline]
                     pub fn #getter_name(&self) -> & #ty {
-                        &self.#field_name
+                        &self.#field_ident
                     }
                 }
             }
@@ -1604,27 +1615,28 @@ fn access_specifier(
 fn compute_visibility(
     ctx: &BindgenContext,
     is_declared_public: bool,
+    callback_override: Option<FieldVisibilityKind>,
     annotations: &Annotations,
     default_kind: FieldVisibilityKind,
 ) -> FieldVisibilityKind {
-    match (
-        is_declared_public,
-        ctx.options().respect_cxx_access_specs,
-        annotations.visibility_kind(),
-    ) {
-        (true, true, annotated_visibility) => {
-            // declared as public, cxx specs are respected
-            annotated_visibility.unwrap_or(FieldVisibilityKind::Public)
-        }
-        (false, true, annotated_visibility) => {
-            // declared as private, cxx specs are respected
-            annotated_visibility.unwrap_or(FieldVisibilityKind::Private)
-        }
-        (_, false, annotated_visibility) => {
-            // cxx specs are not respected, declaration does not matter.
-            annotated_visibility.unwrap_or(default_kind)
-        }
-    }
+    callback_override
+        .or_else(|| annotations.visibility_kind())
+        .unwrap_or_else(|| {
+            match (is_declared_public, ctx.options().respect_cxx_access_specs) {
+                (true, true) => {
+                    // declared as public, cxx specs are respected
+                    FieldVisibilityKind::Public
+                }
+                (false, true) => {
+                    // declared as private, cxx specs are respected
+                    FieldVisibilityKind::Private
+                }
+                (_, false) => {
+                    // cxx specs are not respected, declaration does not matter.
+                    default_kind
+                }
+            }
+        })
 }
 
 impl<'a> FieldCodegen<'a> for BitfieldUnit {
@@ -1636,6 +1648,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         visibility_kind: FieldVisibilityKind,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
+        parent_item: &Item,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1715,6 +1728,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 visibility_kind,
                 accessor_kind,
                 parent,
+                parent_item,
                 result,
                 struct_layout,
                 fields,
@@ -1796,6 +1810,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         visibility_kind: FieldVisibilityKind,
         _accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
+        parent_item: &Item,
         _result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         _fields: &mut F,
@@ -1838,9 +1853,18 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         let offset = self.offset_into_unit();
         let width = self.width() as u8;
 
+        let override_visibility = self.name().and_then(|field_name| {
+            ctx.options().last_callback(|cb| {
+                cb.field_visibility(FieldInfo {
+                    type_name: &parent_item.canonical_name(ctx),
+                    field_name,
+                })
+            })
+        });
         *bitfield_visibility = compute_visibility(
             ctx,
             self.is_public(),
+            override_visibility,
             self.annotations(),
             visibility_kind,
         );
@@ -2007,6 +2031,7 @@ impl CodeGenerator for CompInfo {
                     visibility,
                     struct_accessor_kind,
                     self,
+                    item,
                     result,
                     &mut struct_layout,
                     &mut fields,

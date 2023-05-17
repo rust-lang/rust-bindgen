@@ -489,16 +489,17 @@ pub struct Override {
     pub a: ::std::os::raw::c_uint,
     /// <div rustbindgen private></div>
     b: ::std::os::raw::c_uint,
+    private_c: ::std::os::raw::c_uint,
     pub _bitfield_align_1: [u8; 0],
-    _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub __bindgen_padding_0: [u8; 3usize],
+    _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
+    pub __bindgen_padding_0: u16,
 }
 #[test]
 fn bindgen_test_layout_Override() {
     const UNINIT: ::std::mem::MaybeUninit<Override> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Override > (), 12usize, concat!("Size of: ",
+        ::std::mem::size_of:: < Override > (), 16usize, concat!("Size of: ",
         stringify!(Override))
     );
     assert_eq!(
@@ -512,6 +513,11 @@ fn bindgen_test_layout_Override() {
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((* ptr).b) as usize - ptr as usize }, 4usize,
         concat!("Offset of field: ", stringify!(Override), "::", stringify!(b))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((* ptr).private_c) as usize - ptr as usize },
+        8usize, concat!("Offset of field: ", stringify!(Override), "::",
+        stringify!(private_c))
     );
 }
 impl Override {
@@ -538,11 +544,23 @@ impl Override {
         }
     }
     #[inline]
+    fn private_bf_c(&self) -> ::std::os::raw::c_uint {
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(8usize, 4u8) as u32) }
+    }
+    #[inline]
+    fn set_private_bf_c(&mut self, val: ::std::os::raw::c_uint) {
+        unsafe {
+            let val: u32 = ::std::mem::transmute(val);
+            self._bitfield_1.set(8usize, 4u8, val as u64)
+        }
+    }
+    #[inline]
     fn new_bitfield_1(
         bf_a: ::std::os::raw::c_uint,
         bf_b: ::std::os::raw::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        private_bf_c: ::std::os::raw::c_uint,
+    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
         __bindgen_bitfield_unit
             .set(
                 0usize,
@@ -559,6 +577,17 @@ impl Override {
                 {
                     let bf_b: u32 = unsafe { ::std::mem::transmute(bf_b) };
                     bf_b as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                8usize,
+                4u8,
+                {
+                    let private_bf_c: u32 = unsafe {
+                        ::std::mem::transmute(private_bf_c)
+                    };
+                    private_bf_c as u64
                 },
             );
         __bindgen_bitfield_unit
