@@ -1,4 +1,5 @@
 // bindgen-flags: --respect-cxx-access-specs
+
 class PubPriv {
   public:
     int x;
@@ -41,4 +42,17 @@ class WithAnonStruct {
 
 class WithAnonUnion {
   union {};
+};
+
+class Override {
+ public:
+  unsigned int a;
+  // override with annotation
+  /** <div rustbindgen private></div> */
+  unsigned int b;
+
+  unsigned int bf_a : 4;
+  // override with annotation
+  /** <div rustbindgen private></div> */
+  unsigned int bf_b : 4;
 };
