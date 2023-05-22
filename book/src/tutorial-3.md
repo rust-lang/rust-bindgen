@@ -10,8 +10,6 @@ like `./target/debug/build/bindgen-tutorial-bzip2-sys-afc7747d7eafd720/out/`.
 Note that the associated shared object to `bz2` is `libbz2.so`. In general, a `lib<name>.so` should be referenced in the build file by `<name>`.
 
 ```rust,ignore
-extern crate bindgen;
-
 use std::env;
 use std::path::PathBuf;
 
