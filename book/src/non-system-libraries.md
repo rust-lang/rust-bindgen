@@ -1,17 +1,18 @@
 Now let's suppose we want to generate bindings for a non-system library. We
 will be the same crate setup as the previous tutorial. First let's create a new
-directory `hello` with two files inside it. A `c` source file `hello.c`
+directory `hello` with two files inside it. A C source file `hello.c`
 containing
 ```c
 int hello() {
     return 42;
 }
 ```
-and a `c` header file `hello.h` containing
+and a C header file `hello.h` containing
 ```c
 int hello();
 ```
-given that the library has not been compiled yet, we need to modify the
+
+Given that the library has not been compiled yet, we need to modify the
 `build.rs` build script to compile the `hello.c` source file into a static
 libary:
 
@@ -103,4 +104,3 @@ fn main() {
         .expect("Couldn't write bindings!");
 }
 ```
-
