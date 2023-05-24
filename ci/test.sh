@@ -75,8 +75,6 @@ set_llvm_env() {
   fi
 }
 
-}
-
 assert_no_diff() {
   git add -u
   git diff @
