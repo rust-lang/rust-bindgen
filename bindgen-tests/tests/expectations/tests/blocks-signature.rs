@@ -1,11 +1,5 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #![cfg(target_os = "macos")]
-
 extern crate block;
 extern "C" {
     #[link_name = "\u{1}_Z8atexit_bU13block_pointerFvvE"]
@@ -36,38 +30,25 @@ pub struct contains_block_pointers {
 }
 #[test]
 fn bindgen_test_layout_contains_block_pointers() {
-    const UNINIT: ::std::mem::MaybeUninit<contains_block_pointers> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<contains_block_pointers> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<contains_block_pointers>(),
-        16usize,
+        ::std::mem::size_of:: < contains_block_pointers > (), 16usize,
         concat!("Size of: ", stringify!(contains_block_pointers))
     );
     assert_eq!(
-        ::std::mem::align_of::<contains_block_pointers>(),
-        8usize,
+        ::std::mem::align_of:: < contains_block_pointers > (), 8usize,
         concat!("Alignment of ", stringify!(contains_block_pointers))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).val) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(contains_block_pointers),
-            "::",
-            stringify!(val)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).val) as usize - ptr as usize }, 0usize,
+        concat!("Offset of field: ", stringify!(contains_block_pointers), "::",
+        stringify!(val))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).ptr_val) as usize - ptr as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(contains_block_pointers),
-            "::",
-            stringify!(ptr_val)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).ptr_val) as usize - ptr as usize }, 8usize,
+        concat!("Offset of field: ", stringify!(contains_block_pointers), "::",
+        stringify!(ptr_val))
     );
 }
 impl Default for contains_block_pointers {
@@ -86,7 +67,8 @@ pub type _bindgen_ty_id_40 = *const ::block::Block<
 >;
 pub type _bindgen_ty_id_50 = *const ::block::Block<(usize,), ()>;
 pub type _bindgen_ty_id_56 = *const ::block::Block<(usize,), ()>;
-pub type contains_block_pointers__bindgen_ty_id_61 =
-    *const ::block::Block<(::std::os::raw::c_int,), ()>;
-pub type _bindgen_ty_id_68 =
-    *const ::block::Block<(::std::os::raw::c_int,), ()>;
+pub type contains_block_pointers__bindgen_ty_id_61 = *const ::block::Block<
+    (::std::os::raw::c_int,),
+    (),
+>;
+pub type _bindgen_ty_id_68 = *const ::block::Block<(::std::os::raw::c_int,), ()>;

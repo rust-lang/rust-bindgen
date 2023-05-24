@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
 pub struct BaseWithVtable__bindgen_vtable {}
 /// This should have an explicit vtable.
@@ -33,13 +27,11 @@ pub struct DerivedWithNoVirtualMethods {
 #[test]
 fn bindgen_test_layout_DerivedWithNoVirtualMethods() {
     assert_eq!(
-        ::std::mem::size_of::<DerivedWithNoVirtualMethods>(),
-        16usize,
+        ::std::mem::size_of:: < DerivedWithNoVirtualMethods > (), 16usize,
         concat!("Size of: ", stringify!(DerivedWithNoVirtualMethods))
     );
     assert_eq!(
-        ::std::mem::align_of::<DerivedWithNoVirtualMethods>(),
-        8usize,
+        ::std::mem::align_of:: < DerivedWithNoVirtualMethods > (), 8usize,
         concat!("Alignment of ", stringify!(DerivedWithNoVirtualMethods))
     );
 }
@@ -61,13 +53,11 @@ pub struct DerivedWithVirtualMethods {
 #[test]
 fn bindgen_test_layout_DerivedWithVirtualMethods() {
     assert_eq!(
-        ::std::mem::size_of::<DerivedWithVirtualMethods>(),
-        16usize,
+        ::std::mem::size_of:: < DerivedWithVirtualMethods > (), 16usize,
         concat!("Size of: ", stringify!(DerivedWithVirtualMethods))
     );
     assert_eq!(
-        ::std::mem::align_of::<DerivedWithVirtualMethods>(),
-        8usize,
+        ::std::mem::align_of:: < DerivedWithVirtualMethods > (), 8usize,
         concat!("Alignment of ", stringify!(DerivedWithVirtualMethods))
     );
 }
@@ -108,14 +98,12 @@ pub struct DerivedWithVtable {
 #[test]
 fn bindgen_test_layout_DerivedWithVtable() {
     assert_eq!(
-        ::std::mem::size_of::<DerivedWithVtable>(),
-        16usize,
-        concat!("Size of: ", stringify!(DerivedWithVtable))
+        ::std::mem::size_of:: < DerivedWithVtable > (), 16usize, concat!("Size of: ",
+        stringify!(DerivedWithVtable))
     );
     assert_eq!(
-        ::std::mem::align_of::<DerivedWithVtable>(),
-        8usize,
-        concat!("Alignment of ", stringify!(DerivedWithVtable))
+        ::std::mem::align_of:: < DerivedWithVtable > (), 8usize, concat!("Alignment of ",
+        stringify!(DerivedWithVtable))
     );
 }
 impl Default for DerivedWithVtable {
@@ -136,13 +124,11 @@ pub struct DerivedWithoutVtable {
 #[test]
 fn bindgen_test_layout_DerivedWithoutVtable() {
     assert_eq!(
-        ::std::mem::size_of::<DerivedWithoutVtable>(),
-        8usize,
-        concat!("Size of: ", stringify!(DerivedWithoutVtable))
+        ::std::mem::size_of:: < DerivedWithoutVtable > (), 8usize, concat!("Size of: ",
+        stringify!(DerivedWithoutVtable))
     );
     assert_eq!(
-        ::std::mem::align_of::<DerivedWithoutVtable>(),
-        8usize,
+        ::std::mem::align_of:: < DerivedWithoutVtable > (), 8usize,
         concat!("Alignment of ", stringify!(DerivedWithoutVtable))
     );
 }
@@ -158,81 +144,52 @@ impl Default for DerivedWithoutVtable {
 #[test]
 fn __bindgen_test_layout_BaseWithVtable_open0_ptr_char_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>(),
-        16usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(BaseWithVtable<*mut ::std::os::raw::c_char>)
-        )
+        ::std::mem::size_of:: < BaseWithVtable < * mut ::std::os::raw::c_char > > (),
+        16usize, concat!("Size of template specialization: ", stringify!(BaseWithVtable <
+        * mut ::std::os::raw::c_char >))
     );
     assert_eq!(
-        ::std::mem::align_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(BaseWithVtable<*mut ::std::os::raw::c_char>)
-        )
+        ::std::mem::align_of:: < BaseWithVtable < * mut ::std::os::raw::c_char > > (),
+        8usize, concat!("Alignment of template specialization: ",
+        stringify!(BaseWithVtable < * mut ::std::os::raw::c_char >))
     );
 }
 #[test]
-fn __bindgen_test_layout_BaseWithVtable_open0_ptr_char_close0_instantiation_1()
-{
+fn __bindgen_test_layout_BaseWithVtable_open0_ptr_char_close0_instantiation_1() {
     assert_eq!(
-        ::std::mem::size_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>(),
-        16usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(BaseWithVtable<*mut ::std::os::raw::c_char>)
-        )
+        ::std::mem::size_of:: < BaseWithVtable < * mut ::std::os::raw::c_char > > (),
+        16usize, concat!("Size of template specialization: ", stringify!(BaseWithVtable <
+        * mut ::std::os::raw::c_char >))
     );
     assert_eq!(
-        ::std::mem::align_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(BaseWithVtable<*mut ::std::os::raw::c_char>)
-        )
+        ::std::mem::align_of:: < BaseWithVtable < * mut ::std::os::raw::c_char > > (),
+        8usize, concat!("Alignment of template specialization: ",
+        stringify!(BaseWithVtable < * mut ::std::os::raw::c_char >))
     );
 }
 #[test]
-fn __bindgen_test_layout_BaseWithoutVtable_open0_ptr_char_close0_instantiation()
-{
+fn __bindgen_test_layout_BaseWithoutVtable_open0_ptr_char_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(BaseWithoutVtable<*mut ::std::os::raw::c_char>)
-        )
+        ::std::mem::size_of:: < BaseWithoutVtable < * mut ::std::os::raw::c_char > > (),
+        8usize, concat!("Size of template specialization: ", stringify!(BaseWithoutVtable
+        < * mut ::std::os::raw::c_char >))
     );
     assert_eq!(
-        ::std::mem::align_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(
-        ),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(BaseWithoutVtable<*mut ::std::os::raw::c_char>)
-        )
+        ::std::mem::align_of:: < BaseWithoutVtable < * mut ::std::os::raw::c_char > > (),
+        8usize, concat!("Alignment of template specialization: ",
+        stringify!(BaseWithoutVtable < * mut ::std::os::raw::c_char >))
     );
 }
 #[test]
-fn __bindgen_test_layout_BaseWithoutVtable_open0_ptr_char_close0_instantiation_1(
-) {
+fn __bindgen_test_layout_BaseWithoutVtable_open0_ptr_char_close0_instantiation_1() {
     assert_eq!(
-        ::std::mem::size_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(BaseWithoutVtable<*mut ::std::os::raw::c_char>)
-        )
+        ::std::mem::size_of:: < BaseWithoutVtable < * mut ::std::os::raw::c_char > > (),
+        8usize, concat!("Size of template specialization: ", stringify!(BaseWithoutVtable
+        < * mut ::std::os::raw::c_char >))
     );
     assert_eq!(
-        ::std::mem::align_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(
-        ),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(BaseWithoutVtable<*mut ::std::os::raw::c_char>)
-        )
+        ::std::mem::align_of:: < BaseWithoutVtable < * mut ::std::os::raw::c_char > > (),
+        8usize, concat!("Alignment of template specialization: ",
+        stringify!(BaseWithoutVtable < * mut ::std::os::raw::c_char >))
     );
 }

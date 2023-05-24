@@ -10,6 +10,8 @@ diff = "0.1"
 shlex = "1"
 clap = { version = "4", features = ["derive"] }
 clap_complete = "4"
+prettyplease = { version = "0.2.0" }
+syn = { version = "2.0" }
 tempfile = "3"
 
 [features]
