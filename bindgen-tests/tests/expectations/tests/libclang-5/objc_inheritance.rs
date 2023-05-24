@@ -1,12 +1,6 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #![cfg(target_os = "macos")]
-
-use objc::{self, class, msg_send, sel, sel_impl};
+use objc::{self, msg_send, sel, sel_impl, class};
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 #[repr(transparent)]
@@ -50,8 +44,7 @@ impl From<Bar> for Foo {
 impl std::convert::TryFrom<Foo> for Bar {
     type Error = &'static str;
     fn try_from(parent: Foo) -> Result<Bar, Self::Error> {
-        let is_kind_of: bool =
-            unsafe { msg_send!(parent, isKindOfClass: class!(Bar)) };
+        let is_kind_of: bool = unsafe { msg_send!(parent, isKindOfClass : class!(Bar)) };
         if is_kind_of {
             Ok(Bar(parent.0))
         } else {
@@ -85,8 +78,7 @@ impl From<Baz> for Bar {
 impl std::convert::TryFrom<Bar> for Baz {
     type Error = &'static str;
     fn try_from(parent: Bar) -> Result<Baz, Self::Error> {
-        let is_kind_of: bool =
-            unsafe { msg_send!(parent, isKindOfClass: class!(Baz)) };
+        let is_kind_of: bool = unsafe { msg_send!(parent, isKindOfClass : class!(Baz)) };
         if is_kind_of {
             Ok(Baz(parent.0))
         } else {
@@ -103,8 +95,7 @@ impl From<Baz> for Foo {
 impl std::convert::TryFrom<Foo> for Baz {
     type Error = &'static str;
     fn try_from(parent: Foo) -> Result<Baz, Self::Error> {
-        let is_kind_of: bool =
-            unsafe { msg_send!(parent, isKindOfClass: class!(Baz)) };
+        let is_kind_of: bool = unsafe { msg_send!(parent, isKindOfClass : class!(Baz)) };
         if is_kind_of {
             Ok(Baz(parent.0))
         } else {
