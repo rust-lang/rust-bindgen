@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub type c_char = ::core::ffi::c_char;
 pub type c_double = ::core::ffi::c_double;
 pub type c_float = ::core::ffi::c_float;

@@ -1,11 +1,5 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #![cfg(target_os = "macos")]
-
 #[macro_use]
 extern crate objc;
 #[allow(non_camel_case_types)]
@@ -31,12 +25,12 @@ pub trait ISomeClass: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, ambiguouslyBlockedMethod)
+        msg_send!(* self, ambiguouslyBlockedMethod)
     }
     unsafe fn instanceMethod(&self)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, instanceMethod)
+        msg_send!(* self, instanceMethod)
     }
 }

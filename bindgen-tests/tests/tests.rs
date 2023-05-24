@@ -160,24 +160,14 @@ fn compare_generated_header(
 
     // We skip the generate() error here so we get a full diff below
     let actual = match builder.generate() {
-        Ok(bindings) => {
-            let actual = bindings.to_string();
-            format_code(actual).map_err(|err| {
-                Error::new(
-                    ErrorKind::Other,
-                    format!("Cannot parse the generated bindings: {}", err),
-                )
-            })?
-        }
+        Ok(bindings) => format_code(bindings.to_string()).map_err(|err| {
+            Error::new(
+                ErrorKind::Other,
+                format!("Cannot parse the generated bindings: {}", err),
+            )
+        })?,
         Err(_) => "/* error generating bindings */\n".into(),
     };
-
-    let expected = format_code(expected).map_err(|err| {
-        Error::new(
-            ErrorKind::Other,
-            format!("Cannot parse the expected bindings: {}", err),
-        )
-    })?;
 
     if actual.is_empty() {
         return Err(Error::new(
@@ -185,7 +175,6 @@ fn compare_generated_header(
             "Something's gone really wrong!",
         ));
     }
-
     if actual != expected {
         return error_diff_mismatch(
             &actual,
