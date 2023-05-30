@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub const my_enum1_A: my_enum1 = 0;
 pub type my_enum1 = u32;
 pub const my_enum2_B: my_enum2 = -1;

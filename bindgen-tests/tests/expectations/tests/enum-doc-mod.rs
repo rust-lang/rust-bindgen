@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub mod B {
     /// Document enum
     pub type Type = ::std::os::raw::c_uint;
@@ -18,9 +12,9 @@ pub mod B {
     pub const VAR_D: Type = 3;
     ///< Document field with following exclamation
     pub const VAR_E: Type = 4;
-    /// Document field with preceeding star, with a loong long multiline
-    /// comment.
-    ///
-    /// Very interesting documentation, definitely.
+    /** Document field with preceeding star, with a loong long multiline
+ comment.
+
+ Very interesting documentation, definitely.*/
     pub const VAR_F: Type = 5;
 }

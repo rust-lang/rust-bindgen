@@ -1,12 +1,5 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub struct BlocklistMe(u8);
-
 /// Because this type contains a blocklisted type, it should not derive Debug.
 #[repr(C)]
 pub struct ShouldManuallyImplDebug {
@@ -14,28 +7,20 @@ pub struct ShouldManuallyImplDebug {
 }
 #[test]
 fn bindgen_test_layout_ShouldManuallyImplDebug() {
-    const UNINIT: ::std::mem::MaybeUninit<ShouldManuallyImplDebug> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<ShouldManuallyImplDebug> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<ShouldManuallyImplDebug>(),
-        1usize,
+        ::std::mem::size_of:: < ShouldManuallyImplDebug > (), 1usize,
         concat!("Size of: ", stringify!(ShouldManuallyImplDebug))
     );
     assert_eq!(
-        ::std::mem::align_of::<ShouldManuallyImplDebug>(),
-        1usize,
+        ::std::mem::align_of:: < ShouldManuallyImplDebug > (), 1usize,
         concat!("Alignment of ", stringify!(ShouldManuallyImplDebug))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldManuallyImplDebug),
-            "::",
-            stringify!(a)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
+        concat!("Offset of field: ", stringify!(ShouldManuallyImplDebug), "::",
+        stringify!(a))
     );
 }
 impl Default for ShouldManuallyImplDebug {

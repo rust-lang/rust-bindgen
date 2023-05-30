@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub const Foo_A: Foo = 0;
 pub const Foo_B: Foo = 1;
 pub type Foo = ::std::os::raw::c_uint;

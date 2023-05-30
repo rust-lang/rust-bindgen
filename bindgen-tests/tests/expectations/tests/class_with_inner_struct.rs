@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct A {
@@ -20,38 +14,23 @@ pub struct A_Segment {
 }
 #[test]
 fn bindgen_test_layout_A_Segment() {
-    const UNINIT: ::std::mem::MaybeUninit<A_Segment> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<A_Segment> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<A_Segment>(),
-        8usize,
-        concat!("Size of: ", stringify!(A_Segment))
+        ::std::mem::size_of:: < A_Segment > (), 8usize, concat!("Size of: ",
+        stringify!(A_Segment))
     );
     assert_eq!(
-        ::std::mem::align_of::<A_Segment>(),
-        4usize,
-        concat!("Alignment of ", stringify!(A_Segment))
+        ::std::mem::align_of:: < A_Segment > (), 4usize, concat!("Alignment of ",
+        stringify!(A_Segment))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).begin) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(A_Segment),
-            "::",
-            stringify!(begin)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).begin) as usize - ptr as usize }, 0usize,
+        concat!("Offset of field: ", stringify!(A_Segment), "::", stringify!(begin))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).end) as usize - ptr as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(A_Segment),
-            "::",
-            stringify!(end)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).end) as usize - ptr as usize }, 4usize,
+        concat!("Offset of field: ", stringify!(A_Segment), "::", stringify!(end))
     );
 }
 #[repr(C)]
@@ -61,28 +40,19 @@ pub union A__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_A__bindgen_ty_1() {
-    const UNINIT: ::std::mem::MaybeUninit<A__bindgen_ty_1> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<A__bindgen_ty_1> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<A__bindgen_ty_1>(),
-        4usize,
-        concat!("Size of: ", stringify!(A__bindgen_ty_1))
+        ::std::mem::size_of:: < A__bindgen_ty_1 > (), 4usize, concat!("Size of: ",
+        stringify!(A__bindgen_ty_1))
     );
     assert_eq!(
-        ::std::mem::align_of::<A__bindgen_ty_1>(),
-        4usize,
-        concat!("Alignment of ", stringify!(A__bindgen_ty_1))
+        ::std::mem::align_of:: < A__bindgen_ty_1 > (), 4usize, concat!("Alignment of ",
+        stringify!(A__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(A__bindgen_ty_1),
-            "::",
-            stringify!(f)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).f) as usize - ptr as usize }, 0usize,
+        concat!("Offset of field: ", stringify!(A__bindgen_ty_1), "::", stringify!(f))
     );
 }
 impl Default for A__bindgen_ty_1 {
@@ -101,28 +71,19 @@ pub union A__bindgen_ty_2 {
 }
 #[test]
 fn bindgen_test_layout_A__bindgen_ty_2() {
-    const UNINIT: ::std::mem::MaybeUninit<A__bindgen_ty_2> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<A__bindgen_ty_2> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<A__bindgen_ty_2>(),
-        4usize,
-        concat!("Size of: ", stringify!(A__bindgen_ty_2))
+        ::std::mem::size_of:: < A__bindgen_ty_2 > (), 4usize, concat!("Size of: ",
+        stringify!(A__bindgen_ty_2))
     );
     assert_eq!(
-        ::std::mem::align_of::<A__bindgen_ty_2>(),
-        4usize,
-        concat!("Alignment of ", stringify!(A__bindgen_ty_2))
+        ::std::mem::align_of:: < A__bindgen_ty_2 > (), 4usize, concat!("Alignment of ",
+        stringify!(A__bindgen_ty_2))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(A__bindgen_ty_2),
-            "::",
-            stringify!(d)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).d) as usize - ptr as usize }, 0usize,
+        concat!("Offset of field: ", stringify!(A__bindgen_ty_2), "::", stringify!(d))
     );
 }
 impl Default for A__bindgen_ty_2 {
@@ -136,35 +97,22 @@ impl Default for A__bindgen_ty_2 {
 }
 #[test]
 fn bindgen_test_layout_A() {
-    const UNINIT: ::std::mem::MaybeUninit<A> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<A> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<A>(),
-        12usize,
-        concat!("Size of: ", stringify!(A))
+        ::std::mem::size_of:: < A > (), 12usize, concat!("Size of: ", stringify!(A))
     );
     assert_eq!(
-        ::std::mem::align_of::<A>(),
-        4usize,
-        concat!("Alignment of ", stringify!(A))
+        ::std::mem::align_of:: < A > (), 4usize, concat!("Alignment of ", stringify!(A))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize },
-        0usize,
+        unsafe { ::std::ptr::addr_of!((* ptr).c) as usize - ptr as usize }, 0usize,
         concat!("Offset of field: ", stringify!(A), "::", stringify!(c))
     );
     assert_eq!(
-        unsafe {
-            ::std::ptr::addr_of!((*ptr).named_union) as usize - ptr as usize
-        },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(A),
-            "::",
-            stringify!(named_union)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).named_union) as usize - ptr as usize },
+        4usize, concat!("Offset of field: ", stringify!(A), "::",
+        stringify!(named_union))
     );
 }
 impl Default for A {
@@ -189,58 +137,37 @@ pub struct B_Segment {
 }
 #[test]
 fn bindgen_test_layout_B_Segment() {
-    const UNINIT: ::std::mem::MaybeUninit<B_Segment> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<B_Segment> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<B_Segment>(),
-        8usize,
-        concat!("Size of: ", stringify!(B_Segment))
+        ::std::mem::size_of:: < B_Segment > (), 8usize, concat!("Size of: ",
+        stringify!(B_Segment))
     );
     assert_eq!(
-        ::std::mem::align_of::<B_Segment>(),
-        4usize,
-        concat!("Alignment of ", stringify!(B_Segment))
+        ::std::mem::align_of:: < B_Segment > (), 4usize, concat!("Alignment of ",
+        stringify!(B_Segment))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).begin) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(B_Segment),
-            "::",
-            stringify!(begin)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).begin) as usize - ptr as usize }, 0usize,
+        concat!("Offset of field: ", stringify!(B_Segment), "::", stringify!(begin))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).end) as usize - ptr as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(B_Segment),
-            "::",
-            stringify!(end)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).end) as usize - ptr as usize }, 4usize,
+        concat!("Offset of field: ", stringify!(B_Segment), "::", stringify!(end))
     );
 }
 #[test]
 fn bindgen_test_layout_B() {
-    const UNINIT: ::std::mem::MaybeUninit<B> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<B> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<B>(),
-        4usize,
-        concat!("Size of: ", stringify!(B))
+        ::std::mem::size_of:: < B > (), 4usize, concat!("Size of: ", stringify!(B))
     );
     assert_eq!(
-        ::std::mem::align_of::<B>(),
-        4usize,
-        concat!("Alignment of ", stringify!(B))
+        ::std::mem::align_of:: < B > (), 4usize, concat!("Alignment of ", stringify!(B))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize },
-        0usize,
+        unsafe { ::std::ptr::addr_of!((* ptr).d) as usize - ptr as usize }, 0usize,
         concat!("Offset of field: ", stringify!(B), "::", stringify!(d))
     );
 }
@@ -274,58 +201,35 @@ pub struct C__bindgen_ty_1__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_C__bindgen_ty_1__bindgen_ty_1() {
-    const UNINIT: ::std::mem::MaybeUninit<C__bindgen_ty_1__bindgen_ty_1> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<C__bindgen_ty_1__bindgen_ty_1> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<C__bindgen_ty_1__bindgen_ty_1>(),
-        16usize,
+        ::std::mem::size_of:: < C__bindgen_ty_1__bindgen_ty_1 > (), 16usize,
         concat!("Size of: ", stringify!(C__bindgen_ty_1__bindgen_ty_1))
     );
     assert_eq!(
-        ::std::mem::align_of::<C__bindgen_ty_1__bindgen_ty_1>(),
-        4usize,
+        ::std::mem::align_of:: < C__bindgen_ty_1__bindgen_ty_1 > (), 4usize,
         concat!("Alignment of ", stringify!(C__bindgen_ty_1__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mX1) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(C__bindgen_ty_1__bindgen_ty_1),
-            "::",
-            stringify!(mX1)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).mX1) as usize - ptr as usize }, 0usize,
+        concat!("Offset of field: ", stringify!(C__bindgen_ty_1__bindgen_ty_1), "::",
+        stringify!(mX1))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mY1) as usize - ptr as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(C__bindgen_ty_1__bindgen_ty_1),
-            "::",
-            stringify!(mY1)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).mY1) as usize - ptr as usize }, 4usize,
+        concat!("Offset of field: ", stringify!(C__bindgen_ty_1__bindgen_ty_1), "::",
+        stringify!(mY1))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mX2) as usize - ptr as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(C__bindgen_ty_1__bindgen_ty_1),
-            "::",
-            stringify!(mX2)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).mX2) as usize - ptr as usize }, 8usize,
+        concat!("Offset of field: ", stringify!(C__bindgen_ty_1__bindgen_ty_1), "::",
+        stringify!(mX2))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mY2) as usize - ptr as usize },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(C__bindgen_ty_1__bindgen_ty_1),
-            "::",
-            stringify!(mY2)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).mY2) as usize - ptr as usize }, 12usize,
+        concat!("Offset of field: ", stringify!(C__bindgen_ty_1__bindgen_ty_1), "::",
+        stringify!(mY2))
     );
 }
 #[repr(C)]
@@ -336,40 +240,25 @@ pub struct C__bindgen_ty_1__bindgen_ty_2 {
 }
 #[test]
 fn bindgen_test_layout_C__bindgen_ty_1__bindgen_ty_2() {
-    const UNINIT: ::std::mem::MaybeUninit<C__bindgen_ty_1__bindgen_ty_2> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<C__bindgen_ty_1__bindgen_ty_2> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<C__bindgen_ty_1__bindgen_ty_2>(),
-        8usize,
+        ::std::mem::size_of:: < C__bindgen_ty_1__bindgen_ty_2 > (), 8usize,
         concat!("Size of: ", stringify!(C__bindgen_ty_1__bindgen_ty_2))
     );
     assert_eq!(
-        ::std::mem::align_of::<C__bindgen_ty_1__bindgen_ty_2>(),
-        4usize,
+        ::std::mem::align_of:: < C__bindgen_ty_1__bindgen_ty_2 > (), 4usize,
         concat!("Alignment of ", stringify!(C__bindgen_ty_1__bindgen_ty_2))
     );
     assert_eq!(
-        unsafe {
-            ::std::ptr::addr_of!((*ptr).mStepSyntax) as usize - ptr as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(C__bindgen_ty_1__bindgen_ty_2),
-            "::",
-            stringify!(mStepSyntax)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).mStepSyntax) as usize - ptr as usize },
+        0usize, concat!("Offset of field: ", stringify!(C__bindgen_ty_1__bindgen_ty_2),
+        "::", stringify!(mStepSyntax))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mSteps) as usize - ptr as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(C__bindgen_ty_1__bindgen_ty_2),
-            "::",
-            stringify!(mSteps)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).mSteps) as usize - ptr as usize }, 4usize,
+        concat!("Offset of field: ", stringify!(C__bindgen_ty_1__bindgen_ty_2), "::",
+        stringify!(mSteps))
     );
 }
 impl Default for C__bindgen_ty_1__bindgen_ty_2 {
@@ -383,28 +272,20 @@ impl Default for C__bindgen_ty_1__bindgen_ty_2 {
 }
 #[test]
 fn bindgen_test_layout_C__bindgen_ty_1() {
-    const UNINIT: ::std::mem::MaybeUninit<C__bindgen_ty_1> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<C__bindgen_ty_1> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<C__bindgen_ty_1>(),
-        16usize,
-        concat!("Size of: ", stringify!(C__bindgen_ty_1))
+        ::std::mem::size_of:: < C__bindgen_ty_1 > (), 16usize, concat!("Size of: ",
+        stringify!(C__bindgen_ty_1))
     );
     assert_eq!(
-        ::std::mem::align_of::<C__bindgen_ty_1>(),
-        4usize,
-        concat!("Alignment of ", stringify!(C__bindgen_ty_1))
+        ::std::mem::align_of:: < C__bindgen_ty_1 > (), 4usize, concat!("Alignment of ",
+        stringify!(C__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mFunc) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(C__bindgen_ty_1),
-            "::",
-            stringify!(mFunc)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).mFunc) as usize - ptr as usize }, 0usize,
+        concat!("Offset of field: ", stringify!(C__bindgen_ty_1), "::",
+        stringify!(mFunc))
     );
 }
 impl Default for C__bindgen_ty_1 {
@@ -424,58 +305,37 @@ pub struct C_Segment {
 }
 #[test]
 fn bindgen_test_layout_C_Segment() {
-    const UNINIT: ::std::mem::MaybeUninit<C_Segment> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<C_Segment> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<C_Segment>(),
-        8usize,
-        concat!("Size of: ", stringify!(C_Segment))
+        ::std::mem::size_of:: < C_Segment > (), 8usize, concat!("Size of: ",
+        stringify!(C_Segment))
     );
     assert_eq!(
-        ::std::mem::align_of::<C_Segment>(),
-        4usize,
-        concat!("Alignment of ", stringify!(C_Segment))
+        ::std::mem::align_of:: < C_Segment > (), 4usize, concat!("Alignment of ",
+        stringify!(C_Segment))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).begin) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(C_Segment),
-            "::",
-            stringify!(begin)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).begin) as usize - ptr as usize }, 0usize,
+        concat!("Offset of field: ", stringify!(C_Segment), "::", stringify!(begin))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).end) as usize - ptr as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(C_Segment),
-            "::",
-            stringify!(end)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).end) as usize - ptr as usize }, 4usize,
+        concat!("Offset of field: ", stringify!(C_Segment), "::", stringify!(end))
     );
 }
 #[test]
 fn bindgen_test_layout_C() {
-    const UNINIT: ::std::mem::MaybeUninit<C> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<C> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<C>(),
-        20usize,
-        concat!("Size of: ", stringify!(C))
+        ::std::mem::size_of:: < C > (), 20usize, concat!("Size of: ", stringify!(C))
     );
     assert_eq!(
-        ::std::mem::align_of::<C>(),
-        4usize,
-        concat!("Alignment of ", stringify!(C))
+        ::std::mem::align_of:: < C > (), 4usize, concat!("Alignment of ", stringify!(C))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize },
-        0usize,
+        unsafe { ::std::ptr::addr_of!((* ptr).d) as usize - ptr as usize }, 0usize,
         concat!("Offset of field: ", stringify!(C), "::", stringify!(d))
     );
 }

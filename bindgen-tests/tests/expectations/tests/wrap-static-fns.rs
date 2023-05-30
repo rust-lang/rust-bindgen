@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 extern "C" {
     #[link_name = "foo__extern"]
     pub fn foo() -> ::std::os::raw::c_int;
@@ -21,9 +15,7 @@ extern "C" {
     #[link_name = "takes_fn_ptr__extern"]
     pub fn takes_fn_ptr(
         f: ::std::option::Option<
-            unsafe extern "C" fn(
-                arg1: ::std::os::raw::c_int,
-            ) -> ::std::os::raw::c_int,
+            unsafe extern "C" fn(arg1: ::std::os::raw::c_int) -> ::std::os::raw::c_int,
         >,
     ) -> ::std::os::raw::c_int;
 }
@@ -31,9 +23,7 @@ extern "C" {
     #[link_name = "takes_fn__extern"]
     pub fn takes_fn(
         f: ::std::option::Option<
-            unsafe extern "C" fn(
-                arg1: ::std::os::raw::c_int,
-            ) -> ::std::os::raw::c_int,
+            unsafe extern "C" fn(arg1: ::std::os::raw::c_int) -> ::std::os::raw::c_int,
         >,
     ) -> ::std::os::raw::c_int;
 }

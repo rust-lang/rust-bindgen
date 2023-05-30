@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub type mbedtls_mpi_uint = ::std::os::raw::c_uint;
 /// \brief          MPI structure
 #[repr(C)]

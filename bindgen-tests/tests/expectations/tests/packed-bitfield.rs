@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct __BindgenBitfieldUnit<Storage> {
@@ -55,8 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <=
-                self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -76,8 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <=
-                self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -100,22 +92,17 @@ pub struct Date {
 #[test]
 fn bindgen_test_layout_Date() {
     assert_eq!(
-        ::std::mem::size_of::<Date>(),
-        3usize,
-        concat!("Size of: ", stringify!(Date))
+        ::std::mem::size_of:: < Date > (), 3usize, concat!("Size of: ", stringify!(Date))
     );
     assert_eq!(
-        ::std::mem::align_of::<Date>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Date))
+        ::std::mem::align_of:: < Date > (), 1usize, concat!("Alignment of ",
+        stringify!(Date))
     );
 }
 impl Date {
     #[inline]
     pub fn day(&self) -> ::std::os::raw::c_uchar {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get(0usize, 5u8) as u8)
-        }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 5u8) as u8) }
     }
     #[inline]
     pub fn set_day(&mut self, val: ::std::os::raw::c_uchar) {
@@ -126,9 +113,7 @@ impl Date {
     }
     #[inline]
     pub fn month(&self) -> ::std::os::raw::c_uchar {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get(5usize, 4u8) as u8)
-        }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(5usize, 4u8) as u8) }
     }
     #[inline]
     pub fn set_month(&mut self, val: ::std::os::raw::c_uchar) {
@@ -139,9 +124,7 @@ impl Date {
     }
     #[inline]
     pub fn year(&self) -> ::std::os::raw::c_short {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get(9usize, 15u8) as u16)
-        }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(9usize, 15u8) as u16) }
     }
     #[inline]
     pub fn set_year(&mut self, val: ::std::os::raw::c_short) {
@@ -156,20 +139,34 @@ impl Date {
         month: ::std::os::raw::c_uchar,
         year: ::std::os::raw::c_short,
     ) -> __BindgenBitfieldUnit<[u8; 3usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> =
-            Default::default();
-        __bindgen_bitfield_unit.set(0usize, 5u8, {
-            let day: u8 = unsafe { ::std::mem::transmute(day) };
-            day as u64
-        });
-        __bindgen_bitfield_unit.set(5usize, 4u8, {
-            let month: u8 = unsafe { ::std::mem::transmute(month) };
-            month as u64
-        });
-        __bindgen_bitfield_unit.set(9usize, 15u8, {
-            let year: u16 = unsafe { ::std::mem::transmute(year) };
-            year as u64
-        });
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> = Default::default();
+        __bindgen_bitfield_unit
+            .set(
+                0usize,
+                5u8,
+                {
+                    let day: u8 = unsafe { ::std::mem::transmute(day) };
+                    day as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                5usize,
+                4u8,
+                {
+                    let month: u8 = unsafe { ::std::mem::transmute(month) };
+                    month as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                9usize,
+                15u8,
+                {
+                    let year: u16 = unsafe { ::std::mem::transmute(year) };
+                    year as u64
+                },
+            );
         __bindgen_bitfield_unit
     }
 }

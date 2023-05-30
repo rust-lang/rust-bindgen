@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub type c = nsTArray;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -13,28 +7,19 @@ pub struct nsTArray_base {
 }
 #[test]
 fn bindgen_test_layout_nsTArray_base() {
-    const UNINIT: ::std::mem::MaybeUninit<nsTArray_base> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<nsTArray_base> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<nsTArray_base>(),
-        8usize,
-        concat!("Size of: ", stringify!(nsTArray_base))
+        ::std::mem::size_of:: < nsTArray_base > (), 8usize, concat!("Size of: ",
+        stringify!(nsTArray_base))
     );
     assert_eq!(
-        ::std::mem::align_of::<nsTArray_base>(),
-        8usize,
-        concat!("Alignment of ", stringify!(nsTArray_base))
+        ::std::mem::align_of:: < nsTArray_base > (), 8usize, concat!("Alignment of ",
+        stringify!(nsTArray_base))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(nsTArray_base),
-            "::",
-            stringify!(d)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).d) as usize - ptr as usize }, 0usize,
+        concat!("Offset of field: ", stringify!(nsTArray_base), "::", stringify!(d))
     );
 }
 impl Default for nsTArray_base {
@@ -67,28 +52,19 @@ pub struct nsIContent {
 }
 #[test]
 fn bindgen_test_layout_nsIContent() {
-    const UNINIT: ::std::mem::MaybeUninit<nsIContent> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<nsIContent> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<nsIContent>(),
-        8usize,
-        concat!("Size of: ", stringify!(nsIContent))
+        ::std::mem::size_of:: < nsIContent > (), 8usize, concat!("Size of: ",
+        stringify!(nsIContent))
     );
     assert_eq!(
-        ::std::mem::align_of::<nsIContent>(),
-        8usize,
-        concat!("Alignment of ", stringify!(nsIContent))
+        ::std::mem::align_of:: < nsIContent > (), 8usize, concat!("Alignment of ",
+        stringify!(nsIContent))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(nsIContent),
-            "::",
-            stringify!(foo)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).foo) as usize - ptr as usize }, 0usize,
+        concat!("Offset of field: ", stringify!(nsIContent), "::", stringify!(foo))
     );
 }
 impl Default for nsIContent {
@@ -107,33 +83,22 @@ extern "C" {
 #[test]
 fn __bindgen_test_layout_nsTArray_open0_ptr_nsIContent_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of::<nsTArray>(),
-        8usize,
+        ::std::mem::size_of:: < nsTArray > (), 8usize,
         concat!("Size of template specialization: ", stringify!(nsTArray))
     );
     assert_eq!(
-        ::std::mem::align_of::<nsTArray>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(nsTArray)
-        )
+        ::std::mem::align_of:: < nsTArray > (), 8usize,
+        concat!("Alignment of template specialization: ", stringify!(nsTArray))
     );
 }
 #[test]
-fn __bindgen_test_layout_nsTArray_open0_ptr_nsIContent_close0_instantiation_1()
-{
+fn __bindgen_test_layout_nsTArray_open0_ptr_nsIContent_close0_instantiation_1() {
     assert_eq!(
-        ::std::mem::size_of::<nsTArray>(),
-        8usize,
+        ::std::mem::size_of:: < nsTArray > (), 8usize,
         concat!("Size of template specialization: ", stringify!(nsTArray))
     );
     assert_eq!(
-        ::std::mem::align_of::<nsTArray>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(nsTArray)
-        )
+        ::std::mem::align_of:: < nsTArray > (), 8usize,
+        concat!("Alignment of template specialization: ", stringify!(nsTArray))
     );
 }

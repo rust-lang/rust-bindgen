@@ -75,14 +75,6 @@ set_llvm_env() {
   fi
 }
 
-# Need rustfmt to compare the test expectations.
-set_rustfmt_env() {
-  local toolchain="nightly-$(curl https://rust-lang.github.io/rustup-components-history/$(rustup target list --installed | tail -1)/rustfmt)"
-  rustup update "$toolchain"
-  rustup component add rustfmt --toolchain "$toolchain"
-  export RUSTFMT="$(rustup which --toolchain "$toolchain" rustfmt)"
-}
-
 assert_no_diff() {
   git add -u
   git diff @
@@ -90,7 +82,6 @@ assert_no_diff() {
 }
 
 set_llvm_env
-set_rustfmt_env
 
 get_cargo_args() {
   local args=""
