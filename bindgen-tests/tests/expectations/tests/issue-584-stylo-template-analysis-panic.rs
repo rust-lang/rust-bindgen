@@ -1,12 +1,5 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub type RefPtr<T> = T;
-
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct A {
@@ -16,14 +9,10 @@ pub type A_a = b;
 #[test]
 fn bindgen_test_layout_A() {
     assert_eq!(
-        ::std::mem::size_of::<A>(),
-        1usize,
-        concat!("Size of: ", stringify!(A))
+        ::std::mem::size_of:: < A > (), 1usize, concat!("Size of: ", stringify!(A))
     );
     assert_eq!(
-        ::std::mem::align_of::<A>(),
-        1usize,
-        concat!("Alignment of ", stringify!(A))
+        ::std::mem::align_of:: < A > (), 1usize, concat!("Alignment of ", stringify!(A))
     );
 }
 #[repr(C)]
@@ -51,22 +40,16 @@ pub struct g {
 }
 #[test]
 fn bindgen_test_layout_g() {
-    const UNINIT: ::std::mem::MaybeUninit<g> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<g> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<g>(),
-        1usize,
-        concat!("Size of: ", stringify!(g))
+        ::std::mem::size_of:: < g > (), 1usize, concat!("Size of: ", stringify!(g))
     );
     assert_eq!(
-        ::std::mem::align_of::<g>(),
-        1usize,
-        concat!("Alignment of ", stringify!(g))
+        ::std::mem::align_of:: < g > (), 1usize, concat!("Alignment of ", stringify!(g))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).h) as usize - ptr as usize },
-        0usize,
+        unsafe { ::std::ptr::addr_of!((* ptr).h) as usize - ptr as usize }, 0usize,
         concat!("Offset of field: ", stringify!(g), "::", stringify!(h))
     );
 }
@@ -86,14 +69,10 @@ pub struct b {
 #[test]
 fn bindgen_test_layout_b() {
     assert_eq!(
-        ::std::mem::size_of::<b>(),
-        1usize,
-        concat!("Size of: ", stringify!(b))
+        ::std::mem::size_of:: < b > (), 1usize, concat!("Size of: ", stringify!(b))
     );
     assert_eq!(
-        ::std::mem::align_of::<b>(),
-        1usize,
-        concat!("Alignment of ", stringify!(b))
+        ::std::mem::align_of:: < b > (), 1usize, concat!("Alignment of ", stringify!(b))
     );
 }
 impl Default for b {
@@ -112,13 +91,11 @@ extern "C" {
 #[test]
 fn __bindgen_test_layout_f_open0_e_open1_int_close1_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of::<f>(),
-        1usize,
+        ::std::mem::size_of:: < f > (), 1usize,
         concat!("Size of template specialization: ", stringify!(f))
     );
     assert_eq!(
-        ::std::mem::align_of::<f>(),
-        1usize,
+        ::std::mem::align_of:: < f > (), 1usize,
         concat!("Alignment of template specialization: ", stringify!(f))
     );
 }

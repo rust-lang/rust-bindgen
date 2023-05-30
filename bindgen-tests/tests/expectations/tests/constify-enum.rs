@@ -1,16 +1,7 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
-pub const nsCSSPropertyID_eCSSProperty_COUNT_unexistingVariantValue:
-    nsCSSPropertyID =
-    nsCSSPropertyID::eCSSProperty_COUNT_unexistingVariantValue;
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
+pub const nsCSSPropertyID_eCSSProperty_COUNT_unexistingVariantValue: nsCSSPropertyID = nsCSSPropertyID::eCSSProperty_COUNT_unexistingVariantValue;
 impl nsCSSPropertyID {
-    pub const eCSSProperty_COUNT: nsCSSPropertyID =
-        nsCSSPropertyID::eCSSPropertyAlias_aa;
+    pub const eCSSProperty_COUNT: nsCSSPropertyID = nsCSSPropertyID::eCSSPropertyAlias_aa;
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]

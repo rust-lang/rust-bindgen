@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
 pub struct header {
     pub _bindgen_opaque_blob: [u8; 16usize],
@@ -12,9 +6,8 @@ pub struct header {
 #[test]
 fn bindgen_test_layout_header() {
     assert_eq!(
-        ::std::mem::size_of::<header>(),
-        16usize,
-        concat!("Size of: ", stringify!(header))
+        ::std::mem::size_of:: < header > (), 16usize, concat!("Size of: ",
+        stringify!(header))
     );
 }
 impl Default for header {

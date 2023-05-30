@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Foo {
@@ -49,10 +43,8 @@ pub type MyType = bool;
 pub enum BoolEnumsAreFun2 {
     Value2 = 1,
 }
-pub const AnonymousVariantOne: _bindgen_ty_1 =
-    _bindgen_ty_1::AnonymousVariantOne;
-pub const AnonymousVariantTwo: _bindgen_ty_1 =
-    _bindgen_ty_1::AnonymousVariantTwo;
+pub const AnonymousVariantOne: _bindgen_ty_1 = _bindgen_ty_1::AnonymousVariantOne;
+pub const AnonymousVariantTwo: _bindgen_ty_1 = _bindgen_ty_1::AnonymousVariantTwo;
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum _bindgen_ty_1 {

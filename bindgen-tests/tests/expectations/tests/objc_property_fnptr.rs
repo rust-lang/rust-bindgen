@@ -1,12 +1,6 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #![cfg(target_os = "macos")]
-
-use objc::{self, class, msg_send, sel, sel_impl};
+use objc::{self, msg_send, sel, sel_impl, class};
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 #[repr(transparent)]
@@ -38,7 +32,7 @@ pub trait IFoo: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, func)
+        msg_send!(* self, func)
     }
     unsafe fn setFunc_(
         &self,
@@ -49,9 +43,10 @@ pub trait IFoo: Sized + std::ops::Deref {
                 arg3: f32,
             ) -> ::std::os::raw::c_int,
         >,
-    ) where
+    )
+    where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, setFunc: func)
+        msg_send!(* self, setFunc : func)
     }
 }

@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
 #[derive(Default)]
 pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>, [T; 0]);
@@ -43,28 +37,19 @@ pub struct ZeroSizedArray {
 }
 #[test]
 fn bindgen_test_layout_ZeroSizedArray() {
-    const UNINIT: ::std::mem::MaybeUninit<ZeroSizedArray> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<ZeroSizedArray> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<ZeroSizedArray>(),
-        0usize,
-        concat!("Size of: ", stringify!(ZeroSizedArray))
+        ::std::mem::size_of:: < ZeroSizedArray > (), 0usize, concat!("Size of: ",
+        stringify!(ZeroSizedArray))
     );
     assert_eq!(
-        ::std::mem::align_of::<ZeroSizedArray>(),
-        1usize,
-        concat!("Alignment of ", stringify!(ZeroSizedArray))
+        ::std::mem::align_of:: < ZeroSizedArray > (), 1usize, concat!("Alignment of ",
+        stringify!(ZeroSizedArray))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arr) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ZeroSizedArray),
-            "::",
-            stringify!(arr)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).arr) as usize - ptr as usize }, 0usize,
+        concat!("Offset of field: ", stringify!(ZeroSizedArray), "::", stringify!(arr))
     );
 }
 /// And nor should this get an `_address` field.
@@ -75,32 +60,24 @@ pub struct ContainsZeroSizedArray {
 }
 #[test]
 fn bindgen_test_layout_ContainsZeroSizedArray() {
-    const UNINIT: ::std::mem::MaybeUninit<ContainsZeroSizedArray> =
-        ::std::mem::MaybeUninit::uninit();
+    const UNINIT: ::std::mem::MaybeUninit<ContainsZeroSizedArray> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of::<ContainsZeroSizedArray>(),
-        0usize,
-        concat!("Size of: ", stringify!(ContainsZeroSizedArray))
+        ::std::mem::size_of:: < ContainsZeroSizedArray > (), 0usize, concat!("Size of: ",
+        stringify!(ContainsZeroSizedArray))
     );
     assert_eq!(
-        ::std::mem::align_of::<ContainsZeroSizedArray>(),
-        1usize,
+        ::std::mem::align_of:: < ContainsZeroSizedArray > (), 1usize,
         concat!("Alignment of ", stringify!(ContainsZeroSizedArray))
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).zsa) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ContainsZeroSizedArray),
-            "::",
-            stringify!(zsa)
-        )
+        unsafe { ::std::ptr::addr_of!((* ptr).zsa) as usize - ptr as usize }, 0usize,
+        concat!("Offset of field: ", stringify!(ContainsZeroSizedArray), "::",
+        stringify!(zsa))
     );
 }
-/// Inheriting from ZeroSizedArray shouldn't cause an `_address` to be inserted
-/// either.
+/** Inheriting from ZeroSizedArray shouldn't cause an `_address` to be inserted
+ either.*/
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct InheritsZeroSizedArray {
@@ -109,13 +86,11 @@ pub struct InheritsZeroSizedArray {
 #[test]
 fn bindgen_test_layout_InheritsZeroSizedArray() {
     assert_eq!(
-        ::std::mem::size_of::<InheritsZeroSizedArray>(),
-        0usize,
-        concat!("Size of: ", stringify!(InheritsZeroSizedArray))
+        ::std::mem::size_of:: < InheritsZeroSizedArray > (), 0usize, concat!("Size of: ",
+        stringify!(InheritsZeroSizedArray))
     );
     assert_eq!(
-        ::std::mem::align_of::<InheritsZeroSizedArray>(),
-        1usize,
+        ::std::mem::align_of:: < InheritsZeroSizedArray > (), 1usize,
         concat!("Alignment of ", stringify!(InheritsZeroSizedArray))
     );
 }
@@ -128,13 +103,11 @@ pub struct DynamicallySizedArray {
 #[test]
 fn bindgen_test_layout_DynamicallySizedArray() {
     assert_eq!(
-        ::std::mem::size_of::<DynamicallySizedArray>(),
-        0usize,
-        concat!("Size of: ", stringify!(DynamicallySizedArray))
+        ::std::mem::size_of:: < DynamicallySizedArray > (), 0usize, concat!("Size of: ",
+        stringify!(DynamicallySizedArray))
     );
     assert_eq!(
-        ::std::mem::align_of::<DynamicallySizedArray>(),
-        1usize,
+        ::std::mem::align_of:: < DynamicallySizedArray > (), 1usize,
         concat!("Alignment of ", stringify!(DynamicallySizedArray))
     );
 }
@@ -147,13 +120,11 @@ pub struct ContainsDynamicallySizedArray {
 #[test]
 fn bindgen_test_layout_ContainsDynamicallySizedArray() {
     assert_eq!(
-        ::std::mem::size_of::<ContainsDynamicallySizedArray>(),
-        0usize,
+        ::std::mem::size_of:: < ContainsDynamicallySizedArray > (), 0usize,
         concat!("Size of: ", stringify!(ContainsDynamicallySizedArray))
     );
     assert_eq!(
-        ::std::mem::align_of::<ContainsDynamicallySizedArray>(),
-        1usize,
+        ::std::mem::align_of:: < ContainsDynamicallySizedArray > (), 1usize,
         concat!("Alignment of ", stringify!(ContainsDynamicallySizedArray))
     );
 }

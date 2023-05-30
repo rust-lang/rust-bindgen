@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub const N0: u8 = 0;
 pub const N1: u8 = 1;
 pub const N2: u8 = 2;

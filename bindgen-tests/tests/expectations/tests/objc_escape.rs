@@ -1,12 +1,6 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #![cfg(target_os = "macos")]
-
-use objc::{self, class, msg_send, sel, sel_impl};
+use objc::{self, msg_send, sel, sel_impl, class};
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 #[repr(transparent)]
@@ -26,13 +20,10 @@ impl A {
 }
 impl IA for A {}
 pub trait IA: Sized + std::ops::Deref {
-    unsafe fn f_as_(
-        &self,
-        arg1: ::std::os::raw::c_int,
-        arg2: ::std::os::raw::c_int,
-    ) where
+    unsafe fn f_as_(&self, arg1: ::std::os::raw::c_int, arg2: ::std::os::raw::c_int)
+    where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send ! (* self , f : arg1 r#as : arg2)
+        msg_send!(* self, f : arg1 r#as : arg2)
     }
 }

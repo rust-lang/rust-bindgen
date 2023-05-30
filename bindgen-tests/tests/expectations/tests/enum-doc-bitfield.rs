@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 impl B {
     /// Document field with three slashes
     pub const VAR_A: B = B(0);
@@ -26,10 +20,10 @@ impl B {
     pub const VAR_E: B = B(4);
 }
 impl B {
-    /// Document field with preceeding star, with a loong long multiline
-    /// comment.
-    ///
-    /// Very interesting documentation, definitely.
+    /** Document field with preceeding star, with a loong long multiline
+ comment.
+
+ Very interesting documentation, definitely.*/
     pub const VAR_F: B = B(5);
 }
 impl ::std::ops::BitOr<B> for B {

@@ -1,12 +1,6 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #![cfg(target_os = "macos")]
-
-use objc::{self, class, msg_send, sel, sel_impl};
+use objc::{self, msg_send, sel, sel_impl, class};
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 #[repr(transparent)]
@@ -30,7 +24,7 @@ pub trait IFoo<ObjectType: 'static>: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, get)
+        msg_send!(* self, get)
     }
 }
 #[repr(transparent)]
@@ -48,17 +42,16 @@ impl FooMultiGeneric {
         Self(unsafe { msg_send!(class!(FooMultiGeneric), alloc) })
     }
 }
-impl<KeyType: 'static, ObjectType: 'static>
-    IFooMultiGeneric<KeyType, ObjectType> for FooMultiGeneric
-{
-}
-pub trait IFooMultiGeneric<KeyType: 'static, ObjectType: 'static>:
-    Sized + std::ops::Deref
-{
+impl<KeyType: 'static, ObjectType: 'static> IFooMultiGeneric<KeyType, ObjectType>
+for FooMultiGeneric {}
+pub trait IFooMultiGeneric<
+    KeyType: 'static,
+    ObjectType: 'static,
+>: Sized + std::ops::Deref {
     unsafe fn objectForKey_(&self, key: u64) -> u64
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(*self, objectForKey: key)
+        msg_send!(* self, objectForKey : key)
     }
 }

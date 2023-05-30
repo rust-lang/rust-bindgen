@@ -1,11 +1,5 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #![cfg(not(target_os = "windows"))]
-
 pub const Foo_Bar: Foo = 0;
 pub const Foo_Qux: Foo = 1;
 pub type Foo = ::std::os::raw::c_uchar;

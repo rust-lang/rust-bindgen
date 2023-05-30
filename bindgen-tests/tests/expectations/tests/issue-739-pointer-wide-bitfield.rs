@@ -1,11 +1,5 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #![cfg(not(target_os = "windows"))]
-
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct __BindgenBitfieldUnit<Storage> {
@@ -56,8 +50,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <=
-                self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -77,8 +70,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <=
-                self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -102,22 +94,17 @@ pub struct Foo {
 #[test]
 fn bindgen_test_layout_Foo() {
     assert_eq!(
-        ::std::mem::size_of::<Foo>(),
-        32usize,
-        concat!("Size of: ", stringify!(Foo))
+        ::std::mem::size_of:: < Foo > (), 32usize, concat!("Size of: ", stringify!(Foo))
     );
     assert_eq!(
-        ::std::mem::align_of::<Foo>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Foo))
+        ::std::mem::align_of:: < Foo > (), 8usize, concat!("Alignment of ",
+        stringify!(Foo))
     );
 }
 impl Foo {
     #[inline]
     pub fn m_bitfield(&self) -> ::std::os::raw::c_ulong {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get(0usize, 64u8) as u64)
-        }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 64u8) as u64) }
     }
     #[inline]
     pub fn set_m_bitfield(&mut self, val: ::std::os::raw::c_ulong) {
@@ -128,9 +115,7 @@ impl Foo {
     }
     #[inline]
     pub fn m_bar(&self) -> ::std::os::raw::c_ulong {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get(64usize, 64u8) as u64)
-        }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(64usize, 64u8) as u64) }
     }
     #[inline]
     pub fn set_m_bar(&mut self, val: ::std::os::raw::c_ulong) {
@@ -141,9 +126,7 @@ impl Foo {
     }
     #[inline]
     pub fn foo(&self) -> ::std::os::raw::c_ulong {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get(128usize, 1u8) as u64)
-        }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(128usize, 1u8) as u64) }
     }
     #[inline]
     pub fn set_foo(&mut self, val: ::std::os::raw::c_ulong) {
@@ -154,9 +137,7 @@ impl Foo {
     }
     #[inline]
     pub fn bar(&self) -> ::std::os::raw::c_ulong {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get(192usize, 64u8) as u64)
-        }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(192usize, 64u8) as u64) }
     }
     #[inline]
     pub fn set_bar(&mut self, val: ::std::os::raw::c_ulong) {
@@ -172,24 +153,43 @@ impl Foo {
         foo: ::std::os::raw::c_ulong,
         bar: ::std::os::raw::c_ulong,
     ) -> __BindgenBitfieldUnit<[u8; 32usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> =
-            Default::default();
-        __bindgen_bitfield_unit.set(0usize, 64u8, {
-            let m_bitfield: u64 = unsafe { ::std::mem::transmute(m_bitfield) };
-            m_bitfield as u64
-        });
-        __bindgen_bitfield_unit.set(64usize, 64u8, {
-            let m_bar: u64 = unsafe { ::std::mem::transmute(m_bar) };
-            m_bar as u64
-        });
-        __bindgen_bitfield_unit.set(128usize, 1u8, {
-            let foo: u64 = unsafe { ::std::mem::transmute(foo) };
-            foo as u64
-        });
-        __bindgen_bitfield_unit.set(192usize, 64u8, {
-            let bar: u64 = unsafe { ::std::mem::transmute(bar) };
-            bar as u64
-        });
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
+        __bindgen_bitfield_unit
+            .set(
+                0usize,
+                64u8,
+                {
+                    let m_bitfield: u64 = unsafe { ::std::mem::transmute(m_bitfield) };
+                    m_bitfield as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                64usize,
+                64u8,
+                {
+                    let m_bar: u64 = unsafe { ::std::mem::transmute(m_bar) };
+                    m_bar as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                128usize,
+                1u8,
+                {
+                    let foo: u64 = unsafe { ::std::mem::transmute(foo) };
+                    foo as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                192usize,
+                64u8,
+                {
+                    let bar: u64 = unsafe { ::std::mem::transmute(bar) };
+                    bar as u64
+                },
+            );
         __bindgen_bitfield_unit
     }
 }

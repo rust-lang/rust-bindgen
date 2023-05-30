@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub const foo: &'static [u8; 4] = b"bar\0";
 pub const CHAR: u8 = 98u8;
 pub const CHARR: u8 = 0u8;

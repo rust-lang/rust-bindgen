@@ -71,7 +71,9 @@ dependencies = [
  "clap",
  "clap_complete",
  "diff",
+ "prettyplease",
  "shlex",
+ "syn 2.0.7",
  "tempfile",
 ]
 

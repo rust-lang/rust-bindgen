@@ -1,12 +1,6 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #![cfg(target_os = "macos")]
-
-use objc::{self, class, msg_send, sel, sel_impl};
+use objc::{self, msg_send, sel, sel_impl, class};
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 #[repr(transparent)]
@@ -36,13 +30,13 @@ pub trait IFoo: Sized + std::ops::Deref {
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(class!(Foo), methodWithInt: foo)
+        msg_send!(class!(Foo), methodWithInt : foo)
     }
     unsafe fn methodWithFoo_(foo: Foo)
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send!(class!(Foo), methodWithFoo: foo)
+        msg_send!(class!(Foo), methodWithFoo : foo)
     }
     unsafe fn methodReturningInt() -> ::std::os::raw::c_int
     where
@@ -60,9 +54,12 @@ pub trait IFoo: Sized + std::ops::Deref {
         intvalue: ::std::os::raw::c_int,
         ptr: *mut ::std::os::raw::c_char,
         floatvalue: f32,
-    ) where
+    )
+    where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
-        msg_send ! (class ! (Foo) , methodWithArg1 : intvalue andArg2 : ptr andArg3 : floatvalue)
+        msg_send!(
+            class!(Foo), methodWithArg1 : intvalue andArg2 : ptr andArg3 : floatvalue
+        )
     }
 }

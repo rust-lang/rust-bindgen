@@ -1,10 +1,4 @@
-#![allow(
-    dead_code,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl<T> __BindgenUnionField<T> {
@@ -223,38 +217,22 @@ impl<T> Default for StyleBar<T> {
 #[test]
 fn __bindgen_test_layout_StylePoint_open0_float_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of::<StylePoint<f32>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(StylePoint<f32>)
-        )
+        ::std::mem::size_of:: < StylePoint < f32 > > (), 8usize,
+        concat!("Size of template specialization: ", stringify!(StylePoint < f32 >))
     );
     assert_eq!(
-        ::std::mem::align_of::<StylePoint<f32>>(),
-        4usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(StylePoint<f32>)
-        )
+        ::std::mem::align_of:: < StylePoint < f32 > > (), 4usize,
+        concat!("Alignment of template specialization: ", stringify!(StylePoint < f32 >))
     );
 }
 #[test]
 fn __bindgen_test_layout_StylePoint_open0_float_close0_instantiation_1() {
     assert_eq!(
-        ::std::mem::size_of::<StylePoint<f32>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(StylePoint<f32>)
-        )
+        ::std::mem::size_of:: < StylePoint < f32 > > (), 8usize,
+        concat!("Size of template specialization: ", stringify!(StylePoint < f32 >))
     );
     assert_eq!(
-        ::std::mem::align_of::<StylePoint<f32>>(),
-        4usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(StylePoint<f32>)
-        )
+        ::std::mem::align_of:: < StylePoint < f32 > > (), 4usize,
+        concat!("Alignment of template specialization: ", stringify!(StylePoint < f32 >))
     );
 }
