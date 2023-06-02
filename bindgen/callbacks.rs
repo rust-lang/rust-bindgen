@@ -135,6 +135,15 @@ pub trait ParseCallbacks: fmt::Debug {
     fn process_comment(&self, _comment: &str) -> Option<String> {
         None
     }
+
+    /// Allows renaming the name of a field, replacing `_name`.
+    fn process_field_name(
+        &self,
+        _parent_name: &str,
+        _name: &str,
+    ) -> Option<String> {
+        None
+    }
 }
 
 /// Relevant information about a type to which new derive attributes will be added using
