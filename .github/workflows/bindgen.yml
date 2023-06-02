@@ -111,8 +111,6 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        # TODO(#1954): These should be run on mac too, but turns out they're
-        # broken.
         os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v3
