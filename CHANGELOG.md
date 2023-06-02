@@ -184,7 +184,9 @@
   them. To make the escaping clear and consistent, backslashes are also
   escaped.
 * Updated `bitflags` dependency to 2.2.1. This changes the API of `CodegenConfig`.
-   
+* Prettyplease formatting is gated by an optional, enabled by default Cargo
+  feature when depending on `bindgen` as a library.
+
 ## Removed
 
 ## Fixed
