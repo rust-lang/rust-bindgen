@@ -572,16 +572,16 @@ bindings, so we have nothing left to do here!</p>
 <p>Check out the <a href="https://github.com/fitzgen/bindgen-tutorial-bzip2-sys">full code on Github!</a></p>
 <p>Now let's suppose we want to generate bindings for a non-system library. We
 will be the same crate setup as the previous tutorial. First let's create a new
-directory <code>hello</code> with two files inside it. A <code>c</code> source file <code>hello.c</code>
+directory <code>hello</code> with two files inside it. A C source file <code>hello.c</code>
 containing</p>
 <pre><code class="language-c">int hello() {
     return 42;
 }
 </code></pre>
-<p>and a <code>c</code> header file <code>hello.h</code> containing</p>
+<p>and a C header file <code>hello.h</code> containing</p>
 <pre><code class="language-c">int hello();
 </code></pre>
-<p>given that the library has not been compiled yet, we need to modify the
+<p>Given that the library has not been compiled yet, we need to modify the
 <code>build.rs</code> build script to compile the <code>hello.c</code> source file into a static
 libary:</p>
 <pre><code class="language-rust ignore">extern crate bindgen;
