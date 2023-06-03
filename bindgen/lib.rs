@@ -1085,7 +1085,8 @@ fn parse_one(
         Ok(..) => {}
         Err(ParseError::Continue) => {}
         Err(ParseError::Recurse) => {
-            cursor.visit(|child| parse_one(ctx, child, parent));
+            cursor
+                .visit_sorted(ctx, |ctx, child| parse_one(ctx, child, parent));
         }
     }
     CXChildVisit_Continue
@@ -1126,8 +1127,8 @@ fn parse(context: &mut BindgenContext) -> Result<(), BindgenError> {
     }
 
     let root = context.root_module();
-    context.with_module(root, |context| {
-        cursor.visit(|cursor| parse_one(context, cursor, None))
+    context.with_module(root, |ctx| {
+        cursor.visit_sorted(ctx, |ctx, child| parse_one(ctx, child, None))
     });
 
     assert!(

@@ -6,6 +6,7 @@ use super::item::ItemSet;
 use crate::clang;
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 use crate::parse_one;
+
 use std::io;
 
 /// Whether this module is inline or not.
@@ -82,8 +83,8 @@ impl ClangSubItemParser for Module {
             CXCursor_Namespace => {
                 let module_id = ctx.module(cursor);
                 ctx.with_module(module_id, |ctx| {
-                    cursor.visit(|cursor| {
-                        parse_one(ctx, cursor, Some(module_id.into()))
+                    cursor.visit_sorted(ctx, |ctx, child| {
+                        parse_one(ctx, child, Some(module_id.into()))
                     })
                 });
 

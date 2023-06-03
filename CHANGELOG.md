@@ -188,6 +188,8 @@
 * Updated `bitflags` dependency to 2.2.1. This changes the API of `CodegenConfig`.
 * Prettyplease formatting is gated by an optional, enabled by default Cargo
   feature when depending on `bindgen` as a library.
+* Items are now parsed in the order they appear in source files. This may result in
+  auto-generated `_bindgen_*` names having a different index.
 
 ## Removed
 

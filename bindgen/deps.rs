@@ -9,7 +9,7 @@ pub(crate) struct DepfileSpec {
 
 impl DepfileSpec {
     pub fn write(&self, deps: &BTreeSet<String>) -> std::io::Result<()> {
-        std::fs::write(&self.depfile_path, &self.to_string(deps))
+        std::fs::write(&self.depfile_path, self.to_string(deps))
     }
 
     fn to_string(&self, deps: &BTreeSet<String>) -> String {
