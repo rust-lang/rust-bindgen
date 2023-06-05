@@ -1,4 +1,11 @@
 // bindgen-flags: --experimental --wrap-static-fns
+// bindgen-parse-callbacks: wrap-as-variadic-fn
+
+// to avoid poluting theexpectation tests we put the stdarg.h behind a conditional
+// variable only used in bindgen-integration
+#ifdef USE_VA_HEADER
+#include <stdarg.h>
+#endif
 
 static inline int foo() {
     return 11;
@@ -48,3 +55,28 @@ static inline void nevermore() {
 static inline int variadic(int x, ...) {
     return x;
 }
+
+static inline void no_extra_argument(__builtin_va_list va) {}
+
+static inline int many_va_list(int i, __builtin_va_list va1, __builtin_va_list va2) {
+    return i;
+}
+
+#ifndef USE_VA_HEADER
+static inline int wrap_as_variadic_fn1(int i, __builtin_va_list va) {
+    return i;
+}
+
+static inline void wrap_as_variadic_fn2(int i, __builtin_va_list va) {}
+#else
+static inline int wrap_as_variadic_fn1(int i, va_list va) {
+    int res = 0;
+
+    for (int j = 0; j < i; j++)
+        res += (int) va_arg(va, int);
+
+    return res;
+}
+
+static inline void wrap_as_variadic_fn2(int i, va_list va) {}
+#endif

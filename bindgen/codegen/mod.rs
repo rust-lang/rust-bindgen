@@ -221,6 +221,11 @@ impl From<DerivableTraits> for Vec<&'static str> {
     }
 }
 
+struct WrapAsVariadic {
+    new_name: String,
+    idx_of_va_list_arg: usize,
+}
+
 struct CodegenResult<'a> {
     items: Vec<proc_macro2::TokenStream>,
     dynamic_items: DynamicItems,
@@ -269,7 +274,9 @@ struct CodegenResult<'a> {
     /// that name. This lets us give each overload a unique suffix.
     overload_counters: HashMap<String, u32>,
 
-    items_to_serialize: Vec<ItemId>,
+    /// List of items to serialize. With optionally the argument for the wrap as
+    /// variadic transformation to be applied.
+    items_to_serialize: Vec<(ItemId, Option<WrapAsVariadic>)>,
 }
 
 impl<'a> CodegenResult<'a> {
@@ -4246,9 +4253,6 @@ impl CodeGenerator for Function {
             result.saw_function(seen_symbol_name);
         }
 
-        let args = utils::fnsig_arguments(ctx, signature);
-        let ret = utils::fnsig_return_ty(ctx, signature);
-
         let mut attributes = vec![];
 
         if ctx.options().rust_features().must_use_function {
@@ -4333,10 +4337,6 @@ impl CodeGenerator for Function {
             abi => abi,
         };
 
-        if is_internal && ctx.options().wrap_static_fns {
-            result.items_to_serialize.push(item.id());
-        }
-
         // Handle overloaded functions by giving each overload its own unique
         // suffix.
         let times_seen = result.overload_number(&canonical_name);
@@ -4370,12 +4370,49 @@ impl CodeGenerator for Function {
                 quote! { #[link(wasm_import_module = #name)] }
             });
 
-        if is_internal && ctx.options().wrap_static_fns && !has_link_name_attr {
+        let should_wrap =
+            is_internal && ctx.options().wrap_static_fns && !has_link_name_attr;
+
+        if should_wrap {
             let name = canonical_name.clone() + ctx.wrap_static_fns_suffix();
             attributes.push(attributes::link_name::<true>(&name));
         }
 
-        let ident = ctx.rust_ident(canonical_name);
+        let wrap_as_variadic = if should_wrap && !signature.is_variadic() {
+            utils::wrap_as_variadic_fn(ctx, signature, name)
+        } else {
+            None
+        };
+
+        let (ident, args) = if let Some(WrapAsVariadic {
+            idx_of_va_list_arg,
+            new_name,
+        }) = &wrap_as_variadic
+        {
+            (
+                new_name,
+                utils::fnsig_arguments_iter(
+                    ctx,
+                    // Prune argument at index (idx_of_va_list_arg)
+                    signature.argument_types().iter().enumerate().filter_map(
+                        |(idx, t)| {
+                            if idx == *idx_of_va_list_arg {
+                                None
+                            } else {
+                                Some(t)
+                            }
+                        },
+                    ),
+                    // and replace it by a `...` (variadic symbol and the end of the signature)
+                    true,
+                ),
+            )
+        } else {
+            (&canonical_name, utils::fnsig_arguments(ctx, signature))
+        };
+        let ret = utils::fnsig_return_ty(ctx, signature);
+
+        let ident = ctx.rust_ident(ident);
         let tokens = quote! {
             #wasm_link_attribute
             extern #abi {
@@ -4383,6 +4420,13 @@ impl CodeGenerator for Function {
                 pub fn #ident ( #( #args ),* ) #ret;
             }
         };
+
+        // Add the item to the serialization list if necessary
+        if should_wrap {
+            result
+                .items_to_serialize
+                .push((item.id(), wrap_as_variadic));
+        }
 
         // If we're doing dynamic binding generation, add to the dynamic items.
         if is_dynamic_function {
@@ -4886,14 +4930,70 @@ pub(crate) mod utils {
 
         writeln!(code, "// Static wrappers\n")?;
 
-        for &id in &result.items_to_serialize {
-            let item = context.resolve_item(id);
-            item.serialize(context, (), &mut vec![], &mut code)?;
+        for (id, wrap_as_variadic) in &result.items_to_serialize {
+            let item = context.resolve_item(*id);
+            item.serialize(context, wrap_as_variadic, &mut vec![], &mut code)?;
         }
 
         std::fs::write(source_path, code)?;
 
         Ok(())
+    }
+
+    pub(super) fn wrap_as_variadic_fn(
+        ctx: &BindgenContext,
+        signature: &FunctionSig,
+        name: &str,
+    ) -> Option<super::WrapAsVariadic> {
+        // Fast path, exclude because:
+        //  - with 0 args: no va_list possible, so no point searching for one
+        //  - with 1 args: cannot have a `va_list` and another arg (required by va_start)
+        if signature.argument_types().len() <= 1 {
+            return None;
+        }
+
+        let mut it = signature.argument_types().iter().enumerate().filter_map(
+            |(idx, (_name, mut type_id))| {
+                // Hand rolled visitor that checks for the presence of `va_list`
+                loop {
+                    let ty = ctx.resolve_type(type_id);
+                    if Some("__builtin_va_list") == ty.name() {
+                        return Some(idx);
+                    }
+                    match ty.kind() {
+                        TypeKind::Alias(type_id_alias) => {
+                            type_id = *type_id_alias
+                        }
+                        TypeKind::ResolvedTypeRef(type_id_typedef) => {
+                            type_id = *type_id_typedef
+                        }
+                        _ => break,
+                    }
+                }
+                None
+            },
+        );
+
+        // Return THE idx (by checking that there is no idx after)
+        // This is done since we cannot handle multiple `va_list`
+        it.next().filter(|_| it.next().is_none()).and_then(|idx| {
+            // Call the `wrap_as_variadic_fn` callback
+            #[cfg(feature = "experimental")]
+            {
+                ctx.options()
+                    .last_callback(|c| c.wrap_as_variadic_fn(name))
+                    .map(|new_name| super::WrapAsVariadic {
+                        new_name,
+                        idx_of_va_list_arg: idx,
+                    })
+            }
+            #[cfg(not(feature = "experimental"))]
+            {
+                let _ = name;
+                let _ = idx;
+                None
+            }
+        })
     }
 
     pub(crate) fn prepend_bitfield_unit_type(
@@ -5260,16 +5360,18 @@ pub(crate) mod utils {
         fnsig_return_ty_internal(ctx, sig, /* include_arrow = */ true)
     }
 
-    pub(crate) fn fnsig_arguments(
+    pub(crate) fn fnsig_arguments_iter<
+        'a,
+        I: Iterator<Item = &'a (Option<String>, crate::ir::context::TypeId)>,
+    >(
         ctx: &BindgenContext,
-        sig: &FunctionSig,
+        args_iter: I,
+        is_variadic: bool,
     ) -> Vec<proc_macro2::TokenStream> {
         use super::ToPtr;
 
         let mut unnamed_arguments = 0;
-        let mut args = sig
-            .argument_types()
-            .iter()
+        let mut args = args_iter
             .map(|&(ref name, ty)| {
                 let arg_item = ctx.resolve_item(ty);
                 let arg_ty = arg_item.kind().expect_type();
@@ -5326,11 +5428,22 @@ pub(crate) mod utils {
             })
             .collect::<Vec<_>>();
 
-        if sig.is_variadic() {
+        if is_variadic {
             args.push(quote! { ... })
         }
 
         args
+    }
+
+    pub(crate) fn fnsig_arguments(
+        ctx: &BindgenContext,
+        sig: &FunctionSig,
+    ) -> Vec<proc_macro2::TokenStream> {
+        fnsig_arguments_iter(
+            ctx,
+            sig.argument_types().iter(),
+            sig.is_variadic(),
+        )
     }
 
     pub(crate) fn fnsig_argument_identifiers(

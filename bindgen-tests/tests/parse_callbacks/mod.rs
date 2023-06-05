@@ -113,6 +113,15 @@ impl ParseCallbacks for FieldVisibility {
     }
 }
 
+#[derive(Debug)]
+pub(super) struct WrapAsVariadicFn;
+
+impl ParseCallbacks for WrapAsVariadicFn {
+    fn wrap_as_variadic_fn(&self, name: &str) -> Option<String> {
+        Some(name.to_owned() + "_wrapped")
+    }
+}
+
 pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
     fn try_strip_prefix<'a>(s: &'a str, prefix: &str) -> Option<&'a str> {
         if s.starts_with(prefix) {
@@ -127,6 +136,7 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
         "blocklisted-type-implements-trait" => {
             Box::new(BlocklistedTypeImplementsTrait)
         }
+        "wrap-as-variadic-fn" => Box::new(WrapAsVariadicFn),
         call_back => {
             if let Some(prefix) =
                 try_strip_prefix(call_back, "remove-function-prefix-")

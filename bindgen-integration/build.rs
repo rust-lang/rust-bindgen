@@ -149,6 +149,15 @@ impl Drop for MacroCallback {
     }
 }
 
+#[derive(Debug)]
+struct WrappedVaListCallback;
+
+impl ParseCallbacks for WrappedVaListCallback {
+    fn wrap_as_variadic_fn(&self, name: &str) -> Option<String> {
+        Some(name.to_owned() + "_wrapped")
+    }
+}
+
 fn setup_macro_test() {
     cc::Build::new()
         .cpp(true)
@@ -223,10 +232,12 @@ fn setup_wrap_static_fns_test() {
     let bindings = Builder::default()
         .header(input_header_file_path_str)
         .parse_callbacks(Box::new(CargoCallbacks))
+        .parse_callbacks(Box::new(WrappedVaListCallback))
         .wrap_static_fns(true)
         .wrap_static_fns_path(
             out_path.join("wrap_static_fns").display().to_string(),
         )
+        .clang_arg("-DUSE_VA_HEADER")
         .generate()
         .expect("Unable to generate bindings");
 
@@ -242,6 +253,7 @@ fn setup_wrap_static_fns_test() {
         .arg("-o")
         .arg(&obj_path)
         .arg(out_path.join("wrap_static_fns.c"))
+        .arg("-DUSE_VA_HEADER")
         .output()
         .expect("`clang` command error");
     if !clang_output.status.success() {

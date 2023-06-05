@@ -618,6 +618,7 @@ fn test_wrap_static_fns() {
         .header("tests/headers/wrap-static-fns.h")
         .wrap_static_fns(true)
         .wrap_static_fns_path(generated_path.display().to_string())
+        .parse_callbacks(Box::new(parse_callbacks::WrapAsVariadicFn))
         .generate()
         .expect("Failed to generate bindings");
 
