@@ -170,6 +170,8 @@
   instead of `&[u8]`. (Requires Rust 1.59 or higher.)
 * Added the `--generate-shell-completions` CLI flag to generate completions for
   different shells.
+* The `--wrap-static-fns` option can now wrap `va_list` functions as variadic functions
+  with the experimental `wrap_as_variadic_fn` callback.
 
 ## Changed
 

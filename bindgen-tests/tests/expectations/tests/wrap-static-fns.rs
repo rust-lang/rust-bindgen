@@ -50,3 +50,36 @@ extern "C" {
     #[link_name = "nevermore__extern"]
     pub fn nevermore();
 }
+extern "C" {
+    #[link_name = "no_extra_argument__extern"]
+    pub fn no_extra_argument(va: *mut __va_list_tag);
+}
+extern "C" {
+    #[link_name = "many_va_list__extern"]
+    pub fn many_va_list(
+        i: ::std::os::raw::c_int,
+        va1: *mut __va_list_tag,
+        va2: *mut __va_list_tag,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[link_name = "wrap_as_variadic_fn1__extern"]
+    pub fn wrap_as_variadic_fn1_wrapped(
+        i: ::std::os::raw::c_int,
+        ...
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[link_name = "wrap_as_variadic_fn2__extern"]
+    pub fn wrap_as_variadic_fn2_wrapped(i: ::std::os::raw::c_int, ...);
+}
+pub type __builtin_va_list = [__va_list_tag; 1usize];
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct __va_list_tag {
+    pub gp_offset: ::std::os::raw::c_uint,
+    pub fp_offset: ::std::os::raw::c_uint,
+    pub overflow_arg_area: *mut ::std::os::raw::c_void,
+    pub reg_save_area: *mut ::std::os::raw::c_void,
+    _unused: [u8; 0],
+}
