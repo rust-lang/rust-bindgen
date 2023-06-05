@@ -1,4 +1,5 @@
 use bindgen::callbacks::*;
+use bindgen::FieldVisibilityKind;
 
 #[derive(Debug)]
 pub struct RemovePrefixParseCallback {
@@ -86,25 +87,65 @@ impl ParseCallbacks for BlocklistedTypeImplementsTrait {
     }
 }
 
+#[derive(Debug)]
+struct FieldVisibility {
+    default: FieldVisibilityKind,
+}
+
+/// Implements the `field_visibility` function of the trait by checking if the
+/// field name starts with `private_`. If it does it makes it private, if it
+/// doesn't it makes it public, taking into account the default visibility.
+impl ParseCallbacks for FieldVisibility {
+    fn field_visibility(
+        &self,
+        FieldInfo { field_name, .. }: FieldInfo,
+    ) -> Option<FieldVisibilityKind> {
+        match (self.default, field_name.starts_with("private_")) {
+            (FieldVisibilityKind::Private, false) => {
+                Some(FieldVisibilityKind::Public)
+            }
+            (FieldVisibilityKind::Public, true) => {
+                Some(FieldVisibilityKind::Private)
+            }
+            (FieldVisibilityKind::PublicCrate, _) => unimplemented!(),
+            _ => None,
+        }
+    }
+}
+
 pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
+    fn try_strip_prefix<'a>(s: &'a str, prefix: &str) -> Option<&'a str> {
+        if s.starts_with(prefix) {
+            Some(&s[prefix.len()..])
+        } else {
+            None
+        }
+    }
+
     match cb {
         "enum-variant-rename" => Box::new(EnumVariantRename),
         "blocklisted-type-implements-trait" => {
             Box::new(BlocklistedTypeImplementsTrait)
         }
         call_back => {
-            if call_back.starts_with("remove-function-prefix-") {
-                let prefix = call_back
-                    .split("remove-function-prefix-")
-                    .last()
-                    .to_owned();
-                let lnopc = RemovePrefixParseCallback::new(prefix.unwrap());
+            if let Some(prefix) =
+                try_strip_prefix(call_back, "remove-function-prefix-")
+            {
+                let lnopc = RemovePrefixParseCallback::new(prefix);
                 Box::new(lnopc)
-            } else if call_back.starts_with("prefix-link-name-") {
-                let prefix =
-                    call_back.split("prefix-link-name-").last().to_owned();
-                let plnpc = PrefixLinkNameParseCallback::new(prefix.unwrap());
+            } else if let Some(prefix) =
+                try_strip_prefix(call_back, "prefix-link-name-")
+            {
+                let plnpc = PrefixLinkNameParseCallback::new(prefix);
                 Box::new(plnpc)
+            } else if let Some(default) =
+                try_strip_prefix(call_back, "field-visibility-default-")
+            {
+                Box::new(FieldVisibility {
+                    default: default.parse().expect(
+                        "unable to parse field-visibility-default callback",
+                    ),
+                })
             } else {
                 panic!("Couldn't find name ParseCallbacks: {}", cb)
             }
