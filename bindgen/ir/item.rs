@@ -1460,8 +1460,12 @@ impl Item {
                                 cursor
                             );
                         }
-                        Some(filename) => {
-                            ctx.include_file(filename);
+                        Some(included_file) => {
+                            for cb in &ctx.options().parse_callbacks {
+                                cb.include_file(&included_file);
+                            }
+
+                            ctx.add_dep(included_file);
                         }
                     }
                 }

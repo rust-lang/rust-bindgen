@@ -356,6 +356,14 @@ pub(crate) struct BindgenContext {
     /// This needs to be an std::HashMap because the cexpr API requires it.
     parsed_macros: StdHashMap<Vec<u8>, cexpr::expr::EvalResult>,
 
+    /// A map with all include locations.
+    ///
+    /// This is needed so that items are created in the order they are defined in.
+    ///
+    /// The key is the included file, the value is a pair of the source file and
+    /// the position of the `#include` directive in the source file.
+    includes: StdHashMap<String, (String, usize)>,
+
     /// A set of all the included filenames.
     deps: BTreeSet<String>,
 
@@ -560,6 +568,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         BindgenContext {
             items: vec![Some(root_module)],
+            includes: Default::default(),
             deps,
             types: Default::default(),
             type_params: Default::default(),
@@ -634,12 +643,29 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         )
     }
 
-    /// Add another path to the set of included files.
-    pub(crate) fn include_file(&mut self, filename: String) {
-        for cb in &self.options().parse_callbacks {
-            cb.include_file(&filename);
-        }
-        self.deps.insert(filename);
+    /// Add the location of the `#include` directive for the `included_file`.
+    pub(crate) fn add_include(
+        &mut self,
+        source_file: String,
+        included_file: String,
+        offset: usize,
+    ) {
+        self.includes
+            .entry(included_file)
+            .or_insert((source_file, offset));
+    }
+
+    /// Get the location of the first `#include` directive for the `included_file`.
+    pub(crate) fn included_file_location(
+        &self,
+        included_file: &str,
+    ) -> Option<(String, usize)> {
+        self.includes.get(included_file).cloned()
+    }
+
+    /// Add an included file.
+    pub(crate) fn add_dep(&mut self, dep: String) {
+        self.deps.insert(dep);
     }
 
     /// Get any included files.
