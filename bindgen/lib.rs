@@ -692,7 +692,8 @@ fn rust_to_clang_target(rust_target: &str) -> String {
         return clang_target;
     } else if rust_target.starts_with("riscv32imac-") {
         let mut clang_target = "riscv32-".to_owned();
-        clang_target.push_str(rust_target.strip_prefix("riscv32imac-").unwrap());
+        clang_target
+            .push_str(rust_target.strip_prefix("riscv32imac-").unwrap());
         return clang_target;
     }
     rust_target.to_owned()
