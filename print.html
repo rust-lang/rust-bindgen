@@ -350,7 +350,7 @@ fn main() {
 </code></pre>
 <p>Now, when we run <code>cargo build</code>, our bindings to <code>bzip2</code> are generated on the
 fly!</p>
-<p><a href="http://doc.crates.io/build-script.html">There's more info about <code>build.rs</code> files in the crates.io documentation.</a></p>
+<p><a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html">There's more info about <code>build.rs</code> files in the Cargo documentation.</a></p>
 <h1><a class="header" href="#include-the-generated-bindings-in-srclibrs" id="include-the-generated-bindings-in-srclibrs">Include the Generated Bindings in <code>src/lib.rs</code></a></h1>
 <p>We can use the <code>include!</code> macro to dump our generated bindings right into our
 crate's main entry point, <code>src/lib.rs</code>:</p>
