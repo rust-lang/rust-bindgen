@@ -6,10 +6,10 @@ publish = false
 
 [dev-dependencies]
 bindgen = { path = "../bindgen", features = ["__cli", "experimental"] }
-diff = "0.1"
-shlex = "1"
 clap = { version = "4", features = ["derive"] }
 clap_complete = "4"
+diff = "0.1"
+shlex = "1"
 prettyplease = { version = "0.2.0" }
 syn = { version = "2.0" }
 tempfile = "3"
