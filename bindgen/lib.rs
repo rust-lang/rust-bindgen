@@ -686,6 +686,15 @@ fn rust_to_clang_target(rust_target: &str) -> String {
                 clang_target.strip_prefix("riscv32imc-").unwrap();
         }
         return clang_target;
+    } else if rust_target.starts_with("riscv32imc-") {
+        let mut clang_target = "riscv32-".to_owned();
+        clang_target.push_str(rust_target.strip_prefix("riscv32imc-").unwrap());
+        return clang_target;
+    } else if rust_target.starts_with("riscv32imac-") {
+        let mut clang_target = "riscv32-".to_owned();
+        clang_target
+            .push_str(rust_target.strip_prefix("riscv32imac-").unwrap());
+        return clang_target;
     }
     rust_target.to_owned()
 }
@@ -1285,7 +1294,15 @@ fn test_rust_to_clang_target_riscv() {
     assert_eq!(
         rust_to_clang_target("riscv64gc-unknown-linux-gnu"),
         "riscv64-unknown-linux-gnu"
-    )
+    );
+    assert_eq!(
+        rust_to_clang_target("riscv32imc-unknown-none-elf"),
+        "riscv32-unknown-none-elf"
+    );
+    assert_eq!(
+        rust_to_clang_target("riscv32imac-unknown-none-elf"),
+        "riscv32-unknown-none-elf"
+    );
 }
 
 #[test]
