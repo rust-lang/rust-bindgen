@@ -5,8 +5,8 @@ the `[build-dependencies]` section of our crate's `Cargo.toml` file.
 
 Please always use the latest version of `bindgen`, as it has the most fixes and
 best compatibility.
-You can always check [the bindgen page of
-crates.io](https://crates.io/crates/bindgen) to verify what that version is.
+You can always check the latest version at
+[the bindgen page in crates.io](https://crates.io/crates/bindgen).
 
 ```toml
 [build-dependencies]
