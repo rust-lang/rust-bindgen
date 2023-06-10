@@ -196,6 +196,7 @@
     + `log` removed in favor of `logging`
     + `which` removed in favor of `which-logging`
     + `annotate-snippets` removed in favor of `experimental`
+* Add target mappings for riscv32imc and riscv32imac.
 
 ## Removed
 
