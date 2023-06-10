@@ -29,7 +29,7 @@ log = { version = "0.4", optional = true }
 
 [features]
 default = ["logging", "runtime", "which-rustfmt"]
-logging = ["bindgen/logging", "env_logger", "log"]
+logging = ["bindgen/logging", "dep:env_logger", "dep:log"]
 static = ["bindgen/static"]
 runtime = ["bindgen/runtime"]
 # Dynamically discover a `rustfmt` binary using the `which` crate

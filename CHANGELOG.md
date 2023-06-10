@@ -190,6 +190,12 @@
   feature when depending on `bindgen` as a library.
 * Items are now parsed in the order they appear in source files. This may result in
   auto-generated `_bindgen_*` names having a different index.
+* Remove redundant Cargo features, which were all implicit:
+  - bindgen-cli: `env_logger` and `log` removed in favor of `logging`
+  - bindgen (lib):
+    + `log` removed in favor of `logging`
+    + `which` removed in favor of `which-logging`
+    + `annotate-snippets` removed in favor of `experimental`
 
 ## Removed
 

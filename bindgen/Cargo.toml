@@ -44,12 +44,12 @@ log = { version = "0.4", optional = true }
 
 [features]
 default = ["logging", "prettyplease", "runtime", "which-rustfmt"]
-logging = ["log"]
+logging = ["dep:log"]
 static = ["clang-sys/static"]
 runtime = ["clang-sys/runtime"]
 # Dynamically discover a `rustfmt` binary using the `which` crate
-which-rustfmt = ["which"]
-experimental = ["annotate-snippets"]
+which-rustfmt = ["dep:which"]
+experimental = ["dep:annotate-snippets"]
 
 ## The following features are for internal use and they shouldn't be used if
 ## you're not hacking on bindgen
