@@ -50,6 +50,6 @@ fn main() {
 Now, when we run `cargo build`, our bindings to `bzip2` are generated on the
 fly!
 
-[There's more info about `build.rs` files in the crates.io documentation.][build-rs]
+[There's more info about `build.rs` files in the Cargo documentation.][build-rs]
 
-[build-rs]: http://doc.crates.io/build-script.html
+[build-rs]: https://doc.rust-lang.org/cargo/reference/build-scripts.html
