@@ -211,6 +211,9 @@ options! {
                 ///
                 /// This option is not recursive, meaning that it will only block files whose names
                 /// explicitly match the argument of this method.
+                ///
+                /// This method will use the argument to match the complete path of the file
+                /// instead of a section of it.
                 pub fn blocklist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_files.insert(arg);
                     self
@@ -331,6 +334,9 @@ options! {
                 ///
                 /// This option is transitive by default. Check the documentation of the
                 /// [`Builder::allowlist_recursively`] method for further information.
+                ///
+                /// This method will use the argument to match the complete path of the file
+                /// instead of a section of it.
                 pub fn allowlist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.allowlisted_files.insert(arg);
                     self
