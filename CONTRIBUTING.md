@@ -105,8 +105,11 @@ generate bindings to some C++ code, and then uses the bindings, asserting that
 values are what we expect them to be, both on the Rust and C++ side.
 
 The generated and expected bindings are formatted with [prettyplease] before they are
-compared. It is a default (but optional) dependency of `bindgen` executable,
-so be sure to keep that in mind if you built it using the `--no-default-features` option of Cargo.
+compared. It is a default (but optional) dependency of `bindgen-cli`,
+so be sure to keep that in mind
+(if you built the cli with the `--no-default-features` option of Cargo).
+Note also that `rustfmt` formatting is disabled for the `bindgen-tests/tests/expectations/`
+directory tree, which helps avoid failing ui tests.
 
 Note: running `cargo test` from the root directory of `bindgen`'s repository does not
 automatically test the generated bindings or run the integration tests.
