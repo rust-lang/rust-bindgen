@@ -405,6 +405,11 @@ fn args_from_ty_and_cursor(
 }
 
 impl FunctionSig {
+    /// Get the function name.
+    pub(crate) fn name(&self) -> &str {
+        &self.name
+    }
+
     /// Construct a new function signature from the given Clang type.
     pub(crate) fn from_ty(
         ty: &clang::Type,
@@ -605,10 +610,10 @@ impl FunctionSig {
         &self,
         ctx: &BindgenContext,
         name: Option<&str>,
-    ) -> ClangAbi {
+    ) -> crate::codegen::error::Result<ClangAbi> {
         // FIXME (pvdrz): Try to do this check lazily instead. Maybe store the ABI inside `ctx`
         // instead?.
-        if let Some(name) = name {
+        let abi = if let Some(name) = name {
             if let Some((abi, _)) = ctx
                 .options()
                 .abi_overrides
@@ -628,6 +633,33 @@ impl FunctionSig {
             ClangAbi::Known(*abi)
         } else {
             self.abi
+        };
+
+        match abi {
+            ClangAbi::Known(Abi::ThisCall)
+                if !ctx.options().rust_features().thiscall_abi =>
+            {
+                Err(crate::codegen::error::Error::UnsupportedAbi("thiscall"))
+            }
+            ClangAbi::Known(Abi::Vectorcall)
+                if !ctx.options().rust_features().vectorcall_abi =>
+            {
+                Err(crate::codegen::error::Error::UnsupportedAbi("vectorcall"))
+            }
+            ClangAbi::Known(Abi::CUnwind)
+                if !ctx.options().rust_features().c_unwind_abi =>
+            {
+                Err(crate::codegen::error::Error::UnsupportedAbi("C-unwind"))
+            }
+            ClangAbi::Known(Abi::EfiApi)
+                if !ctx.options().rust_features().abi_efiapi =>
+            {
+                Err(crate::codegen::error::Error::UnsupportedAbi("efiapi"))
+            }
+            ClangAbi::Known(Abi::Win64) if self.is_variadic() => {
+                Err(crate::codegen::error::Error::UnsupportedAbi("Win64"))
+            }
+            abi => Ok(abi),
         }
     }
 

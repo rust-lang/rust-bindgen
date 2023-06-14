@@ -37,13 +37,15 @@ impl Layout {
     pub(crate) fn known_type_for_size(
         ctx: &BindgenContext,
         size: usize,
-    ) -> Option<&'static str> {
+    ) -> Option<syn::Type> {
         Some(match size {
-            16 if ctx.options().rust_features.i128_and_u128 => "u128",
-            8 => "u64",
-            4 => "u32",
-            2 => "u16",
-            1 => "u8",
+            16 if ctx.options().rust_features.i128_and_u128 => {
+                syn::parse_quote! { u128 }
+            }
+            8 => syn::parse_quote! { u64 },
+            4 => syn::parse_quote! { u32 },
+            2 => syn::parse_quote! { u16 },
+            1 => syn::parse_quote! { u8 },
             _ => return None,
         })
     }
@@ -103,7 +105,7 @@ impl Opaque {
     pub(crate) fn known_rust_type_for_array(
         &self,
         ctx: &BindgenContext,
-    ) -> Option<&'static str> {
+    ) -> Option<syn::Type> {
         Layout::known_type_for_size(ctx, self.0.align)
     }
 
