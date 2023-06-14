@@ -45,7 +45,7 @@ TEST_BINDINGS_BINARY=$(mktemp -t bindings.XXXXXX)
 FLAGS="$(grep "// bindgen-flags: " "$TEST" || echo)"
 FLAGS="${FLAGS/\/\/ bindgen\-flags:/}"
 # Prepend the default flags added in test.rs's `create_bindgen_builder`.
-FLAGS="--rustfmt-bindings --with-derive-default --raw-line '' --raw-line '#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]' --raw-line '' $FLAGS"
+FLAGS="--with-derive-default --raw-line '' --raw-line '#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]' --raw-line '' $FLAGS"
 
 
 eval ../target/debug/bindgen \
