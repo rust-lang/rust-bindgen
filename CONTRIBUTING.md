@@ -105,9 +105,9 @@ generate bindings to some C++ code, and then uses the bindings, asserting that
 values are what we expect them to be, both on the Rust and C++ side.
 
 The generated and expected bindings are formatted with [prettyplease] before they are
-compared. It is a default (but optional) dependency of `bindgen-cli`,
+compared. It is a default (but optional) dependency of `bindgen`,
 so be sure to keep that in mind
-(if you built the cli with the `--no-default-features` option of Cargo).
+(if you built `bindgen` with the `--no-default-features` option of Cargo).
 Note also that `rustfmt` formatting is disabled for the `bindgen-tests/tests/expectations/`
 directory tree, which helps avoid failing ui tests.
 
