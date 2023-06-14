@@ -104,17 +104,14 @@ There are also some integration tests in the `./bindgen-integration` crate, whic
 generate bindings to some C++ code, and then uses the bindings, asserting that
 values are what we expect them to be, both on the Rust and C++ side.
 
-The generated and expected bindings are run through `rustfmt` before they are
-compared. Make sure you have `rustfmt` up to date:
-
-```
-$ rustup update nightly
-$ rustup component add rustfmt --toolchain nightly
-```
+The generated and expected bindings are formatted with [prettyplease] before they are
+compared. It is a default (but optional) dependency of `bindgen` executable,
+so be sure to keep that in mind if you built it using the `--no-default-features` option of Cargo.
 
 Note: running `cargo test` from the root directory of `bindgen`'s repository does not
 automatically test the generated bindings or run the integration tests.
 These steps must be performed manually when needed.
+
 
 ### Testing Bindings Generation
 
@@ -576,3 +573,6 @@ $ git push --tags upstream # To publish the tag
 ### Create a new release on Github
 
 See [Releasing projects on Github](https://docs.github.com/en/repositories/releasing-projects-on-github)
+
+
+[prettyplease]: https://github.com/dtolnay/prettyplease
