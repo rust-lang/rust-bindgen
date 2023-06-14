@@ -158,6 +158,9 @@ options! {
         methods: {
             regex_option! {
                 /// Do not generate any bindings for the given type.
+                ///
+                /// This option is not recursive, meaning that it will only block types whose names
+                /// explicitly match the argument of this method.
                 pub fn blocklist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_types.insert(arg);
                     self
@@ -171,6 +174,9 @@ options! {
         methods: {
             regex_option! {
                 /// Do not generate any bindings for the given function.
+                ///
+                /// This option is not recursive, meaning that it will only block functions whose
+                /// names explicitly match the argument of this method.
                 pub fn blocklist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_functions.insert(arg);
                     self
@@ -185,6 +191,9 @@ options! {
             regex_option! {
                 /// Do not generate any bindings for the given item, regardless of whether it is a
                 /// type, function, module, etc.
+                ///
+                /// This option is not recursive, meaning that it will only block items whose names
+                /// explicitly match the argument of this method.
                 pub fn blocklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_items.insert(arg);
                     self
@@ -199,6 +208,9 @@ options! {
             regex_option! {
                 /// Do not generate any bindings for the contents of the given file, regardless of
                 /// whether the contents of the file are types, functions, modules, etc.
+                ///
+                /// This option is not recursive, meaning that it will only block files whose names
+                /// explicitly match the argument of this method.
                 pub fn blocklist_file<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.blocklisted_files.insert(arg);
                     self
