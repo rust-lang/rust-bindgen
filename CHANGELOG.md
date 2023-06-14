@@ -7,129 +7,133 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
-- [0.65.1](#0651)
-  - [Fixed](#fixed-1)
-- [0.65.0](#0650)
+- [0.66.0](#0660)
   - [Added](#added-1)
   - [Changed](#changed-1)
   - [Removed](#removed-1)
-- [0.64.0](#0640)
+- [0.65.1](#0651)
+  - [Fixed](#fixed-1)
+- [0.65.0](#0650)
   - [Added](#added-2)
   - [Changed](#changed-2)
-- [0.63.0](#0630)
+  - [Removed](#removed-2)
+- [0.64.0](#0640)
   - [Added](#added-3)
   - [Changed](#changed-3)
-  - [Removed](#removed-2)
-- [0.62.0](#0620)
+- [0.63.0](#0630)
   - [Added](#added-4)
   - [Changed](#changed-4)
-  - [Fixed](#fixed-2)
-- [0.61.0](#0610)
+  - [Removed](#removed-3)
+- [0.62.0](#0620)
   - [Added](#added-5)
   - [Changed](#changed-5)
+  - [Fixed](#fixed-2)
+- [0.61.0](#0610)
+  - [Added](#added-6)
+  - [Changed](#changed-6)
   - [Fixed](#fixed-3)
 - [0.60.1](#0601)
   - [Fixed](#fixed-4)
 - [0.60.0](#0600)
-  - [Added](#added-6)
+  - [Added](#added-7)
   - [Fixed](#fixed-5)
-  - [Changed](#changed-6)
-  - [Removed](#removed-3)
+  - [Changed](#changed-7)
+  - [Removed](#removed-4)
 - [0.59.2](#0592)
 - [0.59.1](#0591)
   - [Fixed](#fixed-6)
 - [0.59.0](#0590)
-  - [Added](#added-7)
-  - [Fixed](#fixed-7)
-  - [Changed](#changed-7)
-- [0.58.1](#0581)
   - [Added](#added-8)
-- [0.58.0](#0580)
-  - [Added](#added-9)
-  - [Fixed](#fixed-8)
+  - [Fixed](#fixed-7)
   - [Changed](#changed-8)
+- [0.58.1](#0581)
+  - [Added](#added-9)
+- [0.58.0](#0580)
+  - [Added](#added-10)
+  - [Fixed](#fixed-8)
+  - [Changed](#changed-9)
   - [Deprecated](#deprecated)
-  - [Removed](#removed-4)
+  - [Removed](#removed-5)
   - [Fixed](#fixed-9)
   - [Security](#security-1)
 - [0.57.0](#0570)
-  - [Added](#added-10)
+  - [Added](#added-11)
   - [Fixed](#fixed-10)
 - [0.56.0](#0560)
-  - [Added](#added-11)
-  - [Changed](#changed-9)
+  - [Added](#added-12)
+  - [Changed](#changed-10)
   - [Fixed](#fixed-11)
 - [0.55.1](#0551)
   - [Fixed](#fixed-12)
 - [0.55.0](#0550)
-  - [Removed](#removed-5)
-  - [Added](#added-12)
-  - [Changed](#changed-10)
-  - [Fixed](#fixed-13)
-- [0.54.1](#0541)
+  - [Removed](#removed-6)
   - [Added](#added-13)
   - [Changed](#changed-11)
-  - [Fixed](#fixed-14)
-- [0.54.0](#0540)
+  - [Fixed](#fixed-13)
+- [0.54.1](#0541)
   - [Added](#added-14)
   - [Changed](#changed-12)
+  - [Fixed](#fixed-14)
+- [0.54.0](#0540)
+  - [Added](#added-15)
+  - [Changed](#changed-13)
   - [Fixed](#fixed-15)
 - [0.53.3](#0533)
-  - [Added](#added-15)
+  - [Added](#added-16)
   - [Fixed](#fixed-16)
 - [0.53.2](#0532)
-  - [Changed](#changed-13)
-- [0.53.1](#0531)
-  - [Added](#added-16)
-- [0.53.0](#0530)
-  - [Added](#added-17)
   - [Changed](#changed-14)
-  - [Fixed](#fixed-17)
-- [0.52.0](#0520)
+- [0.53.1](#0531)
+  - [Added](#added-17)
+- [0.53.0](#0530)
   - [Added](#added-18)
   - [Changed](#changed-15)
+  - [Fixed](#fixed-17)
+- [0.52.0](#0520)
+  - [Added](#added-19)
+  - [Changed](#changed-16)
   - [Fixed](#fixed-18)
 - [0.51.1](#0511)
   - [Fixed](#fixed-19)
-  - [Changed](#changed-16)
+  - [Changed](#changed-17)
 - [0.51.0](#0510)
   - [Fixed](#fixed-20)
-  - [Changed](#changed-17)
-  - [Added](#added-19)
-- [0.50.0](#0500)
-  - [Added](#added-20)
-- [0.49.3](#0493)
-  - [Added](#added-21)
-- [0.49.2](#0492)
   - [Changed](#changed-18)
+  - [Added](#added-20)
+- [0.50.0](#0500)
+  - [Added](#added-21)
+- [0.49.3](#0493)
+  - [Added](#added-22)
+- [0.49.2](#0492)
+  - [Changed](#changed-19)
 - [0.49.1](#0491)
   - [Fixed](#fixed-21)
-  - [Changed](#changed-19)
-- [0.49.0](#0490)
-  - [Added](#added-22)
-  - [Fixed](#fixed-22)
   - [Changed](#changed-20)
+- [0.49.0](#0490)
+  - [Added](#added-23)
+  - [Fixed](#fixed-22)
+  - [Changed](#changed-21)
 - [0.48.1](#0481)
   - [Fixed](#fixed-23)
 - [0.48.0](#0480)
-  - [Changed](#changed-21)
+  - [Changed](#changed-22)
   - [Fixed](#fixed-24)
 - [0.47.4](#0474)
-  - [Added](#added-23)
+  - [Added](#added-24)
 - [0.47.3](#0473)
-  - [Changed](#changed-22)
+  - [Changed](#changed-23)
 - [0.47.2](#0472)
   - [Fixed](#fixed-25)
 - [0.47.1](#0471)
-  - [Changed](#changed-23)
+  - [Changed](#changed-24)
   - [Fixed](#fixed-26)
 - [0.47.0](#0470)
-  - [Changed](#changed-24)
+  - [Changed](#changed-25)
   - [Fixed](#fixed-27)
 - [0.33.1 .. 0.46.0](#0331--0460)
-  - [Added](#added-24)
-  - [Removed](#removed-6)
-  - [Changed](#changed-25)
+  - [Added](#added-25)
+  - [Removed](#removed-7)
+  - [Changed](#changed-26)
   - [Fixed](#fixed-28)
 - [0.33.1](#0331)
   - [Fixed](#fixed-29)
@@ -139,30 +143,38 @@
 - [0.32.1](#0321)
   - [Fixed](#fixed-31)
 - [0.32.0](#0320)
-  - [Added](#added-25)
-  - [Changed](#changed-26)
-  - [Fixed](#fixed-32)
-- [0.31.0](#0310)
   - [Added](#added-26)
   - [Changed](#changed-27)
-  - [Deprecated](#deprecated-1)
-  - [Removed](#removed-7)
-  - [Fixed](#fixed-33)
-- [0.30.0](#0300)
+  - [Fixed](#fixed-32)
+- [0.31.0](#0310)
   - [Added](#added-27)
   - [Changed](#changed-28)
+  - [Deprecated](#deprecated-1)
+  - [Removed](#removed-8)
+  - [Fixed](#fixed-33)
+- [0.30.0](#0300)
+  - [Added](#added-28)
+  - [Changed](#changed-29)
   - [Deprecated](#deprecated-2)
   - [Fixed](#fixed-34)
 - [0.29.0](#0290)
-  - [Added](#added-28)
-  - [Changed](#changed-29)
+  - [Added](#added-29)
+  - [Changed](#changed-30)
   - [Fixed](#fixed-35)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 --------------------------------------------------------------------------------
 
-# Unreleased
+# Unreleased 
+
+## Added
+## Changed
+## Removed
+## Fixed
+## Security
+
+# 0.66.0
 
 ## Added
 
@@ -171,7 +183,9 @@
 * Added the `--generate-shell-completions` CLI flag to generate completions for
   different shells.
 * The `--wrap-static-fns` option can now wrap `va_list` functions as variadic functions
-  with the experimental `wrap_as_variadic_fn` callback.
+  with the experimental `ParseCallbacks::wrap_as_variadic_fn` method.
+* Add target mappings for riscv32imc and riscv32imac.
+* Add the `ParseCallbacks::field_visibility` method to modify field visibility. 
 
 ## Changed
 
@@ -181,30 +195,31 @@
   statement and only call the static function instead.
 * The `--wrap-static-fns` option no longer emits wrappers for static variadic
   functions.
-* Depfiles generated with `--depfile` or `Builder::depfile` will now be
-  properly generate module names and paths that include spaces by escaping
-  them. To make the escaping clear and consistent, backslashes are also
-  escaped.
+* Depfiles generated with `--depfile` or `Builder::depfile` will now properly
+  generate module names and paths that include spaces by escaping them. To make
+  the escaping clear and consistent, backslashes are also escaped.
 * Updated `bitflags` dependency to 2.2.1. This changes the API of `CodegenConfig`.
 * Prettyplease formatting is gated by an optional, enabled by default Cargo
   feature when depending on `bindgen` as a library.
 * Items are now parsed in the order they appear in source files. This may result in
   auto-generated `_bindgen_*` names having a different index.
+* Use default visibility for padding fields: Previously, padding fields were
+  always public. Now, they follow the default visibility for the type they are
+  in.
+* Compute visibility of bitfield unit based on actual field visibility: A
+  bitfield unit field and its related functions now have their visibility
+  determined based on the most private between the default visibility and the
+  actual visibility of the bitfields within the unit. 
+
+## Removed
 * Remove redundant Cargo features, which were all implicit:
   - bindgen-cli: `env_logger` and `log` removed in favor of `logging`
   - bindgen (lib):
     + `log` removed in favor of `logging`
     + `which` removed in favor of `which-logging`
     + `annotate-snippets` removed in favor of `experimental`
-* Add target mappings for riscv32imc and riscv32imac.
-
-## Removed
-
-## Fixed
 
 * Prettyplease is available as a `Formatter` variant now.
-
-## Security
 
 # 0.65.1
 
