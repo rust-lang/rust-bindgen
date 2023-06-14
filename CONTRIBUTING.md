@@ -161,10 +161,10 @@ $ cargo test
 
 ### Testing a Single Header's Bindings Generation and Compiling its Bindings
 
-Note: You will to need to install [Graphviz](https://graphviz.org/) since that
+Note: You will need to install [Graphviz](https://graphviz.org/) since that
 is a dependency for running `test-one.sh`.
 
-Sometimes its useful to work with one test header from start (generating
+Sometimes it's useful to work with one test header from start (generating
 bindings for it) to finish (compiling the bindings and running their layout
 tests). This can be done with the `bindgen-tests/tests/test-one.sh` script. It supports fuzzy
 searching for test headers. For example, to test

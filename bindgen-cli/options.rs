@@ -872,7 +872,7 @@ where
         if !path.is_absolute() {
             return Err(Error::new(
                 ErrorKind::Other,
-                "--rustfmt-configuration--file needs to be an absolute path!",
+                "--rustfmt-configuration-file needs to be an absolute path!",
             ));
         }
 
