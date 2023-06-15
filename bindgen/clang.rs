@@ -584,7 +584,7 @@ impl Cursor {
                     cmp::Ordering::Equal
                 }
             }
-            (None, None) => cmp::Ordering::Equal,
+            (None, None) => cmp::Ordering::Equal,file
         }
     }
 
