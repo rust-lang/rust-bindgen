@@ -1084,12 +1084,11 @@ fn parse_one(
     ctx: &mut BindgenContext,
     cursor: clang::Cursor,
     parent: Option<ItemId>,
-) -> clang_sys::CXChildVisitResult {
+) {
     if !filter_builtins(ctx, &cursor) {
-        return CXChildVisit_Continue;
+        return;
     }
 
-    use clang_sys::CXChildVisit_Continue;
     match Item::parse(cursor, parent, ctx) {
         Ok(..) => {}
         Err(ParseError::Continue) => {}
@@ -1098,7 +1097,6 @@ fn parse_one(
                 .visit_sorted(ctx, |ctx, child| parse_one(ctx, child, parent));
         }
     }
-    CXChildVisit_Continue
 }
 
 /// Parse the Clang AST into our `Item` internal representation.

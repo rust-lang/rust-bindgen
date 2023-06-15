@@ -498,7 +498,7 @@ impl Cursor {
         }
     }
 
-    /// Traverse this curser's children, sorted by where they appear in source code.
+    /// Traverse all of this cursor's children, sorted by where they appear in source code.
     ///
     /// Call the given function on each AST node traversed.
     pub(crate) fn visit_sorted<Visitor>(
@@ -506,15 +506,13 @@ impl Cursor {
         ctx: &mut BindgenContext,
         mut visitor: Visitor,
     ) where
-        Visitor: FnMut(&mut BindgenContext, Cursor) -> CXChildVisitResult,
+        Visitor: FnMut(&mut BindgenContext, Cursor),
     {
         let mut children = self.collect_children();
-
         for child in &children {
             if child.kind() == CXCursor_InclusionDirective {
                 if let Some(included_file) = child.get_included_file_name() {
                     let location = child.location();
-
                     let (source_file, _, _, offset) = location.location();
 
                     if let Some(source_file) = source_file.name() {
@@ -523,16 +521,59 @@ impl Cursor {
                 }
             }
         }
-
-        children.sort_by(|child1, child2| {
-            child1
-                .location()
-                .partial_cmp_with_context(&child2.location(), ctx)
-                .unwrap_or(std::cmp::Ordering::Equal)
-        });
-
+        children
+            .sort_by(|child1, child2| child1.cmp_by_source_order(child2, ctx));
         for child in children {
             visitor(ctx, child);
+        }
+    }
+
+    /// Compare source order of two cursors, considering `#include` directives.
+    ///
+    /// Built-in items provided by the compiler (which don't have a source file),
+    /// are sorted first. Remaining files are sorted by their position in the source file.
+    /// If the items' source files differ, they are sorted by the position of the first
+    /// `#include` for their source file. If no source files are included, `None` is returned.
+    fn cmp_by_source_order(
+        &self,
+        other: &Self,
+        ctx: &BindgenContext,
+    ) -> cmp::Ordering {
+        let (file, _, _, offset) = self.location().location();
+        let (other_file, _, _, other_offset) = other.location().location();
+
+        let (file, other_file) = match (file.name(), other_file.name()) {
+            (Some(file), Some(other_file)) => (file, other_file),
+            // Built-in definitions should come first.
+            (Some(_), None) => return cmp::Ordering::Greater,
+            (None, Some(_)) => return cmp::Ordering::Less,
+            (None, None) => return cmp::Ordering::Equal,
+        };
+
+        if file == other_file {
+            // Both items are in the same source file, compare by byte offset.
+            return offset.cmp(&other_offset);
+        }
+
+        let include_location = ctx.included_file_location(&file);
+        let other_include_location = ctx.included_file_location(&other_file);
+        match (include_location, other_include_location) {
+            (Some((file2, offset2)), _) if file2 == other_file => {
+                offset2.cmp(&other_offset)
+            }
+            (Some(_), None) => cmp::Ordering::Greater,
+            (_, Some((other_file2, other_offset2))) if file == other_file2 => {
+                offset.cmp(&other_offset2)
+            }
+            (None, Some(_)) => cmp::Ordering::Less,
+            (Some((file2, offset2)), Some((other_file2, other_offset2))) => {
+                if file2 == other_file2 {
+                    offset2.cmp(&other_offset2)
+                } else {
+                    cmp::Ordering::Equal
+                }
+            }
+            (None, None) => cmp::Ordering::Equal,
         }
     }
 
@@ -1560,63 +1601,6 @@ impl SourceLocation {
                 self.x, &mut file, &mut line, &mut col, &mut off,
             );
             (File { x: file }, line as usize, col as usize, off as usize)
-        }
-    }
-}
-
-impl SourceLocation {
-    /// Compare source locations, also considering `#include` directives.
-    ///
-    /// Built-in items provided by the compiler (which don't have a source file),
-    /// are sorted first. Remaining files are sorted by their position in the source file.
-    /// If the items' source files differ, they are sorted by the position of the first
-    /// `#include` for their source file. If no source files are included, `None` is returned.
-    pub(crate) fn partial_cmp_with_context(
-        &self,
-        other: &Self,
-        ctx: &BindgenContext,
-    ) -> Option<cmp::Ordering> {
-        let (file, _, _, offset) = self.location();
-        let (other_file, _, _, other_offset) = other.location();
-
-        match (file.name(), other_file.name()) {
-            (Some(file), Some(other_file)) => {
-                if file == other_file {
-                    return offset.partial_cmp(&other_offset);
-                }
-
-                let include_location = ctx.included_file_location(&file);
-                let other_include_location =
-                    ctx.included_file_location(&other_file);
-
-                match (include_location, other_include_location) {
-                    (Some((file2, offset2)), _) if file2 == other_file => {
-                        offset2.partial_cmp(&other_offset)
-                    }
-                    (Some(_), None) => Some(cmp::Ordering::Greater),
-                    (_, Some((other_file2, other_offset2)))
-                        if file == other_file2 =>
-                    {
-                        offset.partial_cmp(&other_offset2)
-                    }
-                    (None, Some(_)) => Some(cmp::Ordering::Less),
-                    (
-                        Some((file2, offset2)),
-                        Some((other_file2, other_offset2)),
-                    ) => {
-                        if file2 == other_file2 {
-                            offset2.partial_cmp(&other_offset2)
-                        } else {
-                            None
-                        }
-                    }
-                    (None, None) => Some(cmp::Ordering::Equal),
-                }
-            }
-            // Built-in definitions should come first.
-            (Some(_), None) => Some(cmp::Ordering::Greater),
-            (None, Some(_)) => Some(cmp::Ordering::Less),
-            (None, None) => Some(cmp::Ordering::Equal),
         }
     }
 }
