@@ -562,7 +562,7 @@ impl Cursor {
         };
 
         if file == other_file {
-            // Both items are in the same source file, compare by byte offset.
+            // Both items are in the same source file, compare by byte offset.file
             return offset.cmp(&other_offset);
         }
 
@@ -584,7 +584,7 @@ impl Cursor {
                     cmp::Ordering::Equal
                 }
             }
-            (None, None) => cmp::Ordering::Equal,file
+            (None, None) => cmp::Ordering::Equal,
         }
     }
 
