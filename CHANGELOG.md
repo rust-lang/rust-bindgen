@@ -7,23 +7,25 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
+- [0.66.1](#0661)
+  - [Removed](#removed-1)
 - [0.66.0](#0660)
   - [Added](#added-1)
   - [Changed](#changed-1)
-  - [Removed](#removed-1)
+  - [Removed](#removed-2)
 - [0.65.1](#0651)
   - [Fixed](#fixed-1)
 - [0.65.0](#0650)
   - [Added](#added-2)
   - [Changed](#changed-2)
-  - [Removed](#removed-2)
+  - [Removed](#removed-3)
 - [0.64.0](#0640)
   - [Added](#added-3)
   - [Changed](#changed-3)
 - [0.63.0](#0630)
   - [Added](#added-4)
   - [Changed](#changed-4)
-  - [Removed](#removed-3)
+  - [Removed](#removed-4)
 - [0.62.0](#0620)
   - [Added](#added-5)
   - [Changed](#changed-5)
@@ -38,7 +40,7 @@
   - [Added](#added-7)
   - [Fixed](#fixed-5)
   - [Changed](#changed-7)
-  - [Removed](#removed-4)
+  - [Removed](#removed-5)
 - [0.59.2](#0592)
 - [0.59.1](#0591)
   - [Fixed](#fixed-6)
@@ -53,7 +55,7 @@
   - [Fixed](#fixed-8)
   - [Changed](#changed-9)
   - [Deprecated](#deprecated)
-  - [Removed](#removed-5)
+  - [Removed](#removed-6)
   - [Fixed](#fixed-9)
   - [Security](#security-1)
 - [0.57.0](#0570)
@@ -66,7 +68,7 @@
 - [0.55.1](#0551)
   - [Fixed](#fixed-12)
 - [0.55.0](#0550)
-  - [Removed](#removed-6)
+  - [Removed](#removed-7)
   - [Added](#added-13)
   - [Changed](#changed-11)
   - [Fixed](#fixed-13)
@@ -132,7 +134,7 @@
   - [Fixed](#fixed-27)
 - [0.33.1 .. 0.46.0](#0331--0460)
   - [Added](#added-25)
-  - [Removed](#removed-7)
+  - [Removed](#removed-8)
   - [Changed](#changed-26)
   - [Fixed](#fixed-28)
 - [0.33.1](#0331)
@@ -150,7 +152,7 @@
   - [Added](#added-27)
   - [Changed](#changed-28)
   - [Deprecated](#deprecated-1)
-  - [Removed](#removed-8)
+  - [Removed](#removed-9)
   - [Fixed](#fixed-33)
 - [0.30.0](#0300)
   - [Added](#added-28)
@@ -166,13 +168,18 @@
 
 --------------------------------------------------------------------------------
 
-# Unreleased 
+# Unreleased
 
 ## Added
 ## Changed
 ## Removed
 ## Fixed
 ## Security
+
+# 0.66.1
+
+## Removed
+* Revert source order sorting (#2543) due to correctness regressions #2558.
 
 # 0.66.0
 
