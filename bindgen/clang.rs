@@ -562,7 +562,7 @@ impl Cursor {
         };
 
         if file == other_file {
-            // Both items are in the same source file, compare by byte offset.file
+            // Both items are in the same source file, compare by byte offset.
             return offset.cmp(&other_offset);
         }
 
