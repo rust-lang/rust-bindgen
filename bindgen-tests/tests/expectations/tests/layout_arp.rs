@@ -1,5 +1,12 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub const ETHER_ADDR_LEN: u32 = 6;
+pub const ARP_HRD_ETHER: u32 = 1;
+pub const ARP_OP_REQUEST: u32 = 1;
+pub const ARP_OP_REPLY: u32 = 2;
+pub const ARP_OP_REVREQUEST: u32 = 3;
+pub const ARP_OP_REVREPLY: u32 = 4;
+pub const ARP_OP_INVREQUEST: u32 = 8;
+pub const ARP_OP_INVREPLY: u32 = 9;
 /** Ethernet address:
  A universally administered address is uniquely assigned to a device by its
  manufacturer. The first three octets (in transmission order) contain the
@@ -126,10 +133,3 @@ fn bindgen_test_layout_arp_hdr() {
         stringify!(arp_data))
     );
 }
-pub const ARP_HRD_ETHER: u32 = 1;
-pub const ARP_OP_REQUEST: u32 = 1;
-pub const ARP_OP_REPLY: u32 = 2;
-pub const ARP_OP_REVREQUEST: u32 = 3;
-pub const ARP_OP_REVREPLY: u32 = 4;
-pub const ARP_OP_INVREQUEST: u32 = 8;
-pub const ARP_OP_INVREPLY: u32 = 9;

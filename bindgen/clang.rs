@@ -508,6 +508,17 @@ impl Cursor {
     ) where
         Visitor: FnMut(&mut BindgenContext, Cursor),
     {
+        // FIXME(#2556): The current source order stuff doesn't account well for different levels
+        // of includes, or includes that show up at the same byte offset because they are passed in
+        // via CLI.
+        const SOURCE_ORDER_ENABLED: bool = false;
+        if !SOURCE_ORDER_ENABLED {
+            return self.visit(|c| {
+                visitor(ctx, c);
+                CXChildVisit_Continue
+            });
+        }
+
         let mut children = self.collect_children();
         for child in &children {
             if child.kind() == CXCursor_InclusionDirective {
