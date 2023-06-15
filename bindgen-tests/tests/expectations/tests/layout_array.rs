@@ -1,6 +1,13 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub const RTE_CACHE_LINE_SIZE: u32 = 64;
 pub const RTE_MEMPOOL_OPS_NAMESIZE: u32 = 32;
+pub const RTE_MEMPOOL_MAX_OPS_IDX: u32 = 16;
+pub const RTE_HEAP_NUM_FREELISTS: u32 = 13;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct rte_mempool {
+    _unused: [u8; 0],
+}
 /** Prototype for implementation specific data provisioning function.
 
  The function should provide the implementation specific memory for
@@ -12,11 +19,6 @@ pub const RTE_MEMPOOL_OPS_NAMESIZE: u32 = 32;
 pub type rte_mempool_alloc_t = ::std::option::Option<
     unsafe extern "C" fn(mp: *mut rte_mempool) -> ::std::os::raw::c_int,
 >;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rte_mempool {
-    _unused: [u8; 0],
-}
 /// Free the opaque private data pointed to by mp->pool_data pointer.
 pub type rte_mempool_free_t = ::std::option::Option<
     unsafe extern "C" fn(mp: *mut rte_mempool),
@@ -116,7 +118,6 @@ impl ::std::cmp::PartialEq for rte_mempool_ops {
             && self.get_count == other.get_count
     }
 }
-pub const RTE_MEMPOOL_MAX_OPS_IDX: u32 = 16;
 /// The rte_spinlock_t type.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -198,7 +199,6 @@ impl Default for rte_mempool_ops_table {
         }
     }
 }
-pub const RTE_HEAP_NUM_FREELISTS: u32 = 13;
 /// Structure to hold malloc heap
 #[repr(C)]
 #[repr(align(64))]

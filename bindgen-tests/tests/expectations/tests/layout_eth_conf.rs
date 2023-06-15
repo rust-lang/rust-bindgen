@@ -90,6 +90,31 @@ pub const ETH_VMDQ_MAX_VLAN_FILTERS: u32 = 64;
 pub const ETH_DCB_NUM_USER_PRIORITIES: u32 = 8;
 pub const ETH_VMDQ_DCB_NUM_QUEUES: u32 = 128;
 pub const ETH_DCB_NUM_QUEUES: u32 = 128;
+pub const RTE_ETH_FDIR_MAX_FLEXLEN: u32 = 16;
+pub const RTE_ETH_INSET_SIZE_MAX: u32 = 128;
+pub const RTE_ETH_FLOW_UNKNOWN: u32 = 0;
+pub const RTE_ETH_FLOW_RAW: u32 = 1;
+pub const RTE_ETH_FLOW_IPV4: u32 = 2;
+pub const RTE_ETH_FLOW_FRAG_IPV4: u32 = 3;
+pub const RTE_ETH_FLOW_NONFRAG_IPV4_TCP: u32 = 4;
+pub const RTE_ETH_FLOW_NONFRAG_IPV4_UDP: u32 = 5;
+pub const RTE_ETH_FLOW_NONFRAG_IPV4_SCTP: u32 = 6;
+pub const RTE_ETH_FLOW_NONFRAG_IPV4_OTHER: u32 = 7;
+pub const RTE_ETH_FLOW_IPV6: u32 = 8;
+pub const RTE_ETH_FLOW_FRAG_IPV6: u32 = 9;
+pub const RTE_ETH_FLOW_NONFRAG_IPV6_TCP: u32 = 10;
+pub const RTE_ETH_FLOW_NONFRAG_IPV6_UDP: u32 = 11;
+pub const RTE_ETH_FLOW_NONFRAG_IPV6_SCTP: u32 = 12;
+pub const RTE_ETH_FLOW_NONFRAG_IPV6_OTHER: u32 = 13;
+pub const RTE_ETH_FLOW_L2_PAYLOAD: u32 = 14;
+pub const RTE_ETH_FLOW_IPV6_EX: u32 = 15;
+pub const RTE_ETH_FLOW_IPV6_TCP_EX: u32 = 16;
+pub const RTE_ETH_FLOW_IPV6_UDP_EX: u32 = 17;
+pub const RTE_ETH_FLOW_PORT: u32 = 18;
+pub const RTE_ETH_FLOW_VXLAN: u32 = 19;
+pub const RTE_ETH_FLOW_GENEVE: u32 = 20;
+pub const RTE_ETH_FLOW_NVGRE: u32 = 21;
+pub const RTE_ETH_FLOW_MAX: u32 = 22;
 #[repr(u32)]
 /**  A set of values to identify what method is to be used to route
   packets to multiple queues.*/
@@ -1189,8 +1214,6 @@ pub enum rte_eth_payload_type {
     RTE_ETH_L4_PAYLOAD = 4,
     RTE_ETH_PAYLOAD_MAX = 8,
 }
-pub const RTE_ETH_FDIR_MAX_FLEXLEN: u32 = 16;
-pub const RTE_ETH_INSET_SIZE_MAX: u32 = 128;
 /** A structure used to select bytes extracted from the protocol layers to
  flexible payload for filter*/
 #[repr(C)]
@@ -1263,29 +1286,6 @@ fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
         stringify!(mask))
     );
 }
-pub const RTE_ETH_FLOW_UNKNOWN: u32 = 0;
-pub const RTE_ETH_FLOW_RAW: u32 = 1;
-pub const RTE_ETH_FLOW_IPV4: u32 = 2;
-pub const RTE_ETH_FLOW_FRAG_IPV4: u32 = 3;
-pub const RTE_ETH_FLOW_NONFRAG_IPV4_TCP: u32 = 4;
-pub const RTE_ETH_FLOW_NONFRAG_IPV4_UDP: u32 = 5;
-pub const RTE_ETH_FLOW_NONFRAG_IPV4_SCTP: u32 = 6;
-pub const RTE_ETH_FLOW_NONFRAG_IPV4_OTHER: u32 = 7;
-pub const RTE_ETH_FLOW_IPV6: u32 = 8;
-pub const RTE_ETH_FLOW_FRAG_IPV6: u32 = 9;
-pub const RTE_ETH_FLOW_NONFRAG_IPV6_TCP: u32 = 10;
-pub const RTE_ETH_FLOW_NONFRAG_IPV6_UDP: u32 = 11;
-pub const RTE_ETH_FLOW_NONFRAG_IPV6_SCTP: u32 = 12;
-pub const RTE_ETH_FLOW_NONFRAG_IPV6_OTHER: u32 = 13;
-pub const RTE_ETH_FLOW_L2_PAYLOAD: u32 = 14;
-pub const RTE_ETH_FLOW_IPV6_EX: u32 = 15;
-pub const RTE_ETH_FLOW_IPV6_TCP_EX: u32 = 16;
-pub const RTE_ETH_FLOW_IPV6_UDP_EX: u32 = 17;
-pub const RTE_ETH_FLOW_PORT: u32 = 18;
-pub const RTE_ETH_FLOW_VXLAN: u32 = 19;
-pub const RTE_ETH_FLOW_GENEVE: u32 = 20;
-pub const RTE_ETH_FLOW_NVGRE: u32 = 21;
-pub const RTE_ETH_FLOW_MAX: u32 = 22;
 /** A structure used to define all flexible payload related setting
  include flex payload and flex mask*/
 #[repr(C)]
