@@ -9,12 +9,14 @@ pub struct PackedVtable {
 #[test]
 fn bindgen_test_layout_PackedVtable() {
     assert_eq!(
-        ::std::mem::size_of:: < PackedVtable > (), 8usize, concat!("Size of: ",
-        stringify!(PackedVtable))
+        ::std::mem::size_of::<PackedVtable>(),
+        8usize,
+        concat!("Size of: ", stringify!(PackedVtable)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < PackedVtable > (), 1usize, concat!("Alignment of ",
-        stringify!(PackedVtable))
+        ::std::mem::align_of::<PackedVtable>(),
+        1usize,
+        concat!("Alignment of ", stringify!(PackedVtable)),
     );
 }
 impl Default for PackedVtable {

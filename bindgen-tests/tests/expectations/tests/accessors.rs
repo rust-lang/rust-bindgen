@@ -15,32 +15,56 @@ fn bindgen_test_layout_SomeAccessors() {
     const UNINIT: ::std::mem::MaybeUninit<SomeAccessors> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < SomeAccessors > (), 16usize, concat!("Size of: ",
-        stringify!(SomeAccessors))
+        ::std::mem::size_of::<SomeAccessors>(),
+        16usize,
+        concat!("Size of: ", stringify!(SomeAccessors)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < SomeAccessors > (), 4usize, concat!("Alignment of ",
-        stringify!(SomeAccessors))
+        ::std::mem::align_of::<SomeAccessors>(),
+        4usize,
+        concat!("Alignment of ", stringify!(SomeAccessors)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mNoAccessor) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(SomeAccessors), "::",
-        stringify!(mNoAccessor))
+        unsafe { ::std::ptr::addr_of!((*ptr).mNoAccessor) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SomeAccessors),
+            "::",
+            stringify!(mNoAccessor),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mBothAccessors) as usize - ptr as usize },
-        4usize, concat!("Offset of field: ", stringify!(SomeAccessors), "::",
-        stringify!(mBothAccessors))
+        unsafe { ::std::ptr::addr_of!((*ptr).mBothAccessors) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SomeAccessors),
+            "::",
+            stringify!(mBothAccessors),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mUnsafeAccessors) as usize - ptr as usize
-        }, 8usize, concat!("Offset of field: ", stringify!(SomeAccessors), "::",
-        stringify!(mUnsafeAccessors))
+        unsafe { ::std::ptr::addr_of!((*ptr).mUnsafeAccessors) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SomeAccessors),
+            "::",
+            stringify!(mUnsafeAccessors),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mImmutableAccessor) as usize - ptr as usize
-        }, 12usize, concat!("Offset of field: ", stringify!(SomeAccessors), "::",
-        stringify!(mImmutableAccessor))
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).mImmutableAccessor) as usize - ptr as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(SomeAccessors),
+            "::",
+            stringify!(mImmutableAccessor),
+        ),
     );
 }
 impl SomeAccessors {
@@ -77,22 +101,36 @@ fn bindgen_test_layout_AllAccessors() {
     const UNINIT: ::std::mem::MaybeUninit<AllAccessors> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < AllAccessors > (), 8usize, concat!("Size of: ",
-        stringify!(AllAccessors))
+        ::std::mem::size_of::<AllAccessors>(),
+        8usize,
+        concat!("Size of: ", stringify!(AllAccessors)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < AllAccessors > (), 4usize, concat!("Alignment of ",
-        stringify!(AllAccessors))
+        ::std::mem::align_of::<AllAccessors>(),
+        4usize,
+        concat!("Alignment of ", stringify!(AllAccessors)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mBothAccessors) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(AllAccessors), "::",
-        stringify!(mBothAccessors))
+        unsafe { ::std::ptr::addr_of!((*ptr).mBothAccessors) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(AllAccessors),
+            "::",
+            stringify!(mBothAccessors),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mAlsoBothAccessors) as usize - ptr as usize
-        }, 4usize, concat!("Offset of field: ", stringify!(AllAccessors), "::",
-        stringify!(mAlsoBothAccessors))
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).mAlsoBothAccessors) as usize - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(AllAccessors),
+            "::",
+            stringify!(mAlsoBothAccessors),
+        ),
     );
 }
 impl AllAccessors {
@@ -125,22 +163,36 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
     const UNINIT: ::std::mem::MaybeUninit<AllUnsafeAccessors> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < AllUnsafeAccessors > (), 8usize, concat!("Size of: ",
-        stringify!(AllUnsafeAccessors))
+        ::std::mem::size_of::<AllUnsafeAccessors>(),
+        8usize,
+        concat!("Size of: ", stringify!(AllUnsafeAccessors)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < AllUnsafeAccessors > (), 4usize,
-        concat!("Alignment of ", stringify!(AllUnsafeAccessors))
+        ::std::mem::align_of::<AllUnsafeAccessors>(),
+        4usize,
+        concat!("Alignment of ", stringify!(AllUnsafeAccessors)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mBothAccessors) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(AllUnsafeAccessors), "::",
-        stringify!(mBothAccessors))
+        unsafe { ::std::ptr::addr_of!((*ptr).mBothAccessors) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(AllUnsafeAccessors),
+            "::",
+            stringify!(mBothAccessors),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mAlsoBothAccessors) as usize - ptr as usize
-        }, 4usize, concat!("Offset of field: ", stringify!(AllUnsafeAccessors), "::",
-        stringify!(mAlsoBothAccessors))
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).mAlsoBothAccessors) as usize - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(AllUnsafeAccessors),
+            "::",
+            stringify!(mAlsoBothAccessors),
+        ),
     );
 }
 impl AllUnsafeAccessors {
@@ -178,32 +230,56 @@ fn bindgen_test_layout_ContradictAccessors() {
     const UNINIT: ::std::mem::MaybeUninit<ContradictAccessors> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < ContradictAccessors > (), 16usize, concat!("Size of: ",
-        stringify!(ContradictAccessors))
+        ::std::mem::size_of::<ContradictAccessors>(),
+        16usize,
+        concat!("Size of: ", stringify!(ContradictAccessors)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < ContradictAccessors > (), 4usize,
-        concat!("Alignment of ", stringify!(ContradictAccessors))
+        ::std::mem::align_of::<ContradictAccessors>(),
+        4usize,
+        concat!("Alignment of ", stringify!(ContradictAccessors)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mBothAccessors) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(ContradictAccessors), "::",
-        stringify!(mBothAccessors))
+        unsafe { ::std::ptr::addr_of!((*ptr).mBothAccessors) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ContradictAccessors),
+            "::",
+            stringify!(mBothAccessors),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mNoAccessors) as usize - ptr as usize },
-        4usize, concat!("Offset of field: ", stringify!(ContradictAccessors), "::",
-        stringify!(mNoAccessors))
+        unsafe { ::std::ptr::addr_of!((*ptr).mNoAccessors) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ContradictAccessors),
+            "::",
+            stringify!(mNoAccessors),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mUnsafeAccessors) as usize - ptr as usize
-        }, 8usize, concat!("Offset of field: ", stringify!(ContradictAccessors), "::",
-        stringify!(mUnsafeAccessors))
+        unsafe { ::std::ptr::addr_of!((*ptr).mUnsafeAccessors) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ContradictAccessors),
+            "::",
+            stringify!(mUnsafeAccessors),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mImmutableAccessor) as usize - ptr as usize
-        }, 12usize, concat!("Offset of field: ", stringify!(ContradictAccessors), "::",
-        stringify!(mImmutableAccessor))
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).mImmutableAccessor) as usize - ptr as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ContradictAccessors),
+            "::",
+            stringify!(mImmutableAccessor),
+        ),
     );
 }
 impl ContradictAccessors {
@@ -239,17 +315,19 @@ fn bindgen_test_layout_Replaced() {
     const UNINIT: ::std::mem::MaybeUninit<Replaced> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Replaced > (), 4usize, concat!("Size of: ",
-        stringify!(Replaced))
+        ::std::mem::size_of::<Replaced>(),
+        4usize,
+        concat!("Size of: ", stringify!(Replaced)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Replaced > (), 4usize, concat!("Alignment of ",
-        stringify!(Replaced))
+        ::std::mem::align_of::<Replaced>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Replaced)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mAccessor) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(Replaced), "::",
-        stringify!(mAccessor))
+        unsafe { ::std::ptr::addr_of!((*ptr).mAccessor) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Replaced), "::", stringify!(mAccessor)),
     );
 }
 impl Replaced {
@@ -273,17 +351,19 @@ fn bindgen_test_layout_Wrapper() {
     const UNINIT: ::std::mem::MaybeUninit<Wrapper> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Wrapper > (), 4usize, concat!("Size of: ",
-        stringify!(Wrapper))
+        ::std::mem::size_of::<Wrapper>(),
+        4usize,
+        concat!("Size of: ", stringify!(Wrapper)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Wrapper > (), 4usize, concat!("Alignment of ",
-        stringify!(Wrapper))
+        ::std::mem::align_of::<Wrapper>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Wrapper)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mReplaced) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(Wrapper), "::",
-        stringify!(mReplaced))
+        unsafe { ::std::ptr::addr_of!((*ptr).mReplaced) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Wrapper), "::", stringify!(mReplaced)),
     );
 }
 impl Wrapper {

@@ -13,24 +13,29 @@ fn bindgen_test_layout_pad_me() {
     const UNINIT: ::std::mem::MaybeUninit<pad_me> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < pad_me > (), 12usize, concat!("Size of: ",
-        stringify!(pad_me))
+        ::std::mem::size_of::<pad_me>(),
+        12usize,
+        concat!("Size of: ", stringify!(pad_me)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < pad_me > (), 4usize, concat!("Alignment of ",
-        stringify!(pad_me))
+        ::std::mem::align_of::<pad_me>(),
+        4usize,
+        concat!("Alignment of ", stringify!(pad_me)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).first) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(pad_me), "::", stringify!(first))
+        unsafe { ::std::ptr::addr_of!((*ptr).first) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(pad_me), "::", stringify!(first)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).second) as usize - ptr as usize }, 4usize,
-        concat!("Offset of field: ", stringify!(pad_me), "::", stringify!(second))
+        unsafe { ::std::ptr::addr_of!((*ptr).second) as usize - ptr as usize },
+        4usize,
+        concat!("Offset of field: ", stringify!(pad_me), "::", stringify!(second)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).third) as usize - ptr as usize }, 8usize,
-        concat!("Offset of field: ", stringify!(pad_me), "::", stringify!(third))
+        unsafe { ::std::ptr::addr_of!((*ptr).third) as usize - ptr as usize },
+        8usize,
+        concat!("Offset of field: ", stringify!(pad_me), "::", stringify!(third)),
     );
 }
 #[repr(C)]
@@ -45,24 +50,29 @@ fn bindgen_test_layout_dont_pad_me() {
     const UNINIT: ::std::mem::MaybeUninit<dont_pad_me> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < dont_pad_me > (), 4usize, concat!("Size of: ",
-        stringify!(dont_pad_me))
+        ::std::mem::size_of::<dont_pad_me>(),
+        4usize,
+        concat!("Size of: ", stringify!(dont_pad_me)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < dont_pad_me > (), 4usize, concat!("Alignment of ",
-        stringify!(dont_pad_me))
+        ::std::mem::align_of::<dont_pad_me>(),
+        4usize,
+        concat!("Alignment of ", stringify!(dont_pad_me)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).first) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(dont_pad_me), "::", stringify!(first))
+        unsafe { ::std::ptr::addr_of!((*ptr).first) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(dont_pad_me), "::", stringify!(first)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).second) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(dont_pad_me), "::", stringify!(second))
+        unsafe { ::std::ptr::addr_of!((*ptr).second) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(dont_pad_me), "::", stringify!(second)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).third) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(dont_pad_me), "::", stringify!(third))
+        unsafe { ::std::ptr::addr_of!((*ptr).third) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(dont_pad_me), "::", stringify!(third)),
     );
 }
 impl Default for dont_pad_me {

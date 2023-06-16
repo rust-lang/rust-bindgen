@@ -49,7 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -69,7 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -95,15 +95,19 @@ fn bindgen_test_layout_C() {
     const UNINIT: ::std::mem::MaybeUninit<C> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < C > (), 204usize, concat!("Size of: ", stringify!(C))
+        ::std::mem::size_of::<C>(),
+        204usize,
+        concat!("Size of: ", stringify!(C)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < C > (), 4usize, concat!("Alignment of ", stringify!(C))
+        ::std::mem::align_of::<C>(),
+        4usize,
+        concat!("Alignment of ", stringify!(C)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).large_array) as usize - ptr as usize },
-        4usize, concat!("Offset of field: ", stringify!(C), "::",
-        stringify!(large_array))
+        unsafe { ::std::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize },
+        4usize,
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(large_array)),
     );
 }
 impl Default for C {

@@ -30,12 +30,14 @@ pub struct JS_AutoIdVector {
 #[test]
 fn bindgen_test_layout_JS_AutoIdVector() {
     assert_eq!(
-        ::std::mem::size_of:: < JS_AutoIdVector > (), 1usize, concat!("Size of: ",
-        stringify!(JS_AutoIdVector))
+        ::std::mem::size_of::<JS_AutoIdVector>(),
+        1usize,
+        concat!("Size of: ", stringify!(JS_AutoIdVector)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < JS_AutoIdVector > (), 1usize, concat!("Alignment of ",
-        stringify!(JS_AutoIdVector))
+        ::std::mem::align_of::<JS_AutoIdVector>(),
+        1usize,
+        concat!("Alignment of ", stringify!(JS_AutoIdVector)),
     );
 }
 impl Default for JS_AutoIdVector {
@@ -50,11 +52,13 @@ impl Default for JS_AutoIdVector {
 #[test]
 fn __bindgen_test_layout_JS_Base_open0_int_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of:: < JS_Base > (), 1usize,
-        concat!("Size of template specialization: ", stringify!(JS_Base))
+        ::std::mem::size_of::<JS_Base>(),
+        1usize,
+        concat!("Size of template specialization: ", stringify!(JS_Base)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < JS_Base > (), 1usize,
-        concat!("Alignment of template specialization: ", stringify!(JS_Base))
+        ::std::mem::align_of::<JS_Base>(),
+        1usize,
+        concat!("Alignment of template specialization: ", stringify!(JS_Base)),
     );
 }

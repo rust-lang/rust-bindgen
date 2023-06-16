@@ -26,16 +26,19 @@ fn bindgen_test_layout_IntStr() {
     const UNINIT: ::std::mem::MaybeUninit<IntStr> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < IntStr > (), 4usize, concat!("Size of: ",
-        stringify!(IntStr))
+        ::std::mem::size_of::<IntStr>(),
+        4usize,
+        concat!("Size of: ", stringify!(IntStr)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < IntStr > (), 4usize, concat!("Alignment of ",
-        stringify!(IntStr))
+        ::std::mem::align_of::<IntStr>(),
+        4usize,
+        concat!("Alignment of ", stringify!(IntStr)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(IntStr), "::", stringify!(a))
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(IntStr), "::", stringify!(a)),
     );
 }
 impl Default for IntStr {
@@ -58,16 +61,19 @@ fn bindgen_test_layout_FloatStr() {
     const UNINIT: ::std::mem::MaybeUninit<FloatStr> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < FloatStr > (), 4usize, concat!("Size of: ",
-        stringify!(FloatStr))
+        ::std::mem::size_of::<FloatStr>(),
+        4usize,
+        concat!("Size of: ", stringify!(FloatStr)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < FloatStr > (), 4usize, concat!("Alignment of ",
-        stringify!(FloatStr))
+        ::std::mem::align_of::<FloatStr>(),
+        4usize,
+        concat!("Alignment of ", stringify!(FloatStr)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(FloatStr), "::", stringify!(a))
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(FloatStr), "::", stringify!(a)),
     );
 }
 impl Default for FloatStr {
@@ -82,24 +88,32 @@ impl Default for FloatStr {
 #[test]
 fn __bindgen_test_layout_foo_open0_int_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of:: < foo < ::std::os::raw::c_int > > (), 4usize,
-        concat!("Size of template specialization: ", stringify!(foo <
-        ::std::os::raw::c_int >))
+        ::std::mem::size_of::<foo<::std::os::raw::c_int>>(),
+        4usize,
+        concat!(
+            "Size of template specialization: ",
+            stringify!(foo < ::std::os::raw::c_int >),
+        ),
     );
     assert_eq!(
-        ::std::mem::align_of:: < foo < ::std::os::raw::c_int > > (), 4usize,
-        concat!("Alignment of template specialization: ", stringify!(foo <
-        ::std::os::raw::c_int >))
+        ::std::mem::align_of::<foo<::std::os::raw::c_int>>(),
+        4usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify!(foo < ::std::os::raw::c_int >),
+        ),
     );
 }
 #[test]
 fn __bindgen_test_layout_foo_open0_float_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of:: < foo < f32 > > (), 4usize,
-        concat!("Size of template specialization: ", stringify!(foo < f32 >))
+        ::std::mem::size_of::<foo<f32>>(),
+        4usize,
+        concat!("Size of template specialization: ", stringify!(foo < f32 >)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < foo < f32 > > (), 4usize,
-        concat!("Alignment of template specialization: ", stringify!(foo < f32 >))
+        ::std::mem::align_of::<foo<f32>>(),
+        4usize,
+        concat!("Alignment of template specialization: ", stringify!(foo < f32 >)),
     );
 }

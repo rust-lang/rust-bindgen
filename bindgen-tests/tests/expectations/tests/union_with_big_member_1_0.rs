@@ -54,20 +54,24 @@ fn bindgen_test_layout_WithBigArray() {
     const UNINIT: ::std::mem::MaybeUninit<WithBigArray> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < WithBigArray > (), 132usize, concat!("Size of: ",
-        stringify!(WithBigArray))
+        ::std::mem::size_of::<WithBigArray>(),
+        132usize,
+        concat!("Size of: ", stringify!(WithBigArray)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < WithBigArray > (), 4usize, concat!("Alignment of ",
-        stringify!(WithBigArray))
+        ::std::mem::align_of::<WithBigArray>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithBigArray)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(WithBigArray), "::", stringify!(a))
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(WithBigArray), "::", stringify!(a)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).b) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(WithBigArray), "::", stringify!(b))
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(WithBigArray), "::", stringify!(b)),
     );
 }
 impl Clone for WithBigArray {
@@ -96,20 +100,24 @@ fn bindgen_test_layout_WithBigArray2() {
     const UNINIT: ::std::mem::MaybeUninit<WithBigArray2> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < WithBigArray2 > (), 36usize, concat!("Size of: ",
-        stringify!(WithBigArray2))
+        ::std::mem::size_of::<WithBigArray2>(),
+        36usize,
+        concat!("Size of: ", stringify!(WithBigArray2)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < WithBigArray2 > (), 4usize, concat!("Alignment of ",
-        stringify!(WithBigArray2))
+        ::std::mem::align_of::<WithBigArray2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithBigArray2)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(WithBigArray2), "::", stringify!(a))
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(WithBigArray2), "::", stringify!(a)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).b) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(WithBigArray2), "::", stringify!(b))
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(WithBigArray2), "::", stringify!(b)),
     );
 }
 impl Clone for WithBigArray2 {
@@ -129,20 +137,24 @@ fn bindgen_test_layout_WithBigMember() {
     const UNINIT: ::std::mem::MaybeUninit<WithBigMember> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < WithBigMember > (), 132usize, concat!("Size of: ",
-        stringify!(WithBigMember))
+        ::std::mem::size_of::<WithBigMember>(),
+        132usize,
+        concat!("Size of: ", stringify!(WithBigMember)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < WithBigMember > (), 4usize, concat!("Alignment of ",
-        stringify!(WithBigMember))
+        ::std::mem::align_of::<WithBigMember>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithBigMember)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(WithBigMember), "::", stringify!(a))
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(WithBigMember), "::", stringify!(a)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).b) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(WithBigMember), "::", stringify!(b))
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(WithBigMember), "::", stringify!(b)),
     );
 }
 impl Clone for WithBigMember {

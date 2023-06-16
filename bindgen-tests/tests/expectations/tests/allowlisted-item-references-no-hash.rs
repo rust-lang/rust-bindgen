@@ -7,12 +7,14 @@ pub struct NoHash {
 #[test]
 fn bindgen_test_layout_NoHash() {
     assert_eq!(
-        ::std::mem::size_of:: < NoHash > (), 1usize, concat!("Size of: ",
-        stringify!(NoHash))
+        ::std::mem::size_of::<NoHash>(),
+        1usize,
+        concat!("Size of: ", stringify!(NoHash)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < NoHash > (), 1usize, concat!("Alignment of ",
-        stringify!(NoHash))
+        ::std::mem::align_of::<NoHash>(),
+        1usize,
+        concat!("Alignment of ", stringify!(NoHash)),
     );
 }
 #[repr(C)]
@@ -25,15 +27,18 @@ fn bindgen_test_layout_AllowlistMe() {
     const UNINIT: ::std::mem::MaybeUninit<AllowlistMe> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < AllowlistMe > (), 1usize, concat!("Size of: ",
-        stringify!(AllowlistMe))
+        ::std::mem::size_of::<AllowlistMe>(),
+        1usize,
+        concat!("Size of: ", stringify!(AllowlistMe)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < AllowlistMe > (), 1usize, concat!("Alignment of ",
-        stringify!(AllowlistMe))
+        ::std::mem::align_of::<AllowlistMe>(),
+        1usize,
+        concat!("Alignment of ", stringify!(AllowlistMe)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(AllowlistMe), "::", stringify!(a))
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(AllowlistMe), "::", stringify!(a)),
     );
 }

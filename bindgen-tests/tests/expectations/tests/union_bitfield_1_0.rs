@@ -49,7 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -69,7 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -136,11 +136,14 @@ pub struct U4 {
 #[test]
 fn bindgen_test_layout_U4() {
     assert_eq!(
-        ::std::mem::size_of:: < U4 > (), 4usize, concat!("Size of: ", stringify!(U4))
+        ::std::mem::size_of::<U4>(),
+        4usize,
+        concat!("Size of: ", stringify!(U4)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < U4 > (), 4usize, concat!("Alignment of ",
-        stringify!(U4))
+        ::std::mem::align_of::<U4>(),
+        4usize,
+        concat!("Alignment of ", stringify!(U4)),
     );
 }
 impl Clone for U4 {
@@ -188,11 +191,11 @@ pub struct B {
 }
 #[test]
 fn bindgen_test_layout_B() {
+    assert_eq!(::std::mem::size_of::<B>(), 4usize, concat!("Size of: ", stringify!(B)));
     assert_eq!(
-        ::std::mem::size_of:: < B > (), 4usize, concat!("Size of: ", stringify!(B))
-    );
-    assert_eq!(
-        ::std::mem::align_of:: < B > (), 4usize, concat!("Alignment of ", stringify!(B))
+        ::std::mem::align_of::<B>(),
+        4usize,
+        concat!("Alignment of ", stringify!(B)),
     );
 }
 impl Clone for B {
@@ -264,8 +267,9 @@ pub struct HasBigBitfield {
 #[test]
 fn bindgen_test_layout_HasBigBitfield() {
     assert_eq!(
-        ::std::mem::size_of:: < HasBigBitfield > (), 16usize, concat!("Size of: ",
-        stringify!(HasBigBitfield))
+        ::std::mem::size_of::<HasBigBitfield>(),
+        16usize,
+        concat!("Size of: ", stringify!(HasBigBitfield)),
     );
 }
 impl Clone for HasBigBitfield {

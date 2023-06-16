@@ -9,12 +9,14 @@ pub struct nsSlots {
 #[test]
 fn bindgen_test_layout_nsSlots() {
     assert_eq!(
-        ::std::mem::size_of:: < nsSlots > (), 8usize, concat!("Size of: ",
-        stringify!(nsSlots))
+        ::std::mem::size_of::<nsSlots>(),
+        8usize,
+        concat!("Size of: ", stringify!(nsSlots)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < nsSlots > (), 8usize, concat!("Alignment of ",
-        stringify!(nsSlots))
+        ::std::mem::align_of::<nsSlots>(),
+        8usize,
+        concat!("Alignment of ", stringify!(nsSlots)),
     );
 }
 impl Default for nsSlots {

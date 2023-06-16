@@ -9,12 +9,14 @@ pub struct OtherOpaque {
 #[test]
 fn bindgen_test_layout_OtherOpaque() {
     assert_eq!(
-        ::std::mem::size_of:: < OtherOpaque > (), 4usize, concat!("Size of: ",
-        stringify!(OtherOpaque))
+        ::std::mem::size_of::<OtherOpaque>(),
+        4usize,
+        concat!("Size of: ", stringify!(OtherOpaque)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < OtherOpaque > (), 4usize, concat!("Alignment of ",
-        stringify!(OtherOpaque))
+        ::std::mem::align_of::<OtherOpaque>(),
+        4usize,
+        concat!("Alignment of ", stringify!(OtherOpaque)),
     );
 }
 /// <div rustbindgen opaque></div>
@@ -35,25 +37,34 @@ fn bindgen_test_layout_WithOpaquePtr() {
     const UNINIT: ::std::mem::MaybeUninit<WithOpaquePtr> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < WithOpaquePtr > (), 16usize, concat!("Size of: ",
-        stringify!(WithOpaquePtr))
+        ::std::mem::size_of::<WithOpaquePtr>(),
+        16usize,
+        concat!("Size of: ", stringify!(WithOpaquePtr)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < WithOpaquePtr > (), 8usize, concat!("Alignment of ",
-        stringify!(WithOpaquePtr))
+        ::std::mem::align_of::<WithOpaquePtr>(),
+        8usize,
+        concat!("Alignment of ", stringify!(WithOpaquePtr)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).whatever) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(WithOpaquePtr), "::",
-        stringify!(whatever))
+        unsafe { ::std::ptr::addr_of!((*ptr).whatever) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(WithOpaquePtr),
+            "::",
+            stringify!(whatever),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).other) as usize - ptr as usize }, 8usize,
-        concat!("Offset of field: ", stringify!(WithOpaquePtr), "::", stringify!(other))
+        unsafe { ::std::ptr::addr_of!((*ptr).other) as usize - ptr as usize },
+        8usize,
+        concat!("Offset of field: ", stringify!(WithOpaquePtr), "::", stringify!(other)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).t) as usize - ptr as usize }, 12usize,
-        concat!("Offset of field: ", stringify!(WithOpaquePtr), "::", stringify!(t))
+        unsafe { ::std::ptr::addr_of!((*ptr).t) as usize - ptr as usize },
+        12usize,
+        concat!("Offset of field: ", stringify!(WithOpaquePtr), "::", stringify!(t)),
     );
 }
 impl Default for WithOpaquePtr {

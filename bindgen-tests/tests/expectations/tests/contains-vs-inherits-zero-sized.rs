@@ -8,12 +8,14 @@ pub struct Empty {
 #[test]
 fn bindgen_test_layout_Empty() {
     assert_eq!(
-        ::std::mem::size_of:: < Empty > (), 1usize, concat!("Size of: ",
-        stringify!(Empty))
+        ::std::mem::size_of::<Empty>(),
+        1usize,
+        concat!("Size of: ", stringify!(Empty)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Empty > (), 1usize, concat!("Alignment of ",
-        stringify!(Empty))
+        ::std::mem::align_of::<Empty>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Empty)),
     );
 }
 /** This should not get an `_address` byte, so `sizeof(Inherits)` should be
@@ -28,16 +30,19 @@ fn bindgen_test_layout_Inherits() {
     const UNINIT: ::std::mem::MaybeUninit<Inherits> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Inherits > (), 1usize, concat!("Size of: ",
-        stringify!(Inherits))
+        ::std::mem::size_of::<Inherits>(),
+        1usize,
+        concat!("Size of: ", stringify!(Inherits)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Inherits > (), 1usize, concat!("Alignment of ",
-        stringify!(Inherits))
+        ::std::mem::align_of::<Inherits>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Inherits)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).b) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(Inherits), "::", stringify!(b))
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Inherits), "::", stringify!(b)),
     );
 }
 /** This should not get an `_address` byte, but contains `Empty` which *does* get
@@ -53,19 +58,23 @@ fn bindgen_test_layout_Contains() {
     const UNINIT: ::std::mem::MaybeUninit<Contains> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Contains > (), 2usize, concat!("Size of: ",
-        stringify!(Contains))
+        ::std::mem::size_of::<Contains>(),
+        2usize,
+        concat!("Size of: ", stringify!(Contains)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Contains > (), 1usize, concat!("Alignment of ",
-        stringify!(Contains))
+        ::std::mem::align_of::<Contains>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Contains)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).empty) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(Contains), "::", stringify!(empty))
+        unsafe { ::std::ptr::addr_of!((*ptr).empty) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Contains), "::", stringify!(empty)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).b) as usize - ptr as usize }, 1usize,
-        concat!("Offset of field: ", stringify!(Contains), "::", stringify!(b))
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
+        1usize,
+        concat!("Offset of field: ", stringify!(Contains), "::", stringify!(b)),
     );
 }

@@ -49,7 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -69,7 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -102,24 +102,29 @@ fn bindgen_test_layout_V56AMDY() {
     const UNINIT: ::std::mem::MaybeUninit<V56AMDY> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < V56AMDY > (), 8usize, concat!("Size of: ",
-        stringify!(V56AMDY))
+        ::std::mem::size_of::<V56AMDY>(),
+        8usize,
+        concat!("Size of: ", stringify!(V56AMDY)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < V56AMDY > (), 2usize, concat!("Alignment of ",
-        stringify!(V56AMDY))
+        ::std::mem::align_of::<V56AMDY>(),
+        2usize,
+        concat!("Alignment of ", stringify!(V56AMDY)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).MADK) as usize - ptr as usize }, 2usize,
-        concat!("Offset of field: ", stringify!(V56AMDY), "::", stringify!(MADK))
+        unsafe { ::std::ptr::addr_of!((*ptr).MADK) as usize - ptr as usize },
+        2usize,
+        concat!("Offset of field: ", stringify!(V56AMDY), "::", stringify!(MADK)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).MABR) as usize - ptr as usize }, 3usize,
-        concat!("Offset of field: ", stringify!(V56AMDY), "::", stringify!(MABR))
+        unsafe { ::std::ptr::addr_of!((*ptr).MABR) as usize - ptr as usize },
+        3usize,
+        concat!("Offset of field: ", stringify!(V56AMDY), "::", stringify!(MABR)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr)._rB_) as usize - ptr as usize }, 7usize,
-        concat!("Offset of field: ", stringify!(V56AMDY), "::", stringify!(_rB_))
+        unsafe { ::std::ptr::addr_of!((*ptr)._rB_) as usize - ptr as usize },
+        7usize,
+        concat!("Offset of field: ", stringify!(V56AMDY), "::", stringify!(_rB_)),
     );
 }
 impl V56AMDY {

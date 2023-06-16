@@ -12,11 +12,11 @@ pub struct B {
 }
 #[test]
 fn bindgen_test_layout_B() {
+    assert_eq!(::std::mem::size_of::<B>(), 1usize, concat!("Size of: ", stringify!(B)));
     assert_eq!(
-        ::std::mem::size_of:: < B > (), 1usize, concat!("Size of: ", stringify!(B))
-    );
-    assert_eq!(
-        ::std::mem::align_of:: < B > (), 1usize, concat!("Alignment of ", stringify!(B))
+        ::std::mem::align_of::<B>(),
+        1usize,
+        concat!("Alignment of ", stringify!(B)),
     );
 }
 extern "C" {
@@ -32,14 +32,15 @@ pub struct C {
 fn bindgen_test_layout_C() {
     const UNINIT: ::std::mem::MaybeUninit<C> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
+    assert_eq!(::std::mem::size_of::<C>(), 1usize, concat!("Size of: ", stringify!(C)));
     assert_eq!(
-        ::std::mem::size_of:: < C > (), 1usize, concat!("Size of: ", stringify!(C))
+        ::std::mem::align_of::<C>(),
+        1usize,
+        concat!("Alignment of ", stringify!(C)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < C > (), 1usize, concat!("Alignment of ", stringify!(C))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).b) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(b))
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(b)),
     );
 }

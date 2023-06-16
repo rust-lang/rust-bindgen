@@ -32,22 +32,34 @@ fn bindgen_test_layout_contains_block_pointers() {
     const UNINIT: ::std::mem::MaybeUninit<contains_block_pointers> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < contains_block_pointers > (), 16usize,
-        concat!("Size of: ", stringify!(contains_block_pointers))
+        ::std::mem::size_of::<contains_block_pointers>(),
+        16usize,
+        concat!("Size of: ", stringify!(contains_block_pointers)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < contains_block_pointers > (), 8usize,
-        concat!("Alignment of ", stringify!(contains_block_pointers))
+        ::std::mem::align_of::<contains_block_pointers>(),
+        8usize,
+        concat!("Alignment of ", stringify!(contains_block_pointers)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).val) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(contains_block_pointers), "::",
-        stringify!(val))
+        unsafe { ::std::ptr::addr_of!((*ptr).val) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(contains_block_pointers),
+            "::",
+            stringify!(val),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).ptr_val) as usize - ptr as usize }, 8usize,
-        concat!("Offset of field: ", stringify!(contains_block_pointers), "::",
-        stringify!(ptr_val))
+        unsafe { ::std::ptr::addr_of!((*ptr).ptr_val) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(contains_block_pointers),
+            "::",
+            stringify!(ptr_val),
+        ),
     );
 }
 impl Default for contains_block_pointers {

@@ -12,11 +12,13 @@ pub struct Container {
 #[test]
 fn bindgen_test_layout_Container() {
     assert_eq!(
-        ::std::mem::size_of:: < Container > (), 8usize, concat!("Size of: ",
-        stringify!(Container))
+        ::std::mem::size_of::<Container>(),
+        8usize,
+        concat!("Size of: ", stringify!(Container)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Container > (), 4usize, concat!("Alignment of ",
-        stringify!(Container))
+        ::std::mem::align_of::<Container>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Container)),
     );
 }

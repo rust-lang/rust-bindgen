@@ -9,14 +9,18 @@ fn bindgen_test_layout_Foo() {
     const UNINIT: ::std::mem::MaybeUninit<Foo> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Foo > (), 4usize, concat!("Size of: ", stringify!(Foo))
+        ::std::mem::size_of::<Foo>(),
+        4usize,
+        concat!("Size of: ", stringify!(Foo)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Foo > (), 4usize, concat!("Alignment of ",
-        stringify!(Foo))
+        ::std::mem::align_of::<Foo>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Foo)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).s) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(Foo), "::", stringify!(s))
+        unsafe { ::std::ptr::addr_of!((*ptr).s) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Foo), "::", stringify!(s)),
     );
 }

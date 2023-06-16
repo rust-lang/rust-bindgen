@@ -49,7 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -69,7 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -94,20 +94,24 @@ fn bindgen_test_layout_PubPriv() {
     const UNINIT: ::std::mem::MaybeUninit<PubPriv> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < PubPriv > (), 8usize, concat!("Size of: ",
-        stringify!(PubPriv))
+        ::std::mem::size_of::<PubPriv>(),
+        8usize,
+        concat!("Size of: ", stringify!(PubPriv)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < PubPriv > (), 4usize, concat!("Alignment of ",
-        stringify!(PubPriv))
+        ::std::mem::align_of::<PubPriv>(),
+        4usize,
+        concat!("Alignment of ", stringify!(PubPriv)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).x) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(PubPriv), "::", stringify!(x))
+        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(PubPriv), "::", stringify!(x)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).y) as usize - ptr as usize }, 4usize,
-        concat!("Offset of field: ", stringify!(PubPriv), "::", stringify!(y))
+        unsafe { ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize },
+        4usize,
+        concat!("Offset of field: ", stringify!(PubPriv), "::", stringify!(y)),
     );
 }
 #[repr(C)]
@@ -121,12 +125,14 @@ pub struct PrivateBitFields {
 #[test]
 fn bindgen_test_layout_PrivateBitFields() {
     assert_eq!(
-        ::std::mem::size_of:: < PrivateBitFields > (), 4usize, concat!("Size of: ",
-        stringify!(PrivateBitFields))
+        ::std::mem::size_of::<PrivateBitFields>(),
+        4usize,
+        concat!("Size of: ", stringify!(PrivateBitFields)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < PrivateBitFields > (), 4usize, concat!("Alignment of ",
-        stringify!(PrivateBitFields))
+        ::std::mem::align_of::<PrivateBitFields>(),
+        4usize,
+        concat!("Alignment of ", stringify!(PrivateBitFields)),
     );
 }
 impl PrivateBitFields {
@@ -190,12 +196,14 @@ pub struct PublicBitFields {
 #[test]
 fn bindgen_test_layout_PublicBitFields() {
     assert_eq!(
-        ::std::mem::size_of:: < PublicBitFields > (), 4usize, concat!("Size of: ",
-        stringify!(PublicBitFields))
+        ::std::mem::size_of::<PublicBitFields>(),
+        4usize,
+        concat!("Size of: ", stringify!(PublicBitFields)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < PublicBitFields > (), 4usize, concat!("Alignment of ",
-        stringify!(PublicBitFields))
+        ::std::mem::align_of::<PublicBitFields>(),
+        4usize,
+        concat!("Alignment of ", stringify!(PublicBitFields)),
     );
 }
 impl PublicBitFields {
@@ -259,12 +267,14 @@ pub struct MixedBitFields {
 #[test]
 fn bindgen_test_layout_MixedBitFields() {
     assert_eq!(
-        ::std::mem::size_of:: < MixedBitFields > (), 4usize, concat!("Size of: ",
-        stringify!(MixedBitFields))
+        ::std::mem::size_of::<MixedBitFields>(),
+        4usize,
+        concat!("Size of: ", stringify!(MixedBitFields)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < MixedBitFields > (), 4usize, concat!("Alignment of ",
-        stringify!(MixedBitFields))
+        ::std::mem::align_of::<MixedBitFields>(),
+        4usize,
+        concat!("Alignment of ", stringify!(MixedBitFields)),
     );
 }
 impl MixedBitFields {
@@ -327,15 +337,19 @@ fn bindgen_test_layout_Base() {
     const UNINIT: ::std::mem::MaybeUninit<Base> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Base > (), 4usize, concat!("Size of: ", stringify!(Base))
+        ::std::mem::size_of::<Base>(),
+        4usize,
+        concat!("Size of: ", stringify!(Base)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Base > (), 4usize, concat!("Alignment of ",
-        stringify!(Base))
+        ::std::mem::align_of::<Base>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Base)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).member) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(Base), "::", stringify!(member))
+        unsafe { ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Base), "::", stringify!(member)),
     );
 }
 #[repr(C)]
@@ -346,12 +360,14 @@ pub struct InheritsPrivately {
 #[test]
 fn bindgen_test_layout_InheritsPrivately() {
     assert_eq!(
-        ::std::mem::size_of:: < InheritsPrivately > (), 4usize, concat!("Size of: ",
-        stringify!(InheritsPrivately))
+        ::std::mem::size_of::<InheritsPrivately>(),
+        4usize,
+        concat!("Size of: ", stringify!(InheritsPrivately)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < InheritsPrivately > (), 4usize, concat!("Alignment of ",
-        stringify!(InheritsPrivately))
+        ::std::mem::align_of::<InheritsPrivately>(),
+        4usize,
+        concat!("Alignment of ", stringify!(InheritsPrivately)),
     );
 }
 #[repr(C)]
@@ -362,12 +378,14 @@ pub struct InheritsPublically {
 #[test]
 fn bindgen_test_layout_InheritsPublically() {
     assert_eq!(
-        ::std::mem::size_of:: < InheritsPublically > (), 4usize, concat!("Size of: ",
-        stringify!(InheritsPublically))
+        ::std::mem::size_of::<InheritsPublically>(),
+        4usize,
+        concat!("Size of: ", stringify!(InheritsPublically)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < InheritsPublically > (), 4usize,
-        concat!("Alignment of ", stringify!(InheritsPublically))
+        ::std::mem::align_of::<InheritsPublically>(),
+        4usize,
+        concat!("Alignment of ", stringify!(InheritsPublically)),
     );
 }
 #[repr(C)]
@@ -386,17 +404,24 @@ fn bindgen_test_layout_WithAnonStruct__bindgen_ty_1() {
     const UNINIT: ::std::mem::MaybeUninit<WithAnonStruct__bindgen_ty_1> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < WithAnonStruct__bindgen_ty_1 > (), 4usize,
-        concat!("Size of: ", stringify!(WithAnonStruct__bindgen_ty_1))
+        ::std::mem::size_of::<WithAnonStruct__bindgen_ty_1>(),
+        4usize,
+        concat!("Size of: ", stringify!(WithAnonStruct__bindgen_ty_1)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < WithAnonStruct__bindgen_ty_1 > (), 4usize,
-        concat!("Alignment of ", stringify!(WithAnonStruct__bindgen_ty_1))
+        ::std::mem::align_of::<WithAnonStruct__bindgen_ty_1>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithAnonStruct__bindgen_ty_1)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(WithAnonStruct__bindgen_ty_1), "::",
-        stringify!(a))
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(WithAnonStruct__bindgen_ty_1),
+            "::",
+            stringify!(a),
+        ),
     );
 }
 #[repr(C)]
@@ -409,28 +434,37 @@ fn bindgen_test_layout_WithAnonStruct__bindgen_ty_2() {
     const UNINIT: ::std::mem::MaybeUninit<WithAnonStruct__bindgen_ty_2> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < WithAnonStruct__bindgen_ty_2 > (), 4usize,
-        concat!("Size of: ", stringify!(WithAnonStruct__bindgen_ty_2))
+        ::std::mem::size_of::<WithAnonStruct__bindgen_ty_2>(),
+        4usize,
+        concat!("Size of: ", stringify!(WithAnonStruct__bindgen_ty_2)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < WithAnonStruct__bindgen_ty_2 > (), 4usize,
-        concat!("Alignment of ", stringify!(WithAnonStruct__bindgen_ty_2))
+        ::std::mem::align_of::<WithAnonStruct__bindgen_ty_2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithAnonStruct__bindgen_ty_2)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).b) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(WithAnonStruct__bindgen_ty_2), "::",
-        stringify!(b))
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(WithAnonStruct__bindgen_ty_2),
+            "::",
+            stringify!(b),
+        ),
     );
 }
 #[test]
 fn bindgen_test_layout_WithAnonStruct() {
     assert_eq!(
-        ::std::mem::size_of:: < WithAnonStruct > (), 8usize, concat!("Size of: ",
-        stringify!(WithAnonStruct))
+        ::std::mem::size_of::<WithAnonStruct>(),
+        8usize,
+        concat!("Size of: ", stringify!(WithAnonStruct)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < WithAnonStruct > (), 4usize, concat!("Alignment of ",
-        stringify!(WithAnonStruct))
+        ::std::mem::align_of::<WithAnonStruct>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithAnonStruct)),
     );
 }
 #[repr(C)]
@@ -446,12 +480,14 @@ pub union WithAnonUnion__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_WithAnonUnion__bindgen_ty_1() {
     assert_eq!(
-        ::std::mem::size_of:: < WithAnonUnion__bindgen_ty_1 > (), 1usize,
-        concat!("Size of: ", stringify!(WithAnonUnion__bindgen_ty_1))
+        ::std::mem::size_of::<WithAnonUnion__bindgen_ty_1>(),
+        1usize,
+        concat!("Size of: ", stringify!(WithAnonUnion__bindgen_ty_1)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < WithAnonUnion__bindgen_ty_1 > (), 1usize,
-        concat!("Alignment of ", stringify!(WithAnonUnion__bindgen_ty_1))
+        ::std::mem::align_of::<WithAnonUnion__bindgen_ty_1>(),
+        1usize,
+        concat!("Alignment of ", stringify!(WithAnonUnion__bindgen_ty_1)),
     );
 }
 impl Default for WithAnonUnion__bindgen_ty_1 {
@@ -466,12 +502,14 @@ impl Default for WithAnonUnion__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_WithAnonUnion() {
     assert_eq!(
-        ::std::mem::size_of:: < WithAnonUnion > (), 1usize, concat!("Size of: ",
-        stringify!(WithAnonUnion))
+        ::std::mem::size_of::<WithAnonUnion>(),
+        1usize,
+        concat!("Size of: ", stringify!(WithAnonUnion)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < WithAnonUnion > (), 1usize, concat!("Alignment of ",
-        stringify!(WithAnonUnion))
+        ::std::mem::align_of::<WithAnonUnion>(),
+        1usize,
+        concat!("Alignment of ", stringify!(WithAnonUnion)),
     );
 }
 impl Default for WithAnonUnion {
@@ -499,25 +537,29 @@ fn bindgen_test_layout_Override() {
     const UNINIT: ::std::mem::MaybeUninit<Override> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Override > (), 16usize, concat!("Size of: ",
-        stringify!(Override))
+        ::std::mem::size_of::<Override>(),
+        16usize,
+        concat!("Size of: ", stringify!(Override)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Override > (), 4usize, concat!("Alignment of ",
-        stringify!(Override))
+        ::std::mem::align_of::<Override>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Override)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(Override), "::", stringify!(a))
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Override), "::", stringify!(a)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).b) as usize - ptr as usize }, 4usize,
-        concat!("Offset of field: ", stringify!(Override), "::", stringify!(b))
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
+        4usize,
+        concat!("Offset of field: ", stringify!(Override), "::", stringify!(b)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).private_c) as usize - ptr as usize },
-        8usize, concat!("Offset of field: ", stringify!(Override), "::",
-        stringify!(private_c))
+        unsafe { ::std::ptr::addr_of!((*ptr).private_c) as usize - ptr as usize },
+        8usize,
+        concat!("Offset of field: ", stringify!(Override), "::", stringify!(private_c)),
     );
 }
 impl Override {

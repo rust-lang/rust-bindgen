@@ -9,15 +9,19 @@ fn bindgen_test_layout_foo() {
     const UNINIT: ::std::mem::MaybeUninit<foo> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < foo > (), 1usize, concat!("Size of: ", stringify!(foo))
+        ::std::mem::size_of::<foo>(),
+        1usize,
+        concat!("Size of: ", stringify!(foo)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < foo > (), 1usize, concat!("Alignment of ",
-        stringify!(foo))
+        ::std::mem::align_of::<foo>(),
+        1usize,
+        concat!("Alignment of ", stringify!(foo)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).inner) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(inner))
+        unsafe { ::std::ptr::addr_of!((*ptr).inner) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(foo), "::", stringify!(inner)),
     );
 }
 pub type foo_ptr = *const foo;
@@ -31,15 +35,19 @@ fn bindgen_test_layout_bar() {
     const UNINIT: ::std::mem::MaybeUninit<bar> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < bar > (), 1usize, concat!("Size of: ", stringify!(bar))
+        ::std::mem::size_of::<bar>(),
+        1usize,
+        concat!("Size of: ", stringify!(bar)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < bar > (), 1usize, concat!("Alignment of ",
-        stringify!(bar))
+        ::std::mem::align_of::<bar>(),
+        1usize,
+        concat!("Alignment of ", stringify!(bar)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).inner) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(bar), "::", stringify!(inner))
+        unsafe { ::std::ptr::addr_of!((*ptr).inner) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(bar), "::", stringify!(inner)),
     );
 }
 pub type bar_ptr = *mut bar;
@@ -59,16 +67,19 @@ fn bindgen_test_layout_cat() {
     const UNINIT: ::std::mem::MaybeUninit<cat> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < cat > (), 4usize, concat!("Size of: ", stringify!(cat))
+        ::std::mem::size_of::<cat>(),
+        4usize,
+        concat!("Size of: ", stringify!(cat)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < cat > (), 4usize, concat!("Alignment of ",
-        stringify!(cat))
+        ::std::mem::align_of::<cat>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cat)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).standard_issue) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(cat), "::",
-        stringify!(standard_issue))
+        unsafe { ::std::ptr::addr_of!((*ptr).standard_issue) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(cat), "::", stringify!(standard_issue)),
     );
 }
 impl Default for cat {

@@ -11,12 +11,14 @@ pub mod root {
     #[test]
     fn bindgen_test_layout_Test() {
         assert_eq!(
-            ::std::mem::size_of:: < Test > (), 1usize, concat!("Size of: ",
-            stringify!(Test))
+            ::std::mem::size_of::<Test>(),
+            1usize,
+            concat!("Size of: ", stringify!(Test)),
         );
         assert_eq!(
-            ::std::mem::align_of:: < Test > (), 1usize, concat!("Alignment of ",
-            stringify!(Test))
+            ::std::mem::align_of::<Test>(),
+            1usize,
+            concat!("Alignment of ", stringify!(Test)),
         );
     }
 }

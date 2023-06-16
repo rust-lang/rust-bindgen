@@ -15,11 +15,14 @@ pub struct nsID {
 #[test]
 fn bindgen_test_layout_nsID() {
     assert_eq!(
-        ::std::mem::size_of:: < nsID > (), 8usize, concat!("Size of: ", stringify!(nsID))
+        ::std::mem::size_of::<nsID>(),
+        8usize,
+        concat!("Size of: ", stringify!(nsID)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < nsID > (), 8usize, concat!("Alignment of ",
-        stringify!(nsID))
+        ::std::mem::align_of::<nsID>(),
+        8usize,
+        concat!("Alignment of ", stringify!(nsID)),
     );
 }
 impl Default for nsID {

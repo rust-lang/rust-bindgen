@@ -49,7 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -69,7 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -99,15 +99,19 @@ fn bindgen_test_layout_Foo() {
     const UNINIT: ::std::mem::MaybeUninit<Foo> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Foo > (), 136usize, concat!("Size of: ", stringify!(Foo))
+        ::std::mem::size_of::<Foo>(),
+        136usize,
+        concat!("Size of: ", stringify!(Foo)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Foo > (), 4usize, concat!("Alignment of ",
-        stringify!(Foo))
+        ::std::mem::align_of::<Foo>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Foo)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).large) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(Foo), "::", stringify!(large))
+        unsafe { ::std::ptr::addr_of!((*ptr).large) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Foo), "::", stringify!(large)),
     );
 }
 extern "C" {
@@ -134,9 +138,15 @@ impl Default for Foo {
 impl ::std::fmt::Debug for Foo {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         write!(
-            f, "Foo {{ large: [{}], type_ : {:?},  }}", self.large.iter().enumerate()
-            .map(| (i, v) | format!("{}{:?}", if i > 0 { ", " } else { "" }, v))
-            .collect:: < String > (), self.type__bindgen_bitfield()
+            f,
+            "Foo {{ large: [{}], type_ : {:?},  }}",
+            self
+                .large
+                .iter()
+                .enumerate()
+                .map(|(i, v)| format!("{}{:?}", if i > 0 { ", " } else { "" }, v))
+                .collect::<String>(),
+            self.type__bindgen_bitfield(),
         )
     }
 }

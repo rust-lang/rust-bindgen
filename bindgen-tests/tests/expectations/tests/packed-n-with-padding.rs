@@ -12,27 +12,33 @@ fn bindgen_test_layout_Packed() {
     const UNINIT: ::std::mem::MaybeUninit<Packed> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Packed > (), 10usize, concat!("Size of: ",
-        stringify!(Packed))
+        ::std::mem::size_of::<Packed>(),
+        10usize,
+        concat!("Size of: ", stringify!(Packed)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Packed > (), 2usize, concat!("Alignment of ",
-        stringify!(Packed))
+        ::std::mem::align_of::<Packed>(),
+        2usize,
+        concat!("Alignment of ", stringify!(Packed)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(Packed), "::", stringify!(a))
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Packed), "::", stringify!(a)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).b) as usize - ptr as usize }, 2usize,
-        concat!("Offset of field: ", stringify!(Packed), "::", stringify!(b))
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
+        2usize,
+        concat!("Offset of field: ", stringify!(Packed), "::", stringify!(b)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).c) as usize - ptr as usize }, 4usize,
-        concat!("Offset of field: ", stringify!(Packed), "::", stringify!(c))
+        unsafe { ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize },
+        4usize,
+        concat!("Offset of field: ", stringify!(Packed), "::", stringify!(c)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).d) as usize - ptr as usize }, 6usize,
-        concat!("Offset of field: ", stringify!(Packed), "::", stringify!(d))
+        unsafe { ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize },
+        6usize,
+        concat!("Offset of field: ", stringify!(Packed), "::", stringify!(d)),
     );
 }

@@ -7,12 +7,14 @@ pub struct Struct {
 #[test]
 fn bindgen_test_layout_Struct() {
     assert_eq!(
-        ::std::mem::size_of:: < Struct > (), 1usize, concat!("Size of: ",
-        stringify!(Struct))
+        ::std::mem::size_of::<Struct>(),
+        1usize,
+        concat!("Size of: ", stringify!(Struct)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Struct > (), 1usize, concat!("Alignment of ",
-        stringify!(Struct))
+        ::std::mem::align_of::<Struct>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Struct)),
     );
 }
 extern "C" {

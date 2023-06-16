@@ -9,17 +9,24 @@ fn bindgen_test_layout_mozilla_FragmentOrURL() {
     const UNINIT: ::std::mem::MaybeUninit<mozilla_FragmentOrURL> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < mozilla_FragmentOrURL > (), 1usize, concat!("Size of: ",
-        stringify!(mozilla_FragmentOrURL))
+        ::std::mem::size_of::<mozilla_FragmentOrURL>(),
+        1usize,
+        concat!("Size of: ", stringify!(mozilla_FragmentOrURL)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < mozilla_FragmentOrURL > (), 1usize,
-        concat!("Alignment of ", stringify!(mozilla_FragmentOrURL))
+        ::std::mem::align_of::<mozilla_FragmentOrURL>(),
+        1usize,
+        concat!("Alignment of ", stringify!(mozilla_FragmentOrURL)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mIsLocalRef) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(mozilla_FragmentOrURL), "::",
-        stringify!(mIsLocalRef))
+        unsafe { ::std::ptr::addr_of!((*ptr).mIsLocalRef) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(mozilla_FragmentOrURL),
+            "::",
+            stringify!(mIsLocalRef),
+        ),
     );
 }
 #[repr(C)]
@@ -30,12 +37,14 @@ pub struct mozilla_Position {
 #[test]
 fn bindgen_test_layout_mozilla_Position() {
     assert_eq!(
-        ::std::mem::size_of:: < mozilla_Position > (), 1usize, concat!("Size of: ",
-        stringify!(mozilla_Position))
+        ::std::mem::size_of::<mozilla_Position>(),
+        1usize,
+        concat!("Size of: ", stringify!(mozilla_Position)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < mozilla_Position > (), 1usize, concat!("Alignment of ",
-        stringify!(mozilla_Position))
+        ::std::mem::align_of::<mozilla_Position>(),
+        1usize,
+        concat!("Alignment of ", stringify!(mozilla_Position)),
     );
 }
 #[repr(C)]
@@ -75,15 +84,19 @@ fn bindgen_test_layout_Bar() {
     const UNINIT: ::std::mem::MaybeUninit<Bar> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Bar > (), 8usize, concat!("Size of: ", stringify!(Bar))
+        ::std::mem::size_of::<Bar>(),
+        8usize,
+        concat!("Size of: ", stringify!(Bar)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Bar > (), 8usize, concat!("Alignment of ",
-        stringify!(Bar))
+        ::std::mem::align_of::<Bar>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Bar)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mFoo) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(mFoo))
+        unsafe { ::std::ptr::addr_of!((*ptr).mFoo) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(mFoo)),
     );
 }
 impl Default for Bar {
@@ -104,16 +117,19 @@ fn bindgen_test_layout_nsFoo() {
     const UNINIT: ::std::mem::MaybeUninit<nsFoo> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < nsFoo > (), 8usize, concat!("Size of: ",
-        stringify!(nsFoo))
+        ::std::mem::size_of::<nsFoo>(),
+        8usize,
+        concat!("Size of: ", stringify!(nsFoo)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < nsFoo > (), 8usize, concat!("Alignment of ",
-        stringify!(nsFoo))
+        ::std::mem::align_of::<nsFoo>(),
+        8usize,
+        concat!("Alignment of ", stringify!(nsFoo)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mBar) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(nsFoo), "::", stringify!(mBar))
+        unsafe { ::std::ptr::addr_of!((*ptr).mBar) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(nsFoo), "::", stringify!(mBar)),
     );
 }
 impl Default for nsFoo {
@@ -128,13 +144,19 @@ impl Default for nsFoo {
 #[test]
 fn __bindgen_test_layout_mozilla_StyleShapeSource_open0_int_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of:: < mozilla_StyleShapeSource > (), 8usize,
-        concat!("Size of template specialization: ",
-        stringify!(mozilla_StyleShapeSource))
+        ::std::mem::size_of::<mozilla_StyleShapeSource>(),
+        8usize,
+        concat!(
+            "Size of template specialization: ",
+            stringify!(mozilla_StyleShapeSource),
+        ),
     );
     assert_eq!(
-        ::std::mem::align_of:: < mozilla_StyleShapeSource > (), 8usize,
-        concat!("Alignment of template specialization: ",
-        stringify!(mozilla_StyleShapeSource))
+        ::std::mem::align_of::<mozilla_StyleShapeSource>(),
+        8usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify!(mozilla_StyleShapeSource),
+        ),
     );
 }

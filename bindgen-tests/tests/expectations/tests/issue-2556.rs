@@ -14,22 +14,24 @@ pub mod root {
         const UNINIT: ::std::mem::MaybeUninit<nsSize> = ::std::mem::MaybeUninit::uninit();
         let ptr = UNINIT.as_ptr();
         assert_eq!(
-            ::std::mem::size_of:: < nsSize > (), 8usize, concat!("Size of: ",
-            stringify!(nsSize))
+            ::std::mem::size_of::<nsSize>(),
+            8usize,
+            concat!("Size of: ", stringify!(nsSize)),
         );
         assert_eq!(
-            ::std::mem::align_of:: < nsSize > (), 4usize, concat!("Alignment of ",
-            stringify!(nsSize))
+            ::std::mem::align_of::<nsSize>(),
+            4usize,
+            concat!("Alignment of ", stringify!(nsSize)),
         );
         assert_eq!(
-            unsafe { ::std::ptr::addr_of!((* ptr).width) as usize - ptr as usize },
-            0usize, concat!("Offset of field: ", stringify!(nsSize), "::",
-            stringify!(width))
+            unsafe { ::std::ptr::addr_of!((*ptr).width) as usize - ptr as usize },
+            0usize,
+            concat!("Offset of field: ", stringify!(nsSize), "::", stringify!(width)),
         );
         assert_eq!(
-            unsafe { ::std::ptr::addr_of!((* ptr).height) as usize - ptr as usize },
-            4usize, concat!("Offset of field: ", stringify!(nsSize), "::",
-            stringify!(height))
+            unsafe { ::std::ptr::addr_of!((*ptr).height) as usize - ptr as usize },
+            4usize,
+            concat!("Offset of field: ", stringify!(nsSize), "::", stringify!(height)),
         );
     }
     pub mod foo {

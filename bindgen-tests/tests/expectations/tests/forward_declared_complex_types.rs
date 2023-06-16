@@ -7,12 +7,14 @@ pub struct Foo_empty {
 #[test]
 fn bindgen_test_layout_Foo_empty() {
     assert_eq!(
-        ::std::mem::size_of:: < Foo_empty > (), 1usize, concat!("Size of: ",
-        stringify!(Foo_empty))
+        ::std::mem::size_of::<Foo_empty>(),
+        1usize,
+        concat!("Size of: ", stringify!(Foo_empty)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Foo_empty > (), 1usize, concat!("Alignment of ",
-        stringify!(Foo_empty))
+        ::std::mem::align_of::<Foo_empty>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Foo_empty)),
     );
 }
 #[repr(C)]
@@ -30,15 +32,19 @@ fn bindgen_test_layout_Bar() {
     const UNINIT: ::std::mem::MaybeUninit<Bar> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Bar > (), 8usize, concat!("Size of: ", stringify!(Bar))
+        ::std::mem::size_of::<Bar>(),
+        8usize,
+        concat!("Size of: ", stringify!(Bar)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Bar > (), 8usize, concat!("Alignment of ",
-        stringify!(Bar))
+        ::std::mem::align_of::<Bar>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Bar)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).f) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(f))
+        unsafe { ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(f)),
     );
 }
 impl Default for Bar {

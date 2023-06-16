@@ -24,17 +24,24 @@ fn bindgen_test_layout_ContainsInstantiation() {
     const UNINIT: ::std::mem::MaybeUninit<ContainsInstantiation> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < ContainsInstantiation > (), 1usize, concat!("Size of: ",
-        stringify!(ContainsInstantiation))
+        ::std::mem::size_of::<ContainsInstantiation>(),
+        1usize,
+        concat!("Size of: ", stringify!(ContainsInstantiation)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < ContainsInstantiation > (), 1usize,
-        concat!("Alignment of ", stringify!(ContainsInstantiation))
+        ::std::mem::align_of::<ContainsInstantiation>(),
+        1usize,
+        concat!("Alignment of ", stringify!(ContainsInstantiation)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).not_opaque) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(ContainsInstantiation), "::",
-        stringify!(not_opaque))
+        unsafe { ::std::ptr::addr_of!((*ptr).not_opaque) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ContainsInstantiation),
+            "::",
+            stringify!(not_opaque),
+        ),
     );
 }
 impl Default for ContainsInstantiation {
@@ -56,29 +63,42 @@ fn bindgen_test_layout_ContainsOpaqueInstantiation() {
     const UNINIT: ::std::mem::MaybeUninit<ContainsOpaqueInstantiation> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < ContainsOpaqueInstantiation > (), 4usize,
-        concat!("Size of: ", stringify!(ContainsOpaqueInstantiation))
+        ::std::mem::size_of::<ContainsOpaqueInstantiation>(),
+        4usize,
+        concat!("Size of: ", stringify!(ContainsOpaqueInstantiation)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < ContainsOpaqueInstantiation > (), 4usize,
-        concat!("Alignment of ", stringify!(ContainsOpaqueInstantiation))
+        ::std::mem::align_of::<ContainsOpaqueInstantiation>(),
+        4usize,
+        concat!("Alignment of ", stringify!(ContainsOpaqueInstantiation)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).opaque) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(ContainsOpaqueInstantiation), "::",
-        stringify!(opaque))
+        unsafe { ::std::ptr::addr_of!((*ptr).opaque) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ContainsOpaqueInstantiation),
+            "::",
+            stringify!(opaque),
+        ),
     );
 }
 #[test]
 fn __bindgen_test_layout_Template_open0_char_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of:: < Template < ::std::os::raw::c_char > > (), 1usize,
-        concat!("Size of template specialization: ", stringify!(Template <
-        ::std::os::raw::c_char >))
+        ::std::mem::size_of::<Template<::std::os::raw::c_char>>(),
+        1usize,
+        concat!(
+            "Size of template specialization: ",
+            stringify!(Template < ::std::os::raw::c_char >),
+        ),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Template < ::std::os::raw::c_char > > (), 1usize,
-        concat!("Alignment of template specialization: ", stringify!(Template <
-        ::std::os::raw::c_char >))
+        ::std::mem::align_of::<Template<::std::os::raw::c_char>>(),
+        1usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify!(Template < ::std::os::raw::c_char >),
+        ),
     );
 }

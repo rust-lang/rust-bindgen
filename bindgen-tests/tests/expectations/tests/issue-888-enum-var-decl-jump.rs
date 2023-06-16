@@ -18,12 +18,14 @@ pub mod root {
         #[test]
         fn bindgen_test_layout_Type() {
             assert_eq!(
-                ::std::mem::size_of:: < Type > (), 1usize, concat!("Size of: ",
-                stringify!(Type))
+                ::std::mem::size_of::<Type>(),
+                1usize,
+                concat!("Size of: ", stringify!(Type)),
             );
             assert_eq!(
-                ::std::mem::align_of:: < Type > (), 1usize, concat!("Alignment of ",
-                stringify!(Type))
+                ::std::mem::align_of::<Type>(),
+                1usize,
+                concat!("Alignment of ", stringify!(Type)),
             );
         }
     }

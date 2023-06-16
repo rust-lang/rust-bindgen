@@ -49,7 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -69,7 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -97,16 +97,19 @@ fn bindgen_test_layout_bitfield() {
     const UNINIT: ::std::mem::MaybeUninit<bitfield> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < bitfield > (), 16usize, concat!("Size of: ",
-        stringify!(bitfield))
+        ::std::mem::size_of::<bitfield>(),
+        16usize,
+        concat!("Size of: ", stringify!(bitfield)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < bitfield > (), 4usize, concat!("Alignment of ",
-        stringify!(bitfield))
+        ::std::mem::align_of::<bitfield>(),
+        4usize,
+        concat!("Alignment of ", stringify!(bitfield)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).e) as usize - ptr as usize }, 4usize,
-        concat!("Offset of field: ", stringify!(bitfield), "::", stringify!(e))
+        unsafe { ::std::ptr::addr_of!((*ptr).e) as usize - ptr as usize },
+        4usize,
+        concat!("Offset of field: ", stringify!(bitfield), "::", stringify!(e)),
     );
 }
 impl bitfield {

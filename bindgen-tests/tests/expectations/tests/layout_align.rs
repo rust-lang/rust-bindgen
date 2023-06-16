@@ -49,7 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -69,7 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -130,12 +130,14 @@ pub struct rte_kni_fifo {
 #[test]
 fn bindgen_test_layout_rte_kni_fifo() {
     assert_eq!(
-        ::std::mem::size_of:: < rte_kni_fifo > (), 16usize, concat!("Size of: ",
-        stringify!(rte_kni_fifo))
+        ::std::mem::size_of::<rte_kni_fifo>(),
+        16usize,
+        concat!("Size of: ", stringify!(rte_kni_fifo)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < rte_kni_fifo > (), 8usize, concat!("Alignment of ",
-        stringify!(rte_kni_fifo))
+        ::std::mem::align_of::<rte_kni_fifo>(),
+        8usize,
+        concat!("Alignment of ", stringify!(rte_kni_fifo)),
     );
 }
 impl Default for rte_kni_fifo {
@@ -162,17 +164,24 @@ fn bindgen_test_layout_rte_eth_link() {
     const UNINIT: ::std::mem::MaybeUninit<rte_eth_link> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < rte_eth_link > (), 8usize, concat!("Size of: ",
-        stringify!(rte_eth_link))
+        ::std::mem::size_of::<rte_eth_link>(),
+        8usize,
+        concat!("Size of: ", stringify!(rte_eth_link)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < rte_eth_link > (), 8usize, concat!("Alignment of ",
-        stringify!(rte_eth_link))
+        ::std::mem::align_of::<rte_eth_link>(),
+        8usize,
+        concat!("Alignment of ", stringify!(rte_eth_link)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).link_speed) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(rte_eth_link), "::",
-        stringify!(link_speed))
+        unsafe { ::std::ptr::addr_of!((*ptr).link_speed) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_eth_link),
+            "::",
+            stringify!(link_speed),
+        ),
     );
 }
 impl rte_eth_link {

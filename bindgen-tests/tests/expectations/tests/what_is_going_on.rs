@@ -7,12 +7,14 @@ pub struct UnknownUnits {
 #[test]
 fn bindgen_test_layout_UnknownUnits() {
     assert_eq!(
-        ::std::mem::size_of:: < UnknownUnits > (), 1usize, concat!("Size of: ",
-        stringify!(UnknownUnits))
+        ::std::mem::size_of::<UnknownUnits>(),
+        1usize,
+        concat!("Size of: ", stringify!(UnknownUnits)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < UnknownUnits > (), 1usize, concat!("Alignment of ",
-        stringify!(UnknownUnits))
+        ::std::mem::align_of::<UnknownUnits>(),
+        1usize,
+        concat!("Alignment of ", stringify!(UnknownUnits)),
     );
 }
 pub type Float = f32;

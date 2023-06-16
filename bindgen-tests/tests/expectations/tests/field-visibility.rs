@@ -49,7 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -69,7 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -94,12 +94,14 @@ pub struct my_struct1 {
 #[test]
 fn bindgen_test_layout_my_struct1() {
     assert_eq!(
-        ::std::mem::size_of:: < my_struct1 > (), 4usize, concat!("Size of: ",
-        stringify!(my_struct1))
+        ::std::mem::size_of::<my_struct1>(),
+        4usize,
+        concat!("Size of: ", stringify!(my_struct1)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < my_struct1 > (), 4usize, concat!("Alignment of ",
-        stringify!(my_struct1))
+        ::std::mem::align_of::<my_struct1>(),
+        4usize,
+        concat!("Alignment of ", stringify!(my_struct1)),
     );
 }
 impl my_struct1 {
@@ -140,12 +142,14 @@ pub struct my_struct2 {
 #[test]
 fn bindgen_test_layout_my_struct2() {
     assert_eq!(
-        ::std::mem::size_of:: < my_struct2 > (), 4usize, concat!("Size of: ",
-        stringify!(my_struct2))
+        ::std::mem::size_of::<my_struct2>(),
+        4usize,
+        concat!("Size of: ", stringify!(my_struct2)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < my_struct2 > (), 4usize, concat!("Alignment of ",
-        stringify!(my_struct2))
+        ::std::mem::align_of::<my_struct2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(my_struct2)),
     );
 }
 impl my_struct2 {

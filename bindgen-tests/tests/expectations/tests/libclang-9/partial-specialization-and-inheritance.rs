@@ -21,11 +21,13 @@ extern "C" {
 #[test]
 fn bindgen_test_layout_Usage() {
     assert_eq!(
-        ::std::mem::size_of:: < Usage > (), 1usize, concat!("Size of: ",
-        stringify!(Usage))
+        ::std::mem::size_of::<Usage>(),
+        1usize,
+        concat!("Size of: ", stringify!(Usage)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Usage > (), 1usize, concat!("Alignment of ",
-        stringify!(Usage))
+        ::std::mem::align_of::<Usage>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Usage)),
     );
 }

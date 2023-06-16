@@ -8,15 +8,16 @@ pub struct A {
 fn bindgen_test_layout_A() {
     const UNINIT: ::std::mem::MaybeUninit<A> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
+    assert_eq!(::std::mem::size_of::<A>(), 4usize, concat!("Size of: ", stringify!(A)));
     assert_eq!(
-        ::std::mem::size_of:: < A > (), 4usize, concat!("Size of: ", stringify!(A))
+        ::std::mem::align_of::<A>(),
+        4usize,
+        concat!("Alignment of ", stringify!(A)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < A > (), 4usize, concat!("Alignment of ", stringify!(A))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr)._x) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(_x))
+        unsafe { ::std::ptr::addr_of!((*ptr)._x) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(A), "::", stringify!(_x)),
     );
 }
 extern "C" {
