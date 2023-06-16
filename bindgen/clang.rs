@@ -12,12 +12,10 @@ use std::convert::{TryFrom, TryInto};
 use std::env::current_dir;
 use std::ffi::{CStr, CString};
 use std::fmt;
-use std::fs::OpenOptions;
 use std::hash::Hash;
 use std::hash::Hasher;
-use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong};
-use std::path::Path;
-use std::path::PathBuf;
+use std::os::raw::c_char;
+use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 use std::{mem, ptr, slice};
 
@@ -127,7 +125,7 @@ impl Cursor {
             if manglings.is_null() {
                 return Err(());
             }
-            let count = (*manglings).Count as usize;
+            let count = (*manglings).Count.try_into().unwrap();
 
             let mut result = Vec::with_capacity(count);
             for i in 0..count {
@@ -199,7 +197,7 @@ impl Cursor {
     ///
     /// NOTE: This may not return `Some` for partial template specializations,
     /// see #193 and #194.
-    pub(crate) fn num_template_args(&self) -> Option<u32> {
+    pub(crate) fn num_template_args(&self) -> Option<usize> {
         // XXX: `clang_Type_getNumTemplateArguments` is sort of reliable, while
         // `clang_Cursor_getNumTemplateArguments` is totally unreliable.
         // Therefore, try former first, and only fallback to the latter if we
@@ -207,11 +205,9 @@ impl Cursor {
         self.cur_type()
             .num_template_args()
             .or_else(|| {
-                let n: c_int =
-                    unsafe { clang_Cursor_getNumTemplateArguments(self.x) };
-
+                let n = unsafe { clang_Cursor_getNumTemplateArguments(self.x) };
                 if n >= 0 {
-                    Some(n as u32)
+                    Some(n.try_into().unwrap())
                 } else {
                     debug_assert_eq!(n, -1);
                     None
@@ -673,7 +669,7 @@ impl Cursor {
 
     /// Get the width of this cursor's referent bit field, or `None` if the
     /// referent is not a bit field or if the width could not be evaluated.
-    pub(crate) fn bit_width(&self) -> Option<u32> {
+    pub(crate) fn bit_width(&self) -> Option<usize> {
         // It is not safe to check the bit width without ensuring it doesn't
         // depend on a template parameter. See
         // https://github.com/rust-lang/rust-bindgen/issues/2239
@@ -682,11 +678,12 @@ impl Cursor {
         }
 
         unsafe {
-            let w = clang_getFieldDeclBitWidth(self.x);
-            if w == -1 {
-                None
+            let n = clang_getFieldDeclBitWidth(self.x);
+            if n >= 0 {
+                Some(n.try_into().unwrap())
             } else {
-                Some(w as u32)
+                debug_assert_eq!(n, -1);
+                None
             }
         }
     }
@@ -822,7 +819,9 @@ impl Cursor {
         self.num_args().ok().map(|num| {
             (0..num)
                 .map(|i| Cursor {
-                    x: unsafe { clang_Cursor_getArgument(self.x, i as c_uint) },
+                    x: unsafe {
+                        clang_Cursor_getArgument(self.x, i.try_into().unwrap())
+                    },
                 })
                 .collect()
         })
@@ -833,13 +832,14 @@ impl Cursor {
     ///
     /// Returns Err if the cursor's referent is not a function/method call or
     /// declaration.
-    pub(crate) fn num_args(&self) -> Result<u32, ()> {
+    pub(crate) fn num_args(&self) -> Result<usize, ()> {
         unsafe {
-            let w = clang_Cursor_getNumArguments(self.x);
-            if w == -1 {
-                Err(())
+            let n = clang_Cursor_getNumArguments(self.x);
+            if n >= 0 {
+                Ok(n.try_into().unwrap())
             } else {
-                Ok(w as u32)
+                debug_assert_eq!(n, -1);
+                Err(())
             }
         }
     }
@@ -869,9 +869,9 @@ impl Cursor {
         let offset = unsafe { clang_Cursor_getOffsetOfField(self.x) };
 
         if offset < 0 {
-            Err(LayoutError::from(offset as i32))
+            Err(LayoutError::from(i32::try_from(offset).unwrap()))
         } else {
-            Ok(offset as usize)
+            Ok(offset.try_into().unwrap())
         }
     }
 
@@ -940,7 +940,7 @@ pub(crate) struct RawTokens<'a> {
     cursor: &'a Cursor,
     tu: CXTranslationUnit,
     tokens: *mut CXToken,
-    token_count: c_uint,
+    token_count: usize,
 }
 
 impl<'a> RawTokens<'a> {
@@ -954,7 +954,7 @@ impl<'a> RawTokens<'a> {
             cursor,
             tu,
             tokens,
-            token_count,
+            token_count: token_count.try_into().unwrap(),
         }
     }
 
@@ -962,7 +962,7 @@ impl<'a> RawTokens<'a> {
         if self.tokens.is_null() {
             return &[];
         }
-        unsafe { slice::from_raw_parts(self.tokens, self.token_count as usize) }
+        unsafe { slice::from_raw_parts(self.tokens, self.token_count) }
     }
 
     /// Get an iterator over these tokens.
@@ -981,7 +981,7 @@ impl<'a> Drop for RawTokens<'a> {
                 clang_disposeTokens(
                     self.tu,
                     self.tokens,
-                    self.token_count as c_uint,
+                    self.token_count.try_into().unwrap(),
                 );
             }
         }
@@ -1121,11 +1121,13 @@ pub(crate) enum LayoutError {
     /// Asked for the layout of a field in a type that does not have such a
     /// field.
     InvalidFieldName,
+    /// The type is undeduced.
+    Undeduced,
     /// An unknown layout error.
     Unknown,
 }
 
-impl ::std::convert::From<i32> for LayoutError {
+impl From<i32> for LayoutError {
     fn from(val: i32) -> Self {
         use self::LayoutError::*;
 
@@ -1135,6 +1137,7 @@ impl ::std::convert::From<i32> for LayoutError {
             CXTypeLayoutError_Dependent => Dependent,
             CXTypeLayoutError_NotConstantSize => NotConstantSize,
             CXTypeLayoutError_InvalidFieldName => InvalidFieldName,
+            CXTypeLayoutError_Undeduced => Undeduced,
             _ => Unknown,
         }
     }
@@ -1206,41 +1209,10 @@ impl Type {
         self.canonical_type() == *self
     }
 
-    #[inline]
-    fn clang_size_of(&self, ctx: &BindgenContext) -> c_longlong {
-        match self.kind() {
-            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40975
-            CXType_RValueReference | CXType_LValueReference => {
-                ctx.target_pointer_size() as c_longlong
-            }
-            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40813
-            CXType_Auto if self.is_non_deductible_auto_type() => -6,
-            _ => unsafe { clang_Type_getSizeOf(self.x) },
-        }
-    }
-
-    #[inline]
-    fn clang_align_of(&self, ctx: &BindgenContext) -> c_longlong {
-        match self.kind() {
-            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40975
-            CXType_RValueReference | CXType_LValueReference => {
-                ctx.target_pointer_size() as c_longlong
-            }
-            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40813
-            CXType_Auto if self.is_non_deductible_auto_type() => -6,
-            _ => unsafe { clang_Type_getAlignOf(self.x) },
-        }
-    }
-
     /// What is the size of this type? Paper over invalid types by returning `0`
     /// for them.
     pub(crate) fn size(&self, ctx: &BindgenContext) -> usize {
-        let val = self.clang_size_of(ctx);
-        if val < 0 {
-            0
-        } else {
-            val as usize
-        }
+        self.fallible_size(ctx).unwrap_or(0)
     }
 
     /// What is the size of this type?
@@ -1248,23 +1220,30 @@ impl Type {
         &self,
         ctx: &BindgenContext,
     ) -> Result<usize, LayoutError> {
-        let val = self.clang_size_of(ctx);
-        if val < 0 {
-            Err(LayoutError::from(val as i32))
-        } else {
-            Ok(val as usize)
+        match self.kind() {
+            // Work-around for https://github.com/llvm/llvm-project/issues/40320.
+            CXType_RValueReference | CXType_LValueReference => {
+                Ok(ctx.target_pointer_size())
+            }
+            // Work-around for https://github.com/llvm/llvm-project/issues/40159.
+            CXType_Auto if self.is_non_deductible_auto_type() => {
+                Err(LayoutError::Undeduced)
+            }
+            _ => {
+                let size = unsafe { clang_Type_getSizeOf(self.x) };
+                if size < 0 {
+                    Err(LayoutError::from(i32::try_from(size).unwrap()))
+                } else {
+                    Ok(size.try_into().unwrap())
+                }
+            }
         }
     }
 
     /// What is the alignment of this type? Paper over invalid types by
     /// returning `0`.
     pub(crate) fn align(&self, ctx: &BindgenContext) -> usize {
-        let val = self.clang_align_of(ctx);
-        if val < 0 {
-            0
-        } else {
-            val as usize
-        }
+        self.fallible_align(ctx).unwrap_or(0)
     }
 
     /// What is the alignment of this type?
@@ -1272,11 +1251,23 @@ impl Type {
         &self,
         ctx: &BindgenContext,
     ) -> Result<usize, LayoutError> {
-        let val = self.clang_align_of(ctx);
-        if val < 0 {
-            Err(LayoutError::from(val as i32))
-        } else {
-            Ok(val as usize)
+        match self.kind() {
+            // Work-around for https://github.com/llvm/llvm-project/issues/40320.
+            CXType_RValueReference | CXType_LValueReference => {
+                Ok(ctx.target_pointer_size())
+            }
+            // Work-around for https://github.com/llvm/llvm-project/issues/40159.
+            CXType_Auto if self.is_non_deductible_auto_type() => {
+                Err(LayoutError::Undeduced)
+            }
+            _ => {
+                let alignment = unsafe { clang_Type_getAlignOf(self.x) };
+                if alignment < 0 {
+                    Err(LayoutError::from(i32::try_from(alignment).unwrap()))
+                } else {
+                    Ok(alignment.try_into().unwrap())
+                }
+            }
         }
     }
 
@@ -1294,10 +1285,10 @@ impl Type {
 
     /// Get the number of template arguments this type has, or `None` if it is
     /// not some kind of template.
-    pub(crate) fn num_template_args(&self) -> Option<u32> {
+    pub(crate) fn num_template_args(&self) -> Option<usize> {
         let n = unsafe { clang_Type_getNumTemplateArguments(self.x) };
         if n >= 0 {
-            Some(n as u32)
+            Some(n.try_into().unwrap())
         } else {
             debug_assert_eq!(n, -1);
             None
@@ -1321,7 +1312,9 @@ impl Type {
         self.num_args().ok().map(|num| {
             (0..num)
                 .map(|i| Type {
-                    x: unsafe { clang_getArgType(self.x, i as c_uint) },
+                    x: unsafe {
+                        clang_getArgType(self.x, i.try_into().unwrap())
+                    },
                 })
                 .collect()
         })
@@ -1330,13 +1323,14 @@ impl Type {
     /// Given that this type is a function prototype, return the number of arguments it takes.
     ///
     /// Returns Err if the type is not a function prototype.
-    pub(crate) fn num_args(&self) -> Result<u32, ()> {
+    pub(crate) fn num_args(&self) -> Result<usize, ()> {
         unsafe {
-            let w = clang_getNumArgTypes(self.x);
-            if w == -1 {
-                Err(())
+            let n = clang_getNumArgTypes(self.x);
+            if n >= 0 {
+                Ok(n.try_into().unwrap())
             } else {
-                Ok(w as u32)
+                debug_assert_eq!(n, -1);
+                Err(())
             }
         }
     }
@@ -1377,10 +1371,11 @@ impl Type {
     /// Given that this type is an array or vector type, return its number of
     /// elements.
     pub(crate) fn num_elements(&self) -> Option<usize> {
-        let num_elements_returned = unsafe { clang_getNumElements(self.x) };
-        if num_elements_returned != -1 {
-            Some(num_elements_returned as usize)
+        let n = unsafe { clang_getNumElements(self.x) };
+        if n >= 0 {
+            Some(n.try_into().unwrap())
         } else {
+            debug_assert_eq!(n, -1);
             None
         }
     }
@@ -1505,18 +1500,23 @@ impl CanonicalTypeDeclaration {
 /// An iterator for a type's template arguments.
 pub(crate) struct TypeTemplateArgIterator {
     x: CXType,
-    length: u32,
-    index: u32,
+    length: usize,
+    index: usize,
 }
 
 impl Iterator for TypeTemplateArgIterator {
     type Item = Type;
     fn next(&mut self) -> Option<Type> {
         if self.index < self.length {
-            let idx = self.index as c_uint;
+            let idx = self.index;
             self.index += 1;
             Some(Type {
-                x: unsafe { clang_Type_getTemplateArgumentAsType(self.x, idx) },
+                x: unsafe {
+                    clang_Type_getTemplateArgumentAsType(
+                        self.x,
+                        idx.try_into().unwrap(),
+                    )
+                },
             })
         } else {
             None
@@ -1527,7 +1527,7 @@ impl Iterator for TypeTemplateArgIterator {
 impl ExactSizeIterator for TypeTemplateArgIterator {
     fn len(&self) -> usize {
         assert!(self.index <= self.length);
-        (self.length - self.index) as usize
+        self.length - self.index
     }
 }
 
@@ -1673,7 +1673,9 @@ impl Comment {
     pub(crate) fn get_children(&self) -> CommentChildrenIterator {
         CommentChildrenIterator {
             parent: self.x,
-            length: unsafe { clang_Comment_getNumChildren(self.x) },
+            length: unsafe {
+                clang_Comment_getNumChildren(self.x).try_into().unwrap()
+            },
             index: 0,
         }
     }
@@ -1688,7 +1690,9 @@ impl Comment {
     pub(crate) fn get_tag_attrs(&self) -> CommentAttributesIterator {
         CommentAttributesIterator {
             x: self.x,
-            length: unsafe { clang_HTMLStartTag_getNumAttrs(self.x) },
+            length: unsafe {
+                clang_HTMLStartTag_getNumAttrs(self.x).try_into().unwrap()
+            },
             index: 0,
         }
     }
@@ -1697,8 +1701,8 @@ impl Comment {
 /// An iterator for a comment's children
 pub(crate) struct CommentChildrenIterator {
     parent: CXComment,
-    length: c_uint,
-    index: c_uint,
+    length: usize,
+    index: usize,
 }
 
 impl Iterator for CommentChildrenIterator {
@@ -1708,7 +1712,9 @@ impl Iterator for CommentChildrenIterator {
             let idx = self.index;
             self.index += 1;
             Some(Comment {
-                x: unsafe { clang_Comment_getChild(self.parent, idx) },
+                x: unsafe {
+                    clang_Comment_getChild(self.parent, idx.try_into().unwrap())
+                },
             })
         } else {
             None
@@ -1727,15 +1733,15 @@ pub(crate) struct CommentAttribute {
 /// An iterator for a comment's attributes
 pub(crate) struct CommentAttributesIterator {
     x: CXComment,
-    length: c_uint,
-    index: c_uint,
+    length: usize,
+    index: usize,
 }
 
 impl Iterator for CommentAttributesIterator {
     type Item = CommentAttribute;
     fn next(&mut self) -> Option<CommentAttribute> {
         if self.index < self.length {
-            let idx = self.index;
+            let idx = self.index.try_into().unwrap();
             self.index += 1;
             Some(CommentAttribute {
                 name: unsafe {
@@ -1831,7 +1837,7 @@ impl Index {
     pub(crate) fn new(pch: bool, diag: bool) -> Index {
         unsafe {
             Index {
-                x: clang_createIndex(pch as c_int, diag as c_int),
+                x: clang_createIndex(pch.into(), diag.into()),
             }
         }
     }
@@ -1885,9 +1891,9 @@ impl TranslationUnit {
                 ix.x,
                 fname.as_ptr(),
                 c_args.as_ptr(),
-                c_args.len() as c_int,
+                c_args.len().try_into().unwrap(),
                 c_unsaved.as_mut_ptr(),
-                c_unsaved.len() as c_uint,
+                c_unsaved.len().try_into().unwrap(),
                 opts,
             )
         };
@@ -1902,11 +1908,11 @@ impl TranslationUnit {
     /// unit.
     pub(crate) fn diags(&self) -> Vec<Diagnostic> {
         unsafe {
-            let num = clang_getNumDiagnostics(self.x) as usize;
+            let num = clang_getNumDiagnostics(self.x);
             let mut diags = vec![];
             for i in 0..num {
                 diags.push(Diagnostic {
-                    x: clang_getDiagnostic(self.x, i as c_uint),
+                    x: clang_getDiagnostic(self.x, i),
                 });
             }
             diags
@@ -1966,91 +1972,6 @@ impl Drop for TranslationUnit {
     }
 }
 
-/// Translation unit used for macro fallback parsing
-pub(crate) struct FallbackTranslationUnit {
-    file_path: String,
-    header_path: String,
-    pch_path: String,
-    idx: Box<Index>,
-    tu: TranslationUnit,
-}
-
-impl fmt::Debug for FallbackTranslationUnit {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        write!(fmt, "FallbackTranslationUnit {{ }}")
-    }
-}
-
-impl FallbackTranslationUnit {
-    /// Create a new fallback translation unit
-    pub(crate) fn new(
-        file: String,
-        header_path: String,
-        pch_path: String,
-        c_args: &[Box<str>],
-    ) -> Option<Self> {
-        // Create empty file
-        OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .open(&file)
-            .ok()?;
-
-        let f_index = Box::new(Index::new(true, false));
-        let f_translation_unit = TranslationUnit::parse(
-            &f_index,
-            &file,
-            c_args,
-            &[],
-            CXTranslationUnit_None,
-        )?;
-        Some(FallbackTranslationUnit {
-            file_path: file,
-            header_path,
-            pch_path,
-            tu: f_translation_unit,
-            idx: f_index,
-        })
-    }
-
-    /// Get reference to underlying translation unit.
-    pub(crate) fn translation_unit(&self) -> &TranslationUnit {
-        &self.tu
-    }
-
-    /// Reparse a translation unit.
-    pub(crate) fn reparse(
-        &mut self,
-        unsaved_contents: &str,
-    ) -> Result<(), CXErrorCode> {
-        let unsaved = &[UnsavedFile::new(&self.file_path, unsaved_contents)];
-        let mut c_unsaved: Vec<CXUnsavedFile> =
-            unsaved.iter().map(|f| f.x).collect();
-        let ret = unsafe {
-            clang_reparseTranslationUnit(
-                self.tu.x,
-                unsaved.len() as c_uint,
-                c_unsaved.as_mut_ptr(),
-                clang_defaultReparseOptions(self.tu.x),
-            )
-        };
-        if ret != 0 {
-            Err(ret)
-        } else {
-            Ok(())
-        }
-    }
-}
-
-impl Drop for FallbackTranslationUnit {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_file(&self.file_path);
-        let _ = std::fs::remove_file(&self.header_path);
-        let _ = std::fs::remove_file(&self.pch_path);
-    }
-}
-
 /// A diagnostic message generated while parsing a translation unit.
 pub(crate) struct Diagnostic {
     x: CXDiagnostic,
@@ -2098,7 +2019,7 @@ impl UnsavedFile {
         let x = CXUnsavedFile {
             Filename: name.as_ptr(),
             Contents: contents.as_ptr(),
-            Length: contents.as_bytes().len() as c_ulong,
+            Length: contents.as_bytes().len().try_into().unwrap(),
         };
         UnsavedFile { x, name, contents }
     }
@@ -2500,7 +2421,7 @@ impl TargetInfo {
 
         TargetInfo {
             triple,
-            pointer_width: pointer_width as usize,
+            pointer_width: pointer_width.try_into().unwrap(),
             abi,
         }
     }
