@@ -14,10 +14,13 @@ extern "C" {
 #[test]
 fn bindgen_test_layout_Foo() {
     assert_eq!(
-        ::std::mem::size_of:: < Foo > (), 1usize, concat!("Size of: ", stringify!(Foo))
+        ::std::mem::size_of::<Foo>(),
+        1usize,
+        concat!("Size of: ", stringify!(Foo)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Foo > (), 1usize, concat!("Alignment of ",
-        stringify!(Foo))
+        ::std::mem::align_of::<Foo>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Foo)),
     );
 }

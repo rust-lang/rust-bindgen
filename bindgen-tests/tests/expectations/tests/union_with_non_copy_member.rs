@@ -52,16 +52,19 @@ fn bindgen_test_layout_NonCopyType() {
     const UNINIT: ::std::mem::MaybeUninit<NonCopyType> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < NonCopyType > (), 4usize, concat!("Size of: ",
-        stringify!(NonCopyType))
+        ::std::mem::size_of::<NonCopyType>(),
+        4usize,
+        concat!("Size of: ", stringify!(NonCopyType)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < NonCopyType > (), 4usize, concat!("Alignment of ",
-        stringify!(NonCopyType))
+        ::std::mem::align_of::<NonCopyType>(),
+        4usize,
+        concat!("Alignment of ", stringify!(NonCopyType)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).foo) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(NonCopyType), "::", stringify!(foo))
+        unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(NonCopyType), "::", stringify!(foo)),
     );
 }
 #[repr(C)]
@@ -75,22 +78,34 @@ fn bindgen_test_layout_WithBindgenGeneratedWrapper() {
     const UNINIT: ::std::mem::MaybeUninit<WithBindgenGeneratedWrapper> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < WithBindgenGeneratedWrapper > (), 4usize,
-        concat!("Size of: ", stringify!(WithBindgenGeneratedWrapper))
+        ::std::mem::size_of::<WithBindgenGeneratedWrapper>(),
+        4usize,
+        concat!("Size of: ", stringify!(WithBindgenGeneratedWrapper)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < WithBindgenGeneratedWrapper > (), 4usize,
-        concat!("Alignment of ", stringify!(WithBindgenGeneratedWrapper))
+        ::std::mem::align_of::<WithBindgenGeneratedWrapper>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithBindgenGeneratedWrapper)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).non_copy_type) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(WithBindgenGeneratedWrapper),
-        "::", stringify!(non_copy_type))
+        unsafe { ::std::ptr::addr_of!((*ptr).non_copy_type) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(WithBindgenGeneratedWrapper),
+            "::",
+            stringify!(non_copy_type),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).bar) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(WithBindgenGeneratedWrapper), "::",
-        stringify!(bar))
+        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(WithBindgenGeneratedWrapper),
+            "::",
+            stringify!(bar),
+        ),
     );
 }
 impl Default for WithBindgenGeneratedWrapper {
@@ -112,21 +127,29 @@ fn bindgen_test_layout_WithManuallyDrop() {
     const UNINIT: ::std::mem::MaybeUninit<WithManuallyDrop> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < WithManuallyDrop > (), 4usize, concat!("Size of: ",
-        stringify!(WithManuallyDrop))
+        ::std::mem::size_of::<WithManuallyDrop>(),
+        4usize,
+        concat!("Size of: ", stringify!(WithManuallyDrop)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < WithManuallyDrop > (), 4usize, concat!("Alignment of ",
-        stringify!(WithManuallyDrop))
+        ::std::mem::align_of::<WithManuallyDrop>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithManuallyDrop)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).non_copy_type) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(WithManuallyDrop), "::",
-        stringify!(non_copy_type))
+        unsafe { ::std::ptr::addr_of!((*ptr).non_copy_type) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(WithManuallyDrop),
+            "::",
+            stringify!(non_copy_type),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).bar) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(WithManuallyDrop), "::", stringify!(bar))
+        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(WithManuallyDrop), "::", stringify!(bar)),
     );
 }
 impl Default for WithManuallyDrop {
@@ -149,22 +172,34 @@ fn bindgen_test_layout_WithDefaultWrapper() {
     const UNINIT: ::std::mem::MaybeUninit<WithDefaultWrapper> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < WithDefaultWrapper > (), 4usize, concat!("Size of: ",
-        stringify!(WithDefaultWrapper))
+        ::std::mem::size_of::<WithDefaultWrapper>(),
+        4usize,
+        concat!("Size of: ", stringify!(WithDefaultWrapper)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < WithDefaultWrapper > (), 4usize,
-        concat!("Alignment of ", stringify!(WithDefaultWrapper))
+        ::std::mem::align_of::<WithDefaultWrapper>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithDefaultWrapper)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).non_copy_type) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(WithDefaultWrapper), "::",
-        stringify!(non_copy_type))
+        unsafe { ::std::ptr::addr_of!((*ptr).non_copy_type) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(WithDefaultWrapper),
+            "::",
+            stringify!(non_copy_type),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).bar) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(WithDefaultWrapper), "::",
-        stringify!(bar))
+        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(WithDefaultWrapper),
+            "::",
+            stringify!(bar),
+        ),
     );
 }
 impl Default for WithDefaultWrapper {

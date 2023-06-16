@@ -49,7 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -69,7 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -96,19 +96,21 @@ pub struct A {
 fn bindgen_test_layout_A() {
     const UNINIT: ::std::mem::MaybeUninit<A> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
+    assert_eq!(::std::mem::size_of::<A>(), 4usize, concat!("Size of: ", stringify!(A)));
     assert_eq!(
-        ::std::mem::size_of:: < A > (), 4usize, concat!("Size of: ", stringify!(A))
+        ::std::mem::align_of::<A>(),
+        4usize,
+        concat!("Alignment of ", stringify!(A)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < A > (), 4usize, concat!("Alignment of ", stringify!(A))
+        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(A), "::", stringify!(x)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).x) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(x))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).y) as usize - ptr as usize }, 3usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(y))
+        unsafe { ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize },
+        3usize,
+        concat!("Offset of field: ", stringify!(A), "::", stringify!(y)),
     );
 }
 impl A {
@@ -338,11 +340,11 @@ pub struct B {
 }
 #[test]
 fn bindgen_test_layout_B() {
+    assert_eq!(::std::mem::size_of::<B>(), 4usize, concat!("Size of: ", stringify!(B)));
     assert_eq!(
-        ::std::mem::size_of:: < B > (), 4usize, concat!("Size of: ", stringify!(B))
-    );
-    assert_eq!(
-        ::std::mem::align_of:: < B > (), 4usize, concat!("Alignment of ", stringify!(B))
+        ::std::mem::align_of::<B>(),
+        4usize,
+        concat!("Alignment of ", stringify!(B)),
     );
 }
 impl B {
@@ -407,19 +409,21 @@ pub struct C {
 fn bindgen_test_layout_C() {
     const UNINIT: ::std::mem::MaybeUninit<C> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
+    assert_eq!(::std::mem::size_of::<C>(), 8usize, concat!("Size of: ", stringify!(C)));
     assert_eq!(
-        ::std::mem::size_of:: < C > (), 8usize, concat!("Size of: ", stringify!(C))
+        ::std::mem::align_of::<C>(),
+        4usize,
+        concat!("Alignment of ", stringify!(C)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < C > (), 4usize, concat!("Alignment of ", stringify!(C))
+        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(x)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).x) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(x))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).baz) as usize - ptr as usize }, 4usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(baz))
+        unsafe { ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize },
+        4usize,
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(baz)),
     );
 }
 impl C {
@@ -483,12 +487,14 @@ pub struct Date1 {
 #[test]
 fn bindgen_test_layout_Date1() {
     assert_eq!(
-        ::std::mem::size_of:: < Date1 > (), 4usize, concat!("Size of: ",
-        stringify!(Date1))
+        ::std::mem::size_of::<Date1>(),
+        4usize,
+        concat!("Size of: ", stringify!(Date1)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Date1 > (), 2usize, concat!("Alignment of ",
-        stringify!(Date1))
+        ::std::mem::align_of::<Date1>(),
+        2usize,
+        concat!("Alignment of ", stringify!(Date1)),
     );
 }
 impl Date1 {
@@ -593,12 +599,14 @@ pub struct Date2 {
 #[test]
 fn bindgen_test_layout_Date2() {
     assert_eq!(
-        ::std::mem::size_of:: < Date2 > (), 4usize, concat!("Size of: ",
-        stringify!(Date2))
+        ::std::mem::size_of::<Date2>(),
+        4usize,
+        concat!("Size of: ", stringify!(Date2)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Date2 > (), 2usize, concat!("Alignment of ",
-        stringify!(Date2))
+        ::std::mem::align_of::<Date2>(),
+        2usize,
+        concat!("Alignment of ", stringify!(Date2)),
     );
 }
 impl Date2 {
@@ -727,16 +735,19 @@ fn bindgen_test_layout_Date3() {
     const UNINIT: ::std::mem::MaybeUninit<Date3> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Date3 > (), 4usize, concat!("Size of: ",
-        stringify!(Date3))
+        ::std::mem::size_of::<Date3>(),
+        4usize,
+        concat!("Size of: ", stringify!(Date3)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Date3 > (), 2usize, concat!("Alignment of ",
-        stringify!(Date3))
+        ::std::mem::align_of::<Date3>(),
+        2usize,
+        concat!("Alignment of ", stringify!(Date3)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).byte) as usize - ptr as usize }, 3usize,
-        concat!("Offset of field: ", stringify!(Date3), "::", stringify!(byte))
+        unsafe { ::std::ptr::addr_of!((*ptr).byte) as usize - ptr as usize },
+        3usize,
+        concat!("Offset of field: ", stringify!(Date3), "::", stringify!(byte)),
     );
 }
 impl Date3 {

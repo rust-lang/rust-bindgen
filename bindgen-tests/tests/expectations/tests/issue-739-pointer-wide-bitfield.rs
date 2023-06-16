@@ -50,7 +50,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -70,7 +70,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -94,11 +94,14 @@ pub struct Foo {
 #[test]
 fn bindgen_test_layout_Foo() {
     assert_eq!(
-        ::std::mem::size_of:: < Foo > (), 32usize, concat!("Size of: ", stringify!(Foo))
+        ::std::mem::size_of::<Foo>(),
+        32usize,
+        concat!("Size of: ", stringify!(Foo)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Foo > (), 8usize, concat!("Alignment of ",
-        stringify!(Foo))
+        ::std::mem::align_of::<Foo>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Foo)),
     );
 }
 impl Foo {

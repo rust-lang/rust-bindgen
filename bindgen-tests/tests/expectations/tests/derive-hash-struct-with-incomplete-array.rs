@@ -40,20 +40,31 @@ fn bindgen_test_layout_test() {
     const UNINIT: ::std::mem::MaybeUninit<test> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < test > (), 4usize, concat!("Size of: ", stringify!(test))
+        ::std::mem::size_of::<test>(),
+        4usize,
+        concat!("Size of: ", stringify!(test)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < test > (), 4usize, concat!("Alignment of ",
-        stringify!(test))
+        ::std::mem::align_of::<test>(),
+        4usize,
+        concat!("Alignment of ", stringify!(test)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(test), "::", stringify!(a))
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(test), "::", stringify!(a)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).zero_length_array) as usize - ptr as usize
-        }, 4usize, concat!("Offset of field: ", stringify!(test), "::",
-        stringify!(zero_length_array))
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).zero_length_array) as usize - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(test),
+            "::",
+            stringify!(zero_length_array),
+        ),
     );
 }
 #[repr(C)]
@@ -65,12 +76,14 @@ pub struct test2 {
 #[test]
 fn bindgen_test_layout_test2() {
     assert_eq!(
-        ::std::mem::size_of:: < test2 > (), 4usize, concat!("Size of: ",
-        stringify!(test2))
+        ::std::mem::size_of::<test2>(),
+        4usize,
+        concat!("Size of: ", stringify!(test2)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < test2 > (), 4usize, concat!("Alignment of ",
-        stringify!(test2))
+        ::std::mem::align_of::<test2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(test2)),
     );
 }
 #[repr(C)]
@@ -83,11 +96,13 @@ pub struct test3 {
 #[test]
 fn bindgen_test_layout_test3() {
     assert_eq!(
-        ::std::mem::size_of:: < test3 > (), 4usize, concat!("Size of: ",
-        stringify!(test3))
+        ::std::mem::size_of::<test3>(),
+        4usize,
+        concat!("Size of: ", stringify!(test3)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < test3 > (), 4usize, concat!("Alignment of ",
-        stringify!(test3))
+        ::std::mem::align_of::<test3>(),
+        4usize,
+        concat!("Alignment of ", stringify!(test3)),
     );
 }

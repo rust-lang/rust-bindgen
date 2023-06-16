@@ -23,17 +23,24 @@ pub mod root {
         const UNINIT: ::std::mem::MaybeUninit<CapturingContentInfo> = ::std::mem::MaybeUninit::uninit();
         let ptr = UNINIT.as_ptr();
         assert_eq!(
-            ::std::mem::size_of:: < CapturingContentInfo > (), 1usize,
-            concat!("Size of: ", stringify!(CapturingContentInfo))
+            ::std::mem::size_of::<CapturingContentInfo>(),
+            1usize,
+            concat!("Size of: ", stringify!(CapturingContentInfo)),
         );
         assert_eq!(
-            ::std::mem::align_of:: < CapturingContentInfo > (), 1usize,
-            concat!("Alignment of ", stringify!(CapturingContentInfo))
+            ::std::mem::align_of::<CapturingContentInfo>(),
+            1usize,
+            concat!("Alignment of ", stringify!(CapturingContentInfo)),
         );
         assert_eq!(
-            unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
-            concat!("Offset of field: ", stringify!(CapturingContentInfo), "::",
-            stringify!(a))
+            unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(CapturingContentInfo),
+                "::",
+                stringify!(a),
+            ),
         );
     }
 }

@@ -13,21 +13,24 @@ fn bindgen_test_layout_Nice() {
     const UNINIT: ::std::mem::MaybeUninit<Nice> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Nice > (), 144usize, concat!("Size of: ",
-        stringify!(Nice))
+        ::std::mem::size_of::<Nice>(),
+        144usize,
+        concat!("Size of: ", stringify!(Nice)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Nice > (), 8usize, concat!("Alignment of ",
-        stringify!(Nice))
+        ::std::mem::align_of::<Nice>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Nice)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).pointer) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(Nice), "::", stringify!(pointer))
+        unsafe { ::std::ptr::addr_of!((*ptr).pointer) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Nice), "::", stringify!(pointer)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).large_array) as usize - ptr as usize },
-        8usize, concat!("Offset of field: ", stringify!(Nice), "::",
-        stringify!(large_array))
+        unsafe { ::std::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize },
+        8usize,
+        concat!("Offset of field: ", stringify!(Nice), "::", stringify!(large_array)),
     );
 }
 impl Default for Nice {
@@ -42,9 +45,15 @@ impl Default for Nice {
 impl ::std::fmt::Debug for Nice {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         write!(
-            f, "Nice {{ pointer: {:?}, large_array: [{}] }}", self.pointer, self
-            .large_array.iter().enumerate().map(| (i, v) | format!("{}{:?}", if i > 0 {
-            ", " } else { "" }, v)).collect:: < String > ()
+            f,
+            "Nice {{ pointer: {:?}, large_array: [{}] }}",
+            self.pointer,
+            self
+                .large_array
+                .iter()
+                .enumerate()
+                .map(|(i, v)| format!("{}{:?}", if i > 0 { ", " } else { "" }, v))
+                .collect::<String>(),
         )
     }
 }

@@ -7,12 +7,14 @@ pub struct Pupper {
 #[test]
 fn bindgen_test_layout_Pupper() {
     assert_eq!(
-        ::std::mem::size_of:: < Pupper > (), 1usize, concat!("Size of: ",
-        stringify!(Pupper))
+        ::std::mem::size_of::<Pupper>(),
+        1usize,
+        concat!("Size of: ", stringify!(Pupper)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Pupper > (), 1usize, concat!("Alignment of ",
-        stringify!(Pupper))
+        ::std::mem::align_of::<Pupper>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Pupper)),
     );
 }
 #[repr(C)]
@@ -23,12 +25,14 @@ pub struct Doggo {
 #[test]
 fn bindgen_test_layout_Doggo() {
     assert_eq!(
-        ::std::mem::size_of:: < Doggo > (), 1usize, concat!("Size of: ",
-        stringify!(Doggo))
+        ::std::mem::size_of::<Doggo>(),
+        1usize,
+        concat!("Size of: ", stringify!(Doggo)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Doggo > (), 1usize, concat!("Alignment of ",
-        stringify!(Doggo))
+        ::std::mem::align_of::<Doggo>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Doggo)),
     );
 }
 #[repr(C)]
@@ -39,12 +43,14 @@ pub struct SuchWow {
 #[test]
 fn bindgen_test_layout_SuchWow() {
     assert_eq!(
-        ::std::mem::size_of:: < SuchWow > (), 1usize, concat!("Size of: ",
-        stringify!(SuchWow))
+        ::std::mem::size_of::<SuchWow>(),
+        1usize,
+        concat!("Size of: ", stringify!(SuchWow)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < SuchWow > (), 1usize, concat!("Alignment of ",
-        stringify!(SuchWow))
+        ::std::mem::align_of::<SuchWow>(),
+        1usize,
+        concat!("Alignment of ", stringify!(SuchWow)),
     );
 }
 #[repr(C)]
@@ -56,12 +62,14 @@ pub struct Opaque {
 #[test]
 fn bindgen_test_layout_Opaque() {
     assert_eq!(
-        ::std::mem::size_of:: < Opaque > (), 1usize, concat!("Size of: ",
-        stringify!(Opaque))
+        ::std::mem::size_of::<Opaque>(),
+        1usize,
+        concat!("Size of: ", stringify!(Opaque)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Opaque > (), 1usize, concat!("Alignment of ",
-        stringify!(Opaque))
+        ::std::mem::align_of::<Opaque>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Opaque)),
     );
 }
 extern "C" {
@@ -98,16 +106,23 @@ fn bindgen_test_layout_Allowlisted() {
     const UNINIT: ::std::mem::MaybeUninit<Allowlisted> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Allowlisted > (), 1usize, concat!("Size of: ",
-        stringify!(Allowlisted))
+        ::std::mem::size_of::<Allowlisted>(),
+        1usize,
+        concat!("Size of: ", stringify!(Allowlisted)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Allowlisted > (), 1usize, concat!("Alignment of ",
-        stringify!(Allowlisted))
+        ::std::mem::align_of::<Allowlisted>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Allowlisted)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).some_member) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(Allowlisted), "::",
-        stringify!(some_member))
+        unsafe { ::std::ptr::addr_of!((*ptr).some_member) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(Allowlisted),
+            "::",
+            stringify!(some_member),
+        ),
     );
 }

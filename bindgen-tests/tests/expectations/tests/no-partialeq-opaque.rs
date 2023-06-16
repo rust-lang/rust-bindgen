@@ -8,11 +8,13 @@ pub struct NoPartialEq {
 #[test]
 fn bindgen_test_layout_NoPartialEq() {
     assert_eq!(
-        ::std::mem::size_of:: < NoPartialEq > (), 4usize, concat!("Size of: ",
-        stringify!(NoPartialEq))
+        ::std::mem::size_of::<NoPartialEq>(),
+        4usize,
+        concat!("Size of: ", stringify!(NoPartialEq)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < NoPartialEq > (), 4usize, concat!("Alignment of ",
-        stringify!(NoPartialEq))
+        ::std::mem::align_of::<NoPartialEq>(),
+        4usize,
+        concat!("Alignment of ", stringify!(NoPartialEq)),
     );
 }

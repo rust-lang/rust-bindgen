@@ -25,47 +25,54 @@ fn bindgen_test_layout_Bar() {
     const UNINIT: ::std::mem::MaybeUninit<Bar> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Bar > (), 48usize, concat!("Size of: ", stringify!(Bar))
+        ::std::mem::size_of::<Bar>(),
+        48usize,
+        concat!("Size of: ", stringify!(Bar)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Bar > (), 8usize, concat!("Alignment of ",
-        stringify!(Bar))
+        ::std::mem::align_of::<Bar>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Bar)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).baz1) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz1))
+        unsafe { ::std::ptr::addr_of!((*ptr).baz1) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz1)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).baz2) as usize - ptr as usize }, 4usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz2))
+        unsafe { ::std::ptr::addr_of!((*ptr).baz2) as usize - ptr as usize },
+        4usize,
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz2)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).baz3) as usize - ptr as usize }, 8usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz3))
+        unsafe { ::std::ptr::addr_of!((*ptr).baz3) as usize - ptr as usize },
+        8usize,
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz3)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).baz4) as usize - ptr as usize }, 12usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz4))
+        unsafe { ::std::ptr::addr_of!((*ptr).baz4) as usize - ptr as usize },
+        12usize,
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz4)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).baz_ptr1) as usize - ptr as usize },
-        16usize, concat!("Offset of field: ", stringify!(Bar), "::",
-        stringify!(baz_ptr1))
+        unsafe { ::std::ptr::addr_of!((*ptr).baz_ptr1) as usize - ptr as usize },
+        16usize,
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz_ptr1)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).baz_ptr2) as usize - ptr as usize },
-        24usize, concat!("Offset of field: ", stringify!(Bar), "::",
-        stringify!(baz_ptr2))
+        unsafe { ::std::ptr::addr_of!((*ptr).baz_ptr2) as usize - ptr as usize },
+        24usize,
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz_ptr2)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).baz_ptr3) as usize - ptr as usize },
-        32usize, concat!("Offset of field: ", stringify!(Bar), "::",
-        stringify!(baz_ptr3))
+        unsafe { ::std::ptr::addr_of!((*ptr).baz_ptr3) as usize - ptr as usize },
+        32usize,
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz_ptr3)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).baz_ptr4) as usize - ptr as usize },
-        40usize, concat!("Offset of field: ", stringify!(Bar), "::",
-        stringify!(baz_ptr4))
+        unsafe { ::std::ptr::addr_of!((*ptr).baz_ptr4) as usize - ptr as usize },
+        40usize,
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz_ptr4)),
     );
 }
 impl Default for Bar {

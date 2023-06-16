@@ -57,16 +57,19 @@ pub mod root {
         const UNINIT: ::std::mem::MaybeUninit<bar> = ::std::mem::MaybeUninit::uninit();
         let ptr = UNINIT.as_ptr();
         assert_eq!(
-            ::std::mem::size_of:: < bar > (), 4usize, concat!("Size of: ",
-            stringify!(bar))
+            ::std::mem::size_of::<bar>(),
+            4usize,
+            concat!("Size of: ", stringify!(bar)),
         );
         assert_eq!(
-            ::std::mem::align_of:: < bar > (), 4usize, concat!("Alignment of ",
-            stringify!(bar))
+            ::std::mem::align_of::<bar>(),
+            4usize,
+            concat!("Alignment of ", stringify!(bar)),
         );
         assert_eq!(
-            unsafe { ::std::ptr::addr_of!((* ptr).baz) as usize - ptr as usize }, 0usize,
-            concat!("Offset of field: ", stringify!(bar), "::", stringify!(baz))
+            unsafe { ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize },
+            0usize,
+            concat!("Offset of field: ", stringify!(bar), "::", stringify!(baz)),
         );
     }
     impl Clone for bar {

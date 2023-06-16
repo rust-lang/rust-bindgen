@@ -12,22 +12,34 @@ fn bindgen_test_layout_cmdline_token_hdr() {
     const UNINIT: ::std::mem::MaybeUninit<cmdline_token_hdr> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < cmdline_token_hdr > (), 16usize, concat!("Size of: ",
-        stringify!(cmdline_token_hdr))
+        ::std::mem::size_of::<cmdline_token_hdr>(),
+        16usize,
+        concat!("Size of: ", stringify!(cmdline_token_hdr)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < cmdline_token_hdr > (), 8usize, concat!("Alignment of ",
-        stringify!(cmdline_token_hdr))
+        ::std::mem::align_of::<cmdline_token_hdr>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cmdline_token_hdr)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).ops) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(cmdline_token_hdr), "::",
-        stringify!(ops))
+        unsafe { ::std::ptr::addr_of!((*ptr).ops) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cmdline_token_hdr),
+            "::",
+            stringify!(ops),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).offset) as usize - ptr as usize }, 8usize,
-        concat!("Offset of field: ", stringify!(cmdline_token_hdr), "::",
-        stringify!(offset))
+        unsafe { ::std::ptr::addr_of!((*ptr).offset) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cmdline_token_hdr),
+            "::",
+            stringify!(offset),
+        ),
     );
 }
 impl Default for cmdline_token_hdr {
@@ -100,32 +112,54 @@ fn bindgen_test_layout_cmdline_token_ops() {
     const UNINIT: ::std::mem::MaybeUninit<cmdline_token_ops> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < cmdline_token_ops > (), 32usize, concat!("Size of: ",
-        stringify!(cmdline_token_ops))
+        ::std::mem::size_of::<cmdline_token_ops>(),
+        32usize,
+        concat!("Size of: ", stringify!(cmdline_token_ops)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < cmdline_token_ops > (), 8usize, concat!("Alignment of ",
-        stringify!(cmdline_token_ops))
+        ::std::mem::align_of::<cmdline_token_ops>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cmdline_token_ops)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).parse) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(cmdline_token_ops), "::",
-        stringify!(parse))
+        unsafe { ::std::ptr::addr_of!((*ptr).parse) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cmdline_token_ops),
+            "::",
+            stringify!(parse),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).complete_get_nb) as usize - ptr as usize },
-        8usize, concat!("Offset of field: ", stringify!(cmdline_token_ops), "::",
-        stringify!(complete_get_nb))
+        unsafe { ::std::ptr::addr_of!((*ptr).complete_get_nb) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cmdline_token_ops),
+            "::",
+            stringify!(complete_get_nb),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).complete_get_elt) as usize - ptr as usize
-        }, 16usize, concat!("Offset of field: ", stringify!(cmdline_token_ops), "::",
-        stringify!(complete_get_elt))
+        unsafe { ::std::ptr::addr_of!((*ptr).complete_get_elt) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cmdline_token_ops),
+            "::",
+            stringify!(complete_get_elt),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).get_help) as usize - ptr as usize },
-        24usize, concat!("Offset of field: ", stringify!(cmdline_token_ops), "::",
-        stringify!(get_help))
+        unsafe { ::std::ptr::addr_of!((*ptr).get_help) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cmdline_token_ops),
+            "::",
+            stringify!(get_help),
+        ),
     );
 }
 #[repr(u32)]
@@ -150,17 +184,24 @@ fn bindgen_test_layout_cmdline_token_num_data() {
     const UNINIT: ::std::mem::MaybeUninit<cmdline_token_num_data> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < cmdline_token_num_data > (), 4usize, concat!("Size of: ",
-        stringify!(cmdline_token_num_data))
+        ::std::mem::size_of::<cmdline_token_num_data>(),
+        4usize,
+        concat!("Size of: ", stringify!(cmdline_token_num_data)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < cmdline_token_num_data > (), 4usize,
-        concat!("Alignment of ", stringify!(cmdline_token_num_data))
+        ::std::mem::align_of::<cmdline_token_num_data>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cmdline_token_num_data)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).type_) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(cmdline_token_num_data), "::",
-        stringify!(type_))
+        unsafe { ::std::ptr::addr_of!((*ptr).type_) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cmdline_token_num_data),
+            "::",
+            stringify!(type_),
+        ),
     );
 }
 impl Default for cmdline_token_num_data {
@@ -183,22 +224,34 @@ fn bindgen_test_layout_cmdline_token_num() {
     const UNINIT: ::std::mem::MaybeUninit<cmdline_token_num> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < cmdline_token_num > (), 24usize, concat!("Size of: ",
-        stringify!(cmdline_token_num))
+        ::std::mem::size_of::<cmdline_token_num>(),
+        24usize,
+        concat!("Size of: ", stringify!(cmdline_token_num)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < cmdline_token_num > (), 8usize, concat!("Alignment of ",
-        stringify!(cmdline_token_num))
+        ::std::mem::align_of::<cmdline_token_num>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cmdline_token_num)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).hdr) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(cmdline_token_num), "::",
-        stringify!(hdr))
+        unsafe { ::std::ptr::addr_of!((*ptr).hdr) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cmdline_token_num),
+            "::",
+            stringify!(hdr),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).num_data) as usize - ptr as usize },
-        16usize, concat!("Offset of field: ", stringify!(cmdline_token_num), "::",
-        stringify!(num_data))
+        unsafe { ::std::ptr::addr_of!((*ptr).num_data) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cmdline_token_num),
+            "::",
+            stringify!(num_data),
+        ),
     );
 }
 impl Default for cmdline_token_num {

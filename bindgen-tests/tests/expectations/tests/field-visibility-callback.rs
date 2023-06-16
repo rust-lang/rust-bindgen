@@ -49,7 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -69,7 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -97,21 +97,24 @@ fn bindgen_test_layout_my_struct() {
     const UNINIT: ::std::mem::MaybeUninit<my_struct> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < my_struct > (), 12usize, concat!("Size of: ",
-        stringify!(my_struct))
+        ::std::mem::size_of::<my_struct>(),
+        12usize,
+        concat!("Size of: ", stringify!(my_struct)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < my_struct > (), 4usize, concat!("Alignment of ",
-        stringify!(my_struct))
+        ::std::mem::align_of::<my_struct>(),
+        4usize,
+        concat!("Alignment of ", stringify!(my_struct)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(my_struct), "::", stringify!(a))
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(my_struct), "::", stringify!(a)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).private_b) as usize - ptr as usize },
-        4usize, concat!("Offset of field: ", stringify!(my_struct), "::",
-        stringify!(private_b))
+        unsafe { ::std::ptr::addr_of!((*ptr).private_b) as usize - ptr as usize },
+        4usize,
+        concat!("Offset of field: ", stringify!(my_struct), "::", stringify!(private_b)),
     );
 }
 impl my_struct {

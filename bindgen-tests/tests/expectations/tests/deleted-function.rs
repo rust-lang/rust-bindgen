@@ -6,11 +6,11 @@ pub struct A {
 }
 #[test]
 fn bindgen_test_layout_A() {
+    assert_eq!(::std::mem::size_of::<A>(), 1usize, concat!("Size of: ", stringify!(A)));
     assert_eq!(
-        ::std::mem::size_of:: < A > (), 1usize, concat!("Size of: ", stringify!(A))
-    );
-    assert_eq!(
-        ::std::mem::align_of:: < A > (), 1usize, concat!("Alignment of ", stringify!(A))
+        ::std::mem::align_of::<A>(),
+        1usize,
+        concat!("Alignment of ", stringify!(A)),
     );
 }
 extern "C" {
@@ -38,11 +38,11 @@ pub struct B {
 }
 #[test]
 fn bindgen_test_layout_B() {
+    assert_eq!(::std::mem::size_of::<B>(), 1usize, concat!("Size of: ", stringify!(B)));
     assert_eq!(
-        ::std::mem::size_of:: < B > (), 1usize, concat!("Size of: ", stringify!(B))
-    );
-    assert_eq!(
-        ::std::mem::align_of:: < B > (), 1usize, concat!("Alignment of ", stringify!(B))
+        ::std::mem::align_of::<B>(),
+        1usize,
+        concat!("Alignment of ", stringify!(B)),
     );
 }
 #[repr(C)]
@@ -52,11 +52,11 @@ pub struct C {
 }
 #[test]
 fn bindgen_test_layout_C() {
+    assert_eq!(::std::mem::size_of::<C>(), 1usize, concat!("Size of: ", stringify!(C)));
     assert_eq!(
-        ::std::mem::size_of:: < C > (), 1usize, concat!("Size of: ", stringify!(C))
-    );
-    assert_eq!(
-        ::std::mem::align_of:: < C > (), 1usize, concat!("Alignment of ", stringify!(C))
+        ::std::mem::align_of::<C>(),
+        1usize,
+        concat!("Alignment of ", stringify!(C)),
     );
 }
 extern "C" {

@@ -8,11 +8,13 @@ pub struct NoDebug {
 #[test]
 fn bindgen_test_layout_NoDebug() {
     assert_eq!(
-        ::std::mem::size_of:: < NoDebug > (), 4usize, concat!("Size of: ",
-        stringify!(NoDebug))
+        ::std::mem::size_of::<NoDebug>(),
+        4usize,
+        concat!("Size of: ", stringify!(NoDebug)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < NoDebug > (), 4usize, concat!("Alignment of ",
-        stringify!(NoDebug))
+        ::std::mem::align_of::<NoDebug>(),
+        4usize,
+        concat!("Alignment of ", stringify!(NoDebug)),
     );
 }

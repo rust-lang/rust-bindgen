@@ -8,11 +8,13 @@ pub struct NoCopy {
 #[test]
 fn bindgen_test_layout_NoCopy() {
     assert_eq!(
-        ::std::mem::size_of:: < NoCopy > (), 4usize, concat!("Size of: ",
-        stringify!(NoCopy))
+        ::std::mem::size_of::<NoCopy>(),
+        4usize,
+        concat!("Size of: ", stringify!(NoCopy)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < NoCopy > (), 4usize, concat!("Alignment of ",
-        stringify!(NoCopy))
+        ::std::mem::align_of::<NoCopy>(),
+        4usize,
+        concat!("Alignment of ", stringify!(NoCopy)),
     );
 }

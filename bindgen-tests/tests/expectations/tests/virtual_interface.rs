@@ -15,12 +15,14 @@ pub struct PureVirtualIFace {
 #[test]
 fn bindgen_test_layout_PureVirtualIFace() {
     assert_eq!(
-        ::std::mem::size_of:: < PureVirtualIFace > (), 8usize, concat!("Size of: ",
-        stringify!(PureVirtualIFace))
+        ::std::mem::size_of::<PureVirtualIFace>(),
+        8usize,
+        concat!("Size of: ", stringify!(PureVirtualIFace)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < PureVirtualIFace > (), 8usize, concat!("Alignment of ",
-        stringify!(PureVirtualIFace))
+        ::std::mem::align_of::<PureVirtualIFace>(),
+        8usize,
+        concat!("Alignment of ", stringify!(PureVirtualIFace)),
     );
 }
 impl Default for PureVirtualIFace {
@@ -44,12 +46,14 @@ pub struct AnotherInterface {
 #[test]
 fn bindgen_test_layout_AnotherInterface() {
     assert_eq!(
-        ::std::mem::size_of:: < AnotherInterface > (), 8usize, concat!("Size of: ",
-        stringify!(AnotherInterface))
+        ::std::mem::size_of::<AnotherInterface>(),
+        8usize,
+        concat!("Size of: ", stringify!(AnotherInterface)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < AnotherInterface > (), 8usize, concat!("Alignment of ",
-        stringify!(AnotherInterface))
+        ::std::mem::align_of::<AnotherInterface>(),
+        8usize,
+        concat!("Alignment of ", stringify!(AnotherInterface)),
     );
 }
 impl Default for AnotherInterface {
@@ -69,12 +73,14 @@ pub struct Implementation {
 #[test]
 fn bindgen_test_layout_Implementation() {
     assert_eq!(
-        ::std::mem::size_of:: < Implementation > (), 8usize, concat!("Size of: ",
-        stringify!(Implementation))
+        ::std::mem::size_of::<Implementation>(),
+        8usize,
+        concat!("Size of: ", stringify!(Implementation)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Implementation > (), 8usize, concat!("Alignment of ",
-        stringify!(Implementation))
+        ::std::mem::align_of::<Implementation>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Implementation)),
     );
 }
 impl Default for Implementation {
@@ -95,12 +101,14 @@ pub struct DoubleImpl {
 #[test]
 fn bindgen_test_layout_DoubleImpl() {
     assert_eq!(
-        ::std::mem::size_of:: < DoubleImpl > (), 16usize, concat!("Size of: ",
-        stringify!(DoubleImpl))
+        ::std::mem::size_of::<DoubleImpl>(),
+        16usize,
+        concat!("Size of: ", stringify!(DoubleImpl)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < DoubleImpl > (), 8usize, concat!("Alignment of ",
-        stringify!(DoubleImpl))
+        ::std::mem::align_of::<DoubleImpl>(),
+        8usize,
+        concat!("Alignment of ", stringify!(DoubleImpl)),
     );
 }
 impl Default for DoubleImpl {

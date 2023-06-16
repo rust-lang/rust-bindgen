@@ -79,12 +79,14 @@ pub struct ClassD {
 #[test]
 fn bindgen_test_layout_ClassD() {
     assert_eq!(
-        ::std::mem::size_of:: < ClassD > (), 1usize, concat!("Size of: ",
-        stringify!(ClassD))
+        ::std::mem::size_of::<ClassD>(),
+        1usize,
+        concat!("Size of: ", stringify!(ClassD)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < ClassD > (), 1usize, concat!("Alignment of ",
-        stringify!(ClassD))
+        ::std::mem::align_of::<ClassD>(),
+        1usize,
+        concat!("Alignment of ", stringify!(ClassD)),
     );
 }
 impl Default for ClassD {
@@ -99,12 +101,14 @@ impl Default for ClassD {
 #[test]
 fn __bindgen_test_layout_ClassB_open0_ClassD_ClassCInnerCRTP_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of:: < ClassB > (), 1usize,
-        concat!("Size of template specialization: ", stringify!(ClassB))
+        ::std::mem::size_of::<ClassB>(),
+        1usize,
+        concat!("Size of template specialization: ", stringify!(ClassB)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < ClassB > (), 1usize,
-        concat!("Alignment of template specialization: ", stringify!(ClassB))
+        ::std::mem::align_of::<ClassB>(),
+        1usize,
+        concat!("Alignment of template specialization: ", stringify!(ClassB)),
     );
 }
 #[repr(C)]
@@ -115,12 +119,14 @@ pub struct ClassCInnerCRTP {
 #[test]
 fn bindgen_test_layout_ClassCInnerCRTP() {
     assert_eq!(
-        ::std::mem::size_of:: < ClassCInnerCRTP > (), 1usize, concat!("Size of: ",
-        stringify!(ClassCInnerCRTP))
+        ::std::mem::size_of::<ClassCInnerCRTP>(),
+        1usize,
+        concat!("Size of: ", stringify!(ClassCInnerCRTP)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < ClassCInnerCRTP > (), 1usize, concat!("Alignment of ",
-        stringify!(ClassCInnerCRTP))
+        ::std::mem::align_of::<ClassCInnerCRTP>(),
+        1usize,
+        concat!("Alignment of ", stringify!(ClassCInnerCRTP)),
     );
 }
 impl Default for ClassCInnerCRTP {
@@ -135,12 +141,14 @@ impl Default for ClassCInnerCRTP {
 #[test]
 fn __bindgen_test_layout_ClassB_open0_ClassCInnerCRTP_ClassAInner_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of:: < ClassB > (), 1usize,
-        concat!("Size of template specialization: ", stringify!(ClassB))
+        ::std::mem::size_of::<ClassB>(),
+        1usize,
+        concat!("Size of template specialization: ", stringify!(ClassB)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < ClassB > (), 1usize,
-        concat!("Alignment of template specialization: ", stringify!(ClassB))
+        ::std::mem::align_of::<ClassB>(),
+        1usize,
+        concat!("Alignment of template specialization: ", stringify!(ClassB)),
     );
 }
 #[repr(C)]
@@ -153,16 +161,19 @@ fn bindgen_test_layout_ClassAInner() {
     const UNINIT: ::std::mem::MaybeUninit<ClassAInner> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < ClassAInner > (), 8usize, concat!("Size of: ",
-        stringify!(ClassAInner))
+        ::std::mem::size_of::<ClassAInner>(),
+        8usize,
+        concat!("Size of: ", stringify!(ClassAInner)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < ClassAInner > (), 8usize, concat!("Alignment of ",
-        stringify!(ClassAInner))
+        ::std::mem::align_of::<ClassAInner>(),
+        8usize,
+        concat!("Alignment of ", stringify!(ClassAInner)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).x) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(ClassAInner), "::", stringify!(x))
+        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(ClassAInner), "::", stringify!(x)),
     );
 }
 impl Default for ClassAInner {
@@ -184,16 +195,19 @@ fn bindgen_test_layout_ClassCInnerA() {
     const UNINIT: ::std::mem::MaybeUninit<ClassCInnerA> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < ClassCInnerA > (), 8usize, concat!("Size of: ",
-        stringify!(ClassCInnerA))
+        ::std::mem::size_of::<ClassCInnerA>(),
+        8usize,
+        concat!("Size of: ", stringify!(ClassCInnerA)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < ClassCInnerA > (), 8usize, concat!("Alignment of ",
-        stringify!(ClassCInnerA))
+        ::std::mem::align_of::<ClassCInnerA>(),
+        8usize,
+        concat!("Alignment of ", stringify!(ClassCInnerA)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).member) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(ClassCInnerA), "::", stringify!(member))
+        unsafe { ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(ClassCInnerA), "::", stringify!(member)),
     );
 }
 impl Default for ClassCInnerA {
@@ -215,16 +229,19 @@ fn bindgen_test_layout_ClassCInnerB() {
     const UNINIT: ::std::mem::MaybeUninit<ClassCInnerB> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < ClassCInnerB > (), 8usize, concat!("Size of: ",
-        stringify!(ClassCInnerB))
+        ::std::mem::size_of::<ClassCInnerB>(),
+        8usize,
+        concat!("Size of: ", stringify!(ClassCInnerB)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < ClassCInnerB > (), 8usize, concat!("Alignment of ",
-        stringify!(ClassCInnerB))
+        ::std::mem::align_of::<ClassCInnerB>(),
+        8usize,
+        concat!("Alignment of ", stringify!(ClassCInnerB)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).cache) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(ClassCInnerB), "::", stringify!(cache))
+        unsafe { ::std::ptr::addr_of!((*ptr).cache) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(ClassCInnerB), "::", stringify!(cache)),
     );
 }
 impl Default for ClassCInnerB {

@@ -24,16 +24,19 @@ fn bindgen_test_layout_InstantiateIt() {
     const UNINIT: ::std::mem::MaybeUninit<InstantiateIt> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < InstantiateIt > (), 16usize, concat!("Size of: ",
-        stringify!(InstantiateIt))
+        ::std::mem::size_of::<InstantiateIt>(),
+        16usize,
+        concat!("Size of: ", stringify!(InstantiateIt)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < InstantiateIt > (), 8usize, concat!("Alignment of ",
-        stringify!(InstantiateIt))
+        ::std::mem::align_of::<InstantiateIt>(),
+        8usize,
+        concat!("Alignment of ", stringify!(InstantiateIt)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).m_list) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(InstantiateIt), "::", stringify!(m_list))
+        unsafe { ::std::ptr::addr_of!((*ptr).m_list) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(InstantiateIt), "::", stringify!(m_list)),
     );
 }
 impl Default for InstantiateIt {
@@ -48,11 +51,13 @@ impl Default for InstantiateIt {
 #[test]
 fn __bindgen_test_layout_LinkedList_open0_int_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of:: < LinkedList > (), 16usize,
-        concat!("Size of template specialization: ", stringify!(LinkedList))
+        ::std::mem::size_of::<LinkedList>(),
+        16usize,
+        concat!("Size of template specialization: ", stringify!(LinkedList)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < LinkedList > (), 8usize,
-        concat!("Alignment of template specialization: ", stringify!(LinkedList))
+        ::std::mem::align_of::<LinkedList>(),
+        8usize,
+        concat!("Alignment of template specialization: ", stringify!(LinkedList)),
     );
 }

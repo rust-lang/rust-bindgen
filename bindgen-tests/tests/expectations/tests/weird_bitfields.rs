@@ -49,7 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -69,7 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -116,72 +116,111 @@ fn bindgen_test_layout_Weird() {
     const UNINIT: ::std::mem::MaybeUninit<Weird> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Weird > (), 24usize, concat!("Size of: ",
-        stringify!(Weird))
+        ::std::mem::size_of::<Weird>(),
+        24usize,
+        concat!("Size of: ", stringify!(Weird)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Weird > (), 4usize, concat!("Alignment of ",
-        stringify!(Weird))
+        ::std::mem::align_of::<Weird>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Weird)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mStrokeDasharrayLength) as usize - ptr as
-        usize }, 0usize, concat!("Offset of field: ", stringify!(Weird), "::",
-        stringify!(mStrokeDasharrayLength))
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).mStrokeDasharrayLength) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mStrokeDasharrayLength),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mClipRule) as usize - ptr as usize },
-        8usize, concat!("Offset of field: ", stringify!(Weird), "::",
-        stringify!(mClipRule))
+        unsafe { ::std::ptr::addr_of!((*ptr).mClipRule) as usize - ptr as usize },
+        8usize,
+        concat!("Offset of field: ", stringify!(Weird), "::", stringify!(mClipRule)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mColorInterpolation) as usize - ptr as
-        usize }, 9usize, concat!("Offset of field: ", stringify!(Weird), "::",
-        stringify!(mColorInterpolation))
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).mColorInterpolation) as usize - ptr as usize
+        },
+        9usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mColorInterpolation),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mColorInterpolationFilters) as usize - ptr
-        as usize }, 10usize, concat!("Offset of field: ", stringify!(Weird), "::",
-        stringify!(mColorInterpolationFilters))
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).mColorInterpolationFilters) as usize
+                - ptr as usize
+        },
+        10usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mColorInterpolationFilters),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mFillRule) as usize - ptr as usize },
-        11usize, concat!("Offset of field: ", stringify!(Weird), "::",
-        stringify!(mFillRule))
+        unsafe { ::std::ptr::addr_of!((*ptr).mFillRule) as usize - ptr as usize },
+        11usize,
+        concat!("Offset of field: ", stringify!(Weird), "::", stringify!(mFillRule)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mImageRendering) as usize - ptr as usize },
-        12usize, concat!("Offset of field: ", stringify!(Weird), "::",
-        stringify!(mImageRendering))
+        unsafe { ::std::ptr::addr_of!((*ptr).mImageRendering) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mImageRendering),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mPaintOrder) as usize - ptr as usize },
-        13usize, concat!("Offset of field: ", stringify!(Weird), "::",
-        stringify!(mPaintOrder))
+        unsafe { ::std::ptr::addr_of!((*ptr).mPaintOrder) as usize - ptr as usize },
+        13usize,
+        concat!("Offset of field: ", stringify!(Weird), "::", stringify!(mPaintOrder)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mShapeRendering) as usize - ptr as usize },
-        14usize, concat!("Offset of field: ", stringify!(Weird), "::",
-        stringify!(mShapeRendering))
+        unsafe { ::std::ptr::addr_of!((*ptr).mShapeRendering) as usize - ptr as usize },
+        14usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mShapeRendering),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mStrokeLinecap) as usize - ptr as usize },
-        15usize, concat!("Offset of field: ", stringify!(Weird), "::",
-        stringify!(mStrokeLinecap))
+        unsafe { ::std::ptr::addr_of!((*ptr).mStrokeLinecap) as usize - ptr as usize },
+        15usize,
+        concat!("Offset of field: ", stringify!(Weird), "::", stringify!(mStrokeLinecap)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mStrokeLinejoin) as usize - ptr as usize },
-        16usize, concat!("Offset of field: ", stringify!(Weird), "::",
-        stringify!(mStrokeLinejoin))
+        unsafe { ::std::ptr::addr_of!((*ptr).mStrokeLinejoin) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mStrokeLinejoin),
+        ),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mTextAnchor) as usize - ptr as usize },
-        17usize, concat!("Offset of field: ", stringify!(Weird), "::",
-        stringify!(mTextAnchor))
+        unsafe { ::std::ptr::addr_of!((*ptr).mTextAnchor) as usize - ptr as usize },
+        17usize,
+        concat!("Offset of field: ", stringify!(Weird), "::", stringify!(mTextAnchor)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).mTextRendering) as usize - ptr as usize },
-        18usize, concat!("Offset of field: ", stringify!(Weird), "::",
-        stringify!(mTextRendering))
+        unsafe { ::std::ptr::addr_of!((*ptr).mTextRendering) as usize - ptr as usize },
+        18usize,
+        concat!("Offset of field: ", stringify!(Weird), "::", stringify!(mTextRendering)),
     );
 }
 impl Default for Weird {

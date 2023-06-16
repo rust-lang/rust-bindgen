@@ -49,7 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -69,7 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -93,12 +93,14 @@ pub struct mach_msg_type_descriptor_t {
 #[test]
 fn bindgen_test_layout_mach_msg_type_descriptor_t() {
     assert_eq!(
-        ::std::mem::size_of:: < mach_msg_type_descriptor_t > (), 4usize,
-        concat!("Size of: ", stringify!(mach_msg_type_descriptor_t))
+        ::std::mem::size_of::<mach_msg_type_descriptor_t>(),
+        4usize,
+        concat!("Size of: ", stringify!(mach_msg_type_descriptor_t)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < mach_msg_type_descriptor_t > (), 4usize,
-        concat!("Alignment of ", stringify!(mach_msg_type_descriptor_t))
+        ::std::mem::align_of::<mach_msg_type_descriptor_t>(),
+        4usize,
+        concat!("Alignment of ", stringify!(mach_msg_type_descriptor_t)),
     );
 }
 impl mach_msg_type_descriptor_t {

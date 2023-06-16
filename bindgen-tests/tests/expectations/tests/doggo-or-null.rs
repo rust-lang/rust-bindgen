@@ -9,16 +9,19 @@ fn bindgen_test_layout_Doggo() {
     const UNINIT: ::std::mem::MaybeUninit<Doggo> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Doggo > (), 4usize, concat!("Size of: ",
-        stringify!(Doggo))
+        ::std::mem::size_of::<Doggo>(),
+        4usize,
+        concat!("Size of: ", stringify!(Doggo)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Doggo > (), 4usize, concat!("Alignment of ",
-        stringify!(Doggo))
+        ::std::mem::align_of::<Doggo>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Doggo)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).x) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(Doggo), "::", stringify!(x))
+        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Doggo), "::", stringify!(x)),
     );
 }
 #[repr(C)]
@@ -29,11 +32,14 @@ pub struct Null {
 #[test]
 fn bindgen_test_layout_Null() {
     assert_eq!(
-        ::std::mem::size_of:: < Null > (), 1usize, concat!("Size of: ", stringify!(Null))
+        ::std::mem::size_of::<Null>(),
+        1usize,
+        concat!("Size of: ", stringify!(Null)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Null > (), 1usize, concat!("Alignment of ",
-        stringify!(Null))
+        ::std::mem::align_of::<Null>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Null)),
     );
 }
 /** This type is an opaque union. Unions can't derive anything interesting like
@@ -51,12 +57,14 @@ pub union DoggoOrNull {
 #[test]
 fn bindgen_test_layout_DoggoOrNull() {
     assert_eq!(
-        ::std::mem::size_of:: < DoggoOrNull > (), 4usize, concat!("Size of: ",
-        stringify!(DoggoOrNull))
+        ::std::mem::size_of::<DoggoOrNull>(),
+        4usize,
+        concat!("Size of: ", stringify!(DoggoOrNull)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < DoggoOrNull > (), 4usize, concat!("Alignment of ",
-        stringify!(DoggoOrNull))
+        ::std::mem::align_of::<DoggoOrNull>(),
+        4usize,
+        concat!("Alignment of ", stringify!(DoggoOrNull)),
     );
 }
 impl Default for DoggoOrNull {

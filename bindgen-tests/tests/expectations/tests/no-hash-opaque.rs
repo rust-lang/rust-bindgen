@@ -8,11 +8,13 @@ pub struct NoHash {
 #[test]
 fn bindgen_test_layout_NoHash() {
     assert_eq!(
-        ::std::mem::size_of:: < NoHash > (), 4usize, concat!("Size of: ",
-        stringify!(NoHash))
+        ::std::mem::size_of::<NoHash>(),
+        4usize,
+        concat!("Size of: ", stringify!(NoHash)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < NoHash > (), 4usize, concat!("Alignment of ",
-        stringify!(NoHash))
+        ::std::mem::align_of::<NoHash>(),
+        4usize,
+        concat!("Alignment of ", stringify!(NoHash)),
     );
 }

@@ -49,7 +49,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
@@ -69,7 +69,7 @@ where
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
         debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len()
+            (bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len(),
         );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
@@ -92,12 +92,14 @@ pub struct MuchBitfield {
 #[test]
 fn bindgen_test_layout_MuchBitfield() {
     assert_eq!(
-        ::std::mem::size_of:: < MuchBitfield > (), 5usize, concat!("Size of: ",
-        stringify!(MuchBitfield))
+        ::std::mem::size_of::<MuchBitfield>(),
+        5usize,
+        concat!("Size of: ", stringify!(MuchBitfield)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < MuchBitfield > (), 1usize, concat!("Alignment of ",
-        stringify!(MuchBitfield))
+        ::std::mem::align_of::<MuchBitfield>(),
+        1usize,
+        concat!("Alignment of ", stringify!(MuchBitfield)),
     );
 }
 impl MuchBitfield {

@@ -16,16 +16,19 @@ fn bindgen_test_layout_AllowlistedOne() {
     const UNINIT: ::std::mem::MaybeUninit<AllowlistedOne> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < AllowlistedOne > (), 4usize, concat!("Size of: ",
-        stringify!(AllowlistedOne))
+        ::std::mem::size_of::<AllowlistedOne>(),
+        4usize,
+        concat!("Size of: ", stringify!(AllowlistedOne)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < AllowlistedOne > (), 4usize, concat!("Alignment of ",
-        stringify!(AllowlistedOne))
+        ::std::mem::align_of::<AllowlistedOne>(),
+        4usize,
+        concat!("Alignment of ", stringify!(AllowlistedOne)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).a) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(AllowlistedOne), "::", stringify!(a))
+        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(AllowlistedOne), "::", stringify!(a)),
     );
 }
 impl Default for AllowlistedOne {
@@ -47,16 +50,19 @@ fn bindgen_test_layout_AllowlistedTwo() {
     const UNINIT: ::std::mem::MaybeUninit<AllowlistedTwo> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < AllowlistedTwo > (), 4usize, concat!("Size of: ",
-        stringify!(AllowlistedTwo))
+        ::std::mem::size_of::<AllowlistedTwo>(),
+        4usize,
+        concat!("Size of: ", stringify!(AllowlistedTwo)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < AllowlistedTwo > (), 4usize, concat!("Alignment of ",
-        stringify!(AllowlistedTwo))
+        ::std::mem::align_of::<AllowlistedTwo>(),
+        4usize,
+        concat!("Alignment of ", stringify!(AllowlistedTwo)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).b) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(AllowlistedTwo), "::", stringify!(b))
+        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(AllowlistedTwo), "::", stringify!(b)),
     );
 }
 impl Default for AllowlistedTwo {

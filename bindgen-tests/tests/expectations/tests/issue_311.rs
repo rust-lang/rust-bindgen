@@ -16,23 +16,27 @@ pub mod root {
     #[test]
     fn bindgen_test_layout_jsval_layout__bindgen_ty_1() {
         assert_eq!(
-            ::std::mem::size_of:: < jsval_layout__bindgen_ty_1 > (), 1usize,
-            concat!("Size of: ", stringify!(jsval_layout__bindgen_ty_1))
+            ::std::mem::size_of::<jsval_layout__bindgen_ty_1>(),
+            1usize,
+            concat!("Size of: ", stringify!(jsval_layout__bindgen_ty_1)),
         );
         assert_eq!(
-            ::std::mem::align_of:: < jsval_layout__bindgen_ty_1 > (), 1usize,
-            concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_1))
+            ::std::mem::align_of::<jsval_layout__bindgen_ty_1>(),
+            1usize,
+            concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_1)),
         );
     }
     #[test]
     fn bindgen_test_layout_jsval_layout() {
         assert_eq!(
-            ::std::mem::size_of:: < jsval_layout > (), 1usize, concat!("Size of: ",
-            stringify!(jsval_layout))
+            ::std::mem::size_of::<jsval_layout>(),
+            1usize,
+            concat!("Size of: ", stringify!(jsval_layout)),
         );
         assert_eq!(
-            ::std::mem::align_of:: < jsval_layout > (), 1usize, concat!("Alignment of ",
-            stringify!(jsval_layout))
+            ::std::mem::align_of::<jsval_layout>(),
+            1usize,
+            concat!("Alignment of ", stringify!(jsval_layout)),
         );
     }
 }

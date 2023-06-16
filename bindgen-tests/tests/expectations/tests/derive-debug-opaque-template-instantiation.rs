@@ -8,16 +8,19 @@ fn bindgen_test_layout_Instance() {
     const UNINIT: ::std::mem::MaybeUninit<Instance> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < Instance > (), 200usize, concat!("Size of: ",
-        stringify!(Instance))
+        ::std::mem::size_of::<Instance>(),
+        200usize,
+        concat!("Size of: ", stringify!(Instance)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < Instance > (), 4usize, concat!("Alignment of ",
-        stringify!(Instance))
+        ::std::mem::align_of::<Instance>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Instance)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).val) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(Instance), "::", stringify!(val))
+        unsafe { ::std::ptr::addr_of!((*ptr).val) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Instance), "::", stringify!(val)),
     );
 }
 impl Default for Instance {

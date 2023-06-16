@@ -14,15 +14,19 @@ fn bindgen_test_layout_A_B() {
     const UNINIT: ::std::mem::MaybeUninit<A_B> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < A_B > (), 4usize, concat!("Size of: ", stringify!(A_B))
+        ::std::mem::size_of::<A_B>(),
+        4usize,
+        concat!("Size of: ", stringify!(A_B)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < A_B > (), 4usize, concat!("Alignment of ",
-        stringify!(A_B))
+        ::std::mem::align_of::<A_B>(),
+        4usize,
+        concat!("Alignment of ", stringify!(A_B)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).member_b) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(A_B), "::", stringify!(member_b))
+        unsafe { ::std::ptr::addr_of!((*ptr).member_b) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(A_B), "::", stringify!(member_b)),
     );
 }
 #[repr(C)]
@@ -44,15 +48,16 @@ impl<T> Default for A_D<T> {
 fn bindgen_test_layout_A() {
     const UNINIT: ::std::mem::MaybeUninit<A> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
+    assert_eq!(::std::mem::size_of::<A>(), 4usize, concat!("Size of: ", stringify!(A)));
     assert_eq!(
-        ::std::mem::size_of:: < A > (), 4usize, concat!("Size of: ", stringify!(A))
+        ::std::mem::align_of::<A>(),
+        4usize,
+        concat!("Alignment of ", stringify!(A)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < A > (), 4usize, concat!("Alignment of ", stringify!(A))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).member_a) as usize - ptr as usize },
-        0usize, concat!("Offset of field: ", stringify!(A), "::", stringify!(member_a))
+        unsafe { ::std::ptr::addr_of!((*ptr).member_a) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(A), "::", stringify!(member_a)),
     );
 }
 #[repr(C)]
@@ -65,15 +70,19 @@ fn bindgen_test_layout_A_C() {
     const UNINIT: ::std::mem::MaybeUninit<A_C> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
     assert_eq!(
-        ::std::mem::size_of:: < A_C > (), 4usize, concat!("Size of: ", stringify!(A_C))
+        ::std::mem::size_of::<A_C>(),
+        4usize,
+        concat!("Size of: ", stringify!(A_C)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < A_C > (), 4usize, concat!("Alignment of ",
-        stringify!(A_C))
+        ::std::mem::align_of::<A_C>(),
+        4usize,
+        concat!("Alignment of ", stringify!(A_C)),
     );
     assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).baz) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(A_C), "::", stringify!(baz))
+        unsafe { ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(A_C), "::", stringify!(baz)),
     );
 }
 extern "C" {
@@ -82,14 +91,20 @@ extern "C" {
 #[test]
 fn __bindgen_test_layout_A_D_open0_int_close0_instantiation() {
     assert_eq!(
-        ::std::mem::size_of:: < A_D < ::std::os::raw::c_int > > (), 4usize,
-        concat!("Size of template specialization: ", stringify!(A_D <
-        ::std::os::raw::c_int >))
+        ::std::mem::size_of::<A_D<::std::os::raw::c_int>>(),
+        4usize,
+        concat!(
+            "Size of template specialization: ",
+            stringify!(A_D < ::std::os::raw::c_int >),
+        ),
     );
     assert_eq!(
-        ::std::mem::align_of:: < A_D < ::std::os::raw::c_int > > (), 4usize,
-        concat!("Alignment of template specialization: ", stringify!(A_D <
-        ::std::os::raw::c_int >))
+        ::std::mem::align_of::<A_D<::std::os::raw::c_int>>(),
+        4usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify!(A_D < ::std::os::raw::c_int >),
+        ),
     );
 }
 extern "C" {
@@ -104,15 +119,16 @@ pub struct D {
 fn bindgen_test_layout_D() {
     const UNINIT: ::std::mem::MaybeUninit<D> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
+    assert_eq!(::std::mem::size_of::<D>(), 4usize, concat!("Size of: ", stringify!(D)));
     assert_eq!(
-        ::std::mem::size_of:: < D > (), 4usize, concat!("Size of: ", stringify!(D))
+        ::std::mem::align_of::<D>(),
+        4usize,
+        concat!("Alignment of ", stringify!(D)),
     );
     assert_eq!(
-        ::std::mem::align_of:: < D > (), 4usize, concat!("Alignment of ", stringify!(D))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((* ptr).member) as usize - ptr as usize }, 0usize,
-        concat!("Offset of field: ", stringify!(D), "::", stringify!(member))
+        unsafe { ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(D), "::", stringify!(member)),
     );
 }
 #[repr(C)]
