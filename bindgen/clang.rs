@@ -510,17 +510,6 @@ impl Cursor {
     ) where
         Visitor: FnMut(&mut BindgenContext, Cursor),
     {
-        // FIXME(#2556): The current source order stuff doesn't account well for different levels
-        // of includes, or includes that show up at the same byte offset because they are passed in
-        // via CLI.
-        const SOURCE_ORDER_ENABLED: bool = false;
-        if !SOURCE_ORDER_ENABLED {
-            return self.visit(|c| {
-                visitor(ctx, c);
-                CXChildVisit_Continue
-            });
-        }
-
         let mut children = self.collect_children();
         for child in &children {
             if child.kind() == CXCursor_InclusionDirective {
@@ -528,9 +517,8 @@ impl Cursor {
                     let location = child.location();
                     let (source_file, _, _, offset) = location.location();
 
-                    if let Some(source_file) = source_file.name() {
-                        ctx.add_include(source_file, included_file, offset);
-                    }
+                    let source_file = source_file.name();
+                    ctx.add_include(source_file, included_file, offset);
                 }
             }
         }
@@ -557,36 +545,41 @@ impl Cursor {
 
         let (file, other_file) = match (file.name(), other_file.name()) {
             (Some(file), Some(other_file)) => (file, other_file),
-            // Built-in definitions should come first.
-            (Some(_), None) => return cmp::Ordering::Greater,
-            (None, Some(_)) => return cmp::Ordering::Less,
-            (None, None) => return cmp::Ordering::Equal,
+            // Keep the original sorting of built-in definitions.
+            (None, _) | (_, None) => return cmp::Ordering::Equal,
         };
 
+        // If both items are in the same source file, simply compare the offset.
         if file == other_file {
-            // Both items are in the same source file, compare by byte offset.
             return offset.cmp(&other_offset);
         }
 
+        // `None` here means `file`/`other_file` is the main header file.
         let include_location = ctx.included_file_location(&file);
         let other_include_location = ctx.included_file_location(&other_file);
+
         match (include_location, other_include_location) {
-            (Some((file2, offset2)), _) if file2 == other_file => {
+            // The main header file (`None`) comes after header passed as CLI argument (`Some((None, _))`).
+            (None, Some((None, _))) => cmp::Ordering::Greater,
+            (Some((None, _)), None) => cmp::Ordering::Less,
+            // If an item was included in the same source file as the other item,
+            // compare its `#include` location offset the offset of the other item.
+            (Some((Some(file2), offset2)), _) if file2 == other_file => {
                 offset2.cmp(&other_offset)
             }
-            (Some(_), None) => cmp::Ordering::Greater,
-            (_, Some((other_file2, other_offset2))) if file == other_file2 => {
+            (_, Some((Some(other_file2), other_offset2)))
+                if file == other_file2 =>
+            {
                 offset.cmp(&other_offset2)
             }
-            (None, Some(_)) => cmp::Ordering::Less,
-            (Some((file2, offset2)), Some((other_file2, other_offset2))) => {
-                if file2 == other_file2 {
-                    offset2.cmp(&other_offset2)
-                } else {
-                    cmp::Ordering::Equal
-                }
+            // If both items were included in the same file, compare the offset of their `#include` directives.
+            (Some((file2, offset2)), Some((other_file2, other_offset2)))
+                if file2 == other_file2 =>
+            {
+                offset2.cmp(&other_offset2)
             }
-            (None, None) => cmp::Ordering::Equal,
+            // Otherwise, keep the original sorting.
+            _ => cmp::Ordering::Equal,
         }
     }
 
