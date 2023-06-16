@@ -4,10 +4,6 @@
 pub struct Foo {
     pub _address: u8,
 }
-extern "C" {
-    #[link_name = "\u{1}_Z1fv"]
-    pub fn f();
-}
 #[test]
 fn __bindgen_test_layout_Foo_open0_Bar_close0_instantiation() {
     assert_eq!(
@@ -20,6 +16,23 @@ fn __bindgen_test_layout_Foo_open0_Bar_close0_instantiation() {
         1usize,
         concat!("Alignment of template specialization: ", stringify!(Foo)),
     );
+}
+#[test]
+fn __bindgen_test_layout_Foo_open0_Boo_close0_instantiation() {
+    assert_eq!(
+        ::std::mem::size_of::<Foo>(),
+        1usize,
+        concat!("Size of template specialization: ", stringify!(Foo)),
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Foo>(),
+        1usize,
+        concat!("Alignment of template specialization: ", stringify!(Foo)),
+    );
+}
+extern "C" {
+    #[link_name = "\u{1}_Z1fv"]
+    pub fn f();
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -37,19 +50,6 @@ fn bindgen_test_layout_Baz() {
         ::std::mem::align_of::<Baz>(),
         1usize,
         concat!("Alignment of ", stringify!(Baz)),
-    );
-}
-#[test]
-fn __bindgen_test_layout_Foo_open0_Boo_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<Foo>(),
-        1usize,
-        concat!("Size of template specialization: ", stringify!(Foo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Foo>(),
-        1usize,
-        concat!("Alignment of template specialization: ", stringify!(Foo)),
     );
 }
 #[repr(C)]
