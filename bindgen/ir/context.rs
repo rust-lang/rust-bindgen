@@ -364,7 +364,7 @@ pub(crate) struct BindgenContext {
     ///
     /// The key is the included file, the value is a pair of the source file and
     /// the position of the `#include` directive in the source file.
-    includes: StdHashMap<String, (String, usize)>,
+    includes: StdHashMap<String, (Option<String>, usize)>,
 
     /// A set of all the included filenames.
     deps: BTreeSet<Box<str>>,
@@ -661,7 +661,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Add the location of the `#include` directive for the `included_file`.
     pub(crate) fn add_include(
         &mut self,
-        source_file: String,
+        source_file: Option<String>,
         included_file: String,
         offset: usize,
     ) {
@@ -674,7 +674,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     pub(crate) fn included_file_location(
         &self,
         included_file: &str,
-    ) -> Option<(String, usize)> {
+    ) -> Option<(Option<String>, usize)> {
         self.includes.get(included_file).cloned()
     }
 
