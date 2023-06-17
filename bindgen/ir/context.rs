@@ -307,6 +307,25 @@ enum TypeKey {
     Declaration(Cursor),
 }
 
+/// Specifies where a header was included from.
+#[derive(Debug)]
+pub(crate) enum IncludeLocation {
+    /// Include location of the main header file, i.e. none.
+    Main,
+    /// Include location of a header specified as a CLI argument.
+    Cli {
+        /// Offset of the include location.
+        offset: usize,
+    },
+    /// Include location of a header included with the `#include` directive.
+    File {
+        /// Source file name of the include location.
+        file_name: String,
+        /// Offset of the include location.
+        offset: usize,
+    },
+}
+
 /// A context used during parsing and generation of structs.
 #[derive(Debug)]
 pub(crate) struct BindgenContext {
@@ -674,8 +693,17 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     pub(crate) fn included_file_location(
         &self,
         included_file: &str,
-    ) -> Option<(Option<String>, usize)> {
-        self.includes.get(included_file).cloned()
+    ) -> IncludeLocation {
+        match self.includes.get(included_file).cloned() {
+            // Header was not included anywhere, so it must be the main header.
+            None => IncludeLocation::Main,
+            // Header has no source location, so it must have been included via CLI arguments.
+            Some((None, offset)) => IncludeLocation::Cli { offset },
+            // Header was included with an `#include` directive.
+            Some((Some(file_name), offset)) => {
+                IncludeLocation::File { file_name, offset }
+            }
+        }
     }
 
     /// Add an included file.
