@@ -4,7 +4,7 @@
 #![allow(non_upper_case_globals, dead_code)]
 #![deny(clippy::missing_docs_in_private_items)]
 
-use crate::ir::context::BindgenContext;
+use crate::ir::context::{BindgenContext, IncludeLocation};
 use clang_sys::*;
 use std::cmp;
 
@@ -554,32 +554,145 @@ impl Cursor {
             return offset.cmp(&other_offset);
         }
 
-        // `None` here means `file`/`other_file` is the main header file.
-        let include_location = ctx.included_file_location(&file);
-        let other_include_location = ctx.included_file_location(&other_file);
+        let mut include_location = ctx.included_file_location(&file);
+        let mut other_include_location =
+            ctx.included_file_location(&other_file);
 
-        match (include_location, other_include_location) {
-            // The main header file (`None`) comes after header passed as CLI argument (`Some((None, _))`).
-            (None, Some((None, _))) => cmp::Ordering::Greater,
-            (Some((None, _)), None) => cmp::Ordering::Less,
-            // If an item was included in the same source file as the other item,
-            // compare its `#include` location offset the offset of the other item.
-            (Some((Some(file2), offset2)), _) if file2 == other_file => {
-                offset2.cmp(&other_offset)
+        use IncludeLocation::*;
+
+        loop {
+            match (&include_location, &other_include_location) {
+                // Both items are in the main header file, this should already have been handled at this point.
+                (Main, Main) => {
+                    unreachable!("Should have been handled at this point.")
+                }
+                // Headers passed as CLI arguments come before the main header file.
+                (Main, Cli { .. }) => return cmp::Ordering::Greater,
+                (Cli { .. }, Main) => return cmp::Ordering::Less,
+                // If both were included via CLI arguments, compare their offset.
+                (
+                    Cli { offset: offset2 },
+                    Cli {
+                        offset: other_offset2,
+                    },
+                ) => return offset2.cmp(other_offset2),
+                // If an item was included in the same source file as the other item,
+                // compare its `#include` location offset the offset of the other item.
+                (
+                    File {
+                        file_name: ref file2,
+                        offset: offset2,
+                    },
+                    Main,
+                ) => {
+                    if *file2 == other_file {
+                        return offset2.cmp(&other_offset);
+                    }
+
+                    // Continue checking one level up.
+                    include_location = ctx.included_file_location(file2);
+                }
+                (
+                    Main,
+                    File {
+                        file_name: ref other_file2,
+                        offset: other_offset2,
+                    },
+                ) => {
+                    if file == *other_file2 {
+                        return offset.cmp(other_offset2);
+                    }
+
+                    // Continue checking one level up.
+                    other_include_location =
+                        ctx.included_file_location(other_file2);
+                }
+                (
+                    File {
+                        file_name: file2,
+                        offset: offset2,
+                    },
+                    File {
+                        file_name: other_file2,
+                        offset: other_offset2,
+                    },
+                ) => {
+                    // If both items were included in the same file, compare the offset of their `#include` directives.
+                    if file2 == other_file2 {
+                        return offset2.cmp(other_offset2);
+                    }
+
+                    // Find the offset of where `file` is transivitely included in `ancestor_file`.
+                    let offset_in_ancestor =
+                        |mut file: String, ancestor_file: &str| {
+                            while file != ancestor_file {
+                                let include_location =
+                                    ctx.included_file_location(&file);
+                                file = if let IncludeLocation::File {
+                                    file_name: file,
+                                    offset,
+                                } = include_location
+                                {
+                                    if file == ancestor_file {
+                                        return Some(offset);
+                                    }
+
+                                    file
+                                } else {
+                                    break;
+                                }
+                            }
+
+                            None
+                        };
+
+                    if let Some(offset2) =
+                        offset_in_ancestor(file2.clone(), other_file2)
+                    {
+                        return offset2.cmp(other_offset2);
+                    }
+
+                    if let Some(other_offset2) =
+                        offset_in_ancestor(other_file2.clone(), file2)
+                    {
+                        return offset2.cmp(&other_offset2);
+                    }
+
+                    // Otherwise, go one level up.
+                    //
+                    // # Example
+                    //
+                    // a.h
+                    // ├── b.h
+                    // └── c.h
+                    //
+                    // When comparing items inside `b.h` and `c.h`, go up one level and
+                    // compare the include locations of `b.h` and `c.h` in `a.h` instead.
+                    include_location = ctx.included_file_location(file2);
+                    other_include_location =
+                        ctx.included_file_location(other_file2);
+                }
+                (
+                    File {
+                        file_name: file2, ..
+                    },
+                    Cli { .. },
+                ) => {
+                    // Continue checking one level up.
+                    include_location = ctx.included_file_location(file2);
+                }
+                (
+                    Cli { .. },
+                    File {
+                        file_name: other_file2,
+                        ..
+                    },
+                ) => {
+                    // Continue checking one level up.
+                    other_include_location =
+                        ctx.included_file_location(other_file2);
+                }
             }
-            (_, Some((Some(other_file2), other_offset2)))
-                if file == other_file2 =>
-            {
-                offset.cmp(&other_offset2)
-            }
-            // If both items were included in the same file, compare the offset of their `#include` directives.
-            (Some((file2, offset2)), Some((other_file2, other_offset2)))
-                if file2 == other_file2 =>
-            {
-                offset2.cmp(&other_offset2)
-            }
-            // Otherwise, keep the original sorting.
-            _ => cmp::Ordering::Equal,
         }
     }
 
