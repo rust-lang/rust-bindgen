@@ -25,6 +25,8 @@ use crate::codegen::utils::type_from_named;
 use crate::codegen::utils::{fnsig_argument_type, fnsig_return_ty_internal};
 use crate::codegen::CodegenError;
 use crate::codegen::ToRustTyOrOpaque;
+use crate::ir::comp::Field;
+use crate::ir::comp::FieldMethods;
 use crate::ir::item::ItemCanonicalName;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
@@ -3219,6 +3221,32 @@ impl cmacro::CodegenContext for BindgenContext {
 
         if let Some(ty) = self.type_by_name(ty) {
             return Some(ty.to_rust_ty_or_opaque(self, &()));
+        }
+
+        None
+    }
+
+    fn resolve_field_ty(&self, ty: &str, field: &str) -> Option<syn::Type> {
+        let field_name = field;
+
+        if let Some(ty) = self.type_by_name(ty) {
+            let ty = self.resolve_type(*ty).canonical_type(self);
+
+            if let TypeKind::Comp(comp_info) = ty.kind() {
+                for field in comp_info.fields() {
+                    match field {
+                        Field::DataMember(data_member)
+                            if data_member.name() == Some(field_name) =>
+                        {
+                            let field_ty = data_member.ty();
+                            return Some(
+                                field_ty.to_rust_ty_or_opaque(self, &()),
+                            );
+                        }
+                        _ => (),
+                    }
+                }
+            }
         }
 
         None
