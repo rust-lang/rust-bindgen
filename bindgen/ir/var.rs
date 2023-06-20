@@ -504,10 +504,11 @@ fn get_integer_literal_from_cursor(cursor: &clang::Cursor) -> Option<i64> {
     value
 }
 
+#[cfg_attr(not(feature = "experimental"), allow(unused_variables))]
 fn duplicated_macro_diagnostic(
     macro_name: &str,
-    _location: crate::clang::SourceLocation,
-    _ctx: &BindgenContext,
+    location: crate::clang::SourceLocation,
+    ctx: &BindgenContext,
 ) {
     warn!("Duplicated macro definition: {}", macro_name);
 
@@ -525,19 +526,24 @@ fn duplicated_macro_diagnostic(
     //
     // Will trigger this message even though there's nothing wrong with it.
     #[allow(clippy::overly_complex_bool_expr)]
-    if false && _ctx.options().emit_diagnostics {
+    if false && ctx.options().emit_diagnostics {
         use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
         use std::borrow::Cow;
 
         let mut slice = Slice::default();
         let mut source = Cow::from(macro_name);
 
-        let (file, line, col, _) = _location.location();
-        if let Some(filename) = file.name() {
-            if let Ok(Some(code)) = get_line(&filename, line) {
+        if let crate::clang::SourceLocation::File {
+            file_name,
+            line,
+            column,
+            ..
+        } = location
+        {
+            if let Ok(Some(code)) = get_line(&file_name, line) {
                 source = code.into();
             }
-            slice.with_location(filename, line, col);
+            slice.with_location(file_name, line, column);
         }
 
         slice.with_source(source);

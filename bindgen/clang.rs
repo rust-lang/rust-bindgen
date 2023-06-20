@@ -8,6 +8,7 @@ use crate::ir::context::{BindgenContext, IncludeLocation};
 use clang_sys::*;
 use std::cmp;
 
+use std::convert::TryInto;
 use std::ffi::{CStr, CString};
 use std::fmt;
 use std::fs::OpenOptions;
@@ -137,8 +138,7 @@ impl Cursor {
 
     /// Returns whether the cursor refers to a built-in definition.
     pub(crate) fn is_builtin(&self) -> bool {
-        let (file, _, _, _) = self.location().location();
-        file.name().is_none()
+        matches!(self.location(), SourceLocation::Builtin { .. })
     }
 
     /// Get the `Cursor` for this cursor's referent's lexical parent.
@@ -378,8 +378,31 @@ impl Cursor {
     /// Get the source location for the referent.
     pub(crate) fn location(&self) -> SourceLocation {
         unsafe {
-            SourceLocation {
-                x: clang_getCursorLocation(self.x),
+            let location = clang_getCursorLocation(self.x);
+
+            let mut file = mem::zeroed();
+            let mut line = 0;
+            let mut column = 0;
+            let mut offset = 0;
+            clang_getSpellingLocation(
+                location,
+                &mut file,
+                &mut line,
+                &mut column,
+                &mut offset,
+            );
+
+            if file.is_null() {
+                SourceLocation::Builtin {
+                    offset: offset.try_into().unwrap(),
+                }
+            } else {
+                SourceLocation::File {
+                    file_name: cxstring_into_string(clang_getFileName(file)),
+                    line: line.try_into().unwrap(),
+                    column: column.try_into().unwrap(),
+                    offset: offset.try_into().unwrap(),
+                }
             }
         }
     }
@@ -514,11 +537,7 @@ impl Cursor {
         for child in &children {
             if child.kind() == CXCursor_InclusionDirective {
                 if let Some(included_file) = child.get_included_file_name() {
-                    let location = child.location();
-                    let (source_file, _, _, offset) = location.location();
-
-                    let source_file = source_file.name();
-                    ctx.add_include(source_file, included_file, offset);
+                    ctx.add_include(included_file, child.location());
                 }
             }
         }
@@ -529,171 +548,16 @@ impl Cursor {
         }
     }
 
-    /// Compare source order of two cursors, considering `#include` directives.
-    ///
-    /// Built-in items provided by the compiler (which don't have a source file),
-    /// are sorted first. Remaining files are sorted by their position in the source file.
-    /// If the items' source files differ, they are sorted by the position of the first
-    /// `#include` for their source file. If no source files are included, `None` is returned.
+    /// Compare two cursors according how they appear in source files.
     fn cmp_by_source_order(
         &self,
         other: &Self,
         ctx: &BindgenContext,
     ) -> cmp::Ordering {
-        let (file, _, _, offset) = self.location().location();
-        let (other_file, _, _, other_offset) = other.location().location();
+        let location = self.location();
+        let other_location = other.location();
 
-        let (file, other_file) = match (file.name(), other_file.name()) {
-            (Some(file), Some(other_file)) => (file, other_file),
-            // Keep the original sorting of built-in definitions.
-            (None, _) | (_, None) => return cmp::Ordering::Equal,
-        };
-
-        // If both items are in the same source file, simply compare the offset.
-        if file == other_file {
-            return offset.cmp(&other_offset);
-        }
-
-        let mut include_location = ctx.included_file_location(&file);
-        let mut other_include_location =
-            ctx.included_file_location(&other_file);
-
-        use IncludeLocation::*;
-
-        loop {
-            match (&include_location, &other_include_location) {
-                // Both items are in the main header file, this should already have been handled at this point.
-                (Main, Main) => {
-                    unreachable!("Should have been handled at this point.")
-                }
-                // Headers passed as CLI arguments come before the main header file.
-                (Main, Cli { .. }) => return cmp::Ordering::Greater,
-                (Cli { .. }, Main) => return cmp::Ordering::Less,
-                // If both were included via CLI arguments, compare their offset.
-                (
-                    Cli { offset: offset2 },
-                    Cli {
-                        offset: other_offset2,
-                    },
-                ) => return offset2.cmp(other_offset2),
-                // If an item was included in the same source file as the other item,
-                // compare its `#include` location offset the offset of the other item.
-                (
-                    File {
-                        file_name: ref file2,
-                        offset: offset2,
-                    },
-                    Main,
-                ) => {
-                    if *file2 == other_file {
-                        return offset2.cmp(&other_offset);
-                    }
-
-                    // Continue checking one level up.
-                    include_location = ctx.included_file_location(file2);
-                }
-                (
-                    Main,
-                    File {
-                        file_name: ref other_file2,
-                        offset: other_offset2,
-                    },
-                ) => {
-                    if file == *other_file2 {
-                        return offset.cmp(other_offset2);
-                    }
-
-                    // Continue checking one level up.
-                    other_include_location =
-                        ctx.included_file_location(other_file2);
-                }
-                (
-                    File {
-                        file_name: file2,
-                        offset: offset2,
-                    },
-                    File {
-                        file_name: other_file2,
-                        offset: other_offset2,
-                    },
-                ) => {
-                    // If both items were included in the same file, compare the offset of their `#include` directives.
-                    if file2 == other_file2 {
-                        return offset2.cmp(other_offset2);
-                    }
-
-                    // Find the offset of where `file` is transivitely included in `ancestor_file`.
-                    let offset_in_ancestor =
-                        |mut file: String, ancestor_file: &str| {
-                            while file != ancestor_file {
-                                let include_location =
-                                    ctx.included_file_location(&file);
-                                file = if let IncludeLocation::File {
-                                    file_name: file,
-                                    offset,
-                                } = include_location
-                                {
-                                    if file == ancestor_file {
-                                        return Some(offset);
-                                    }
-
-                                    file
-                                } else {
-                                    break;
-                                }
-                            }
-
-                            None
-                        };
-
-                    if let Some(offset2) =
-                        offset_in_ancestor(file2.clone(), other_file2)
-                    {
-                        return offset2.cmp(other_offset2);
-                    }
-
-                    if let Some(other_offset2) =
-                        offset_in_ancestor(other_file2.clone(), file2)
-                    {
-                        return offset2.cmp(&other_offset2);
-                    }
-
-                    // Otherwise, go one level up.
-                    //
-                    // # Example
-                    //
-                    // a.h
-                    // ├── b.h
-                    // └── c.h
-                    //
-                    // When comparing items inside `b.h` and `c.h`, go up one level and
-                    // compare the include locations of `b.h` and `c.h` in `a.h` instead.
-                    include_location = ctx.included_file_location(file2);
-                    other_include_location =
-                        ctx.included_file_location(other_file2);
-                }
-                (
-                    File {
-                        file_name: file2, ..
-                    },
-                    Cli { .. },
-                ) => {
-                    // Continue checking one level up.
-                    include_location = ctx.included_file_location(file2);
-                }
-                (
-                    Cli { .. },
-                    File {
-                        file_name: other_file2,
-                        ..
-                    },
-                ) => {
-                    // Continue checking one level up.
-                    other_include_location =
-                        ctx.included_file_location(other_file2);
-                }
-            }
-        }
+        location.cmp_by_source_order(&other_location, ctx)
     }
 
     /// Collect all of this cursor's children into a vec and return them.
@@ -1698,36 +1562,119 @@ impl ExactSizeIterator for TypeTemplateArgIterator {
     }
 }
 
-/// A `SourceLocation` is a file, line, column, and byte offset location for
-/// some source text.
-pub(crate) struct SourceLocation {
-    x: CXSourceLocation,
+/// A location of some source code.
+#[derive(Clone)]
+pub(crate) enum SourceLocation {
+    /// Location of a built-in.
+    Builtin {
+        /// Offset.
+        offset: usize,
+    },
+    /// Location in a source file.
+    File {
+        /// Name of the source file.
+        file_name: String,
+        /// Line in the source file.
+        line: usize,
+        /// Column in the source file.
+        column: usize,
+        /// Offset in the source file.
+        offset: usize,
+    },
 }
 
 impl SourceLocation {
-    /// Get the (file, line, column, byte offset) tuple for this source
-    /// location.
-    pub(crate) fn location(&self) -> (File, usize, usize, usize) {
-        unsafe {
-            let mut file = mem::zeroed();
-            let mut line = 0;
-            let mut col = 0;
-            let mut off = 0;
-            clang_getFileLocation(
-                self.x, &mut file, &mut line, &mut col, &mut off,
-            );
-            (File { x: file }, line as usize, col as usize, off as usize)
+    /// Locations of built-in items provided by the compiler (which don't have a source file),
+    /// are sorted first. Remaining locations are sorted by their position in the source file.
+    /// If the locations' source files differ, they are sorted by the position of where the
+    /// source files are first transitively included, see `IncludeLocation::cmp_by_source_order`.
+    pub fn cmp_by_source_order(
+        &self,
+        other: &Self,
+        ctx: &BindgenContext,
+    ) -> cmp::Ordering {
+        match (self, other) {
+            (
+                SourceLocation::Builtin { offset },
+                SourceLocation::Builtin {
+                    offset: other_offset,
+                },
+            ) => offset.cmp(other_offset),
+            // Built-ins come first.
+            (SourceLocation::Builtin { .. }, _) => cmp::Ordering::Less,
+            (_, SourceLocation::Builtin { .. }) => {
+                other.cmp_by_source_order(self, ctx).reverse()
+            }
+            (
+                SourceLocation::File {
+                    file_name, offset, ..
+                },
+                SourceLocation::File {
+                    file_name: other_file_name,
+                    offset: other_offset,
+                    ..
+                },
+            ) => {
+                if file_name == other_file_name {
+                    return offset.cmp(other_offset);
+                }
+
+                // If `file` is transitively included via `ancestor_file`,
+                // find the offset of the include directive in `ancestor_file`.
+                let offset_in_ancestor = |file: &str, ancestor_file: &str| {
+                    let mut file = file;
+                    while file != ancestor_file {
+                        let include_location = ctx.include_location(file);
+                        file = if let IncludeLocation::File {
+                            file_name: file,
+                            offset,
+                            ..
+                        } = include_location
+                        {
+                            if file == ancestor_file {
+                                return Some(offset);
+                            }
+
+                            file
+                        } else {
+                            break;
+                        }
+                    }
+
+                    None
+                };
+
+                if let Some(offset) =
+                    offset_in_ancestor(file_name, other_file_name)
+                {
+                    return offset.cmp(other_offset);
+                }
+
+                if let Some(other_offset) =
+                    offset_in_ancestor(other_file_name, file_name)
+                {
+                    return offset.cmp(other_offset);
+                }
+
+                // If the source files are siblings, compare their include locations.
+                let parent = ctx.include_location(file_name);
+                let other_parent = ctx.include_location(other_file_name);
+                parent.cmp_by_source_order(other_parent, ctx)
+            }
         }
     }
 }
 
 impl fmt::Display for SourceLocation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let (file, line, col, _) = self.location();
-        if let Some(name) = file.name() {
-            write!(f, "{}:{}:{}", name, line, col)
-        } else {
-            "builtin definitions".fmt(f)
+        match self {
+            Self::Builtin { .. } => "built-in".fmt(f),
+            Self::File {
+                file_name,
+                line,
+                column,
+                ..
+            } => write!(f, "{}:{}:{}", file_name, line, column),
         }
     }
 }
@@ -1834,21 +1781,6 @@ impl Iterator for CommentAttributesIterator {
         } else {
             None
         }
-    }
-}
-
-/// A source file.
-pub(crate) struct File {
-    x: CXFile,
-}
-
-impl File {
-    /// Get the name of this source file.
-    pub(crate) fn name(&self) -> Option<String> {
-        if self.x.is_null() {
-            return None;
-        }
-        Some(unsafe { cxstring_into_string(clang_getFileName(self.x)) })
     }
 }
 

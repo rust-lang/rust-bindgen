@@ -4631,17 +4631,19 @@ fn unsupported_abi_diagnostic(
             Level::Note,
         );
 
-        if let Some(loc) = location {
-            let (file, line, col, _) = loc.location();
-
-            if let Some(filename) = file.name() {
-                if let Ok(Some(source)) = get_line(&filename, line) {
-                    let mut slice = Slice::default();
-                    slice
-                        .with_source(source)
-                        .with_location(filename, line, col);
-                    diag.add_slice(slice);
-                }
+        if let Some(crate::clang::SourceLocation::File {
+            file_name,
+            line,
+            column,
+            ..
+        }) = location.cloned()
+        {
+            if let Ok(Some(source)) = get_line(&file_name, line) {
+                let mut slice = Slice::default();
+                slice
+                    .with_source(source)
+                    .with_location(file_name, line, column);
+                diag.add_slice(slice);
             }
         }
 
@@ -4649,10 +4651,11 @@ fn unsupported_abi_diagnostic(
     }
 }
 
+#[cfg_attr(not(feature = "experimental"), allow(unused_variables))]
 fn variadic_fn_diagnostic(
     fn_name: &str,
-    _location: Option<&crate::clang::SourceLocation>,
-    _ctx: &BindgenContext,
+    location: Option<&crate::clang::SourceLocation>,
+    ctx: &BindgenContext,
 ) {
     warn!(
         "Cannot generate wrapper for the static variadic function `{}`.",
@@ -4660,7 +4663,7 @@ fn variadic_fn_diagnostic(
     );
 
     #[cfg(feature = "experimental")]
-    if _ctx.options().emit_diagnostics {
+    if ctx.options().emit_diagnostics {
         use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
 
         let mut diag = Diagnostic::default();
@@ -4669,17 +4672,19 @@ fn variadic_fn_diagnostic(
             .add_annotation("The `--wrap-static-fns` feature does not support variadic functions.", Level::Note)
             .add_annotation("No code will be generated for this function.", Level::Note);
 
-        if let Some(loc) = _location {
-            let (file, line, col, _) = loc.location();
-
-            if let Some(filename) = file.name() {
-                if let Ok(Some(source)) = get_line(&filename, line) {
-                    let mut slice = Slice::default();
-                    slice
-                        .with_source(source)
-                        .with_location(filename, line, col);
-                    diag.add_slice(slice);
-                }
+        if let Some(crate::clang::SourceLocation::File {
+            file_name,
+            line,
+            column,
+            ..
+        }) = location.cloned()
+        {
+            if let Ok(Some(source)) = get_line(&file_name, line) {
+                let mut slice = Slice::default();
+                slice
+                    .with_source(source)
+                    .with_location(file_name, line, column);
+                diag.add_slice(slice);
             }
         }
 
