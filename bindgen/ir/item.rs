@@ -17,7 +17,7 @@ use super::module::Module;
 use super::template::{AsTemplateParam, TemplateParameters};
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{Type, TypeKind};
-use crate::clang;
+use crate::clang::{self, SourceLocation};
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 
 use std::cell::{Cell, OnceCell};
@@ -640,12 +640,10 @@ impl Item {
         }
 
         if !ctx.options().blocklisted_files.is_empty() {
-            if let Some(location) = &self.location {
-                let (file, _, _, _) = location.location();
-                if let Some(filename) = file.name() {
-                    if ctx.options().blocklisted_files.matches(filename) {
-                        return true;
-                    }
+            if let Some(SourceLocation::File { file_name, .. }) = &self.location
+            {
+                if ctx.options().blocklisted_files.matches(file_name) {
+                    return true;
                 }
             }
         }
