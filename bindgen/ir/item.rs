@@ -640,9 +640,13 @@ impl Item {
         }
 
         if !ctx.options().blocklisted_files.is_empty() {
-            if let Some(SourceLocation::File { file_name, .. }) = &self.location
+            if let Some(SourceLocation::File { file_path, .. }) = &self.location
             {
-                if ctx.options().blocklisted_files.matches(file_name) {
+                if ctx
+                    .options()
+                    .blocklisted_files
+                    .matches(file_path.display().to_string())
+                {
                     return true;
                 }
             }

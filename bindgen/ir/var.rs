@@ -509,16 +509,16 @@ fn duplicated_macro_diagnostic(
         let mut source = Cow::from(macro_name);
 
         if let crate::clang::SourceLocation::File {
-            file_name,
+            file_path,
             line,
             column,
             ..
         } = location
         {
-            if let Ok(Some(code)) = get_line(&file_name, line) {
+            if let Ok(Some(code)) = get_line(&file_path, line) {
                 source = code.into();
             }
-            slice.with_location(file_name, line, column);
+            slice.with_location(file_path, line, column);
         }
 
         slice.with_source(source);

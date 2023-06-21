@@ -7,7 +7,6 @@
 use crate::ir::context::{BindgenContext, IncludeLocation};
 use clang_sys::*;
 use std::cmp;
-
 use std::convert::TryInto;
 use std::ffi::{CStr, CString};
 use std::fmt;
@@ -15,6 +14,8 @@ use std::fs::OpenOptions;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong, c_ulonglong};
+use std::path::Path;
+use std::path::PathBuf;
 use std::sync::OnceLock;
 use std::{mem, ptr, slice};
 
@@ -397,8 +398,9 @@ impl Cursor {
                     offset: offset.try_into().unwrap(),
                 }
             } else {
+                let file_name = cxstring_into_string(clang_getFileName(file));
                 SourceLocation::File {
-                    file_name: cxstring_into_string(clang_getFileName(file)),
+                    file_path: absolutize_path(file_name),
                     line: line.try_into().unwrap(),
                     column: column.try_into().unwrap(),
                     offset: offset.try_into().unwrap(),
@@ -536,8 +538,12 @@ impl Cursor {
         let mut children = self.collect_children();
         for child in &children {
             if child.kind() == CXCursor_InclusionDirective {
-                if let Some(included_file) = child.get_included_file_name() {
-                    ctx.add_include(included_file, child.location());
+                if let Some(included_file_name) = child.get_included_file_name()
+                {
+                    ctx.add_include(
+                        absolutize_path(included_file_name),
+                        child.location(),
+                    );
                 }
             }
         }
@@ -1576,7 +1582,7 @@ pub(crate) enum SourceLocation {
     /// Location in a source file.
     File {
         /// Name of the source file.
-        file_name: String,
+        file_path: PathBuf,
         /// Line in the source file.
         line: usize,
         /// Column in the source file.
@@ -1584,6 +1590,18 @@ pub(crate) enum SourceLocation {
         /// Offset in the source file.
         offset: usize,
     },
+}
+
+fn absolutize_path<P: AsRef<Path>>(path: P) -> PathBuf {
+    let path = path.as_ref();
+
+    if path.is_relative() {
+        std::env::current_dir()
+            .expect("Cannot retrieve current directory")
+            .join(path)
+    } else {
+        path.to_owned()
+    }
 }
 
 impl SourceLocation {
@@ -1610,26 +1628,26 @@ impl SourceLocation {
             }
             (
                 SourceLocation::File {
-                    file_name, offset, ..
+                    file_path, offset, ..
                 },
                 SourceLocation::File {
-                    file_name: other_file_name,
+                    file_path: other_file_path,
                     offset: other_offset,
                     ..
                 },
             ) => {
-                if file_name == other_file_name {
+                if file_path == other_file_path {
                     return offset.cmp(other_offset);
                 }
 
                 // If `file` is transitively included via `ancestor_file`,
                 // find the offset of the include directive in `ancestor_file`.
-                let offset_in_ancestor = |file: &str, ancestor_file: &str| {
+                let offset_in_ancestor = |file: &Path, ancestor_file: &Path| {
                     let mut file = file;
                     while file != ancestor_file {
                         let include_location = ctx.include_location(file);
                         file = if let IncludeLocation::File {
-                            file_name: file,
+                            file_path: file,
                             offset,
                             ..
                         } = include_location
@@ -1648,20 +1666,20 @@ impl SourceLocation {
                 };
 
                 if let Some(offset) =
-                    offset_in_ancestor(file_name, other_file_name)
+                    offset_in_ancestor(file_path, other_file_path)
                 {
                     return offset.cmp(other_offset);
                 }
 
                 if let Some(other_offset) =
-                    offset_in_ancestor(other_file_name, file_name)
+                    offset_in_ancestor(other_file_path, file_path)
                 {
                     return offset.cmp(other_offset);
                 }
 
                 // If the source files are siblings, compare their include locations.
-                let parent = ctx.include_location(file_name);
-                let other_parent = ctx.include_location(other_file_name);
+                let parent = ctx.include_location(file_path);
+                let other_parent = ctx.include_location(other_file_path);
                 parent.cmp_by_source_order(other_parent, ctx)
             }
         }
@@ -1673,11 +1691,11 @@ impl fmt::Display for SourceLocation {
         match self {
             Self::Builtin { .. } => "built-in".fmt(f),
             Self::File {
-                file_name,
+                file_path,
                 line,
                 column,
                 ..
-            } => write!(f, "{}:{}:{}", file_name, line, column),
+            } => write!(f, "{}:{}:{}", file_path.display(), line, column),
         }
     }
 }
@@ -1906,6 +1924,15 @@ impl TranslationUnit {
                 x: clang_getTranslationUnitCursor(self.x),
             }
         }
+    }
+
+    /// Get the source file path of this translation unit.
+    pub(crate) fn path(&self) -> PathBuf {
+        let file_name = unsafe {
+            cxstring_into_string(clang_getTranslationUnitSpelling(self.x))
+        };
+
+        absolutize_path(file_name)
     }
 
     /// Save a translation unit to the given file.
