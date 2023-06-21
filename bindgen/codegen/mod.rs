@@ -4632,17 +4632,17 @@ fn unsupported_abi_diagnostic(
         );
 
         if let Some(crate::clang::SourceLocation::File {
-            file_name,
+            file_path,
             line,
             column,
             ..
         }) = location.cloned()
         {
-            if let Ok(Some(source)) = get_line(&file_name, line) {
+            if let Ok(Some(source)) = get_line(&file_path, line) {
                 let mut slice = Slice::default();
                 slice
                     .with_source(source)
-                    .with_location(file_name, line, column);
+                    .with_location(file_path, line, column);
                 diag.add_slice(slice);
             }
         }
@@ -4673,17 +4673,17 @@ fn variadic_fn_diagnostic(
             .add_annotation("No code will be generated for this function.", Level::Note);
 
         if let Some(crate::clang::SourceLocation::File {
-            file_name,
+            file_path,
             line,
             column,
             ..
         }) = location.cloned()
         {
-            if let Ok(Some(source)) = get_line(&file_name, line) {
+            if let Ok(Some(source)) = get_line(&file_path, line) {
                 let mut slice = Slice::default();
                 slice
                     .with_source(source)
-                    .with_location(file_name, line, column);
+                    .with_location(file_path, line, column);
                 diag.add_slice(slice);
             }
         }

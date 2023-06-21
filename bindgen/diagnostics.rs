@@ -2,8 +2,8 @@
 //!
 //! The entry point of this module is the [`Diagnostic`] type.
 
-use std::fmt::Write;
 use std::io::{self, BufRead, BufReader};
+use std::path::Path;
 use std::{borrow::Cow, fs::File};
 
 use annotate_snippets::{
@@ -162,25 +162,24 @@ impl<'a> Slice<'a> {
     }
 
     /// Set the file, line and column.
-    pub(crate) fn with_location(
+    pub(crate) fn with_location<P: AsRef<Path>>(
         &mut self,
-        mut name: String,
+        path: P,
         line: usize,
         col: usize,
     ) -> &mut Self {
-        write!(name, ":{}:{}", line, col)
-            .expect("Writing to a string cannot fail");
-        self.filename = Some(name);
+        self.filename =
+            Some(format!("{}:{}:{}", path.as_ref().display(), line, col));
         self.line = Some(line);
         self
     }
 }
 
-pub(crate) fn get_line(
-    filename: &str,
+pub(crate) fn get_line<P: AsRef<Path>>(
+    file_path: P,
     line: usize,
 ) -> io::Result<Option<String>> {
-    let file = BufReader::new(File::open(filename)?);
+    let file = BufReader::new(File::open(file_path.as_ref())?);
     if let Some(line) = file.lines().nth(line.wrapping_sub(1)) {
         return line.map(Some);
     }
