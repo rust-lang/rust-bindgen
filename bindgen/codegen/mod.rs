@@ -714,18 +714,18 @@ impl CodeGenerator for Var {
                     let len = proc_macro2::Literal::usize_unsuffixed(
                         cstr_bytes.len(),
                     );
-                    let cstr = CStr::from_bytes_with_nul(&cstr_bytes).unwrap();
 
                     // TODO: Here we ignore the type we just made up, probably
                     // we should refactor how the variable type and ty ID work.
                     let array_ty = quote! { [u8; #len] };
                     let cstr_ty = quote! { ::#prefix::ffi::CStr };
 
-                    let bytes = proc_macro2::Literal::byte_string(
-                        cstr.to_bytes_with_nul(),
-                    );
+                    let bytes = proc_macro2::Literal::byte_string(&cstr_bytes);
 
-                    if rust_features.const_cstr && options.generate_cstr {
+                    if options.generate_cstr &&
+                        rust_features.const_cstr &&
+                        CStr::from_bytes_with_nul(&cstr_bytes).is_ok()
+                    {
                         result.push(quote! {
                             #(#attrs)*
                             #[allow(unsafe_code)]
