@@ -123,14 +123,6 @@ impl ParseCallbacks for WrapAsVariadicFn {
 }
 
 pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
-    fn try_strip_prefix<'a>(s: &'a str, prefix: &str) -> Option<&'a str> {
-        if s.starts_with(prefix) {
-            Some(&s[prefix.len()..])
-        } else {
-            None
-        }
-    }
-
     match cb {
         "enum-variant-rename" => Box::new(EnumVariantRename),
         "blocklisted-type-implements-trait" => {
@@ -139,17 +131,17 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
         "wrap-as-variadic-fn" => Box::new(WrapAsVariadicFn),
         call_back => {
             if let Some(prefix) =
-                try_strip_prefix(call_back, "remove-function-prefix-")
+                call_back.strip_prefix("remove-function-prefix-")
             {
                 let lnopc = RemovePrefixParseCallback::new(prefix);
                 Box::new(lnopc)
             } else if let Some(prefix) =
-                try_strip_prefix(call_back, "prefix-link-name-")
+                call_back.strip_prefix("prefix-link-name-")
             {
                 let plnpc = PrefixLinkNameParseCallback::new(prefix);
                 Box::new(plnpc)
             } else if let Some(default) =
-                try_strip_prefix(call_back, "field-visibility-default-")
+                call_back.strip_prefix("field-visibility-default-")
             {
                 Box::new(FieldVisibility {
                     default: default.parse().expect(
