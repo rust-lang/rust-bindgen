@@ -1,8 +1,8 @@
 [package]
 name = "quickchecking"
 description = "Bindgen property tests with quickcheck. Generate random valid C code and pass it to the csmith/predicate.py script"
-version = "0.1.0"
-authors = ["Shea Newton <sheanewt@gmail.com>"]
+version = "0.0.0"
+publish = false
 
 [lib]
 name = "quickchecking"
