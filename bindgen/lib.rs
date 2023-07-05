@@ -1244,7 +1244,7 @@ fn commandline_flag_unit_test_function() {
     let bindings = crate::builder();
     let command_line_flags = bindings.command_line_flags();
 
-    let test_cases = vec![
+    let test_cases = [
         "--rust-target",
         "--no-derive-default",
         "--generate",
@@ -1263,7 +1263,7 @@ fn commandline_flag_unit_test_function() {
         .allowlist_function("safe_function");
 
     let command_line_flags = bindings.command_line_flags();
-    let test_cases = vec![
+    let test_cases = [
         "--rust-target",
         "input_header",
         "--no-derive-default",
