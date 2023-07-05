@@ -4,6 +4,7 @@ description = "Bindgen property tests with quickcheck. Generate random valid C c
 version = "0.0.0"
 publish = false
 rust-version = "1.64"
+edition = "2018"
 
 [lib]
 name = "quickchecking"
