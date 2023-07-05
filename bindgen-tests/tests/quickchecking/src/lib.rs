@@ -82,7 +82,7 @@ fn run_predicate_script(
             .output()?;
     }
 
-    Ok(Command::new(&predicate_script_path_string)
+    Ok(Command::new(predicate_script_path_string)
         .arg(&header_path_string)
         .output()?)
 }
