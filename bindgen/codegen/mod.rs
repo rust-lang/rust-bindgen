@@ -4912,7 +4912,7 @@ pub(crate) mod utils {
 
         let items = vec![use_objc, id_type];
         let old_items = mem::replace(result, items);
-        result.extend(old_items.into_iter());
+        result.extend(old_items);
     }
 
     pub(crate) fn prepend_block_header(
@@ -4931,7 +4931,7 @@ pub(crate) mod utils {
 
         let items = vec![use_block];
         let old_items = mem::replace(result, items);
-        result.extend(old_items.into_iter());
+        result.extend(old_items);
     }
 
     pub(crate) fn prepend_union_types(
@@ -5043,7 +5043,7 @@ pub(crate) mod utils {
         ];
 
         let old_items = mem::replace(result, items);
-        result.extend(old_items.into_iter());
+        result.extend(old_items);
     }
 
     pub(crate) fn prepend_incomplete_array_types(
@@ -5119,7 +5119,7 @@ pub(crate) mod utils {
         ];
 
         let old_items = mem::replace(result, items);
-        result.extend(old_items.into_iter());
+        result.extend(old_items);
     }
 
     pub(crate) fn prepend_complex_type(
@@ -5136,7 +5136,7 @@ pub(crate) mod utils {
 
         let items = vec![complex_type];
         let old_items = mem::replace(result, items);
-        result.extend(old_items.into_iter());
+        result.extend(old_items);
     }
 
     pub(crate) fn build_path(

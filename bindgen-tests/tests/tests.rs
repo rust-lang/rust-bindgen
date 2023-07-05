@@ -254,7 +254,7 @@ fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
                 .last()
                 .and_then(shlex::split)
                 .unwrap();
-            flags.extend(extra_flags.into_iter());
+            flags.extend(extra_flags);
         } else if line.contains("bindgen-osx-only") {
             let prepend_flags = ["--raw-line", "#![cfg(target_os=\"macos\")]"];
             flags = prepend_flags
@@ -304,10 +304,7 @@ fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
         "",
     ];
 
-    let args = prepend
-        .iter()
-        .map(ToString::to_string)
-        .chain(flags.into_iter());
+    let args = prepend.iter().map(ToString::to_string).chain(flags);
 
     let mut builder = builder_from_flags(args)?.0;
     if let Some(ref parse_cb) = parse_callbacks {
