@@ -1,12 +1,14 @@
 extern crate bindgen;
 extern crate clap;
-extern crate diff;
 #[cfg(feature = "logging")]
 extern crate env_logger;
 extern crate shlex;
 
 use bindgen::{clang_version, Builder};
+use console::{style, Style};
+use similar::{ChangeTag, TextDiff};
 use std::env;
+use std::fmt;
 use std::fs;
 use std::io::{BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::{Path, PathBuf};
@@ -52,13 +54,7 @@ fn error_diff_mismatch(
         println!("+++ generated from: {:?}", header);
     }
 
-    for diff in diff::lines(expected, actual) {
-        match diff {
-            diff::Result::Left(l) => println!("-{}", l),
-            diff::Result::Both(l, _) => println!(" {}", l),
-            diff::Result::Right(r) => println!("+{}", r),
-        }
-    }
+    show_diff(expected, actual);
 
     if should_overwrite_expected() {
         // Overwrite the expectation with actual output.
@@ -82,6 +78,52 @@ fn error_diff_mismatch(
     }
 
     Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation or with BINDGEN_TESTS_DIFFTOOL=meld to do this manually."))
+}
+
+struct Line(Option<usize>);
+
+impl fmt::Display for Line {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self.0 {
+            None => write!(f, "    "),
+            Some(idx) => write!(f, "{:<4}", idx + 1),
+        }
+    }
+}
+
+fn show_diff(old: &str, new: &str) {
+    let diff = TextDiff::from_lines(old, new);
+    for (count, group) in diff.grouped_ops(3).iter().enumerate() {
+        if count > 0 {
+            let message= format!("(chunk {count}/n)");
+            println!("{}", style(message).cyan().dim());
+        }
+        for diff_op in group {
+            for change in diff.iter_inline_changes(diff_op) {
+                let (sign, styled) = match change.tag() {
+                    ChangeTag::Delete => ("-", Style::new().red()),
+                    ChangeTag::Insert => ("+", Style::new().green()),
+                    ChangeTag::Equal => (" ", Style::new()),
+                };
+                print!(
+                    "{}{}| {}",
+                    style(Line(change.old_index())).dim(),
+                    style(Line(change.new_index())).dim(),
+                    styled.apply_to(sign).bold(),
+                );
+                for (emphasized, text) in change.iter_strings_lossy() {
+                    if emphasized {
+                        print!("{}", styled.apply_to(text).underlined());
+                    } else {
+                        print!("{}", styled.apply_to(text));
+                    }
+                }
+                if change.missing_newline() {
+                    println!();
+                }
+            }
+        }
+    }
 }
 
 fn compare_generated_header(
