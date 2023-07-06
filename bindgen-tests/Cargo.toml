@@ -13,7 +13,7 @@ prettyplease = { version = "0.2.7", features = ["verbatim"] }
 syn = { version = "2.0" }
 tempfile = "3"
 similar = { version = "2.2.1", features = ["inline"] }
-console = "0.15.7"
+owo-colors = "3.5.0"
 
 [features]
 logging = ["bindgen/logging"]

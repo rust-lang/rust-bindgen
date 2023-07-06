@@ -5,7 +5,7 @@ extern crate env_logger;
 extern crate shlex;
 
 use bindgen::{clang_version, Builder};
-use console::{style, Style};
+use owo_colors::{OwoColorize, Style};
 use similar::{ChangeTag, TextDiff};
 use std::env;
 use std::fmt;
@@ -95,27 +95,27 @@ fn show_diff(old: &str, new: &str) {
     let diff = TextDiff::from_lines(old, new);
     for (count, group) in diff.grouped_ops(3).iter().enumerate() {
         if count > 0 {
-            let message= format!("(chunk {count}/n)");
-            println!("{}", style(message).cyan().dim());
+            let message = format!("(chunk {count}/n)");
+            println!("{}", message.cyan().dimmed());
         }
         for diff_op in group {
             for change in diff.iter_inline_changes(diff_op) {
-                let (sign, styled) = match change.tag() {
+                let (sign, color) = match change.tag() {
                     ChangeTag::Delete => ("-", Style::new().red()),
                     ChangeTag::Insert => ("+", Style::new().green()),
                     ChangeTag::Equal => (" ", Style::new()),
                 };
                 print!(
                     "{}{}| {}",
-                    style(Line(change.old_index())).dim(),
-                    style(Line(change.new_index())).dim(),
-                    styled.apply_to(sign).bold(),
+                    Line(change.old_index()).style(color).dimmed(),
+                    Line(change.new_index()).style(color).dimmed(),
+                    sign.style(color).bold(),
                 );
                 for (emphasized, text) in change.iter_strings_lossy() {
                     if emphasized {
-                        print!("{}", styled.apply_to(text).underlined());
+                        print!("{}", text.style(color).underline());
                     } else {
-                        print!("{}", styled.apply_to(text));
+                        print!("{}", text.style(color));
                     }
                 }
                 if change.missing_newline() {
