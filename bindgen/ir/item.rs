@@ -1032,6 +1032,7 @@ impl Item {
                 FunctionKind::Method(MethodKind::Virtual { .. }) => {
                     cc.methods()
                 }
+                FunctionKind::Macro => true,
             },
         }
     }
@@ -1322,6 +1323,7 @@ impl Item {
             TypeKind::Void |
             TypeKind::Int(..) |
             TypeKind::Pointer(..) |
+            TypeKind::Function(..) |
             TypeKind::Float(..) => {}
             _ => panic!("Unsupported builtin type"),
         }

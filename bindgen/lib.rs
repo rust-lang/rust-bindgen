@@ -40,6 +40,7 @@ mod options;
 mod time;
 
 pub mod callbacks;
+pub mod function_types;
 
 mod clang;
 #[cfg(feature = "experimental")]
