@@ -4,7 +4,7 @@ extern crate clap;
 extern crate env_logger;
 extern crate shlex;
 
-use bindgen::{clang_version, Builder};
+use bindgen::{clang_version, function_types::FunctionType, Builder};
 use owo_colors::{OwoColorize, Style};
 use similar::{ChangeTag, TextDiff};
 use std::env;
@@ -700,6 +700,53 @@ fn test_wrap_static_fns() {
 
     let actual_c = fs::read_to_string(generated_path.with_extension("c"))
         .expect("Could not read actual wrap_static_fns.c");
+
+    if expected_c != actual_c {
+        error_diff_mismatch(
+            &actual_c,
+            &expected_c,
+            None,
+            &expect_path.with_extension("c"),
+        )
+        .unwrap();
+    }
+}
+
+#[test]
+fn test_function_macros() {
+    if env::current_dir().unwrap().ends_with("rust-bindgen") {
+        env::set_current_dir(Path::new("bindgen-tests")).unwrap();
+    }
+    if env::var("OUT_DIR").is_err() {
+        env::set_var("OUT_DIR", PathBuf::from("target/out"));
+    }
+    let expect_path = PathBuf::from("tests/expectations/tests/generated")
+        .join("function_macros");
+    println!("In path is ::: {}", expect_path.display());
+
+    let generated_path =
+        PathBuf::from(env::var("OUT_DIR").unwrap()).join("function_macros");
+    println!("Out path is ::: {}", generated_path.display());
+
+    let _bindings = Builder::default()
+        .header("tests/headers/function_macros.h")
+        .macro_function("SIMPLE", FunctionType::new::<(), ()>())
+        .macro_function("INDIRECT_SIMPLE", FunctionType::new::<(), ()>())
+        .macro_function("COMPLEX", FunctionType::new::<f32, u32>())
+        .macro_function("INDIRECT_COMPLEX", FunctionType::new::<f32, u32>())
+        .macro_function(
+            "CONDITIONAL_COMPLEX",
+            FunctionType::new::<f32, (bool, u32)>(),
+        )
+        .native_code_generation_path(generated_path.display().to_string())
+        .generate()
+        .expect("Failed to generate bindings");
+
+    let expected_c = fs::read_to_string(expect_path.with_extension("c"))
+        .expect("Could not read generated function_macros.c");
+
+    let actual_c = fs::read_to_string(generated_path.with_extension("c"))
+        .expect("Could not read actual function_macros.c");
 
     if expected_c != actual_c {
         error_diff_mismatch(
