@@ -4125,7 +4125,8 @@ impl CodeGenerator for Function {
         debug!("<Function as CodeGenerator>::codegen: item = {:?}", item);
         debug_assert!(item.is_enabled_for_codegen(ctx));
 
-        if self.kind() == FunctionKind::Macro {
+        let is_function_macro = self.kind() == FunctionKind::Macro;
+        if is_function_macro {
             result
                 .items_to_serialize
                 .push(SerializableItem::MacroFunction(item.id()));
@@ -4274,6 +4275,9 @@ impl CodeGenerator for Function {
 
         if should_wrap {
             let name = canonical_name.clone() + ctx.wrap_static_fns_suffix();
+            attributes.push(attributes::link_name::<true>(&name));
+        } else if is_function_macro && !has_link_name_attr {
+            let name = canonical_name.clone() + "__macro";
             attributes.push(attributes::link_name::<true>(&name));
         }
 
