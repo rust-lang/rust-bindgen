@@ -26,7 +26,7 @@ pub mod root {
     impl<T> ::std::clone::Clone for __BindgenUnionField<T> {
         #[inline]
         fn clone(&self) -> Self {
-            Self::new()
+            *self
         }
     }
     impl<T> ::std::marker::Copy for __BindgenUnionField<T> {}

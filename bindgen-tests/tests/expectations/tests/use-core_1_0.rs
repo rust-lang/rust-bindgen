@@ -25,7 +25,7 @@ impl<T> ::core::default::Default for __BindgenUnionField<T> {
 impl<T> ::core::clone::Clone for __BindgenUnionField<T> {
     #[inline]
     fn clone(&self) -> Self {
-        Self::new()
+        *self
     }
 }
 impl<T> ::core::marker::Copy for __BindgenUnionField<T> {}

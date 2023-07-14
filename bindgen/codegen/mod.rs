@@ -4990,7 +4990,7 @@ pub(crate) mod utils {
             impl<T> ::#prefix::clone::Clone for __BindgenUnionField<T> {
                 #[inline]
                 fn clone(&self) -> Self {
-                    Self::new()
+                    *self
                 }
             }
         };
