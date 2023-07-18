@@ -263,9 +263,9 @@ impl std::fmt::Display for Formatter {
 ///
 /// # Regular expression arguments
 ///
-/// Some [`Builder`] methods such as the `allowlist_*` and `blocklist_*` methods allow regular
+/// Some [`Builder`] methods, such as the `allowlist_*` and `blocklist_*`, allow regular
 /// expressions as arguments. These regular expressions will be enclosed in parentheses and
-/// anchored with `^` and `$`. So if the argument passed is `<regex>`, the regular expression to be
+/// anchored with `^` and `$`. So, if the argument passed is `<regex>`, the regular expression to be
 /// stored will be `^(<regex>)$`.
 ///
 /// As a consequence, regular expressions passed to `bindgen` will try to match the whole name of
@@ -273,16 +273,16 @@ impl std::fmt::Display for Formatter {
 /// `prefix`, the `prefix.*` regular expression must be used.
 ///
 /// Certain methods, like [`Builder::allowlist_function`], use regular expressions over function
-/// names. To match C++ methods, prefix the name of the type where they belong followed by an
-/// underscore. So if the type `Foo` has a method `bar`, it can be matched with the `Foo_bar`
+/// names. To match C++ methods, prefix the name of the type where they belong, followed by an
+/// underscore. So, if the type `Foo` has a method `bar`, it can be matched with the `Foo_bar`
 /// regular expression.
 ///
 /// Additionally, Objective-C interfaces can be matched by prefixing the regular expression with
-/// `I`. For example, the `IFoo` regular expression matches the `Foo` interface and the `IFoo_foo`
+/// `I`. For example, the `IFoo` regular expression matches the `Foo` interface, and the `IFoo_foo`
 /// regular expression matches the `foo` method of the `Foo` interface.
 ///
 /// Releases of `bindgen` with a version lesser or equal to `0.62.0` used to accept the wildcard
-/// pattern `*` as a valid regular expression. This behavior has been deprecated and the `.*`
+/// pattern `*` as a valid regular expression. This behavior has been deprecated, and the `.*`
 /// regular expression must be used instead.
 #[derive(Debug, Default, Clone)]
 pub struct Builder {
