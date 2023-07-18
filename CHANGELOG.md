@@ -176,6 +176,9 @@
   the `incorrect_clone_impl_on_copy_type` Clippy lint.
 ## Removed
 ## Fixed
+- Bindgen no longer panics when parsing an objective-C header that includes a
+  Rust keyword that cannot be a raw identifier, such as: `self`, `crate`,
+  `super` or `Self`.
 ## Security
 
 # 0.66.1

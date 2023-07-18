@@ -26,4 +26,10 @@ pub trait IA: Sized + std::ops::Deref {
     {
         msg_send!(* self, f : arg1 r#as : arg2)
     }
+    unsafe fn crate_(&self, self_: ::std::os::raw::c_int)
+    where
+        <Self as std::ops::Deref>::Target: objc::Message + Sized,
+    {
+        msg_send!(* self, crate_ : self_)
+    }
 }
