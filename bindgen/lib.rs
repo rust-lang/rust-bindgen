@@ -263,7 +263,7 @@ impl std::fmt::Display for Formatter {
 ///
 /// # Regular expression arguments
 ///
-/// Some [`Builder`] methods, such as the `allowlist_*` and `blocklist_*`, allow regular
+/// Some [`Builder`] methods, such as `allowlist_*` and `blocklist_*`, allow regular
 /// expressions as arguments. These regular expressions will be enclosed in parentheses and
 /// anchored with `^` and `$`. So, if the argument passed is `<regex>`, the regular expression to be
 /// stored will be `^(<regex>)$`.
