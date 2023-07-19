@@ -171,6 +171,7 @@
 # Unreleased
 
 ## Added
+- The `system` ABI is now supported as an option for the `--override-abi` flag.
 ## Changed
 - The `Clone` implementation for `_BindgenUnionField` has been changed to pass
   the `incorrect_clone_impl_on_copy_type` Clippy lint.
