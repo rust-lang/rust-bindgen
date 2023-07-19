@@ -8,5 +8,8 @@ extern "stdcall" {
 extern "C" {
     pub fn baz();
 }
+extern "system" {
+    pub fn qux();
+}
 pub type boo = ::std::option::Option<unsafe extern "efiapi" fn()>;
 pub type foobar = ::std::option::Option<unsafe extern "efiapi" fn(boo: boo)>;
