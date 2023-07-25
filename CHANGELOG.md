@@ -175,6 +175,7 @@
 ## Changed
 - The `Clone` implementation for `_BindgenUnionField` has been changed to pass
   the `incorrect_clone_impl_on_copy_type` Clippy lint.
+- Mark `c_unwind` as stabilised, in 1.71
 ## Removed
 ## Fixed
 - Bindgen no longer panics when parsing an objective-C header that includes a
