@@ -300,6 +300,12 @@ mod test {
                 !f_1_21.thiscall_abi &&
                 !f_1_21.vectorcall_abi
         );
+        let features = RustFeatures::from(RustTarget::Stable_1_71);
+        assert!(
+            features.c_unwind_abi &&
+                features.abi_efiapi &&
+                !features.thiscall_abi
+        );
         let f_nightly = RustFeatures::from(RustTarget::Nightly);
         assert!(
             f_nightly.static_lifetime_elision &&
