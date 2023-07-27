@@ -4348,7 +4348,7 @@ fn unsupported_abi_diagnostic(
         .add_annotation(
             format!(
                 "The configured Rust version is {}.",
-                String::from(ctx.options().rust_target)
+                ctx.options().rust_target
             ),
             Level::Note,
         );

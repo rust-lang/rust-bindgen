@@ -52,7 +52,9 @@ mod regex_set;
 pub use codegen::{
     AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle,
 };
-pub use features::{RustTarget, LATEST_STABLE_RUST, RUST_TARGET_STRINGS};
+#[cfg(feature = "__cli")]
+pub use features::RUST_TARGET_STRINGS;
+pub use features::{RustTarget, LATEST_STABLE_RUST};
 pub use ir::annotations::FieldVisibilityKind;
 pub use ir::function::Abi;
 pub use regex_set::RegexSet;
@@ -568,8 +570,7 @@ impl BindgenOptions {
 }
 
 fn deprecated_target_diagnostic(target: RustTarget, _options: &BindgenOptions) {
-    let target = String::from(target);
-    warn!("The {} Rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues", target,);
+    warn!("The {} Rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues", target);
 
     #[cfg(feature = "experimental")]
     if _options.emit_diagnostics {

@@ -12,9 +12,9 @@ use std::process::exit;
 
 fn rust_target_help() -> String {
     format!(
-        "Version of the Rust compiler to target. Valid options are: {:?}. Defaults to {:?}.",
+        "Version of the Rust compiler to target. Valid options are: {:?}. Defaults to {}.",
         RUST_TARGET_STRINGS,
-        String::from(RustTarget::default())
+        RustTarget::default()
     )
 }
 
