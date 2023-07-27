@@ -137,10 +137,12 @@ macro_rules! rust_target_base {
             /// Rust stable 1.68
             ///  * `abi_efiapi` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/65815))
             => Stable_1_68 => 1.68;
+            /// Rust stable 1.71
+            ///  * `c_unwind` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/74990))
+            => Stable_1_71 => 1.71;
             /// Nightly rust
             ///  * `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))
             ///  * `vectorcall` calling convention (no tracking issue)
-            ///  * `c_unwind` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/74990))
             => Nightly => nightly;
         );
     }
@@ -150,7 +152,7 @@ rust_target_base!(rust_target_def);
 rust_target_base!(rust_target_values_def);
 
 /// Latest stable release of Rust
-pub const LATEST_STABLE_RUST: RustTarget = RustTarget::Stable_1_68;
+pub const LATEST_STABLE_RUST: RustTarget = RustTarget::Stable_1_71;
 
 /// Create RustFeatures struct definition, new(), and a getter for each field
 macro_rules! rust_feature_def {
@@ -253,10 +255,12 @@ rust_feature_def!(
     Stable_1_68 {
         => abi_efiapi;
     }
+    Stable_1_71 {
+        => c_unwind_abi;
+    }
     Nightly {
         => thiscall_abi;
         => vectorcall_abi;
-        => c_unwind_abi;
     }
 );
 
@@ -296,6 +300,12 @@ mod test {
                 !f_1_21.thiscall_abi &&
                 !f_1_21.vectorcall_abi
         );
+        let features = RustFeatures::from(RustTarget::Stable_1_71);
+        assert!(
+            features.c_unwind_abi &&
+                features.abi_efiapi &&
+                !features.thiscall_abi
+        );
         let f_nightly = RustFeatures::from(RustTarget::Nightly);
         assert!(
             f_nightly.static_lifetime_elision &&
@@ -306,8 +316,7 @@ mod test {
                 f_nightly.maybe_uninit &&
                 f_nightly.repr_align &&
                 f_nightly.thiscall_abi &&
-                f_nightly.vectorcall_abi &&
-                f_nightly.c_unwind_abi
+                f_nightly.vectorcall_abi
         );
     }
 
@@ -324,6 +333,7 @@ mod test {
         test_target("1.19", RustTarget::Stable_1_19);
         test_target("1.21", RustTarget::Stable_1_21);
         test_target("1.25", RustTarget::Stable_1_25);
+        test_target("1.71", RustTarget::Stable_1_71);
         test_target("nightly", RustTarget::Nightly);
     }
 }
