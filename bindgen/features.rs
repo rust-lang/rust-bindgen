@@ -49,32 +49,7 @@ macro_rules! define_rust_targets {
                     Self::Nightly => None
                 }
             }
-        }
 
-        impl FromStr for RustTarget {
-            type Err = io::Error;
-
-            fn from_str(s: &str) -> Result<Self, Self::Err> {
-                if s == "nightly" {
-                    return Ok(Self::Nightly);
-                }
-
-                if let Some(("1", str_minor)) = s.split_once(".") {
-                    if let Ok(minor) = str_minor.parse::<u64>() {
-                        $(if minor == $minor {
-                            return Ok(Self::$variant);
-                        })*
-                    }
-                }
-
-                Err(io::Error::new(
-                    io::ErrorKind::InvalidInput,
-                    concat!("Got an invalid rust target. Accepted values are of the form \"1.0\" or \"nightly\".")
-                ))
-            }
-        }
-
-        impl RustTarget {
             const fn stable_releases() -> [(Self, u64); [$($minor,)*].len()] {
                 [$((Self::$variant, $minor),)*]
             }
@@ -209,6 +184,31 @@ impl Ord for RustTarget {
             (None, Some(_)) => Ordering::Greater,
             (None, None) => Ordering::Equal,
         }
+    }
+}
+
+impl FromStr for RustTarget {
+    type Err = io::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s == "nightly" {
+            return Ok(Self::Nightly);
+        }
+
+        if let Some(("1", str_minor)) = s.split_once(".") {
+            if let Ok(minor) = str_minor.parse::<u64>() {
+                for (target, target_minor) in Self::stable_releases() {
+                    if minor == target_minor {
+                        return Ok(target);
+                    }
+                }
+            }
+        }
+
+        Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "Got an invalid rust target. Accepted values are of the form \"1.0\" or \"nightly\"."
+        ))
     }
 }
 
