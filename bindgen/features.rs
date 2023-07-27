@@ -8,6 +8,7 @@ use std::cmp::Ordering;
 use std::io;
 use std::str::FromStr;
 
+/// This macro defines the [`RustTarget`] and [`RustFeatures`] types.
 macro_rules! define_rust_targets {
     (
         Nightly => {$($nightly_feature:ident $(: #$issue:literal)?),* $(,)?} $(,)?
@@ -195,7 +196,7 @@ impl FromStr for RustTarget {
             return Ok(Self::Nightly);
         }
 
-        if let Some(("1", str_minor)) = s.split_once(".") {
+        if let Some(("1", str_minor)) = s.split_once('.') {
             if let Ok(minor) = str_minor.parse::<u64>() {
                 for (target, target_minor) in Self::stable_releases() {
                     if minor == target_minor {
