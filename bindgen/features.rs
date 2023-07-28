@@ -208,7 +208,7 @@ impl FromStr for RustTarget {
 
         Err(io::Error::new(
             io::ErrorKind::InvalidInput,
-            "Got an invalid rust target. Accepted values are of the form \"1.0\" or \"nightly\"."
+            "Got an invalid Rust target. Accepted values are of the form \"1.71\" or \"nightly\"."
         ))
     }
 }
