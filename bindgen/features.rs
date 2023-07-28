@@ -90,7 +90,7 @@ macro_rules! define_rust_targets {
     };
 }
 
-// NOTE(emilio): When adding or removing features here, make sure to add the stabilization PR
+// NOTE: When adding or removing features here, make sure to add the stabilization PR
 // number for the feature if it has been stabilized or the tracking issue number if the feature is
 // not stable.
 define_rust_targets! {
