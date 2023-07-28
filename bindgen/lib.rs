@@ -570,7 +570,7 @@ impl BindgenOptions {
 }
 
 fn deprecated_target_diagnostic(target: RustTarget, _options: &BindgenOptions) {
-    warn!("The {} Rust target is deprecated. If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues", target);
+    warn!("The {} Rust target is deprecated. If you have a need to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues", target);
 
     #[cfg(feature = "experimental")]
     if _options.emit_diagnostics {
