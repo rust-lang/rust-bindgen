@@ -1543,7 +1543,7 @@ options! {
         },
         as_args: |rust_target, args| {
             args.push("--rust-target".to_owned());
-            args.push((*rust_target).into());
+            args.push(rust_target.to_string());
         },
     },
     /// Features to be enabled. They are derived from `rust_target`.
