@@ -584,6 +584,9 @@ impl CodeGenerator for Module {
                 if ctx.need_opaque_array_type() {
                     utils::prepend_opaque_array_type(&mut *result);
                 }
+                if let Some(layout) = ctx.need_bindgen_long_double() {
+                    utils::prepend_long_double(layout, &mut *result);
+                }
                 if result.saw_objc {
                     utils::prepend_objc_header(ctx, &mut *result);
                 }
@@ -3043,6 +3046,10 @@ impl Method {
             return;
         }
 
+        if utils::sig_unsupported_types(ctx, signature) {
+            return;
+        }
+
         // Do not generate variadic methods, since rust does not allow
         // implementing them, and we don't do a good job at it anyway.
         if signature.is_variadic() {
@@ -4287,11 +4294,11 @@ impl TryToRustTy for Type {
                 Ok(int_kind_rust_type(ctx, ik, self.layout(ctx)))
             }
             TypeKind::Float(fk) => {
-                Ok(float_kind_rust_type(ctx, fk, self.layout(ctx)))
+                Ok(float_kind_rust_type(ctx, fk, self.layout(ctx), 1))
             }
             TypeKind::Complex(fk) => {
                 let float_path =
-                    float_kind_rust_type(ctx, fk, self.layout(ctx));
+                    float_kind_rust_type(ctx, fk, self.layout(ctx), 2);
 
                 ctx.generated_bindgen_complex();
                 Ok(if ctx.options().enable_cxx_namespaces {
@@ -4643,6 +4650,11 @@ impl CodeGenerator for Function {
             }
             Ok(abi) => abi,
         };
+
+        if utils::sig_unsupported_types(ctx, signature) {
+            warn!("Skipping function which passes or returns by value types not available in Rust.");
+            return None;
+        }
 
         // Handle overloaded functions by giving each overload its own unique
         // suffix.
@@ -5193,6 +5205,7 @@ pub(crate) mod utils {
     use crate::ir::context::TypeId;
     use crate::ir::function::{Abi, ClangAbi, FunctionSig};
     use crate::ir::item::{Item, ItemCanonicalPath};
+    use crate::ir::layout::Layout;
     use crate::ir::ty::TypeKind;
     use crate::{args_are_cpp, file_is_cpp};
     use std::borrow::Cow;
@@ -5627,6 +5640,23 @@ pub(crate) mod utils {
         result.insert(0, ty);
     }
 
+    pub(crate) fn prepend_long_double(
+        layout: Layout,
+        result: &mut Vec<proc_macro2::TokenStream>,
+    ) {
+        let Layout { align, size, .. } = layout;
+        let align = proc_macro2::Literal::u64_unsuffixed(align as u64);
+        let size = proc_macro2::Literal::u64_unsuffixed(size as u64);
+        result.insert(
+            0,
+            quote! {
+                #[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
+                #[repr(C, align(#align))]
+                pub struct __BindgenLongDouble([u8; #size]);
+            },
+        );
+    }
+
     pub(crate) fn build_path(
         item: &Item,
         ctx: &BindgenContext,
@@ -5917,5 +5947,16 @@ pub(crate) mod utils {
         }
 
         true
+    }
+
+    pub(crate) fn sig_unsupported_types(
+        ctx: &BindgenContext,
+        sig: &FunctionSig,
+    ) -> bool {
+        sig.argument_types()
+            .iter()
+            .map(|(_, ty_id)| ty_id)
+            .chain(std::iter::once(&sig.return_type()))
+            .any(|ty_id| ctx.lookup_never_by_value(*ty_id))
     }
 }
