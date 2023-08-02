@@ -849,7 +849,7 @@ impl Bindings {
         }
 
         if let Some(h) = options.input_headers.last() {
-            let path = Path::new(h);
+            let path = Path::new(h.as_ref());
             if let Ok(md) = std::fs::metadata(path) {
                 if md.is_dir() {
                     return Err(BindgenError::FolderAsHeader(path.into()));
@@ -860,7 +860,7 @@ impl Bindings {
                     ));
                 }
                 let h = h.clone();
-                options.clang_args.push(h);
+                options.clang_args.push(h.into());
             } else {
                 return Err(BindgenError::NotExist(path.into()));
             }

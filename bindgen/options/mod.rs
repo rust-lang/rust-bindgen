@@ -114,7 +114,7 @@ macro_rules! options {
                 let headers = match self.options.input_headers.split_last() {
                     Some((header, headers)) => {
                         // The last input header is passed as an argument in the first position.
-                        args.push(header.clone());
+                        args.push(header.clone().into());
                         headers
                     },
                     None => &[]
@@ -141,7 +141,7 @@ macro_rules! options {
                 // We need to pass all but the last header via the `-include` clang argument.
                 for header in headers {
                     args.push("-include".to_owned());
-                    args.push(header.clone());
+                    args.push(header.clone().into());
                 }
 
                 args
@@ -1119,7 +1119,7 @@ options! {
         },
     },
     /// The input header files.
-    input_headers:  Vec<String> {
+    input_headers:  Vec<Box<str>> {
         methods: {
             /// Add an input C/C++ header to generate bindings for.
             ///
@@ -1143,7 +1143,7 @@ options! {
             ///     .unwrap();
             /// ```
             pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
-                self.options.input_headers.push(header.into());
+                self.options.input_headers.push(header.into().into_boxed_str());
                 self
             }
         },

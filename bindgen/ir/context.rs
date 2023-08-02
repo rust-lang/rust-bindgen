@@ -365,7 +365,7 @@ pub(crate) struct BindgenContext {
     includes: StdHashMap<String, (String, usize)>,
 
     /// A set of all the included filenames.
-    deps: BTreeSet<String>,
+    deps: BTreeSet<Box<str>>,
 
     /// The active replacements collected from replaces="xxx" annotations.
     replacements: HashMap<Vec<String>, ItemId>,
@@ -664,12 +664,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Add an included file.
-    pub(crate) fn add_dep(&mut self, dep: String) {
+    pub(crate) fn add_dep(&mut self, dep: Box<str>) {
         self.deps.insert(dep);
     }
 
     /// Get any included files.
-    pub(crate) fn deps(&self) -> &BTreeSet<String> {
+    pub(crate) fn deps(&self) -> &BTreeSet<Box<str>> {
         &self.deps
     }
 
