@@ -94,15 +94,15 @@ fn file_is_cpp(name_file: &str) -> bool {
         name_file.ends_with(".h++")
 }
 
-fn args_are_cpp(clang_args: &[String]) -> bool {
+fn args_are_cpp(clang_args: &[Box<str>]) -> bool {
     for w in clang_args.windows(2) {
-        if w[0] == "-xc++" || w[1] == "-xc++" {
+        if w[0].as_ref() == "-xc++" || w[1].as_ref() == "-xc++" {
             return true;
         }
-        if w[0] == "-x" && w[1] == "c++" {
+        if w[0].as_ref() == "-x" && w[1].as_ref() == "c++" {
             return true;
         }
-        if w[0] == "-include" && file_is_cpp(&w[1]) {
+        if w[0].as_ref() == "-include" && file_is_cpp(w[1].as_ref()) {
             return true;
         }
     }
@@ -319,16 +319,18 @@ impl Builder {
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate(mut self) -> Result<Bindings, BindgenError> {
         // Add any extra arguments from the environment to the clang command line.
-        self.options
-            .clang_args
-            .extend(get_extra_clang_args(&self.options.parse_callbacks));
+        self.options.clang_args.extend(
+            get_extra_clang_args(&self.options.parse_callbacks)
+                .into_iter()
+                .map(String::into_boxed_str),
+        );
 
         // Transform input headers to arguments on the clang command line.
         self.options.clang_args.extend(
             self.options.input_headers
                 [..self.options.input_headers.len().saturating_sub(1)]
                 .iter()
-                .flat_map(|header| ["-include".into(), header.to_string()]),
+                .flat_map(|header| ["-include".into(), header.clone()]),
         );
 
         let input_unsaved_files =
@@ -401,7 +403,7 @@ impl Builder {
             .stdout(Stdio::piped());
 
         for a in &self.options.clang_args {
-            cmd.arg(a);
+            cmd.arg(a.as_ref());
         }
 
         for a in get_extra_clang_args(&self.options.parse_callbacks) {
@@ -668,16 +670,16 @@ pub(crate) const HOST_TARGET: &str =
 
 // Some architecture triplets are different between rust and libclang, see #1211
 // and duplicates.
-fn rust_to_clang_target(rust_target: &str) -> String {
+fn rust_to_clang_target(rust_target: &str) -> Box<str> {
     if rust_target.starts_with("aarch64-apple-") {
         let mut clang_target = "arm64-apple-".to_owned();
         clang_target
             .push_str(rust_target.strip_prefix("aarch64-apple-").unwrap());
-        return clang_target;
+        return clang_target.into();
     } else if rust_target.starts_with("riscv64gc-") {
         let mut clang_target = "riscv64-".to_owned();
         clang_target.push_str(rust_target.strip_prefix("riscv64gc-").unwrap());
-        return clang_target;
+        return clang_target.into();
     } else if rust_target.ends_with("-espidf") {
         let mut clang_target =
             rust_target.strip_suffix("-espidf").unwrap().to_owned();
@@ -686,32 +688,32 @@ fn rust_to_clang_target(rust_target: &str) -> String {
             clang_target = "riscv32-".to_owned() +
                 clang_target.strip_prefix("riscv32imc-").unwrap();
         }
-        return clang_target;
+        return clang_target.into();
     } else if rust_target.starts_with("riscv32imc-") {
         let mut clang_target = "riscv32-".to_owned();
         clang_target.push_str(rust_target.strip_prefix("riscv32imc-").unwrap());
-        return clang_target;
+        return clang_target.into();
     } else if rust_target.starts_with("riscv32imac-") {
         let mut clang_target = "riscv32-".to_owned();
         clang_target
             .push_str(rust_target.strip_prefix("riscv32imac-").unwrap());
-        return clang_target;
+        return clang_target.into();
     }
-    rust_target.to_owned()
+    rust_target.into()
 }
 
 /// Returns the effective target, and whether it was explicitly specified on the
 /// clang flags.
-fn find_effective_target(clang_args: &[String]) -> (String, bool) {
+fn find_effective_target(clang_args: &[Box<str>]) -> (Box<str>, bool) {
     let mut args = clang_args.iter();
     while let Some(opt) = args.next() {
         if opt.starts_with("--target=") {
             let mut split = opt.split('=');
             split.next();
-            return (split.next().unwrap().to_owned(), true);
+            return (split.next().unwrap().into(), true);
         }
 
-        if opt == "-target" {
+        if opt.as_ref() == "-target" {
             if let Some(target) = args.next() {
                 return (target.clone(), true);
             }
@@ -756,9 +758,10 @@ impl Bindings {
         // opening libclang.so, it has to be the same architecture and thus the
         // check is fine.
         if !explicit_target && !is_host_build {
-            options
-                .clang_args
-                .insert(0, format!("--target={}", effective_target));
+            options.clang_args.insert(
+                0,
+                format!("--target={}", effective_target).into_boxed_str(),
+            );
         };
 
         fn detect_include_paths(options: &mut BindgenOptions) {
@@ -779,7 +782,7 @@ impl Bindings {
                             return false;
                         }
 
-                        let arg = &**arg;
+                        let arg = arg.as_ref();
 
                         // https://clang.llvm.org/docs/ClangCommandLineReference.html
                         // -isystem and -isystem-after are harmless.
@@ -796,7 +799,7 @@ impl Bindings {
 
                         true
                     })
-                    .cloned()
+                    .map(|arg| arg.clone().into())
                     .collect::<Vec<_>>()
             };
 
@@ -828,8 +831,8 @@ impl Bindings {
             if let Some(search_paths) = search_paths {
                 for path in search_paths.into_iter() {
                     if let Ok(path) = path.into_os_string().into_string() {
-                        options.clang_args.push("-isystem".to_owned());
-                        options.clang_args.push(path);
+                        options.clang_args.push("-isystem".into());
+                        options.clang_args.push(path.into_boxed_str());
                     }
                 }
             }
@@ -859,8 +862,7 @@ impl Bindings {
                         path.into(),
                     ));
                 }
-                let h = h.clone();
-                options.clang_args.push(h.into());
+                options.clang_args.push(h.clone());
             } else {
                 return Err(BindgenError::NotExist(path.into()));
             }
@@ -868,9 +870,9 @@ impl Bindings {
 
         for (idx, f) in input_unsaved_files.iter().enumerate() {
             if idx != 0 || !options.input_headers.is_empty() {
-                options.clang_args.push("-include".to_owned());
+                options.clang_args.push("-include".into());
             }
-            options.clang_args.push(f.name.to_str().unwrap().to_owned())
+            options.clang_args.push(f.name.to_str().unwrap().into())
         }
 
         debug!("Fixed-up options: {:?}", options);
@@ -1285,21 +1287,24 @@ fn commandline_flag_unit_test_function() {
 
 #[test]
 fn test_rust_to_clang_target() {
-    assert_eq!(rust_to_clang_target("aarch64-apple-ios"), "arm64-apple-ios");
+    assert_eq!(
+        rust_to_clang_target("aarch64-apple-ios").as_ref(),
+        "arm64-apple-ios"
+    );
 }
 
 #[test]
 fn test_rust_to_clang_target_riscv() {
     assert_eq!(
-        rust_to_clang_target("riscv64gc-unknown-linux-gnu"),
+        rust_to_clang_target("riscv64gc-unknown-linux-gnu").as_ref(),
         "riscv64-unknown-linux-gnu"
     );
     assert_eq!(
-        rust_to_clang_target("riscv32imc-unknown-none-elf"),
+        rust_to_clang_target("riscv32imc-unknown-none-elf").as_ref(),
         "riscv32-unknown-none-elf"
     );
     assert_eq!(
-        rust_to_clang_target("riscv32imac-unknown-none-elf"),
+        rust_to_clang_target("riscv32imac-unknown-none-elf").as_ref(),
         "riscv32-unknown-none-elf"
     );
 }
@@ -1307,11 +1312,11 @@ fn test_rust_to_clang_target_riscv() {
 #[test]
 fn test_rust_to_clang_target_espidf() {
     assert_eq!(
-        rust_to_clang_target("riscv32imc-esp-espidf"),
+        rust_to_clang_target("riscv32imc-esp-espidf").as_ref(),
         "riscv32-esp-elf"
     );
     assert_eq!(
-        rust_to_clang_target("xtensa-esp32-espidf"),
+        rust_to_clang_target("xtensa-esp32-espidf").as_ref(),
         "xtensa-esp32-elf"
     );
 }

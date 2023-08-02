@@ -135,7 +135,7 @@ macro_rules! options {
                 args.push("--".to_owned());
 
                 if !self.options.clang_args.is_empty() {
-                    args.extend_from_slice(&self.options.clang_args);
+                    args.extend(self.options.clang_args.iter().map(|s| s.clone().into()));
                 }
 
                 // We need to pass all but the last header via the `-include` clang argument.
@@ -1151,11 +1151,11 @@ options! {
         as_args: ignore,
     },
     /// The set of arguments to be passed straight through to Clang.
-    clang_args: Vec<String> {
+    clang_args: Vec<Box<str>> {
         methods: {
             /// Add an argument to be passed straight through to Clang.
             pub fn clang_arg<T: Into<String>>(self, arg: T) -> Builder {
-                self.clang_args([arg.into()])
+                self.clang_args([arg.into().into_boxed_str()])
             }
 
             /// Add several arguments to be passed straight through to Clang.
@@ -1164,7 +1164,7 @@ options! {
                 I::Item: AsRef<str>,
             {
                 for arg in args {
-                    self.options.clang_args.push(arg.as_ref().to_owned());
+                    self.options.clang_args.push(arg.as_ref().to_owned().into_boxed_str());
                 }
                 self
             }
