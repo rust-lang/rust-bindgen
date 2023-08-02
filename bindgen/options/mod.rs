@@ -1072,19 +1072,19 @@ options! {
         as_args: |value, args| (!value).as_args(args, "--no-convert-floats"),
     },
     /// The set of raw lines to be prepended to the top-level module of the generated Rust code.
-    raw_lines: Vec<String> {
+    raw_lines: Vec<Box<str>> {
         methods: {
             /// Add a line of Rust code at the beginning of the generated bindings. The string is
             /// passed through without any modification.
             pub fn raw_line<T: Into<String>>(mut self, arg: T) -> Self {
-                self.options.raw_lines.push(arg.into());
+                self.options.raw_lines.push(arg.into().into_boxed_str());
                 self
             }
         },
         as_args: |raw_lines, args| {
             for line in raw_lines {
                 args.push("--raw-line".to_owned());
-                args.push(line.clone());
+                args.push(line.clone().into());
             }
         },
     },
