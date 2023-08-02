@@ -1173,7 +1173,7 @@ options! {
         as_args: ignore,
     },
     /// Tuples of unsaved file contents of the form (name, contents).
-    input_header_contents: Vec<(String, String)> {
+    input_header_contents: Vec<(Box<str>, Box<str>)> {
         methods: {
             /// Add `contents` as an input C/C++ header named `name`.
             ///
@@ -1187,7 +1187,7 @@ options! {
                     .join(name)
                     .to_str()
                     .expect("Cannot convert current directory name to string")
-                    .to_owned();
+                    .into();
                 self.options
                     .input_header_contents
                     .push((absolute_path, contents.into()));
