@@ -601,7 +601,10 @@ impl CodeGenerator for Module {
         let inner_items = result.inner(|result| {
             result.push(root_import(ctx, item));
 
-            let path = item.namespace_aware_canonical_path(ctx).join("::");
+            let path = item
+                .namespace_aware_canonical_path(ctx)
+                .join("::")
+                .into_boxed_str();
             if let Some(raw_lines) = ctx.options().module_lines.get(&path) {
                 for raw_line in raw_lines {
                     found_any = true;

@@ -1089,7 +1089,7 @@ options! {
         },
     },
     /// The set of raw lines to prepend to different modules.
-    module_lines: HashMap<String, Vec<String>> {
+    module_lines: HashMap<Box<str>, Vec<Box<str>>> {
         methods: {
             /// Add a given line to the beginning of a given module.
             ///
@@ -1102,9 +1102,9 @@ options! {
             {
                 self.options
                     .module_lines
-                    .entry(module.into())
+                    .entry(module.into().into_boxed_str())
                     .or_insert_with(Vec::new)
-                    .push(line.into());
+                    .push(line.into().into_boxed_str());
                 self
             }
         },
@@ -1112,8 +1112,8 @@ options! {
             for (module, lines) in module_lines {
                 for line in lines.iter() {
                     args.push("--module-raw-line".to_owned());
-                    args.push(module.clone());
-                    args.push(line.clone());
+                    args.push(module.clone().into());
+                    args.push(line.clone().into());
                 }
             }
         },
