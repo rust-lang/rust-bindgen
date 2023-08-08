@@ -1923,9 +1923,9 @@ pub(crate) struct UnsavedFile {
 
 impl UnsavedFile {
     /// Construct a new unsaved file with the given `name` and `contents`.
-    pub(crate) fn new(name: Box<str>, contents: Box<str>) -> UnsavedFile {
-        let name = CString::new(name.into_boxed_bytes()).unwrap();
-        let contents = CString::new(contents.into_boxed_bytes()).unwrap();
+    pub(crate) fn new(name: &str, contents: &str) -> UnsavedFile {
+        let name = CString::new(name.as_bytes()).unwrap();
+        let contents = CString::new(contents.as_bytes()).unwrap();
         let x = CXUnsavedFile {
             Filename: name.as_ptr(),
             Contents: contents.as_ptr(),
