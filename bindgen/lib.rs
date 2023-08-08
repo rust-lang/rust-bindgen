@@ -336,7 +336,9 @@ impl Builder {
         let input_unsaved_files =
             std::mem::take(&mut self.options.input_header_contents)
                 .into_iter()
-                .map(|(name, contents)| clang::UnsavedFile::new(name.as_ref(), contents.as_ref()))
+                .map(|(name, contents)| {
+                    clang::UnsavedFile::new(name.as_ref(), contents.as_ref())
+                })
                 .collect::<Vec<_>>();
 
         Bindings::generate(self.options, input_unsaved_files)
