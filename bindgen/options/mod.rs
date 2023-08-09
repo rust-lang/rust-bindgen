@@ -345,6 +345,23 @@ options! {
         },
         as_args: "--allowlist-file",
     },
+    /// Items that have been allowlisted and should appear in the generated code.
+    allowlisted_items: RegexSet {
+        methods: {
+            regex_option! {
+                /// Generate bindings for the given item, regardless of whether it is a type,
+                /// function, module, etc.
+                ///
+                /// This option is transitive by default. Check the documentation of the
+                /// [`Builder::allowlist_recursively`] method for further information.
+                pub fn allowlist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
+                    self.options.allowlisted_items.insert(arg);
+                    self
+                }
+            }
+        },
+        as_args: "--allowlist-item",
+    },
     /// The default style of for generated `enum`s.
     default_enum_style: EnumVariation {
         methods: {
