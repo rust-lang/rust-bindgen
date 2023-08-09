@@ -1103,7 +1103,7 @@ options! {
                 self.options
                     .module_lines
                     .entry(module.into().into_boxed_str())
-                    .or_insert_with(Vec::new)
+                    .or_default()
                     .push(line.into().into_boxed_str());
                 self
             }
