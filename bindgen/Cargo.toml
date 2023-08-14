@@ -59,3 +59,6 @@ __cli = []
 __testing_only_extra_assertions = []
 __testing_only_libclang_9 = []
 __testing_only_libclang_5 = []
+
+[package.metadata.docs.rs]
+features = ["default", "experimental"]
