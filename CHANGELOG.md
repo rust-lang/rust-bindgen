@@ -179,6 +179,7 @@
   equal to or greater than 1.71.
   This comes as a result of the ABI being stabilised (in Rust 1.71).
 ## Removed
+- The `extra_assert` and `extra_assert_eq` macros are no longer exported.
 ## Fixed
 - Bindgen no longer panics when parsing an objective-C header that includes a
   Rust keyword that cannot be a raw identifier, such as: `self`, `crate`,
