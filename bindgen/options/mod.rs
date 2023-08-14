@@ -1590,7 +1590,7 @@ options! {
             /// Set whether `size_t` should be translated to `usize`.
             ///
             /// If `size_t` is translated to `usize`, type definitions for `size_t` will not be
-            /// emitted. 
+            /// emitted.
             ///
             /// `size_t` is translated to `usize` by default.
             pub fn size_t_is_usize(mut self, is: bool) -> Self {
