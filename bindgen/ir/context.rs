@@ -2343,7 +2343,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     if self.options().allowlisted_types.is_empty() &&
                         self.options().allowlisted_functions.is_empty() &&
                         self.options().allowlisted_vars.is_empty() &&
-                        self.options().allowlisted_files.is_empty()
+                        self.options().allowlisted_files.is_empty() &&
+                        self.options().allowlisted_items.is_empty()
                     {
                         return true;
                     }
@@ -2373,6 +2374,11 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
                     let name = item.path_for_allowlisting(self)[1..].join("::");
                     debug!("allowlisted_items: testing {:?}", name);
+
+                    if self.options().allowlisted_items.matches(&name) {
+                        return true;
+                    }
+
                     match *item.kind() {
                         ItemKind::Module(..) => true,
                         ItemKind::Function(_) => {
@@ -2495,6 +2501,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         for item in self.options().allowlisted_types.unmatched_items() {
             unused_regex_diagnostic(item, "--allowlist-type", self);
+        }
+
+        for item in self.options().allowlisted_items.unmatched_items() {
+            unused_regex_diagnostic(item, "--allowlist-items", self);
         }
     }
 

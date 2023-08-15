@@ -172,6 +172,8 @@
 
 ## Added
 - The `system` ABI is now supported as an option for the `--override-abi` flag.
+- The `allowlist_item` method and the `--allowlist-item` flag have been
+  included to filter items regardless or their kind.
 ## Changed
 - The `Clone` implementation for `_BindgenUnionField` has been changed to pass
   the `incorrect_clone_impl_on_copy_type` Clippy lint.

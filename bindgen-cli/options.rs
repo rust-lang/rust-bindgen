@@ -258,6 +258,9 @@ struct BindgenCommand {
     /// Allowlist all contents of PATH.
     #[arg(long, value_name = "PATH")]
     allowlist_file: Vec<String>,
+    /// Allowlist all items matching REGEX. Other non-allowlisted items will not be generated.
+    #[arg(long, value_name = "REGEX")]
+    allowlist_item: Vec<String>,
     /// Print verbose error messages.
     #[arg(long)]
     verbose: bool,
@@ -471,6 +474,7 @@ where
         allowlist_type,
         allowlist_var,
         allowlist_file,
+        allowlist_item,
         verbose,
         dump_preprocessed_input,
         no_record_matches,
@@ -827,6 +831,10 @@ where
 
     for file in allowlist_file {
         builder = builder.allowlist_file(file);
+    }
+
+    for item in allowlist_item {
+        builder = builder.allowlist_item(item);
     }
 
     for arg in clang_args {
