@@ -32,7 +32,7 @@ targets = [
 
 # Config for 'cargo release'
 [workspace.metadata.release]
-shared-version = true
+shared-version = true # ensures published packages share the same version
 tag-name = "v{{version}}"
 
 # The profile that 'cargo dist' will build with

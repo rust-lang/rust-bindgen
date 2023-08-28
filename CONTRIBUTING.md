@@ -552,10 +552,14 @@ $ npm install doctoc
 $ ./node_modules/doctoc/doctoc.js CHANGELOG.md
 ```
 
-### Bumping the version numbers.
+### Bumping the version numbers
 
-Bump version numbers as needed. Run tests just to ensure everything is working
-as expected.
+Use `cargo release` (from `cargo install cargo-release`) to automate things:
+
+- For a feature release, `cargo minor` (will bump v0.62.1 to v0.63.0)
+- For a patch release, `cargo patch` (will bump v0.63.0 to v0.63.1)
+
+Run tests just to ensure everything is working as expected.
 
 ### Merge to `main`
 
@@ -565,7 +569,13 @@ important fix) you can skip this.
 
 ### Publish and add a git tag for the right commit
 
-Once you're in the right commit, do:
+Once you're in the right commit, do `cargo release --execute`.
+
+```
+cargo release [path|minor] --execute
+cargo release --execute
+```
+This does the equivalent of the following:
 
 ```
 $ git tag -a v0.62.1 # With the right version of course
@@ -573,9 +583,23 @@ $ pushd bindgen && cargo publish && popd
 $ pushd bindgen-cli && cargo publish && popd
 $ git push --tags upstream # To publish the tag
 ```
+
 ### Create a new release on Github
 
-See [Releasing projects on Github](https://docs.github.com/en/repositories/releasing-projects-on-github)
+The release will be automated with the help of `.github/workflows/release.yml`,
+and will only be created when all tests succeed.
+While the tests are still running,
+a draft GitHub release will be created,
+to avoid notifying watchers of the repo should a CI step fail.
 
+If everything succeeds,
+bindgen cli installers for Linux/MacOS and Windows will be created,
+as well as tarballs.
+See `[workspace.metadata.dist]` section in Cargo.toml for the configuration.
+
+To update the configuration:
+```
+cargo dist init # from `cargo install cargo-dist`
+cargo dist generate-ci # to update .github/workflows/release.yml
 
 [prettyplease]: https://github.com/dtolnay/prettyplease
