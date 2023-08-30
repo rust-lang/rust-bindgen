@@ -556,8 +556,8 @@ $ ./node_modules/doctoc/doctoc.js CHANGELOG.md
 
 Use `cargo release` (from `cargo install cargo-release`) to automate things:
 
-- For a feature release, `cargo minor` (will bump v0.62.1 to v0.63.0)
-- For a patch release, `cargo patch` (will bump v0.63.0 to v0.63.1)
+- For a feature release, `cargo release minor --execute` (will bump v0.62.1 to v0.63.0)
+- For a patch release, `cargo release patch --execute` (will bump v0.63.0 to v0.63.1)
 
 Run tests just to ensure everything is working as expected.
 
@@ -569,10 +569,10 @@ important fix) you can skip this.
 
 ### Publish and add a git tag for the right commit
 
-Once you're in the right commit, do `cargo release --execute`.
+Once you're in the right commit, do.
 
 ```
-cargo release [path|minor] --execute
+cargo release [patch|minor] --execute
 cargo release --execute
 ```
 This does the equivalent of the following:
@@ -597,9 +597,11 @@ bindgen cli installers for Linux/MacOS and Windows will be created,
 as well as tarballs.
 See `[workspace.metadata.dist]` section in Cargo.toml for the configuration.
 
-To update the configuration:
+To update the release configuration:
+
 ```
-cargo dist init # from `cargo install cargo-dist`
+cargo dist init # from "cargo install cargo-dist"
 cargo dist generate-ci # to update .github/workflows/release.yml
+```
 
 [prettyplease]: https://github.com/dtolnay/prettyplease
