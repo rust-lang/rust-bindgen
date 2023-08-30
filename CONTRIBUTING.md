@@ -569,7 +569,7 @@ important fix) you can skip this.
 
 ### Publish and add a git tag for the right commit
 
-Once you're in the right commit, do.
+Once you're in the right commit, do:
 
 ```
 cargo release [patch|minor] --execute
