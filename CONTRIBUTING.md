@@ -597,7 +597,8 @@ bindgen cli installers for Linux/MacOS and Windows will be created,
 as well as tarballs.
 See `[workspace.metadata.dist]` section in Cargo.toml for the configuration.
 
-To update the release configuration:
+To update the release configuration,
+when a new cargo-dist is available:
 
 ```
 cargo dist init # from "cargo install cargo-dist"
