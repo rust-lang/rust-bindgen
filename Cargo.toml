@@ -34,6 +34,7 @@ targets = [
 [workspace.metadata.release]
 shared-version = true # ensures published packages share the same version
 tag-name = "v{{version}}"
+release = false
 
 # The profile that 'cargo dist' will build with
 [profile.dist]

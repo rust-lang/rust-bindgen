@@ -62,3 +62,6 @@ __testing_only_libclang_5 = []
 
 [package.metadata.docs.rs]
 features = ["experimental"]
+
+[package.metadata.release]
+release = true
