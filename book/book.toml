@@ -5,3 +5,4 @@ description = "`bindgen` automatically generates Rust FFI bindings to C and C++ 
 [output.html]
 git-repository-url = "https://github.com/rust-lang/rust-bindgen"
 edit-url-template = "https://github.com/rust-lang/rust-bindgen/edit/main/book/{path}"
+search.use-boolean-and = true
