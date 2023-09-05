@@ -52,7 +52,7 @@ jobs:
           override: true
 
       - name: Build with msrv
-        run: rm Cargo.lock && cargo +1.60.0 build --lib
+        run: cargo +1.60.0 build --lib
 
   minimal:
     runs-on: ubuntu-latest
