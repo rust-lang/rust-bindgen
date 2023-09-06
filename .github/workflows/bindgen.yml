@@ -51,8 +51,8 @@ jobs:
           toolchain: 1.60.0
           override: true
 
-      - name: Build with msrv
-        run: cargo +1.60.0 build --lib
+      - name: Test lib with msrv
+        run: cargo +1.60.0 test --package bindgen
 
   minimal:
     runs-on: ubuntu-latest
