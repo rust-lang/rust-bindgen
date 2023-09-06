@@ -34,7 +34,12 @@ targets = [
 [workspace.metadata.release]
 shared-version = true # ensures published packages share the same version
 tag-name = "v{{version}}"
+# Don't release any crate unless its manifest has `release = true`
 release = false
+
+[workspace.metadata.dist]
+# Don't compile any crate while building artifacts unless the crate's manifest has `dist = true`
+dist = false
 
 # The profile that 'cargo dist' will build with
 [profile.dist]
