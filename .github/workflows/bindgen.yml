@@ -42,17 +42,25 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install msrv
-        uses: actions-rs/toolchain@v1
+      - name: Install msrv for lib
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           # MSRV below is documented in Cargo.toml and README.md, please update those if you
           # change this.
           toolchain: 1.60.0
-          override: true
 
-      - name: Build with msrv
-        run: cargo +1.60.0 build --lib
+      - name: Test lib with msrv
+        run: cargo +1.60.0 test --package bindgen
+
+      - name: Install msrv for cli
+        uses: dtolnay/rust-toolchain@master
+        with:
+          # MSRV below is documented in Cargo.toml and README.md, please update those if you
+          # change this.
+          toolchain: 1.64.0
+
+      - name: Test cli with msrv
+        run: cargo +1.64.0 build --package bindgen-cli
 
   minimal:
     runs-on: ubuntu-latest
