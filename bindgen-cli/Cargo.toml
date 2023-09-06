@@ -44,3 +44,6 @@ __testing_only_libclang_5 = ["bindgen/__testing_only_libclang_5"]
 
 [package.metadata.release]
 release = true
+
+[package.metadata.dist]
+dist = true

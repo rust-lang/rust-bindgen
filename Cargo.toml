@@ -29,11 +29,14 @@ targets = [
     "x86_64-pc-windows-msvc",
     "aarch64-apple-darwin",
 ]
+# Don't compile any crate while building artifacts unless the crate's manifest has `dist = true`
+dist = false
 
 # Config for 'cargo release'
 [workspace.metadata.release]
 shared-version = true # ensures published packages share the same version
 tag-name = "v{{version}}"
+# Don't release any crate unless its manifest has `release = true`
 release = false
 
 # The profile that 'cargo dist' will build with
