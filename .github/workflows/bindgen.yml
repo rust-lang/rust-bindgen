@@ -43,13 +43,11 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install msrv for lib
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           # MSRV below is documented in Cargo.toml and README.md, please update those if you
           # change this.
           toolchain: 1.60.0
-          override: true
 
       - name: Test lib with msrv
         run: cargo +1.60.0 test --package bindgen
