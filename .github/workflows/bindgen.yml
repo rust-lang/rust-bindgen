@@ -42,7 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install msrv
+      - name: Install msrv for lib
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
