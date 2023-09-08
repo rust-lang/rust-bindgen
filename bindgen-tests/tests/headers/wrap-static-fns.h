@@ -52,6 +52,10 @@ static inline void nevermore() {
     while (1) { }
 }
 
+static inline int takes_fn_with_no_args(int(f)(void)) {
+    return f();
+}
+
 static inline int variadic(int x, ...) {
     return x;
 }
