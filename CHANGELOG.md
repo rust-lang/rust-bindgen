@@ -179,6 +179,8 @@
 
 ## Added
 ## Changed
+- The `--wrap-static-fns` feature was updated so function types that has no
+  argument use `void` as its sole argument.
 ## Removed
 ## Fixed
 ## Security
