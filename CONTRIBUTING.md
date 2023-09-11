@@ -354,7 +354,7 @@ changes should be squashed into the original commit.
 Unsure who to ask for review? Ask any of:
 
 * `@emilio`
-* `@fitzgen`
+* `@pvdrz`
 
 More resources:
 
