@@ -56,7 +56,7 @@ issue, provide us with:
 * The `bindgen` flags used to reproduce the issue with the header file
 * The expected `bindgen` output
 * The actual `bindgen` output
-* The [debugging logs](#logs) generated when running `bindgen` on this testcase
+* The [debugging logs](#debug-logging) generated when running `bindgen` on this testcase
 
 ## Looking to Start Contributing to `bindgen`?
 
