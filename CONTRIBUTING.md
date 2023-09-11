@@ -69,7 +69,8 @@ issue, provide us with:
 
 ### `rustfmt` / `cargo fmt`
 
-We use `nightly` channel for `rustfmt` so please set the appropriate setting your editor/IDE for that.
+We use `nightly` channel for `rustfmt`,
+so please set the appropriate setting in your editor/IDE for that.
 
 For rust-analyzer, you can set `rustfmt.extraArgs = ['+nightly']`.
 
