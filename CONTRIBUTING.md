@@ -573,7 +573,6 @@ Once you're in the right commit, do:
 
 ```
 cargo release [patch|minor] --execute
-cargo release --execute
 ```
 This does the equivalent of the following:
 
