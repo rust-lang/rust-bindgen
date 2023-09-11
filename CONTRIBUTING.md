@@ -35,9 +35,9 @@ and introduce yourself.
   - [Writing a Predicate Script](#writing-a-predicate-script)
 - [Cutting a new bindgen release](#cutting-a-new-bindgen-release)
   - [Updating the changelog](#updating-the-changelog)
-  - [Bumping the version numbers.](#bumping-the-version-numbers)
   - [Merge to `main`](#merge-to-main)
-  - [Publish and add a git tag for the right commit](#publish-and-add-a-git-tag-for-the-right-commit)
+  - [Tag and publish](#tag-and-publish)
+  - [Create a new release on GitHub](create-a-new-relese-on-github)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
