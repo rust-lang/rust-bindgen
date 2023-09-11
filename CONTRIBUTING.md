@@ -212,7 +212,7 @@ add each of:
 If you need to update the test expectations for a test file that generates
 different bindings for different `libclang` versions, you *don't* need to have
 many versions of `libclang` installed locally. Just make a work-in-progress pull
-request, and then when Travis CI fails, it will log a diff of the
+request, and then when CI fails, it will log a diff of the
 expectations. Use the diff to patch the appropriate expectation file locally and
 then update your pull request.
 
