@@ -51,6 +51,12 @@ extern "C" {
     pub fn nevermore();
 }
 extern "C" {
+    #[link_name = "takes_fn_with_no_args__extern"]
+    pub fn takes_fn_with_no_args(
+        f: ::std::option::Option<unsafe extern "C" fn() -> ::std::os::raw::c_int>,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
     #[link_name = "no_extra_argument__extern"]
     pub fn no_extra_argument(va: *mut __va_list_tag);
 }
