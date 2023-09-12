@@ -337,7 +337,7 @@ mod tests {
             let original_size = self
                 .reachable
                 .entry(node)
-                .or_insert_with(HashSet::default)
+                .or_default()
                 .len();
 
             for sub_node in self.graph.0[&node].iter() {
@@ -346,7 +346,7 @@ mod tests {
                 let sub_reachable = self
                     .reachable
                     .entry(*sub_node)
-                    .or_insert_with(HashSet::default)
+                    .or_default()
                     .clone();
 
                 for transitive in sub_reachable {
