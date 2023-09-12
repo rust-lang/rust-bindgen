@@ -184,6 +184,8 @@
 ## Removed
 ## Fixed
 - Allow compiling `bindgen-cli` with a static libclang.
+- Emit an opaque integer type for pointer types that don't have the same size
+  as the target's pointer size.
 ## Security
 
 # 0.68.1
