@@ -35,9 +35,9 @@ and introduce yourself.
   - [Writing a Predicate Script](#writing-a-predicate-script)
 - [Cutting a new bindgen release](#cutting-a-new-bindgen-release)
   - [Updating the changelog](#updating-the-changelog)
-  - [Bumping the version numbers.](#bumping-the-version-numbers)
   - [Merge to `main`](#merge-to-main)
-  - [Publish and add a git tag for the right commit](#publish-and-add-a-git-tag-for-the-right-commit)
+  - [Tag and publish](#tag-and-publish)
+  - [Create a new release on GitHub](create-a-new-relese-on-github)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -56,7 +56,7 @@ issue, provide us with:
 * The `bindgen` flags used to reproduce the issue with the header file
 * The expected `bindgen` output
 * The actual `bindgen` output
-* The [debugging logs](#logs) generated when running `bindgen` on this testcase
+* The [debugging logs](#debug-logging) generated when running `bindgen` on this testcase
 
 ## Looking to Start Contributing to `bindgen`?
 
@@ -69,7 +69,8 @@ issue, provide us with:
 
 ### `rustfmt` / `cargo fmt`
 
-We use `nightly` channel for `rustfmt` so please set the appropriate setting your editor/IDE for that.
+We use `nightly` channel for `rustfmt`,
+so please set the appropriate setting in your editor/IDE for that.
 
 For rust-analyzer, you can set `rustfmt.extraArgs = ['+nightly']`.
 
@@ -212,8 +213,8 @@ add each of:
 
 If you need to update the test expectations for a test file that generates
 different bindings for different `libclang` versions, you *don't* need to have
-many version of `libclang` installed locally. Just make a work-in-progress pull
-request, and then when Travis CI fails, it will log a diff of the
+many versions of `libclang` installed locally. Just make a work-in-progress pull
+request, and then when CI fails, it will log a diff of the
 expectations. Use the diff to patch the appropriate expectation file locally and
 then update your pull request.
 
@@ -355,7 +356,7 @@ changes should be squashed into the original commit.
 Unsure who to ask for review? Ask any of:
 
 * `@emilio`
-* `@fitzgen`
+* `@pvdrz`
 
 More resources:
 
@@ -552,42 +553,38 @@ $ npm install doctoc
 $ ./node_modules/doctoc/doctoc.js CHANGELOG.md
 ```
 
-### Bumping the version numbers
-
-Use `cargo release` (from `cargo install cargo-release`) to automate things:
-
-- For a feature release, `cargo release minor --execute` (will bump v0.62.1 to v0.63.0)
-- For a patch release, `cargo release patch --execute` (will bump v0.63.0 to v0.63.1)
-
-Run tests just to ensure everything is working as expected.
-
 ### Merge to `main`
 
 For regular releases, the changes above should end up in `main` before
 publishing. For dot-releases of an old version (e.g., cherry-picking an
 important fix) you can skip this.
 
-### Publish and add a git tag for the right commit
+### Tag and publish
 
-Once you're in the right commit, do:
+Once you're in the right branch, do:
 
 ```
 cargo release [patch|minor] --execute
-cargo release --execute
 ```
-This does the equivalent of the following:
+This does the following:
 
-```
-$ git tag -a v0.62.1 # With the right version of course
-$ pushd bindgen && cargo publish && popd
-$ pushd bindgen-cli && cargo publish && popd
-$ git push --tags upstream # To publish the tag
-```
+- Tag (`git tag`) the HEAD commit
+- Publish (`cargo publish`) bindgen and bindgen-cli
+- Push (`git push`) to GitHub
+
+The `patch` and `minor` refer to semver concepts:
+
+- `patch` would bump __v0.68.1__ to __v0.68.2__
+- `feature` would bump __v0.68.2__ to __v0.69.0__
 
 ### Create a new release on Github
 
-The release will be automated with the help of `.github/workflows/release.yml`,
-and will only be created when all tests succeed.
+The release is automated with the help of `.github/workflows/release.yml`,
+and will only be created...
+
+- when a Git tag is pushed
+- when all tests succeed
+
 While the tests are still running,
 a draft GitHub release will be created,
 to avoid notifying watchers of the repo should a CI step fail.
