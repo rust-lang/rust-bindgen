@@ -39,4 +39,3 @@ impl Default for TEST_STRUCT {
     }
 }
 pub type TEST = TEST_STRUCT;
-
