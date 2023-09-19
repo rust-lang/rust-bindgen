@@ -183,6 +183,7 @@
   argument use `void` as its sole argument.
 ## Removed
 ## Fixed
+- Allow compiling `bindgen-cli` with a static libclang.
 ## Security
 
 # 0.68.1
