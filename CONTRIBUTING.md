@@ -566,6 +566,7 @@ Once you're in the right branch, do:
 ```
 cargo release [patch|minor] --execute
 ```
+
 This does the following:
 
 - Tag (`git tag`) the HEAD commit
