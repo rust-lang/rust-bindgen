@@ -33,3 +33,33 @@ pub trait IA: Sized + std::ops::Deref {
         msg_send!(* self, crate_ : self_)
     }
 }
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone)]
+pub struct B(pub id);
+impl std::ops::Deref for B {
+    type Target = objc::runtime::Object;
+    fn deref(&self) -> &Self::Target {
+        unsafe { &*self.0 }
+    }
+}
+unsafe impl objc::Message for B {}
+impl B {
+    pub fn alloc() -> Self {
+        Self(unsafe { msg_send!(class!(B), alloc) })
+    }
+}
+impl IB for B {}
+pub trait IB: Sized + std::ops::Deref {
+    unsafe fn type_(&self) -> id
+    where
+        <Self as std::ops::Deref>::Target: objc::Message + Sized,
+    {
+        msg_send!(* self, type)
+    }
+    unsafe fn setType_(&self, type_: id)
+    where
+        <Self as std::ops::Deref>::Target: objc::Message + Sized,
+    {
+        msg_send!(* self, setType : type_)
+    }
+}
