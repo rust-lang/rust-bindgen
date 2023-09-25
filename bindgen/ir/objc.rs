@@ -258,17 +258,17 @@ impl ObjCMethod {
                 if name.is_empty() {
                     None
                 } else if idx == 0 {
-                    // Try to parse the method name as an identifier. Having a keyword  is ok
+                    // Try to parse the method name as an identifier. Having a keyword is ok
                     // unless it is `crate`, `self`, `super` or `Self`, so we try to add the `_`
                     // suffix to it and parse it.
-                    Some(
-                        syn::parse_str::<Ident>(name)
-                            .or_else(|err| {
-                                syn::parse_str::<Ident>(&format!("{}_", name))
-                                    .map_err(|_| err)
-                            })
-                            .expect("Invalid identifier"),
-                    )
+                    if ["crate", "self", "super", "Self"].contains(&name) {
+                        Some(Ident::new(
+                            &format!("{}_", name),
+                            Span::call_site(),
+                        ))
+                    } else {
+                        Some(Ident::new(name, Span::call_site()))
+                    }
                 } else {
                     // Try to parse the current joining name as an identifier. This might fail if the name
                     // is a keyword, so we try to  "r#" to it and parse again, this could also fail
