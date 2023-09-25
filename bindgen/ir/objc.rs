@@ -253,9 +253,12 @@ impl ObjCMethod {
         let split_name: Vec<Option<Ident>> = self
             .name
             .split(':')
-            .map(|name| {
+            .enumerate()
+            .map(|(idx, name)| {
                 if name.is_empty() {
                     None
+                } else if idx == 0 {
+                    Some(Ident::new(name, Span::call_site()))
                 } else {
                     // Try to parse the current name as an identifier. This might fail if the name
                     // is a keyword, so we try to  "r#" to it and parse again, this could also fail
