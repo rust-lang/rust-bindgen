@@ -1528,8 +1528,12 @@ impl CompInfo {
                             clang_sys::CX_CXXPublic,
                     });
                 }
-                CXCursor_Constructor |
-                CXCursor_Destructor |
+                CXCursor_Constructor | CXCursor_Destructor |
+                CXCursor_CXXMethod => {
+                    if let Some(res) = handle_method_cursor(cur, &mut ci) {
+                        return res;
+                    }
+                }
                 CXCursor_FunctionTemplate => {
                     cur.visit(|child| {
                         match child.kind() {
@@ -1544,11 +1548,6 @@ impl CompInfo {
                         }
                         CXChildVisit_Continue
                     });
-                }
-                CXCursor_CXXMethod => {
-                    if let Some(res) = handle_method_cursor(cur, &mut ci) {
-                        return res;
-                    }
                 }
                 CXCursor_NonTypeTemplateParameter => {
                     ci.has_non_type_template_params = true;
