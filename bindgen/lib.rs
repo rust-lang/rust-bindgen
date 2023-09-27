@@ -1232,9 +1232,50 @@ fn get_target_dependent_env_var(
 ///     .generate();
 /// ```
 #[derive(Debug)]
-pub struct CargoCallbacks;
+pub struct CargoCallbacks {
+    rerun_on_input_files: bool,
+}
+
+/// Create a new `CargoCallbacks` value with [`CargoCallbacks::rerun_on_input_files`] disabled.
+///
+/// This constructor has been deprecated in favor of [`CargoCallbacks::new`] where
+/// [`CargoCallbacks::rerun_on_input_files`] is enabled by default.
+#[deprecated = "Use `CargoCallbacks::new()` instead. Please, check the documentation for further information."]
+pub const CargoCallbacks: CargoCallbacks = CargoCallbacks {
+    rerun_on_input_files: false,
+};
+
+impl CargoCallbacks {
+    /// Create a new `CargoCallbacks` value.
+    pub fn new() -> Self {
+        Self {
+            rerun_on_input_files: true,
+        }
+    }
+
+    /// Whether Cargo should re-run the build script if any of the input files has changed.
+    ///
+    /// This option is enabled by default. Unless the deprecated [`CargoCallbacks`] constructor is
+    /// used.
+    pub fn rerun_on_input_files(mut self, doit: bool) -> Self {
+        self.rerun_on_input_files = doit;
+        self
+    }
+}
+
+impl Default for CargoCallbacks {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl callbacks::ParseCallbacks for CargoCallbacks {
+    fn input_file(&self, filename: &str) {
+        if self.rerun_on_input_files {
+            println!("cargo:rerun-if-changed={}", filename);
+        }
+    }
+
     fn include_file(&self, filename: &str) {
         println!("cargo:rerun-if-changed={}", filename);
     }
