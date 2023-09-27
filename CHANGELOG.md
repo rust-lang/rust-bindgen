@@ -186,6 +186,8 @@
 - Allow compiling `bindgen-cli` with a static libclang.
 - Emit an opaque integer type for pointer types that don't have the same size
   as the target's pointer size.
+- Avoid escaping Objective-C method names unless they are `Self`, `self`,
+  `crate` or `super`.
 ## Security
 
 # 0.68.1
