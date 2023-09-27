@@ -99,7 +99,7 @@ pub trait ParseCallbacks: fmt::Debug {
         None
     }
 
-    /// This will be called on every input file, with the full path of the file.
+    /// This will be called on every input file with the path of the file.
     fn input_file(&self, _filename: &str) {}
 
     /// This will be called on every file inclusion, with the full path of the included file.

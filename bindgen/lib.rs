@@ -325,6 +325,11 @@ impl Builder {
                 .map(String::into_boxed_str),
         );
 
+        for header in &self.options.input_headers {
+            self.options
+                .for_each_callback(|cb| cb.input_file(header.as_ref()));
+        }
+
         // Transform input headers to arguments on the clang command line.
         self.options.clang_args.extend(
             self.options.input_headers
@@ -564,6 +569,10 @@ impl BindgenOptions {
             .iter()
             .flat_map(|cb| f(cb.as_ref()))
             .collect()
+    }
+
+    fn for_each_callback(&self, f: impl Fn(&dyn callbacks::ParseCallbacks)) {
+        self.parse_callbacks.iter().for_each(|cb| f(cb.as_ref()));
     }
 
     fn process_comment(&self, comment: &str) -> String {
