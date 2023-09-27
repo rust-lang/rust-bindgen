@@ -1265,6 +1265,82 @@ impl CompInfo {
 
         let mut maybe_anonymous_struct_field = None;
         cursor.visit(|cur| {
+            let mut handle_method_cursor =
+                |cur: clang::Cursor, ci: &mut CompInfo| {
+                    let is_virtual = cur.method_is_virtual();
+                    let is_static = cur.method_is_static();
+                    debug_assert!(!(is_static && is_virtual), "How?");
+
+                    ci.has_destructor |= cur.kind() == CXCursor_Destructor;
+                    ci.has_own_virtual_method |= is_virtual;
+
+                    // This used to not be here, but then I tried generating
+                    // stylo bindings with this (without path filters), and
+                    // cried a lot with a method in gfx/Point.h
+                    // (ToUnknownPoint), that somehow was causing the same type
+                    // to be inserted in the map two times.
+                    //
+                    // I couldn't make a reduced test case, but anyway...
+                    // Methods of template functions not only used to be inlined,
+                    // but also instantiated, and we wouldn't be able to call
+                    // them, so just bail out.
+                    if !ci.template_params.is_empty() {
+                        return Some(CXChildVisit_Continue);
+                    }
+
+                    // NB: This gets us an owned `Function`, not a
+                    // `FunctionSig`.
+                    let signature =
+                        match Item::parse(cur, Some(potential_id), ctx) {
+                            Ok(item)
+                                if ctx
+                                    .resolve_item(item)
+                                    .kind()
+                                    .is_function() =>
+                            {
+                                item
+                            }
+                            _ => return Some(CXChildVisit_Continue),
+                        };
+
+                    let signature = signature.expect_function_id(ctx);
+
+                    match cur.kind() {
+                        CXCursor_Constructor => {
+                            ci.constructors.push(signature);
+                        }
+                        CXCursor_Destructor => {
+                            let kind = if is_virtual {
+                                MethodKind::VirtualDestructor {
+                                    pure_virtual: cur.method_is_pure_virtual(),
+                                }
+                            } else {
+                                MethodKind::Destructor
+                            };
+                            ci.destructor = Some((kind, signature));
+                        }
+                        CXCursor_CXXMethod => {
+                            let is_const = cur.method_is_const();
+                            let method_kind = if is_static {
+                                MethodKind::Static
+                            } else if is_virtual {
+                                MethodKind::Virtual {
+                                    pure_virtual: cur.method_is_pure_virtual(),
+                                }
+                            } else {
+                                MethodKind::Normal
+                            };
+
+                            let method =
+                                Method::new(method_kind, signature, is_const);
+
+                            ci.methods.push(method);
+                        }
+                        _ => unreachable!("How can we see this here?"),
+                    };
+                    None
+                };
+
             if cur.kind() != CXCursor_FieldDecl {
                 if let Some((ty, clang_ty, public, offset)) =
                     maybe_anonymous_struct_field.take()
@@ -1452,78 +1528,26 @@ impl CompInfo {
                             clang_sys::CX_CXXPublic,
                     });
                 }
-                CXCursor_Constructor | CXCursor_Destructor |
-                CXCursor_CXXMethod => {
-                    let is_virtual = cur.method_is_virtual();
-                    let is_static = cur.method_is_static();
-                    debug_assert!(!(is_static && is_virtual), "How?");
-
-                    ci.has_destructor |= cur.kind() == CXCursor_Destructor;
-                    ci.has_own_virtual_method |= is_virtual;
-
-                    // This used to not be here, but then I tried generating
-                    // stylo bindings with this (without path filters), and
-                    // cried a lot with a method in gfx/Point.h
-                    // (ToUnknownPoint), that somehow was causing the same type
-                    // to be inserted in the map two times.
-                    //
-                    // I couldn't make a reduced test case, but anyway...
-                    // Methods of template functions not only used to be inlined,
-                    // but also instantiated, and we wouldn't be able to call
-                    // them, so just bail out.
-                    if !ci.template_params.is_empty() {
-                        return CXChildVisit_Continue;
-                    }
-
-                    // NB: This gets us an owned `Function`, not a
-                    // `FunctionSig`.
-                    let signature =
-                        match Item::parse(cur, Some(potential_id), ctx) {
-                            Ok(item)
-                                if ctx
-                                    .resolve_item(item)
-                                    .kind()
-                                    .is_function() =>
-                            {
-                                item
+                CXCursor_Constructor |
+                CXCursor_Destructor |
+                CXCursor_FunctionTemplate => {
+                    cur.visit(|child| {
+                        match child.kind() {
+                            CXCursor_CXXMethod => {
+                                if let Some(res) =
+                                    handle_method_cursor(child, &mut ci)
+                                {
+                                    return res;
+                                }
                             }
-                            _ => return CXChildVisit_Continue,
-                        };
-
-                    let signature = signature.expect_function_id(ctx);
-
-                    match cur.kind() {
-                        CXCursor_Constructor => {
-                            ci.constructors.push(signature);
+                            _ => {}
                         }
-                        CXCursor_Destructor => {
-                            let kind = if is_virtual {
-                                MethodKind::VirtualDestructor {
-                                    pure_virtual: cur.method_is_pure_virtual(),
-                                }
-                            } else {
-                                MethodKind::Destructor
-                            };
-                            ci.destructor = Some((kind, signature));
-                        }
-                        CXCursor_CXXMethod => {
-                            let is_const = cur.method_is_const();
-                            let method_kind = if is_static {
-                                MethodKind::Static
-                            } else if is_virtual {
-                                MethodKind::Virtual {
-                                    pure_virtual: cur.method_is_pure_virtual(),
-                                }
-                            } else {
-                                MethodKind::Normal
-                            };
-
-                            let method =
-                                Method::new(method_kind, signature, is_const);
-
-                            ci.methods.push(method);
-                        }
-                        _ => unreachable!("How can we see this here?"),
+                        CXChildVisit_Continue
+                    });
+                }
+                CXCursor_CXXMethod => {
+                    if let Some(res) = handle_method_cursor(cur, &mut ci) {
+                        return res;
                     }
                 }
                 CXCursor_NonTypeTemplateParameter => {
@@ -1550,7 +1574,6 @@ impl CompInfo {
                 // Intentionally not handled
                 CXCursor_CXXAccessSpecifier |
                 CXCursor_CXXFinalAttr |
-                CXCursor_FunctionTemplate |
                 CXCursor_ConversionFunction => {}
                 _ => {
                     warn!(
