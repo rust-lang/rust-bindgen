@@ -1264,7 +1264,7 @@ impl CargoCallbacks {
 
     /// Whether Cargo should re-run the build script if any of the input files has changed.
     ///
-    /// This option is enabled by default. Unless the deprecated [`CargoCallbacks`] constructor is
+    /// This option is enabled by default. Unless the deprecated [`const@CargoCallbacks`] constructor is
     /// used.
     pub fn rerun_on_input_files(mut self, doit: bool) -> Self {
         self.rerun_on_input_files = doit;
