@@ -327,7 +327,7 @@ impl Builder {
 
         for header in &self.options.input_headers {
             self.options
-                .for_each_callback(|cb| cb.input_file(header.as_ref()));
+                .for_each_callback(|cb| cb.header_file(header.as_ref()));
         }
 
         // Transform input headers to arguments on the clang command line.
@@ -1242,32 +1242,32 @@ fn get_target_dependent_env_var(
 /// ```
 #[derive(Debug)]
 pub struct CargoCallbacks {
-    rerun_on_input_files: bool,
+    rerun_on_header_files: bool,
 }
 
-/// Create a new `CargoCallbacks` value with [`CargoCallbacks::rerun_on_input_files`] disabled.
+/// Create a new `CargoCallbacks` value with [`CargoCallbacks::rerun_on_header_files`] disabled.
 ///
 /// This constructor has been deprecated in favor of [`CargoCallbacks::new`] where
-/// [`CargoCallbacks::rerun_on_input_files`] is enabled by default.
+/// [`CargoCallbacks::rerun_on_header_files`] is enabled by default.
 #[deprecated = "Use `CargoCallbacks::new()` instead. Please, check the documentation for further information."]
 pub const CargoCallbacks: CargoCallbacks = CargoCallbacks {
-    rerun_on_input_files: false,
+    rerun_on_header_files: false,
 };
 
 impl CargoCallbacks {
     /// Create a new `CargoCallbacks` value.
     pub fn new() -> Self {
         Self {
-            rerun_on_input_files: true,
+            rerun_on_header_files: true,
         }
     }
 
-    /// Whether Cargo should re-run the build script if any of the input files has changed.
+    /// Whether Cargo should re-run the build script if any of the input header files has changed.
     ///
-    /// This option is enabled by default. Unless the deprecated [`const@CargoCallbacks`] constructor is
-    /// used.
-    pub fn rerun_on_input_files(mut self, doit: bool) -> Self {
-        self.rerun_on_input_files = doit;
+    /// This option is enabled by default unless the deprecated [`const@CargoCallbacks`]
+    /// constructor is used.
+    pub fn rerun_on_header_files(mut self, doit: bool) -> Self {
+        self.rerun_on_header_files = doit;
         self
     }
 }
@@ -1279,8 +1279,8 @@ impl Default for CargoCallbacks {
 }
 
 impl callbacks::ParseCallbacks for CargoCallbacks {
-    fn input_file(&self, filename: &str) {
-        if self.rerun_on_input_files {
+    fn header_file(&self, filename: &str) {
+        if self.rerun_on_header_files {
             println!("cargo:rerun-if-changed={}", filename);
         }
     }
