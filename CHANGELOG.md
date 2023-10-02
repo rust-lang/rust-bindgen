@@ -178,9 +178,19 @@
 # Unreleased
 
 ## Added
+- Added the `ParseCallbacks::header_file` callback which runs on every filename passed to `Builder::header`.
+- Added the `CargoCallbacks::new` constructor which emits a cargo-rerun line
+  for every input header file by default.
+- Added the `CargoCallbacks::rerun_on_header_files` method to configure whether
+  a cargo-rerun line should be emitted for every input header file.
 ## Changed
 - The `--wrap-static-fns` feature was updated so function types that has no
   argument use `void` as its sole argument.
+- `CargoCallbacks` is no longer a [unit-like
+  struct](https://doc.rust-lang.org/reference/items/structs.html) and the
+  `CargoCallbacks` constant was added to mitigate the breaking nature of this
+  change. This constant has been marked as deprecated and users will have to
+  use the new `CargoCallbacks::new` method in the future.
 ## Removed
 ## Fixed
 - Allow compiling `bindgen-cli` with a static libclang.
