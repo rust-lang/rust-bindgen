@@ -4,7 +4,7 @@ use bindgen::{
     FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
     RegexSet, RustTarget, DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
 };
-use clap::error;
+use clap::error::{Error, ErrorKind};
 use clap::{CommandFactory, Parser};
 use std::fs::File;
 use std::io;
@@ -21,7 +21,7 @@ fn rust_target_help() -> String {
 
 fn parse_codegen_config(
     what_to_generate: &str,
-) -> Result<CodegenConfig, error::Error> {
+) -> Result<CodegenConfig, Error> {
     let mut config = CodegenConfig::empty();
     for what in what_to_generate.split(',') {
         match what {
@@ -32,8 +32,8 @@ fn parse_codegen_config(
             "constructors" => config.insert(CodegenConfig::CONSTRUCTORS),
             "destructors" => config.insert(CodegenConfig::DESTRUCTORS),
             otherwise => {
-                return Err(error::Error::raw(
-                    error::ErrorKind::InvalidValue,
+                return Err(Error::raw(
+                    ErrorKind::InvalidValue,
                     format!("Unknown codegen item kind: {}", otherwise),
                 ));
             }
@@ -43,19 +43,19 @@ fn parse_codegen_config(
     Ok(config)
 }
 
-fn parse_rustfmt_config_path(path_str: &str) -> Result<PathBuf, error::Error> {
+fn parse_rustfmt_config_path(path_str: &str) -> Result<PathBuf, Error> {
     let path = Path::new(path_str);
 
     if !path.is_absolute() {
-        return Err(error::Error::raw(
-            error::ErrorKind::InvalidValue,
+        return Err(Error::raw(
+            ErrorKind::InvalidValue,
             "--rustfmt-configuration-file needs to be an absolute path!",
         ));
     }
 
     if path.to_str().is_none() {
-        return Err(error::Error::raw(
-            error::ErrorKind::InvalidUtf8,
+        return Err(Error::raw(
+            ErrorKind::InvalidUtf8,
             "--rustfmt-configuration-file contains non-valid UTF8 characters.",
         ));
     }
@@ -63,26 +63,24 @@ fn parse_rustfmt_config_path(path_str: &str) -> Result<PathBuf, error::Error> {
     Ok(path.to_path_buf())
 }
 
-fn parse_abi_override(
-    abi_override: &str,
-) -> Result<(Abi, String), error::Error> {
-    let (regex, abi_str) = abi_override.rsplit_once('=').ok_or_else(|| {
-        error::Error::raw(error::ErrorKind::InvalidValue, "Missing `=`")
-    })?;
+fn parse_abi_override(abi_override: &str) -> Result<(Abi, String), Error> {
+    let (regex, abi_str) = abi_override
+        .rsplit_once('=')
+        .ok_or_else(|| Error::raw(ErrorKind::InvalidValue, "Missing `=`"))?;
 
-    let abi = abi_str.parse().map_err(|err| {
-        error::Error::raw(error::ErrorKind::InvalidValue, err)
-    })?;
+    let abi = abi_str
+        .parse()
+        .map_err(|err| Error::raw(ErrorKind::InvalidValue, err))?;
 
     Ok((abi, regex.to_owned()))
 }
 
 fn parse_custom_derive(
     custom_derive: &str,
-) -> Result<(Vec<String>, String), error::Error> {
-    let (regex, derives) = custom_derive.rsplit_once('=').ok_or_else(|| {
-        error::Error::raw(error::ErrorKind::InvalidValue, "Missing `=`")
-    })?;
+) -> Result<(Vec<String>, String), Error> {
+    let (regex, derives) = custom_derive
+        .rsplit_once('=')
+        .ok_or_else(|| Error::raw(ErrorKind::InvalidValue, "Missing `=`"))?;
 
     let derives = derives.split(',').map(|s| s.to_owned()).collect();
 
