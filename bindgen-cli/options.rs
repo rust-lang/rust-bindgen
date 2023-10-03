@@ -51,7 +51,7 @@ fn parse_codegen_config(
 )]
 struct BindgenCommand {
     /// C or C++ header file.
-    header: Option<String>,
+    header: String,
     /// Path to write depfile to.
     #[arg(long)]
     depfile: Option<String>,
@@ -545,11 +545,7 @@ where
 
     let mut builder = builder();
 
-    if let Some(header) = header {
-        builder = builder.header(header);
-    } else {
-        return Err(Error::new(ErrorKind::Other, "Header not found"));
-    }
+    builder = builder.header(header);
 
     if let Some(rust_target) = rust_target {
         builder = builder.rust_target(rust_target);
