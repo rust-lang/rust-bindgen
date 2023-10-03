@@ -77,6 +77,18 @@ fn parse_abi_override(
     Ok((abi, regex.to_owned()))
 }
 
+fn parse_custom_derive(
+    custom_derive: &str,
+) -> Result<(Vec<String>, String), error::Error> {
+    let (regex, derives) = custom_derive.rsplit_once('=').ok_or_else(|| {
+        error::Error::raw(error::ErrorKind::InvalidValue, "Missing `=`")
+    })?;
+
+    let derives = derives.split(',').map(|s| s.to_owned()).collect();
+
+    Ok((derives, regex.to_owned()))
+}
+
 #[derive(Parser, Debug)]
 #[clap(
     about = "Generates Rust bindings from C/C++ headers.",
@@ -388,17 +400,17 @@ struct BindgenCommand {
     #[arg(long)]
     wrap_unsafe_ops: bool,
     /// Derive custom traits on any kind of type. The <CUSTOM> value must be of the shape <REGEX>=<DERIVE> where <DERIVE> is a coma-separated list of derive macros.
-    #[arg(long, value_name = "CUSTOM")]
-    with_derive_custom: Vec<String>,
+    #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_derive)]
+    with_derive_custom: Vec<(Vec<String>, String)>,
     /// Derive custom traits on a `struct`. The <CUSTOM> value must be of the shape <REGEX>=<DERIVE> where <DERIVE> is a coma-separated list of derive macros.
-    #[arg(long, value_name = "CUSTOM")]
-    with_derive_custom_struct: Vec<String>,
+    #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_derive)]
+    with_derive_custom_struct: Vec<(Vec<String>, String)>,
     /// Derive custom traits on an `enum. The <CUSTOM> value must be of the shape <REGEX>=<DERIVE> where <DERIVE> is a coma-separated list of derive macros.
-    #[arg(long, value_name = "CUSTOM")]
-    with_derive_custom_enum: Vec<String>,
+    #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_derive)]
+    with_derive_custom_enum: Vec<(Vec<String>, String)>,
     /// Derive custom traits on a `union`. The <CUSTOM> value must be of the shape <REGEX>=<DERIVE> where <DERIVE> is a coma-separated list of derive macros.
-    #[arg(long, value_name = "CUSTOM")]
-    with_derive_custom_union: Vec<String>,
+    #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_derive)]
+    with_derive_custom_union: Vec<(Vec<String>, String)>,
     /// Generate wrappers for `static` and `static inline` functions.
     #[arg(long, requires = "experimental")]
     wrap_static_fns: bool,
@@ -1061,12 +1073,7 @@ where
         ),
     ] {
         let name = emit_diagnostics.then_some(name);
-        for custom_derive in custom_derives {
-            let (regex, derives) = custom_derive
-                .rsplit_once('=')
-                .expect("Invalid custom derive argument: Missing `=`");
-            let derives = derives.split(',').map(|s| s.to_owned()).collect();
-
+        for (derives, regex) in custom_derives {
             let mut regex_set = RegexSet::new();
             regex_set.insert(regex);
             regex_set.build_with_diagnostics(false, name);
