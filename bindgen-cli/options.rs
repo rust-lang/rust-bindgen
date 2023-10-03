@@ -917,7 +917,9 @@ where
         builder = builder.formatter(formatter);
     }
 
-    builder = builder.rustfmt_configuration_file(rustfmt_configuration_file);
+    if let Some(path) = rustfmt_configuration_file {
+        builder = builder.rustfmt_configuration_file(Some(path));
+    }
 
     for regex in no_partialeq {
         builder = builder.no_partialeq(regex);
