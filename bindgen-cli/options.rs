@@ -1,6 +1,6 @@
 use bindgen::callbacks::TypeKind;
 use bindgen::{
-    builder, AliasVariation, Builder, CodegenConfig, EnumVariation,
+    builder, Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
     FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
     RegexSet, RustTarget, DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
 };
@@ -61,6 +61,20 @@ fn parse_rustfmt_config_path(path_str: &str) -> Result<PathBuf, error::Error> {
     }
 
     Ok(path.to_path_buf())
+}
+
+fn parse_abi_override(
+    abi_override: &str,
+) -> Result<(Abi, String), error::Error> {
+    let (regex, abi_str) = abi_override.rsplit_once('=').ok_or_else(|| {
+        error::Error::raw(error::ErrorKind::InvalidValue, "Missing `=`")
+    })?;
+
+    let abi = abi_str.parse().map_err(|err| {
+        error::Error::raw(error::ErrorKind::InvalidValue, err)
+    })?;
+
+    Ok((abi, regex.to_owned()))
 }
 
 #[derive(Parser, Debug)]
@@ -368,8 +382,8 @@ struct BindgenCommand {
     #[arg(long)]
     merge_extern_blocks: bool,
     /// Overrides the <ABI> of functions matching <REGEX>. The <OVERRIDE> value must be of the shape <REGEX>=<ABI> where ABI can be one of C, stdcall, efiapi, fastcall, thiscall, aapcs, win64 or C-unwind<.>
-    #[arg(long, value_name = "OVERRIDE")]
-    override_abi: Vec<String>,
+    #[arg(long, value_name = "OVERRIDE", value_parser = parse_abi_override)]
+    override_abi: Vec<(Abi, String)>,
     /// Wrap unsafe operations in unsafe blocks.
     #[arg(long)]
     wrap_unsafe_ops: bool,
@@ -977,13 +991,7 @@ where
         builder = builder.merge_extern_blocks(true);
     }
 
-    for abi_override in override_abi {
-        let (regex, abi_str) = abi_override
-            .rsplit_once('=')
-            .expect("Invalid ABI override: Missing `=`");
-        let abi = abi_str
-            .parse()
-            .unwrap_or_else(|err| panic!("Invalid ABI override: {}", err));
+    for (abi, regex) in override_abi {
         builder = builder.override_abi(abi, regex);
     }
 
