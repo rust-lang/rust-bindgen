@@ -4,6 +4,7 @@ use bindgen::{
     FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
     RegexSet, RustTarget, DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
 };
+use clap::error;
 use clap::{CommandFactory, Parser};
 use std::fs::File;
 use std::io::{self, Error, ErrorKind};
@@ -18,7 +19,9 @@ fn rust_target_help() -> String {
     )
 }
 
-fn parse_codegen_config(what_to_generate: &str) -> io::Result<CodegenConfig> {
+fn parse_codegen_config(
+    what_to_generate: &str,
+) -> Result<CodegenConfig, error::Error> {
     let mut config = CodegenConfig::empty();
     for what in what_to_generate.split(',') {
         match what {
@@ -29,9 +32,9 @@ fn parse_codegen_config(what_to_generate: &str) -> io::Result<CodegenConfig> {
             "constructors" => config.insert(CodegenConfig::CONSTRUCTORS),
             "destructors" => config.insert(CodegenConfig::DESTRUCTORS),
             otherwise => {
-                return Err(Error::new(
-                    ErrorKind::Other,
-                    format!("Unknown generate item: {}", otherwise),
+                return Err(error::Error::raw(
+                    error::ErrorKind::InvalidValue,
+                    format!("Unknown codegen item kind: {}", otherwise),
                 ));
             }
         }
