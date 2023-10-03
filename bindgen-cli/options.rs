@@ -279,8 +279,8 @@ struct BindgenCommand {
     /// Add a raw line of Rust code at the beginning of output.
     #[arg(long)]
     raw_line: Vec<String>,
-    /// Add a <RAW-LINE> of Rust code to a given module with name <MODULE-NAME>.
-    #[arg(long, number_of_values = 2, value_names = ["MODULE-NAME", "RAW-LINE"])]
+    /// Add a RAW_LINE of Rust code to a given module with name MODULE_NAME.
+    #[arg(long, number_of_values = 2, value_names = ["MODULE_NAME", "RAW_LINE"])]
     module_raw_line: Vec<String>,
     #[arg(long, help = rust_target_help())]
     rust_target: Option<RustTarget>,
