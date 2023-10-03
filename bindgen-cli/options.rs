@@ -7,8 +7,8 @@ use bindgen::{
 use clap::error;
 use clap::{CommandFactory, Parser};
 use std::fs::File;
-use std::io::{self, Error, ErrorKind};
-use std::path::PathBuf;
+use std::io;
+use std::path::{Path, PathBuf};
 use std::process::exit;
 
 fn rust_target_help() -> String {
@@ -41,6 +41,26 @@ fn parse_codegen_config(
     }
 
     Ok(config)
+}
+
+fn parse_rustfmt_config_path(path_str: &str) -> Result<PathBuf, error::Error> {
+    let path = Path::new(path_str);
+
+    if !path.is_absolute() {
+        return Err(error::Error::raw(
+            error::ErrorKind::InvalidValue,
+            "--rustfmt-configuration-file needs to be an absolute path!",
+        ));
+    }
+
+    if path.to_str().is_none() {
+        return Err(error::Error::raw(
+            error::ErrorKind::InvalidUtf8,
+            "--rustfmt-configuration-file contains non-valid UTF8 characters.",
+        ));
+    }
+
+    Ok(path.to_path_buf())
 }
 
 #[derive(Parser, Debug)]
@@ -288,8 +308,8 @@ struct BindgenCommand {
     )]
     formatter: Option<Formatter>,
     /// The absolute <PATH> to the rustfmt configuration file. The configuration file will be used for formatting the bindings. This parameter sets `formatter` to `rustfmt`.
-    #[arg(long, value_name = "PATH", conflicts_with = "no_rustfmt_bindings")]
-    rustfmt_configuration_file: Option<String>,
+    #[arg(long, value_name = "PATH", conflicts_with = "no_rustfmt_bindings", value_parser=parse_rustfmt_config_path)]
+    rustfmt_configuration_file: Option<PathBuf>,
     /// Avoid deriving PartialEq for types matching <REGEX>.
     #[arg(long, value_name = "REGEX")]
     no_partialeq: Vec<String>,
@@ -873,25 +893,7 @@ where
         builder = builder.formatter(formatter);
     }
 
-    if let Some(path_str) = rustfmt_configuration_file {
-        let path = PathBuf::from(path_str);
-
-        if !path.is_absolute() {
-            return Err(Error::new(
-                ErrorKind::Other,
-                "--rustfmt-configuration-file needs to be an absolute path!",
-            ));
-        }
-
-        if path.to_str().is_none() {
-            return Err(Error::new(
-                ErrorKind::Other,
-                "--rustfmt-configuration-file contains non-valid UTF8 characters.",
-            ));
-        }
-
-        builder = builder.rustfmt_configuration_file(Some(path));
-    }
+    builder = builder.rustfmt_configuration_file(rustfmt_configuration_file);
 
     for regex in no_partialeq {
         builder = builder.no_partialeq(regex);
