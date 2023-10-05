@@ -21,7 +21,8 @@ use self::struct_layout::StructLayoutTracker;
 use super::BindgenOptions;
 
 use crate::callbacks::{
-    AttributeInfo, DeriveInfo, FieldInfo, TypeKind as DeriveTypeKind,
+    AttributeInfo, DeriveInfo, DiscoveredItem, DiscoveredItemId, FieldInfo,
+    TypeKind as DeriveTypeKind,
 };
 use crate::codegen::error::Error;
 use crate::ir::analysis::{HasVtable, Sizedness};
@@ -982,6 +983,18 @@ impl CodeGenerator for Type {
                 }
 
                 let rust_name = ctx.rust_ident(&name);
+
+                ctx.options().for_each_callback(|cb| {
+                    cb.new_item_found(
+                        DiscoveredItemId::new(item.id().as_usize()),
+                        DiscoveredItem::Alias {
+                            alias_name: rust_name.to_string(),
+                            alias_for: DiscoveredItemId::new(
+                                inner_item.id().as_usize(),
+                            ),
+                        },
+                    );
+                });
 
                 let mut tokens = if let Some(comment) = item.comment(ctx) {
                     attributes::doc(comment)
@@ -2448,6 +2461,32 @@ impl CodeGenerator for CompInfo {
         derives.extend(item.annotations().derives().iter().map(String::as_str));
 
         let is_rust_union = is_union && struct_layout.is_rust_union();
+
+        ctx.options().for_each_callback(|cb| {
+            let discovered_item = match self.kind() {
+                CompKind::Struct => DiscoveredItem::Struct {
+                    original_name: item
+                        .kind()
+                        .expect_type()
+                        .name()
+                        .map(String::from),
+                    final_name: canonical_ident.to_string(),
+                },
+                CompKind::Union => DiscoveredItem::Union {
+                    original_name: item
+                        .kind()
+                        .expect_type()
+                        .name()
+                        .map(String::from),
+                    final_name: canonical_ident.to_string(),
+                },
+            };
+
+            cb.new_item_found(
+                DiscoveredItemId::new(item.id().as_usize()),
+                discovered_item,
+            );
+        });
 
         // The custom derives callback may return a list of derive attributes;
         // add them to the end of the list.
