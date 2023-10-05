@@ -22,7 +22,7 @@ use std::mem;
 
 /// The kind of compound type.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub(crate) enum CompKind {
+pub enum CompKind {
     /// A struct.
     Struct,
     /// A union.
