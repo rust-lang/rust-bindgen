@@ -416,9 +416,9 @@ struct BindgenCommand {
     /// Generate wrappers for `static` and `static inline` functions.
     #[arg(long, requires = "experimental")]
     wrap_static_fns: bool,
-    /// Sets the path of the file where generated native code will be emitted.
+    /// Sets the path of the file where generated code for wrapper functions will be emitted.
     #[arg(long, requires = "experimental", value_name = "PATH")]
-    native_code_generation_path: Option<PathBuf>,
+    wrapper_code_generation_path: Option<PathBuf>,
     /// Sets the SUFFIX added to the extern wrapper functions generated for `static` and `static
     /// inline` functions.
     #[arg(long, requires = "experimental", value_name = "SUFFIX")]
@@ -563,7 +563,7 @@ where
         with_derive_custom_enum,
         with_derive_custom_union,
         wrap_static_fns,
-        native_code_generation_path,
+        wrapper_code_generation_path,
         wrap_static_fns_suffix,
         macro_function,
         default_visibility,
@@ -1107,8 +1107,8 @@ where
         builder = builder.wrap_static_fns(true);
     }
 
-    if let Some(path) = native_code_generation_path {
-        builder = builder.native_code_generation_path(path);
+    if let Some(path) = wrapper_code_generation_path {
+        builder = builder.wrapper_code_generation_path(path);
     }
 
     if let Some(suffix) = wrap_static_fns_suffix {

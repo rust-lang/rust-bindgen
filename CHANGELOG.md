@@ -273,8 +273,8 @@
   `CargoCallbacks` constant was added to mitigate the breaking nature of this
   change. This constant has been marked as deprecated and users will have to
   use the new `CargoCallbacks::new` method in the future.
-- Renamed `--wrap-static-fns-path` argument to `--native-code-generation-path` and the
-  corresponding `wrap_static_fns_path` builder function to `native_code_generation_path`.
+- Renamed `--wrap-static-fns-path` argument to `-wrapper-code-generation-path` and the
+  corresponding `wrap_static_fns_path` builder function to `wrapper_code_generation_path`.
 ## Removed
 ## Fixed
 - Allow compiling `bindgen-cli` with a static libclang.

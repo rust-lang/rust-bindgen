@@ -4811,7 +4811,7 @@ pub(crate) mod utils {
 
         let path = context
             .options()
-            .native_code_generation_path
+            .wrapper_code_generation_path
             .as_ref()
             .map(PathBuf::from)
             .unwrap_or_else(|| {

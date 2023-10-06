@@ -2042,7 +2042,7 @@ options! {
         as_args: "--wrap-static-fns-suffix",
     },
     /// The path of the file where generated native code will be emitted.
-    native_code_generation_path: Option<PathBuf> {
+    wrapper_code_generation_path: Option<PathBuf> {
         methods: {
             #[cfg(feature = "experimental")]
             /// Set the path for the source code file that would be created if any code
@@ -2057,12 +2057,12 @@ options! {
             ///
             /// The default path is `temp_dir/bindgen/extern`, where `temp_dir` is the path
             /// returned by [`std::env::temp_dir`] .
-            pub fn native_code_generation_path<T: AsRef<Path>>(mut self, path: T) -> Self {
-                self.options.native_code_generation_path = Some(path.as_ref().to_owned());
+            pub fn wrapper_code_generation_path<T: AsRef<Path>>(mut self, path: T) -> Self {
+                self.options.wrapper_code_generation_path = Some(path.as_ref().to_owned());
                 self
             }
         },
-        as_args: "--native-code-generation-path",
+        as_args: "--wrapper-code-generation-path",
     },
     /// A mapping of names to function types of registered functional macros
     /// for which a wrapping function should be generated.

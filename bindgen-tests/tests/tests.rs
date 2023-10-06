@@ -690,7 +690,7 @@ fn test_wrap_static_fns() {
     let _bindings = Builder::default()
         .header("tests/headers/wrap-static-fns.h")
         .wrap_static_fns(true)
-        .native_code_generation_path(generated_path.display().to_string())
+        .wrapper_code_generation_path(generated_path.display().to_string())
         .parse_callbacks(Box::new(parse_callbacks::WrapAsVariadicFn))
         .generate()
         .expect("Failed to generate bindings");
@@ -738,7 +738,7 @@ fn test_function_macros() {
             "CONDITIONAL_COMPLEX",
             FunctionType::new::<f32, (bool, u32)>(),
         )
-        .native_code_generation_path(generated_path.display().to_string())
+        .wrapper_code_generation_path(generated_path.display().to_string())
         .generate()
         .expect("Failed to generate bindings");
 
