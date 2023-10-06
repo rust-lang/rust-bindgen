@@ -1,4 +1,4 @@
-// bindgen-flags: --macro-function "SIMPLE" --macro-function "INDIRECT_SIMPLE" --macro-function "f32 COMPLEX(u32)" --macro-function "f32 INDIRECT_COMPLEX(u32)" --macro-function "f32 CONDITIONAL_COMPLEX(bool, u32)"
+// bindgen-flags: --experimental --macro-function "SIMPLE" --macro-function "INDIRECT_SIMPLE" --macro-function "f32 COMPLEX(u32)" --macro-function "f32 INDIRECT_COMPLEX(u32)" --macro-function "f32 CONDITIONAL_COMPLEX(bool, u32)"
 
 void simple(void);
 

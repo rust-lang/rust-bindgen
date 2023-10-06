@@ -425,7 +425,7 @@ struct BindgenCommand {
     wrap_static_fns_suffix: Option<String>,
     /// Create a wrapper function for the macro. The MACRO value must be of the shape
     /// `[<return type>] <macro name>[(<comma separated list of arguments>)]`.
-    #[arg(long, value_name = "MACRO")]
+    #[arg(long, requires = "experimental", value_name = "MACRO")]
     macro_function: Option<Vec<String>>,
     /// Set the default VISIBILITY of fields, including bitfields and accessor methods for
     /// bitfields. This flag is ignored if the `--respect-cxx-access-specs` flag is used.
