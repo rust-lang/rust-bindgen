@@ -1122,11 +1122,8 @@ where
             {
                 (macro_definition.as_str(), Vec::new())
             } else {
-                let Some((left_side, arguments)) =
-                    macro_definition.split_once('(')
-                else {
-                    panic!("Invalid function macro definition: No '(' for ')' at end found");
-                };
+                let (left_side, arguments) =
+                    macro_definition.split_once('(').expect("Invalid function macro definition: No '(' for ')' at end found");
                 let arguments = &arguments[..arguments.len() - 1];
                 if arguments.trim().is_empty() {
                     // The empty argument list case `()`.
