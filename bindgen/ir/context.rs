@@ -3285,10 +3285,14 @@ impl cmacro::CodegenContext for BindgenContext {
     fn rust_target(&self) -> Option<String> {
         // FIXME: Workaround until `generate_cstr` is the default.
         if !self.options().generate_cstr {
-            return Some("1.0".into());
+            if self.options().rust_features.static_lifetime_elision {
+                return Some("1.17.0".into());
+            } else {
+                return Some("1.0.0".into());
+            }
         }
 
-        Some(self.options().rust_target.to_string())
+        self.options().rust_target.full_version()
     }
 }
 
