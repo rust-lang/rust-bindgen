@@ -2024,22 +2024,22 @@ options! {
         },
         as_args: "--wrap-static-fns",
     },
-    /// The suffix to be added to the function wrappers for `static` functions.
-    wrap_static_fns_suffix: Option<String> {
+    /// The suffix to be added to the function wrappers for `static` functions and functional macros.
+    wrapper_function_suffix: Option<String> {
         methods: {
             #[cfg(feature = "experimental")]
-            /// Set the suffix added to the wrappers for `static` functions.
+            /// Set the suffix added to the wrappers for `static` functions and functional macros.
             ///
             /// This option only comes into effect if `true` is passed to the
-            /// [`Builder::wrap_static_fns`] method.
+            /// [`Builder::wrap_static_fns`] method if a functional macro is defined.
             ///
             /// The default suffix is `__extern`.
-            pub fn wrap_static_fns_suffix<T: AsRef<str>>(mut self, suffix: T) -> Self {
-                self.options.wrap_static_fns_suffix = Some(suffix.as_ref().to_owned());
+            pub fn wrapper_function_suffix<T: AsRef<str>>(mut self, suffix: T) -> Self {
+                self.options.wrapper_function_suffix = Some(suffix.as_ref().to_owned());
                 self
             }
         },
-        as_args: "--wrap-static-fns-suffix",
+        as_args: "--wrapper-function-suffix",
     },
     /// The path of the file where generated native code will be emitted.
     wrapper_code_generation_path: Option<PathBuf> {

@@ -119,15 +119,7 @@ impl<'a> CSerialize<'a> for Function {
             self.kind() != FunctionKind::Macro || !args.is_empty();
 
         // The name used for the wrapper self.
-        let wrap_name = format!(
-            "{}{}",
-            name,
-            if self.kind() == FunctionKind::Macro {
-                "__macro"
-            } else {
-                ctx.wrap_static_fns_suffix()
-            }
-        );
+        let wrap_name = format!("{name}{}", ctx.wrapper_function_suffix());
 
         // The function's return type
         let (ret_item, ret_ty) = {

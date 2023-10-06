@@ -419,10 +419,10 @@ struct BindgenCommand {
     /// Sets the path of the file where generated code for wrapper functions will be emitted.
     #[arg(long, requires = "experimental", value_name = "PATH")]
     wrapper_code_generation_path: Option<PathBuf>,
-    /// Sets the SUFFIX added to the extern wrapper functions generated for `static` and `static
-    /// inline` functions.
+    /// Sets the SUFFIX added to the wrapper functions generated for `static` and `static inline`
+    /// functions and functional macros.
     #[arg(long, requires = "experimental", value_name = "SUFFIX")]
-    wrap_static_fns_suffix: Option<String>,
+    wrapper_function_suffix: Option<String>,
     /// Create a wrapper function for the macro. The MACRO value must be of the shape
     /// `[<return type>] <macro name>[(<comma separated list of arguments>)]`.
     #[arg(long, requires = "experimental", value_name = "MACRO")]
@@ -564,7 +564,7 @@ where
         with_derive_custom_union,
         wrap_static_fns,
         wrapper_code_generation_path,
-        wrap_static_fns_suffix,
+        wrapper_function_suffix,
         macro_function,
         default_visibility,
         emit_diagnostics,
@@ -1111,8 +1111,8 @@ where
         builder = builder.wrapper_code_generation_path(path);
     }
 
-    if let Some(suffix) = wrap_static_fns_suffix {
-        builder = builder.wrap_static_fns_suffix(suffix);
+    if let Some(suffix) = wrapper_function_suffix {
+        builder = builder.wrapper_function_suffix(suffix);
     }
 
     if let Some(macro_functions) = macro_function {

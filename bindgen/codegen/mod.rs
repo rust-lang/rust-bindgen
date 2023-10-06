@@ -4273,11 +4273,8 @@ impl CodeGenerator for Function {
         let should_wrap =
             is_internal && ctx.options().wrap_static_fns && !has_link_name_attr;
 
-        if should_wrap {
-            let name = canonical_name.clone() + ctx.wrap_static_fns_suffix();
-            attributes.push(attributes::link_name::<true>(&name));
-        } else if is_function_macro && !has_link_name_attr {
-            let name = canonical_name.clone() + "__macro";
+        if should_wrap || (is_function_macro && !has_link_name_attr) {
+            let name = canonical_name.clone() + ctx.wrapper_function_suffix();
             attributes.push(attributes::link_name::<true>(&name));
         }
 
