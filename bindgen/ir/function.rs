@@ -7,7 +7,7 @@ use super::item::Item;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
 use crate::callbacks::{ItemInfo, ItemKind};
-use crate::clang::{self, Attribute};
+use crate::clang::{self, ABIKind, Attribute};
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 use clang_sys::{self, CXCallingConv};
 
@@ -323,11 +323,12 @@ pub(crate) fn cursor_mangling(
         return None;
     }
 
+    let is_itanium_abi = ctx.abi_kind() == ABIKind::GenericItanium;
     let is_destructor = cursor.kind() == clang_sys::CXCursor_Destructor;
     if let Ok(mut manglings) = cursor.cxx_manglings() {
         while let Some(m) = manglings.pop() {
             // Only generate the destructor group 1, see below.
-            if is_destructor && !m.ends_with("D1Ev") {
+            if is_itanium_abi && is_destructor && !m.ends_with("D1Ev") {
                 continue;
             }
 
@@ -340,7 +341,7 @@ pub(crate) fn cursor_mangling(
         return None;
     }
 
-    if is_destructor {
+    if is_itanium_abi && is_destructor {
         // With old (3.8-) libclang versions, and the Itanium ABI, clang returns
         // the "destructor group 0" symbol, which means that it'll try to free
         // memory, which definitely isn't what we want.
