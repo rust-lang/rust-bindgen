@@ -578,6 +578,9 @@ impl CodeGenerator for Module {
                 if result.saw_incomplete_array {
                     utils::prepend_incomplete_array_types(ctx, &mut *result);
                 }
+                if ctx.need_bindgen_float16_type() {
+                    utils::prepend_float16_type(&mut *result);
+                }
                 if ctx.need_bindgen_complex_type() {
                     utils::prepend_complex_type(&mut *result);
                 }
@@ -5132,6 +5135,20 @@ pub(crate) mod utils {
             incomplete_array_debug_impl,
         ];
 
+        let old_items = mem::replace(result, items);
+        result.extend(old_items);
+    }
+
+    pub(crate) fn prepend_float16_type(
+        result: &mut Vec<proc_macro2::TokenStream>,
+    ) {
+        let float16_type = quote! {
+            #[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
+            #[repr(transparent)]
+            pub struct __BindgenFloat16(pub u16);
+        };
+
+        let items = vec![float16_type];
         let old_items = mem::replace(result, items);
         result.extend(old_items);
     }
