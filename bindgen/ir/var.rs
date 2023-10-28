@@ -429,6 +429,10 @@ fn parse_macro(
 
     let cexpr_tokens = cursor.cexpr_tokens();
 
+    if let Some(callbacks) = ctx.parse_callbacks() {
+        callbacks.modify_macro(cursor.spelling(), &mut cexpr_tokens);
+    }
+
     let parser = expr::IdentifierParser::new(ctx.parsed_macros());
 
     match parser.macro_definition(&cexpr_tokens) {
