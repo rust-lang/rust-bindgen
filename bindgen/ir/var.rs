@@ -429,7 +429,7 @@ fn parse_macro(
 
     let cexpr_tokens = cursor.cexpr_tokens();
 
-    if let Some(callbacks) = ctx.parse_callbacks() {
+    if let Some(callbacks) = ctx.options.parse_callbacks() {
         callbacks.modify_macro(cursor.spelling(), &mut cexpr_tokens);
     }
 
