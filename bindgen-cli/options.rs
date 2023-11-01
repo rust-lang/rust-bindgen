@@ -8,6 +8,7 @@ use clap::error::{Error, ErrorKind};
 use clap::{CommandFactory, Parser};
 use std::fs::File;
 use std::io;
+use std::io::{Error as IoError, ErrorKind as IoErrorKind};
 use std::path::{Path, PathBuf};
 use std::process::exit;
 
@@ -95,7 +96,7 @@ fn parse_custom_derive(
 )]
 struct BindgenCommand {
     /// C or C++ header file.
-    header: String,
+    header: Option<String>,
     /// Path to write depfile to.
     #[arg(long)]
     depfile: Option<String>,
@@ -589,7 +590,11 @@ where
 
     let mut builder = builder();
 
-    builder = builder.header(header);
+    if let Some(header) = header {
+        builder = builder.header(header);
+    } else {
+        return Err(IoError::new(IoErrorKind::Other, "Header not found"));
+    }
 
     if let Some(rust_target) = rust_target {
         builder = builder.rust_target(rust_target);
