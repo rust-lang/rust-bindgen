@@ -544,15 +544,6 @@ like the following is a useful way to check what has landed:
 
 Also worth checking the [next-release tag](https://github.com/rust-lang/rust-bindgen/pulls?q=is%3Apr+label%3Anext-release).
 
-Once that's done and the changelog is up-to-date, run `doctoc` on it.
-
-If needed, install it locally by running:
-
-```
-$ npm install doctoc
-$ ./node_modules/doctoc/doctoc.js CHANGELOG.md
-```
-
 ### Merge to `main`
 
 For regular releases, the changes above should end up in `main` before
@@ -561,14 +552,21 @@ important fix) you can skip this.
 
 ### Tag and publish
 
-Once you're in the right branch, do:
+Once you're in `main`. Remember to install `doctoc` by running:
+```
+npm install doctoc
+```
 
+And then run:
 ```
 cargo release [patch|minor] --no-publish --execute
 ```
 
 This does the following:
 
+- Bump the version.
+- Turn the `Unreleased` section of the changelog into the section for the version being published.
+- Update the table of contents of the changelog using `doctoc`.
 - Tag (`git tag`) the HEAD commit
 - Publish (`cargo publish`) bindgen and bindgen-cli
 - Push (`git push`) to GitHub
