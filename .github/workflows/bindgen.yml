@@ -238,7 +238,7 @@ jobs:
           override: true
       
       - name: Check cfg
-        run: cargo check -Z unstable-options -Z check-cfg=features
+        run: cargo check -Z unstable-options -Z check-cfg
 
   test-book:
     runs-on: ubuntu-latest
