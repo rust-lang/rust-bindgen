@@ -15,7 +15,7 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-      - name: Publish bindden (lib)
+      - name: Publish bindgen (lib)
         run: cargo publish --package bindgen --token ${CRATES_TOKEN}
-      - name: Publish bindden-cli
+      - name: Publish bindgen-cli
         run: cargo publish --package bindgen-cli --token ${CRATES_TOKEN}
