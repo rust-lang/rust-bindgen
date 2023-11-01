@@ -36,12 +36,6 @@ tag-name = "v{{version}}"
 # Don't release any crate unless its manifest has `release = true`
 release = false
 
-# Add version and date to changelog file
-[[workspace.metadata.release.pre-release-replacements]]
-file = "CHANGELOG.md"
-search = "# Unreleased"
-replace = "# {{version}} ({{date}})"
-
 # The profile that 'cargo dist' will build with
 [profile.dist]
 inherits = "release"

@@ -18,3 +18,8 @@ csmith-fuzzing/platform.info
 
 # Backups of test cases from C-Reduce
 **/*.orig
+
+# node.js files
+node_modules
+package-lock.json
+package.json
