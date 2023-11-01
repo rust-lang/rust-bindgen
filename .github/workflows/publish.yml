@@ -1,0 +1,21 @@
+# To trigger this:
+# - go to Actions > Publish
+# - click the Run Workflow dropdown in the top-right
+name: Publish
+on: workflow_dispatch
+env:
+  CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
+jobs:
+  cargo-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+      - name: Publish bindgen (lib)
+        run: cargo publish --package bindgen --token ${CRATES_TOKEN}
+      - name: Publish bindgen-cli
+        run: cargo publish --package bindgen-cli --token ${CRATES_TOKEN}

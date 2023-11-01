@@ -564,8 +564,9 @@ important fix) you can skip this.
 Once you're in the right branch, do:
 
 ```
-cargo release [patch|minor] --execute
+cargo release [patch|minor] --no-publish --execute
 ```
+
 This does the following:
 
 - Tag (`git tag`) the HEAD commit
