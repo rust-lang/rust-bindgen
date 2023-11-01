@@ -4,7 +4,7 @@
 name: Publish
 on: workflow_dispatch
 env:
-  CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
+  CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 jobs:
   cargo-publish:
     runs-on: ubuntu-latest
@@ -16,6 +16,6 @@ jobs:
         with:
           toolchain: stable
       - name: Publish bindgen (lib)
-        run: cargo publish --package bindgen --token ${CRATES_TOKEN}
+        run: cargo publish --package bindgen --token ${CARGO_REGISTRY_TOKEN}
       - name: Publish bindgen-cli
-        run: cargo publish --package bindgen-cli --token ${CRATES_TOKEN}
+        run: cargo publish --package bindgen-cli --token ${CARGO_REGISTRY_TOKEN}
