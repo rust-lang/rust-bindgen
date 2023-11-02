@@ -8,7 +8,6 @@ use clap::error::{Error, ErrorKind};
 use clap::{CommandFactory, Parser};
 use std::fs::File;
 use std::io;
-use std::io::{Error as IoError, ErrorKind as IoErrorKind};
 use std::path::{Path, PathBuf};
 use std::process::exit;
 
@@ -593,7 +592,7 @@ where
     if let Some(header) = header {
         builder = builder.header(header);
     } else {
-        return Err(IoError::new(IoErrorKind::Other, "Header not found"));
+        return Err(io::Error::new(io::ErrorKind::Other, "Header not found"));
     }
 
     if let Some(rust_target) = rust_target {
