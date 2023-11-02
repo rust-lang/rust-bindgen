@@ -182,11 +182,9 @@
 
 --------------------------------------------------------------------------------
 # Unreleased
-## Added
-## Changed
-## Removed
+
 ## Fixed
-## Security
+- Allow to run `bindgen -v` without an input header argument.
 
 # 0.69.0 (2023-11-01)
 
