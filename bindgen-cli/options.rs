@@ -95,7 +95,7 @@ fn parse_custom_derive(
 )]
 struct BindgenCommand {
     /// C or C++ header file.
-    header: String,
+    header: Option<String>,
     /// Path to write depfile to.
     #[arg(long)]
     depfile: Option<String>,
@@ -589,7 +589,11 @@ where
 
     let mut builder = builder();
 
-    builder = builder.header(header);
+    if let Some(header) = header {
+        builder = builder.header(header);
+    } else {
+        return Err(io::Error::new(io::ErrorKind::Other, "Header not found"));
+    }
 
     if let Some(rust_target) = rust_target {
         builder = builder.rust_target(rust_target);
