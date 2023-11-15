@@ -5285,7 +5285,8 @@ pub(crate) mod utils {
                 } else {
                     t.to_rust_ty_or_opaque(ctx, &())
                 };
-                stream.to_ptr(ctx.resolve_type(t).is_const())
+                stream
+                    .to_ptr(ctx.resolve_type(t).is_const() || arg_ty.is_const())
             }
             TypeKind::Pointer(inner) => {
                 let inner = ctx.resolve_item(inner);
