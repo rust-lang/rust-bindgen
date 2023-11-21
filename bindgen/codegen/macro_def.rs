@@ -201,7 +201,7 @@ impl CodeGenerator for MacroDef {
                             });
                         } else {
                             warn!(
-                                "Unhandled variable-like macro: {} = {:?}",
+                                "Unhandled variable-like macro `{}`: {:?}",
                                 var_macro.name(),
                                 expr
                             );
