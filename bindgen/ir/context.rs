@@ -696,6 +696,36 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         // depfiles need to include the explicitly listed headers too
         let deps = options.input_headers.iter().map(SourceFile::new).collect();
 
+        // Define macros added via command-line arguments so that
+        // dependent macros are generated correctly.
+        let mut macro_set = cmacro::MacroSet::new();
+        let mut next_is_define = false;
+        for arg in &options.clang_args {
+            let arg = if next_is_define {
+                next_is_define = false;
+                arg.as_ref()
+            } else if let Some(arg) = arg.strip_prefix("-D") {
+                if arg.is_empty() {
+                    next_is_define = true;
+                    continue;
+                }
+
+                arg
+            } else {
+                continue;
+            };
+
+            let (name, value) = if let Some((name, value)) = arg.split_once('=')
+            {
+                // FIXME: Value should be tokenized instead of taken verbatim.
+                (name, vec![value])
+            } else {
+                (arg, vec![])
+            };
+
+            macro_set.define_var_macro(name, value);
+        }
+
         BindgenContext {
             items: vec![Some(root_module)],
             includes: Default::default(),
@@ -708,7 +738,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             semantic_parents: Default::default(),
             currently_parsed_types: vec![],
             parsed_macros: Default::default(),
-            macro_set: Default::default(),
+            macro_set,
             function_names: Default::default(),
             type_names: Default::default(),
             replacements: Default::default(),
