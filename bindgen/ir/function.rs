@@ -303,6 +303,7 @@ fn get_abi(cc: CXCallingConv) -> ClangAbi {
         CXCallingConv_X86VectorCall => ClangAbi::Known(Abi::Vectorcall),
         CXCallingConv_AAPCS => ClangAbi::Known(Abi::Aapcs),
         CXCallingConv_X86_64Win64 => ClangAbi::Known(Abi::Win64),
+        CXCallingConv_AArch64VectorCall => ClangAbi::Known(Abi::Vectorcall),
         other => ClangAbi::Unknown(other),
     }
 }
