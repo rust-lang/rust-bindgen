@@ -83,7 +83,7 @@ where
         }
     }
 }
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Struct {
     pub _bitfield_align_1: [u8; 0],
@@ -214,4 +214,98 @@ impl Struct {
             );
         __bindgen_bitfield_unit
     }
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Inner {
+    pub _bitfield_align_1: [u16; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
+}
+#[test]
+fn bindgen_test_layout_Inner() {
+    assert_eq!(
+        ::std::mem::size_of::<Inner>(),
+        4usize,
+        concat!("Size of: ", stringify!(Inner)),
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Inner>(),
+        2usize,
+        concat!("Alignment of ", stringify!(Inner)),
+    );
+}
+impl Inner {
+    #[inline]
+    pub fn a(&self) -> ::std::os::raw::c_ushort {
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 16u8) as u16) }
+    }
+    #[inline]
+    pub fn set_a(&mut self, val: ::std::os::raw::c_ushort) {
+        unsafe {
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(0usize, 16u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn b(&self) -> ::std::os::raw::c_ushort {
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(16usize, 16u8) as u16) }
+    }
+    #[inline]
+    pub fn set_b(&mut self, val: ::std::os::raw::c_ushort) {
+        unsafe {
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(16usize, 16u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        a: ::std::os::raw::c_ushort,
+        b: ::std::os::raw::c_ushort,
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+        __bindgen_bitfield_unit
+            .set(
+                0usize,
+                16u8,
+                {
+                    let a: u16 = unsafe { ::std::mem::transmute(a) };
+                    a as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                16usize,
+                16u8,
+                {
+                    let b: u16 = unsafe { ::std::mem::transmute(b) };
+                    b as u64
+                },
+            );
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C, packed)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Outer {
+    pub inner: Inner,
+}
+#[test]
+fn bindgen_test_layout_Outer() {
+    const UNINIT: ::std::mem::MaybeUninit<Outer> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<Outer>(),
+        4usize,
+        concat!("Size of: ", stringify!(Outer)),
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Outer>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Outer)),
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).inner) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Outer), "::", stringify!(inner)),
+    );
 }

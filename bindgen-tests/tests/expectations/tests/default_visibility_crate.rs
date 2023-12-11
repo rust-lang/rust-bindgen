@@ -89,7 +89,7 @@ pub struct Point {
     pub(crate) x: ::std::os::raw::c_int,
     pub(crate) y: ::std::os::raw::c_int,
 }
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Color {
     pub(crate) _bitfield_align_1: [u8; 0],

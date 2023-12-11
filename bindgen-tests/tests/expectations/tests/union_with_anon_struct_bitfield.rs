@@ -90,7 +90,6 @@ pub union foo {
     pub __bindgen_anon_1: foo__bindgen_ty_1,
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct foo__bindgen_ty_1 {
     pub _bitfield_align_1: [u32; 0],

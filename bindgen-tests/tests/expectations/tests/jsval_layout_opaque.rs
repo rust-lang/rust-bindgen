@@ -181,7 +181,6 @@ pub union jsval_layout {
     pub asUIntPtr: usize,
 }
 #[repr(C)]
-#[repr(align(8))]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct jsval_layout__bindgen_ty_1 {
     pub _bitfield_align_1: [u64; 0],
