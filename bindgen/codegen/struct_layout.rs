@@ -212,7 +212,10 @@ impl<'a> StructLayoutTracker<'a> {
                     0
                 } else if !self.is_packed {
                     self.padding_bytes(field_layout)
-                } else if let Some(l) = self.known_type_layout {
+                } else if let Some(mut l) = self.known_type_layout {
+                    if field_layout.align < l.align {
+                        l.align = field_layout.align;
+                    }
                     self.padding_bytes(l)
                 } else {
                     0
