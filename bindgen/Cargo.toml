@@ -36,7 +36,7 @@ peeking_take_while = "0.1.2"
 prettyplease = { version = "0.2.7", optional = true, features = ["verbatim"] }
 proc-macro2 = { version = "1", default-features = false }
 quote = { version = "1", default-features = false }
-regex = { version = "1.5.1", default-features = false, features = ["std", "unicode-perl"] }
+regex = { version = "1.5.3", default-features = false, features = ["std", "unicode-perl"] }
 rustc-hash = "1.0.1"
 shlex = "1"
 syn = { version = "2.0", features = ["full", "extra-traits", "visit-mut"] }
