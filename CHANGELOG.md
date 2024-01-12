@@ -188,6 +188,7 @@
 ## Changed
 ## Removed
 ## Fixed
+- Fixed generation of extern "C" blocks with llvm 18+. See #2689.
 ## Security
 
 # 0.69.1 (2023-11-02)
