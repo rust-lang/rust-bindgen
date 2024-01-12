@@ -11,3 +11,11 @@ extern "C" {
     #[link_name = "\u{1}_Z1hv"]
     pub fn h() -> !;
 }
+extern "C" {
+    #[link_name = "\u{1}_Z1iPFvvE"]
+    pub fn i(arg: ::std::option::Option<unsafe extern "C" fn() -> !>);
+}
+extern "C" {
+    #[link_name = "\u{1}_Z1jPFvvE"]
+    pub fn j(arg: ::std::option::Option<unsafe extern "C" fn() -> !>) -> !;
+}
