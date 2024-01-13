@@ -3,17 +3,17 @@ environment:
   RUST_CHANNEL: "%Configuration%"
   matrix:
   - TARGET: gnu
-    LLVM_VERSION: 5.0.0-1
-    BINDGEN_FEATURES: __testing_only_libclang_5
-  - TARGET: gnu
     LLVM_VERSION: 9.0.0-1
     BINDGEN_FEATURES: __testing_only_libclang_9
-  - TARGET: msvc
-    LLVM_VERSION: 5.0.0
-    BINDGEN_FEATURES: __testing_only_libclang_5
+  - TARGET: gnu
+    LLVM_VERSION: 16.0.4
+    BINDGEN_FEATURES: __testing_only_libclang_16
   - TARGET: msvc
     LLVM_VERSION: 9.0.0
     BINDGEN_FEATURES: __testing_only_libclang_9
+  - TARGET: msvc
+    LLVM_VERSION: 16.0.4
+    BINDGEN_FEATURES: __testing_only_libclang_16
 
 configuration:
 - stable

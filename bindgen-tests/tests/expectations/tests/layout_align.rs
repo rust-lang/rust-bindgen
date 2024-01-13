@@ -129,6 +129,8 @@ pub struct rte_kni_fifo {
 }
 #[test]
 fn bindgen_test_layout_rte_kni_fifo() {
+    const UNINIT: ::std::mem::MaybeUninit<rte_kni_fifo> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::std::mem::size_of::<rte_kni_fifo>(),
         16usize,
@@ -138,6 +140,36 @@ fn bindgen_test_layout_rte_kni_fifo() {
         ::std::mem::align_of::<rte_kni_fifo>(),
         8usize,
         concat!("Alignment of ", stringify!(rte_kni_fifo)),
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).write) as usize - ptr as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(rte_kni_fifo), "::", stringify!(write)),
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).read) as usize - ptr as usize },
+        4usize,
+        concat!("Offset of field: ", stringify!(rte_kni_fifo), "::", stringify!(read)),
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize },
+        8usize,
+        concat!("Offset of field: ", stringify!(rte_kni_fifo), "::", stringify!(len)),
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).elem_size) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_kni_fifo),
+            "::",
+            stringify!(elem_size),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).buffer) as usize - ptr as usize },
+        16usize,
+        concat!("Offset of field: ", stringify!(rte_kni_fifo), "::", stringify!(buffer)),
     );
 }
 impl Default for rte_kni_fifo {
