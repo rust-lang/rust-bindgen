@@ -175,14 +175,14 @@ jobs:
           #   feature_extra_asserts: 0
 
           # Ensure stuff works on macos too
-          # Disabled for now because llvm doesn't provide releases for x86-64
-          # macOS which is what the runner uses.
+          # FIXME: Ideally should use the latest llvm version, but llvm doesn't
+          # provide releases for x86-64 macOS anymore which is what the runner uses.
           #
-          # - os: macos-latest
-          #   llvm_version: "16.0"
-          #   release_build: 0
-          #   no_default_features: 0
-          #   feature_extra_asserts: 0
+          - os: macos-latest
+            llvm_version: "9.0"
+            release_build: 0
+            no_default_features: 0
+            feature_extra_asserts: 0
     steps:
       - uses: actions/checkout@v3
 
