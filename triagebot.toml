@@ -1,0 +1,28 @@
+[relabel]
+allow-unauthenticated = [
+    "A-*",
+    "C-*",
+    "E-*",
+    "I-*",
+    "S-*",
+    "bug",
+    "dependencies",
+    "enhancement",
+    "good first issue",
+    "hacktoberfest",
+    "help wanted",
+    "invalid",
+    "meta",
+    "msvc",
+    "next-release",
+    "question",
+    "This Week In Servo (TWiS)",
+    "windows",
+]
+
+[autolabel."A-C++"]
+trigger_files = [
+    "**/*.cpp",
+    "**/*.cc",
+    "**/*.hpp",
+]
