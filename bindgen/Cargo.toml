@@ -58,7 +58,7 @@ __cli = []
 # Features used for CI testing
 __testing_only_extra_assertions = []
 __testing_only_libclang_9 = []
-__testing_only_libclang_5 = []
+__testing_only_libclang_16 = []
 
 [package.metadata.docs.rs]
 features = ["experimental"]

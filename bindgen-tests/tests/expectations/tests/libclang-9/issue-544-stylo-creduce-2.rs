@@ -2,10 +2,10 @@
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Foo {
-    pub member: *mut Foo_SecondAlias,
+    pub member: *mut [u8; 0usize],
 }
 pub type Foo_FirstAlias = [u8; 0usize];
-pub type Foo_SecondAlias = Foo;
+pub type Foo_SecondAlias = [u8; 0usize];
 impl Default for Foo {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

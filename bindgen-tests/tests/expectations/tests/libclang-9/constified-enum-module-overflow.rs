@@ -13,7 +13,7 @@ pub type C_U = B;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct A {
-    pub u: B,
+    pub u: u8,
 }
 #[test]
 fn bindgen_test_layout_A() {
@@ -42,18 +42,5 @@ fn __bindgen_test_layout_C_open0_A_close0_instantiation() {
         ::std::mem::align_of::<C>(),
         1usize,
         concat!("Alignment of template specialization: ", stringify!(C)),
-    );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_A_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B>(),
-        1usize,
-        concat!("Size of template specialization: ", stringify!(B)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<B>(),
-        1usize,
-        concat!("Alignment of template specialization: ", stringify!(B)),
     );
 }
