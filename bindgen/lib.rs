@@ -1239,7 +1239,7 @@ fn get_target_dependent_env_var(
 /// use bindgen::builder;
 /// let bindings = builder()
 ///     .header("path/to/input/header")
-///     .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+///     .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
 ///     .generate();
 /// ```
 #[derive(Debug)]
