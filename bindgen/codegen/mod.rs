@@ -1165,7 +1165,6 @@ impl<'a> CodeGenerator for Vtable<'a> {
                         _ => panic!("Function signature type mismatch"),
                     };
 
-                    // FIXME: Is there a canonical name without the class prepended?
                     let function_name = function_item.canonical_name(ctx);
 
                     // FIXME: Need to account for overloading with times_seen (separately from regular function path).
