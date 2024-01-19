@@ -5,5 +5,12 @@ namespace bar {
 
 typedef int Baz;
 
+// anonymous structs should still be "namespaced"
+struct Foo {
+	struct {
+		int a;
+	} anon;
+};
+
 }
 }
