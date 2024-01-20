@@ -29,10 +29,10 @@ annotate-snippets = { version = "0.9.1", features = ["color"], optional = true }
 bitflags = "2.2.1"
 cexpr = "0.6"
 clang-sys = { version = "1", features = ["clang_6_0"] }
+itertools = { version = "0.12.0", default-features = false }
 lazy_static = "1"
 lazycell = "1"
 log = { version = "0.4", optional = true }
-peeking_take_while = "0.1.2"
 prettyplease = { version = "0.2.7", optional = true, features = ["verbatim"] }
 proc-macro2 = { version = "1", default-features = false }
 quote = { version = "1", default-features = false }

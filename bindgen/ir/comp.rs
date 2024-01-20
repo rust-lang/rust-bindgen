@@ -1,5 +1,7 @@
 //! Compound types (unions and structs) in our intermediate representation.
 
+use itertools::Itertools;
+
 use super::analysis::Sizedness;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, FunctionId, ItemId, TypeId, VarId};
@@ -15,7 +17,6 @@ use crate::ir::derive::CanDeriveCopy;
 use crate::parse::ParseError;
 use crate::HashMap;
 use crate::NonCopyUnionStyle;
-use peeking_take_while::PeekableExt;
 use std::cmp;
 use std::io;
 use std::mem;
