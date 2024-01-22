@@ -390,7 +390,7 @@ fn test_clang_env_args() {
             "test.hpp",
             "#ifdef _ENV_ONE\nextern const int x[] = { 42 };\n#endif\n\
              #ifdef _ENV_TWO\nextern const int y[] = { 42 };\n#endif\n\
-             #ifdef NOT_THREE\nextern const int z[] = { 42 };\n#endif\n",
+             #if defined NOT_THREE && NOT_THREE == 1\nextern const int z[] = { 42 };\n#endif\n",
         )
         .generate()
         .unwrap()
