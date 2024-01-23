@@ -156,6 +156,9 @@ struct BindgenCommand {
     /// Mark FILE as hidden.
     #[arg(long, value_name = "FILE")]
     blocklist_file: Vec<String>,
+    /// Mark VAR as hidden.
+    #[arg(long, value_name = "VAR")]
+    blocklist_var: Vec<String>,
     /// Avoid generating layout tests for any type.
     #[arg(long)]
     no_layout_tests: bool,
@@ -471,6 +474,7 @@ where
         blocklist_function,
         blocklist_item,
         blocklist_file,
+        blocklist_var,
         no_layout_tests,
         no_derive_copy,
         no_derive_debug,
@@ -674,6 +678,10 @@ where
 
     for file in blocklist_file {
         builder = builder.blocklist_file(file);
+    }
+
+    for var in blocklist_var {
+        builder = builder.blocklist_var(var);
     }
 
     if builtins {
