@@ -440,13 +440,14 @@ impl Builder {
 
 impl BindgenOptions {
     fn build(&mut self) {
-        const REGEX_SETS_LEN: usize = 28;
+        const REGEX_SETS_LEN: usize = 29;
 
         let regex_sets: [_; REGEX_SETS_LEN] = [
             &mut self.blocklisted_types,
             &mut self.blocklisted_functions,
             &mut self.blocklisted_items,
             &mut self.blocklisted_files,
+            &mut self.blocklisted_vars,
             &mut self.opaque_types,
             &mut self.allowlisted_vars,
             &mut self.allowlisted_types,
@@ -483,6 +484,7 @@ impl BindgenOptions {
                     "--blocklist-function",
                     "--blocklist-item",
                     "--blocklist-file",
+                    "--blocklist-var",
                     "--opaque-type",
                     "--allowlist-type",
                     "--allowlist-function",
