@@ -91,9 +91,9 @@ impl<'a> StructLayoutTracker<'a> {
         ty: &'a Type,
         name: &'a str,
         visibility: FieldVisibilityKind,
+        is_packed: bool,
     ) -> Self {
         let known_type_layout = ty.layout(ctx);
-        let is_packed = comp.is_packed(ctx, known_type_layout.as_ref());
         let (is_rust_union, can_copy_union_fields) =
             comp.is_rust_union(ctx, known_type_layout.as_ref(), name);
         StructLayoutTracker {
