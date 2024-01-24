@@ -1977,6 +1977,7 @@ impl CodeGenerator for CompInfo {
             ty,
             &canonical_name,
             visibility,
+            packed,
         );
 
         if !is_opaque {
@@ -2196,7 +2197,14 @@ impl CodeGenerator for CompInfo {
         if let Some(comment) = item.comment(ctx) {
             attributes.push(attributes::doc(comment));
         }
-        if packed && !is_opaque {
+
+        // if a type has both a "packed" attribute and an "align(N)" attribute, then check if the
+        // "packed" attr is redundant, and do not include it if so.
+        if packed &&
+            !is_opaque &&
+            !(explicit_align.is_some() &&
+                self.already_packed(ctx).map_or(false, |t| t))
+        {
             let n = layout.map_or(1, |l| l.align);
             assert!(ctx.options().rust_features().repr_packed_n || n == 1);
             let packed_repr = if n == 1 {
