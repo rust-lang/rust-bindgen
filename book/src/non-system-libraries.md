@@ -91,7 +91,7 @@ fn main() {
         .header(headers_path_str)
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
-        .parse_callbacks(Box::new(CargoCallbacks))
+        .parse_callbacks(Box::new(CargoCallbacks::new()))
         // Finish the builder and generate the bindings.
         .generate()
         // Unwrap the Result and panic on failure.
