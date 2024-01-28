@@ -186,9 +186,6 @@ fn main() {
     // shared library.
     println!(&quot;cargo:rustc-link-lib=bz2&quot;);
 
-    // Tell cargo to invalidate the built crate whenever the wrapper changes
-    println!(&quot;cargo:rerun-if-changed=wrapper.h&quot;);
-
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
     // the resulting bindings.
