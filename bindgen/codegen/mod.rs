@@ -2203,7 +2203,7 @@ impl CodeGenerator for CompInfo {
         if packed &&
             !is_opaque &&
             !(explicit_align.is_some() &&
-                self.already_packed(ctx).map_or(false, |t| t))
+                self.already_packed(ctx).unwrap_or(false))
         {
             let n = layout.map_or(1, |l| l.align);
             assert!(ctx.options().rust_features().repr_packed_n || n == 1);
