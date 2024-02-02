@@ -473,6 +473,42 @@ fn test_multiple_header_calls_in_builder() {
 }
 
 #[test]
+fn test_headers_call_in_builder() {
+    let actual = builder()
+        .headers([
+            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/func_ptr.h"),
+            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/char.h"),
+        ])
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let actual = format_code(actual).unwrap();
+
+    let expected_filename = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/expectations/tests/test_multiple_header_calls_in_builder.rs"
+    );
+    let expected = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/expectations/tests/test_multiple_header_calls_in_builder.rs"
+    ));
+    let expected = format_code(expected).unwrap();
+
+    if actual != expected {
+        println!("Generated bindings differ from expected!");
+        error_diff_mismatch(
+            &actual,
+            &expected,
+            None,
+            Path::new(expected_filename),
+        )
+        .unwrap();
+    }
+}
+
+#[test]
 fn test_multiple_header_contents() {
     let actual = builder()
         .header_contents("test.h", "int foo(const char* a);")

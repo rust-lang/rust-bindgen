@@ -1179,6 +1179,35 @@ options! {
                 self.options.input_headers.push(header.into().into_boxed_str());
                 self
             }
+
+            /// Add input C/C++ header(s) to generate bindings for.
+            ///
+            /// This can be used to generate bindings for a single header:
+            ///
+            /// ```ignore
+            /// let bindings = bindgen::Builder::default()
+            ///     .headers(["input.h"])
+            ///     .generate()
+            ///     .unwrap();
+            /// ```
+            ///
+            /// Or for multiple headers:
+            ///
+            /// ```ignore
+            /// let bindings = bindgen::Builder::default()
+            ///     .headers(["first.h", "second.h", "third.h"])
+            ///     .generate()
+            ///     .unwrap();
+            /// ```
+            pub fn headers<I: IntoIterator>(mut self, headers: I) -> Builder
+            where
+                I::Item: Into<String>,
+            {
+                self.options
+                    .input_headers
+                    .extend(headers.into_iter().map(Into::into).map(Into::into));
+                self
+            }
         },
         // This field is handled specially inside the macro.
         as_args: ignore,
