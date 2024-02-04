@@ -198,6 +198,7 @@
 # Unreleased
 ## Added
 ## Changed
+- Allow older itertools. (#2745)
 ## Removed
 ## Fixed
 ## Security
