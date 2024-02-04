@@ -191,10 +191,27 @@
 --------------------------------------------------------------------------------
 # Unreleased
 ## Added
+
+- Added blocklist_var (#2731)
+- Stabilized thiscall_abi (#2661)
+
 ## Changed
+
+- Use CR consistently on windows (#2698)
+- Replaced peeking_take_while by itertools (#2724)
+
 ## Removed
 ## Fixed
+
+- Try to avoid repr(packed) for explicitly aligned types when not needed (#2734)
+- Improved destructor handling on Windows (#2663)
+- Support Float16 (#2667)
+- Fix alignment contribution from bitfields (#2680)
+- Fixed msrv build.
+
 ## Security
+
+- Updated shlex dependency (RUSTSEC-2024-0006)
 
 # 0.69.2 (2024-01-13)
 ## Added
