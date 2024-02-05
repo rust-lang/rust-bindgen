@@ -252,7 +252,7 @@ impl Type {
         Cow::Owned(name)
     }
 
-    /// Get this type's santizied name.
+    /// Get this type's sanitized name.
     pub(crate) fn sanitized_name<'a>(
         &'a self,
         ctx: &BindgenContext,
@@ -498,7 +498,7 @@ fn is_invalid_type_param_invalid_start() {
 }
 
 #[test]
-fn is_invalid_type_param_invalid_remaing() {
+fn is_invalid_type_param_invalid_remaining() {
     let ty = Type::new(Some("foo-".into()), None, TypeKind::TypeParam, false);
     assert!(ty.is_invalid_type_param())
 }
@@ -1092,7 +1092,7 @@ impl Type {
                         Item::from_ty_or_ref(inner, location, None, ctx);
                     if inner_id == potential_id {
                         warn!(
-                            "Generating oqaque type instead of self-referential \
+                            "Generating opaque type instead of self-referential \
                             typedef");
                         // This can happen if we bail out of recursive situations
                         // within the clang parsing.

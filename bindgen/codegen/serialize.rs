@@ -81,7 +81,7 @@ impl<'a> CSerialize<'a> for Function {
 
         let name = self.name();
 
-        // Function argoments stored as `(name, type_id)` tuples.
+        // Function arguments stored as `(name, type_id)` tuples.
         let args = {
             let mut count = 0;
 

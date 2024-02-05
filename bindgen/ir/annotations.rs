@@ -8,7 +8,7 @@ use std::str::FromStr;
 
 use crate::clang;
 
-/// What kind of visibility modifer should be used for a struct or field?
+/// What kind of visibility modifier should be used for a struct or field?
 #[derive(Copy, PartialEq, Eq, PartialOrd, Ord, Clone, Debug)]
 pub enum FieldVisibilityKind {
     /// Fields are marked as private, i.e., struct Foo {bar: bool}

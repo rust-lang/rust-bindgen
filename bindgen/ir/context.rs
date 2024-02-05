@@ -36,7 +36,7 @@ use std::mem;
 #[derive(Debug, Copy, Clone, Eq, PartialOrd, Ord, Hash)]
 pub(crate) struct ItemId(usize);
 
-/// Declare a newtype around `ItemId` with convesion methods.
+/// Declare a newtype around `ItemId` with conversion methods.
 macro_rules! item_id_newtype {
     (
         $( #[$attr:meta] )*

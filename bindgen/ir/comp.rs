@@ -147,7 +147,7 @@ pub(crate) trait FieldMethods {
     /// If this is a bitfield, how many bits does it need?
     fn bitfield_width(&self) -> Option<u32>;
 
-    /// Is this feild declared public?
+    /// Is this field declared public?
     fn is_public(&self) -> bool;
 
     /// Get the annotations for this field.

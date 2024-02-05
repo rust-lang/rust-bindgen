@@ -508,7 +508,7 @@ options! {
     constified_enums: RegexSet {
         methods: {
             regex_option! {
-                /// Mark the given `enum` as a set o integer constants.
+                /// Mark the given `enum` as a set of integer constants.
                 ///
                 /// This is similar to the [`Builder::constified_enum_module`] style, but the
                 /// constants are generated in the current module instead of in a new module.
@@ -1814,7 +1814,7 @@ options! {
         },
         as_args: "--dynamic-loading",
     },
-    /// Whether to equire successful linkage for all routines in a shared library.
+    /// Whether to require successful linkage for all routines in a shared library.
     dynamic_link_require_all: bool {
         methods: {
             /// Set whether to require successful linkage for all routines in a shared library.
@@ -1879,7 +1879,7 @@ options! {
         },
         as_args: "--c-naming",
     },
-    /// Wether to always emit explicit padding fields.
+    /// Whether to always emit explicit padding fields.
     force_explicit_padding: bool {
         methods: {
             /// Set whether to always emit explicit padding fields.

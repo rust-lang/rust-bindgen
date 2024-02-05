@@ -26,7 +26,7 @@ pub(crate) enum ItemKind {
 }
 
 impl ItemKind {
-    /// Get a reference to this `ItemKind`'s underying `Module`, or `None` if it
+    /// Get a reference to this `ItemKind`'s underlying `Module`, or `None` if it
     /// is some other kind.
     pub(crate) fn as_module(&self) -> Option<&Module> {
         match *self {
@@ -50,7 +50,7 @@ impl ItemKind {
         self.as_module().is_some()
     }
 
-    /// Get a reference to this `ItemKind`'s underying `Function`, or `None` if
+    /// Get a reference to this `ItemKind`'s underlying `Function`, or `None` if
     /// it is some other kind.
     pub(crate) fn as_function(&self) -> Option<&Function> {
         match *self {
@@ -64,13 +64,13 @@ impl ItemKind {
         self.as_function().is_some()
     }
 
-    /// Get a reference to this `ItemKind`'s underying `Function`, or panic if
+    /// Get a reference to this `ItemKind`'s underlying `Function`, or panic if
     /// it is some other kind.
     pub(crate) fn expect_function(&self) -> &Function {
         self.as_function().expect("Not a function")
     }
 
-    /// Get a reference to this `ItemKind`'s underying `Type`, or `None` if
+    /// Get a reference to this `ItemKind`'s underlying `Type`, or `None` if
     /// it is some other kind.
     pub(crate) fn as_type(&self) -> Option<&Type> {
         match *self {
@@ -79,7 +79,7 @@ impl ItemKind {
         }
     }
 
-    /// Get a mutable reference to this `ItemKind`'s underying `Type`, or `None`
+    /// Get a mutable reference to this `ItemKind`'s underlying `Type`, or `None`
     /// if it is some other kind.
     pub(crate) fn as_type_mut(&mut self) -> Option<&mut Type> {
         match *self {
@@ -93,13 +93,13 @@ impl ItemKind {
         self.as_type().is_some()
     }
 
-    /// Get a reference to this `ItemKind`'s underying `Type`, or panic if it is
+    /// Get a reference to this `ItemKind`'s underlying `Type`, or panic if it is
     /// some other kind.
     pub(crate) fn expect_type(&self) -> &Type {
         self.as_type().expect("Not a type")
     }
 
-    /// Get a reference to this `ItemKind`'s underying `Var`, or `None` if it is
+    /// Get a reference to this `ItemKind`'s underlying `Var`, or `None` if it is
     /// some other kind.
     pub(crate) fn as_var(&self) -> Option<&Var> {
         match *self {
