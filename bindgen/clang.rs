@@ -874,7 +874,7 @@ impl Cursor {
         unsafe { clang_getCXXAccessSpecifier(self.x) }
     }
 
-    /// Is the cursor's referrent publically accessible in C++?
+    /// Is the cursor's referent publically accessible in C++?
     ///
     /// Returns true if self.access_specifier() is `CX_CXXPublic` or
     /// `CX_CXXInvalidAccessSpecifier`.

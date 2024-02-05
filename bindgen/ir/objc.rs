@@ -39,7 +39,7 @@ pub(crate) struct ObjCInterface {
     /// The direct parent for this interface.
     pub(crate) parent_class: Option<ItemId>,
 
-    /// List of the methods defined in this interfae
+    /// List of the methods defined in this interface
     methods: Vec<ObjCMethod>,
 
     class_methods: Vec<ObjCMethod>,
@@ -137,7 +137,7 @@ impl ObjCInterface {
                 CXCursor_ObjCClassRef => {
                     if cursor.kind() == CXCursor_ObjCCategoryDecl {
                         // We are actually a category extension, and we found the reference
-                        // to the original interface, so name this interface approriately
+                        // to the original interface, so name this interface appropriately
                         interface.name = c.spelling();
                         interface.category = Some(cursor.spelling());
                     }

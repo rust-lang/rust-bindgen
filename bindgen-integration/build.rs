@@ -279,7 +279,7 @@ fn setup_wrap_static_fns_test() {
 
     bindings
         .write_to_file(out_rust_file)
-        .expect("Cound not write bindings to the Rust file");
+        .expect("Could not write bindings to the Rust file");
 }
 
 fn main() {

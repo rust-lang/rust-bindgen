@@ -18,7 +18,7 @@ objc::runtime::Object` (the pointer to the objective-c instance). The trait
 `IFoo` is needed to allow for the generated inheritance.
 
 Functions that use or return objective-c pointers of instance `Foo` will return
-`Foo`. The reason this works is beacuse `Foo` represented as `transparent`.
+`Foo`. The reason this works is because `Foo` represented as `transparent`.
 This will be helpful for a lot of objective-c frameworks however there are some
 cases where functions return `instancetype` which is a type alias for `id` so
 an occasional `foo.0` may be required. An example of this would in the UIKit

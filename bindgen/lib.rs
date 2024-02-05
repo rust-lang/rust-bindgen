@@ -144,7 +144,7 @@ impl CodegenConfig {
         self.contains(CodegenConfig::VARS)
     }
 
-    /// Returns true if methds should be generated.
+    /// Returns true if methods should be generated.
     pub fn methods(self) -> bool {
         self.contains(CodegenConfig::METHODS)
     }
