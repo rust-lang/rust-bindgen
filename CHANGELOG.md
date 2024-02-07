@@ -204,6 +204,7 @@
 # Unreleased
 ## Added
 ## Changed
+- Add target mappings for riscv64imac and riscv32imafc.
 ## Removed
 ## Fixed
 ## Security
