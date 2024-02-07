@@ -695,6 +695,11 @@ fn rust_to_clang_target(rust_target: &str) -> Box<str> {
         let mut clang_target = "riscv64-".to_owned();
         clang_target.push_str(rust_target.strip_prefix("riscv64gc-").unwrap());
         return clang_target.into();
+    } else if rust_target.starts_with("riscv64imac-") {
+        let mut clang_target = "riscv64-".to_owned();
+        clang_target
+            .push_str(rust_target.strip_prefix("riscv64imac-").unwrap());
+        return clang_target.into();
     } else if rust_target.ends_with("-espidf") {
         let mut clang_target =
             rust_target.strip_suffix("-espidf").unwrap().to_owned();
@@ -712,6 +717,11 @@ fn rust_to_clang_target(rust_target: &str) -> Box<str> {
         let mut clang_target = "riscv32-".to_owned();
         clang_target
             .push_str(rust_target.strip_prefix("riscv32imac-").unwrap());
+        return clang_target.into();
+    } else if rust_target.starts_with("riscv32imafc-") {
+        let mut clang_target = "riscv32-".to_owned();
+        clang_target
+            .push_str(rust_target.strip_prefix("riscv32imafc-").unwrap());
         return clang_target.into();
     }
     rust_target.into()
@@ -1358,11 +1368,19 @@ fn test_rust_to_clang_target_riscv() {
         "riscv64-unknown-linux-gnu"
     );
     assert_eq!(
+        rust_to_clang_target("riscv64imac-unknown-none-elf").as_ref(),
+        "riscv64-unknown-none-elf"
+    );
+    assert_eq!(
         rust_to_clang_target("riscv32imc-unknown-none-elf").as_ref(),
         "riscv32-unknown-none-elf"
     );
     assert_eq!(
         rust_to_clang_target("riscv32imac-unknown-none-elf").as_ref(),
+        "riscv32-unknown-none-elf"
+    );
+    assert_eq!(
+        rust_to_clang_target("riscv32imafc-unknown-none-elf").as_ref(),
         "riscv32-unknown-none-elf"
     );
 }
