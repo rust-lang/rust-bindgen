@@ -579,7 +579,7 @@ containing</p>
 </code></pre>
 <p>Given that the library has not been compiled yet, we need to modify the
 <code>build.rs</code> build script to compile the <code>hello.c</code> source file into a static
-libary:</p>
+library:</p>
 <pre><code class="language-rust ignore">extern crate bindgen;
 
 use std::env;
@@ -1147,7 +1147,7 @@ for more details.</p>
 <li>
 <p>Many C++ specific aspects of calling conventions. For example in the Itanium abi types that are 
 &quot;<a href="https://itanium-cxx-abi.github.io/cxx-abi/abi.html#non-trivial">non trivial for the purposes of calls</a>&quot; 
-should be passed by pointer, even if they are otherwise eligable to be passed in a register.
+should be passed by pointer, even if they are otherwise eligible to be passed in a register.
 Similarly in both the Itanium and MSVC ABIs such types are returned by &quot;hidden parameter&quot;, much like
 large structs in C that would not fit into a register. This also applies to types with any base classes
 in the MSVC ABI (see <a href="https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention?view=msvc-170#return-values">x64 calling convention</a>).
@@ -1229,7 +1229,7 @@ the beginning of the generated bindings. The same logic applies to the
 <code>IFoo</code> where <code>Foo</code> is the objective-c class and <code>id</code> is an alias for <code>*mut objc::runtime::Object</code> (the pointer to the objective-c instance). The trait
 <code>IFoo</code> is needed to allow for the generated inheritance.</p>
 <p>Functions that use or return objective-c pointers of instance <code>Foo</code> will return
-<code>Foo</code>. The reason this works is beacuse <code>Foo</code> represented as <code>transparent</code>.
+<code>Foo</code>. The reason this works is because <code>Foo</code> represented as <code>transparent</code>.
 This will be helpful for a lot of objective-c frameworks however there are some
 cases where functions return <code>instancetype</code> which is a type alias for <code>id</code> so
 an occasional <code>foo.0</code> may be required. An example of this would in the UIKit

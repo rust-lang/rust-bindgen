@@ -181,7 +181,7 @@ the beginning of the generated bindings. The same logic applies to the
 <code>IFoo</code> where <code>Foo</code> is the objective-c class and <code>id</code> is an alias for <code>*mut objc::runtime::Object</code> (the pointer to the objective-c instance). The trait
 <code>IFoo</code> is needed to allow for the generated inheritance.</p>
 <p>Functions that use or return objective-c pointers of instance <code>Foo</code> will return
-<code>Foo</code>. The reason this works is beacuse <code>Foo</code> represented as <code>transparent</code>.
+<code>Foo</code>. The reason this works is because <code>Foo</code> represented as <code>transparent</code>.
 This will be helpful for a lot of objective-c frameworks however there are some
 cases where functions return <code>instancetype</code> which is a type alias for <code>id</code> so
 an occasional <code>foo.0</code> may be required. An example of this would in the UIKit
