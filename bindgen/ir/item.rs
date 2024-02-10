@@ -85,12 +85,6 @@ pub(crate) trait HasTypeParamInArray {
     fn has_type_param_in_array(&self, ctx: &BindgenContext) -> bool;
 }
 
-/// A trait for determining if some IR thing has float or not.
-pub(crate) trait HasFloat {
-    /// Returns `true` if the thing has float, and `false` otherwise.
-    fn has_float(&self, ctx: &BindgenContext) -> bool;
-}
-
 /// A trait for iterating over an item and its parents and up its ancestor chain
 /// up to (but not including) the implicit root module.
 pub(crate) trait ItemAncestors {
@@ -1200,29 +1194,6 @@ impl HasTypeParamInArray for Item {
             "You're not supposed to call this yet"
         );
         ctx.lookup_has_type_param_in_array(self.id())
-    }
-}
-
-impl<T> HasFloat for T
-where
-    T: Copy + Into<ItemId>,
-{
-    fn has_float(&self, ctx: &BindgenContext) -> bool {
-        debug_assert!(
-            ctx.in_codegen_phase(),
-            "You're not supposed to call this yet"
-        );
-        ctx.lookup_has_float(*self)
-    }
-}
-
-impl HasFloat for Item {
-    fn has_float(&self, ctx: &BindgenContext) -> bool {
-        debug_assert!(
-            ctx.in_codegen_phase(),
-            "You're not supposed to call this yet"
-        );
-        ctx.lookup_has_float(self.id())
     }
 }
 
