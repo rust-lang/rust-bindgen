@@ -654,7 +654,7 @@ fn build_flags_output_helper(builder: &bindgen::Builder) {
 
     let flags_quoted: Vec<String> = command_line_flags
         .iter()
-        .map(|x| format!("{}", shlex::quote(x)))
+        .map(|x| format!("{}", shlex::try_quote(x).unwrap()))
         .collect();
     let flags_str = flags_quoted.join(" ");
     println!("{}", flags_str);
