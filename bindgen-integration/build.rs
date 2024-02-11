@@ -234,7 +234,7 @@ fn setup_wrap_static_fns_test() {
         .parse_callbacks(Box::new(CargoCallbacks))
         .parse_callbacks(Box::new(WrappedVaListCallback))
         .wrap_static_fns(true)
-        .wrap_static_fns_path(
+        .wrapper_code_generation_path(
             out_path.join("wrap_static_fns").display().to_string(),
         )
         .clang_arg("-DUSE_VA_HEADER")

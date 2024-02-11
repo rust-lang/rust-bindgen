@@ -262,6 +262,9 @@
   for every input header file by default.
 - Added the `CargoCallbacks::rerun_on_header_files` method to configure whether
   a cargo-rerun line should be emitted for every input header file.
+- Added `--macro-function` argument and corresponding `macro_function` builder function.
+  These allow defining macros for which a wrapper function will be generated,
+  which allows to call these macros from Rust.
 ## Changed
 - The `--wrap-static-fns` feature was updated so function types that has no
   argument use `void` as its sole argument.
@@ -270,6 +273,10 @@
   `CargoCallbacks` constant was added to mitigate the breaking nature of this
   change. This constant has been marked as deprecated and users will have to
   use the new `CargoCallbacks::new` method in the future.
+- Renamed `--wrap-static-fns-path` argument to `--wrapper-code-generation-path` and the
+  corresponding `wrap_static_fns_path` builder function to `wrapper_code_generation_path`.
+- Renamed `--wrap-static-fns-suffix` argument to `--wrapper-function-suffix` and the
+  corresponding `wrap_static_fns_suffix` builder function to `wrapper_function_suffix`.
 ## Removed
 ## Fixed
 - Allow compiling `bindgen-cli` with a static libclang.
@@ -328,7 +335,7 @@ This version was skipped due to some problems on the release workflow.
 * The `--wrap-static-fns` option can now wrap `va_list` functions as variadic functions
   with the experimental `ParseCallbacks::wrap_as_variadic_fn` method.
 * Add target mappings for riscv32imc and riscv32imac.
-* Add the `ParseCallbacks::field_visibility` method to modify field visibility. 
+* Add the `ParseCallbacks::field_visibility` method to modify field visibility.
 
 ## Changed
 
@@ -352,7 +359,7 @@ This version was skipped due to some problems on the release workflow.
 * Compute visibility of bitfield unit based on actual field visibility: A
   bitfield unit field and its related functions now have their visibility
   determined based on the most private between the default visibility and the
-  actual visibility of the bitfields within the unit. 
+  actual visibility of the bitfields within the unit.
 
 ## Removed
 * Remove redundant Cargo features, which were all implicit:
@@ -408,7 +415,7 @@ This version was skipped due to some problems on the release workflow.
    types. (#2463)
  * The `Builder::rustfmt_bindings` methods and the `--no-rustfmt-bindings` flag
    are now deprecated in favor of the formatter API. (#2453)
-   
+
 ## Removed
  * The following deprecated flags were removed: `--use-msvc-mangling`,
    `--rustfmt-bindings` and `--size_t-is-usize`. (#2408)

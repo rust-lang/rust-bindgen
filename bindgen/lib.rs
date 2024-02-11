@@ -40,6 +40,7 @@ mod options;
 mod time;
 
 pub mod callbacks;
+pub mod function_types;
 
 mod clang;
 #[cfg(feature = "experimental")]
@@ -84,8 +85,8 @@ type HashSet<K> = rustc_hash::FxHashSet<K>;
 
 /// Default prefix for the anon fields.
 pub const DEFAULT_ANON_FIELDS_PREFIX: &str = "__bindgen_anon_";
-
-const DEFAULT_NON_EXTERN_FNS_SUFFIX: &str = "__extern";
+/// Default suffix for wrapper functions.
+const DEFAULT_WRAPPER_FUNCTION_SUFFIX: &str = "__extern";
 
 fn file_is_cpp(name_file: &str) -> bool {
     name_file.ends_with(".hpp") ||

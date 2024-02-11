@@ -1,4 +1,5 @@
 use bindgen::callbacks::TypeKind;
+use bindgen::function_types::{FunctionType, TypeKind as CTypeKind};
 use bindgen::{
     builder, Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
     FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
@@ -415,14 +416,17 @@ struct BindgenCommand {
     /// Generate wrappers for `static` and `static inline` functions.
     #[arg(long, requires = "experimental")]
     wrap_static_fns: bool,
-    /// Sets the PATH for the source file that must be created due to the presence of `static` and
-    /// `static inline` functions.
+    /// Sets the path of the file where generated code for wrapper functions will be emitted.
     #[arg(long, requires = "experimental", value_name = "PATH")]
-    wrap_static_fns_path: Option<PathBuf>,
-    /// Sets the SUFFIX added to the extern wrapper functions generated for `static` and `static
-    /// inline` functions.
+    wrapper_code_generation_path: Option<PathBuf>,
+    /// Sets the SUFFIX added to the wrapper functions generated for `static` and `static inline`
+    /// functions and functional macros.
     #[arg(long, requires = "experimental", value_name = "SUFFIX")]
-    wrap_static_fns_suffix: Option<String>,
+    wrapper_function_suffix: Option<String>,
+    /// Create a wrapper function for the macro. The MACRO value must be of the shape
+    /// `[<return type>] <macro name>[(<comma separated list of arguments>)]`.
+    #[arg(long, requires = "experimental", value_name = "MACRO")]
+    macro_function: Option<Vec<String>>,
     /// Set the default VISIBILITY of fields, including bitfields and accessor methods for
     /// bitfields. This flag is ignored if the `--respect-cxx-access-specs` flag is used.
     #[arg(long, value_name = "VISIBILITY")]
@@ -559,8 +563,9 @@ where
         with_derive_custom_enum,
         with_derive_custom_union,
         wrap_static_fns,
-        wrap_static_fns_path,
-        wrap_static_fns_suffix,
+        wrapper_code_generation_path,
+        wrapper_function_suffix,
+        macro_function,
         default_visibility,
         emit_diagnostics,
         generate_shell_completions,
@@ -1102,12 +1107,56 @@ where
         builder = builder.wrap_static_fns(true);
     }
 
-    if let Some(path) = wrap_static_fns_path {
-        builder = builder.wrap_static_fns_path(path);
+    if let Some(path) = wrapper_code_generation_path {
+        builder = builder.wrapper_code_generation_path(path);
     }
 
-    if let Some(suffix) = wrap_static_fns_suffix {
-        builder = builder.wrap_static_fns_suffix(suffix);
+    if let Some(suffix) = wrapper_function_suffix {
+        builder = builder.wrapper_function_suffix(suffix);
+    }
+
+    if let Some(macro_functions) = macro_function {
+        for macro_definition in macro_functions.into_iter() {
+            let (left_side, argument_types) = if !macro_definition
+                .ends_with(')')
+            {
+                (macro_definition.as_str(), Vec::new())
+            } else {
+                let (left_side, arguments) =
+                    macro_definition.split_once('(').expect("Invalid function macro definition: No '(' for ')' at end found");
+                let arguments = &arguments[..arguments.len() - 1];
+                if arguments.trim().is_empty() {
+                    // The empty argument list case `()`.
+                    (left_side, Vec::new())
+                } else {
+                    (
+                        left_side,
+                        arguments
+                            .split(',')
+                            .map(|argument| {
+                                parse_c_type(argument).unwrap_or_else(|err| {
+                                    panic!(
+                                    "Invalid function macro argument type: {}",
+                                    err
+                                )
+                                })
+                            })
+                            .collect(),
+                    )
+                }
+            };
+            let parts =
+                left_side.split_ascii_whitespace().collect::<Vec<&str>>();
+            let (return_type, name) = match parts.as_slice() {
+                [name] => (CTypeKind::Void, name),
+                [return_type, name] => (parse_c_type(return_type).unwrap_or_else(|err| panic!("Invalid function macro return type: {}", err)), name),
+                _ => panic!("Invalid function macro name: Name must not contain whitespaces"),
+            };
+            builder = builder.macro_function(
+                *name,
+                FunctionType::from(return_type, argument_types),
+            )
+        }
     }
 
     if let Some(visibility) = default_visibility {
@@ -1119,4 +1168,29 @@ where
     }
 
     Ok((builder, output, verbose))
+}
+
+/// Parse a [`CTypeKind`] from the given command line `input`.
+fn parse_c_type(input: &str) -> Result<CTypeKind, String> {
+    let input = input.trim();
+    Ok(match input {
+        "void" | "()" => CTypeKind::Void,
+        "bool" => CTypeKind::Bool,
+        "char" => CTypeKind::Char,
+        "int" => CTypeKind::Int,
+        "long" => CTypeKind::Long,
+        "u8" | "uint8_t" => CTypeKind::U8,
+        "u16" | "uint16_t" => CTypeKind::U16,
+        "u32" | "uint32_t" => CTypeKind::U32,
+        "u64" | "uint64_t" => CTypeKind::U64,
+        "u128" | "uint128_t" => CTypeKind::U128,
+        "i8" | "int8_t" => CTypeKind::I8,
+        "i16" | "int16_t" => CTypeKind::I16,
+        "i32" | "int32_t" => CTypeKind::I32,
+        "i64" | "int64_t" => CTypeKind::I64,
+        "i128" | "int128_t" => CTypeKind::I128,
+        "f32" | "float" => CTypeKind::F32,
+        "f64" | "double" => CTypeKind::F64,
+        _ => return Err(format!("Unsupported C type \"{input}\"")),
+    })
 }

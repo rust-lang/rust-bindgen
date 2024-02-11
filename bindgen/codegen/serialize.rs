@@ -62,7 +62,9 @@ impl<'a> CSerialize<'a> for Function {
         stack: &mut Vec<String>,
         writer: &mut W,
     ) -> Result<(), CodegenError> {
-        if self.kind() != FunctionKind::Function {
+        if self.kind() != FunctionKind::Function &&
+            self.kind() != FunctionKind::Macro
+        {
             return Err(CodegenError::Serialize {
                 msg: format!(
                     "Cannot serialize function kind {:?}",
@@ -113,8 +115,11 @@ impl<'a> CSerialize<'a> for Function {
                 .collect::<Vec<_>>()
         };
 
+        let should_add_parenthesis_to_call =
+            self.kind() != FunctionKind::Macro || !args.is_empty();
+
         // The name used for the wrapper self.
-        let wrap_name = format!("{}{}", name, ctx.wrap_static_fns_suffix());
+        let wrap_name = format!("{name}{}", ctx.wrapper_function_suffix());
 
         // The function's return type
         let (ret_item, ret_ty) = {
@@ -137,9 +142,9 @@ impl<'a> CSerialize<'a> for Function {
         if wrap_as_variadic.is_none() {
             // Write `) { name(` if the function returns void and `) { return name(` if it does not.
             if ret_ty.is_void() {
-                write!(writer, ") {{ {}(", name)?;
+                write!(writer, ") {{ {}", name)?;
             } else {
-                write!(writer, ") {{ return {}(", name)?;
+                write!(writer, ") {{ return {}", name)?;
             }
         } else {
             // Write `, ...) {`
@@ -165,7 +170,10 @@ impl<'a> CSerialize<'a> for Function {
             if !ret_ty.is_void() {
                 write!(writer, "ret = ")?;
             }
-            write!(writer, "{}(", name)?;
+            write!(writer, "{}", name)?;
+        }
+        if should_add_parenthesis_to_call {
+            write!(writer, "(")?;
         }
 
         // Get the arguments names and insert at the right place if necessary `ap`
@@ -181,8 +189,11 @@ impl<'a> CSerialize<'a> for Function {
         serialize_sep(", ", args.iter(), ctx, writer, |name, _, buf| {
             write!(buf, "{}", name).map_err(From::from)
         })?;
+        if should_add_parenthesis_to_call {
+            write!(writer, ")")?;
+        }
         #[rustfmt::skip]
-        write!(writer, ");{}", if wrap_as_variadic.is_none() { " " } else { "\n" })?;
+        write!(writer, ";{}", if wrap_as_variadic.is_none() { " " } else { "\n" })?;
 
         if wrap_as_variadic.is_some() {
             // End va_list and return the result if their is one
@@ -254,6 +265,16 @@ impl<'a> CSerialize<'a> for Type {
                     IntKind::LongLong => write!(writer, "long long")?,
                     IntKind::ULongLong => write!(writer, "unsigned long long")?,
                     IntKind::Char { .. } => write!(writer, "char")?,
+                    IntKind::U8 { .. } => write!(writer, "uint8_t")?,
+                    IntKind::U16 { .. } => write!(writer, "uint16_t")?,
+                    IntKind::U32 { .. } => write!(writer, "uint32_t")?,
+                    IntKind::U64 { .. } => write!(writer, "uint64_t")?,
+                    IntKind::U128 { .. } => write!(writer, "uint128_t")?,
+                    IntKind::I8 { .. } => write!(writer, "int8_t")?,
+                    IntKind::I16 { .. } => write!(writer, "int16_t")?,
+                    IntKind::I32 { .. } => write!(writer, "int32_t")?,
+                    IntKind::I64 { .. } => write!(writer, "int64_t")?,
+                    IntKind::I128 { .. } => write!(writer, "int128_t")?,
                     int_kind => {
                         return Err(CodegenError::Serialize {
                             msg: format!(

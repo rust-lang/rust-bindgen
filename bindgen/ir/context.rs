@@ -2863,13 +2863,14 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         }
     }
 
-    /// Get the suffix to be added to `static` functions if the `--wrap-static-fns` option is
-    /// enabled.
-    pub(crate) fn wrap_static_fns_suffix(&self) -> &str {
+    /// Get the suffix to be added to generated wrapper functions like
+    /// `static` functions if the `--wrap-static-fns` option is enabled
+    /// or functional macros.
+    pub(crate) fn wrapper_function_suffix(&self) -> &str {
         self.options()
-            .wrap_static_fns_suffix
+            .wrapper_function_suffix
             .as_deref()
-            .unwrap_or(crate::DEFAULT_NON_EXTERN_FNS_SUFFIX)
+            .unwrap_or(crate::DEFAULT_WRAPPER_FUNCTION_SUFFIX)
     }
 }
 

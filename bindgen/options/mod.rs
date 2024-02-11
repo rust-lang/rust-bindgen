@@ -11,6 +11,7 @@ use crate::codegen::{
 };
 use crate::deps::DepfileSpec;
 use crate::features::{RustFeatures, RustTarget};
+use crate::function_types::{FunctionType, TypeKind};
 use crate::regex_set::RegexSet;
 use crate::Abi;
 use crate::Builder;
@@ -2023,44 +2024,101 @@ options! {
         },
         as_args: "--wrap-static-fns",
     },
-    /// The suffix to be added to the function wrappers for `static` functions.
-    wrap_static_fns_suffix: Option<String> {
+    /// The suffix to be added to the function wrappers for `static` functions and functional macros.
+    wrapper_function_suffix: Option<String> {
         methods: {
             #[cfg(feature = "experimental")]
-            /// Set the suffix added to the wrappers for `static` functions.
+            /// Set the suffix added to the wrappers for `static` functions and functional macros.
             ///
             /// This option only comes into effect if `true` is passed to the
-            /// [`Builder::wrap_static_fns`] method.
+            /// [`Builder::wrap_static_fns`] method if a functional macro is defined.
             ///
             /// The default suffix is `__extern`.
-            pub fn wrap_static_fns_suffix<T: AsRef<str>>(mut self, suffix: T) -> Self {
-                self.options.wrap_static_fns_suffix = Some(suffix.as_ref().to_owned());
+            pub fn wrapper_function_suffix<T: AsRef<str>>(mut self, suffix: T) -> Self {
+                self.options.wrapper_function_suffix = Some(suffix.as_ref().to_owned());
                 self
             }
         },
-        as_args: "--wrap-static-fns-suffix",
+        as_args: "--wrapper-function-suffix",
     },
-    /// The path of the file where the wrappers for `static` functions will be emitted.
-    wrap_static_fns_path: Option<PathBuf> {
+    /// The path of the file where generated native code will be emitted.
+    wrapper_code_generation_path: Option<PathBuf> {
         methods: {
             #[cfg(feature = "experimental")]
-            /// Set the path for the source code file that would be created if any wrapper
-            /// functions must be generated due to the presence of `static` functions.
+            /// Set the path for the source code file that would be created if any code
+            /// must be generated.
             ///
             /// `bindgen` will automatically add the right extension to the header and source code
             /// files.
             ///
             /// This option only comes into effect if `true` is passed to the
-            /// [`Builder::wrap_static_fns`] method.
+            /// [`Builder::wrap_static_fns`] method or if a function macro is defined
+            /// via [`Builder::macro_function`].
             ///
             /// The default path is `temp_dir/bindgen/extern`, where `temp_dir` is the path
             /// returned by [`std::env::temp_dir`] .
-            pub fn wrap_static_fns_path<T: AsRef<Path>>(mut self, path: T) -> Self {
-                self.options.wrap_static_fns_path = Some(path.as_ref().to_owned());
+            pub fn wrapper_code_generation_path<T: AsRef<Path>>(mut self, path: T) -> Self {
+                self.options.wrapper_code_generation_path = Some(path.as_ref().to_owned());
                 self
             }
         },
-        as_args: "--wrap-static-fns-path",
+        as_args: "--wrapper-code-generation-path",
+    },
+    /// A mapping of names to function types of registered functional macros
+    /// for which a wrapping function should be generated.
+    macro_functions: HashMap<String, FunctionType> {
+        methods: {
+            /// Register a new functional macro with the given `name` for which a wrapper function will be generated.
+            /// The `function_type` specifies the concrete type as which the macro will be called.
+            ///
+            /// Example:
+            /// ```rust,ignore
+            /// Builder::default()
+            ///     .macro_function("MACRO_WITH_NO_ARGUMENTS", FunctionType::new::<(), ()>())
+            ///     .macro_function("MACRO_WITH_ONE_ARGUMENT_AND_RETURN_VALUE", FunctionType::new::<f32, u32>())
+            ///     .macro_function("MACRO_WITH_TWO_ARGUMENTS_AND_RETURN_VALUE", FunctionType::new::<f32, (bool, u32)>())
+            /// ```
+            pub fn macro_function<T: Into<String>>(mut self, name: T, function_type: FunctionType) -> Self {
+                let name = name.into();
+                if self.options.macro_functions.insert(name.clone(), function_type).is_some() {
+                    panic!("Duplicate definition for macro function {}", name);
+                }
+                self
+            }
+        },
+        as_args: |macro_functions, args| {
+            /// Serialize the `typ` into a format that will be accepted as a bindgen argument.
+            fn serialize_type(typ: &TypeKind) -> &'static str {
+                match typ {
+                    TypeKind::Void => "void",
+                    TypeKind::Bool => "bool",
+                    TypeKind::Char => "char",
+                    TypeKind::Int => "int",
+                    TypeKind::Long => "long",
+                    TypeKind::U8 => "u8",
+                    TypeKind::U16 => "u16",
+                    TypeKind::U32 => "u32",
+                    TypeKind::U64 => "u64",
+                    TypeKind::U128 => "u128",
+                    TypeKind::I8 => "i8",
+                    TypeKind::I16 => "i16",
+                    TypeKind::I32 => "i32",
+                    TypeKind::I64 => "i64",
+                    TypeKind::I128 => "i128",
+                    TypeKind::F32 => "f32",
+                    TypeKind::F64 => "f64",
+                }
+            }
+
+            for (name, function_type) in macro_functions.iter() {
+                args.push("--macro-function".to_string());
+                args.push(format!(
+                    "{return_type} {name}({arguments})",
+                    return_type = serialize_type(&function_type.return_type),
+                    arguments = function_type.argument_types.iter().map(serialize_type).collect::<Vec<&str>>().join(", "),
+                ));
+            }
+        },
     },
     /// Default visibility of fields.
     default_visibility: FieldVisibilityKind {

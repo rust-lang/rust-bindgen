@@ -228,6 +228,15 @@ struct WrapAsVariadic {
     idx_of_va_list_arg: usize,
 }
 
+/// An item that can be serialized to C code.
+enum SerializableItem {
+    /// A static function with optionally the argument for the wrap as
+    /// variadic transformation to be applied.
+    StaticFunction(ItemId, Option<WrapAsVariadic>),
+    /// A function like macro.
+    MacroFunction(ItemId),
+}
+
 struct CodegenResult<'a> {
     items: Vec<proc_macro2::TokenStream>,
     dynamic_items: DynamicItems,
@@ -276,9 +285,8 @@ struct CodegenResult<'a> {
     /// that name. This lets us give each overload a unique suffix.
     overload_counters: HashMap<String, u32>,
 
-    /// List of items to serialize. With optionally the argument for the wrap as
-    /// variadic transformation to be applied.
-    items_to_serialize: Vec<(ItemId, Option<WrapAsVariadic>)>,
+    /// List of items to serialize.
+    items_to_serialize: Vec<SerializableItem>,
 }
 
 impl<'a> CodegenResult<'a> {
@@ -4117,6 +4125,13 @@ impl CodeGenerator for Function {
         debug!("<Function as CodeGenerator>::codegen: item = {:?}", item);
         debug_assert!(item.is_enabled_for_codegen(ctx));
 
+        let is_function_macro = self.kind() == FunctionKind::Macro;
+        if is_function_macro {
+            result
+                .items_to_serialize
+                .push(SerializableItem::MacroFunction(item.id()));
+        }
+
         let is_internal = matches!(self.linkage(), Linkage::Internal);
 
         let signature_item = ctx.resolve_item(self.signature());
@@ -4258,8 +4273,8 @@ impl CodeGenerator for Function {
         let should_wrap =
             is_internal && ctx.options().wrap_static_fns && !has_link_name_attr;
 
-        if should_wrap {
-            let name = canonical_name.clone() + ctx.wrap_static_fns_suffix();
+        if should_wrap || (is_function_macro && !has_link_name_attr) {
+            let name = canonical_name.clone() + ctx.wrapper_function_suffix();
             attributes.push(attributes::link_name::<true>(&name));
         }
 
@@ -4310,7 +4325,10 @@ impl CodeGenerator for Function {
         if should_wrap {
             result
                 .items_to_serialize
-                .push((item.id(), wrap_as_variadic));
+                .push(SerializableItem::StaticFunction(
+                    item.id(),
+                    wrap_as_variadic,
+                ));
         }
 
         // If we're doing dynamic binding generation, add to the dynamic items.
@@ -4765,7 +4783,9 @@ pub(crate) fn codegen(
 
 pub(crate) mod utils {
     use super::serialize::CSerialize;
-    use super::{error, CodegenError, CodegenResult, ToRustTyOrOpaque};
+    use super::{
+        error, CodegenError, CodegenResult, SerializableItem, ToRustTyOrOpaque,
+    };
     use crate::ir::context::BindgenContext;
     use crate::ir::context::TypeId;
     use crate::ir::function::{Abi, ClangAbi, FunctionSig};
@@ -4788,7 +4808,7 @@ pub(crate) mod utils {
 
         let path = context
             .options()
-            .wrap_static_fns_path
+            .wrapper_code_generation_path
             .as_ref()
             .map(PathBuf::from)
             .unwrap_or_else(|| {
@@ -4812,6 +4832,7 @@ pub(crate) mod utils {
 
         let mut code = Vec::new();
 
+        writeln!(code, "#include <stdint.h>\n#include <stdbool.h>")?;
         if !context.options().input_headers.is_empty() {
             for header in &context.options().input_headers {
                 writeln!(code, "#include \"{}\"", header)?;
@@ -4828,11 +4849,49 @@ pub(crate) mod utils {
             writeln!(code)?;
         }
 
-        writeln!(code, "// Static wrappers\n")?;
+        let mut static_wrappers = result
+            .items_to_serialize
+            .iter()
+            .filter_map(|item| {
+                if let SerializableItem::StaticFunction(id, wrap_as_variadic) =
+                    item
+                {
+                    Some((id, wrap_as_variadic))
+                } else {
+                    None
+                }
+            })
+            .peekable();
+        if static_wrappers.peek().is_some() {
+            writeln!(code, "// Static wrappers\n")?;
+            for (id, wrap_as_variadic) in static_wrappers {
+                let item = context.resolve_item(*id);
+                item.serialize(
+                    context,
+                    wrap_as_variadic,
+                    &mut vec![],
+                    &mut code,
+                )?;
+            }
+        }
 
-        for (id, wrap_as_variadic) in &result.items_to_serialize {
-            let item = context.resolve_item(*id);
-            item.serialize(context, wrap_as_variadic, &mut vec![], &mut code)?;
+        let mut function_macros = result
+            .items_to_serialize
+            .iter()
+            .filter_map(|item| {
+                if let SerializableItem::MacroFunction(id) = item {
+                    Some(id)
+                } else {
+                    None
+                }
+            })
+            .peekable();
+        if function_macros.peek().is_some() {
+            writeln!(code, "// Macro function wrappers\n")?;
+            for id in function_macros {
+                let item = context.resolve_item(*id);
+                item.serialize(context, &None, &mut vec![], &mut code)?;
+            }
         }
 
         std::fs::write(source_path, code)?;

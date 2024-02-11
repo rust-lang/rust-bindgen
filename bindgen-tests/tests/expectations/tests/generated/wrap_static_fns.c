@@ -1,3 +1,5 @@
+#include <stdint.h>
+#include <stdbool.h>
 #include "tests/headers/wrap-static-fns.h"
 
 // Static wrappers

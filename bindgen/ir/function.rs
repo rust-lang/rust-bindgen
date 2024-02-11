@@ -9,6 +9,7 @@ use super::ty::TypeKind;
 use crate::callbacks::{ItemInfo, ItemKind};
 use crate::clang::{self, ABIKind, Attribute};
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
+use cexpr::token::{Kind, Token};
 use clang_sys::{self, CXCallingConv};
 
 use quote::TokenStreamExt;
@@ -24,6 +25,8 @@ pub(crate) enum FunctionKind {
     Function,
     /// A method of some kind.
     Method(MethodKind),
+    /// A functional macro.
+    Macro,
 }
 
 impl FunctionKind {
@@ -725,6 +728,94 @@ impl ClangSubItemParser for Function {
         context: &mut BindgenContext,
     ) -> Result<ParseResult<Self>, ParseError> {
         use clang_sys::*;
+        if cursor.kind() == CXCursor_MacroDefinition {
+            if let Some(function_type) = context
+                .options()
+                .macro_functions
+                .get(&cursor.spelling())
+                .cloned()
+            {
+                // Extract the macro argument names from the tokens.
+                let macro_tokens = cursor.cexpr_tokens();
+                let argument_names = if macro_tokens.get(1) !=
+                    Some(&Token::from((Kind::Punctuation, b"(".as_slice())))
+                {
+                    Vec::new()
+                } else {
+                    let mut argument_names = Vec::new();
+                    let mut token_iterator = macro_tokens.into_iter().skip(2); // Skip macro name and open parentheses.
+                    while let Some(token) = token_iterator.next() {
+                        if token.kind != Kind::Identifier {
+                            break;
+                        }
+                        if let Ok(name) = String::from_utf8(token.raw.to_vec())
+                        {
+                            argument_names.push(name);
+                        }
+                        if let Some(token) = token_iterator.next() {
+                            if token.kind != Kind::Punctuation ||
+                                *token.raw != *b",".as_slice()
+                            {
+                                break;
+                            }
+                        } else {
+                            break;
+                        };
+                    }
+                    argument_names
+                };
+
+                // Construct a [Function] for the macro.
+                let name = cursor.spelling();
+                let mangled_name = None;
+                let link_name = context.options().last_callback(|callbacks| {
+                    callbacks.generated_link_name_override(ItemInfo {
+                        name: name.as_str(),
+                        kind: ItemKind::Function,
+                    })
+                });
+                let signature = Item::builtin_type(
+                    TypeKind::Function(FunctionSig {
+                        name: name.clone(),
+                        return_type: Item::builtin_type(
+                            function_type.return_type.clone().into(),
+                            false,
+                            context,
+                        ),
+                        argument_types: function_type
+                            .argument_types
+                            .iter()
+                            .enumerate()
+                            .map(|(index, kind)| {
+                                (
+                                    argument_names.get(index).cloned(),
+                                    Item::builtin_type(
+                                        kind.clone().into(),
+                                        false,
+                                        context,
+                                    ),
+                                )
+                            })
+                            .collect(),
+                        is_variadic: false,
+                        is_divergent: false,
+                        must_use: false,
+                        abi: ClangAbi::Known(Abi::C),
+                    }),
+                    true,
+                    context,
+                );
+                let function = Self::new(
+                    name,
+                    mangled_name,
+                    link_name,
+                    signature,
+                    FunctionKind::Macro,
+                    Linkage::External,
+                );
+                return Ok(ParseResult::New(function, Some(cursor)));
+            }
+        }
 
         let kind = match FunctionKind::from_cursor(&cursor) {
             None => return Err(ParseError::Continue),
