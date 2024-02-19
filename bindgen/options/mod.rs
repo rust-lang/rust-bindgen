@@ -2104,5 +2104,27 @@ options! {
             }
         },
         as_args: "--emit-diagnostics",
+    },
+    /// A type to use for const pointers.
+    custom_const_pointer_type: Option<String> {
+        methods: {
+            /// Sets the given type to be used instead of const pointers.
+            pub fn custom_const_pointer_type<T: Into<String>>(mut self, custom_const_pointer_type: Option<T>) -> Self {
+                self.options.custom_const_pointer_type = custom_const_pointer_type.map(|s| s.into());
+                self
+            }
+        },
+        as_args: "--custom-const-pointer-type",
+    },
+    /// A type to use for mut pointers.
+    custom_mut_pointer_type: Option<String> {
+        methods: {
+            /// Sets the given type to be used instead of mut pointers.
+            pub fn custom_mut_pointer_type<T: Into<String>>(mut self, custom_mut_pointer_type: Option<T>) -> Self {
+                self.options.custom_mut_pointer_type = custom_mut_pointer_type.map(|s| s.into());
+                self
+            }
+        },
+        as_args: "--custom-mut-pointer-type",
     }
 }

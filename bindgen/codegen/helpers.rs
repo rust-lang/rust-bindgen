@@ -352,4 +352,30 @@ pub(crate) mod ast_ty {
             })
             .collect()
     }
+
+    pub(crate) fn to_ptr(
+        ctx: &BindgenContext,
+        ty: syn::Type,
+        is_const: bool,
+    ) -> syn::Type {
+        if is_const {
+            if let Some(wrapper) =
+                ctx.options().custom_const_pointer_type.as_ref()
+            {
+                let wrapper = ctx.rust_ident_raw(wrapper);
+                syn::parse_quote! { #wrapper<#ty> }
+            } else {
+                syn::parse_quote! { *const #ty }
+            }
+        } else {
+            if let Some(wrapper) =
+                ctx.options().custom_mut_pointer_type.as_ref()
+            {
+                let wrapper = ctx.rust_ident_raw(wrapper);
+                syn::parse_quote! { #wrapper<#ty> }
+            } else {
+                syn::parse_quote! { *mut #ty }
+            }
+        }
+    }
 }

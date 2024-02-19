@@ -15,7 +15,9 @@ pub(crate) mod bitfield_unit;
 mod bitfield_unit_tests;
 
 use self::dyngen::DynamicItems;
+use self::helpers::ast_ty::to_ptr;
 use self::helpers::attributes;
+
 use self::struct_layout::StructLayoutTracker;
 
 use super::BindgenOptions;
@@ -387,22 +389,6 @@ impl<'a> ops::Deref for CodegenResult<'a> {
 impl<'a> ops::DerefMut for CodegenResult<'a> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.items
-    }
-}
-
-/// A trait to convert a rust type into a pointer, optionally const, to the same
-/// type.
-trait ToPtr {
-    fn to_ptr(self, is_const: bool) -> syn::Type;
-}
-
-impl ToPtr for syn::Type {
-    fn to_ptr(self, is_const: bool) -> syn::Type {
-        if is_const {
-            syn::parse_quote! { *const #self }
-        } else {
-            syn::parse_quote! { *mut #self }
-        }
     }
 }
 
@@ -1985,10 +1971,10 @@ impl CodeGenerator for CompInfo {
                 let vtable = Vtable::new(item.id(), self);
                 vtable.codegen(ctx, result, item);
 
-                let vtable_type = vtable
+                let vtable_item_type = vtable
                     .try_to_rust_ty(ctx, &())
-                    .expect("vtable to Rust type conversion is infallible")
-                    .to_ptr(true);
+                    .expect("vtable to Rust type conversion is infallible");
+                let vtable_type = to_ptr(ctx, vtable_item_type, true);
 
                 fields.push(quote! {
                     pub vtable_: #vtable_type ,
@@ -3858,7 +3844,7 @@ impl TryToRustTy for Type {
             TypeKind::Void => Ok(c_void(ctx)),
             // TODO: we should do something smart with nullptr, or maybe *const
             // c_void is enough?
-            TypeKind::NullPtr => Ok(c_void(ctx).to_ptr(true)),
+            TypeKind::NullPtr => Ok(to_ptr(ctx, c_void(ctx), true)),
             TypeKind::Int(ik) => {
                 Ok(int_kind_rust_type(ctx, ik, self.layout(ctx)))
             }
@@ -3905,7 +3891,7 @@ impl TryToRustTy for Type {
             TypeKind::BlockPointer(..) => {
                 if self.is_block_pointer() && !ctx.options().generate_block {
                     let void = c_void(ctx);
-                    return Ok(void.to_ptr(/* is_const = */ false));
+                    return Ok(to_ptr(ctx, void, /* is_const = */ false));
                 }
 
                 if item.is_opaque(ctx, &()) &&
@@ -3967,7 +3953,7 @@ impl TryToRustTy for Type {
                 {
                     Ok(ty)
                 } else {
-                    Ok(ty.to_ptr(is_const))
+                    Ok(to_ptr(ctx, ty, is_const))
                 }
             }
             TypeKind::TypeParam => {
@@ -5265,8 +5251,6 @@ pub(crate) mod utils {
         ctx: &BindgenContext,
         ty: &TypeId,
     ) -> syn::Type {
-        use super::ToPtr;
-
         let arg_item = ctx.resolve_item(ty);
         let arg_ty = arg_item.kind().expect_type();
 
@@ -5285,7 +5269,11 @@ pub(crate) mod utils {
                 } else {
                     t.to_rust_ty_or_opaque(ctx, &())
                 };
-                stream.to_ptr(ctx.resolve_type(t).is_const())
+                super::helpers::ast_ty::to_ptr(
+                    ctx,
+                    stream,
+                    ctx.resolve_type(t).is_const(),
+                )
             }
             TypeKind::Pointer(inner) => {
                 let inner = ctx.resolve_item(inner);
