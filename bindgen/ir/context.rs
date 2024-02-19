@@ -29,7 +29,6 @@ use quote::ToTokens;
 use std::borrow::Cow;
 use std::cell::{Cell, RefCell};
 use std::collections::{BTreeSet, HashMap as StdHashMap};
-use std::iter::IntoIterator;
 use std::mem;
 
 /// An identifier for some kind of IR item.

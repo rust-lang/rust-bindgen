@@ -126,7 +126,7 @@ pub(crate) mod ast_ty {
     use crate::ir::function::FunctionSig;
     use crate::ir::layout::Layout;
     use crate::ir::ty::{FloatKind, IntKind};
-    use proc_macro2::{self, TokenStream};
+    use proc_macro2::TokenStream;
     use std::str::FromStr;
 
     pub(crate) fn c_void(ctx: &BindgenContext) -> syn::Type {

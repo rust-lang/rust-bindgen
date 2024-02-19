@@ -7,7 +7,7 @@ use crate::ir::context::BindgenContext;
 use crate::ir::layout::Layout;
 use crate::ir::ty::{Type, TypeKind};
 use crate::FieldVisibilityKind;
-use proc_macro2::{self, Ident, Span};
+use proc_macro2::{Ident, Span};
 use std::cmp;
 
 const MAX_GUARANTEED_ALIGN: usize = 8;
