@@ -52,7 +52,7 @@ use crate::ir::template::{
 use crate::ir::ty::{Type, TypeKind};
 use crate::ir::var::Var;
 
-use proc_macro2::{self, Ident, Span};
+use proc_macro2::{Ident, Span};
 use quote::TokenStreamExt;
 
 use crate::{Entry, HashMap, HashSet};

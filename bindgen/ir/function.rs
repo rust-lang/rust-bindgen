@@ -9,7 +9,7 @@ use super::ty::TypeKind;
 use crate::callbacks::{ItemInfo, ItemKind};
 use crate::clang::{self, ABIKind, Attribute};
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
-use clang_sys::{self, CXCallingConv};
+use clang_sys::CXCallingConv;
 
 use quote::TokenStreamExt;
 use std::io;
