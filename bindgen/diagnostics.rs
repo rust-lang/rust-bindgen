@@ -110,7 +110,7 @@ impl<'a> Diagnostic<'a> {
                 slices.push(ExtSlice {
                     source: source.as_ref(),
                     line_start: slice.line.unwrap_or_default(),
-                    origin: slice.filename.as_deref(),
+                    origin: slice.origin.as_deref(),
                     annotations: vec![],
                     fold: false,
                 })
@@ -146,9 +146,9 @@ impl<'a> Diagnostic<'a> {
 /// A slice of source code.
 #[derive(Default)]
 pub(crate) struct Slice<'a> {
-    source: Option<Cow<'a, str>>,
-    filename: Option<String>,
     line: Option<usize>,
+    origin: Option<String>,
+    source: Option<Cow<'a, str>>,
 }
 
 impl<'a> Slice<'a> {
@@ -162,15 +162,14 @@ impl<'a> Slice<'a> {
     }
 
     /// Set the file, line and column.
-    pub(crate) fn with_location<P: AsRef<Path>>(
+    pub(crate) fn with_location(
         &mut self,
-        path: P,
+        file_name: &str,
         line: usize,
-        col: usize,
+        column: usize,
     ) -> &mut Self {
-        self.filename =
-            Some(format!("{}:{}:{}", path.as_ref().display(), line, col));
         self.line = Some(line);
+        self.origin = Some(format!("{file_name}:{line}:{column}"));
         self
     }
 }
