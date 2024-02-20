@@ -512,11 +512,10 @@ fn duplicated_macro_diagnostic(
             file, line, column, ..
         } = location
         {
-            let file_path = file.path();
-            if let Ok(Some(code)) = get_line(&file_path, line) {
+            if let Ok(Some(code)) = get_line(file.path(), line) {
                 source = code.into();
             }
-            slice.with_location(file_path, line, column);
+            slice.with_location(file.name(), line, column);
         }
 
         slice.with_source(source);
