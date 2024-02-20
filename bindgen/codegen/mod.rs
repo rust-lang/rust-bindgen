@@ -4638,12 +4638,13 @@ fn unsupported_abi_diagnostic(
             ..
         }) = location.cloned()
         {
-            let file_path = file.path();
-            if let Ok(Some(source)) = get_line(&file_path, line) {
+            if let Ok(Some(source)) = get_line(file.path(), line) {
                 let mut slice = Slice::default();
-                slice
-                    .with_source(source)
-                    .with_location(file_path, line, column);
+                slice.with_source(source).with_location(
+                    file.name(),
+                    line,
+                    column,
+                );
                 diag.add_slice(slice);
             }
         }
@@ -4680,12 +4681,13 @@ fn variadic_fn_diagnostic(
             ..
         }) = location.cloned()
         {
-            let file_path = file.path();
-            if let Ok(Some(source)) = get_line(&file_path, line) {
+            if let Ok(Some(source)) = get_line(file.path(), line) {
                 let mut slice = Slice::default();
-                slice
-                    .with_source(source)
-                    .with_location(file_path, line, column);
+                slice.with_source(source).with_location(
+                    file.name(),
+                    line,
+                    column,
+                );
                 diag.add_slice(slice);
             }
         }
