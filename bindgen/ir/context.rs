@@ -2629,7 +2629,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                             if self
                                 .options()
                                 .allowlisted_files
-                                .matches(file.path().display().to_string())
+                                .matches(file.name())
                             {
                                 return true;
                             }
