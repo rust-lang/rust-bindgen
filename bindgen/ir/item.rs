@@ -640,12 +640,11 @@ impl Item {
         }
 
         if !ctx.options().blocklisted_files.is_empty() {
-            if let Some(SourceLocation::File { file_path, .. }) = &self.location
-            {
+            if let Some(SourceLocation::File { file, .. }) = &self.location {
                 if ctx
                     .options()
                     .blocklisted_files
-                    .matches(file_path.display().to_string())
+                    .matches(file.path().display().to_string())
                 {
                     return true;
                 }
@@ -1431,17 +1430,17 @@ impl Item {
             }
 
             CXCursor_InclusionDirective => {
-                let file = cursor.get_included_file_name();
+                let file = cursor.get_included_file();
                 match file {
-                    None => {
-                        warn!("Inclusion of a nameless file in {:?}", cursor);
-                    }
                     Some(included_file) => {
                         for cb in &ctx.options().parse_callbacks {
-                            cb.include_file(&included_file);
+                            cb.include_file(included_file.name());
                         }
 
-                        ctx.add_dep(included_file.into_boxed_str());
+                        ctx.add_dep(included_file);
+                    }
+                    None => {
+                        warn!("Inclusion of a nameless file in {:?}", cursor)
                     }
                 }
                 Err(ParseError::Continue)

@@ -6,8 +6,10 @@
 
 use crate::ir::context::{BindgenContext, IncludeLocation};
 use clang_sys::*;
+use std::borrow::Cow;
 use std::cmp;
 use std::convert::TryInto;
+use std::env::current_dir;
 use std::ffi::{CStr, CString};
 use std::fmt;
 use std::fs::OpenOptions;
@@ -398,9 +400,8 @@ impl Cursor {
                     offset: offset.try_into().unwrap(),
                 }
             } else {
-                let file_name = cxstring_into_string(clang_getFileName(file));
                 SourceLocation::File {
-                    file_path: absolutize_path(file_name),
+                    file: SourceFile::from_raw(file),
                     line: line.try_into().unwrap(),
                     column: column.try_into().unwrap(),
                     offset: offset.try_into().unwrap(),
@@ -538,12 +539,8 @@ impl Cursor {
         let mut children = self.collect_children();
         for child in &children {
             if child.kind() == CXCursor_InclusionDirective {
-                if let Some(included_file_name) = child.get_included_file_name()
-                {
-                    ctx.add_include(
-                        absolutize_path(included_file_name),
-                        child.location(),
-                    );
+                if let Some(included_file) = child.get_included_file() {
+                    ctx.add_include(included_file, child.location());
                 }
             }
         }
@@ -936,14 +933,12 @@ impl Cursor {
     /// Obtain the real path name of a cursor of InclusionDirective kind.
     ///
     /// Returns None if the cursor does not include a file, otherwise the file's full name
-    pub(crate) fn get_included_file_name(&self) -> Option<String> {
-        let file = unsafe { clang_sys::clang_getIncludedFile(self.x) };
+    pub(crate) fn get_included_file(&self) -> Option<SourceFile> {
+        let file = unsafe { clang_getIncludedFile(self.x) };
         if file.is_null() {
             None
         } else {
-            Some(unsafe {
-                cxstring_into_string(clang_sys::clang_getFileName(file))
-            })
+            Some(unsafe { SourceFile::from_raw(file) })
         }
     }
 }
@@ -1578,8 +1573,8 @@ pub(crate) enum SourceLocation {
     },
     /// Location in a source file.
     File {
-        /// Name of the source file.
-        file_path: PathBuf,
+        /// The source file.
+        file: SourceFile,
         /// Line in the source file.
         line: usize,
         /// Column in the source file.
@@ -1587,18 +1582,6 @@ pub(crate) enum SourceLocation {
         /// Offset in the source file.
         offset: usize,
     },
-}
-
-fn absolutize_path<P: AsRef<Path>>(path: P) -> PathBuf {
-    let path = path.as_ref();
-
-    if path.is_relative() {
-        std::env::current_dir()
-            .expect("Cannot retrieve current directory")
-            .join(path)
-    } else {
-        path.to_owned()
-    }
 }
 
 impl SourceLocation {
@@ -1624,59 +1607,64 @@ impl SourceLocation {
                 other.cmp_by_source_order(self, ctx).reverse()
             }
             (
+                SourceLocation::File { file, offset, .. },
                 SourceLocation::File {
-                    file_path, offset, ..
-                },
-                SourceLocation::File {
-                    file_path: other_file_path,
+                    file: other_file,
                     offset: other_offset,
                     ..
                 },
             ) => {
+                let file_path = file.path();
+                let other_file_path = other_file.path();
+
                 if file_path == other_file_path {
                     return offset.cmp(other_offset);
                 }
 
                 // If `file` is transitively included via `ancestor_file`,
                 // find the offset of the include directive in `ancestor_file`.
-                let offset_in_ancestor = |file: &Path, ancestor_file: &Path| {
-                    let mut file = file;
-                    while file != ancestor_file {
-                        let include_location = ctx.include_location(file);
-                        file = if let IncludeLocation::File {
-                            file_path: file,
-                            offset,
-                            ..
-                        } = include_location
-                        {
-                            if file == ancestor_file {
-                                return Some(offset);
+                let offset_in_ancestor =
+                    |file_path: &Path, ancestor_file_path: &Path| {
+                        let mut file_path = Cow::Borrowed(file_path);
+                        while file_path != ancestor_file_path {
+                            let include_location =
+                                ctx.include_location(file_path);
+                            file_path = if let IncludeLocation::File {
+                                file,
+                                offset,
+                                ..
+                            } = include_location
+                            {
+                                let file_path = Cow::Owned(file.path());
+
+                                if file_path == ancestor_file_path {
+                                    return Some(offset);
+                                }
+
+                                file_path
+                            } else {
+                                break;
                             }
-
-                            file
-                        } else {
-                            break;
                         }
-                    }
 
-                    None
-                };
+                        None
+                    };
 
                 if let Some(offset) =
-                    offset_in_ancestor(file_path, other_file_path)
+                    offset_in_ancestor(&file_path, &other_file_path)
                 {
                     return offset.cmp(other_offset);
                 }
 
                 if let Some(other_offset) =
-                    offset_in_ancestor(other_file_path, file_path)
+                    offset_in_ancestor(&other_file_path, &file_path)
                 {
                     return offset.cmp(other_offset);
                 }
 
                 // If the source files are siblings, compare their include locations.
                 let parent = ctx.include_location(file_path);
-                let other_parent = ctx.include_location(other_file_path);
+                let other_parent = ctx.include_location(&other_file_path);
                 parent.cmp_by_source_order(other_parent, ctx)
             }
         }
@@ -1688,11 +1676,8 @@ impl fmt::Display for SourceLocation {
         match self {
             Self::Builtin { .. } => "built-in".fmt(f),
             Self::File {
-                file_path,
-                line,
-                column,
-                ..
-            } => write!(f, "{}:{}:{}", file_path.display(), line, column),
+                file, line, column, ..
+            } => write!(f, "{}:{}:{}", file.path().display(), line, column),
         }
     }
 }
@@ -1802,17 +1787,63 @@ impl Iterator for CommentAttributesIterator {
     }
 }
 
-fn cxstring_to_string_leaky(s: CXString) -> String {
-    if s.data.is_null() {
-        return "".to_owned();
-    }
-    let c_str = unsafe { CStr::from_ptr(clang_getCString(s) as *const _) };
-    c_str.to_string_lossy().into_owned()
+/// A source file.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct SourceFile {
+    name: Box<str>,
 }
 
-fn cxstring_into_string(s: CXString) -> String {
+impl SourceFile {
+    /// Creates a new `SourceFile` from a file name.
+    #[inline]
+    pub fn new<P: AsRef<str>>(name: P) -> Self {
+        Self {
+            name: name.as_ref().to_owned().into_boxed_str(),
+        }
+    }
+
+    /// Creates a new `SourceFile` from a raw pointer.
+    ///
+    /// # Safety
+    ///
+    /// `file` must point to a valid `CXFile`.
+    pub unsafe fn from_raw(file: CXFile) -> Self {
+        let name = unsafe { cxstring_into_string(clang_getFileName(file)) };
+
+        Self::new(name)
+    }
+
+    #[inline]
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Get the path of this source file.
+    pub fn path(&self) -> PathBuf {
+        let path = Path::new(self.name());
+        if path.is_relative() {
+            current_dir()
+                .expect("Cannot retrieve current directory")
+                .join(path)
+        } else {
+            path.to_owned()
+        }
+    }
+}
+
+unsafe fn cxstring_to_string_leaky(s: CXString) -> String {
+    if s.data.is_null() {
+        Cow::Borrowed("")
+    } else {
+        let c_str = CStr::from_ptr(clang_getCString(s) as *const _);
+        c_str.to_string_lossy()
+    }
+    .into_owned()
+}
+
+unsafe fn cxstring_into_string(s: CXString) -> String {
     let ret = cxstring_to_string_leaky(s);
-    unsafe { clang_disposeString(s) };
+    clang_disposeString(s);
     ret
 }
 
@@ -1923,13 +1954,13 @@ impl TranslationUnit {
         }
     }
 
-    /// Get the source file path of this translation unit.
-    pub(crate) fn path(&self) -> PathBuf {
-        let file_name = unsafe {
+    /// Get the source file of this.
+    pub fn file(&self) -> SourceFile {
+        let name = unsafe {
             cxstring_into_string(clang_getTranslationUnitSpelling(self.x))
         };
 
-        absolutize_path(file_name)
+        SourceFile::new(name)
     }
 
     /// Save a translation unit to the given file.

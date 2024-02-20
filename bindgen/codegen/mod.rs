@@ -4632,12 +4632,13 @@ fn unsupported_abi_diagnostic(
         );
 
         if let Some(crate::clang::SourceLocation::File {
-            file_path,
+            file,
             line,
             column,
             ..
         }) = location.cloned()
         {
+            let file_path = file.path();
             if let Ok(Some(source)) = get_line(&file_path, line) {
                 let mut slice = Slice::default();
                 slice
@@ -4673,12 +4674,13 @@ fn variadic_fn_diagnostic(
             .add_annotation("No code will be generated for this function.", Level::Note);
 
         if let Some(crate::clang::SourceLocation::File {
-            file_path,
+            file,
             line,
             column,
             ..
         }) = location.cloned()
         {
+            let file_path = file.path();
             if let Ok(Some(source)) = get_line(&file_path, line) {
                 let mut slice = Slice::default();
                 slice

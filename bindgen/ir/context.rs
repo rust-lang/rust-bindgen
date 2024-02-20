@@ -19,7 +19,7 @@ use super::module::{Module, ModuleKind};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
-use crate::clang::{self, ABIKind, Cursor, SourceLocation};
+use crate::clang::{self, ABIKind, Cursor, SourceFile, SourceLocation};
 use crate::codegen::CodegenError;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
@@ -320,7 +320,7 @@ pub(crate) enum IncludeLocation {
     /// Include location of a header included with an `#include` directive.
     File {
         /// Source file name of the include location.
-        file_path: PathBuf,
+        file: SourceFile,
         /// Line of the include location.
         line: usize,
         /// Column of the include location.
@@ -366,11 +366,10 @@ impl IncludeLocation {
             (
                 IncludeLocation::Cli { .. } | IncludeLocation::Main,
                 IncludeLocation::File {
-                    file_path: other_file_path,
-                    ..
+                    file: other_file, ..
                 },
             ) => {
-                let other_parent = ctx.include_location(other_file_path);
+                let other_parent = ctx.include_location(other_file.path());
                 self.cmp_by_source_order(other_parent, ctx)
             }
             (
@@ -380,26 +379,26 @@ impl IncludeLocation {
             // If both include locations are in files, compare them as `SourceLocation`s.
             (
                 IncludeLocation::File {
-                    file_path,
+                    file,
                     line,
                     column,
                     offset,
                 },
                 IncludeLocation::File {
-                    file_path: other_file_path,
+                    file: other_file,
                     line: other_line,
                     column: other_column,
                     offset: other_offset,
                 },
             ) => SourceLocation::File {
-                file_path: file_path.clone(),
+                file: file.clone(),
                 line: *line,
                 column: *column,
                 offset: *offset,
             }
             .cmp_by_source_order(
                 &SourceLocation::File {
-                    file_path: other_file_path.clone(),
+                    file: other_file.clone(),
                     line: *other_line,
                     column: *other_column,
                     offset: *other_offset,
@@ -470,7 +469,7 @@ pub(crate) struct BindgenContext {
     includes: StdHashMap<PathBuf, IncludeLocation>,
 
     /// A set of all the included filenames.
-    deps: BTreeSet<Box<str>>,
+    deps: BTreeSet<SourceFile>,
 
     /// The active replacements collected from replaces="xxx" annotations.
     replacements: HashMap<Vec<String>, ItemId>,
@@ -675,7 +674,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let root_module_id = root_module.id().as_module_id_unchecked();
 
         // depfiles need to include the explicitly listed headers too
-        let deps = options.input_headers.iter().cloned().collect();
+        let deps = options.input_headers.iter().map(SourceFile::new).collect();
 
         BindgenContext {
             items: vec![Some(root_module)],
@@ -764,16 +763,18 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Add the location of where `included_file` is included.
     pub(crate) fn add_include(
         &mut self,
-        included_file_path: PathBuf,
+        included_file: SourceFile,
         source_location: SourceLocation,
     ) {
+        let included_file_path = included_file.path();
+
         if self.includes.contains_key(&included_file_path) {
             return;
         }
 
         let include_location = {
             // Recursively including the main header file doesn't count.
-            if self.translation_unit.path() == included_file_path {
+            if self.translation_unit.file().path() == included_file_path {
                 IncludeLocation::Main
             } else {
                 match source_location {
@@ -783,12 +784,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     }
                     // Header was included with an `#include` directive.
                     SourceLocation::File {
-                        file_path,
+                        file,
                         line,
                         column,
                         offset,
                     } => IncludeLocation::File {
-                        file_path,
+                        file,
                         line,
                         column,
                         offset,
@@ -812,12 +813,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Add an included file.
-    pub(crate) fn add_dep(&mut self, dep: Box<str>) {
+    pub(crate) fn add_dep(&mut self, dep: SourceFile) {
         self.deps.insert(dep);
     }
 
     /// Get any included files.
-    pub(crate) fn deps(&self) -> &BTreeSet<Box<str>> {
+    pub(crate) fn deps(&self) -> &BTreeSet<SourceFile> {
         &self.deps
     }
 
@@ -2622,14 +2623,13 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     // Items with a source location in an explicitly allowlisted file
                     // are always included.
                     if !self.options().allowlisted_files.is_empty() {
-                        if let Some(SourceLocation::File {
-                            file_path, ..
-                        }) = item.location()
+                        if let Some(SourceLocation::File { file, .. }) =
+                            item.location()
                         {
                             if self
                                 .options()
                                 .allowlisted_files
-                                .matches(file_path.display().to_string())
+                                .matches(file.path().display().to_string())
                             {
                                 return true;
                             }
