@@ -787,7 +787,7 @@ impl Item {
 
         match *self.kind() {
             ItemKind::Var(ref var) => var.name().to_owned(),
-            ItemKind::MacroDef(ref var) => var.name().to_owned(),
+            ItemKind::MacroDef(ref macro_def) => macro_def.name().to_owned(),
             ItemKind::Module(ref module) => {
                 module.name().map(ToOwned::to_owned).unwrap_or_else(|| {
                     format!("_bindgen_mod_{}", self.exposed_id(ctx))
