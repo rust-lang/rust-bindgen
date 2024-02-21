@@ -3249,7 +3249,10 @@ impl cmacro::CodegenContext for BindgenContext {
             .last_callback(|c| c.fn_macro_arg_type(name, arg))
     }
 
-    fn resolve_enum_variant(&self, variant: &str) -> Option<syn::Expr> {
+    fn resolve_enum_variant(
+        &self,
+        variant: &str,
+    ) -> Option<(syn::Type, syn::Expr)> {
         let (item_id, enum_variant) = self.enum_variant(variant)?;
 
         let item = self.resolve_item(item_id);
@@ -3257,7 +3260,12 @@ impl cmacro::CodegenContext for BindgenContext {
             return None;
         }
 
-        Some(enum_variant.clone())
+        let enum_ty = match item.kind() {
+            ItemKind::Type(enum_ty) => enum_ty.to_rust_ty_or_opaque(self, item),
+            _ => return None,
+        };
+
+        Some((enum_ty, enum_variant.clone()))
     }
 
     fn resolve_ty(&self, ty: &str) -> Option<syn::Type> {
