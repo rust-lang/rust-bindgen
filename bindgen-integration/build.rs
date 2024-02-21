@@ -95,7 +95,7 @@ impl ParseCallbacks for MacroCallback {
             }
             "TESTMACRO_STRING_FUNC_NON_UTF8" => {
                 assert_eq!(args, &["x"]);
-                assert_eq!(body, &["(", "x", "\"ÿÿ\"", ")"]);
+                assert_eq!(body, &["(", "x", r#""\xFF\xFF""#, ")"]);
                 *self.seen_funcs.lock().unwrap() += 1;
             }
             name => {
