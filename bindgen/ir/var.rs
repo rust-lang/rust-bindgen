@@ -164,16 +164,14 @@ fn handle_function_macro(
 ) {
     let is_closing_paren = |t: &ClangToken| {
         // Test cheap token kind before comparing exact spellings.
-        t.kind == clang_sys::CXToken_Punctuation && t.spelling() == b")"
+        t.kind == clang_sys::CXToken_Punctuation &&
+            t.spelling().to_bytes() == b")"
     };
     let tokens: Vec<_> = cursor.tokens().iter().collect();
     if let Some(boundary) = tokens.iter().position(is_closing_paren) {
         let mut tokens = tokens
             .iter()
-            .map(|token| {
-                let s = token.spelling();
-                encoding_rs::mem::decode_latin1(s)
-            })
+            .map(|token| token.spelling().to_str().unwrap())
             .collect::<Vec<_>>();
 
         let name = tokens.remove(0);
@@ -181,15 +179,12 @@ fn handle_function_macro(
             .drain(..boundary)
             .skip(1)
             .take(boundary - 2)
-            .filter(|token| token != ",")
+            .filter(|&token| token != ",")
             .collect();
         let body = tokens;
 
-        let args = args.iter().map(|s| s.as_ref()).collect::<Vec<_>>();
-        let body = body.iter().map(|s| s.as_ref()).collect::<Vec<_>>();
-
         let info = FnMacroInfo {
-            name: &name,
+            name,
             args: &args,
             body: &body,
         };

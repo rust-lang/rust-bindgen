@@ -2159,8 +2159,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let mut kind = ModuleKind::Normal;
         let mut looking_for_name = false;
         for token in cursor.tokens().iter() {
-            match token.spelling() {
-                b"inline" => {
+            match token.spelling().to_str().unwrap() {
+                "inline" => {
                     debug_assert!(
                         kind != ModuleKind::Inline,
                         "Multiple inline keywords?"
@@ -2177,10 +2177,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 // but the tokenization of the second begins with the double
                 // colon. That's ok, so we only need to handle the weird
                 // tokenization here.
-                b"namespace" | b"::" => {
+                "namespace" | "::" => {
                     looking_for_name = true;
                 }
-                b"{" => {
+                "{" => {
                     // This should be an anonymous namespace.
                     assert!(looking_for_name);
                     break;
@@ -2188,9 +2188,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 name => {
                     if looking_for_name {
                         if module_name.is_none() {
-                            module_name = Some(
-                                String::from_utf8_lossy(name).into_owned(),
-                            );
+                            module_name = Some(name.to_owned());
                         }
                         break;
                     } else {
@@ -2205,7 +2203,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                         // See also https://github.com/rust-lang/rust-bindgen/issues/1676.
                         warn!(
                             "Ignored unknown namespace prefix '{}' at {:?} in {:?}",
-                            String::from_utf8_lossy(name),
+                            name,
                             token,
                             cursor
                         );
