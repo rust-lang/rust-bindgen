@@ -5495,7 +5495,6 @@ pub(crate) mod utils {
                 primitive_ty(ctx, "usize")
             }
             "uintptr_t" => primitive_ty(ctx, "usize"),
-
             "ssize_t" if ctx.options().size_t_is_usize => {
                 primitive_ty(ctx, "isize")
             }
