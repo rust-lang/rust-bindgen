@@ -553,7 +553,7 @@ pub(crate) struct BindgenContext {
 
     /// A map of all enum variants, mapping the variant name to
     /// the generated constant name and/or path.
-    enum_variants: HashMap<String, syn::Expr>,
+    enum_variants: HashMap<String, (ItemId, syn::Expr)>,
 
     /// The set of (`ItemId`s of) types that can't derive debug.
     ///
@@ -2837,15 +2837,19 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
                         use crate::EnumVariation;
 
+                        let enum_canonical_name = if ty.name().is_some() {
+                            Some(self.rust_ident(item.canonical_name(self)))
+                        } else {
+                            None
+                        };
+
                         for variant in enum_ty.variants() {
                             let variant_name = self.rust_ident(variant.name());
 
-                            let variant_expr = if ty.name().is_some() {
-                                let enum_canonical_name =
-                                    item.canonical_name(self);
-                                let enum_canonical_name =
-                                    self.rust_ident(enum_canonical_name);
-
+                            let variant_expr = if let Some(
+                                enum_canonical_name,
+                            ) = &enum_canonical_name
+                            {
                                 match variation {
                                     EnumVariation::Rust { .. } |
                                     EnumVariation::NewType {
@@ -2862,7 +2866,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                     EnumVariation::Consts { .. } => {
                                         let constant_name = self
                                             .enum_variant_const_name(
-                                                Some(&enum_canonical_name),
+                                                Some(enum_canonical_name),
                                                 &variant_name,
                                             );
                                         syn::parse_quote! { #constant_name }
@@ -2879,7 +2883,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
                             self.enum_variants.insert(
                                 variant.name().to_owned(),
-                                variant_expr,
+                                (item.id(), variant_expr),
                             );
                         }
                     }
@@ -2943,12 +2947,17 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Get the generated name of an enum variant.
-    pub(crate) fn enum_variant(&self, variant: &str) -> Option<&syn::Expr> {
+    pub(crate) fn enum_variant(
+        &self,
+        variant: &str,
+    ) -> Option<(ItemId, &syn::Expr)> {
         assert!(
             self.in_codegen_phase(),
             "We only compute enum_variants when we enter codegen",
         );
-        self.enum_variants.get(variant)
+        self.enum_variants
+            .get(variant)
+            .map(|(item_id, variant)| (*item_id, variant))
     }
 
     /// Look up whether `id` refers to an `enum` whose underlying type is
@@ -3241,7 +3250,14 @@ impl cmacro::CodegenContext for BindgenContext {
     }
 
     fn resolve_enum_variant(&self, variant: &str) -> Option<syn::Expr> {
-        self.enum_variant(variant).cloned()
+        let (item_id, enum_variant) = self.enum_variant(variant)?;
+
+        let item = self.resolve_item(item_id);
+        if item.is_blocklisted(self) {
+            return None;
+        }
+
+        Some(enum_variant.clone())
     }
 
     fn resolve_ty(&self, ty: &str) -> Option<syn::Type> {
