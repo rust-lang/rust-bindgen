@@ -25,7 +25,6 @@ pub(crate) struct StructLayoutTracker<'a> {
     latest_offset: usize,
     padding_count: usize,
     latest_field_layout: Option<Layout>,
-    max_field_align: usize,
     last_field_was_bitfield: bool,
     visibility: FieldVisibilityKind,
 }
@@ -108,7 +107,6 @@ impl<'a> StructLayoutTracker<'a> {
             latest_offset: 0,
             padding_count: 0,
             latest_field_layout: None,
-            max_field_align: 0,
             last_field_was_bitfield: false,
         }
     }
@@ -127,7 +125,6 @@ impl<'a> StructLayoutTracker<'a> {
         let ptr_size = self.ctx.target_pointer_size();
         self.latest_offset += ptr_size;
         self.latest_field_layout = Some(Layout::new(ptr_size, ptr_size));
-        self.max_field_align = ptr_size;
     }
 
     pub(crate) fn saw_base(&mut self, base_ty: &Type) {
@@ -137,7 +134,6 @@ impl<'a> StructLayoutTracker<'a> {
 
             self.latest_offset += self.padding_bytes(layout) + layout.size;
             self.latest_field_layout = Some(layout);
-            self.max_field_align = cmp::max(self.max_field_align, layout.align);
         }
     }
 
@@ -156,7 +152,6 @@ impl<'a> StructLayoutTracker<'a> {
 
         self.latest_field_layout = Some(layout);
         self.last_field_was_bitfield = true;
-        self.max_field_align = cmp::max(self.max_field_align, layout.align);
     }
 
     /// Returns a padding field if necessary for a given new field _before_
@@ -265,8 +260,6 @@ impl<'a> StructLayoutTracker<'a> {
 
         self.latest_offset += field_layout.size;
         self.latest_field_layout = Some(field_layout);
-        self.max_field_align =
-            cmp::max(self.max_field_align, field_layout.align);
         self.last_field_was_bitfield = false;
 
         debug!(
@@ -365,26 +358,6 @@ impl<'a> StructLayoutTracker<'a> {
         }
     }
 
-    pub(crate) fn requires_explicit_align(&self, layout: Layout) -> bool {
-        let repr_align = self.ctx.options().rust_features().repr_align;
-
-        // Always force explicit repr(align) for stuff more than 16-byte aligned
-        // to work-around https://github.com/rust-lang/rust/issues/54341.
-        //
-        // Worst-case this just generates redundant alignment attributes.
-        if repr_align && self.max_field_align >= 16 {
-            return true;
-        }
-
-        if self.max_field_align >= layout.align {
-            return false;
-        }
-
-        // We can only generate up-to a 8-bytes of alignment unless we support
-        // repr(align).
-        repr_align || layout.align <= MAX_GUARANTEED_ALIGN
-    }
-
     fn padding_bytes(&self, layout: Layout) -> usize {
         align_to(self.latest_offset, layout.align) - self.latest_offset
     }
@@ -399,8 +372,6 @@ impl<'a> StructLayoutTracker<'a> {
             &format!("__bindgen_padding_{}", padding_count),
             Span::call_site(),
         );
-
-        self.max_field_align = cmp::max(self.max_field_align, layout.align);
 
         let vis = super::access_specifier(self.visibility);
 

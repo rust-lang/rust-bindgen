@@ -21,6 +21,7 @@ use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
 use crate::clang::{self, ABIKind, Cursor};
 use crate::codegen::CodegenError;
+use crate::ir::analysis::Sizedness;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 
@@ -1024,6 +1025,49 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         }
     }
 
+    fn check_alignment(&mut self, id: ItemId) {
+        let item = self.items[id.0].as_ref().unwrap();
+        let mut has_vtable_ptr: bool = false;
+
+        if let Some(have_vtable) = &self.have_vtable {
+            if have_vtable.contains_key(&id) {
+                has_vtable_ptr = true;
+            }
+        }
+
+        let zero_sized = item.is_zero_sized(&self);
+        let is_opaque = item.is_opaque(&self, &());
+
+        self.with_loaned_item(id, |ctx, item| {
+            let ty = item.kind_mut().as_type_mut().unwrap();
+            let layout = ty.layout(ctx);
+            ty.as_comp_mut().unwrap().check_alignment(
+                ctx,
+                has_vtable_ptr,
+                zero_sized,
+                is_opaque,
+                layout,
+            );
+        })
+    }
+
+    /// Each compount type needs to be checked for if it requires an `align(N)` attribute.
+    fn compute_alignment_of_compound_types(&mut self) {
+        let comp_item_ids: Vec<ItemId> = self
+            .items()
+            .filter_map(|(id, item)| {
+                if item.kind().as_type()?.is_comp() {
+                    return Some(id);
+                }
+                None
+            })
+            .collect();
+
+        for id in comp_item_ids {
+            self.check_alignment(id);
+        }
+    }
+
     /// Assign a new generated name for each anonymous field.
     fn deanonymize_fields(&mut self) {
         let _t = self.timer("deanonymize_fields");
@@ -1212,6 +1256,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         self.compute_has_vtable();
         self.compute_sizedness();
+        self.compute_alignment_of_compound_types();
         self.compute_has_destructor();
         self.find_used_template_parameters();
         self.compute_enum_typedef_combos();
