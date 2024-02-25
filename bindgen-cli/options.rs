@@ -400,6 +400,9 @@ struct BindgenCommand {
     /// Wrap unsafe operations in unsafe blocks.
     #[arg(long)]
     wrap_unsafe_ops: bool,
+    /// Use DSTs to represent structures with flexible array members.
+    #[arg(long)]
+    flexarray_dst: bool,
     /// Derive custom traits on any kind of type. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a coma-separated list of derive macros.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_derive)]
     with_derive_custom: Vec<(Vec<String>, String)>,
@@ -554,6 +557,7 @@ where
         merge_extern_blocks,
         override_abi,
         wrap_unsafe_ops,
+        flexarray_dst,
         with_derive_custom,
         with_derive_custom_struct,
         with_derive_custom_enum,
@@ -1021,6 +1025,10 @@ where
 
     if wrap_unsafe_ops {
         builder = builder.wrap_unsafe_ops(true);
+    }
+
+    if flexarray_dst {
+        builder = builder.flexarray_dst(true);
     }
 
     #[derive(Debug)]
