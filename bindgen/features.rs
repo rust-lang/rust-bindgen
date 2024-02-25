@@ -96,6 +96,8 @@ macro_rules! define_rust_targets {
 define_rust_targets! {
     Nightly => {
         vectorcall_abi,
+        ptr_metadata: #81513,
+        layout_for_ptr: #69835,
     },
     Stable_1_77(77) => { offset_of: #106655 },
     Stable_1_73(73) => { thiscall_abi: #42202 },
