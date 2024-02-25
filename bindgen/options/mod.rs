@@ -1981,6 +1981,19 @@ options! {
         },
         as_args: "--wrap-unsafe-ops",
     },
+    /// Use DSTs to represent structures with flexible array members.
+    flexarray_dst: bool {
+        methods: {
+            /// Use DSTs to represent structures with flexible array members.
+            ///
+            /// This option is disabled by default.
+            pub fn flexarray_dst(mut self, doit: bool) -> Self {
+                self.options.flexarray_dst = doit;
+                self
+            }
+        },
+        as_args: "--flexarray-dst",
+    },
     /// Patterns for functions whose ABI should be overridden.
     abi_overrides: HashMap<Abi, RegexSet> {
         methods: {
