@@ -169,10 +169,17 @@ fn handle_function_macro(
     };
     let tokens: Vec<_> = cursor.tokens().iter().collect();
     if let Some(boundary) = tokens.iter().position(is_closing_paren) {
-        let mut tokens = tokens
+        let tokens: Result<Vec<_>, _> = tokens
             .iter()
-            .map(|token| token.spelling().to_str().unwrap())
-            .collect::<Vec<_>>();
+            .map(|token| token.spelling().to_str())
+            .collect();
+
+        let mut tokens = if let Ok(tokens) = tokens {
+            tokens
+        } else {
+            // Skip macros containing invalid UTF-8.
+            return;
+        };
 
         let name = tokens.remove(0);
         let args: Vec<_> = tokens

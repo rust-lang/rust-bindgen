@@ -2159,7 +2159,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let mut kind = ModuleKind::Normal;
         let mut looking_for_name = false;
         for token in cursor.tokens().iter() {
-            match token.spelling().to_str().unwrap() {
+            let spelling = token.spelling();
+            let name = match spelling.to_str() {
+                Ok(name) => Cow::Borrowed(name),
+                Err(_) => spelling.to_string_lossy(),
+            };
+            match name.as_ref() {
                 "inline" => {
                     debug_assert!(
                         kind != ModuleKind::Inline,
@@ -2185,29 +2190,26 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     assert!(looking_for_name);
                     break;
                 }
-                name => {
-                    if looking_for_name {
-                        if module_name.is_none() {
-                            module_name = Some(name.to_owned());
-                        }
-                        break;
-                    } else {
-                        // This is _likely_, but not certainly, a macro that's
-                        // been placed just before the namespace keyword.
-                        // Unfortunately, clang tokens don't let us easily see
-                        // through the ifdef tokens, so we don't know what this
-                        // token should really be. Instead of panicking though,
-                        // we warn the user that we assumed the token was blank,
-                        // and then move on.
-                        //
-                        // See also https://github.com/rust-lang/rust-bindgen/issues/1676.
-                        warn!(
-                            "Ignored unknown namespace prefix '{}' at {:?} in {:?}",
-                            name,
-                            token,
-                            cursor
-                        );
+                name if looking_for_name => {
+                    if module_name.is_none() {
+                        module_name = Some(name.to_owned());
                     }
+                    break;
+                }
+                name => {
+                    // This is _likely_, but not certainly, a macro that's
+                    // been placed just before the namespace keyword.
+                    // Unfortunately, clang tokens don't let us easily see
+                    // through the ifdef tokens, so we don't know what this
+                    // token should really be. Instead of panicking though,
+                    // we warn the user that we assumed the token was blank,
+                    // and then move on.
+                    //
+                    // See also https://github.com/rust-lang/rust-bindgen/issues/1676.
+                    warn!(
+                        "Ignored unknown namespace prefix '{}' at {:?} in {:?}",
+                        name, token, cursor
+                    );
                 }
             }
         }
