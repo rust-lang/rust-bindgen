@@ -2162,7 +2162,14 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             let spelling = token.spelling();
             let name = match spelling.to_str() {
                 Ok(name) => Cow::Borrowed(name),
-                Err(_) => spelling.to_string_lossy(),
+                Err(_) => {
+                    let name = spelling.to_string_lossy();
+                    warn!(
+                        "Lossy conversion of non-UTF8 token {:?} to {:?}.",
+                        spelling, name
+                    );
+                    name
+                }
             };
             match name.as_ref() {
                 "inline" => {

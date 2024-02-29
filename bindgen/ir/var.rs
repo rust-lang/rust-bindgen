@@ -167,9 +167,9 @@ fn handle_function_macro(
         t.kind == clang_sys::CXToken_Punctuation &&
             t.spelling().to_bytes() == b")"
     };
-    let tokens: Vec<_> = cursor.tokens().iter().collect();
-    if let Some(boundary) = tokens.iter().position(is_closing_paren) {
-        let tokens: Result<Vec<_>, _> = tokens
+    let mut raw_tokens: Vec<_> = cursor.tokens().iter().collect();
+    if let Some(boundary) = raw_tokens.iter().position(is_closing_paren) {
+        let tokens: Result<Vec<_>, _> = raw_tokens
             .iter()
             .map(|token| token.spelling().to_str())
             .collect();
@@ -177,7 +177,11 @@ fn handle_function_macro(
         let mut tokens = if let Ok(tokens) = tokens {
             tokens
         } else {
-            // Skip macros containing invalid UTF-8.
+            let raw_name = raw_tokens.remove(0);
+            warn!(
+                "Ignoring macro {:?} containing invalid UTF-8 tokens.",
+                raw_name.spelling()
+            );
             return;
         };
 
