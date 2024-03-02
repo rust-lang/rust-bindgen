@@ -1333,6 +1333,7 @@ trait FieldCodegen<'a> {
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         parent_item: &Item,
+        last_field: bool,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1353,6 +1354,7 @@ impl<'a> FieldCodegen<'a> for Field {
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         parent_item: &Item,
+        last_field: bool,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1370,6 +1372,7 @@ impl<'a> FieldCodegen<'a> for Field {
                     accessor_kind,
                     parent,
                     parent_item,
+                    last_field,
                     result,
                     struct_layout,
                     fields,
@@ -1384,6 +1387,7 @@ impl<'a> FieldCodegen<'a> for Field {
                     accessor_kind,
                     parent,
                     parent_item,
+                    last_field,
                     result,
                     struct_layout,
                     fields,
@@ -1428,6 +1432,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         parent_item: &Item,
+        last_field: bool,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1453,17 +1458,20 @@ impl<'a> FieldCodegen<'a> for FieldData {
         let ty = if parent.is_union() {
             wrap_union_field_if_needed(ctx, struct_layout, ty, result)
         } else if let Some(item) = field_ty.is_incomplete_array(ctx) {
-            result.saw_incomplete_array();
-            struct_layout.saw_flexible_array();
-
-            let inner = item.to_rust_ty_or_opaque(ctx, &());
-
-            if ctx.options().flexarray_dst {
+            // Only FAM if its the last field
+            if ctx.options().flexarray_dst && last_field {
+                struct_layout.saw_flexible_array();
                 syn::parse_quote! { FAM }
-            } else if ctx.options().enable_cxx_namespaces {
-                syn::parse_quote! { root::__IncompleteArrayField<#inner> }
             } else {
-                syn::parse_quote! { __IncompleteArrayField<#inner> }
+                result.saw_incomplete_array();
+
+                let inner = item.to_rust_ty_or_opaque(ctx, &());
+
+                if ctx.options().enable_cxx_namespaces {
+                    syn::parse_quote! { root::__IncompleteArrayField<#inner> }
+                } else {
+                    syn::parse_quote! { __IncompleteArrayField<#inner> }
+                }
             }
         } else {
             ty
@@ -1685,6 +1693,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         parent_item: &Item,
+        _last_field: bool,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1745,7 +1754,8 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         let mut generate_ctor = layout.size <= RUST_DERIVE_IN_ARRAY_LIMIT;
 
         let mut unit_visibility = visibility_kind;
-        for bf in self.bitfields() {
+        let bfields = self.bitfields();
+        for (idx, bf) in bfields.iter().enumerate() {
             // Codegen not allowed for anonymous bitfields
             if bf.name().is_none() {
                 continue;
@@ -1765,6 +1775,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 accessor_kind,
                 parent,
                 parent_item,
+                idx == bfields.len() - 1,
                 result,
                 struct_layout,
                 fields,
@@ -1847,6 +1858,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         _accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         parent_item: &Item,
+        _last_field: bool,
         _result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         _fields: &mut F,
@@ -2080,13 +2092,15 @@ impl CodeGenerator for CompInfo {
                 .annotations()
                 .accessor_kind()
                 .unwrap_or(FieldAccessorKind::None);
-            for field in self.fields() {
+            let field_decls = self.fields();
+            for (idx, field) in field_decls.iter().enumerate() {
                 field.codegen(
                     ctx,
                     visibility,
                     struct_accessor_kind,
                     self,
                     item,
+                    idx == field_decls.len() - 1,
                     result,
                     &mut struct_layout,
                     &mut fields,
@@ -5268,9 +5282,6 @@ pub(crate) mod utils {
         ctx: &BindgenContext,
         result: &mut Vec<proc_macro2::TokenStream>,
     ) {
-        if ctx.options().flexarray_dst {
-            return;
-        }
         let prefix = ctx.trait_prefix();
 
         // If the target supports `const fn`, declare eligible functions
