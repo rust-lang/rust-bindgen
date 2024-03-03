@@ -14,8 +14,8 @@ pub mod root {
         #[repr(C)]
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub struct Rooted<T> {
-            pub ptr: root::JS::detail::Wrapped<T>,
             pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+            pub ptr: root::JS::detail::Wrapped<T>,
         }
         impl<T> Default for Rooted<T> {
             fn default() -> Self {

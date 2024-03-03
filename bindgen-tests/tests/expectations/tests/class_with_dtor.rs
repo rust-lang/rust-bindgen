@@ -2,8 +2,8 @@
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct HandleWithDtor<T> {
-    pub ptr: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub ptr: *mut T,
 }
 impl<T> Default for HandleWithDtor<T> {
     fn default() -> Self {

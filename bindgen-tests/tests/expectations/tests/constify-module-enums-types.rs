@@ -211,8 +211,8 @@ extern "C" {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Thing<T> {
-    pub thing: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub thing: T,
 }
 impl<T> Default for Thing<T> {
     fn default() -> Self {

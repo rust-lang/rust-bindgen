@@ -2,9 +2,9 @@
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Point<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub x: T,
     pub y: T,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl<T> Default for Point<T> {
     fn default() -> Self {

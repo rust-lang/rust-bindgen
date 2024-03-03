@@ -45,9 +45,9 @@ impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct StylePoint<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub x: T,
     pub y: T,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl<T> Default for StylePoint<T> {
     fn default() -> Self {
@@ -61,12 +61,12 @@ impl<T> Default for StylePoint<T> {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct StyleFoo<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub __bindgen_anon_1: __BindgenUnionField<StyleFoo__bindgen_ty_1>,
     pub foo: __BindgenUnionField<StyleFoo_Foo_Body<T>>,
     pub bar: __BindgenUnionField<StyleFoo_Bar_Body<T>>,
     pub baz: __BindgenUnionField<StyleFoo_Baz_Body<T>>,
     pub bindgen_union_field: [u8; 0usize],
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 pub const StyleFoo_Tag_Foo: StyleFoo_Tag = 0;
 pub const StyleFoo_Tag_Bar: StyleFoo_Tag = 0;
@@ -76,11 +76,11 @@ pub type StyleFoo_Tag = u8;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct StyleFoo_Foo_Body<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub tag: StyleFoo_Tag,
     pub x: i32,
     pub y: StylePoint<T>,
     pub z: StylePoint<f32>,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl<T> Default for StyleFoo_Foo_Body<T> {
     fn default() -> Self {
@@ -94,9 +94,9 @@ impl<T> Default for StyleFoo_Foo_Body<T> {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct StyleFoo_Bar_Body<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub tag: StyleFoo_Tag,
     pub _0: T,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl<T> Default for StyleFoo_Bar_Body<T> {
     fn default() -> Self {
@@ -110,9 +110,9 @@ impl<T> Default for StyleFoo_Bar_Body<T> {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct StyleFoo_Baz_Body<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub tag: StyleFoo_Tag,
     pub _0: StylePoint<T>,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl<T> Default for StyleFoo_Baz_Body<T> {
     fn default() -> Self {
@@ -140,9 +140,9 @@ impl Default for StyleFoo__bindgen_ty_1 {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct StyleBar<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub tag: StyleBar_Tag,
     pub __bindgen_anon_1: StyleBar__bindgen_ty_1<T>,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 pub const StyleBar_Tag_Bar1: StyleBar_Tag = 0;
 pub const StyleBar_Tag_Bar2: StyleBar_Tag = 0;
@@ -152,10 +152,10 @@ pub type StyleBar_Tag = ::std::os::raw::c_int;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct StyleBar_StyleBar1_Body<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub x: i32,
     pub y: StylePoint<T>,
     pub z: StylePoint<f32>,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl<T> Default for StyleBar_StyleBar1_Body<T> {
     fn default() -> Self {
@@ -169,8 +169,8 @@ impl<T> Default for StyleBar_StyleBar1_Body<T> {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct StyleBar_StyleBar2_Body<T> {
-    pub _0: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _0: T,
 }
 impl<T> Default for StyleBar_StyleBar2_Body<T> {
     fn default() -> Self {
@@ -184,8 +184,8 @@ impl<T> Default for StyleBar_StyleBar2_Body<T> {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct StyleBar_StyleBar3_Body<T> {
-    pub _0: StylePoint<T>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _0: StylePoint<T>,
 }
 impl<T> Default for StyleBar_StyleBar3_Body<T> {
     fn default() -> Self {
@@ -199,11 +199,11 @@ impl<T> Default for StyleBar_StyleBar3_Body<T> {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct StyleBar__bindgen_ty_1<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub bar1: __BindgenUnionField<StyleBar_StyleBar1_Body<T>>,
     pub bar2: __BindgenUnionField<StyleBar_StyleBar2_Body<T>>,
     pub bar3: __BindgenUnionField<StyleBar_StyleBar3_Body<T>>,
     pub bindgen_union_field: [u8; 0usize],
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl<T> Default for StyleBar<T> {
     fn default() -> Self {

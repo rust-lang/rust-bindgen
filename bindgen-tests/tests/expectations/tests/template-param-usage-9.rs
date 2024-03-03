@@ -9,10 +9,10 @@ pub type DoesNotUse_Typedefed<U> = U;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct DoesNotUse_IndirectUsage<T, U> {
-    pub member: DoesNotUse_Aliased<T>,
-    pub another: DoesNotUse_Typedefed<U>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub _phantom_1: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
+    pub member: DoesNotUse_Aliased<T>,
+    pub another: DoesNotUse_Typedefed<U>,
 }
 impl<T, U> Default for DoesNotUse_IndirectUsage<T, U> {
     fn default() -> Self {

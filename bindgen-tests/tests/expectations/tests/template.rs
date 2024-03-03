@@ -2,10 +2,10 @@
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct Foo<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub m_member: T,
     pub m_member_ptr: *mut T,
     pub m_member_arr: [T; 1usize],
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl<T> Default for Foo<T> {
     fn default() -> Self {
@@ -19,8 +19,8 @@ impl<T> Default for Foo<T> {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct B<T> {
-    pub m_member: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub m_member: T,
 }
 impl<T> Default for B<T> {
     fn default() -> Self {
@@ -180,9 +180,9 @@ pub type D_MyFoo = Foo<::std::os::raw::c_int>;
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct D_U<Z> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<Z>>,
     pub m_nested_foo: D_MyFoo,
     pub m_baz: Z,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<Z>>,
 }
 impl<Z> Default for D_U<Z> {
     fn default() -> Self {
@@ -205,10 +205,10 @@ impl Default for D {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Rooted<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub prev: *mut T,
     pub next: *mut Rooted<*mut ::std::os::raw::c_void>,
     pub ptr: T,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl<T> Default for Rooted<T> {
     fn default() -> Self {
@@ -257,8 +257,8 @@ pub type WithDtorIntFwd = WithDtor<::std::os::raw::c_int>;
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct WithDtor<T> {
-    pub member: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub member: T,
 }
 impl<T> Default for WithDtor<T> {
     fn default() -> Self {
@@ -343,8 +343,8 @@ fn bindgen_test_layout_POD() {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct NestedReplaced<T> {
-    pub buff: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub buff: *mut T,
 }
 impl<T> Default for NestedReplaced<T> {
     fn default() -> Self {
@@ -358,8 +358,8 @@ impl<T> Default for NestedReplaced<T> {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct NestedBase<T> {
-    pub buff: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub buff: *mut T,
 }
 impl<T> Default for NestedBase<T> {
     fn default() -> Self {
@@ -373,10 +373,10 @@ impl<T> Default for NestedBase<T> {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct NestedContainer<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub c: T,
     pub nested: NestedReplaced<T>,
     pub inc: Incomplete<T>,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl<T> Default for NestedContainer<T> {
     fn default() -> Self {
@@ -390,8 +390,8 @@ impl<T> Default for NestedContainer<T> {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Incomplete<T> {
-    pub d: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub d: T,
 }
 impl<T> Default for Incomplete<T> {
     fn default() -> Self {
@@ -432,8 +432,8 @@ pub struct Templated {
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct ReplacedWithoutDestructor<T> {
-    pub buff: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub buff: *mut T,
 }
 impl<T> Default for ReplacedWithoutDestructor<T> {
     fn default() -> Self {
@@ -447,8 +447,8 @@ impl<T> Default for ReplacedWithoutDestructor<T> {
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct ShouldNotBeCopiable<T> {
-    pub m_member: ReplacedWithoutDestructor<T>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub m_member: ReplacedWithoutDestructor<T>,
 }
 impl<T> Default for ShouldNotBeCopiable<T> {
     fn default() -> Self {
@@ -462,8 +462,8 @@ impl<T> Default for ShouldNotBeCopiable<T> {
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct ShouldNotBeCopiableAsWell<U> {
-    pub m_member: ReplacedWithoutDestructorFwd<U>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
+    pub m_member: ReplacedWithoutDestructorFwd<U>,
 }
 impl<U> Default for ShouldNotBeCopiableAsWell<U> {
     fn default() -> Self {
@@ -481,8 +481,8 @@ impl<U> Default for ShouldNotBeCopiableAsWell<U> {
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct ReplacedWithoutDestructorFwd<T> {
-    pub buff: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub buff: *mut T,
 }
 impl<T> Default for ReplacedWithoutDestructorFwd<T> {
     fn default() -> Self {

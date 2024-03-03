@@ -2,9 +2,9 @@
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct js_RootedBase<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub foo: *mut T,
     pub next: *mut Rooted<T>,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl<T> Default for js_RootedBase<T> {
     fn default() -> Self {
@@ -18,8 +18,8 @@ impl<T> Default for js_RootedBase<T> {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Rooted<T> {
-    pub _base: js_RootedBase<T>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _base: js_RootedBase<T>,
 }
 impl<T> Default for Rooted<T> {
     fn default() -> Self {
