@@ -6,8 +6,8 @@ pub type JS_detail_MaybeWrapped<T> = T;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct JS_Rooted<T> {
-    pub ptr: JS_detail_MaybeWrapped<T>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub ptr: JS_detail_MaybeWrapped<T>,
 }
 impl<T> Default for JS_Rooted<T> {
     fn default() -> Self {

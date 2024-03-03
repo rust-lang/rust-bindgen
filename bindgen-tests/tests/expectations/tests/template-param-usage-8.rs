@@ -2,10 +2,10 @@
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct IndirectUsage<T, U> {
-    pub member1: IndirectUsage_Typedefed<T>,
-    pub member2: IndirectUsage_Aliased<U>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub _phantom_1: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
+    pub member1: IndirectUsage_Typedefed<T>,
+    pub member2: IndirectUsage_Aliased<U>,
 }
 pub type IndirectUsage_Typedefed<T> = T;
 pub type IndirectUsage_Aliased<U> = U;

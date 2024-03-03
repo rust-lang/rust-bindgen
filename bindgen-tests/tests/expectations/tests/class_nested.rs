@@ -32,8 +32,8 @@ fn bindgen_test_layout_A_B() {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct A_D<T> {
-    pub foo: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub foo: T,
 }
 impl<T> Default for A_D<T> {
     fn default() -> Self {
@@ -134,14 +134,14 @@ fn bindgen_test_layout_D() {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Templated<T> {
-    pub member: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub member: T,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Templated_Templated_inner<T> {
-    pub member_ptr: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub member_ptr: *mut T,
 }
 impl<T> Default for Templated_Templated_inner<T> {
     fn default() -> Self {

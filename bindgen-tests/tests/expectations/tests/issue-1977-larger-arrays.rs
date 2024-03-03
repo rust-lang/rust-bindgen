@@ -32,8 +32,8 @@ impl Default for S {
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct ST<T> {
-    pub large_array: [T; 33usize],
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub large_array: [T; 33usize],
 }
 impl<T> Default for ST<T> {
     fn default() -> Self {

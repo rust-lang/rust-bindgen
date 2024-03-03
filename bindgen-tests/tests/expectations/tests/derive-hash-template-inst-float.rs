@@ -3,8 +3,8 @@
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct foo<T> {
-    pub data: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub data: T,
 }
 impl<T> Default for foo<T> {
     fn default() -> Self {

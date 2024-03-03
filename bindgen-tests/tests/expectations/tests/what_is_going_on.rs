@@ -21,9 +21,9 @@ pub type Float = f32;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct PointTyped<F> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<F>>,
     pub x: F,
     pub y: F,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<F>>,
 }
 impl<F> Default for PointTyped<F> {
     fn default() -> Self {

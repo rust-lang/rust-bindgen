@@ -2,8 +2,8 @@
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Foo<T> {
-    pub t_member: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub t_member: T,
 }
 impl<T> Default for Foo<T> {
     fn default() -> Self {
@@ -22,8 +22,8 @@ pub struct Bar {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Quux<V> {
-    pub v_member: V,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<V>>,
+    pub v_member: V,
 }
 impl<V> Default for Quux<V> {
     fn default() -> Self {

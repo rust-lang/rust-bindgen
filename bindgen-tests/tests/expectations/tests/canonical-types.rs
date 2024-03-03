@@ -7,8 +7,8 @@ pub struct ClassA {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ClassA_ClassAInner<T> {
-    pub x: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub x: *mut T,
 }
 impl<T> Default for ClassA_ClassAInner<T> {
     fn default() -> Self {

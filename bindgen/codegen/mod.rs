@@ -1990,6 +1990,23 @@ impl CodeGenerator for CompInfo {
             packed,
         );
 
+        let mut generic_param_names = vec![];
+
+        for (idx, ty) in item.used_template_params(ctx).iter().enumerate() {
+            let param = ctx.resolve_type(*ty);
+            let name = param.name().unwrap();
+            let ident = ctx.rust_ident(name);
+            generic_param_names.push(ident.clone());
+
+            let prefix = ctx.trait_prefix();
+            let field_name = ctx.rust_ident(format!("_phantom_{}", idx));
+            fields.push(quote! {
+                pub #field_name : ::#prefix::marker::PhantomData<
+                    ::#prefix::cell::UnsafeCell<#ident>
+                > ,
+            });
+        }
+
         if !is_opaque {
             if item.has_vtable_ptr(ctx) {
                 let vtable = Vtable::new(item.id(), self);
@@ -2173,32 +2190,15 @@ impl CodeGenerator for CompInfo {
             });
         }
 
-        let mut generic_param_names = vec![];
-
-        for (idx, ty) in item.used_template_params(ctx).iter().enumerate() {
-            let param = ctx.resolve_type(*ty);
-            let name = param.name().unwrap();
-            let ident = ctx.rust_ident(name);
-            generic_param_names.push(ident.clone());
-
-            let prefix = ctx.trait_prefix();
-            let field_name = ctx.rust_ident(format!("_phantom_{}", idx));
-            fields.push(quote! {
-                pub #field_name : ::#prefix::marker::PhantomData<
-                    ::#prefix::cell::UnsafeCell<#ident>
-                > ,
-            });
-        }
-
         let generics = if !generic_param_names.is_empty() {
             let generic_param_names = generic_param_names.clone();
             quote! {
                 < #( #generic_param_names ),* >
-            }
+            } 
         } else {
-            quote! {}
+            quote !{}
         };
-
+        
         let mut attributes = vec![];
         let mut needs_clone_impl = false;
         let mut needs_default_impl = false;

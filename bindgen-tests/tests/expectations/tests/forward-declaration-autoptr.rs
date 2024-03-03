@@ -7,8 +7,8 @@ pub struct Foo {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct RefPtr<T> {
-    pub m_inner: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub m_inner: *mut T,
 }
 impl<T> Default for RefPtr<T> {
     fn default() -> Self {
