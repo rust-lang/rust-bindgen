@@ -2607,10 +2607,6 @@ impl CodeGenerator for CompInfo {
                 #canonical_ident < #( #generic_param_names , )* [ #flex_inner_ty; 0 ] >
             };
 
-            let turbo_dst_ty = quote! {
-                #canonical_ident :: < #( #generic_param_names , )* [ #flex_inner_ty ] >
-            };
-
             let layout = if ctx.options().rust_features().layout_for_ptr {
                 quote! {
                     pub fn layout(len: usize) -> ::#prefix::alloc::Layout {
@@ -2632,43 +2628,65 @@ impl CodeGenerator for CompInfo {
             {
                 (
                     quote! {
-                        /// Construct a DST for `#canonical_ident` from a thin
-                        /// pointer.
-                        ///
-                        /// SAFETY: the `len` must be <= the underlying storage.
-                        /// Note: returned lifetime is unbounded.
-                        pub unsafe fn from_ptr<'a>(ptr: *const #sized_ty_for_impl, len: usize) -> &'a Self {
-                            let ptr: *const Self = ::#prefix::ptr::from_raw_parts(ptr as *const (), len);
-                            &*ptr
+                        pub fn fixed(&self) -> (& #sized_ty_for_impl, usize) {
+                            unsafe {
+                                let (ptr, len) = (self as *const Self).to_raw_parts();
+                                (&*(ptr as *const #sized_ty_for_impl), len)
+                            }
                         }
 
-                        /// Construct a mutable DST for `#canonical_ident` from
-                        /// a thin pointer. This is `MaybeUninit` to allow for
-                        /// initialization.
-                        ///
-                        /// SAFETY: the `len` must be <= the underlying storage.
-                        /// Note: returned lifetime is unbounded.
-                        pub unsafe fn from_ptr_mut<'a>(ptr: *mut #sized_ty_for_impl, len: usize) -> ::#prefix::mem::MaybeUninit<&'a mut Self> {
-                            let ptr: *mut Self = ::#prefix::ptr::from_raw_parts_mut(ptr as *mut (), len);
-                            ::#prefix::mem::MaybeUninit::new(&mut *ptr)
+                        pub fn fixed_mut(&mut self) -> (&mut #sized_ty_for_impl, usize) {
+                            unsafe {
+                                let (ptr, len) = (self as *mut Self).to_raw_parts();
+                                (&mut *(ptr as *mut #sized_ty_for_impl), len)
+
+                            }
                         }
                     },
                     quote! {
-                        /// Turn a sized reference for `#canonical_ident` into
-                        /// DST with the given `len`.
+                        /// Convert a sized prefix to an unsized structure with the given length.
                         ///
-                        /// SAFETY: the `len` must be <= the underlying storage.
-                        pub unsafe fn from_ref(&self, len: usize) -> & #dst_ty_for_impl {
-                            // SAFETY: caller guarantees `len` is good
-                            unsafe { #turbo_dst_ty :: from_ptr(self, len) }
+                        /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+                        pub unsafe fn flex_ref(&self, len: usize) -> &#dst_ty_for_impl {
+                            // SAFETY: Reference is always valid as pointer. Caller is guaranteeing `len`.
+                            unsafe { Self::flex_ptr(self, len) }
                         }
 
-                        /// Turn a mutable sized reference for
-                        /// `#canonical_ident` into DST with the given `len`.
+                        /// Convert a mutable sized prefix to an unsized structure with the given length.
                         ///
-                        /// SAFETY: the `len` must be <= the underlying storage.
-                        pub unsafe fn from_ref_mut(&mut self, len: usize) -> &mut #dst_ty_for_impl {
-                            unsafe { #turbo_dst_ty :: from_ptr_mut(self, len).assume_init() }
+                        /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+                        pub unsafe fn flex_mut_ref(&mut self, len: usize) -> &mut #dst_ty_for_impl {
+                            // SAFETY: Reference is always valid as pointer. Caller is guaranteeing `len`.
+                            unsafe { Self::flex_ptr_mut(self, len).assume_init() }
+                        }
+
+                        /// Construct DST variant from a pointer and a size.
+                        ///
+                        /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+                        /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+                        pub unsafe fn flex_ptr<'unbounded>(ptr: *const Self, len: usize) -> &'unbounded #dst_ty_for_impl {
+                            unsafe { &*::#prefix::ptr::from_raw_parts(ptr as *const (), len) }
+                        }
+
+                        /// Construct mutable DST variant from a pointer and a
+                        /// size. The returned `&mut` reference is initialized
+                        /// pointing to memory referenced by `ptr`, but there's
+                        /// no requirement that that memory be initialized.
+                        ///
+                        /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+                        /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+                        pub unsafe fn flex_ptr_mut<'unbounded>(
+                            ptr: *mut Self,
+                            len: usize,
+                        ) -> ::#prefix::mem::MaybeUninit<&'unbounded mut #dst_ty_for_impl> {
+                            unsafe {
+                                // Initialize reference without ever exposing it, as its possibly uninitialized
+                                let mut uninit = ::#prefix::mem::MaybeUninit::<&mut #dst_ty_for_impl>::uninit();
+                                (uninit.as_mut_ptr() as *mut *mut #dst_ty_for_impl)
+                                    .write(::#prefix::ptr::from_raw_parts_mut(ptr as *mut (), len));
+
+                                uninit
+                            }
                         }
                     },
                 )

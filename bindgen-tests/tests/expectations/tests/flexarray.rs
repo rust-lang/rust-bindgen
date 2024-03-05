@@ -69,50 +69,63 @@ impl flexarray<[::std::os::raw::c_int]> {
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
-    /// Construct a DST for `#canonical_ident` from a thin
-    /// pointer.
-    ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    /// Note: returned lifetime is unbounded.
-    pub unsafe fn from_ptr<'a>(
-        ptr: *const flexarray<[::std::os::raw::c_int; 0]>,
-        len: usize,
-    ) -> &'a Self {
-        let ptr: *const Self = ::std::ptr::from_raw_parts(ptr as *const (), len);
-        &*ptr
+    pub fn fixed(&self) -> (&flexarray<[::std::os::raw::c_int; 0]>, usize) {
+        unsafe {
+            let (ptr, len) = (self as *const Self).to_raw_parts();
+            (&*(ptr as *const flexarray<[::std::os::raw::c_int; 0]>), len)
+        }
     }
-    /// Construct a mutable DST for `#canonical_ident` from
-    /// a thin pointer. This is `MaybeUninit` to allow for
-    /// initialization.
-    ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    /// Note: returned lifetime is unbounded.
-    pub unsafe fn from_ptr_mut<'a>(
-        ptr: *mut flexarray<[::std::os::raw::c_int; 0]>,
-        len: usize,
-    ) -> ::std::mem::MaybeUninit<&'a mut Self> {
-        let ptr: *mut Self = ::std::ptr::from_raw_parts_mut(ptr as *mut (), len);
-        ::std::mem::MaybeUninit::new(&mut *ptr)
+    pub fn fixed_mut(&mut self) -> (&mut flexarray<[::std::os::raw::c_int; 0]>, usize) {
+        unsafe {
+            let (ptr, len) = (self as *mut Self).to_raw_parts();
+            (&mut *(ptr as *mut flexarray<[::std::os::raw::c_int; 0]>), len)
+        }
     }
 }
 impl flexarray<[::std::os::raw::c_int; 0]> {
-    /// Turn a sized reference for `#canonical_ident` into
-    /// DST with the given `len`.
+    /// Convert a sized prefix to an unsized structure with the given length.
     ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    pub unsafe fn from_ref(&self, len: usize) -> &flexarray<[::std::os::raw::c_int]> {
-        unsafe { flexarray::<[::std::os::raw::c_int]>::from_ptr(self, len) }
+    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    pub unsafe fn flex_ref(&self, len: usize) -> &flexarray<[::std::os::raw::c_int]> {
+        unsafe { Self::flex_ptr(self, len) }
     }
-    /// Turn a mutable sized reference for
-    /// `#canonical_ident` into DST with the given `len`.
+    /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    pub unsafe fn from_ref_mut(
+    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    pub unsafe fn flex_mut_ref(
         &mut self,
         len: usize,
     ) -> &mut flexarray<[::std::os::raw::c_int]> {
+        unsafe { Self::flex_ptr_mut(self, len).assume_init() }
+    }
+    /// Construct DST variant from a pointer and a size.
+    ///
+    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+    /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+    pub unsafe fn flex_ptr<'unbounded>(
+        ptr: *const Self,
+        len: usize,
+    ) -> &'unbounded flexarray<[::std::os::raw::c_int]> {
+        unsafe { &*::std::ptr::from_raw_parts(ptr as *const (), len) }
+    }
+    /// Construct mutable DST variant from a pointer and a
+    /// size. The returned `&mut` reference is initialized
+    /// pointing to memory referenced by `ptr`, but there's
+    /// no requirement that that memory be initialized.
+    ///
+    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+    /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+    pub unsafe fn flex_ptr_mut<'unbounded>(
+        ptr: *mut Self,
+        len: usize,
+    ) -> ::std::mem::MaybeUninit<&'unbounded mut flexarray<[::std::os::raw::c_int]>> {
         unsafe {
-            flexarray::<[::std::os::raw::c_int]>::from_ptr_mut(self, len).assume_init()
+            let mut uninit = ::std::mem::MaybeUninit::<
+                &mut flexarray<[::std::os::raw::c_int]>,
+            >::uninit();
+            (uninit.as_mut_ptr() as *mut *mut flexarray<[::std::os::raw::c_int]>)
+                .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
+            uninit
         }
     }
 }
@@ -154,54 +167,70 @@ impl flexarray_zero<[::std::os::raw::c_int]> {
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
-    /// Construct a DST for `#canonical_ident` from a thin
-    /// pointer.
-    ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    /// Note: returned lifetime is unbounded.
-    pub unsafe fn from_ptr<'a>(
-        ptr: *const flexarray_zero<[::std::os::raw::c_int; 0]>,
-        len: usize,
-    ) -> &'a Self {
-        let ptr: *const Self = ::std::ptr::from_raw_parts(ptr as *const (), len);
-        &*ptr
+    pub fn fixed(&self) -> (&flexarray_zero<[::std::os::raw::c_int; 0]>, usize) {
+        unsafe {
+            let (ptr, len) = (self as *const Self).to_raw_parts();
+            (&*(ptr as *const flexarray_zero<[::std::os::raw::c_int; 0]>), len)
+        }
     }
-    /// Construct a mutable DST for `#canonical_ident` from
-    /// a thin pointer. This is `MaybeUninit` to allow for
-    /// initialization.
-    ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    /// Note: returned lifetime is unbounded.
-    pub unsafe fn from_ptr_mut<'a>(
-        ptr: *mut flexarray_zero<[::std::os::raw::c_int; 0]>,
-        len: usize,
-    ) -> ::std::mem::MaybeUninit<&'a mut Self> {
-        let ptr: *mut Self = ::std::ptr::from_raw_parts_mut(ptr as *mut (), len);
-        ::std::mem::MaybeUninit::new(&mut *ptr)
+    pub fn fixed_mut(
+        &mut self,
+    ) -> (&mut flexarray_zero<[::std::os::raw::c_int; 0]>, usize) {
+        unsafe {
+            let (ptr, len) = (self as *mut Self).to_raw_parts();
+            (&mut *(ptr as *mut flexarray_zero<[::std::os::raw::c_int; 0]>), len)
+        }
     }
 }
 impl flexarray_zero<[::std::os::raw::c_int; 0]> {
-    /// Turn a sized reference for `#canonical_ident` into
-    /// DST with the given `len`.
+    /// Convert a sized prefix to an unsized structure with the given length.
     ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    pub unsafe fn from_ref(
+    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    pub unsafe fn flex_ref(
         &self,
         len: usize,
     ) -> &flexarray_zero<[::std::os::raw::c_int]> {
-        unsafe { flexarray_zero::<[::std::os::raw::c_int]>::from_ptr(self, len) }
+        unsafe { Self::flex_ptr(self, len) }
     }
-    /// Turn a mutable sized reference for
-    /// `#canonical_ident` into DST with the given `len`.
+    /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    pub unsafe fn from_ref_mut(
+    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    pub unsafe fn flex_mut_ref(
         &mut self,
         len: usize,
     ) -> &mut flexarray_zero<[::std::os::raw::c_int]> {
+        unsafe { Self::flex_ptr_mut(self, len).assume_init() }
+    }
+    /// Construct DST variant from a pointer and a size.
+    ///
+    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+    /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+    pub unsafe fn flex_ptr<'unbounded>(
+        ptr: *const Self,
+        len: usize,
+    ) -> &'unbounded flexarray_zero<[::std::os::raw::c_int]> {
+        unsafe { &*::std::ptr::from_raw_parts(ptr as *const (), len) }
+    }
+    /// Construct mutable DST variant from a pointer and a
+    /// size. The returned `&mut` reference is initialized
+    /// pointing to memory referenced by `ptr`, but there's
+    /// no requirement that that memory be initialized.
+    ///
+    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+    /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+    pub unsafe fn flex_ptr_mut<'unbounded>(
+        ptr: *mut Self,
+        len: usize,
+    ) -> ::std::mem::MaybeUninit<
+        &'unbounded mut flexarray_zero<[::std::os::raw::c_int]>,
+    > {
         unsafe {
-            flexarray_zero::<[::std::os::raw::c_int]>::from_ptr_mut(self, len)
-                .assume_init()
+            let mut uninit = ::std::mem::MaybeUninit::<
+                &mut flexarray_zero<[::std::os::raw::c_int]>,
+            >::uninit();
+            (uninit.as_mut_ptr() as *mut *mut flexarray_zero<[::std::os::raw::c_int]>)
+                .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
+            uninit
         }
     }
 }
@@ -219,49 +248,64 @@ impl<T> flexarray_template<T, [T]> {
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
-    /// Construct a DST for `#canonical_ident` from a thin
-    /// pointer.
-    ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    /// Note: returned lifetime is unbounded.
-    pub unsafe fn from_ptr<'a>(
-        ptr: *const flexarray_template<T, [T; 0]>,
-        len: usize,
-    ) -> &'a Self {
-        let ptr: *const Self = ::std::ptr::from_raw_parts(ptr as *const (), len);
-        &*ptr
+    pub fn fixed(&self) -> (&flexarray_template<T, [T; 0]>, usize) {
+        unsafe {
+            let (ptr, len) = (self as *const Self).to_raw_parts();
+            (&*(ptr as *const flexarray_template<T, [T; 0]>), len)
+        }
     }
-    /// Construct a mutable DST for `#canonical_ident` from
-    /// a thin pointer. This is `MaybeUninit` to allow for
-    /// initialization.
-    ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    /// Note: returned lifetime is unbounded.
-    pub unsafe fn from_ptr_mut<'a>(
-        ptr: *mut flexarray_template<T, [T; 0]>,
-        len: usize,
-    ) -> ::std::mem::MaybeUninit<&'a mut Self> {
-        let ptr: *mut Self = ::std::ptr::from_raw_parts_mut(ptr as *mut (), len);
-        ::std::mem::MaybeUninit::new(&mut *ptr)
+    pub fn fixed_mut(&mut self) -> (&mut flexarray_template<T, [T; 0]>, usize) {
+        unsafe {
+            let (ptr, len) = (self as *mut Self).to_raw_parts();
+            (&mut *(ptr as *mut flexarray_template<T, [T; 0]>), len)
+        }
     }
 }
 impl<T> flexarray_template<T, [T; 0]> {
-    /// Turn a sized reference for `#canonical_ident` into
-    /// DST with the given `len`.
+    /// Convert a sized prefix to an unsized structure with the given length.
     ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    pub unsafe fn from_ref(&self, len: usize) -> &flexarray_template<T, [T]> {
-        unsafe { flexarray_template::<T, [T]>::from_ptr(self, len) }
+    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    pub unsafe fn flex_ref(&self, len: usize) -> &flexarray_template<T, [T]> {
+        unsafe { Self::flex_ptr(self, len) }
     }
-    /// Turn a mutable sized reference for
-    /// `#canonical_ident` into DST with the given `len`.
+    /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    pub unsafe fn from_ref_mut(
+    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    pub unsafe fn flex_mut_ref(
         &mut self,
         len: usize,
     ) -> &mut flexarray_template<T, [T]> {
-        unsafe { flexarray_template::<T, [T]>::from_ptr_mut(self, len).assume_init() }
+        unsafe { Self::flex_ptr_mut(self, len).assume_init() }
+    }
+    /// Construct DST variant from a pointer and a size.
+    ///
+    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+    /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+    pub unsafe fn flex_ptr<'unbounded>(
+        ptr: *const Self,
+        len: usize,
+    ) -> &'unbounded flexarray_template<T, [T]> {
+        unsafe { &*::std::ptr::from_raw_parts(ptr as *const (), len) }
+    }
+    /// Construct mutable DST variant from a pointer and a
+    /// size. The returned `&mut` reference is initialized
+    /// pointing to memory referenced by `ptr`, but there's
+    /// no requirement that that memory be initialized.
+    ///
+    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+    /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+    pub unsafe fn flex_ptr_mut<'unbounded>(
+        ptr: *mut Self,
+        len: usize,
+    ) -> ::std::mem::MaybeUninit<&'unbounded mut flexarray_template<T, [T]>> {
+        unsafe {
+            let mut uninit = ::std::mem::MaybeUninit::<
+                &mut flexarray_template<T, [T]>,
+            >::uninit();
+            (uninit.as_mut_ptr() as *mut *mut flexarray_template<T, [T]>)
+                .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
+            uninit
+        }
     }
 }
 impl<T> Default for flexarray_template<T, [T; 0]> {
@@ -366,56 +410,80 @@ impl flexarray_bogus_zero_fam<[::std::os::raw::c_char]> {
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
-    /// Construct a DST for `#canonical_ident` from a thin
-    /// pointer.
-    ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    /// Note: returned lifetime is unbounded.
-    pub unsafe fn from_ptr<'a>(
-        ptr: *const flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]>,
-        len: usize,
-    ) -> &'a Self {
-        let ptr: *const Self = ::std::ptr::from_raw_parts(ptr as *const (), len);
-        &*ptr
+    pub fn fixed(
+        &self,
+    ) -> (&flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]>, usize) {
+        unsafe {
+            let (ptr, len) = (self as *const Self).to_raw_parts();
+            (
+                &*(ptr as *const flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]>),
+                len,
+            )
+        }
     }
-    /// Construct a mutable DST for `#canonical_ident` from
-    /// a thin pointer. This is `MaybeUninit` to allow for
-    /// initialization.
-    ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    /// Note: returned lifetime is unbounded.
-    pub unsafe fn from_ptr_mut<'a>(
-        ptr: *mut flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]>,
-        len: usize,
-    ) -> ::std::mem::MaybeUninit<&'a mut Self> {
-        let ptr: *mut Self = ::std::ptr::from_raw_parts_mut(ptr as *mut (), len);
-        ::std::mem::MaybeUninit::new(&mut *ptr)
+    pub fn fixed_mut(
+        &mut self,
+    ) -> (&mut flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]>, usize) {
+        unsafe {
+            let (ptr, len) = (self as *mut Self).to_raw_parts();
+            (
+                &mut *(ptr
+                    as *mut flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]>),
+                len,
+            )
+        }
     }
 }
 impl flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]> {
-    /// Turn a sized reference for `#canonical_ident` into
-    /// DST with the given `len`.
+    /// Convert a sized prefix to an unsized structure with the given length.
     ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    pub unsafe fn from_ref(
+    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    pub unsafe fn flex_ref(
         &self,
         len: usize,
     ) -> &flexarray_bogus_zero_fam<[::std::os::raw::c_char]> {
-        unsafe {
-            flexarray_bogus_zero_fam::<[::std::os::raw::c_char]>::from_ptr(self, len)
-        }
+        unsafe { Self::flex_ptr(self, len) }
     }
-    /// Turn a mutable sized reference for
-    /// `#canonical_ident` into DST with the given `len`.
+    /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    pub unsafe fn from_ref_mut(
+    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    pub unsafe fn flex_mut_ref(
         &mut self,
         len: usize,
     ) -> &mut flexarray_bogus_zero_fam<[::std::os::raw::c_char]> {
+        unsafe { Self::flex_ptr_mut(self, len).assume_init() }
+    }
+    /// Construct DST variant from a pointer and a size.
+    ///
+    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+    /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+    pub unsafe fn flex_ptr<'unbounded>(
+        ptr: *const Self,
+        len: usize,
+    ) -> &'unbounded flexarray_bogus_zero_fam<[::std::os::raw::c_char]> {
+        unsafe { &*::std::ptr::from_raw_parts(ptr as *const (), len) }
+    }
+    /// Construct mutable DST variant from a pointer and a
+    /// size. The returned `&mut` reference is initialized
+    /// pointing to memory referenced by `ptr`, but there's
+    /// no requirement that that memory be initialized.
+    ///
+    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+    /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+    pub unsafe fn flex_ptr_mut<'unbounded>(
+        ptr: *mut Self,
+        len: usize,
+    ) -> ::std::mem::MaybeUninit<
+        &'unbounded mut flexarray_bogus_zero_fam<[::std::os::raw::c_char]>,
+    > {
         unsafe {
-            flexarray_bogus_zero_fam::<[::std::os::raw::c_char]>::from_ptr_mut(self, len)
-                .assume_init()
+            let mut uninit = ::std::mem::MaybeUninit::<
+                &mut flexarray_bogus_zero_fam<[::std::os::raw::c_char]>,
+            >::uninit();
+            (uninit.as_mut_ptr()
+                as *mut *mut flexarray_bogus_zero_fam<[::std::os::raw::c_char]>)
+                .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
+            uninit
         }
     }
 }
@@ -463,54 +531,70 @@ impl flexarray_align<[::std::os::raw::c_int]> {
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
-    /// Construct a DST for `#canonical_ident` from a thin
-    /// pointer.
-    ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    /// Note: returned lifetime is unbounded.
-    pub unsafe fn from_ptr<'a>(
-        ptr: *const flexarray_align<[::std::os::raw::c_int; 0]>,
-        len: usize,
-    ) -> &'a Self {
-        let ptr: *const Self = ::std::ptr::from_raw_parts(ptr as *const (), len);
-        &*ptr
+    pub fn fixed(&self) -> (&flexarray_align<[::std::os::raw::c_int; 0]>, usize) {
+        unsafe {
+            let (ptr, len) = (self as *const Self).to_raw_parts();
+            (&*(ptr as *const flexarray_align<[::std::os::raw::c_int; 0]>), len)
+        }
     }
-    /// Construct a mutable DST for `#canonical_ident` from
-    /// a thin pointer. This is `MaybeUninit` to allow for
-    /// initialization.
-    ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    /// Note: returned lifetime is unbounded.
-    pub unsafe fn from_ptr_mut<'a>(
-        ptr: *mut flexarray_align<[::std::os::raw::c_int; 0]>,
-        len: usize,
-    ) -> ::std::mem::MaybeUninit<&'a mut Self> {
-        let ptr: *mut Self = ::std::ptr::from_raw_parts_mut(ptr as *mut (), len);
-        ::std::mem::MaybeUninit::new(&mut *ptr)
+    pub fn fixed_mut(
+        &mut self,
+    ) -> (&mut flexarray_align<[::std::os::raw::c_int; 0]>, usize) {
+        unsafe {
+            let (ptr, len) = (self as *mut Self).to_raw_parts();
+            (&mut *(ptr as *mut flexarray_align<[::std::os::raw::c_int; 0]>), len)
+        }
     }
 }
 impl flexarray_align<[::std::os::raw::c_int; 0]> {
-    /// Turn a sized reference for `#canonical_ident` into
-    /// DST with the given `len`.
+    /// Convert a sized prefix to an unsized structure with the given length.
     ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    pub unsafe fn from_ref(
+    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    pub unsafe fn flex_ref(
         &self,
         len: usize,
     ) -> &flexarray_align<[::std::os::raw::c_int]> {
-        unsafe { flexarray_align::<[::std::os::raw::c_int]>::from_ptr(self, len) }
+        unsafe { Self::flex_ptr(self, len) }
     }
-    /// Turn a mutable sized reference for
-    /// `#canonical_ident` into DST with the given `len`.
+    /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
-    /// SAFETY: the `len` must be <= the underlying storage.
-    pub unsafe fn from_ref_mut(
+    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    pub unsafe fn flex_mut_ref(
         &mut self,
         len: usize,
     ) -> &mut flexarray_align<[::std::os::raw::c_int]> {
+        unsafe { Self::flex_ptr_mut(self, len).assume_init() }
+    }
+    /// Construct DST variant from a pointer and a size.
+    ///
+    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+    /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+    pub unsafe fn flex_ptr<'unbounded>(
+        ptr: *const Self,
+        len: usize,
+    ) -> &'unbounded flexarray_align<[::std::os::raw::c_int]> {
+        unsafe { &*::std::ptr::from_raw_parts(ptr as *const (), len) }
+    }
+    /// Construct mutable DST variant from a pointer and a
+    /// size. The returned `&mut` reference is initialized
+    /// pointing to memory referenced by `ptr`, but there's
+    /// no requirement that that memory be initialized.
+    ///
+    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+    /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+    pub unsafe fn flex_ptr_mut<'unbounded>(
+        ptr: *mut Self,
+        len: usize,
+    ) -> ::std::mem::MaybeUninit<
+        &'unbounded mut flexarray_align<[::std::os::raw::c_int]>,
+    > {
         unsafe {
-            flexarray_align::<[::std::os::raw::c_int]>::from_ptr_mut(self, len)
-                .assume_init()
+            let mut uninit = ::std::mem::MaybeUninit::<
+                &mut flexarray_align<[::std::os::raw::c_int]>,
+            >::uninit();
+            (uninit.as_mut_ptr() as *mut *mut flexarray_align<[::std::os::raw::c_int]>)
+                .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
+            uninit
         }
     }
 }
