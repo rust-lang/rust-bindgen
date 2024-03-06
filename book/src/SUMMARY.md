@@ -27,4 +27,5 @@
 - [Generating Bindings to Objective-c](./objc.md)
 - [Using Unions](./using-unions.md)
 - [Using Bitfields](./using-bitfields.md)
+- [Using Flexible Array Members](./using-fam.md)
 - [FAQ](./faq.md)
