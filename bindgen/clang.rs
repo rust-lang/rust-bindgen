@@ -10,6 +10,7 @@ use std::cmp;
 
 use std::ffi::{CStr, CString};
 use std::fmt;
+use std::fs::OpenOptions;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong, c_ulonglong};
@@ -1868,6 +1869,27 @@ impl TranslationUnit {
         }
     }
 
+    /// Save a translation unit to the given file.
+    pub(crate) fn save(&mut self, file: &str) -> Result<(), CXSaveError> {
+        let file = if let Ok(cstring) = CString::new(file) {
+            cstring
+        } else {
+            return Err(CXSaveError_Unknown);
+        };
+        let ret = unsafe {
+            clang_saveTranslationUnit(
+                self.x,
+                file.as_ptr(),
+                clang_defaultSaveOptions(self.x),
+            )
+        };
+        if ret != 0 {
+            Err(ret)
+        } else {
+            Ok(())
+        }
+    }
+
     /// Is this the null translation unit?
     pub(crate) fn is_null(&self) -> bool {
         self.x.is_null()
@@ -1878,6 +1900,89 @@ impl Drop for TranslationUnit {
     fn drop(&mut self) {
         unsafe {
             clang_disposeTranslationUnit(self.x);
+        }
+    }
+}
+
+/// Translation unit used for macro fallback parsing
+pub(crate) struct FallbackTranslationUnit {
+    file_path: String,
+    pch_paths: Vec<String>,
+    idx: Box<Index>,
+    tu: TranslationUnit,
+}
+
+impl fmt::Debug for FallbackTranslationUnit {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        write!(fmt, "FallbackTranslationUnit {{ }}")
+    }
+}
+
+impl FallbackTranslationUnit {
+    /// Create a new fallback translation unit
+    pub(crate) fn new(
+        file: String,
+        pch_paths: Vec<String>,
+        c_args: &[Box<str>],
+    ) -> Option<Self> {
+        // Create empty file
+        OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(&file)
+            .ok()?;
+
+        let f_index = Box::new(Index::new(true, false));
+        let f_translation_unit = TranslationUnit::parse(
+            &f_index,
+            &file,
+            c_args,
+            &[],
+            CXTranslationUnit_None,
+        )?;
+        Some(FallbackTranslationUnit {
+            file_path: file,
+            pch_paths,
+            tu: f_translation_unit,
+            idx: f_index,
+        })
+    }
+
+    /// Get reference to underlying translation unit.
+    pub(crate) fn translation_unit(&self) -> &TranslationUnit {
+        &self.tu
+    }
+
+    /// Reparse a translation unit.
+    pub(crate) fn reparse(
+        &mut self,
+        unsaved_contents: &str,
+    ) -> Result<(), CXErrorCode> {
+        let unsaved = &[UnsavedFile::new(&self.file_path, unsaved_contents)];
+        let mut c_unsaved: Vec<CXUnsavedFile> =
+            unsaved.iter().map(|f| f.x).collect();
+        let ret = unsafe {
+            clang_reparseTranslationUnit(
+                self.tu.x,
+                unsaved.len() as c_uint,
+                c_unsaved.as_mut_ptr(),
+                clang_defaultReparseOptions(self.tu.x),
+            )
+        };
+        if ret != 0 {
+            Err(ret)
+        } else {
+            Ok(())
+        }
+    }
+}
+
+impl Drop for FallbackTranslationUnit {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_file(&self.file_path);
+        for pch in self.pch_paths.iter() {
+            let _ = std::fs::remove_file(pch);
         }
     }
 }
