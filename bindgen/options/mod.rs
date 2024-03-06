@@ -21,9 +21,7 @@ use crate::HashMap;
 use crate::DEFAULT_ANON_FIELDS_PREFIX;
 
 use std::env;
-#[cfg(feature = "experimental")]
-use std::path::Path;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
 use as_args::AsArgs;
@@ -2107,5 +2105,38 @@ options! {
             }
         },
         as_args: "--emit-diagnostics",
+    },
+    /// Whether to use Clang evaluation on temporary files as a fallback for macros that fail to
+    /// parse.
+    clang_macro_fallback: bool {
+        methods: {
+            /// Use Clang as a fallback for macros that fail to parse using `CExpr`.
+            ///
+            /// This uses a workaround to evaluate each macro in a temporary file. Because this
+            /// results in slower compilation, this option is opt-in.
+            pub fn clang_macro_fallback(mut self) -> Self {
+                self.options.clang_macro_fallback = true;
+                self
+            }
+        },
+        as_args: "--clang-macro-fallback",
+    }
+    /// Path to use for temporary files created by clang macro fallback code like precompiled
+    /// headers.
+    clang_macro_fallback_build_dir: Option<PathBuf> {
+        methods: {
+            /// Set a path to a directory to which `.c` and `.h.pch` files should be written for the
+            /// purpose of using clang to evaluate macros that can't be easily parsed.
+            ///
+            /// The default location for `.h.pch` files is the directory that the corresponding
+            /// `.h` file is located in. The default for the temporary `.c` file used for clang
+            /// parsing is the current working directory. Both of these defaults are overridden
+            /// by this option.
+            pub fn clang_macro_fallback_build_dir<P: AsRef<Path>>(mut self, path: P) -> Self {
+                self.options.clang_macro_fallback_build_dir = Some(path.as_ref().to_owned());
+                self
+            }
+        },
+        as_args: "--clang-macro-fallback-build-dir",
     }
 }
