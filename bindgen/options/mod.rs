@@ -1263,6 +1263,9 @@ options! {
     parse_callbacks: Vec<Rc<dyn ParseCallbacks>> {
         methods: {
             /// Add a new [`ParseCallbacks`] instance to configure types in different situations.
+            ///
+            /// This can also be used with [`CargoCallbacks`](struct@crate::CargoCallbacks) to emit
+            /// `cargo:rerun-if-changed=...` for all `#include`d header files.
             pub fn parse_callbacks(mut self, cb: Box<dyn ParseCallbacks>) -> Self {
                 self.options.parse_callbacks.push(Rc::from(cb));
                 self
