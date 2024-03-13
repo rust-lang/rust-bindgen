@@ -1022,10 +1022,20 @@ impl CodeGenerator for Type {
                         let packed = false; // Types can't be packed in Rust.
                         let derivable_traits =
                             derives_of_item(item, ctx, packed);
-                        if !derivable_traits.is_empty() {
-                            let derives: Vec<_> = derivable_traits.into();
-                            attributes.push(attributes::derives(&derives))
-                        }
+                        let mut derives: Vec<_> = derivable_traits.into();
+                        // The custom derives callback may return a list of derive attributes;
+                        // add them to the end of the list.
+                        let custom_derives =
+                            ctx.options().all_callbacks(|cb| {
+                                cb.add_derives(&DeriveInfo {
+                                    name: &name,
+                                    kind: DeriveTypeKind::Struct,
+                                })
+                            });
+                        // In most cases this will be a no-op, since custom_derives will be empty.
+                        derives
+                            .extend(custom_derives.iter().map(|s| s.as_str()));
+                        attributes.push(attributes::derives(&derives));
 
                         quote! {
                             #( #attributes )*
