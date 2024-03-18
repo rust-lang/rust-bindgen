@@ -566,7 +566,6 @@ This does the following:
 - Turn the `Unreleased` section of the changelog into the section for the version being published.
 - Update the table of contents of the changelog using `doctoc`.
 - Tag (`git tag`) the HEAD commit
-- Publish (`cargo publish`) bindgen and bindgen-cli
 - Push (`git push`) to GitHub
 
 The `patch` and `minor` refer to semver concepts:
