@@ -586,8 +586,8 @@ a draft GitHub release will be created,
 to avoid notifying watchers of the repo should a CI step fail.
 
 If everything succeeds,
-bindgen cli installers for Linux/MacOS and Windows will be created,
-as well as tarballs.
+tarballs containing bindgen cli executables for Linux and MacOS
+(both for x86 and Arm) will be created.
 See `[workspace.metadata.dist]` section in Cargo.toml for the configuration.
 
 To update the release configuration,
