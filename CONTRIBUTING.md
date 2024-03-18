@@ -571,7 +571,7 @@ This does the following:
 The `patch` and `minor` refer to semver concepts:
 
 - `patch` would bump __v0.68.1__ to __v0.68.2__
-- `feature` would bump __v0.68.2__ to __v0.69.0__
+- `minor` would bump __v0.68.2__ to __v0.69.0__
 
 ### Create a new release on Github
 
