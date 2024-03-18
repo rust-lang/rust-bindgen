@@ -600,7 +600,7 @@ cargo dist generate-ci # to update .github/workflows/release.yml
 
 ### What to do if a Github release fails
 
-If the release process failed after you run `cargo release` you can manually
+If the release process fails after you run `cargo release` you can manually
 delete the tag and release from Github. Also remember to delete the tag locally
 by running `git tag -d`. Once all the extra changes are in the `main` branch
 you can trigger a release by creating a new tag using `git tag` and push it
