@@ -834,10 +834,9 @@ impl CompFields {
             CompFields::Error => return None, // panic?
         };
 
-        // XXX correct with padding on end?
-        match fields.last() {
-            None | Some(Field::Bitfields(..)) => None,
-            Some(Field::DataMember(FieldData { ty, .. })) => ctx
+        match fields.last()? {
+            Field::Bitfields(..) => None,
+            Field::DataMember(FieldData { ty, .. }) => ctx
                 .resolve_type(*ty)
                 .is_incomplete_array(ctx)
                 .map(|item| item.expect_type_id(ctx)),
