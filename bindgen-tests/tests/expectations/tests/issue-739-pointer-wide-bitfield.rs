@@ -84,6 +84,8 @@ where
         }
     }
 }
+pub const POINTER_WIDTH: usize = ::std::mem::size_of::<*mut ::std::os::raw::c_void>()
+    as usize * 8;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Foo {

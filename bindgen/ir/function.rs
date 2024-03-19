@@ -431,14 +431,13 @@ impl FunctionSig {
             return Err(ParseError::Continue);
         }
 
-        let spelling = cursor.spelling();
+        let name = cursor.spelling();
 
         // Don't parse operatorxx functions in C++
-        let is_operator = |spelling: &str| {
-            spelling.starts_with("operator") &&
-                !clang::is_valid_identifier(spelling)
+        let is_operator = |name: &str| {
+            name.starts_with("operator") && !clang::is_valid_identifier(name)
         };
-        if is_operator(&spelling) {
+        if is_operator(&name) {
             return Err(ParseError::Continue);
         }
 
@@ -446,7 +445,7 @@ impl FunctionSig {
         // include the template parameter in their name. Just skip them, since
         // we don't handle well non-type template parameters anyway.
         if (kind == CXCursor_Constructor || kind == CXCursor_Destructor) &&
-            spelling.contains('<')
+            name.contains('<')
         {
             return Err(ParseError::Continue);
         }
@@ -547,13 +546,7 @@ impl FunctionSig {
                 let class = class.as_type_id_unchecked();
 
                 let class = if is_const {
-                    let const_class_id = ctx.next_item_id();
-                    ctx.build_const_wrapper(
-                        const_class_id,
-                        class,
-                        None,
-                        &parent.cur_type(),
-                    )
+                    ctx.build_const_wrapper(class, None, &parent.cur_type())
                 } else {
                     class
                 };
@@ -605,7 +598,7 @@ impl FunctionSig {
         }
 
         Ok(Self {
-            name: spelling,
+            name,
             return_type: ret,
             argument_types: args,
             is_variadic: ty.is_variadic(),
@@ -722,7 +715,7 @@ impl FunctionSig {
 impl ClangSubItemParser for Function {
     fn parse(
         cursor: clang::Cursor,
-        context: &mut BindgenContext,
+        ctx: &mut BindgenContext,
     ) -> Result<ParseResult<Self>, ParseError> {
         use clang_sys::*;
 
@@ -753,8 +746,8 @@ impl ClangSubItemParser for Function {
                 .definition()
                 .map_or(false, |x| x.is_inlined_function())
         {
-            if !context.options().generate_inline_functions &&
-                !context.options().wrap_static_fns
+            if !ctx.options().generate_inline_functions &&
+                !ctx.options().wrap_static_fns
             {
                 return Err(ParseError::Continue);
             }
@@ -764,7 +757,7 @@ impl ClangSubItemParser for Function {
             }
 
             // We cannot handle `inline` functions that are not `static`.
-            if context.options().wrap_static_fns &&
+            if ctx.options().wrap_static_fns &&
                 cursor.is_inlined_function() &&
                 matches!(linkage, Linkage::External)
             {
@@ -773,10 +766,18 @@ impl ClangSubItemParser for Function {
         }
 
         // Grab the signature using Item::from_ty.
-        let sig = Item::from_ty(&cursor.cur_type(), cursor, None, context)?;
+        let sig = Item::from_ty(&cursor.cur_type(), cursor, None, ctx)?;
 
         let mut name = cursor.spelling();
         assert!(!name.is_empty(), "Empty function name?");
+
+        // If a function exists, there cannot be a variable-like macro with the same name,
+        // except if the macro expands to its own name, in which case it is useless anyways.
+        ctx.macro_set.undefine_var_macro(&name);
+
+        // If a function exists, there cannot be a function-like macro with the same name,
+        // except if the macro expands to the function, in which case it is useless anyways.
+        ctx.macro_set.undefine_fn_macro(&name);
 
         if cursor.kind() == CXCursor_Destructor {
             // Remove the leading `~`. The alternative to this is special-casing
@@ -791,7 +792,7 @@ impl ClangSubItemParser for Function {
             // but seems easy enough to handle it here.
             name.push_str("_destructor");
         }
-        if let Some(nm) = context.options().last_callback(|callbacks| {
+        if let Some(nm) = ctx.options().last_callback(|callbacks| {
             callbacks.generated_name_override(ItemInfo {
                 name: name.as_str(),
                 kind: ItemKind::Function,
@@ -801,25 +802,19 @@ impl ClangSubItemParser for Function {
         }
         assert!(!name.is_empty(), "Empty function name.");
 
-        let mangled_name = cursor_mangling(context, &cursor);
+        let mangled_name = cursor_mangling(ctx, &cursor);
 
-        let link_name = context.options().last_callback(|callbacks| {
+        let link_name = ctx.options().last_callback(|callbacks| {
             callbacks.generated_link_name_override(ItemInfo {
                 name: name.as_str(),
                 kind: ItemKind::Function,
             })
         });
 
-        let function = Self::new(
-            name.clone(),
-            mangled_name,
-            link_name,
-            sig,
-            kind,
-            linkage,
-        );
-
-        Ok(ParseResult::New(function, Some(cursor)))
+        Ok(ParseResult::New(
+            Self::new(name, mangled_name, link_name, sig, kind, linkage),
+            Some(cursor),
+        ))
     }
 }
 

@@ -1,3 +1,5 @@
+// bindgen-flags: --generate-cstr
+
 #define foo "bar"
 #define CHAR 'b'
 #define CHARR '\0'
