@@ -1693,7 +1693,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         parent_item: &Item,
-        _last_field: bool,
+        last_field: bool,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1775,7 +1775,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 accessor_kind,
                 parent,
                 parent_item,
-                idx == bfields.len() - 1,
+                last_field && idx == bfields.len() - 1,
                 result,
                 struct_layout,
                 fields,
@@ -2594,116 +2594,13 @@ impl CodeGenerator for CompInfo {
         }
 
         if needs_flexarray_impl {
-            let prefix = ctx.trait_prefix();
-
-            let flex_array =
-                flex_inner_ty.as_ref().map(|ty| quote! { [ #ty ] });
-
-            let dst_ty_for_impl = quote! {
-                #canonical_ident < #( #generic_param_names , )* #flex_array >
-
-            };
-            let sized_ty_for_impl = quote! {
-                #canonical_ident < #( #generic_param_names , )* [ #flex_inner_ty; 0 ] >
-            };
-
-            let layout = if ctx.options().rust_features().layout_for_ptr {
-                quote! {
-                    pub fn layout(len: usize) -> ::#prefix::alloc::Layout {
-                        // SAFETY: Null pointers are OK if we don't deref them
-                        unsafe {
-                            let p: *const Self = ::#prefix::ptr::from_raw_parts(::#prefix::ptr::null(), len);
-                            ::#prefix::alloc::Layout::for_value_raw(p)
-                        }
-                    }
-                }
-            } else {
-                quote!()
-            };
-
-            let (from_ptr_dst, from_ptr_sized) = if ctx
-                .options()
-                .rust_features()
-                .ptr_metadata
-            {
-                (
-                    quote! {
-                        pub fn fixed(&self) -> (& #sized_ty_for_impl, usize) {
-                            unsafe {
-                                let (ptr, len) = (self as *const Self).to_raw_parts();
-                                (&*(ptr as *const #sized_ty_for_impl), len)
-                            }
-                        }
-
-                        pub fn fixed_mut(&mut self) -> (&mut #sized_ty_for_impl, usize) {
-                            unsafe {
-                                let (ptr, len) = (self as *mut Self).to_raw_parts();
-                                (&mut *(ptr as *mut #sized_ty_for_impl), len)
-
-                            }
-                        }
-                    },
-                    quote! {
-                        /// Convert a sized prefix to an unsized structure with the given length.
-                        ///
-                        /// SAFETY: Underlying storage is initialized up to at least `len` elements.
-                        pub unsafe fn flex_ref(&self, len: usize) -> &#dst_ty_for_impl {
-                            // SAFETY: Reference is always valid as pointer. Caller is guaranteeing `len`.
-                            unsafe { Self::flex_ptr(self, len) }
-                        }
-
-                        /// Convert a mutable sized prefix to an unsized structure with the given length.
-                        ///
-                        /// SAFETY: Underlying storage is initialized up to at least `len` elements.
-                        pub unsafe fn flex_mut_ref(&mut self, len: usize) -> &mut #dst_ty_for_impl {
-                            // SAFETY: Reference is always valid as pointer. Caller is guaranteeing `len`.
-                            unsafe { Self::flex_ptr_mut(self, len).assume_init() }
-                        }
-
-                        /// Construct DST variant from a pointer and a size.
-                        ///
-                        /// NOTE: lifetime of returned reference is not tied to any underlying storage.
-                        /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
-                        pub unsafe fn flex_ptr<'unbounded>(ptr: *const Self, len: usize) -> &'unbounded #dst_ty_for_impl {
-                            unsafe { &*::#prefix::ptr::from_raw_parts(ptr as *const (), len) }
-                        }
-
-                        /// Construct mutable DST variant from a pointer and a
-                        /// size. The returned `&mut` reference is initialized
-                        /// pointing to memory referenced by `ptr`, but there's
-                        /// no requirement that that memory be initialized.
-                        ///
-                        /// NOTE: lifetime of returned reference is not tied to any underlying storage.
-                        /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
-                        pub unsafe fn flex_ptr_mut<'unbounded>(
-                            ptr: *mut Self,
-                            len: usize,
-                        ) -> ::#prefix::mem::MaybeUninit<&'unbounded mut #dst_ty_for_impl> {
-                            unsafe {
-                                // Initialize reference without ever exposing it, as its possibly uninitialized
-                                let mut uninit = ::#prefix::mem::MaybeUninit::<&mut #dst_ty_for_impl>::uninit();
-                                (uninit.as_mut_ptr() as *mut *mut #dst_ty_for_impl)
-                                    .write(::#prefix::ptr::from_raw_parts_mut(ptr as *mut (), len));
-
-                                uninit
-                            }
-                        }
-                    },
-                )
-            } else {
-                (quote!(), quote!())
-            };
-
-            result.push(quote! {
-                impl #impl_generics_labels #dst_ty_for_impl {
-                    #layout
-                    #from_ptr_dst
-                }
-
-                impl #impl_generics_labels #sized_ty_for_impl {
-                    #from_ptr_sized
-                }
-            });
+            result.push(self.generate_flexarray(
+                ctx,
+                &canonical_ident,
+                flex_inner_ty,
+                &*generic_param_names,
+                &impl_generics_labels,
+            ));
         }
 
         if needs_default_impl {
@@ -2786,6 +2683,127 @@ impl CodeGenerator for CompInfo {
                     #( #methods )*
                 }
             });
+        }
+    }
+}
+
+impl CompInfo {
+    fn generate_flexarray(
+        &self,
+        ctx: &BindgenContext,
+        canonical_ident: &Ident,
+        flex_inner_ty: Option<proc_macro2::TokenStream>,
+        generic_param_names: &[Ident],
+        impl_generics_labels: &proc_macro2::TokenStream,
+    ) -> proc_macro2::TokenStream {
+        let prefix = ctx.trait_prefix();
+
+        let flex_array = flex_inner_ty.as_ref().map(|ty| quote! { [ #ty ] });
+
+        let dst_ty_for_impl = quote! {
+            #canonical_ident < #( #generic_param_names , )* #flex_array >
+
+        };
+        let sized_ty_for_impl = quote! {
+            #canonical_ident < #( #generic_param_names , )* [ #flex_inner_ty; 0 ] >
+        };
+
+        let layout = if ctx.options().rust_features().layout_for_ptr {
+            quote! {
+                pub fn layout(len: usize) -> ::#prefix::alloc::Layout {
+                    // SAFETY: Null pointers are OK if we don't deref them
+                    unsafe {
+                        let p: *const Self = ::#prefix::ptr::from_raw_parts(::#prefix::ptr::null(), len);
+                        ::#prefix::alloc::Layout::for_value_raw(p)
+                    }
+                }
+            }
+        } else {
+            quote!()
+        };
+
+        let (from_ptr_dst, from_ptr_sized) = if ctx
+            .options()
+            .rust_features()
+            .ptr_metadata
+        {
+            (
+                quote! {
+                    pub fn fixed(&self) -> (& #sized_ty_for_impl, usize) {
+                        unsafe {
+                            let (ptr, len) = (self as *const Self).to_raw_parts();
+                            (&*(ptr as *const #sized_ty_for_impl), len)
+                        }
+                    }
+
+                    pub fn fixed_mut(&mut self) -> (&mut #sized_ty_for_impl, usize) {
+                        unsafe {
+                            let (ptr, len) = (self as *mut Self).to_raw_parts();
+                            (&mut *(ptr as *mut #sized_ty_for_impl), len)
+
+                        }
+                    }
+                },
+                quote! {
+                    /// Convert a sized prefix to an unsized structure with the given length.
+                    ///
+                    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+                    pub unsafe fn flex_ref(&self, len: usize) -> &#dst_ty_for_impl {
+                        // SAFETY: Reference is always valid as pointer. Caller is guaranteeing `len`.
+                        unsafe { Self::flex_ptr(self, len) }
+                    }
+
+                    /// Convert a mutable sized prefix to an unsized structure with the given length.
+                    ///
+                    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+                    pub unsafe fn flex_mut_ref(&mut self, len: usize) -> &mut #dst_ty_for_impl {
+                        // SAFETY: Reference is always valid as pointer. Caller is guaranteeing `len`.
+                        unsafe { Self::flex_ptr_mut(self, len).assume_init() }
+                    }
+
+                    /// Construct DST variant from a pointer and a size.
+                    ///
+                    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+                    /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+                    pub unsafe fn flex_ptr<'unbounded>(ptr: *const Self, len: usize) -> &'unbounded #dst_ty_for_impl {
+                        unsafe { &*::#prefix::ptr::from_raw_parts(ptr as *const (), len) }
+                    }
+
+                    /// Construct mutable DST variant from a pointer and a
+                    /// size. The returned `&mut` reference is initialized
+                    /// pointing to memory referenced by `ptr`, but there's
+                    /// no requirement that that memory be initialized.
+                    ///
+                    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+                    /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+                    pub unsafe fn flex_ptr_mut<'unbounded>(
+                        ptr: *mut Self,
+                        len: usize,
+                    ) -> ::#prefix::mem::MaybeUninit<&'unbounded mut #dst_ty_for_impl> {
+                        unsafe {
+                            // Initialize reference without ever exposing it, as its possibly uninitialized
+                            let mut uninit = ::#prefix::mem::MaybeUninit::<&mut #dst_ty_for_impl>::uninit();
+                            (uninit.as_mut_ptr() as *mut *mut #dst_ty_for_impl)
+                                .write(::#prefix::ptr::from_raw_parts_mut(ptr as *mut (), len));
+
+                            uninit
+                        }
+                    }
+                },
+            )
+        } else {
+            (quote!(), quote!())
+        };
+
+        quote! {
+            impl #impl_generics_labels #dst_ty_for_impl {
+                #layout
+                #from_ptr_dst
+            }
+
+            impl #impl_generics_labels #sized_ty_for_impl {
+                #from_ptr_sized
+            }
         }
     }
 }
