@@ -17,7 +17,7 @@ pub mod root {
             pub fn in_whatever();
         }
     }
-    pub mod _bindgen_mod_id_17 {
+    pub mod _bindgen_mod_id_13 {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
@@ -49,7 +49,7 @@ pub mod root {
     #[repr(C)]
     #[derive(Debug)]
     pub struct C<T> {
-        pub _base: root::_bindgen_mod_id_17::A,
+        pub _base: root::_bindgen_mod_id_13::A,
         pub m_c: T,
         pub m_c_ptr: *mut T,
         pub m_c_arr: [T; 10usize],
