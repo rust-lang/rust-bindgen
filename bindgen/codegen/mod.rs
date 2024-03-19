@@ -2194,11 +2194,11 @@ impl CodeGenerator for CompInfo {
             let generic_param_names = generic_param_names.clone();
             quote! {
                 < #( #generic_param_names ),* >
-            } 
+            }
         } else {
-            quote !{}
+            quote! {}
         };
-        
+
         let mut attributes = vec![];
         let mut needs_clone_impl = false;
         let mut needs_default_impl = false;
