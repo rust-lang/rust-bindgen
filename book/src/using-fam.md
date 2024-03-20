@@ -29,7 +29,7 @@ Bindgen supports these structures in two different ways.
 
 ## `__IncompleteArrayField`
 
-By default, bindgen will the corresponding Rust structure:
+By default, bindgen will generate the corresponding Rust structure:
 ```rust,ignore
 #[repr(C)]
 struct MyRecord {
@@ -75,7 +75,7 @@ struct MyRecord {
 }
 ```
 Rust has a set of types which are almost exact analogs for these Flexible Array
-Member types: the Dynamically Sized Type ("DST"). For example:
+Member types: the Dynamically Sized Type ("DST").
 
 This looks almost identical to a normal Rust structure, except that you'll note
 the type of the `payload` field is a raw slice `[...]` rather than the usual
@@ -99,7 +99,7 @@ struct MyRecord<FAM: ?Sized = [::std::os::raw::c_char; 0]> {
 
 That is:
 1. a type parameter `FAM` which represents the type of the `payload` field,
-2. it's `?Sized` meaning it can be unsigned (ie, a DST)
+2. it's `?Sized` meaning it can be unsized (ie, a DST)
 3. it has the default type of `[c_char; 0]` - that is a zero-sized array of characters
 
 This means that referencing plain `MyRecord` will be exactly like `MyRecord`
