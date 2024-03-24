@@ -26,83 +26,40 @@ pub mod root {
         pub struct Foo {
             pub c: ::std::os::raw::c_char,
         }
-        #[test]
-        fn bindgen_test_layout_Foo() {
-            const UNINIT: ::std::mem::MaybeUninit<Foo> = ::std::mem::MaybeUninit::uninit();
-            let ptr = UNINIT.as_ptr();
-            assert_eq!(
-                ::std::mem::size_of::<Foo>(),
-                1usize,
-                concat!("Size of: ", stringify!(Foo)),
-            );
-            assert_eq!(
-                ::std::mem::align_of::<Foo>(),
-                1usize,
-                concat!("Alignment of ", stringify!(Foo)),
-            );
-            assert_eq!(
-                unsafe { ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize },
-                0usize,
-                concat!("Offset of field: ", stringify!(Foo), "::", stringify!(c)),
-            );
-        }
+        const _: () = {
+            assert!(::std::mem::size_of::<Foo>() == 1usize, "Size of Foo");
+            assert!(::std::mem::align_of::<Foo>() == 1usize, "Alignment of Foo");
+            assert!(::std::mem::offset_of!(Foo, c) == 0usize, "Offset of field: Foo::c");
+        };
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
         pub struct Bar {
             pub i: ::std::os::raw::c_int,
         }
-        #[test]
-        fn bindgen_test_layout_Bar() {
-            const UNINIT: ::std::mem::MaybeUninit<Bar> = ::std::mem::MaybeUninit::uninit();
-            let ptr = UNINIT.as_ptr();
-            assert_eq!(
-                ::std::mem::size_of::<Bar>(),
-                4usize,
-                concat!("Size of: ", stringify!(Bar)),
-            );
-            assert_eq!(
-                ::std::mem::align_of::<Bar>(),
-                4usize,
-                concat!("Alignment of ", stringify!(Bar)),
-            );
-            assert_eq!(
-                unsafe { ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize },
-                0usize,
-                concat!("Offset of field: ", stringify!(Bar), "::", stringify!(i)),
-            );
-        }
+        const _: () = {
+            assert!(::std::mem::size_of::<Bar>() == 4usize, "Size of Bar");
+            assert!(::std::mem::align_of::<Bar>() == 4usize, "Alignment of Bar");
+            assert!(::std::mem::offset_of!(Bar, i) == 0usize, "Offset of field: Bar::i");
+        };
         #[repr(C)]
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub struct ContainsInstantiation {
             pub not_opaque: root::zoidberg::Template<root::zoidberg::Foo>,
         }
-        #[test]
-        fn bindgen_test_layout_ContainsInstantiation() {
-            const UNINIT: ::std::mem::MaybeUninit<ContainsInstantiation> = ::std::mem::MaybeUninit::uninit();
-            let ptr = UNINIT.as_ptr();
-            assert_eq!(
-                ::std::mem::size_of::<ContainsInstantiation>(),
-                1usize,
-                concat!("Size of: ", stringify!(ContainsInstantiation)),
+        const _: () = {
+            assert!(
+                ::std::mem::size_of::<ContainsInstantiation>() == 1usize,
+                "Size of ContainsInstantiation",
             );
-            assert_eq!(
-                ::std::mem::align_of::<ContainsInstantiation>(),
-                1usize,
-                concat!("Alignment of ", stringify!(ContainsInstantiation)),
+            assert!(
+                ::std::mem::align_of::<ContainsInstantiation>() == 1usize,
+                "Alignment of ContainsInstantiation",
             );
-            assert_eq!(
-                unsafe {
-                    ::std::ptr::addr_of!((*ptr).not_opaque) as usize - ptr as usize
-                },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(ContainsInstantiation),
-                    "::",
-                    stringify!(not_opaque),
-                ),
+            assert!(
+                ::std::mem::offset_of!(ContainsInstantiation, not_opaque) == 0usize,
+                "Offset of field: ContainsInstantiation::not_opaque",
             );
-        }
+        };
         impl Default for ContainsInstantiation {
             fn default() -> Self {
                 let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -117,49 +74,31 @@ pub mod root {
         pub struct ContainsOpaqueInstantiation {
             pub opaque: u32,
         }
-        #[test]
-        fn bindgen_test_layout_ContainsOpaqueInstantiation() {
-            const UNINIT: ::std::mem::MaybeUninit<ContainsOpaqueInstantiation> = ::std::mem::MaybeUninit::uninit();
-            let ptr = UNINIT.as_ptr();
-            assert_eq!(
-                ::std::mem::size_of::<ContainsOpaqueInstantiation>(),
-                4usize,
-                concat!("Size of: ", stringify!(ContainsOpaqueInstantiation)),
+        const _: () = {
+            assert!(
+                ::std::mem::size_of::<ContainsOpaqueInstantiation>() == 4usize,
+                "Size of ContainsOpaqueInstantiation",
             );
-            assert_eq!(
-                ::std::mem::align_of::<ContainsOpaqueInstantiation>(),
-                4usize,
-                concat!("Alignment of ", stringify!(ContainsOpaqueInstantiation)),
+            assert!(
+                ::std::mem::align_of::<ContainsOpaqueInstantiation>() == 4usize,
+                "Alignment of ContainsOpaqueInstantiation",
             );
-            assert_eq!(
-                unsafe { ::std::ptr::addr_of!((*ptr).opaque) as usize - ptr as usize },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(ContainsOpaqueInstantiation),
-                    "::",
-                    stringify!(opaque),
-                ),
+            assert!(
+                ::std::mem::offset_of!(ContainsOpaqueInstantiation, opaque) == 0usize,
+                "Offset of field: ContainsOpaqueInstantiation::opaque",
             );
-        }
+        };
     }
-    #[test]
-    fn __bindgen_test_layout_Template_open0_Foo_close0_instantiation() {
-        assert_eq!(
-            ::std::mem::size_of::<root::zoidberg::Template<root::zoidberg::Foo>>(),
-            1usize,
-            concat!(
-                "Size of template specialization: ",
-                stringify!(root::zoidberg::Template < root::zoidberg::Foo >),
-            ),
+    const _: () = {
+        assert!(
+            ::std::mem::size_of::<root::zoidberg::Template<root::zoidberg::Foo>>()
+                == 1usize,
+            "Size of template specialization: Template_open0_Foo_close0",
         );
-        assert_eq!(
-            ::std::mem::align_of::<root::zoidberg::Template<root::zoidberg::Foo>>(),
-            1usize,
-            concat!(
-                "Alignment of template specialization: ",
-                stringify!(root::zoidberg::Template < root::zoidberg::Foo >),
-            ),
+        assert!(
+            ::std::mem::align_of::<root::zoidberg::Template<root::zoidberg::Foo>>()
+                == 1usize,
+            "Align of template specialization: Template_open0_Foo_close0",
         );
-    }
+    };
 }

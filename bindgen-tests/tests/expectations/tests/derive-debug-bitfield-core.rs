@@ -95,20 +95,12 @@ pub struct C {
 fn bindgen_test_layout_C() {
     const UNINIT: ::core::mem::MaybeUninit<C> = ::core::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::core::mem::size_of::<C>(),
-        204usize,
-        concat!("Size of: ", stringify!(C)),
-    );
-    assert_eq!(
-        ::core::mem::align_of::<C>(),
-        4usize,
-        concat!("Alignment of ", stringify!(C)),
-    );
+    assert_eq!(::core::mem::size_of::<C>(), 204usize, "Size of C");
+    assert_eq!(::core::mem::align_of::<C>(), 4usize, "Alignment of C");
     assert_eq!(
         unsafe { ::core::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize },
         4usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(large_array)),
+        "Offset of field: C::large_array",
     );
 }
 impl Default for C {

@@ -13,30 +13,21 @@ pub mod root {
     pub struct jsval_layout__bindgen_ty_1 {
         pub _address: u8,
     }
-    #[test]
-    fn bindgen_test_layout_jsval_layout__bindgen_ty_1() {
-        assert_eq!(
-            ::std::mem::size_of::<jsval_layout__bindgen_ty_1>(),
-            1usize,
-            concat!("Size of: ", stringify!(jsval_layout__bindgen_ty_1)),
+    const _: () = {
+        assert!(
+            ::std::mem::size_of::<jsval_layout__bindgen_ty_1>() == 1usize,
+            "Size of jsval_layout__bindgen_ty_1",
         );
-        assert_eq!(
-            ::std::mem::align_of::<jsval_layout__bindgen_ty_1>(),
-            1usize,
-            concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_1)),
+        assert!(
+            ::std::mem::align_of::<jsval_layout__bindgen_ty_1>() == 1usize,
+            "Alignment of jsval_layout__bindgen_ty_1",
         );
-    }
-    #[test]
-    fn bindgen_test_layout_jsval_layout() {
-        assert_eq!(
-            ::std::mem::size_of::<jsval_layout>(),
-            1usize,
-            concat!("Size of: ", stringify!(jsval_layout)),
+    };
+    const _: () = {
+        assert!(::std::mem::size_of::<jsval_layout>() == 1usize, "Size of jsval_layout");
+        assert!(
+            ::std::mem::align_of::<jsval_layout>() == 1usize,
+            "Alignment of jsval_layout",
         );
-        assert_eq!(
-            ::std::mem::align_of::<jsval_layout>(),
-            1usize,
-            concat!("Alignment of ", stringify!(jsval_layout)),
-        );
-    }
+    };
 }

@@ -15,19 +15,10 @@ pub mod root {
             #[link_name = "\u{1}_ZN6Halide4Type1bE"]
             pub static mut Type_b: root::a;
         }
-        #[test]
-        fn bindgen_test_layout_Type() {
-            assert_eq!(
-                ::std::mem::size_of::<Type>(),
-                1usize,
-                concat!("Size of: ", stringify!(Type)),
-            );
-            assert_eq!(
-                ::std::mem::align_of::<Type>(),
-                1usize,
-                concat!("Alignment of ", stringify!(Type)),
-            );
-        }
+        const _: () = {
+            assert!(::std::mem::size_of::<Type>() == 1usize, "Size of Type");
+            assert!(::std::mem::align_of::<Type>() == 1usize, "Alignment of Type");
+        };
     }
     #[repr(u32)]
     #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]

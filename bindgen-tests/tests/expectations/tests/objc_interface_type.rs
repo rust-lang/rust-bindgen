@@ -25,26 +25,14 @@ pub trait IFoo: Sized + std::ops::Deref {}
 pub struct FooStruct {
     pub foo: Foo,
 }
-#[test]
-fn bindgen_test_layout_FooStruct() {
-    const UNINIT: ::std::mem::MaybeUninit<FooStruct> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<FooStruct>(),
-        8usize,
-        concat!("Size of: ", stringify!(FooStruct)),
+const _: () = {
+    assert!(::std::mem::size_of::<FooStruct>() == 8usize, "Size of FooStruct");
+    assert!(::std::mem::align_of::<FooStruct>() == 8usize, "Alignment of FooStruct");
+    assert!(
+        ::std::mem::offset_of!(FooStruct, foo) == 0usize,
+        "Offset of field: FooStruct::foo",
     );
-    assert_eq!(
-        ::std::mem::align_of::<FooStruct>(),
-        8usize,
-        concat!("Alignment of ", stringify!(FooStruct)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(FooStruct), "::", stringify!(foo)),
-    );
-}
+};
 impl Default for FooStruct {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

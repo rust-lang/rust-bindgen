@@ -8,19 +8,10 @@ pub struct Base__bindgen_vtable {
 pub struct Base {
     pub vtable_: *const Base__bindgen_vtable,
 }
-#[test]
-fn bindgen_test_layout_Base() {
-    assert_eq!(
-        ::std::mem::size_of::<Base>(),
-        8usize,
-        concat!("Size of: ", stringify!(Base)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Base>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Base)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<Base>() == 8usize, "Size of Base");
+    assert!(::std::mem::align_of::<Base>() == 8usize, "Alignment of Base");
+};
 impl Default for Base {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -39,19 +30,10 @@ extern "C" {
 pub struct Derived {
     pub _base: Base,
 }
-#[test]
-fn bindgen_test_layout_Derived() {
-    assert_eq!(
-        ::std::mem::size_of::<Derived>(),
-        8usize,
-        concat!("Size of: ", stringify!(Derived)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Derived>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Derived)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<Derived>() == 8usize, "Size of Derived");
+    assert!(::std::mem::align_of::<Derived>() == 8usize, "Alignment of Derived");
+};
 impl Default for Derived {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

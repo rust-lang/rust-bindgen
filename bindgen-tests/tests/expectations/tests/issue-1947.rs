@@ -96,36 +96,22 @@ pub struct V56AMDY {
     pub _bitfield_2: __BindgenBitfieldUnit<[u8; 3usize]>,
     pub _rB_: U8,
 }
-#[test]
-fn bindgen_test_layout_V56AMDY() {
-    const UNINIT: ::std::mem::MaybeUninit<V56AMDY> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<V56AMDY>(),
-        8usize,
-        concat!("Size of: ", stringify!(V56AMDY)),
+const _: () = {
+    assert!(::std::mem::size_of::<V56AMDY>() == 8usize, "Size of V56AMDY");
+    assert!(::std::mem::align_of::<V56AMDY>() == 2usize, "Alignment of V56AMDY");
+    assert!(
+        ::std::mem::offset_of!(V56AMDY, MADK) == 2usize,
+        "Offset of field: V56AMDY::MADK",
     );
-    assert_eq!(
-        ::std::mem::align_of::<V56AMDY>(),
-        2usize,
-        concat!("Alignment of ", stringify!(V56AMDY)),
+    assert!(
+        ::std::mem::offset_of!(V56AMDY, MABR) == 3usize,
+        "Offset of field: V56AMDY::MABR",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).MADK) as usize - ptr as usize },
-        2usize,
-        concat!("Offset of field: ", stringify!(V56AMDY), "::", stringify!(MADK)),
+    assert!(
+        ::std::mem::offset_of!(V56AMDY, _rB_) == 7usize,
+        "Offset of field: V56AMDY::_rB_",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).MABR) as usize - ptr as usize },
-        3usize,
-        concat!("Offset of field: ", stringify!(V56AMDY), "::", stringify!(MABR)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr)._rB_) as usize - ptr as usize },
-        7usize,
-        concat!("Offset of field: ", stringify!(V56AMDY), "::", stringify!(_rB_)),
-    );
-}
+};
 impl V56AMDY {
     #[inline]
     pub fn MADZ(&self) -> U16 {

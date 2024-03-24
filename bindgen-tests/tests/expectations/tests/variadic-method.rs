@@ -8,19 +8,10 @@ extern "C" {
 pub struct Bar {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_Bar() {
-    assert_eq!(
-        ::std::mem::size_of::<Bar>(),
-        1usize,
-        concat!("Size of: ", stringify!(Bar)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Bar>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Bar)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<Bar>() == 1usize, "Size of Bar");
+    assert!(::std::mem::align_of::<Bar>() == 1usize, "Alignment of Bar");
+};
 extern "C" {
     #[link_name = "\u{1}_ZN3Bar3fooEPKcz"]
     pub fn Bar_foo(this: *mut Bar, fmt: *const ::std::os::raw::c_char, ...);

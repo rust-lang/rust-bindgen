@@ -90,19 +90,13 @@ pub struct capabilities {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
 }
-#[test]
-fn bindgen_test_layout_capabilities() {
-    assert_eq!(
-        ::std::mem::size_of::<capabilities>(),
-        16usize,
-        concat!("Size of: ", stringify!(capabilities)),
+const _: () = {
+    assert!(::std::mem::size_of::<capabilities>() == 16usize, "Size of capabilities");
+    assert!(
+        ::std::mem::align_of::<capabilities>() == 4usize,
+        "Alignment of capabilities",
     );
-    assert_eq!(
-        ::std::mem::align_of::<capabilities>(),
-        4usize,
-        concat!("Alignment of ", stringify!(capabilities)),
-    );
-}
+};
 impl capabilities {
     #[inline]
     pub fn bit_1(&self) -> ::std::os::raw::c_uint {

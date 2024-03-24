@@ -6,41 +6,18 @@ pub struct HasPrivate {
     /// <div rustbindgen private></div>
     mIsPrivate: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_HasPrivate() {
-    const UNINIT: ::std::mem::MaybeUninit<HasPrivate> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<HasPrivate>(),
-        8usize,
-        concat!("Size of: ", stringify!(HasPrivate)),
+const _: () = {
+    assert!(::std::mem::size_of::<HasPrivate>() == 8usize, "Size of HasPrivate");
+    assert!(::std::mem::align_of::<HasPrivate>() == 4usize, "Alignment of HasPrivate");
+    assert!(
+        ::std::mem::offset_of!(HasPrivate, mNotPrivate) == 0usize,
+        "Offset of field: HasPrivate::mNotPrivate",
     );
-    assert_eq!(
-        ::std::mem::align_of::<HasPrivate>(),
-        4usize,
-        concat!("Alignment of ", stringify!(HasPrivate)),
+    assert!(
+        ::std::mem::offset_of!(HasPrivate, mIsPrivate) == 4usize,
+        "Offset of field: HasPrivate::mIsPrivate",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mNotPrivate) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(HasPrivate),
-            "::",
-            stringify!(mNotPrivate),
-        ),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mIsPrivate) as usize - ptr as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(HasPrivate),
-            "::",
-            stringify!(mIsPrivate),
-        ),
-    );
-}
+};
 /// <div rustbindgen private></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -48,41 +25,18 @@ pub struct VeryPrivate {
     mIsPrivate: ::std::os::raw::c_int,
     mIsAlsoPrivate: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_VeryPrivate() {
-    const UNINIT: ::std::mem::MaybeUninit<VeryPrivate> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<VeryPrivate>(),
-        8usize,
-        concat!("Size of: ", stringify!(VeryPrivate)),
+const _: () = {
+    assert!(::std::mem::size_of::<VeryPrivate>() == 8usize, "Size of VeryPrivate");
+    assert!(::std::mem::align_of::<VeryPrivate>() == 4usize, "Alignment of VeryPrivate");
+    assert!(
+        ::std::mem::offset_of!(VeryPrivate, mIsPrivate) == 0usize,
+        "Offset of field: VeryPrivate::mIsPrivate",
     );
-    assert_eq!(
-        ::std::mem::align_of::<VeryPrivate>(),
-        4usize,
-        concat!("Alignment of ", stringify!(VeryPrivate)),
+    assert!(
+        ::std::mem::offset_of!(VeryPrivate, mIsAlsoPrivate) == 4usize,
+        "Offset of field: VeryPrivate::mIsAlsoPrivate",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mIsPrivate) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(VeryPrivate),
-            "::",
-            stringify!(mIsPrivate),
-        ),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mIsAlsoPrivate) as usize - ptr as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(VeryPrivate),
-            "::",
-            stringify!(mIsAlsoPrivate),
-        ),
-    );
-}
+};
 /// <div rustbindgen private></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -91,38 +45,21 @@ pub struct ContradictPrivate {
     pub mNotPrivate: ::std::os::raw::c_int,
     mIsPrivate: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_ContradictPrivate() {
-    const UNINIT: ::std::mem::MaybeUninit<ContradictPrivate> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ContradictPrivate>(),
-        8usize,
-        concat!("Size of: ", stringify!(ContradictPrivate)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<ContradictPrivate>() == 8usize,
+        "Size of ContradictPrivate",
     );
-    assert_eq!(
-        ::std::mem::align_of::<ContradictPrivate>(),
-        4usize,
-        concat!("Alignment of ", stringify!(ContradictPrivate)),
+    assert!(
+        ::std::mem::align_of::<ContradictPrivate>() == 4usize,
+        "Alignment of ContradictPrivate",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mNotPrivate) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ContradictPrivate),
-            "::",
-            stringify!(mNotPrivate),
-        ),
+    assert!(
+        ::std::mem::offset_of!(ContradictPrivate, mNotPrivate) == 0usize,
+        "Offset of field: ContradictPrivate::mNotPrivate",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mIsPrivate) as usize - ptr as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ContradictPrivate),
-            "::",
-            stringify!(mIsPrivate),
-        ),
+    assert!(
+        ::std::mem::offset_of!(ContradictPrivate, mIsPrivate) == 4usize,
+        "Offset of field: ContradictPrivate::mIsPrivate",
     );
-}
+};

@@ -6,41 +6,25 @@ pub union nsStyleUnion {
     pub mFloat: f32,
     pub mPointer: *mut ::std::os::raw::c_void,
 }
-#[test]
-fn bindgen_test_layout_nsStyleUnion() {
-    const UNINIT: ::std::mem::MaybeUninit<nsStyleUnion> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<nsStyleUnion>(),
-        8usize,
-        concat!("Size of: ", stringify!(nsStyleUnion)),
+const _: () = {
+    assert!(::std::mem::size_of::<nsStyleUnion>() == 8usize, "Size of nsStyleUnion");
+    assert!(
+        ::std::mem::align_of::<nsStyleUnion>() == 8usize,
+        "Alignment of nsStyleUnion",
     );
-    assert_eq!(
-        ::std::mem::align_of::<nsStyleUnion>(),
-        8usize,
-        concat!("Alignment of ", stringify!(nsStyleUnion)),
+    assert!(
+        ::std::mem::offset_of!(nsStyleUnion, mInt) == 0usize,
+        "Offset of field: nsStyleUnion::mInt",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mInt) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(nsStyleUnion), "::", stringify!(mInt)),
+    assert!(
+        ::std::mem::offset_of!(nsStyleUnion, mFloat) == 0usize,
+        "Offset of field: nsStyleUnion::mFloat",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mFloat) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(nsStyleUnion), "::", stringify!(mFloat)),
+    assert!(
+        ::std::mem::offset_of!(nsStyleUnion, mPointer) == 0usize,
+        "Offset of field: nsStyleUnion::mPointer",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mPointer) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(nsStyleUnion),
-            "::",
-            stringify!(mPointer),
-        ),
-    );
-}
+};
 impl Default for nsStyleUnion {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

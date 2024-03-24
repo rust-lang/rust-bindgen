@@ -4,19 +4,13 @@
 pub struct TestOverload {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_TestOverload() {
-    assert_eq!(
-        ::std::mem::size_of::<TestOverload>(),
-        1usize,
-        concat!("Size of: ", stringify!(TestOverload)),
+const _: () = {
+    assert!(::std::mem::size_of::<TestOverload>() == 1usize, "Size of TestOverload");
+    assert!(
+        ::std::mem::align_of::<TestOverload>() == 1usize,
+        "Alignment of TestOverload",
     );
-    assert_eq!(
-        ::std::mem::align_of::<TestOverload>(),
-        1usize,
-        concat!("Alignment of ", stringify!(TestOverload)),
-    );
-}
+};
 extern "C" {
     #[link_name = "\u{1}_ZN12TestOverloadC1Ei"]
     pub fn TestOverload_TestOverload(
@@ -47,19 +41,16 @@ impl TestOverload {
 pub struct TestPublicNoArgs {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_TestPublicNoArgs() {
-    assert_eq!(
-        ::std::mem::size_of::<TestPublicNoArgs>(),
-        1usize,
-        concat!("Size of: ", stringify!(TestPublicNoArgs)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<TestPublicNoArgs>() == 1usize,
+        "Size of TestPublicNoArgs",
     );
-    assert_eq!(
-        ::std::mem::align_of::<TestPublicNoArgs>(),
-        1usize,
-        concat!("Alignment of ", stringify!(TestPublicNoArgs)),
+    assert!(
+        ::std::mem::align_of::<TestPublicNoArgs>() == 1usize,
+        "Alignment of TestPublicNoArgs",
     );
-}
+};
 extern "C" {
     #[link_name = "\u{1}_ZN16TestPublicNoArgsC1Ev"]
     pub fn TestPublicNoArgs_TestPublicNoArgs(this: *mut TestPublicNoArgs);

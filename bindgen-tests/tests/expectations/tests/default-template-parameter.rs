@@ -16,25 +16,16 @@ impl<T, U> Default for Foo<T, U> {
         }
     }
 }
-#[test]
-fn __bindgen_test_layout_Foo_open0_bool__int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<Foo<bool, ::std::os::raw::c_int>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(Foo < bool, ::std::os::raw::c_int >),
-        ),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<Foo<bool, ::std::os::raw::c_int>>() == 8usize,
+        "Size of template specialization: Foo_open0_bool__int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<Foo<bool, ::std::os::raw::c_int>>(),
-        4usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(Foo < bool, ::std::os::raw::c_int >),
-        ),
+    assert!(
+        ::std::mem::align_of::<Foo<bool, ::std::os::raw::c_int>>() == 4usize,
+        "Align of template specialization: Foo_open0_bool__int_close0",
     );
-}
+};
 extern "C" {
     #[link_name = "\u{1}_ZL3bar"]
     pub static mut bar: Foo<bool, ::std::os::raw::c_int>;

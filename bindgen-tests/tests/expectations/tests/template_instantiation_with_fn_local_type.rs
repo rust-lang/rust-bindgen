@@ -8,83 +8,50 @@ extern "C" {
     #[link_name = "\u{1}_Z1fv"]
     pub fn f();
 }
-#[test]
-fn __bindgen_test_layout_Foo_open0_Bar_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<Foo>(),
-        1usize,
-        concat!("Size of template specialization: ", stringify!(Foo)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<Foo>() == 1usize,
+        "Size of template specialization: Foo_open0_Bar_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<Foo>(),
-        1usize,
-        concat!("Alignment of template specialization: ", stringify!(Foo)),
+    assert!(
+        ::std::mem::align_of::<Foo>() == 1usize,
+        "Align of template specialization: Foo_open0_Bar_close0",
     );
-}
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Baz {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_Baz() {
-    assert_eq!(
-        ::std::mem::size_of::<Baz>(),
-        1usize,
-        concat!("Size of: ", stringify!(Baz)),
+const _: () = {
+    assert!(::std::mem::size_of::<Baz>() == 1usize, "Size of Baz");
+    assert!(::std::mem::align_of::<Baz>() == 1usize, "Alignment of Baz");
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<Foo>() == 1usize,
+        "Size of template specialization: Foo_open0_Boo_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<Baz>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Baz)),
+    assert!(
+        ::std::mem::align_of::<Foo>() == 1usize,
+        "Align of template specialization: Foo_open0_Boo_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_Foo_open0_Boo_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<Foo>(),
-        1usize,
-        concat!("Size of template specialization: ", stringify!(Foo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Foo>(),
-        1usize,
-        concat!("Alignment of template specialization: ", stringify!(Foo)),
-    );
-}
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Bar {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_Bar() {
-    assert_eq!(
-        ::std::mem::size_of::<Bar>(),
-        1usize,
-        concat!("Size of: ", stringify!(Bar)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Bar>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Bar)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<Bar>() == 1usize, "Size of Bar");
+    assert!(::std::mem::align_of::<Bar>() == 1usize, "Alignment of Bar");
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Boo {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_Boo() {
-    assert_eq!(
-        ::std::mem::size_of::<Boo>(),
-        1usize,
-        concat!("Size of: ", stringify!(Boo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Boo>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Boo)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<Boo>() == 1usize, "Size of Boo");
+    assert!(::std::mem::align_of::<Boo>() == 1usize, "Alignment of Boo");
+};

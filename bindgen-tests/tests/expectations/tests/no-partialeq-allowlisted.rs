@@ -4,23 +4,11 @@
 pub struct NoPartialEq {
     pub i: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_NoPartialEq() {
-    const UNINIT: ::std::mem::MaybeUninit<NoPartialEq> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<NoPartialEq>(),
-        4usize,
-        concat!("Size of: ", stringify!(NoPartialEq)),
+const _: () = {
+    assert!(::std::mem::size_of::<NoPartialEq>() == 4usize, "Size of NoPartialEq");
+    assert!(::std::mem::align_of::<NoPartialEq>() == 4usize, "Alignment of NoPartialEq");
+    assert!(
+        ::std::mem::offset_of!(NoPartialEq, i) == 0usize,
+        "Offset of field: NoPartialEq::i",
     );
-    assert_eq!(
-        ::std::mem::align_of::<NoPartialEq>(),
-        4usize,
-        concat!("Alignment of ", stringify!(NoPartialEq)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(NoPartialEq), "::", stringify!(i)),
-    );
-}
+};

@@ -6,31 +6,20 @@ pub struct BlocklistMe(u8);
 pub struct ShouldNotDeriveDefault {
     pub a: BlocklistMe,
 }
-#[test]
-fn bindgen_test_layout_ShouldNotDeriveDefault() {
-    const UNINIT: ::std::mem::MaybeUninit<ShouldNotDeriveDefault> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ShouldNotDeriveDefault>(),
-        1usize,
-        concat!("Size of: ", stringify!(ShouldNotDeriveDefault)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<ShouldNotDeriveDefault>() == 1usize,
+        "Size of ShouldNotDeriveDefault",
     );
-    assert_eq!(
-        ::std::mem::align_of::<ShouldNotDeriveDefault>(),
-        1usize,
-        concat!("Alignment of ", stringify!(ShouldNotDeriveDefault)),
+    assert!(
+        ::std::mem::align_of::<ShouldNotDeriveDefault>() == 1usize,
+        "Alignment of ShouldNotDeriveDefault",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldNotDeriveDefault),
-            "::",
-            stringify!(a),
-        ),
+    assert!(
+        ::std::mem::offset_of!(ShouldNotDeriveDefault, a) == 0usize,
+        "Offset of field: ShouldNotDeriveDefault::a",
     );
-}
+};
 impl Default for ShouldNotDeriveDefault {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

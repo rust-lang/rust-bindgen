@@ -60,108 +60,68 @@ pub struct C {
     pub mArrayRef: B<*mut [::std::os::raw::c_int; 1usize]>,
     pub mBConstArray: B<[::std::os::raw::c_int; 1usize]>,
 }
-#[test]
-fn bindgen_test_layout_C() {
-    const UNINIT: ::std::mem::MaybeUninit<C> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<C>(),
-        104usize,
-        concat!("Size of: ", stringify!(C)),
+const _: () = {
+    assert!(::std::mem::size_of::<C>() == 104usize, "Size of C");
+    assert!(::std::mem::align_of::<C>() == 8usize, "Alignment of C");
+    assert!(::std::mem::offset_of!(C, mB) == 0usize, "Offset of field: C::mB");
+    assert!(
+        ::std::mem::offset_of!(C, mBConstPtr) == 8usize,
+        "Offset of field: C::mBConstPtr",
     );
-    assert_eq!(
-        ::std::mem::align_of::<C>(),
-        8usize,
-        concat!("Alignment of ", stringify!(C)),
+    assert!(
+        ::std::mem::offset_of!(C, mBConstStructPtr) == 16usize,
+        "Offset of field: C::mBConstStructPtr",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mB) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mB)),
+    assert!(
+        ::std::mem::offset_of!(C, mBConstStructPtrArray) == 24usize,
+        "Offset of field: C::mBConstStructPtrArray",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBConstPtr) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBConstPtr)),
+    assert!(
+        ::std::mem::offset_of!(C, mBConst) == 32usize,
+        "Offset of field: C::mBConst",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBConstStructPtr) as usize - ptr as usize },
-        16usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBConstStructPtr)),
+    assert!(
+        ::std::mem::offset_of!(C, mBVolatile) == 36usize,
+        "Offset of field: C::mBVolatile",
     );
-    assert_eq!(
-        unsafe {
-            ::std::ptr::addr_of!((*ptr).mBConstStructPtrArray) as usize - ptr as usize
-        },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(C),
-            "::",
-            stringify!(mBConstStructPtrArray),
-        ),
+    assert!(
+        ::std::mem::offset_of!(C, mBConstBool) == 40usize,
+        "Offset of field: C::mBConstBool",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBConst) as usize - ptr as usize },
-        32usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBConst)),
+    assert!(
+        ::std::mem::offset_of!(C, mBConstChar) == 42usize,
+        "Offset of field: C::mBConstChar",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBVolatile) as usize - ptr as usize },
-        36usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBVolatile)),
+    assert!(
+        ::std::mem::offset_of!(C, mBArray) == 44usize,
+        "Offset of field: C::mBArray",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBConstBool) as usize - ptr as usize },
-        40usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBConstBool)),
+    assert!(
+        ::std::mem::offset_of!(C, mBPtrArray) == 48usize,
+        "Offset of field: C::mBPtrArray",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBConstChar) as usize - ptr as usize },
-        42usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBConstChar)),
+    assert!(
+        ::std::mem::offset_of!(C, mBArrayPtr) == 56usize,
+        "Offset of field: C::mBArrayPtr",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBArray) as usize - ptr as usize },
-        44usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBArray)),
+    assert!(::std::mem::offset_of!(C, mBRef) == 64usize, "Offset of field: C::mBRef");
+    assert!(
+        ::std::mem::offset_of!(C, mBConstRef) == 72usize,
+        "Offset of field: C::mBConstRef",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBPtrArray) as usize - ptr as usize },
-        48usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBPtrArray)),
+    assert!(
+        ::std::mem::offset_of!(C, mPtrRef) == 80usize,
+        "Offset of field: C::mPtrRef",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBArrayPtr) as usize - ptr as usize },
-        56usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBArrayPtr)),
+    assert!(
+        ::std::mem::offset_of!(C, mArrayRef) == 88usize,
+        "Offset of field: C::mArrayRef",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBRef) as usize - ptr as usize },
-        64usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBRef)),
+    assert!(
+        ::std::mem::offset_of!(C, mBConstArray) == 96usize,
+        "Offset of field: C::mBConstArray",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBConstRef) as usize - ptr as usize },
-        72usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBConstRef)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mPtrRef) as usize - ptr as usize },
-        80usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mPtrRef)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mArrayRef) as usize - ptr as usize },
-        88usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mArrayRef)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBConstArray) as usize - ptr as usize },
-        96usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBConstArray)),
-    );
-}
+};
 impl Default for C {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -224,26 +184,20 @@ impl<T> Default for Rooted<T> {
 pub struct RootedContainer {
     pub root: Rooted<*mut ::std::os::raw::c_void>,
 }
-#[test]
-fn bindgen_test_layout_RootedContainer() {
-    const UNINIT: ::std::mem::MaybeUninit<RootedContainer> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<RootedContainer>(),
-        24usize,
-        concat!("Size of: ", stringify!(RootedContainer)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<RootedContainer>() == 24usize,
+        "Size of RootedContainer",
     );
-    assert_eq!(
-        ::std::mem::align_of::<RootedContainer>(),
-        8usize,
-        concat!("Alignment of ", stringify!(RootedContainer)),
+    assert!(
+        ::std::mem::align_of::<RootedContainer>() == 8usize,
+        "Alignment of RootedContainer",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).root) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(RootedContainer), "::", stringify!(root)),
+    assert!(
+        ::std::mem::offset_of!(RootedContainer, root) == 0usize,
+        "Offset of field: RootedContainer::root",
     );
-}
+};
 impl Default for RootedContainer {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -274,31 +228,20 @@ impl<T> Default for WithDtor<T> {
 pub struct PODButContainsDtor {
     pub member: WithDtorIntFwd,
 }
-#[test]
-fn bindgen_test_layout_PODButContainsDtor() {
-    const UNINIT: ::std::mem::MaybeUninit<PODButContainsDtor> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<PODButContainsDtor>(),
-        4usize,
-        concat!("Size of: ", stringify!(PODButContainsDtor)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<PODButContainsDtor>() == 4usize,
+        "Size of PODButContainsDtor",
     );
-    assert_eq!(
-        ::std::mem::align_of::<PODButContainsDtor>(),
-        4usize,
-        concat!("Alignment of ", stringify!(PODButContainsDtor)),
+    assert!(
+        ::std::mem::align_of::<PODButContainsDtor>() == 4usize,
+        "Alignment of PODButContainsDtor",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(PODButContainsDtor),
-            "::",
-            stringify!(member),
-        ),
+    assert!(
+        ::std::mem::offset_of!(PODButContainsDtor, member) == 0usize,
+        "Offset of field: PODButContainsDtor::member",
     );
-}
+};
 impl Default for PODButContainsDtor {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -319,26 +262,14 @@ pub struct Opaque {
 pub struct POD {
     pub opaque_member: u32,
 }
-#[test]
-fn bindgen_test_layout_POD() {
-    const UNINIT: ::std::mem::MaybeUninit<POD> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<POD>(),
-        4usize,
-        concat!("Size of: ", stringify!(POD)),
+const _: () = {
+    assert!(::std::mem::size_of::<POD>() == 4usize, "Size of POD");
+    assert!(::std::mem::align_of::<POD>() == 4usize, "Alignment of POD");
+    assert!(
+        ::std::mem::offset_of!(POD, opaque_member) == 0usize,
+        "Offset of field: POD::opaque_member",
     );
-    assert_eq!(
-        ::std::mem::align_of::<POD>(),
-        4usize,
-        concat!("Alignment of ", stringify!(POD)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).opaque_member) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(POD), "::", stringify!(opaque_member)),
-    );
-}
+};
 /// <div rustbindgen replaces="NestedReplaced"></div>
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -407,19 +338,10 @@ impl<T> Default for Incomplete<T> {
 pub struct Untemplated {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_Untemplated() {
-    assert_eq!(
-        ::std::mem::size_of::<Untemplated>(),
-        1usize,
-        concat!("Size of: ", stringify!(Untemplated)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Untemplated>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Untemplated)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<Untemplated>() == 1usize, "Size of Untemplated");
+    assert!(::std::mem::align_of::<Untemplated>() == 1usize, "Alignment of Untemplated");
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Templated {
@@ -493,390 +415,213 @@ impl<T> Default for ReplacedWithoutDestructorFwd<T> {
         }
     }
 }
-#[test]
-fn __bindgen_test_layout_Foo_open0_int_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<Foo<::std::os::raw::c_int>>(),
-        24usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(Foo < ::std::os::raw::c_int >),
-        ),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<Foo<::std::os::raw::c_int>>() == 24usize,
+        "Size of template specialization: Foo_open0_int_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<Foo<::std::os::raw::c_int>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(Foo < ::std::os::raw::c_int >),
-        ),
+    assert!(
+        ::std::mem::align_of::<Foo<::std::os::raw::c_int>>() == 8usize,
+        "Align of template specialization: Foo_open0_int_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_unsigned_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<::std::os::raw::c_uint>>(),
-        4usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < ::std::os::raw::c_uint >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<::std::os::raw::c_uint>>() == 4usize,
+        "Size of template specialization: B_open0_unsigned_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<::std::os::raw::c_uint>>(),
-        4usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < ::std::os::raw::c_uint >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<::std::os::raw::c_uint>>() == 4usize,
+        "Align of template specialization: B_open0_unsigned_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_ptr_const_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<*const ::std::os::raw::c_int>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < * const ::std::os::raw::c_int >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<*const ::std::os::raw::c_int>>() == 8usize,
+        "Size of template specialization: B_open0_ptr_const_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<*const ::std::os::raw::c_int>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < * const ::std::os::raw::c_int >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<*const ::std::os::raw::c_int>>() == 8usize,
+        "Align of template specialization: B_open0_ptr_const_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_ptr_const_mozilla__Foo_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<*const mozilla_Foo>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < * const mozilla_Foo >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<*const mozilla_Foo>>() == 8usize,
+        "Size of template specialization: B_open0_ptr_const_mozilla__Foo_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<*const mozilla_Foo>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < * const mozilla_Foo >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<*const mozilla_Foo>>() == 8usize,
+        "Align of template specialization: B_open0_ptr_const_mozilla__Foo_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_array1_ptr_const_mozilla__Foo_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<[*const mozilla_Foo; 1usize]>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < [* const mozilla_Foo; 1usize] >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<[*const mozilla_Foo; 1usize]>>() == 8usize,
+        "Size of template specialization: B_open0_array1_ptr_const_mozilla__Foo_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<[*const mozilla_Foo; 1usize]>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < [* const mozilla_Foo; 1usize] >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<[*const mozilla_Foo; 1usize]>>() == 8usize,
+        "Align of template specialization: B_open0_array1_ptr_const_mozilla__Foo_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_const_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<::std::os::raw::c_int>>(),
-        4usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < ::std::os::raw::c_int >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<::std::os::raw::c_int>>() == 4usize,
+        "Size of template specialization: B_open0_const_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<::std::os::raw::c_int>>(),
-        4usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < ::std::os::raw::c_int >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<::std::os::raw::c_int>>() == 4usize,
+        "Align of template specialization: B_open0_const_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_volatile_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<::std::os::raw::c_int>>(),
-        4usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < ::std::os::raw::c_int >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<::std::os::raw::c_int>>() == 4usize,
+        "Size of template specialization: B_open0_volatile_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<::std::os::raw::c_int>>(),
-        4usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < ::std::os::raw::c_int >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<::std::os::raw::c_int>>() == 4usize,
+        "Align of template specialization: B_open0_volatile_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_const_bool_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<bool>>(),
-        1usize,
-        concat!("Size of template specialization: ", stringify!(B < bool >)),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<bool>>() == 1usize,
+        "Size of template specialization: B_open0_const_bool_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<bool>>(),
-        1usize,
-        concat!("Alignment of template specialization: ", stringify!(B < bool >)),
+    assert!(
+        ::std::mem::align_of::<B<bool>>() == 1usize,
+        "Align of template specialization: B_open0_const_bool_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_const_char16_t_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<u16>>(),
-        2usize,
-        concat!("Size of template specialization: ", stringify!(B < u16 >)),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<u16>>() == 2usize,
+        "Size of template specialization: B_open0_const_char16_t_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<u16>>(),
-        2usize,
-        concat!("Alignment of template specialization: ", stringify!(B < u16 >)),
+    assert!(
+        ::std::mem::align_of::<B<u16>>() == 2usize,
+        "Align of template specialization: B_open0_const_char16_t_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_array1_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<[::std::os::raw::c_int; 1usize]>>(),
-        4usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < [::std::os::raw::c_int; 1usize] >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<[::std::os::raw::c_int; 1usize]>>() == 4usize,
+        "Size of template specialization: B_open0_array1_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<[::std::os::raw::c_int; 1usize]>>(),
-        4usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < [::std::os::raw::c_int; 1usize] >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<[::std::os::raw::c_int; 1usize]>>() == 4usize,
+        "Align of template specialization: B_open0_array1_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_array1_ptr_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<[*mut ::std::os::raw::c_int; 1usize]>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < [* mut ::std::os::raw::c_int; 1usize] >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<[*mut ::std::os::raw::c_int; 1usize]>>() == 8usize,
+        "Size of template specialization: B_open0_array1_ptr_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<[*mut ::std::os::raw::c_int; 1usize]>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < [* mut ::std::os::raw::c_int; 1usize] >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<[*mut ::std::os::raw::c_int; 1usize]>>() == 8usize,
+        "Align of template specialization: B_open0_array1_ptr_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_ptr_array1_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<*mut [::std::os::raw::c_int; 1usize]>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < * mut [::std::os::raw::c_int; 1usize] >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<*mut [::std::os::raw::c_int; 1usize]>>() == 8usize,
+        "Size of template specialization: B_open0_ptr_array1_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<*mut [::std::os::raw::c_int; 1usize]>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < * mut [::std::os::raw::c_int; 1usize] >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<*mut [::std::os::raw::c_int; 1usize]>>() == 8usize,
+        "Align of template specialization: B_open0_ptr_array1_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_ref_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<*mut ::std::os::raw::c_int>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < * mut ::std::os::raw::c_int >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<*mut ::std::os::raw::c_int>>() == 8usize,
+        "Size of template specialization: B_open0_ref_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<*mut ::std::os::raw::c_int>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < * mut ::std::os::raw::c_int >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<*mut ::std::os::raw::c_int>>() == 8usize,
+        "Align of template specialization: B_open0_ref_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_ref_const_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<*const ::std::os::raw::c_int>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < * const ::std::os::raw::c_int >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<*const ::std::os::raw::c_int>>() == 8usize,
+        "Size of template specialization: B_open0_ref_const_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<*const ::std::os::raw::c_int>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < * const ::std::os::raw::c_int >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<*const ::std::os::raw::c_int>>() == 8usize,
+        "Align of template specialization: B_open0_ref_const_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_ref_ptr_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<*mut *mut ::std::os::raw::c_int>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < * mut * mut ::std::os::raw::c_int >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<*mut *mut ::std::os::raw::c_int>>() == 8usize,
+        "Size of template specialization: B_open0_ref_ptr_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<*mut *mut ::std::os::raw::c_int>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < * mut * mut ::std::os::raw::c_int >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<*mut *mut ::std::os::raw::c_int>>() == 8usize,
+        "Align of template specialization: B_open0_ref_ptr_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_ref_array1_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<*mut [::std::os::raw::c_int; 1usize]>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < * mut [::std::os::raw::c_int; 1usize] >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<*mut [::std::os::raw::c_int; 1usize]>>() == 8usize,
+        "Size of template specialization: B_open0_ref_array1_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<*mut [::std::os::raw::c_int; 1usize]>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < * mut [::std::os::raw::c_int; 1usize] >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<*mut [::std::os::raw::c_int; 1usize]>>() == 8usize,
+        "Align of template specialization: B_open0_ref_array1_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_array1_const_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B<[::std::os::raw::c_int; 1usize]>>(),
-        4usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(B < [::std::os::raw::c_int; 1usize] >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<B<[::std::os::raw::c_int; 1usize]>>() == 4usize,
+        "Size of template specialization: B_open0_array1_const_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<B<[::std::os::raw::c_int; 1usize]>>(),
-        4usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(B < [::std::os::raw::c_int; 1usize] >),
-        ),
+    assert!(
+        ::std::mem::align_of::<B<[::std::os::raw::c_int; 1usize]>>() == 4usize,
+        "Align of template specialization: B_open0_array1_const_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_Foo_open0_int_int_close0_instantiation_1() {
-    assert_eq!(
-        ::std::mem::size_of::<Foo<::std::os::raw::c_int>>(),
-        24usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(Foo < ::std::os::raw::c_int >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<Foo<::std::os::raw::c_int>>() == 24usize,
+        "Size of template specialization: Foo_open0_int_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<Foo<::std::os::raw::c_int>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(Foo < ::std::os::raw::c_int >),
-        ),
+    assert!(
+        ::std::mem::align_of::<Foo<::std::os::raw::c_int>>() == 8usize,
+        "Align of template specialization: Foo_open0_int_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_Rooted_open0_ptr_void_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<Rooted<*mut ::std::os::raw::c_void>>(),
-        24usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(Rooted < * mut ::std::os::raw::c_void >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<Rooted<*mut ::std::os::raw::c_void>>() == 24usize,
+        "Size of template specialization: Rooted_open0_ptr_void_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<Rooted<*mut ::std::os::raw::c_void>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(Rooted < * mut ::std::os::raw::c_void >),
-        ),
+    assert!(
+        ::std::mem::align_of::<Rooted<*mut ::std::os::raw::c_void>>() == 8usize,
+        "Align of template specialization: Rooted_open0_ptr_void_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_Rooted_open0_ptr_void_close0_instantiation_1() {
-    assert_eq!(
-        ::std::mem::size_of::<Rooted<*mut ::std::os::raw::c_void>>(),
-        24usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(Rooted < * mut ::std::os::raw::c_void >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<Rooted<*mut ::std::os::raw::c_void>>() == 24usize,
+        "Size of template specialization: Rooted_open0_ptr_void_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<Rooted<*mut ::std::os::raw::c_void>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(Rooted < * mut ::std::os::raw::c_void >),
-        ),
+    assert!(
+        ::std::mem::align_of::<Rooted<*mut ::std::os::raw::c_void>>() == 8usize,
+        "Align of template specialization: Rooted_open0_ptr_void_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_WithDtor_open0_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<WithDtor<::std::os::raw::c_int>>(),
-        4usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(WithDtor < ::std::os::raw::c_int >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<WithDtor<::std::os::raw::c_int>>() == 4usize,
+        "Size of template specialization: WithDtor_open0_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<WithDtor<::std::os::raw::c_int>>(),
-        4usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(WithDtor < ::std::os::raw::c_int >),
-        ),
+    assert!(
+        ::std::mem::align_of::<WithDtor<::std::os::raw::c_int>>() == 4usize,
+        "Align of template specialization: WithDtor_open0_int_close0",
     );
-}
+};

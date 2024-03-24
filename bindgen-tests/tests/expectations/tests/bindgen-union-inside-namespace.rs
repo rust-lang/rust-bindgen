@@ -60,25 +60,17 @@ pub mod root {
         fn bindgen_test_layout_Bar() {
             const UNINIT: ::std::mem::MaybeUninit<Bar> = ::std::mem::MaybeUninit::uninit();
             let ptr = UNINIT.as_ptr();
-            assert_eq!(
-                ::std::mem::size_of::<Bar>(),
-                4usize,
-                concat!("Size of: ", stringify!(Bar)),
-            );
-            assert_eq!(
-                ::std::mem::align_of::<Bar>(),
-                4usize,
-                concat!("Alignment of ", stringify!(Bar)),
-            );
+            assert_eq!(::std::mem::size_of::<Bar>(), 4usize, "Size of Bar");
+            assert_eq!(::std::mem::align_of::<Bar>(), 4usize, "Alignment of Bar");
             assert_eq!(
                 unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
                 0usize,
-                concat!("Offset of field: ", stringify!(Bar), "::", stringify!(foo)),
+                "Offset of field: Bar::foo",
             );
             assert_eq!(
                 unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
                 0usize,
-                concat!("Offset of field: ", stringify!(Bar), "::", stringify!(bar)),
+                "Offset of field: Bar::bar",
             );
         }
         impl Clone for Bar {

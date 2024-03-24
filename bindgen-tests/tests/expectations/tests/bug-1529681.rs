@@ -4,16 +4,13 @@
 pub struct BrowsingContext {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_BrowsingContext() {
-    assert_eq!(
-        ::std::mem::size_of::<BrowsingContext>(),
-        1usize,
-        concat!("Size of: ", stringify!(BrowsingContext)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<BrowsingContext>() == 1usize,
+        "Size of BrowsingContext",
     );
-    assert_eq!(
-        ::std::mem::align_of::<BrowsingContext>(),
-        1usize,
-        concat!("Alignment of ", stringify!(BrowsingContext)),
+    assert!(
+        ::std::mem::align_of::<BrowsingContext>() == 1usize,
+        "Alignment of BrowsingContext",
     );
-}
+};

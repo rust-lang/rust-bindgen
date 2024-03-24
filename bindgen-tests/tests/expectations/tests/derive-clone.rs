@@ -12,22 +12,17 @@ fn bindgen_test_layout_ShouldDeriveClone() {
     assert_eq!(
         ::std::mem::size_of::<ShouldDeriveClone>(),
         132usize,
-        concat!("Size of: ", stringify!(ShouldDeriveClone)),
+        "Size of ShouldDeriveClone",
     );
     assert_eq!(
         ::std::mem::align_of::<ShouldDeriveClone>(),
         4usize,
-        concat!("Alignment of ", stringify!(ShouldDeriveClone)),
+        "Alignment of ShouldDeriveClone",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).large) as usize - ptr as usize },
         0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldDeriveClone),
-            "::",
-            stringify!(large),
-        ),
+        "Offset of field: ShouldDeriveClone::large",
     );
 }
 impl Default for ShouldDeriveClone {

@@ -4,16 +4,7 @@
 pub struct false_type {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_false_type() {
-    assert_eq!(
-        ::std::mem::size_of::<false_type>(),
-        1usize,
-        concat!("Size of: ", stringify!(false_type)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<false_type>(),
-        1usize,
-        concat!("Alignment of ", stringify!(false_type)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<false_type>() == 1usize, "Size of false_type");
+    assert!(::std::mem::align_of::<false_type>() == 1usize, "Alignment of false_type");
+};

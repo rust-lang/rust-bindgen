@@ -12,19 +12,16 @@ pub struct PureVirtualIFace__bindgen_vtable {
 pub struct PureVirtualIFace {
     pub vtable_: *const PureVirtualIFace__bindgen_vtable,
 }
-#[test]
-fn bindgen_test_layout_PureVirtualIFace() {
-    assert_eq!(
-        ::std::mem::size_of::<PureVirtualIFace>(),
-        8usize,
-        concat!("Size of: ", stringify!(PureVirtualIFace)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<PureVirtualIFace>() == 8usize,
+        "Size of PureVirtualIFace",
     );
-    assert_eq!(
-        ::std::mem::align_of::<PureVirtualIFace>(),
-        8usize,
-        concat!("Alignment of ", stringify!(PureVirtualIFace)),
+    assert!(
+        ::std::mem::align_of::<PureVirtualIFace>() == 8usize,
+        "Alignment of PureVirtualIFace",
     );
-}
+};
 impl Default for PureVirtualIFace {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -43,19 +40,16 @@ pub struct AnotherInterface__bindgen_vtable {
 pub struct AnotherInterface {
     pub vtable_: *const AnotherInterface__bindgen_vtable,
 }
-#[test]
-fn bindgen_test_layout_AnotherInterface() {
-    assert_eq!(
-        ::std::mem::size_of::<AnotherInterface>(),
-        8usize,
-        concat!("Size of: ", stringify!(AnotherInterface)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<AnotherInterface>() == 8usize,
+        "Size of AnotherInterface",
     );
-    assert_eq!(
-        ::std::mem::align_of::<AnotherInterface>(),
-        8usize,
-        concat!("Alignment of ", stringify!(AnotherInterface)),
+    assert!(
+        ::std::mem::align_of::<AnotherInterface>() == 8usize,
+        "Alignment of AnotherInterface",
     );
-}
+};
 impl Default for AnotherInterface {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -70,19 +64,13 @@ impl Default for AnotherInterface {
 pub struct Implementation {
     pub _base: PureVirtualIFace,
 }
-#[test]
-fn bindgen_test_layout_Implementation() {
-    assert_eq!(
-        ::std::mem::size_of::<Implementation>(),
-        8usize,
-        concat!("Size of: ", stringify!(Implementation)),
+const _: () = {
+    assert!(::std::mem::size_of::<Implementation>() == 8usize, "Size of Implementation");
+    assert!(
+        ::std::mem::align_of::<Implementation>() == 8usize,
+        "Alignment of Implementation",
     );
-    assert_eq!(
-        ::std::mem::align_of::<Implementation>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Implementation)),
-    );
-}
+};
 impl Default for Implementation {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -98,19 +86,10 @@ pub struct DoubleImpl {
     pub _base: PureVirtualIFace,
     pub _base_1: AnotherInterface,
 }
-#[test]
-fn bindgen_test_layout_DoubleImpl() {
-    assert_eq!(
-        ::std::mem::size_of::<DoubleImpl>(),
-        16usize,
-        concat!("Size of: ", stringify!(DoubleImpl)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DoubleImpl>(),
-        8usize,
-        concat!("Alignment of ", stringify!(DoubleImpl)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<DoubleImpl>() == 16usize, "Size of DoubleImpl");
+    assert!(::std::mem::align_of::<DoubleImpl>() == 8usize, "Alignment of DoubleImpl");
+};
 impl Default for DoubleImpl {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

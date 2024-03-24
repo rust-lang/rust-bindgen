@@ -24,26 +24,14 @@ pub type my_fun_t = ::std::option::Option<
 pub struct Foo {
     pub callback: my_fun_t,
 }
-#[test]
-fn bindgen_test_layout_Foo() {
-    const UNINIT: ::std::mem::MaybeUninit<Foo> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Foo>(),
-        8usize,
-        concat!("Size of: ", stringify!(Foo)),
+const _: () = {
+    assert!(::std::mem::size_of::<Foo>() == 8usize, "Size of Foo");
+    assert!(::std::mem::align_of::<Foo>() == 8usize, "Alignment of Foo");
+    assert!(
+        ::std::mem::offset_of!(Foo, callback) == 0usize,
+        "Offset of field: Foo::callback",
     );
-    assert_eq!(
-        ::std::mem::align_of::<Foo>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Foo)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).callback) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Foo), "::", stringify!(callback)),
-    );
-}
+};
 pub type my_fun2_t = ::std::option::Option<
     unsafe extern "C" fn(
         arg1: ::std::os::raw::c_int,
@@ -65,23 +53,11 @@ pub type my_fun2_t = ::std::option::Option<
 pub struct Bar {
     pub callback: my_fun2_t,
 }
-#[test]
-fn bindgen_test_layout_Bar() {
-    const UNINIT: ::std::mem::MaybeUninit<Bar> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Bar>(),
-        8usize,
-        concat!("Size of: ", stringify!(Bar)),
+const _: () = {
+    assert!(::std::mem::size_of::<Bar>() == 8usize, "Size of Bar");
+    assert!(::std::mem::align_of::<Bar>() == 8usize, "Alignment of Bar");
+    assert!(
+        ::std::mem::offset_of!(Bar, callback) == 0usize,
+        "Offset of field: Bar::callback",
     );
-    assert_eq!(
-        ::std::mem::align_of::<Bar>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Bar)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).callback) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(callback)),
-    );
-}
+};

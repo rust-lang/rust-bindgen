@@ -24,19 +24,16 @@ impl<T> Default for BaseWithVtable<T> {
 pub struct DerivedWithNoVirtualMethods {
     pub _base: BaseWithVtable<*mut ::std::os::raw::c_char>,
 }
-#[test]
-fn bindgen_test_layout_DerivedWithNoVirtualMethods() {
-    assert_eq!(
-        ::std::mem::size_of::<DerivedWithNoVirtualMethods>(),
-        16usize,
-        concat!("Size of: ", stringify!(DerivedWithNoVirtualMethods)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<DerivedWithNoVirtualMethods>() == 16usize,
+        "Size of DerivedWithNoVirtualMethods",
     );
-    assert_eq!(
-        ::std::mem::align_of::<DerivedWithNoVirtualMethods>(),
-        8usize,
-        concat!("Alignment of ", stringify!(DerivedWithNoVirtualMethods)),
+    assert!(
+        ::std::mem::align_of::<DerivedWithNoVirtualMethods>() == 8usize,
+        "Alignment of DerivedWithNoVirtualMethods",
     );
-}
+};
 impl Default for DerivedWithNoVirtualMethods {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -52,19 +49,16 @@ impl Default for DerivedWithNoVirtualMethods {
 pub struct DerivedWithVirtualMethods {
     pub _base: BaseWithVtable<*mut ::std::os::raw::c_char>,
 }
-#[test]
-fn bindgen_test_layout_DerivedWithVirtualMethods() {
-    assert_eq!(
-        ::std::mem::size_of::<DerivedWithVirtualMethods>(),
-        16usize,
-        concat!("Size of: ", stringify!(DerivedWithVirtualMethods)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<DerivedWithVirtualMethods>() == 16usize,
+        "Size of DerivedWithVirtualMethods",
     );
-    assert_eq!(
-        ::std::mem::align_of::<DerivedWithVirtualMethods>(),
-        8usize,
-        concat!("Alignment of ", stringify!(DerivedWithVirtualMethods)),
+    assert!(
+        ::std::mem::align_of::<DerivedWithVirtualMethods>() == 8usize,
+        "Alignment of DerivedWithVirtualMethods",
     );
-}
+};
 impl Default for DerivedWithVirtualMethods {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -99,19 +93,16 @@ pub struct DerivedWithVtable {
     pub vtable_: *const DerivedWithVtable__bindgen_vtable,
     pub _base: BaseWithoutVtable<*mut ::std::os::raw::c_char>,
 }
-#[test]
-fn bindgen_test_layout_DerivedWithVtable() {
-    assert_eq!(
-        ::std::mem::size_of::<DerivedWithVtable>(),
-        16usize,
-        concat!("Size of: ", stringify!(DerivedWithVtable)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<DerivedWithVtable>() == 16usize,
+        "Size of DerivedWithVtable",
     );
-    assert_eq!(
-        ::std::mem::align_of::<DerivedWithVtable>(),
-        8usize,
-        concat!("Alignment of ", stringify!(DerivedWithVtable)),
+    assert!(
+        ::std::mem::align_of::<DerivedWithVtable>() == 8usize,
+        "Alignment of DerivedWithVtable",
     );
-}
+};
 impl Default for DerivedWithVtable {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -127,19 +118,16 @@ impl Default for DerivedWithVtable {
 pub struct DerivedWithoutVtable {
     pub _base: BaseWithoutVtable<*mut ::std::os::raw::c_char>,
 }
-#[test]
-fn bindgen_test_layout_DerivedWithoutVtable() {
-    assert_eq!(
-        ::std::mem::size_of::<DerivedWithoutVtable>(),
-        8usize,
-        concat!("Size of: ", stringify!(DerivedWithoutVtable)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<DerivedWithoutVtable>() == 8usize,
+        "Size of DerivedWithoutVtable",
     );
-    assert_eq!(
-        ::std::mem::align_of::<DerivedWithoutVtable>(),
-        8usize,
-        concat!("Alignment of ", stringify!(DerivedWithoutVtable)),
+    assert!(
+        ::std::mem::align_of::<DerivedWithoutVtable>() == 8usize,
+        "Alignment of DerivedWithoutVtable",
     );
-}
+};
 impl Default for DerivedWithoutVtable {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -149,79 +137,47 @@ impl Default for DerivedWithoutVtable {
         }
     }
 }
-#[test]
-fn __bindgen_test_layout_BaseWithVtable_open0_ptr_char_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>(),
-        16usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(BaseWithVtable < * mut ::std::os::raw::c_char >),
-        ),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>() == 16usize,
+        "Size of template specialization: BaseWithVtable_open0_ptr_char_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(BaseWithVtable < * mut ::std::os::raw::c_char >),
-        ),
+    assert!(
+        ::std::mem::align_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>() == 8usize,
+        "Align of template specialization: BaseWithVtable_open0_ptr_char_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_BaseWithVtable_open0_ptr_char_close0_instantiation_1() {
-    assert_eq!(
-        ::std::mem::size_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>(),
-        16usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(BaseWithVtable < * mut ::std::os::raw::c_char >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>() == 16usize,
+        "Size of template specialization: BaseWithVtable_open0_ptr_char_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(BaseWithVtable < * mut ::std::os::raw::c_char >),
-        ),
+    assert!(
+        ::std::mem::align_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>() == 8usize,
+        "Align of template specialization: BaseWithVtable_open0_ptr_char_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_BaseWithoutVtable_open0_ptr_char_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(BaseWithoutVtable < * mut ::std::os::raw::c_char >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>()
+            == 8usize,
+        "Size of template specialization: BaseWithoutVtable_open0_ptr_char_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(BaseWithoutVtable < * mut ::std::os::raw::c_char >),
-        ),
+    assert!(
+        ::std::mem::align_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>()
+            == 8usize,
+        "Align of template specialization: BaseWithoutVtable_open0_ptr_char_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_BaseWithoutVtable_open0_ptr_char_close0_instantiation_1() {
-    assert_eq!(
-        ::std::mem::size_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(BaseWithoutVtable < * mut ::std::os::raw::c_char >),
-        ),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>()
+            == 8usize,
+        "Size of template specialization: BaseWithoutVtable_open0_ptr_char_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(BaseWithoutVtable < * mut ::std::os::raw::c_char >),
-        ),
+    assert!(
+        ::std::mem::align_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>()
+            == 8usize,
+        "Align of template specialization: BaseWithoutVtable_open0_ptr_char_close0",
     );
-}
+};

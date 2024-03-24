@@ -4,52 +4,22 @@
 pub struct foo {
     pub inner: ::std::os::raw::c_char,
 }
-#[test]
-fn bindgen_test_layout_foo() {
-    const UNINIT: ::std::mem::MaybeUninit<foo> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<foo>(),
-        1usize,
-        concat!("Size of: ", stringify!(foo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<foo>(),
-        1usize,
-        concat!("Alignment of ", stringify!(foo)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).inner) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(inner)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<foo>() == 1usize, "Size of foo");
+    assert!(::std::mem::align_of::<foo>() == 1usize, "Alignment of foo");
+    assert!(::std::mem::offset_of!(foo, inner) == 0usize, "Offset of field: foo::inner");
+};
 pub type foo_ptr = *const foo;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct bar {
     pub inner: ::std::os::raw::c_char,
 }
-#[test]
-fn bindgen_test_layout_bar() {
-    const UNINIT: ::std::mem::MaybeUninit<bar> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<bar>(),
-        1usize,
-        concat!("Size of: ", stringify!(bar)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<bar>(),
-        1usize,
-        concat!("Alignment of ", stringify!(bar)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).inner) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(bar), "::", stringify!(inner)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<bar>() == 1usize, "Size of bar");
+    assert!(::std::mem::align_of::<bar>() == 1usize, "Alignment of bar");
+    assert!(::std::mem::offset_of!(bar, inner) == 0usize, "Offset of field: bar::inner");
+};
 pub type bar_ptr = *mut bar;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -62,26 +32,14 @@ pub type baz_ptr = *mut baz;
 pub union cat {
     pub standard_issue: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_cat() {
-    const UNINIT: ::std::mem::MaybeUninit<cat> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<cat>(),
-        4usize,
-        concat!("Size of: ", stringify!(cat)),
+const _: () = {
+    assert!(::std::mem::size_of::<cat>() == 4usize, "Size of cat");
+    assert!(::std::mem::align_of::<cat>() == 4usize, "Alignment of cat");
+    assert!(
+        ::std::mem::offset_of!(cat, standard_issue) == 0usize,
+        "Offset of field: cat::standard_issue",
     );
-    assert_eq!(
-        ::std::mem::align_of::<cat>(),
-        4usize,
-        concat!("Alignment of ", stringify!(cat)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).standard_issue) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(cat), "::", stringify!(standard_issue)),
-    );
-}
+};
 impl Default for cat {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

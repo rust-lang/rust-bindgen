@@ -135,16 +135,8 @@ pub struct U4 {
 }
 #[test]
 fn bindgen_test_layout_U4() {
-    assert_eq!(
-        ::std::mem::size_of::<U4>(),
-        4usize,
-        concat!("Size of: ", stringify!(U4)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<U4>(),
-        4usize,
-        concat!("Alignment of ", stringify!(U4)),
-    );
+    assert_eq!(::std::mem::size_of::<U4>(), 4usize, "Size of U4");
+    assert_eq!(::std::mem::align_of::<U4>(), 4usize, "Alignment of U4");
 }
 impl Clone for U4 {
     fn clone(&self) -> Self {
@@ -191,12 +183,8 @@ pub struct B {
 }
 #[test]
 fn bindgen_test_layout_B() {
-    assert_eq!(::std::mem::size_of::<B>(), 4usize, concat!("Size of: ", stringify!(B)));
-    assert_eq!(
-        ::std::mem::align_of::<B>(),
-        4usize,
-        concat!("Alignment of ", stringify!(B)),
-    );
+    assert_eq!(::std::mem::size_of::<B>(), 4usize, "Size of B");
+    assert_eq!(::std::mem::align_of::<B>(), 4usize, "Alignment of B");
 }
 impl Clone for B {
     fn clone(&self) -> Self {
@@ -269,7 +257,7 @@ fn bindgen_test_layout_HasBigBitfield() {
     assert_eq!(
         ::std::mem::size_of::<HasBigBitfield>(),
         16usize,
-        concat!("Size of: ", stringify!(HasBigBitfield)),
+        "Size of HasBigBitfield",
     );
 }
 impl Clone for HasBigBitfield {
