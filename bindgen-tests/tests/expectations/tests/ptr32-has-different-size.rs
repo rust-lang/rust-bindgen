@@ -4,31 +4,13 @@
 pub struct TEST_STRUCT {
     pub ptr_32bit: u32,
 }
-#[test]
-fn bindgen_test_layout_TEST_STRUCT() {
-    const UNINIT: ::std::mem::MaybeUninit<TEST_STRUCT> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<TEST_STRUCT>(),
-        4usize,
-        concat!("Size of: ", stringify!(TEST_STRUCT)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<TEST_STRUCT>(),
-        4usize,
-        concat!("Alignment of ", stringify!(TEST_STRUCT)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).ptr_32bit) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(TEST_STRUCT),
-            "::",
-            stringify!(ptr_32bit),
-        ),
-    );
-}
+const _: () = {
+    ["Size of TEST_STRUCT"][::std::mem::size_of::<TEST_STRUCT>() - 4usize];
+    ["Alignment of TEST_STRUCT"][::std::mem::align_of::<TEST_STRUCT>() - 4usize];
+    [
+        "Offset of field: TEST_STRUCT::ptr_32bit",
+    ][::std::mem::offset_of!(TEST_STRUCT, ptr_32bit) - 0usize];
+};
 impl Default for TEST_STRUCT {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

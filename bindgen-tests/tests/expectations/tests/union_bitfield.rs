@@ -90,19 +90,10 @@ pub union U4 {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
 }
-#[test]
-fn bindgen_test_layout_U4() {
-    assert_eq!(
-        ::std::mem::size_of::<U4>(),
-        4usize,
-        concat!("Size of: ", stringify!(U4)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<U4>(),
-        4usize,
-        concat!("Alignment of ", stringify!(U4)),
-    );
-}
+const _: () = {
+    ["Size of U4"][::std::mem::size_of::<U4>() - 4usize];
+    ["Alignment of U4"][::std::mem::align_of::<U4>() - 4usize];
+};
 impl Default for U4 {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -147,15 +138,10 @@ pub union B {
     pub _bitfield_align_1: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
-#[test]
-fn bindgen_test_layout_B() {
-    assert_eq!(::std::mem::size_of::<B>(), 4usize, concat!("Size of: ", stringify!(B)));
-    assert_eq!(
-        ::std::mem::align_of::<B>(),
-        4usize,
-        concat!("Alignment of ", stringify!(B)),
-    );
-}
+const _: () = {
+    ["Size of B"][::std::mem::size_of::<B>() - 4usize];
+    ["Alignment of B"][::std::mem::align_of::<B>() - 4usize];
+};
 impl Default for B {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

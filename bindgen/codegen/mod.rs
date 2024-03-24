@@ -1254,6 +1254,9 @@ impl CodeGenerator for TemplateInstantiation {
             return;
         }
 
+        // For consistency with other layout tests, gate this on offset_of.
+        let compile_time = ctx.options().rust_features().offset_of;
+
         // If there are any unbound type parameters, then we can't generate a
         // layout test because we aren't dealing with a concrete type with a
         // concrete size and alignment.
@@ -1268,14 +1271,17 @@ impl CodeGenerator for TemplateInstantiation {
             let align = layout.align;
 
             let name = item.full_disambiguated_name(ctx);
-            let mut fn_name =
-                format!("__bindgen_test_layout_{}_instantiation", name);
-            let times_seen = result.overload_number(&fn_name);
-            if times_seen > 0 {
-                write!(&mut fn_name, "_{}", times_seen).unwrap();
-            }
-
-            let fn_name = ctx.rust_ident_raw(fn_name);
+            let fn_name = if compile_time {
+                None
+            } else {
+                let mut fn_name =
+                    format!("__bindgen_test_layout_{name}_instantiation");
+                let times_seen = result.overload_number(&fn_name);
+                if times_seen > 0 {
+                    write!(&mut fn_name, "_{times_seen}").unwrap();
+                }
+                Some(ctx.rust_ident_raw(fn_name))
+            };
 
             let prefix = ctx.trait_prefix();
             let ident = item.to_rust_ty_or_opaque(ctx, &());
@@ -1285,20 +1291,32 @@ impl CodeGenerator for TemplateInstantiation {
             let align_of_expr = quote! {
                 ::#prefix::mem::align_of::<#ident>()
             };
+            let size_of_err =
+                format!("Size of template specialization: {name}");
+            let align_of_err =
+                format!("Align of template specialization: {name}");
 
-            let item = quote! {
-                #[test]
-                fn #fn_name() {
-                    assert_eq!(#size_of_expr, #size,
-                               concat!("Size of template specialization: ",
-                                       stringify!(#ident)));
-                    assert_eq!(#align_of_expr, #align,
-                               concat!("Alignment of template specialization: ",
-                                       stringify!(#ident)));
-                }
-            };
-
-            result.push(item);
+            if compile_time {
+                // In an ideal world this would be assert_eq!, but that is not
+                // supported in const fn due to the need for string formatting.
+                // If #size_of_expr > #size, this will index OOB, and if
+                // #size_of_expr < #size, the subtraction will overflow, both
+                // of which print enough information to see what has gone wrong.
+                result.push(quote! {
+                    const _: () = {
+                        [#size_of_err][#size_of_expr - #size];
+                        [#align_of_err][#align_of_expr - #align];
+                    };
+                });
+            } else {
+                result.push(quote! {
+                    #[test]
+                    fn #fn_name() {
+                        assert_eq!(#size_of_expr, #size, #size_of_err);
+                        assert_eq!(#align_of_expr, #align, #align_of_err);
+                    }
+                });
+            }
         }
     }
 }
@@ -2344,9 +2362,14 @@ impl CodeGenerator for CompInfo {
 
             if ctx.options().layout_tests && !self.is_forward_declaration() {
                 if let Some(layout) = layout {
-                    let fn_name =
-                        format!("bindgen_test_layout_{}", canonical_ident);
-                    let fn_name = ctx.rust_ident_raw(fn_name);
+                    let compile_time = ctx.options().rust_features().offset_of;
+                    let fn_name = if compile_time {
+                        None
+                    } else {
+                        let fn_name =
+                            format!("bindgen_test_layout_{canonical_ident}");
+                        Some(ctx.rust_ident_raw(fn_name))
+                    };
                     let prefix = ctx.trait_prefix();
                     let size_of_expr = quote! {
                         ::#prefix::mem::size_of::<#canonical_ident>()
@@ -2356,18 +2379,22 @@ impl CodeGenerator for CompInfo {
                     };
                     let size = layout.size;
                     let align = layout.align;
+                    let size_of_err = format!("Size of {canonical_ident}");
+                    let align_of_err =
+                        format!("Alignment of {canonical_ident}");
 
                     let check_struct_align = if align >
                         ctx.target_pointer_size() &&
                         !ctx.options().rust_features().repr_align
                     {
                         None
+                    } else if compile_time {
+                        Some(quote! {
+                            [#align_of_err][#align_of_expr - #align];
+                        })
                     } else {
                         Some(quote! {
-                            assert_eq!(#align_of_expr,
-                                   #align,
-                                   concat!("Alignment of ", stringify!(#canonical_ident)));
-
+                            assert_eq!(#align_of_expr, #align, #align_of_err);
                         })
                     };
 
@@ -2388,21 +2415,34 @@ impl CodeGenerator for CompInfo {
                                 field.offset().map(|offset| {
                                     let field_offset = offset / 8;
                                     let field_name = ctx.rust_ident(name);
-                                    quote! {
-                                        assert_eq!(
-                                            unsafe {
-                                                ::#prefix::ptr::addr_of!((*ptr).#field_name) as usize - ptr as usize
-                                            },
-                                            #field_offset,
-                                            concat!("Offset of field: ", stringify!(#canonical_ident), "::", stringify!(#field_name))
-                                        );
+                                    let offset_of_err = format!("Offset of field: {canonical_ident}::{field_name}");
+                                    if compile_time {
+                                        quote! {
+                                            [#offset_of_err][
+                                                ::#prefix::mem::offset_of!(#canonical_ident, #field_name) - #field_offset
+                                            ];
+                                        }
+                                    } else {
+                                        quote! {
+                                            assert_eq!(
+                                                unsafe {
+                                                    ::#prefix::ptr::addr_of!((*ptr).#field_name) as usize - ptr as usize
+                                                },
+                                                #field_offset,
+                                                #offset_of_err
+                                            );
+                                        }
                                     }
                                 })
                             })
                             .collect()
                     };
 
-                    let uninit_decl = if !check_field_offset.is_empty() {
+                    let uninit_decl = if check_field_offset.is_empty() ||
+                        compile_time
+                    {
+                        None
+                    } else {
                         // FIXME: When MSRV >= 1.59.0, we can use
                         // > const PTR: *const #canonical_ident = ::#prefix::mem::MaybeUninit::uninit().as_ptr();
                         Some(quote! {
@@ -2412,22 +2452,27 @@ impl CodeGenerator for CompInfo {
                             const UNINIT: ::#prefix::mem::MaybeUninit<#canonical_ident> = ::#prefix::mem::MaybeUninit::uninit();
                             let ptr = UNINIT.as_ptr();
                         })
-                    } else {
-                        None
                     };
 
-                    let item = quote! {
-                        #[test]
-                        fn #fn_name() {
-                            #uninit_decl
-                            assert_eq!(#size_of_expr,
-                                       #size,
-                                       concat!("Size of: ", stringify!(#canonical_ident)));
-                            #check_struct_align
-                            #( #check_field_offset )*
-                        }
-                    };
-                    result.push(item);
+                    if compile_time {
+                        result.push(quote! {
+                            const _: () = {
+                                [#size_of_err][#size_of_expr - #size];
+                                #check_struct_align
+                                #( #check_field_offset )*
+                            };
+                        });
+                    } else {
+                        result.push(quote! {
+                            #[test]
+                            fn #fn_name() {
+                                #uninit_decl
+                                assert_eq!(#size_of_expr, #size, #size_of_err);
+                                #check_struct_align
+                                #( #check_field_offset )*
+                            }
+                        });
+                    }
                 }
             }
 

@@ -24,34 +24,13 @@ pub mod root {
             pub struct bar {
                 pub this_should_work: root::ns1::ns2::foo::Type,
             }
-            #[test]
-            fn bindgen_test_layout_bar() {
-                const UNINIT: ::std::mem::MaybeUninit<bar> = ::std::mem::MaybeUninit::uninit();
-                let ptr = UNINIT.as_ptr();
-                assert_eq!(
-                    ::std::mem::size_of::<bar>(),
-                    4usize,
-                    concat!("Size of: ", stringify!(bar)),
-                );
-                assert_eq!(
-                    ::std::mem::align_of::<bar>(),
-                    4usize,
-                    concat!("Alignment of ", stringify!(bar)),
-                );
-                assert_eq!(
-                    unsafe {
-                        ::std::ptr::addr_of!((*ptr).this_should_work) as usize
-                            - ptr as usize
-                    },
-                    0usize,
-                    concat!(
-                        "Offset of field: ",
-                        stringify!(bar),
-                        "::",
-                        stringify!(this_should_work),
-                    ),
-                );
-            }
+            const _: () = {
+                ["Size of bar"][::std::mem::size_of::<bar>() - 4usize];
+                ["Alignment of bar"][::std::mem::align_of::<bar>() - 4usize];
+                [
+                    "Offset of field: bar::this_should_work",
+                ][::std::mem::offset_of!(bar, this_should_work) - 0usize];
+            };
             impl Default for bar {
                 fn default() -> Self {
                     let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

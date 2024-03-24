@@ -15,51 +15,20 @@ pub struct foo {
     pub complexFloat: __BindgenComplex<::std::os::raw::c_float>,
     pub complexDouble: __BindgenComplex<::std::os::raw::c_double>,
 }
-#[test]
-fn bindgen_test_layout_foo() {
-    const UNINIT: ::std::mem::MaybeUninit<foo> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<foo>(),
-        48usize,
-        concat!("Size of: ", stringify!(foo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<foo>(),
-        8usize,
-        concat!("Alignment of ", stringify!(foo)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(bar)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize },
-        4usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(baz)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).bazz) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(bazz)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).bazzz) as usize - ptr as usize },
-        16usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(bazzz)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).complexFloat) as usize - ptr as usize },
-        24usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(complexFloat)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).complexDouble) as usize - ptr as usize },
-        32usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(complexDouble)),
-    );
-}
+const _: () = {
+    ["Size of foo"][::std::mem::size_of::<foo>() - 48usize];
+    ["Alignment of foo"][::std::mem::align_of::<foo>() - 8usize];
+    ["Offset of field: foo::bar"][::std::mem::offset_of!(foo, bar) - 0usize];
+    ["Offset of field: foo::baz"][::std::mem::offset_of!(foo, baz) - 4usize];
+    ["Offset of field: foo::bazz"][::std::mem::offset_of!(foo, bazz) - 8usize];
+    ["Offset of field: foo::bazzz"][::std::mem::offset_of!(foo, bazzz) - 16usize];
+    [
+        "Offset of field: foo::complexFloat",
+    ][::std::mem::offset_of!(foo, complexFloat) - 24usize];
+    [
+        "Offset of field: foo::complexDouble",
+    ][::std::mem::offset_of!(foo, complexDouble) - 32usize];
+};
 impl Default for foo {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

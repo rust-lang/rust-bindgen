@@ -4,26 +4,11 @@
 pub struct foo {
     pub mMember: [::std::os::raw::c_longlong; 1usize],
 }
-#[test]
-fn bindgen_test_layout_foo() {
-    const UNINIT: ::std::mem::MaybeUninit<foo> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<foo>(),
-        8usize,
-        concat!("Size of: ", stringify!(foo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<foo>(),
-        8usize,
-        concat!("Alignment of ", stringify!(foo)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(mMember)),
-    );
-}
+const _: () = {
+    ["Size of foo"][::std::mem::size_of::<foo>() - 8usize];
+    ["Alignment of foo"][::std::mem::align_of::<foo>() - 8usize];
+    ["Offset of field: foo::mMember"][::std::mem::offset_of!(foo, mMember) - 0usize];
+};
 pub type __m128 = [f32; 4usize];
 pub type __m128d = [f64; 2usize];
 pub type __m128i = [::std::os::raw::c_longlong; 2usize];

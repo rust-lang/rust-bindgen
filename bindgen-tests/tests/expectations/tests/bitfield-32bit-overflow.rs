@@ -89,19 +89,10 @@ pub struct MuchBitfield {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 5usize]>,
 }
-#[test]
-fn bindgen_test_layout_MuchBitfield() {
-    assert_eq!(
-        ::std::mem::size_of::<MuchBitfield>(),
-        5usize,
-        concat!("Size of: ", stringify!(MuchBitfield)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<MuchBitfield>(),
-        1usize,
-        concat!("Alignment of ", stringify!(MuchBitfield)),
-    );
-}
+const _: () = {
+    ["Size of MuchBitfield"][::std::mem::size_of::<MuchBitfield>() - 5usize];
+    ["Alignment of MuchBitfield"][::std::mem::align_of::<MuchBitfield>() - 1usize];
+};
 impl MuchBitfield {
     #[inline]
     pub fn m0(&self) -> ::std::os::raw::c_char {

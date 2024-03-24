@@ -10,51 +10,27 @@ extern "C" {
 pub struct Test__Float16 {
     pub f: __BindgenFloat16,
 }
-#[test]
-fn bindgen_test_layout_Test__Float16() {
-    const UNINIT: ::std::mem::MaybeUninit<Test__Float16> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Test__Float16>(),
-        2usize,
-        concat!("Size of: ", stringify!(Test__Float16)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Test__Float16>(),
-        2usize,
-        concat!("Alignment of ", stringify!(Test__Float16)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Test__Float16), "::", stringify!(f)),
-    );
-}
+const _: () = {
+    ["Size of Test__Float16"][::std::mem::size_of::<Test__Float16>() - 2usize];
+    ["Alignment of Test__Float16"][::std::mem::align_of::<Test__Float16>() - 2usize];
+    [
+        "Offset of field: Test__Float16::f",
+    ][::std::mem::offset_of!(Test__Float16, f) - 0usize];
+};
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Test__Float16Ref {
     pub f: *mut __BindgenFloat16,
 }
-#[test]
-fn bindgen_test_layout_Test__Float16Ref() {
-    const UNINIT: ::std::mem::MaybeUninit<Test__Float16Ref> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Test__Float16Ref>(),
-        8usize,
-        concat!("Size of: ", stringify!(Test__Float16Ref)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Test__Float16Ref>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Test__Float16Ref)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Test__Float16Ref), "::", stringify!(f)),
-    );
-}
+const _: () = {
+    ["Size of Test__Float16Ref"][::std::mem::size_of::<Test__Float16Ref>() - 8usize];
+    [
+        "Alignment of Test__Float16Ref",
+    ][::std::mem::align_of::<Test__Float16Ref>() - 8usize];
+    [
+        "Offset of field: Test__Float16Ref::f",
+    ][::std::mem::offset_of!(Test__Float16Ref, f) - 0usize];
+};
 impl Default for Test__Float16Ref {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

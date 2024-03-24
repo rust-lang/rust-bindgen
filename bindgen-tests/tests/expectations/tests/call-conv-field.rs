@@ -10,41 +10,20 @@ pub struct JNINativeInterface_ {
     >,
     pub __hack: ::std::os::raw::c_ulonglong,
 }
-#[test]
-fn bindgen_test_layout_JNINativeInterface_() {
-    const UNINIT: ::std::mem::MaybeUninit<JNINativeInterface_> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<JNINativeInterface_>(),
-        16usize,
-        concat!("Size of: ", stringify!(JNINativeInterface_)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<JNINativeInterface_>(),
-        8usize,
-        concat!("Alignment of ", stringify!(JNINativeInterface_)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).GetVersion) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(JNINativeInterface_),
-            "::",
-            stringify!(GetVersion),
-        ),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).__hack) as usize - ptr as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(JNINativeInterface_),
-            "::",
-            stringify!(__hack),
-        ),
-    );
-}
+const _: () = {
+    [
+        "Size of JNINativeInterface_",
+    ][::std::mem::size_of::<JNINativeInterface_>() - 16usize];
+    [
+        "Alignment of JNINativeInterface_",
+    ][::std::mem::align_of::<JNINativeInterface_>() - 8usize];
+    [
+        "Offset of field: JNINativeInterface_::GetVersion",
+    ][::std::mem::offset_of!(JNINativeInterface_, GetVersion) - 0usize];
+    [
+        "Offset of field: JNINativeInterface_::__hack",
+    ][::std::mem::offset_of!(JNINativeInterface_, __hack) - 8usize];
+};
 extern "stdcall" {
     pub fn bar();
 }

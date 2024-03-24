@@ -51,19 +51,10 @@ impl Default for TErrorResult {
 pub struct ErrorResult {
     pub _base: TErrorResult,
 }
-#[test]
-fn bindgen_test_layout_ErrorResult() {
-    assert_eq!(
-        ::std::mem::size_of::<ErrorResult>(),
-        24usize,
-        concat!("Size of: ", stringify!(ErrorResult)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ErrorResult>(),
-        8usize,
-        concat!("Alignment of ", stringify!(ErrorResult)),
-    );
-}
+const _: () = {
+    ["Size of ErrorResult"][::std::mem::size_of::<ErrorResult>() - 24usize];
+    ["Alignment of ErrorResult"][::std::mem::align_of::<ErrorResult>() - 8usize];
+};
 impl Default for ErrorResult {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -73,16 +64,11 @@ impl Default for ErrorResult {
         }
     }
 }
-#[test]
-fn __bindgen_test_layout_TErrorResult_open0_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<TErrorResult>(),
-        24usize,
-        concat!("Size of template specialization: ", stringify!(TErrorResult)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<TErrorResult>(),
-        8usize,
-        concat!("Alignment of template specialization: ", stringify!(TErrorResult)),
-    );
-}
+const _: () = {
+    [
+        "Size of template specialization: TErrorResult_open0_int_close0",
+    ][::std::mem::size_of::<TErrorResult>() - 24usize];
+    [
+        "Align of template specialization: TErrorResult_open0_int_close0",
+    ][::std::mem::align_of::<TErrorResult>() - 8usize];
+};

@@ -8,20 +8,12 @@ pub struct CppObj {
 fn bindgen_test_layout_CppObj() {
     const UNINIT: ::std::mem::MaybeUninit<CppObj> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<CppObj>(),
-        4usize,
-        concat!("Size of: ", stringify!(CppObj)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<CppObj>(),
-        4usize,
-        concat!("Alignment of ", stringify!(CppObj)),
-    );
+    assert_eq!(::std::mem::size_of::<CppObj>(), 4usize, "Size of CppObj");
+    assert_eq!(::std::mem::align_of::<CppObj>(), 4usize, "Alignment of CppObj");
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
         0usize,
-        concat!("Offset of field: ", stringify!(CppObj), "::", stringify!(x)),
+        "Offset of field: CppObj::x",
     );
 }
 extern "C" {
@@ -56,20 +48,12 @@ pub struct CppObj2 {
 fn bindgen_test_layout_CppObj2() {
     const UNINIT: ::std::mem::MaybeUninit<CppObj2> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<CppObj2>(),
-        16usize,
-        concat!("Size of: ", stringify!(CppObj2)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<CppObj2>(),
-        8usize,
-        concat!("Alignment of ", stringify!(CppObj2)),
-    );
+    assert_eq!(::std::mem::size_of::<CppObj2>(), 16usize, "Size of CppObj2");
+    assert_eq!(::std::mem::align_of::<CppObj2>(), 8usize, "Alignment of CppObj2");
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
         8usize,
-        concat!("Offset of field: ", stringify!(CppObj2), "::", stringify!(x)),
+        "Offset of field: CppObj2::x",
     );
 }
 extern "C" {
@@ -107,20 +91,12 @@ pub struct CppObj3 {
 fn bindgen_test_layout_CppObj3() {
     const UNINIT: ::std::mem::MaybeUninit<CppObj3> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<CppObj3>(),
-        24usize,
-        concat!("Size of: ", stringify!(CppObj3)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<CppObj3>(),
-        8usize,
-        concat!("Alignment of ", stringify!(CppObj3)),
-    );
+    assert_eq!(::std::mem::size_of::<CppObj3>(), 24usize, "Size of CppObj3");
+    assert_eq!(::std::mem::align_of::<CppObj3>(), 8usize, "Alignment of CppObj3");
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
         16usize,
-        concat!("Offset of field: ", stringify!(CppObj3), "::", stringify!(x)),
+        "Offset of field: CppObj3::x",
     );
 }
 extern "C" {
@@ -158,20 +134,12 @@ pub struct CppObj4 {
 fn bindgen_test_layout_CppObj4() {
     const UNINIT: ::std::mem::MaybeUninit<CppObj4> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<CppObj4>(),
-        24usize,
-        concat!("Size of: ", stringify!(CppObj4)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<CppObj4>(),
-        8usize,
-        concat!("Alignment of ", stringify!(CppObj4)),
-    );
+    assert_eq!(::std::mem::size_of::<CppObj4>(), 24usize, "Size of CppObj4");
+    assert_eq!(::std::mem::align_of::<CppObj4>(), 8usize, "Alignment of CppObj4");
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
         16usize,
-        concat!("Offset of field: ", stringify!(CppObj4), "::", stringify!(x)),
+        "Offset of field: CppObj4::x",
     );
 }
 extern "C" {

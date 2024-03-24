@@ -10,56 +10,25 @@ pub struct __BindgenComplex<T> {
 pub struct TestDouble {
     pub mMember: __BindgenComplex<f64>,
 }
-#[test]
-fn bindgen_test_layout_TestDouble() {
-    const UNINIT: ::std::mem::MaybeUninit<TestDouble> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<TestDouble>(),
-        16usize,
-        concat!("Size of: ", stringify!(TestDouble)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<TestDouble>(),
-        8usize,
-        concat!("Alignment of ", stringify!(TestDouble)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(TestDouble), "::", stringify!(mMember)),
-    );
-}
+const _: () = {
+    ["Size of TestDouble"][::std::mem::size_of::<TestDouble>() - 16usize];
+    ["Alignment of TestDouble"][::std::mem::align_of::<TestDouble>() - 8usize];
+    [
+        "Offset of field: TestDouble::mMember",
+    ][::std::mem::offset_of!(TestDouble, mMember) - 0usize];
+};
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TestDoublePtr {
     pub mMember: *mut __BindgenComplex<f64>,
 }
-#[test]
-fn bindgen_test_layout_TestDoublePtr() {
-    const UNINIT: ::std::mem::MaybeUninit<TestDoublePtr> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<TestDoublePtr>(),
-        8usize,
-        concat!("Size of: ", stringify!(TestDoublePtr)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<TestDoublePtr>(),
-        8usize,
-        concat!("Alignment of ", stringify!(TestDoublePtr)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(TestDoublePtr),
-            "::",
-            stringify!(mMember),
-        ),
-    );
-}
+const _: () = {
+    ["Size of TestDoublePtr"][::std::mem::size_of::<TestDoublePtr>() - 8usize];
+    ["Alignment of TestDoublePtr"][::std::mem::align_of::<TestDoublePtr>() - 8usize];
+    [
+        "Offset of field: TestDoublePtr::mMember",
+    ][::std::mem::offset_of!(TestDoublePtr, mMember) - 0usize];
+};
 impl Default for TestDoublePtr {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -74,51 +43,25 @@ impl Default for TestDoublePtr {
 pub struct TestFloat {
     pub mMember: __BindgenComplex<f32>,
 }
-#[test]
-fn bindgen_test_layout_TestFloat() {
-    const UNINIT: ::std::mem::MaybeUninit<TestFloat> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<TestFloat>(),
-        8usize,
-        concat!("Size of: ", stringify!(TestFloat)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<TestFloat>(),
-        4usize,
-        concat!("Alignment of ", stringify!(TestFloat)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(TestFloat), "::", stringify!(mMember)),
-    );
-}
+const _: () = {
+    ["Size of TestFloat"][::std::mem::size_of::<TestFloat>() - 8usize];
+    ["Alignment of TestFloat"][::std::mem::align_of::<TestFloat>() - 4usize];
+    [
+        "Offset of field: TestFloat::mMember",
+    ][::std::mem::offset_of!(TestFloat, mMember) - 0usize];
+};
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TestFloatPtr {
     pub mMember: *mut __BindgenComplex<f32>,
 }
-#[test]
-fn bindgen_test_layout_TestFloatPtr() {
-    const UNINIT: ::std::mem::MaybeUninit<TestFloatPtr> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<TestFloatPtr>(),
-        8usize,
-        concat!("Size of: ", stringify!(TestFloatPtr)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<TestFloatPtr>(),
-        8usize,
-        concat!("Alignment of ", stringify!(TestFloatPtr)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mMember) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(TestFloatPtr), "::", stringify!(mMember)),
-    );
-}
+const _: () = {
+    ["Size of TestFloatPtr"][::std::mem::size_of::<TestFloatPtr>() - 8usize];
+    ["Alignment of TestFloatPtr"][::std::mem::align_of::<TestFloatPtr>() - 8usize];
+    [
+        "Offset of field: TestFloatPtr::mMember",
+    ][::std::mem::offset_of!(TestFloatPtr, mMember) - 0usize];
+};
 impl Default for TestFloatPtr {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

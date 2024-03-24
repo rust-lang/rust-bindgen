@@ -10,31 +10,12 @@ pub struct Bar {
     pub baz1: one_Foo::Type,
     pub baz2: *mut one_Foo::Type,
 }
-#[test]
-fn bindgen_test_layout_Bar() {
-    const UNINIT: ::std::mem::MaybeUninit<Bar> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Bar>(),
-        16usize,
-        concat!("Size of: ", stringify!(Bar)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Bar>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Bar)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).baz1) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz1)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).baz2) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz2)),
-    );
-}
+const _: () = {
+    ["Size of Bar"][::std::mem::size_of::<Bar>() - 16usize];
+    ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 8usize];
+    ["Offset of field: Bar::baz1"][::std::mem::offset_of!(Bar, baz1) - 0usize];
+    ["Offset of field: Bar::baz2"][::std::mem::offset_of!(Bar, baz2) - 8usize];
+};
 impl Default for Bar {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

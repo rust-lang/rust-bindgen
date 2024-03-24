@@ -219,12 +219,12 @@ fn __bindgen_test_layout_StylePoint_open0_float_close0_instantiation() {
     assert_eq!(
         ::std::mem::size_of::<StylePoint<f32>>(),
         8usize,
-        concat!("Size of template specialization: ", stringify!(StylePoint < f32 >)),
+        "Size of template specialization: StylePoint_open0_float_close0",
     );
     assert_eq!(
         ::std::mem::align_of::<StylePoint<f32>>(),
         4usize,
-        concat!("Alignment of template specialization: ", stringify!(StylePoint < f32 >)),
+        "Align of template specialization: StylePoint_open0_float_close0",
     );
 }
 #[test]
@@ -232,11 +232,11 @@ fn __bindgen_test_layout_StylePoint_open0_float_close0_instantiation_1() {
     assert_eq!(
         ::std::mem::size_of::<StylePoint<f32>>(),
         8usize,
-        concat!("Size of template specialization: ", stringify!(StylePoint < f32 >)),
+        "Size of template specialization: StylePoint_open0_float_close0",
     );
     assert_eq!(
         ::std::mem::align_of::<StylePoint<f32>>(),
         4usize,
-        concat!("Alignment of template specialization: ", stringify!(StylePoint < f32 >)),
+        "Align of template specialization: StylePoint_open0_float_close0",
     );
 }

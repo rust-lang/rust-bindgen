@@ -11,20 +11,12 @@ pub struct NoDebug {
 fn bindgen_test_layout_NoDebug() {
     const UNINIT: ::std::mem::MaybeUninit<NoDebug> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<NoDebug>(),
-        64usize,
-        concat!("Size of: ", stringify!(NoDebug)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<NoDebug>(),
-        64usize,
-        concat!("Alignment of ", stringify!(NoDebug)),
-    );
+    assert_eq!(::std::mem::size_of::<NoDebug>(), 64usize, "Size of NoDebug");
+    assert_eq!(::std::mem::align_of::<NoDebug>(), 64usize, "Alignment of NoDebug");
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize },
         0usize,
-        concat!("Offset of field: ", stringify!(NoDebug), "::", stringify!(c)),
+        "Offset of field: NoDebug::c",
     );
 }
 impl Default for NoDebug {
@@ -59,32 +51,22 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
     assert_eq!(
         ::std::mem::size_of::<ShouldDeriveDebugButDoesNot>(),
         64usize,
-        concat!("Size of: ", stringify!(ShouldDeriveDebugButDoesNot)),
+        "Size of ShouldDeriveDebugButDoesNot",
     );
     assert_eq!(
         ::std::mem::align_of::<ShouldDeriveDebugButDoesNot>(),
         64usize,
-        concat!("Alignment of ", stringify!(ShouldDeriveDebugButDoesNot)),
+        "Alignment of ShouldDeriveDebugButDoesNot",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize },
         0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldDeriveDebugButDoesNot),
-            "::",
-            stringify!(c),
-        ),
+        "Offset of field: ShouldDeriveDebugButDoesNot::c",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize },
         32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldDeriveDebugButDoesNot),
-            "::",
-            stringify!(d),
-        ),
+        "Offset of field: ShouldDeriveDebugButDoesNot::d",
     );
 }
 impl Default for ShouldDeriveDebugButDoesNot {

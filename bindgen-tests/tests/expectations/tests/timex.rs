@@ -90,26 +90,11 @@ pub struct timex {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 44usize]>,
 }
-#[test]
-fn bindgen_test_layout_timex() {
-    const UNINIT: ::std::mem::MaybeUninit<timex> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<timex>(),
-        48usize,
-        concat!("Size of: ", stringify!(timex)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<timex>(),
-        4usize,
-        concat!("Alignment of ", stringify!(timex)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).tai) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(timex), "::", stringify!(tai)),
-    );
-}
+const _: () = {
+    ["Size of timex"][::std::mem::size_of::<timex>() - 48usize];
+    ["Alignment of timex"][::std::mem::align_of::<timex>() - 4usize];
+    ["Offset of field: timex::tai"][::std::mem::offset_of!(timex, tai) - 0usize];
+};
 impl Default for timex {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -126,26 +111,13 @@ pub struct timex_named {
     pub _bitfield_align_1: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 44usize]>,
 }
-#[test]
-fn bindgen_test_layout_timex_named() {
-    const UNINIT: ::std::mem::MaybeUninit<timex_named> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<timex_named>(),
-        48usize,
-        concat!("Size of: ", stringify!(timex_named)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<timex_named>(),
-        4usize,
-        concat!("Alignment of ", stringify!(timex_named)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).tai) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(timex_named), "::", stringify!(tai)),
-    );
-}
+const _: () = {
+    ["Size of timex_named"][::std::mem::size_of::<timex_named>() - 48usize];
+    ["Alignment of timex_named"][::std::mem::align_of::<timex_named>() - 4usize];
+    [
+        "Offset of field: timex_named::tai",
+    ][::std::mem::offset_of!(timex_named, tai) - 0usize];
+};
 impl Default for timex_named {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

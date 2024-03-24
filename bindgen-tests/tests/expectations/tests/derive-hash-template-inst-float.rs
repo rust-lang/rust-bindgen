@@ -21,26 +21,11 @@ impl<T> Default for foo<T> {
 pub struct IntStr {
     pub a: foo<::std::os::raw::c_int>,
 }
-#[test]
-fn bindgen_test_layout_IntStr() {
-    const UNINIT: ::std::mem::MaybeUninit<IntStr> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<IntStr>(),
-        4usize,
-        concat!("Size of: ", stringify!(IntStr)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<IntStr>(),
-        4usize,
-        concat!("Alignment of ", stringify!(IntStr)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(IntStr), "::", stringify!(a)),
-    );
-}
+const _: () = {
+    ["Size of IntStr"][::std::mem::size_of::<IntStr>() - 4usize];
+    ["Alignment of IntStr"][::std::mem::align_of::<IntStr>() - 4usize];
+    ["Offset of field: IntStr::a"][::std::mem::offset_of!(IntStr, a) - 0usize];
+};
 impl Default for IntStr {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -56,26 +41,11 @@ impl Default for IntStr {
 pub struct FloatStr {
     pub a: foo<f32>,
 }
-#[test]
-fn bindgen_test_layout_FloatStr() {
-    const UNINIT: ::std::mem::MaybeUninit<FloatStr> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<FloatStr>(),
-        4usize,
-        concat!("Size of: ", stringify!(FloatStr)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<FloatStr>(),
-        4usize,
-        concat!("Alignment of ", stringify!(FloatStr)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(FloatStr), "::", stringify!(a)),
-    );
-}
+const _: () = {
+    ["Size of FloatStr"][::std::mem::size_of::<FloatStr>() - 4usize];
+    ["Alignment of FloatStr"][::std::mem::align_of::<FloatStr>() - 4usize];
+    ["Offset of field: FloatStr::a"][::std::mem::offset_of!(FloatStr, a) - 0usize];
+};
 impl Default for FloatStr {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -85,35 +55,19 @@ impl Default for FloatStr {
         }
     }
 }
-#[test]
-fn __bindgen_test_layout_foo_open0_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<foo<::std::os::raw::c_int>>(),
-        4usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(foo < ::std::os::raw::c_int >),
-        ),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<foo<::std::os::raw::c_int>>(),
-        4usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(foo < ::std::os::raw::c_int >),
-        ),
-    );
-}
-#[test]
-fn __bindgen_test_layout_foo_open0_float_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<foo<f32>>(),
-        4usize,
-        concat!("Size of template specialization: ", stringify!(foo < f32 >)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<foo<f32>>(),
-        4usize,
-        concat!("Alignment of template specialization: ", stringify!(foo < f32 >)),
-    );
-}
+const _: () = {
+    [
+        "Size of template specialization: foo_open0_int_close0",
+    ][::std::mem::size_of::<foo<::std::os::raw::c_int>>() - 4usize];
+    [
+        "Align of template specialization: foo_open0_int_close0",
+    ][::std::mem::align_of::<foo<::std::os::raw::c_int>>() - 4usize];
+};
+const _: () = {
+    [
+        "Size of template specialization: foo_open0_float_close0",
+    ][::std::mem::size_of::<foo<f32>>() - 4usize];
+    [
+        "Align of template specialization: foo_open0_float_close0",
+    ][::std::mem::align_of::<foo<f32>>() - 4usize];
+};

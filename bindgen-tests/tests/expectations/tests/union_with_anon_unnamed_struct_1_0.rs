@@ -64,52 +64,32 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
     assert_eq!(
         ::std::mem::size_of::<pixel__bindgen_ty_1>(),
         4usize,
-        concat!("Size of: ", stringify!(pixel__bindgen_ty_1)),
+        "Size of pixel__bindgen_ty_1",
     );
     assert_eq!(
         ::std::mem::align_of::<pixel__bindgen_ty_1>(),
         1usize,
-        concat!("Alignment of ", stringify!(pixel__bindgen_ty_1)),
+        "Alignment of pixel__bindgen_ty_1",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).r) as usize - ptr as usize },
         0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(pixel__bindgen_ty_1),
-            "::",
-            stringify!(r),
-        ),
+        "Offset of field: pixel__bindgen_ty_1::r",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).g) as usize - ptr as usize },
         1usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(pixel__bindgen_ty_1),
-            "::",
-            stringify!(g),
-        ),
+        "Offset of field: pixel__bindgen_ty_1::g",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
         2usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(pixel__bindgen_ty_1),
-            "::",
-            stringify!(b),
-        ),
+        "Offset of field: pixel__bindgen_ty_1::b",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
         3usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(pixel__bindgen_ty_1),
-            "::",
-            stringify!(a),
-        ),
+        "Offset of field: pixel__bindgen_ty_1::a",
     );
 }
 impl Clone for pixel__bindgen_ty_1 {
@@ -121,20 +101,12 @@ impl Clone for pixel__bindgen_ty_1 {
 fn bindgen_test_layout_pixel() {
     const UNINIT: ::std::mem::MaybeUninit<pixel> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<pixel>(),
-        4usize,
-        concat!("Size of: ", stringify!(pixel)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<pixel>(),
-        4usize,
-        concat!("Alignment of ", stringify!(pixel)),
-    );
+    assert_eq!(::std::mem::size_of::<pixel>(), 4usize, "Size of pixel");
+    assert_eq!(::std::mem::align_of::<pixel>(), 4usize, "Alignment of pixel");
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).rgba) as usize - ptr as usize },
         0usize,
-        concat!("Offset of field: ", stringify!(pixel), "::", stringify!(rgba)),
+        "Offset of field: pixel::rgba",
     );
 }
 impl Clone for pixel {

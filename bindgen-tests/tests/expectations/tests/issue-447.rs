@@ -14,19 +14,14 @@ pub mod root {
             pub struct GuardObjectNotifier {
                 pub _address: u8,
             }
-            #[test]
-            fn bindgen_test_layout_GuardObjectNotifier() {
-                assert_eq!(
-                    ::std::mem::size_of::<GuardObjectNotifier>(),
-                    1usize,
-                    concat!("Size of: ", stringify!(GuardObjectNotifier)),
-                );
-                assert_eq!(
-                    ::std::mem::align_of::<GuardObjectNotifier>(),
-                    1usize,
-                    concat!("Alignment of ", stringify!(GuardObjectNotifier)),
-                );
-            }
+            const _: () = {
+                [
+                    "Size of GuardObjectNotifier",
+                ][::std::mem::size_of::<GuardObjectNotifier>() - 1usize];
+                [
+                    "Alignment of GuardObjectNotifier",
+                ][::std::mem::align_of::<GuardObjectNotifier>() - 1usize];
+            };
         }
     }
     #[repr(C)]
@@ -34,19 +29,14 @@ pub mod root {
     pub struct JSAutoCompartment {
         pub _address: u8,
     }
-    #[test]
-    fn bindgen_test_layout_JSAutoCompartment() {
-        assert_eq!(
-            ::std::mem::size_of::<JSAutoCompartment>(),
-            1usize,
-            concat!("Size of: ", stringify!(JSAutoCompartment)),
-        );
-        assert_eq!(
-            ::std::mem::align_of::<JSAutoCompartment>(),
-            1usize,
-            concat!("Alignment of ", stringify!(JSAutoCompartment)),
-        );
-    }
+    const _: () = {
+        [
+            "Size of JSAutoCompartment",
+        ][::std::mem::size_of::<JSAutoCompartment>() - 1usize];
+        [
+            "Alignment of JSAutoCompartment",
+        ][::std::mem::align_of::<JSAutoCompartment>() - 1usize];
+    };
     extern "C" {
         #[link_name = "\u{1}_ZN17JSAutoCompartmentC1EN7mozilla6detail19GuardObjectNotifierE"]
         pub fn JSAutoCompartment_JSAutoCompartment(

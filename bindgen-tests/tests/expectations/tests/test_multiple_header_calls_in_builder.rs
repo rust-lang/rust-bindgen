@@ -25,84 +25,19 @@ pub struct Test {
     pub Ccu: UChar,
     pub Ccd: SChar,
 }
-#[test]
-fn bindgen_test_layout_Test() {
-    const UNINIT: ::std::mem::MaybeUninit<Test> =
-        ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Test>(),
-        12usize,
-        concat!("Size of: ", stringify!(Test))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Test>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Test))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).ch) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Test), "::", stringify!(ch))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).u) as usize - ptr as usize },
-        1usize,
-        concat!("Offset of field: ", stringify!(Test), "::", stringify!(u))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize },
-        2usize,
-        concat!("Offset of field: ", stringify!(Test), "::", stringify!(d))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).cch) as usize - ptr as usize },
-        3usize,
-        concat!("Offset of field: ", stringify!(Test), "::", stringify!(cch))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).cu) as usize - ptr as usize },
-        4usize,
-        concat!("Offset of field: ", stringify!(Test), "::", stringify!(cu))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).cd) as usize - ptr as usize },
-        5usize,
-        concat!("Offset of field: ", stringify!(Test), "::", stringify!(cd))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).Cch) as usize - ptr as usize },
-        6usize,
-        concat!("Offset of field: ", stringify!(Test), "::", stringify!(Cch))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).Cu) as usize - ptr as usize },
-        7usize,
-        concat!("Offset of field: ", stringify!(Test), "::", stringify!(Cu))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).Cd) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(Test), "::", stringify!(Cd))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).Ccch) as usize - ptr as usize },
-        9usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(Test),
-            "::",
-            stringify!(Ccch)
-        )
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).Ccu) as usize - ptr as usize },
-        10usize,
-        concat!("Offset of field: ", stringify!(Test), "::", stringify!(Ccu))
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).Ccd) as usize - ptr as usize },
-        11usize,
-        concat!("Offset of field: ", stringify!(Test), "::", stringify!(Ccd))
-    );
-}
+const _: () = {
+    ["Size of Test"][::std::mem::size_of::<Test>() - 12usize];
+    ["Alignment of Test"][::std::mem::align_of::<Test>() - 1usize];
+    ["Offset of field: Test::ch"][::std::mem::offset_of!(Test, ch) - 0usize];
+    ["Offset of field: Test::u"][::std::mem::offset_of!(Test, u) - 1usize];
+    ["Offset of field: Test::d"][::std::mem::offset_of!(Test, d) - 2usize];
+    ["Offset of field: Test::cch"][::std::mem::offset_of!(Test, cch) - 3usize];
+    ["Offset of field: Test::cu"][::std::mem::offset_of!(Test, cu) - 4usize];
+    ["Offset of field: Test::cd"][::std::mem::offset_of!(Test, cd) - 5usize];
+    ["Offset of field: Test::Cch"][::std::mem::offset_of!(Test, Cch) - 6usize];
+    ["Offset of field: Test::Cu"][::std::mem::offset_of!(Test, Cu) - 7usize];
+    ["Offset of field: Test::Cd"][::std::mem::offset_of!(Test, Cd) - 8usize];
+    ["Offset of field: Test::Ccch"][::std::mem::offset_of!(Test, Ccch) - 9usize];
+    ["Offset of field: Test::Ccu"][::std::mem::offset_of!(Test, Ccu) - 10usize];
+    ["Offset of field: Test::Ccd"][::std::mem::offset_of!(Test, Ccd) - 11usize];
+};

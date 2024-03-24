@@ -91,19 +91,10 @@ pub struct my_struct1 {
     _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     __bindgen_padding_0: [u8; 3usize],
 }
-#[test]
-fn bindgen_test_layout_my_struct1() {
-    assert_eq!(
-        ::std::mem::size_of::<my_struct1>(),
-        4usize,
-        concat!("Size of: ", stringify!(my_struct1)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<my_struct1>(),
-        4usize,
-        concat!("Alignment of ", stringify!(my_struct1)),
-    );
-}
+const _: () = {
+    ["Size of my_struct1"][::std::mem::size_of::<my_struct1>() - 4usize];
+    ["Alignment of my_struct1"][::std::mem::align_of::<my_struct1>() - 4usize];
+};
 impl my_struct1 {
     #[inline]
     fn a(&self) -> ::std::os::raw::c_int {
@@ -139,19 +130,10 @@ pub struct my_struct2 {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }
-#[test]
-fn bindgen_test_layout_my_struct2() {
-    assert_eq!(
-        ::std::mem::size_of::<my_struct2>(),
-        4usize,
-        concat!("Size of: ", stringify!(my_struct2)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<my_struct2>(),
-        4usize,
-        concat!("Alignment of ", stringify!(my_struct2)),
-    );
-}
+const _: () = {
+    ["Size of my_struct2"][::std::mem::size_of::<my_struct2>() - 4usize];
+    ["Alignment of my_struct2"][::std::mem::align_of::<my_struct2>() - 4usize];
+};
 impl my_struct2 {
     #[inline]
     pub fn a(&self) -> ::std::os::raw::c_int {

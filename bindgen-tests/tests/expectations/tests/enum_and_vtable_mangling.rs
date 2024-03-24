@@ -17,22 +17,11 @@ pub struct C {
     pub vtable_: *const C__bindgen_vtable,
     pub i: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_C() {
-    const UNINIT: ::std::mem::MaybeUninit<C> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<C>(), 16usize, concat!("Size of: ", stringify!(C)));
-    assert_eq!(
-        ::std::mem::align_of::<C>(),
-        8usize,
-        concat!("Alignment of ", stringify!(C)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(i)),
-    );
-}
+const _: () = {
+    ["Size of C"][::std::mem::size_of::<C>() - 16usize];
+    ["Alignment of C"][::std::mem::align_of::<C>() - 8usize];
+    ["Offset of field: C::i"][::std::mem::offset_of!(C, i) - 8usize];
+};
 impl Default for C {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

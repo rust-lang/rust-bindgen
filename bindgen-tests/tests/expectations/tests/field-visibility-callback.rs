@@ -92,31 +92,14 @@ pub struct my_struct {
     _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     __bindgen_padding_0: [u8; 3usize],
 }
-#[test]
-fn bindgen_test_layout_my_struct() {
-    const UNINIT: ::std::mem::MaybeUninit<my_struct> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<my_struct>(),
-        12usize,
-        concat!("Size of: ", stringify!(my_struct)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<my_struct>(),
-        4usize,
-        concat!("Alignment of ", stringify!(my_struct)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(my_struct), "::", stringify!(a)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).private_b) as usize - ptr as usize },
-        4usize,
-        concat!("Offset of field: ", stringify!(my_struct), "::", stringify!(private_b)),
-    );
-}
+const _: () = {
+    ["Size of my_struct"][::std::mem::size_of::<my_struct>() - 12usize];
+    ["Alignment of my_struct"][::std::mem::align_of::<my_struct>() - 4usize];
+    ["Offset of field: my_struct::a"][::std::mem::offset_of!(my_struct, a) - 0usize];
+    [
+        "Offset of field: my_struct::private_b",
+    ][::std::mem::offset_of!(my_struct, private_b) - 4usize];
+};
 impl my_struct {
     #[inline]
     pub fn c(&self) -> ::std::os::raw::c_int {

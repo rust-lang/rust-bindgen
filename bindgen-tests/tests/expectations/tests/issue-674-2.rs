@@ -18,70 +18,32 @@ pub mod root {
     pub struct c {
         pub b: u8,
     }
-    #[test]
-    fn bindgen_test_layout_c() {
-        const UNINIT: ::std::mem::MaybeUninit<c> = ::std::mem::MaybeUninit::uninit();
-        let ptr = UNINIT.as_ptr();
-        assert_eq!(
-            ::std::mem::size_of::<c>(),
-            1usize,
-            concat!("Size of: ", stringify!(c)),
-        );
-        assert_eq!(
-            ::std::mem::align_of::<c>(),
-            1usize,
-            concat!("Alignment of ", stringify!(c)),
-        );
-        assert_eq!(
-            unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
-            0usize,
-            concat!("Offset of field: ", stringify!(c), "::", stringify!(b)),
-        );
-    }
+    const _: () = {
+        ["Size of c"][::std::mem::size_of::<c>() - 1usize];
+        ["Alignment of c"][::std::mem::align_of::<c>() - 1usize];
+        ["Offset of field: c::b"][::std::mem::offset_of!(c, b) - 0usize];
+    };
     #[repr(C)]
     #[derive(Debug, Default, Copy, Clone)]
     pub struct B {
         pub a: root::c,
     }
-    #[test]
-    fn bindgen_test_layout_B() {
-        const UNINIT: ::std::mem::MaybeUninit<B> = ::std::mem::MaybeUninit::uninit();
-        let ptr = UNINIT.as_ptr();
-        assert_eq!(
-            ::std::mem::size_of::<B>(),
-            1usize,
-            concat!("Size of: ", stringify!(B)),
-        );
-        assert_eq!(
-            ::std::mem::align_of::<B>(),
-            1usize,
-            concat!("Alignment of ", stringify!(B)),
-        );
-        assert_eq!(
-            unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-            0usize,
-            concat!("Offset of field: ", stringify!(B), "::", stringify!(a)),
-        );
-    }
+    const _: () = {
+        ["Size of B"][::std::mem::size_of::<B>() - 1usize];
+        ["Alignment of B"][::std::mem::align_of::<B>() - 1usize];
+        ["Offset of field: B::a"][::std::mem::offset_of!(B, a) - 0usize];
+    };
     #[repr(C)]
     #[derive(Debug, Default, Copy, Clone)]
     pub struct StaticRefPtr {
         pub _address: u8,
     }
-    #[test]
-    fn __bindgen_test_layout_StaticRefPtr_open0_B_close0_instantiation() {
-        assert_eq!(
-            ::std::mem::size_of::<root::StaticRefPtr>(),
-            1usize,
-            concat!("Size of template specialization: ", stringify!(root::StaticRefPtr)),
-        );
-        assert_eq!(
-            ::std::mem::align_of::<root::StaticRefPtr>(),
-            1usize,
-            concat!(
-                "Alignment of template specialization: ",
-                stringify!(root::StaticRefPtr),
-            ),
-        );
-    }
+    const _: () = {
+        [
+            "Size of template specialization: StaticRefPtr_open0_B_close0",
+        ][::std::mem::size_of::<root::StaticRefPtr>() - 1usize];
+        [
+            "Align of template specialization: StaticRefPtr_open0_B_close0",
+        ][::std::mem::align_of::<root::StaticRefPtr>() - 1usize];
+    };
 }

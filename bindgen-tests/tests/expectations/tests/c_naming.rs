@@ -4,26 +4,11 @@
 pub struct struct_a {
     pub a: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_struct_a() {
-    const UNINIT: ::std::mem::MaybeUninit<struct_a> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<struct_a>(),
-        4usize,
-        concat!("Size of: ", stringify!(struct_a)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<struct_a>(),
-        4usize,
-        concat!("Alignment of ", stringify!(struct_a)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(struct_a), "::", stringify!(a)),
-    );
-}
+const _: () = {
+    ["Size of struct_a"][::std::mem::size_of::<struct_a>() - 4usize];
+    ["Alignment of struct_a"][::std::mem::align_of::<struct_a>() - 4usize];
+    ["Offset of field: struct_a::a"][::std::mem::offset_of!(struct_a, a) - 0usize];
+};
 pub type a = *const struct_a;
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -31,31 +16,12 @@ pub union union_b {
     pub a: ::std::os::raw::c_int,
     pub b: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_union_b() {
-    const UNINIT: ::std::mem::MaybeUninit<union_b> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<union_b>(),
-        4usize,
-        concat!("Size of: ", stringify!(union_b)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<union_b>(),
-        4usize,
-        concat!("Alignment of ", stringify!(union_b)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(union_b), "::", stringify!(a)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(union_b), "::", stringify!(b)),
-    );
-}
+const _: () = {
+    ["Size of union_b"][::std::mem::size_of::<union_b>() - 4usize];
+    ["Alignment of union_b"][::std::mem::align_of::<union_b>() - 4usize];
+    ["Offset of field: union_b::a"][::std::mem::offset_of!(union_b, a) - 0usize];
+    ["Offset of field: union_b::b"][::std::mem::offset_of!(union_b, b) - 0usize];
+};
 impl Default for union_b {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
