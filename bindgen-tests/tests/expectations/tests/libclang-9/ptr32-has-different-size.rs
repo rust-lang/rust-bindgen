@@ -2,11 +2,11 @@
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct TEST_STRUCT {
-    pub ptr_32bit: u32,
+    pub ptr_32bit: *mut ::std::os::raw::c_void,
 }
 const _: () = {
-    assert!(::std::mem::size_of::<TEST_STRUCT>() == 4usize, "Size of TEST_STRUCT");
-    assert!(::std::mem::align_of::<TEST_STRUCT>() == 4usize, "Alignment of TEST_STRUCT");
+    assert!(::std::mem::size_of::<TEST_STRUCT>() == 8usize, "Size of TEST_STRUCT");
+    assert!(::std::mem::align_of::<TEST_STRUCT>() == 8usize, "Alignment of TEST_STRUCT");
     assert!(
         ::std::mem::offset_of!(TEST_STRUCT, ptr_32bit) == 0usize,
         "Offset of field: TEST_STRUCT::ptr_32bit",

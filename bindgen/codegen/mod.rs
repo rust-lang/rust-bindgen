@@ -1274,7 +1274,8 @@ impl CodeGenerator for TemplateInstantiation {
             let fn_name = if compile_time {
                 None
             } else {
-                let mut fn_name = format!("__bindgen_test_layout_{name}_instantiation");
+                let mut fn_name =
+                    format!("__bindgen_test_layout_{name}_instantiation");
                 let times_seen = result.overload_number(&fn_name);
                 if times_seen > 0 {
                     write!(&mut fn_name, "_{times_seen}").unwrap();
@@ -1290,8 +1291,10 @@ impl CodeGenerator for TemplateInstantiation {
             let align_of_expr = quote! {
                 ::#prefix::mem::align_of::<#ident>()
             };
-            let size_of_err = format!("Size of template specialization: {name}");
-            let align_of_err = format!("Align of template specialization: {name}");
+            let size_of_err =
+                format!("Size of template specialization: {name}");
+            let align_of_err =
+                format!("Align of template specialization: {name}");
 
             if compile_time {
                 result.push(quote! {
@@ -2358,7 +2361,8 @@ impl CodeGenerator for CompInfo {
                     let fn_name = if compile_time {
                         None
                     } else {
-                        let fn_name = format!("bindgen_test_layout_{canonical_ident}");
+                        let fn_name =
+                            format!("bindgen_test_layout_{canonical_ident}");
                         Some(ctx.rust_ident_raw(fn_name))
                     };
                     let prefix = ctx.trait_prefix();
@@ -2371,7 +2375,8 @@ impl CodeGenerator for CompInfo {
                     let size = layout.size;
                     let align = layout.align;
                     let size_of_err = format!("Size of {canonical_ident}");
-                    let align_of_err = format!("Alignment of {canonical_ident}");
+                    let align_of_err =
+                        format!("Alignment of {canonical_ident}");
 
                     let check_struct_align = if align >
                         ctx.target_pointer_size() &&
@@ -2429,7 +2434,9 @@ impl CodeGenerator for CompInfo {
                             .collect()
                     };
 
-                    let uninit_decl = if check_field_offset.is_empty() || compile_time {
+                    let uninit_decl = if check_field_offset.is_empty() ||
+                        compile_time
+                    {
                         None
                     } else {
                         // FIXME: When MSRV >= 1.59.0, we can use
