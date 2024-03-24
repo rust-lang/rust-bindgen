@@ -25,26 +25,11 @@ pub mod root {
         pub struct A {
             pub b: root::whatever::whatever_int_t,
         }
-        #[test]
-        fn bindgen_test_layout_A() {
-            const UNINIT: ::std::mem::MaybeUninit<A> = ::std::mem::MaybeUninit::uninit();
-            let ptr = UNINIT.as_ptr();
-            assert_eq!(
-                ::std::mem::size_of::<A>(),
-                4usize,
-                concat!("Size of: ", stringify!(A)),
-            );
-            assert_eq!(
-                ::std::mem::align_of::<A>(),
-                4usize,
-                concat!("Alignment of ", stringify!(A)),
-            );
-            assert_eq!(
-                unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
-                0usize,
-                concat!("Offset of field: ", stringify!(A), "::", stringify!(b)),
-            );
-        }
+        const _: () = {
+            ["Size of A"][::std::mem::size_of::<A>() - 4usize];
+            ["Alignment of A"][::std::mem::align_of::<A>() - 4usize];
+            ["Offset of field: A::b"][::std::mem::offset_of!(A, b) - 0usize];
+        };
     }
     #[repr(C)]
     #[derive(Debug)]

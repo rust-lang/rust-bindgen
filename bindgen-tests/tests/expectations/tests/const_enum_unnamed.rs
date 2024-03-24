@@ -18,16 +18,7 @@ pub const Foo_FOO_BAR: Foo__bindgen_ty_1 = Foo__bindgen_ty_1::FOO_BAR;
 pub enum Foo__bindgen_ty_1 {
     FOO_BAR = 10,
 }
-#[test]
-fn bindgen_test_layout_Foo() {
-    assert_eq!(
-        ::std::mem::size_of::<Foo>(),
-        1usize,
-        concat!("Size of: ", stringify!(Foo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Foo>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Foo)),
-    );
-}
+const _: () = {
+    ["Size of Foo"][::std::mem::size_of::<Foo>() - 1usize];
+    ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 1usize];
+};

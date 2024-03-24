@@ -6,19 +6,10 @@ pub struct Foo__bindgen_vtable(::std::os::raw::c_void);
 pub struct Foo {
     pub vtable_: *const Foo__bindgen_vtable,
 }
-#[test]
-fn bindgen_test_layout_Foo() {
-    assert_eq!(
-        ::std::mem::size_of::<Foo>(),
-        8usize,
-        concat!("Size of: ", stringify!(Foo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Foo>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Foo)),
-    );
-}
+const _: () = {
+    ["Size of Foo"][::std::mem::size_of::<Foo>() - 8usize];
+    ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 8usize];
+};
 impl Default for Foo {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

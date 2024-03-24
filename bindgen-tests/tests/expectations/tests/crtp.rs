@@ -9,19 +9,10 @@ pub struct Base {
 pub struct Derived {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_Derived() {
-    assert_eq!(
-        ::std::mem::size_of::<Derived>(),
-        1usize,
-        concat!("Size of: ", stringify!(Derived)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Derived>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Derived)),
-    );
-}
+const _: () = {
+    ["Size of Derived"][::std::mem::size_of::<Derived>() - 1usize];
+    ["Alignment of Derived"][::std::mem::align_of::<Derived>() - 1usize];
+};
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct BaseWithDestructor {
@@ -32,42 +23,27 @@ pub struct BaseWithDestructor {
 pub struct DerivedFromBaseWithDestructor {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_DerivedFromBaseWithDestructor() {
-    assert_eq!(
-        ::std::mem::size_of::<DerivedFromBaseWithDestructor>(),
-        1usize,
-        concat!("Size of: ", stringify!(DerivedFromBaseWithDestructor)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DerivedFromBaseWithDestructor>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DerivedFromBaseWithDestructor)),
-    );
-}
-#[test]
-fn __bindgen_test_layout_Base_open0_Derived_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<Base>(),
-        1usize,
-        concat!("Size of template specialization: ", stringify!(Base)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Base>(),
-        1usize,
-        concat!("Alignment of template specialization: ", stringify!(Base)),
-    );
-}
-#[test]
-fn __bindgen_test_layout_BaseWithDestructor_open0_DerivedFromBaseWithDestructor_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<BaseWithDestructor>(),
-        1usize,
-        concat!("Size of template specialization: ", stringify!(BaseWithDestructor)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<BaseWithDestructor>(),
-        1usize,
-        concat!("Alignment of template specialization: ", stringify!(BaseWithDestructor)),
-    );
-}
+const _: () = {
+    [
+        "Size of DerivedFromBaseWithDestructor",
+    ][::std::mem::size_of::<DerivedFromBaseWithDestructor>() - 1usize];
+    [
+        "Alignment of DerivedFromBaseWithDestructor",
+    ][::std::mem::align_of::<DerivedFromBaseWithDestructor>() - 1usize];
+};
+const _: () = {
+    [
+        "Size of template specialization: Base_open0_Derived_close0",
+    ][::std::mem::size_of::<Base>() - 1usize];
+    [
+        "Align of template specialization: Base_open0_Derived_close0",
+    ][::std::mem::align_of::<Base>() - 1usize];
+};
+const _: () = {
+    [
+        "Size of template specialization: BaseWithDestructor_open0_DerivedFromBaseWithDestructor_close0",
+    ][::std::mem::size_of::<BaseWithDestructor>() - 1usize];
+    [
+        "Align of template specialization: BaseWithDestructor_open0_DerivedFromBaseWithDestructor_close0",
+    ][::std::mem::align_of::<BaseWithDestructor>() - 1usize];
+};

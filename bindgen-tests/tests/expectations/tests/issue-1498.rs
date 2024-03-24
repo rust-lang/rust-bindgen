@@ -24,41 +24,20 @@ pub union rte_memseg__bindgen_ty_1 {
     ///< Makes sure addr is always 64 bits
     pub addr_64: u64,
 }
-#[test]
-fn bindgen_test_layout_rte_memseg__bindgen_ty_1() {
-    const UNINIT: ::std::mem::MaybeUninit<rte_memseg__bindgen_ty_1> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<rte_memseg__bindgen_ty_1>(),
-        8usize,
-        concat!("Size of: ", stringify!(rte_memseg__bindgen_ty_1)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<rte_memseg__bindgen_ty_1>(),
-        8usize,
-        concat!("Alignment of ", stringify!(rte_memseg__bindgen_ty_1)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).addr) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_memseg__bindgen_ty_1),
-            "::",
-            stringify!(addr),
-        ),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).addr_64) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_memseg__bindgen_ty_1),
-            "::",
-            stringify!(addr_64),
-        ),
-    );
-}
+const _: () = {
+    [
+        "Size of rte_memseg__bindgen_ty_1",
+    ][::std::mem::size_of::<rte_memseg__bindgen_ty_1>() - 8usize];
+    [
+        "Alignment of rte_memseg__bindgen_ty_1",
+    ][::std::mem::align_of::<rte_memseg__bindgen_ty_1>() - 8usize];
+    [
+        "Offset of field: rte_memseg__bindgen_ty_1::addr",
+    ][::std::mem::offset_of!(rte_memseg__bindgen_ty_1, addr) - 0usize];
+    [
+        "Offset of field: rte_memseg__bindgen_ty_1::addr_64",
+    ][::std::mem::offset_of!(rte_memseg__bindgen_ty_1, addr_64) - 0usize];
+};
 impl Default for rte_memseg__bindgen_ty_1 {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -68,56 +47,28 @@ impl Default for rte_memseg__bindgen_ty_1 {
         }
     }
 }
-#[test]
-fn bindgen_test_layout_rte_memseg() {
-    const UNINIT: ::std::mem::MaybeUninit<rte_memseg> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<rte_memseg>(),
-        44usize,
-        concat!("Size of: ", stringify!(rte_memseg)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<rte_memseg>(),
-        1usize,
-        concat!("Alignment of ", stringify!(rte_memseg)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).phys_addr) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(rte_memseg), "::", stringify!(phys_addr)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize },
-        16usize,
-        concat!("Offset of field: ", stringify!(rte_memseg), "::", stringify!(len)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).hugepage_sz) as usize - ptr as usize },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_memseg),
-            "::",
-            stringify!(hugepage_sz),
-        ),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).socket_id) as usize - ptr as usize },
-        32usize,
-        concat!("Offset of field: ", stringify!(rte_memseg), "::", stringify!(socket_id)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).nchannel) as usize - ptr as usize },
-        36usize,
-        concat!("Offset of field: ", stringify!(rte_memseg), "::", stringify!(nchannel)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).nrank) as usize - ptr as usize },
-        40usize,
-        concat!("Offset of field: ", stringify!(rte_memseg), "::", stringify!(nrank)),
-    );
-}
+const _: () = {
+    ["Size of rte_memseg"][::std::mem::size_of::<rte_memseg>() - 44usize];
+    ["Alignment of rte_memseg"][::std::mem::align_of::<rte_memseg>() - 1usize];
+    [
+        "Offset of field: rte_memseg::phys_addr",
+    ][::std::mem::offset_of!(rte_memseg, phys_addr) - 0usize];
+    [
+        "Offset of field: rte_memseg::len",
+    ][::std::mem::offset_of!(rte_memseg, len) - 16usize];
+    [
+        "Offset of field: rte_memseg::hugepage_sz",
+    ][::std::mem::offset_of!(rte_memseg, hugepage_sz) - 24usize];
+    [
+        "Offset of field: rte_memseg::socket_id",
+    ][::std::mem::offset_of!(rte_memseg, socket_id) - 32usize];
+    [
+        "Offset of field: rte_memseg::nchannel",
+    ][::std::mem::offset_of!(rte_memseg, nchannel) - 36usize];
+    [
+        "Offset of field: rte_memseg::nrank",
+    ][::std::mem::offset_of!(rte_memseg, nrank) - 40usize];
+};
 impl Default for rte_memseg {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

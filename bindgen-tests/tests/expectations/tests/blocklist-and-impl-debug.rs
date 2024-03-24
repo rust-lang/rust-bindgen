@@ -5,31 +5,17 @@ pub struct BlocklistMe(u8);
 pub struct ShouldManuallyImplDebug {
     pub a: BlocklistMe,
 }
-#[test]
-fn bindgen_test_layout_ShouldManuallyImplDebug() {
-    const UNINIT: ::std::mem::MaybeUninit<ShouldManuallyImplDebug> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ShouldManuallyImplDebug>(),
-        1usize,
-        concat!("Size of: ", stringify!(ShouldManuallyImplDebug)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ShouldManuallyImplDebug>(),
-        1usize,
-        concat!("Alignment of ", stringify!(ShouldManuallyImplDebug)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldManuallyImplDebug),
-            "::",
-            stringify!(a),
-        ),
-    );
-}
+const _: () = {
+    [
+        "Size of ShouldManuallyImplDebug",
+    ][::std::mem::size_of::<ShouldManuallyImplDebug>() - 1usize];
+    [
+        "Alignment of ShouldManuallyImplDebug",
+    ][::std::mem::align_of::<ShouldManuallyImplDebug>() - 1usize];
+    [
+        "Offset of field: ShouldManuallyImplDebug::a",
+    ][::std::mem::offset_of!(ShouldManuallyImplDebug, a) - 0usize];
+};
 impl Default for ShouldManuallyImplDebug {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

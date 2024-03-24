@@ -10,31 +10,12 @@ pub struct Bar {
     pub f: *const Foo,
     pub m: ::std::os::raw::c_uint,
 }
-#[test]
-fn bindgen_test_layout_Bar() {
-    const UNINIT: ::std::mem::MaybeUninit<Bar> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Bar>(),
-        16usize,
-        concat!("Size of: ", stringify!(Bar)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Bar>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Bar)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(f)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).m) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(m)),
-    );
-}
+const _: () = {
+    ["Size of Bar"][::std::mem::size_of::<Bar>() - 16usize];
+    ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 8usize];
+    ["Offset of field: Bar::f"][::std::mem::offset_of!(Bar, f) - 0usize];
+    ["Offset of field: Bar::m"][::std::mem::offset_of!(Bar, m) - 8usize];
+};
 impl Default for Bar {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -50,31 +31,12 @@ pub struct Baz {
     pub f: *mut Foo,
     pub m: ::std::os::raw::c_uint,
 }
-#[test]
-fn bindgen_test_layout_Baz() {
-    const UNINIT: ::std::mem::MaybeUninit<Baz> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Baz>(),
-        16usize,
-        concat!("Size of: ", stringify!(Baz)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Baz>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Baz)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Baz), "::", stringify!(f)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).m) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(Baz), "::", stringify!(m)),
-    );
-}
+const _: () = {
+    ["Size of Baz"][::std::mem::size_of::<Baz>() - 16usize];
+    ["Alignment of Baz"][::std::mem::align_of::<Baz>() - 8usize];
+    ["Offset of field: Baz::f"][::std::mem::offset_of!(Baz, f) - 0usize];
+    ["Offset of field: Baz::m"][::std::mem::offset_of!(Baz, m) - 8usize];
+};
 impl Default for Baz {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -90,31 +52,12 @@ pub struct Tar {
     pub f: *const Foo,
     pub m: ::std::os::raw::c_uint,
 }
-#[test]
-fn bindgen_test_layout_Tar() {
-    const UNINIT: ::std::mem::MaybeUninit<Tar> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Tar>(),
-        16usize,
-        concat!("Size of: ", stringify!(Tar)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Tar>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Tar)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Tar), "::", stringify!(f)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).m) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(Tar), "::", stringify!(m)),
-    );
-}
+const _: () = {
+    ["Size of Tar"][::std::mem::size_of::<Tar>() - 16usize];
+    ["Alignment of Tar"][::std::mem::align_of::<Tar>() - 8usize];
+    ["Offset of field: Tar::f"][::std::mem::offset_of!(Tar, f) - 0usize];
+    ["Offset of field: Tar::m"][::std::mem::offset_of!(Tar, m) - 8usize];
+};
 impl Default for Tar {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -130,31 +73,12 @@ pub struct Taz {
     pub f: *mut Foo,
     pub m: ::std::os::raw::c_uint,
 }
-#[test]
-fn bindgen_test_layout_Taz() {
-    const UNINIT: ::std::mem::MaybeUninit<Taz> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Taz>(),
-        16usize,
-        concat!("Size of: ", stringify!(Taz)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Taz>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Taz)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Taz), "::", stringify!(f)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).m) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(Taz), "::", stringify!(m)),
-    );
-}
+const _: () = {
+    ["Size of Taz"][::std::mem::size_of::<Taz>() - 16usize];
+    ["Alignment of Taz"][::std::mem::align_of::<Taz>() - 8usize];
+    ["Offset of field: Taz::f"][::std::mem::offset_of!(Taz, f) - 0usize];
+    ["Offset of field: Taz::m"][::std::mem::offset_of!(Taz, m) - 8usize];
+};
 impl Default for Taz {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

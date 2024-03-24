@@ -6,19 +6,10 @@ pub struct VirtualMethods__bindgen_vtable {}
 pub struct VirtualMethods {
     pub vtable_: *const VirtualMethods__bindgen_vtable,
 }
-#[test]
-fn bindgen_test_layout_VirtualMethods() {
-    assert_eq!(
-        ::std::mem::size_of::<VirtualMethods>(),
-        8usize,
-        concat!("Size of: ", stringify!(VirtualMethods)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<VirtualMethods>(),
-        8usize,
-        concat!("Alignment of ", stringify!(VirtualMethods)),
-    );
-}
+const _: () = {
+    ["Size of VirtualMethods"][::std::mem::size_of::<VirtualMethods>() - 8usize];
+    ["Alignment of VirtualMethods"][::std::mem::align_of::<VirtualMethods>() - 8usize];
+};
 impl Default for VirtualMethods {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -38,19 +29,14 @@ pub struct Set {
 pub struct ServoElementSnapshotTable {
     pub _base: Set,
 }
-#[test]
-fn bindgen_test_layout_ServoElementSnapshotTable() {
-    assert_eq!(
-        ::std::mem::size_of::<ServoElementSnapshotTable>(),
-        4usize,
-        concat!("Size of: ", stringify!(ServoElementSnapshotTable)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ServoElementSnapshotTable>(),
-        4usize,
-        concat!("Alignment of ", stringify!(ServoElementSnapshotTable)),
-    );
-}
+const _: () = {
+    [
+        "Size of ServoElementSnapshotTable",
+    ][::std::mem::size_of::<ServoElementSnapshotTable>() - 4usize];
+    [
+        "Alignment of ServoElementSnapshotTable",
+    ][::std::mem::align_of::<ServoElementSnapshotTable>() - 4usize];
+};
 impl Default for ServoElementSnapshotTable {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -60,16 +46,11 @@ impl Default for ServoElementSnapshotTable {
         }
     }
 }
-#[test]
-fn __bindgen_test_layout_Set_open0_VirtualMethods_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<Set>(),
-        4usize,
-        concat!("Size of template specialization: ", stringify!(Set)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Set>(),
-        4usize,
-        concat!("Alignment of template specialization: ", stringify!(Set)),
-    );
-}
+const _: () = {
+    [
+        "Size of template specialization: Set_open0_VirtualMethods_close0",
+    ][::std::mem::size_of::<Set>() - 4usize];
+    [
+        "Align of template specialization: Set_open0_VirtualMethods_close0",
+    ][::std::mem::align_of::<Set>() - 4usize];
+};

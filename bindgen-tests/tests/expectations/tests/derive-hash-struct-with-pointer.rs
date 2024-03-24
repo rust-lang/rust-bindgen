@@ -5,26 +5,13 @@
 pub struct ConstPtrMutObj {
     pub bar: *mut ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_ConstPtrMutObj() {
-    const UNINIT: ::std::mem::MaybeUninit<ConstPtrMutObj> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ConstPtrMutObj>(),
-        8usize,
-        concat!("Size of: ", stringify!(ConstPtrMutObj)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ConstPtrMutObj>(),
-        8usize,
-        concat!("Alignment of ", stringify!(ConstPtrMutObj)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(ConstPtrMutObj), "::", stringify!(bar)),
-    );
-}
+const _: () = {
+    ["Size of ConstPtrMutObj"][::std::mem::size_of::<ConstPtrMutObj>() - 8usize];
+    ["Alignment of ConstPtrMutObj"][::std::mem::align_of::<ConstPtrMutObj>() - 8usize];
+    [
+        "Offset of field: ConstPtrMutObj::bar",
+    ][::std::mem::offset_of!(ConstPtrMutObj, bar) - 0usize];
+};
 impl Default for ConstPtrMutObj {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -39,26 +26,13 @@ impl Default for ConstPtrMutObj {
 pub struct MutPtrMutObj {
     pub bar: *mut ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_MutPtrMutObj() {
-    const UNINIT: ::std::mem::MaybeUninit<MutPtrMutObj> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<MutPtrMutObj>(),
-        8usize,
-        concat!("Size of: ", stringify!(MutPtrMutObj)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<MutPtrMutObj>(),
-        8usize,
-        concat!("Alignment of ", stringify!(MutPtrMutObj)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(MutPtrMutObj), "::", stringify!(bar)),
-    );
-}
+const _: () = {
+    ["Size of MutPtrMutObj"][::std::mem::size_of::<MutPtrMutObj>() - 8usize];
+    ["Alignment of MutPtrMutObj"][::std::mem::align_of::<MutPtrMutObj>() - 8usize];
+    [
+        "Offset of field: MutPtrMutObj::bar",
+    ][::std::mem::offset_of!(MutPtrMutObj, bar) - 0usize];
+};
 impl Default for MutPtrMutObj {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -73,26 +47,13 @@ impl Default for MutPtrMutObj {
 pub struct MutPtrConstObj {
     pub bar: *const ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_MutPtrConstObj() {
-    const UNINIT: ::std::mem::MaybeUninit<MutPtrConstObj> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<MutPtrConstObj>(),
-        8usize,
-        concat!("Size of: ", stringify!(MutPtrConstObj)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<MutPtrConstObj>(),
-        8usize,
-        concat!("Alignment of ", stringify!(MutPtrConstObj)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(MutPtrConstObj), "::", stringify!(bar)),
-    );
-}
+const _: () = {
+    ["Size of MutPtrConstObj"][::std::mem::size_of::<MutPtrConstObj>() - 8usize];
+    ["Alignment of MutPtrConstObj"][::std::mem::align_of::<MutPtrConstObj>() - 8usize];
+    [
+        "Offset of field: MutPtrConstObj::bar",
+    ][::std::mem::offset_of!(MutPtrConstObj, bar) - 0usize];
+};
 impl Default for MutPtrConstObj {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -107,26 +68,15 @@ impl Default for MutPtrConstObj {
 pub struct ConstPtrConstObj {
     pub bar: *const ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_ConstPtrConstObj() {
-    const UNINIT: ::std::mem::MaybeUninit<ConstPtrConstObj> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ConstPtrConstObj>(),
-        8usize,
-        concat!("Size of: ", stringify!(ConstPtrConstObj)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ConstPtrConstObj>(),
-        8usize,
-        concat!("Alignment of ", stringify!(ConstPtrConstObj)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(ConstPtrConstObj), "::", stringify!(bar)),
-    );
-}
+const _: () = {
+    ["Size of ConstPtrConstObj"][::std::mem::size_of::<ConstPtrConstObj>() - 8usize];
+    [
+        "Alignment of ConstPtrConstObj",
+    ][::std::mem::align_of::<ConstPtrConstObj>() - 8usize];
+    [
+        "Offset of field: ConstPtrConstObj::bar",
+    ][::std::mem::offset_of!(ConstPtrConstObj, bar) - 0usize];
+};
 impl Default for ConstPtrConstObj {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

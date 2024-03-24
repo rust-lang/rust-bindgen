@@ -15,45 +15,24 @@ pub type C_U = B;
 pub struct A {
     pub u: B,
 }
-#[test]
-fn bindgen_test_layout_A() {
-    const UNINIT: ::std::mem::MaybeUninit<A> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<A>(), 1usize, concat!("Size of: ", stringify!(A)));
-    assert_eq!(
-        ::std::mem::align_of::<A>(),
-        1usize,
-        concat!("Alignment of ", stringify!(A)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).u) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(u)),
-    );
-}
-#[test]
-fn __bindgen_test_layout_C_open0_A_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<C>(),
-        1usize,
-        concat!("Size of template specialization: ", stringify!(C)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<C>(),
-        1usize,
-        concat!("Alignment of template specialization: ", stringify!(C)),
-    );
-}
-#[test]
-fn __bindgen_test_layout_B_open0_A_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<B>(),
-        1usize,
-        concat!("Size of template specialization: ", stringify!(B)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<B>(),
-        1usize,
-        concat!("Alignment of template specialization: ", stringify!(B)),
-    );
-}
+const _: () = {
+    ["Size of A"][::std::mem::size_of::<A>() - 1usize];
+    ["Alignment of A"][::std::mem::align_of::<A>() - 1usize];
+    ["Offset of field: A::u"][::std::mem::offset_of!(A, u) - 0usize];
+};
+const _: () = {
+    [
+        "Size of template specialization: C_open0_A_close0",
+    ][::std::mem::size_of::<C>() - 1usize];
+    [
+        "Align of template specialization: C_open0_A_close0",
+    ][::std::mem::align_of::<C>() - 1usize];
+};
+const _: () = {
+    [
+        "Size of template specialization: B_open0_A_close0",
+    ][::std::mem::size_of::<B>() - 1usize];
+    [
+        "Align of template specialization: B_open0_A_close0",
+    ][::std::mem::align_of::<B>() - 1usize];
+};

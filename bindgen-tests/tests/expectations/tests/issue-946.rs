@@ -2,17 +2,8 @@
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct foo {}
-#[test]
-fn bindgen_test_layout_foo() {
-    assert_eq!(
-        ::std::mem::size_of::<foo>(),
-        0usize,
-        concat!("Size of: ", stringify!(foo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<foo>(),
-        1usize,
-        concat!("Alignment of ", stringify!(foo)),
-    );
-}
+const _: () = {
+    ["Size of foo"][::std::mem::size_of::<foo>() - 0usize];
+    ["Alignment of foo"][::std::mem::align_of::<foo>() - 1usize];
+};
 pub type bar = foo;

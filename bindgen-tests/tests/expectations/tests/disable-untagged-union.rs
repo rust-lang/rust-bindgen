@@ -49,28 +49,9 @@ pub struct Foo {
     pub baz: __BindgenUnionField<::std::os::raw::c_uint>,
     pub bindgen_union_field: u32,
 }
-#[test]
-fn bindgen_test_layout_Foo() {
-    const UNINIT: ::std::mem::MaybeUninit<Foo> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Foo>(),
-        4usize,
-        concat!("Size of: ", stringify!(Foo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Foo>(),
-        4usize,
-        concat!("Alignment of ", stringify!(Foo)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Foo), "::", stringify!(bar)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Foo), "::", stringify!(baz)),
-    );
-}
+const _: () = {
+    ["Size of Foo"][::std::mem::size_of::<Foo>() - 4usize];
+    ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 4usize];
+    ["Offset of field: Foo::bar"][::std::mem::offset_of!(Foo, bar) - 0usize];
+    ["Offset of field: Foo::baz"][::std::mem::offset_of!(Foo, baz) - 0usize];
+};

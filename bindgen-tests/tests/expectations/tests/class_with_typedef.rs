@@ -11,42 +11,15 @@ pub struct C {
 }
 pub type C_MyInt = ::std::os::raw::c_int;
 pub type C_Lookup = *const ::std::os::raw::c_char;
-#[test]
-fn bindgen_test_layout_C() {
-    const UNINIT: ::std::mem::MaybeUninit<C> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<C>(), 72usize, concat!("Size of: ", stringify!(C)));
-    assert_eq!(
-        ::std::mem::align_of::<C>(),
-        8usize,
-        concat!("Alignment of ", stringify!(C)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(c)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).ptr) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(ptr)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arr) as usize - ptr as usize },
-        16usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(arr)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize },
-        56usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(d)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).other_ptr) as usize - ptr as usize },
-        64usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(other_ptr)),
-    );
-}
+const _: () = {
+    ["Size of C"][::std::mem::size_of::<C>() - 72usize];
+    ["Alignment of C"][::std::mem::align_of::<C>() - 8usize];
+    ["Offset of field: C::c"][::std::mem::offset_of!(C, c) - 0usize];
+    ["Offset of field: C::ptr"][::std::mem::offset_of!(C, ptr) - 8usize];
+    ["Offset of field: C::arr"][::std::mem::offset_of!(C, arr) - 16usize];
+    ["Offset of field: C::d"][::std::mem::offset_of!(C, d) - 56usize];
+    ["Offset of field: C::other_ptr"][::std::mem::offset_of!(C, other_ptr) - 64usize];
+};
 extern "C" {
     #[link_name = "\u{1}_ZN1C6methodEi"]
     pub fn C_method(this: *mut C, c: C_MyInt);
@@ -96,22 +69,11 @@ pub struct D {
     pub _base: C,
     pub ptr: *mut C_MyInt,
 }
-#[test]
-fn bindgen_test_layout_D() {
-    const UNINIT: ::std::mem::MaybeUninit<D> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<D>(), 80usize, concat!("Size of: ", stringify!(D)));
-    assert_eq!(
-        ::std::mem::align_of::<D>(),
-        8usize,
-        concat!("Alignment of ", stringify!(D)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).ptr) as usize - ptr as usize },
-        72usize,
-        concat!("Offset of field: ", stringify!(D), "::", stringify!(ptr)),
-    );
-}
+const _: () = {
+    ["Size of D"][::std::mem::size_of::<D>() - 80usize];
+    ["Alignment of D"][::std::mem::align_of::<D>() - 8usize];
+    ["Offset of field: D::ptr"][::std::mem::offset_of!(D, ptr) - 72usize];
+};
 impl Default for D {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

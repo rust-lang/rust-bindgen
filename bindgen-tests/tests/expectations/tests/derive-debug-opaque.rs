@@ -6,16 +6,8 @@ pub struct Opaque {
 }
 #[test]
 fn bindgen_test_layout_Opaque() {
-    assert_eq!(
-        ::std::mem::size_of::<Opaque>(),
-        164usize,
-        concat!("Size of: ", stringify!(Opaque)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Opaque>(),
-        4usize,
-        concat!("Alignment of ", stringify!(Opaque)),
-    );
+    assert_eq!(::std::mem::size_of::<Opaque>(), 164usize, "Size of Opaque");
+    assert_eq!(::std::mem::align_of::<Opaque>(), 4usize, "Alignment of Opaque");
 }
 impl Default for Opaque {
     fn default() -> Self {
@@ -39,20 +31,12 @@ pub struct OpaqueUser {
 fn bindgen_test_layout_OpaqueUser() {
     const UNINIT: ::std::mem::MaybeUninit<OpaqueUser> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<OpaqueUser>(),
-        164usize,
-        concat!("Size of: ", stringify!(OpaqueUser)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<OpaqueUser>(),
-        4usize,
-        concat!("Alignment of ", stringify!(OpaqueUser)),
-    );
+    assert_eq!(::std::mem::size_of::<OpaqueUser>(), 164usize, "Size of OpaqueUser");
+    assert_eq!(::std::mem::align_of::<OpaqueUser>(), 4usize, "Alignment of OpaqueUser");
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).opaque) as usize - ptr as usize },
         0usize,
-        concat!("Offset of field: ", stringify!(OpaqueUser), "::", stringify!(opaque)),
+        "Offset of field: OpaqueUser::opaque",
     );
 }
 impl Default for OpaqueUser {

@@ -5,16 +5,7 @@
 pub struct NoDebug {
     pub _bindgen_opaque_blob: u32,
 }
-#[test]
-fn bindgen_test_layout_NoDebug() {
-    assert_eq!(
-        ::std::mem::size_of::<NoDebug>(),
-        4usize,
-        concat!("Size of: ", stringify!(NoDebug)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<NoDebug>(),
-        4usize,
-        concat!("Alignment of ", stringify!(NoDebug)),
-    );
-}
+const _: () = {
+    ["Size of NoDebug"][::std::mem::size_of::<NoDebug>() - 4usize];
+    ["Alignment of NoDebug"][::std::mem::align_of::<NoDebug>() - 4usize];
+};

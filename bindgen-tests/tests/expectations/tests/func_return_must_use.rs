@@ -28,19 +28,10 @@ extern "C" {
 #[derive(Debug, Default, Copy, Clone)]
 #[must_use]
 pub struct AnnotatedStruct {}
-#[test]
-fn bindgen_test_layout_AnnotatedStruct() {
-    assert_eq!(
-        ::std::mem::size_of::<AnnotatedStruct>(),
-        0usize,
-        concat!("Size of: ", stringify!(AnnotatedStruct)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<AnnotatedStruct>(),
-        1usize,
-        concat!("Alignment of ", stringify!(AnnotatedStruct)),
-    );
-}
+const _: () = {
+    ["Size of AnnotatedStruct"][::std::mem::size_of::<AnnotatedStruct>() - 0usize];
+    ["Alignment of AnnotatedStruct"][::std::mem::align_of::<AnnotatedStruct>() - 1usize];
+};
 extern "C" {
     #[must_use]
     pub fn return_annotated_struct() -> AnnotatedStruct;
@@ -48,19 +39,10 @@ extern "C" {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct PlainStruct {}
-#[test]
-fn bindgen_test_layout_PlainStruct() {
-    assert_eq!(
-        ::std::mem::size_of::<PlainStruct>(),
-        0usize,
-        concat!("Size of: ", stringify!(PlainStruct)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<PlainStruct>(),
-        1usize,
-        concat!("Alignment of ", stringify!(PlainStruct)),
-    );
-}
+const _: () = {
+    ["Size of PlainStruct"][::std::mem::size_of::<PlainStruct>() - 0usize];
+    ["Alignment of PlainStruct"][::std::mem::align_of::<PlainStruct>() - 1usize];
+};
 /// <div rustbindgen mustusetype></div>
 pub type TypedefPlainStruct = PlainStruct;
 extern "C" {

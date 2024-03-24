@@ -4,12 +4,7 @@
 pub struct U {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_U() {
-    assert_eq!(::std::mem::size_of::<U>(), 1usize, concat!("Size of: ", stringify!(U)));
-    assert_eq!(
-        ::std::mem::align_of::<U>(),
-        1usize,
-        concat!("Alignment of ", stringify!(U)),
-    );
-}
+const _: () = {
+    ["Size of U"][::std::mem::size_of::<U>() - 1usize];
+    ["Alignment of U"][::std::mem::align_of::<U>() - 1usize];
+};

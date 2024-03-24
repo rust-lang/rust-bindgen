@@ -18,29 +18,15 @@ pub mod root {
     pub struct CapturingContentInfo {
         pub a: u8,
     }
-    #[test]
-    fn bindgen_test_layout_CapturingContentInfo() {
-        const UNINIT: ::std::mem::MaybeUninit<CapturingContentInfo> = ::std::mem::MaybeUninit::uninit();
-        let ptr = UNINIT.as_ptr();
-        assert_eq!(
-            ::std::mem::size_of::<CapturingContentInfo>(),
-            1usize,
-            concat!("Size of: ", stringify!(CapturingContentInfo)),
-        );
-        assert_eq!(
-            ::std::mem::align_of::<CapturingContentInfo>(),
-            1usize,
-            concat!("Alignment of ", stringify!(CapturingContentInfo)),
-        );
-        assert_eq!(
-            unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(CapturingContentInfo),
-                "::",
-                stringify!(a),
-            ),
-        );
-    }
+    const _: () = {
+        [
+            "Size of CapturingContentInfo",
+        ][::std::mem::size_of::<CapturingContentInfo>() - 1usize];
+        [
+            "Alignment of CapturingContentInfo",
+        ][::std::mem::align_of::<CapturingContentInfo>() - 1usize];
+        [
+            "Offset of field: CapturingContentInfo::a",
+        ][::std::mem::offset_of!(CapturingContentInfo, a) - 0usize];
+    };
 }

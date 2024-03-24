@@ -4,49 +4,28 @@
 pub struct mozilla_FragmentOrURL {
     pub mIsLocalRef: bool,
 }
-#[test]
-fn bindgen_test_layout_mozilla_FragmentOrURL() {
-    const UNINIT: ::std::mem::MaybeUninit<mozilla_FragmentOrURL> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<mozilla_FragmentOrURL>(),
-        1usize,
-        concat!("Size of: ", stringify!(mozilla_FragmentOrURL)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<mozilla_FragmentOrURL>(),
-        1usize,
-        concat!("Alignment of ", stringify!(mozilla_FragmentOrURL)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mIsLocalRef) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(mozilla_FragmentOrURL),
-            "::",
-            stringify!(mIsLocalRef),
-        ),
-    );
-}
+const _: () = {
+    [
+        "Size of mozilla_FragmentOrURL",
+    ][::std::mem::size_of::<mozilla_FragmentOrURL>() - 1usize];
+    [
+        "Alignment of mozilla_FragmentOrURL",
+    ][::std::mem::align_of::<mozilla_FragmentOrURL>() - 1usize];
+    [
+        "Offset of field: mozilla_FragmentOrURL::mIsLocalRef",
+    ][::std::mem::offset_of!(mozilla_FragmentOrURL, mIsLocalRef) - 0usize];
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct mozilla_Position {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_mozilla_Position() {
-    assert_eq!(
-        ::std::mem::size_of::<mozilla_Position>(),
-        1usize,
-        concat!("Size of: ", stringify!(mozilla_Position)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<mozilla_Position>(),
-        1usize,
-        concat!("Alignment of ", stringify!(mozilla_Position)),
-    );
-}
+const _: () = {
+    ["Size of mozilla_Position"][::std::mem::size_of::<mozilla_Position>() - 1usize];
+    [
+        "Alignment of mozilla_Position",
+    ][::std::mem::align_of::<mozilla_Position>() - 1usize];
+};
 #[repr(C)]
 pub struct mozilla_StyleShapeSource {
     pub __bindgen_anon_1: mozilla_StyleShapeSource__bindgen_ty_1,
@@ -79,26 +58,11 @@ impl Default for mozilla_StyleShapeSource {
 pub struct Bar {
     pub mFoo: *mut nsFoo,
 }
-#[test]
-fn bindgen_test_layout_Bar() {
-    const UNINIT: ::std::mem::MaybeUninit<Bar> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Bar>(),
-        8usize,
-        concat!("Size of: ", stringify!(Bar)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Bar>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Bar)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mFoo) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(mFoo)),
-    );
-}
+const _: () = {
+    ["Size of Bar"][::std::mem::size_of::<Bar>() - 8usize];
+    ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 8usize];
+    ["Offset of field: Bar::mFoo"][::std::mem::offset_of!(Bar, mFoo) - 0usize];
+};
 impl Default for Bar {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -112,26 +76,11 @@ impl Default for Bar {
 pub struct nsFoo {
     pub mBar: mozilla_StyleShapeSource,
 }
-#[test]
-fn bindgen_test_layout_nsFoo() {
-    const UNINIT: ::std::mem::MaybeUninit<nsFoo> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<nsFoo>(),
-        8usize,
-        concat!("Size of: ", stringify!(nsFoo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<nsFoo>(),
-        8usize,
-        concat!("Alignment of ", stringify!(nsFoo)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBar) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(nsFoo), "::", stringify!(mBar)),
-    );
-}
+const _: () = {
+    ["Size of nsFoo"][::std::mem::size_of::<nsFoo>() - 8usize];
+    ["Alignment of nsFoo"][::std::mem::align_of::<nsFoo>() - 8usize];
+    ["Offset of field: nsFoo::mBar"][::std::mem::offset_of!(nsFoo, mBar) - 0usize];
+};
 impl Default for nsFoo {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -141,22 +90,11 @@ impl Default for nsFoo {
         }
     }
 }
-#[test]
-fn __bindgen_test_layout_mozilla_StyleShapeSource_open0_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<mozilla_StyleShapeSource>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(mozilla_StyleShapeSource),
-        ),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<mozilla_StyleShapeSource>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(mozilla_StyleShapeSource),
-        ),
-    );
-}
+const _: () = {
+    [
+        "Size of template specialization: mozilla_StyleShapeSource_open0_int_close0",
+    ][::std::mem::size_of::<mozilla_StyleShapeSource>() - 8usize];
+    [
+        "Align of template specialization: mozilla_StyleShapeSource_open0_int_close0",
+    ][::std::mem::align_of::<mozilla_StyleShapeSource>() - 8usize];
+};

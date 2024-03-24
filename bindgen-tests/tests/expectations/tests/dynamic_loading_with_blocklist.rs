@@ -4,22 +4,11 @@
 pub struct X {
     pub _x: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_X() {
-    const UNINIT: ::std::mem::MaybeUninit<X> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<X>(), 4usize, concat!("Size of: ", stringify!(X)));
-    assert_eq!(
-        ::std::mem::align_of::<X>(),
-        4usize,
-        concat!("Alignment of ", stringify!(X)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr)._x) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(X), "::", stringify!(_x)),
-    );
-}
+const _: () = {
+    ["Size of X"][::std::mem::size_of::<X>() - 4usize];
+    ["Alignment of X"][::std::mem::align_of::<X>() - 4usize];
+    ["Offset of field: X::_x"][::std::mem::offset_of!(X, _x) - 0usize];
+};
 extern "C" {
     #[link_name = "\u{1}_ZN1X13some_functionEv"]
     pub fn X_some_function(this: *mut X);

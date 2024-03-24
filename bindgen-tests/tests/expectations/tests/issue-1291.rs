@@ -23,89 +23,81 @@ pub struct RTCRay {
 fn bindgen_test_layout_RTCRay() {
     const UNINIT: ::std::mem::MaybeUninit<RTCRay> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<RTCRay>(),
-        96usize,
-        concat!("Size of: ", stringify!(RTCRay)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<RTCRay>(),
-        16usize,
-        concat!("Alignment of ", stringify!(RTCRay)),
-    );
+    assert_eq!(::std::mem::size_of::<RTCRay>(), 96usize, "Size of RTCRay");
+    assert_eq!(::std::mem::align_of::<RTCRay>(), 16usize, "Alignment of RTCRay");
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).org) as usize - ptr as usize },
         0usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(org)),
+        "Offset of field: RTCRay::org",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).align0) as usize - ptr as usize },
         12usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(align0)),
+        "Offset of field: RTCRay::align0",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).dir) as usize - ptr as usize },
         16usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(dir)),
+        "Offset of field: RTCRay::dir",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).align1) as usize - ptr as usize },
         28usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(align1)),
+        "Offset of field: RTCRay::align1",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).tnear) as usize - ptr as usize },
         32usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(tnear)),
+        "Offset of field: RTCRay::tnear",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).tfar) as usize - ptr as usize },
         36usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(tfar)),
+        "Offset of field: RTCRay::tfar",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).time) as usize - ptr as usize },
         40usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(time)),
+        "Offset of field: RTCRay::time",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).mask) as usize - ptr as usize },
         44usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(mask)),
+        "Offset of field: RTCRay::mask",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).Ng) as usize - ptr as usize },
         48usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(Ng)),
+        "Offset of field: RTCRay::Ng",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).align2) as usize - ptr as usize },
         60usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(align2)),
+        "Offset of field: RTCRay::align2",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).u) as usize - ptr as usize },
         64usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(u)),
+        "Offset of field: RTCRay::u",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).v) as usize - ptr as usize },
         68usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(v)),
+        "Offset of field: RTCRay::v",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).geomID) as usize - ptr as usize },
         72usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(geomID)),
+        "Offset of field: RTCRay::geomID",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).primID) as usize - ptr as usize },
         76usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(primID)),
+        "Offset of field: RTCRay::primID",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).instID) as usize - ptr as usize },
         80usize,
-        concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(instID)),
+        "Offset of field: RTCRay::instID",
     );
 }

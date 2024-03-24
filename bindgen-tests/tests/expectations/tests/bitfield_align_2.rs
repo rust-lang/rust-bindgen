@@ -98,19 +98,10 @@ pub struct TaggedPtr {
     pub _bitfield_align_1: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
 }
-#[test]
-fn bindgen_test_layout_TaggedPtr() {
-    assert_eq!(
-        ::std::mem::size_of::<TaggedPtr>(),
-        8usize,
-        concat!("Size of: ", stringify!(TaggedPtr)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<TaggedPtr>(),
-        8usize,
-        concat!("Alignment of ", stringify!(TaggedPtr)),
-    );
-}
+const _: () = {
+    ["Size of TaggedPtr"][::std::mem::size_of::<TaggedPtr>() - 8usize];
+    ["Alignment of TaggedPtr"][::std::mem::align_of::<TaggedPtr>() - 8usize];
+};
 impl Default for TaggedPtr {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

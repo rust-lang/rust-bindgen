@@ -22,31 +22,13 @@ pub struct ether_addr {
     ///< Addr bytes in tx order
     pub addr_bytes: [u8; 6usize],
 }
-#[test]
-fn bindgen_test_layout_ether_addr() {
-    const UNINIT: ::std::mem::MaybeUninit<ether_addr> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ether_addr>(),
-        6usize,
-        concat!("Size of: ", stringify!(ether_addr)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ether_addr>(),
-        1usize,
-        concat!("Alignment of ", stringify!(ether_addr)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).addr_bytes) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ether_addr),
-            "::",
-            stringify!(addr_bytes),
-        ),
-    );
-}
+const _: () = {
+    ["Size of ether_addr"][::std::mem::size_of::<ether_addr>() - 6usize];
+    ["Alignment of ether_addr"][::std::mem::align_of::<ether_addr>() - 1usize];
+    [
+        "Offset of field: ether_addr::addr_bytes",
+    ][::std::mem::offset_of!(ether_addr, addr_bytes) - 0usize];
+};
 /// ARP header IPv4 payload.
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -60,41 +42,22 @@ pub struct arp_ipv4 {
     ///< target IP address
     pub arp_tip: u32,
 }
-#[test]
-fn bindgen_test_layout_arp_ipv4() {
-    const UNINIT: ::std::mem::MaybeUninit<arp_ipv4> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<arp_ipv4>(),
-        20usize,
-        concat!("Size of: ", stringify!(arp_ipv4)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<arp_ipv4>(),
-        1usize,
-        concat!("Alignment of ", stringify!(arp_ipv4)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arp_sha) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(arp_ipv4), "::", stringify!(arp_sha)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arp_sip) as usize - ptr as usize },
-        6usize,
-        concat!("Offset of field: ", stringify!(arp_ipv4), "::", stringify!(arp_sip)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arp_tha) as usize - ptr as usize },
-        10usize,
-        concat!("Offset of field: ", stringify!(arp_ipv4), "::", stringify!(arp_tha)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arp_tip) as usize - ptr as usize },
-        16usize,
-        concat!("Offset of field: ", stringify!(arp_ipv4), "::", stringify!(arp_tip)),
-    );
-}
+const _: () = {
+    ["Size of arp_ipv4"][::std::mem::size_of::<arp_ipv4>() - 20usize];
+    ["Alignment of arp_ipv4"][::std::mem::align_of::<arp_ipv4>() - 1usize];
+    [
+        "Offset of field: arp_ipv4::arp_sha",
+    ][::std::mem::offset_of!(arp_ipv4, arp_sha) - 0usize];
+    [
+        "Offset of field: arp_ipv4::arp_sip",
+    ][::std::mem::offset_of!(arp_ipv4, arp_sip) - 6usize];
+    [
+        "Offset of field: arp_ipv4::arp_tha",
+    ][::std::mem::offset_of!(arp_ipv4, arp_tha) - 10usize];
+    [
+        "Offset of field: arp_ipv4::arp_tip",
+    ][::std::mem::offset_of!(arp_ipv4, arp_tip) - 16usize];
+};
 /// ARP header.
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -106,48 +69,25 @@ pub struct arp_hdr {
     pub arp_op: u16,
     pub arp_data: arp_ipv4,
 }
-#[test]
-fn bindgen_test_layout_arp_hdr() {
-    const UNINIT: ::std::mem::MaybeUninit<arp_hdr> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<arp_hdr>(),
-        28usize,
-        concat!("Size of: ", stringify!(arp_hdr)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<arp_hdr>(),
-        1usize,
-        concat!("Alignment of ", stringify!(arp_hdr)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arp_hrd) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(arp_hdr), "::", stringify!(arp_hrd)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arp_pro) as usize - ptr as usize },
-        2usize,
-        concat!("Offset of field: ", stringify!(arp_hdr), "::", stringify!(arp_pro)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arp_hln) as usize - ptr as usize },
-        4usize,
-        concat!("Offset of field: ", stringify!(arp_hdr), "::", stringify!(arp_hln)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arp_pln) as usize - ptr as usize },
-        5usize,
-        concat!("Offset of field: ", stringify!(arp_hdr), "::", stringify!(arp_pln)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arp_op) as usize - ptr as usize },
-        6usize,
-        concat!("Offset of field: ", stringify!(arp_hdr), "::", stringify!(arp_op)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arp_data) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(arp_hdr), "::", stringify!(arp_data)),
-    );
-}
+const _: () = {
+    ["Size of arp_hdr"][::std::mem::size_of::<arp_hdr>() - 28usize];
+    ["Alignment of arp_hdr"][::std::mem::align_of::<arp_hdr>() - 1usize];
+    [
+        "Offset of field: arp_hdr::arp_hrd",
+    ][::std::mem::offset_of!(arp_hdr, arp_hrd) - 0usize];
+    [
+        "Offset of field: arp_hdr::arp_pro",
+    ][::std::mem::offset_of!(arp_hdr, arp_pro) - 2usize];
+    [
+        "Offset of field: arp_hdr::arp_hln",
+    ][::std::mem::offset_of!(arp_hdr, arp_hln) - 4usize];
+    [
+        "Offset of field: arp_hdr::arp_pln",
+    ][::std::mem::offset_of!(arp_hdr, arp_pln) - 5usize];
+    [
+        "Offset of field: arp_hdr::arp_op",
+    ][::std::mem::offset_of!(arp_hdr, arp_op) - 6usize];
+    [
+        "Offset of field: arp_hdr::arp_data",
+    ][::std::mem::offset_of!(arp_hdr, arp_data) - 8usize];
+};

@@ -11,20 +11,16 @@ pub struct AlignedToOne {
 fn bindgen_test_layout_AlignedToOne() {
     const UNINIT: ::std::mem::MaybeUninit<AlignedToOne> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<AlignedToOne>(),
-        4usize,
-        concat!("Size of: ", stringify!(AlignedToOne)),
-    );
+    assert_eq!(::std::mem::size_of::<AlignedToOne>(), 4usize, "Size of AlignedToOne");
     assert_eq!(
         ::std::mem::align_of::<AlignedToOne>(),
         1usize,
-        concat!("Alignment of ", stringify!(AlignedToOne)),
+        "Alignment of AlignedToOne",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize },
         0usize,
-        concat!("Offset of field: ", stringify!(AlignedToOne), "::", stringify!(i)),
+        "Offset of field: AlignedToOne::i",
     );
 }
 /// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
@@ -37,20 +33,16 @@ pub struct AlignedToTwo {
 fn bindgen_test_layout_AlignedToTwo() {
     const UNINIT: ::std::mem::MaybeUninit<AlignedToTwo> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<AlignedToTwo>(),
-        4usize,
-        concat!("Size of: ", stringify!(AlignedToTwo)),
-    );
+    assert_eq!(::std::mem::size_of::<AlignedToTwo>(), 4usize, "Size of AlignedToTwo");
     assert_eq!(
         ::std::mem::align_of::<AlignedToTwo>(),
         2usize,
-        concat!("Alignment of ", stringify!(AlignedToTwo)),
+        "Alignment of AlignedToTwo",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize },
         0usize,
-        concat!("Offset of field: ", stringify!(AlignedToTwo), "::", stringify!(i)),
+        "Offset of field: AlignedToTwo::i",
     );
 }
 /** This should not be opaque because although `libclang` doesn't give us the
@@ -66,25 +58,21 @@ pub struct PackedToOne {
 fn bindgen_test_layout_PackedToOne() {
     const UNINIT: ::std::mem::MaybeUninit<PackedToOne> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<PackedToOne>(),
-        8usize,
-        concat!("Size of: ", stringify!(PackedToOne)),
-    );
+    assert_eq!(::std::mem::size_of::<PackedToOne>(), 8usize, "Size of PackedToOne");
     assert_eq!(
         ::std::mem::align_of::<PackedToOne>(),
         1usize,
-        concat!("Alignment of ", stringify!(PackedToOne)),
+        "Alignment of PackedToOne",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
         0usize,
-        concat!("Offset of field: ", stringify!(PackedToOne), "::", stringify!(x)),
+        "Offset of field: PackedToOne::x",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize },
         4usize,
-        concat!("Offset of field: ", stringify!(PackedToOne), "::", stringify!(y)),
+        "Offset of field: PackedToOne::y",
     );
 }
 /// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
@@ -98,24 +86,20 @@ pub struct PackedToTwo {
 fn bindgen_test_layout_PackedToTwo() {
     const UNINIT: ::std::mem::MaybeUninit<PackedToTwo> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<PackedToTwo>(),
-        8usize,
-        concat!("Size of: ", stringify!(PackedToTwo)),
-    );
+    assert_eq!(::std::mem::size_of::<PackedToTwo>(), 8usize, "Size of PackedToTwo");
     assert_eq!(
         ::std::mem::align_of::<PackedToTwo>(),
         2usize,
-        concat!("Alignment of ", stringify!(PackedToTwo)),
+        "Alignment of PackedToTwo",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
         0usize,
-        concat!("Offset of field: ", stringify!(PackedToTwo), "::", stringify!(x)),
+        "Offset of field: PackedToTwo::x",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize },
         4usize,
-        concat!("Offset of field: ", stringify!(PackedToTwo), "::", stringify!(y)),
+        "Offset of field: PackedToTwo::y",
     );
 }

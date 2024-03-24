@@ -11,19 +11,14 @@ pub struct rte_mbuf {
 pub struct rte_mbuf__bindgen_ty_1 {
     pub bindgen_union_field: [u8; 0usize],
 }
-#[test]
-fn bindgen_test_layout_rte_mbuf__bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<rte_mbuf__bindgen_ty_1>(),
-        0usize,
-        concat!("Size of: ", stringify!(rte_mbuf__bindgen_ty_1)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<rte_mbuf__bindgen_ty_1>(),
-        1usize,
-        concat!("Alignment of ", stringify!(rte_mbuf__bindgen_ty_1)),
-    );
-}
+const _: () = {
+    [
+        "Size of rte_mbuf__bindgen_ty_1",
+    ][::std::mem::size_of::<rte_mbuf__bindgen_ty_1>() - 0usize];
+    [
+        "Alignment of rte_mbuf__bindgen_ty_1",
+    ][::std::mem::align_of::<rte_mbuf__bindgen_ty_1>() - 1usize];
+};
 impl Default for rte_mbuf__bindgen_ty_1 {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -33,19 +28,10 @@ impl Default for rte_mbuf__bindgen_ty_1 {
         }
     }
 }
-#[test]
-fn bindgen_test_layout_rte_mbuf() {
-    assert_eq!(
-        ::std::mem::size_of::<rte_mbuf>(),
-        0usize,
-        concat!("Size of: ", stringify!(rte_mbuf)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<rte_mbuf>(),
-        64usize,
-        concat!("Alignment of ", stringify!(rte_mbuf)),
-    );
-}
+const _: () = {
+    ["Size of rte_mbuf"][::std::mem::size_of::<rte_mbuf>() - 0usize];
+    ["Alignment of rte_mbuf"][::std::mem::align_of::<rte_mbuf>() - 64usize];
+};
 impl Default for rte_mbuf {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

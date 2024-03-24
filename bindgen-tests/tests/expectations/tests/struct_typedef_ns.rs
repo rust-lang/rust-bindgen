@@ -11,31 +11,15 @@ pub mod root {
         pub struct typedef_struct {
             pub foo: ::std::os::raw::c_int,
         }
-        #[test]
-        fn bindgen_test_layout_typedef_struct() {
-            const UNINIT: ::std::mem::MaybeUninit<typedef_struct> = ::std::mem::MaybeUninit::uninit();
-            let ptr = UNINIT.as_ptr();
-            assert_eq!(
-                ::std::mem::size_of::<typedef_struct>(),
-                4usize,
-                concat!("Size of: ", stringify!(typedef_struct)),
-            );
-            assert_eq!(
-                ::std::mem::align_of::<typedef_struct>(),
-                4usize,
-                concat!("Alignment of ", stringify!(typedef_struct)),
-            );
-            assert_eq!(
-                unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(typedef_struct),
-                    "::",
-                    stringify!(foo),
-                ),
-            );
-        }
+        const _: () = {
+            ["Size of typedef_struct"][::std::mem::size_of::<typedef_struct>() - 4usize];
+            [
+                "Alignment of typedef_struct",
+            ][::std::mem::align_of::<typedef_struct>() - 4usize];
+            [
+                "Offset of field: typedef_struct::foo",
+            ][::std::mem::offset_of!(typedef_struct, foo) - 0usize];
+        };
         #[repr(u32)]
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub enum typedef_enum {
@@ -50,31 +34,15 @@ pub mod root {
         pub struct typedef_struct {
             pub foo: ::std::os::raw::c_int,
         }
-        #[test]
-        fn bindgen_test_layout_typedef_struct() {
-            const UNINIT: ::std::mem::MaybeUninit<typedef_struct> = ::std::mem::MaybeUninit::uninit();
-            let ptr = UNINIT.as_ptr();
-            assert_eq!(
-                ::std::mem::size_of::<typedef_struct>(),
-                4usize,
-                concat!("Size of: ", stringify!(typedef_struct)),
-            );
-            assert_eq!(
-                ::std::mem::align_of::<typedef_struct>(),
-                4usize,
-                concat!("Alignment of ", stringify!(typedef_struct)),
-            );
-            assert_eq!(
-                unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
-                0usize,
-                concat!(
-                    "Offset of field: ",
-                    stringify!(typedef_struct),
-                    "::",
-                    stringify!(foo),
-                ),
-            );
-        }
+        const _: () = {
+            ["Size of typedef_struct"][::std::mem::size_of::<typedef_struct>() - 4usize];
+            [
+                "Alignment of typedef_struct",
+            ][::std::mem::align_of::<typedef_struct>() - 4usize];
+            [
+                "Offset of field: typedef_struct::foo",
+            ][::std::mem::offset_of!(typedef_struct, foo) - 0usize];
+        };
         #[repr(u32)]
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub enum typedef_enum {

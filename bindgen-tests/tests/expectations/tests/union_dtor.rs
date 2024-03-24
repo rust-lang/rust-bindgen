@@ -4,31 +4,16 @@ pub union UnionWithDtor {
     pub mFoo: ::std::os::raw::c_int,
     pub mBar: *mut ::std::os::raw::c_void,
 }
-#[test]
-fn bindgen_test_layout_UnionWithDtor() {
-    const UNINIT: ::std::mem::MaybeUninit<UnionWithDtor> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<UnionWithDtor>(),
-        8usize,
-        concat!("Size of: ", stringify!(UnionWithDtor)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<UnionWithDtor>(),
-        8usize,
-        concat!("Alignment of ", stringify!(UnionWithDtor)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mFoo) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(UnionWithDtor), "::", stringify!(mFoo)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mBar) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(UnionWithDtor), "::", stringify!(mBar)),
-    );
-}
+const _: () = {
+    ["Size of UnionWithDtor"][::std::mem::size_of::<UnionWithDtor>() - 8usize];
+    ["Alignment of UnionWithDtor"][::std::mem::align_of::<UnionWithDtor>() - 8usize];
+    [
+        "Offset of field: UnionWithDtor::mFoo",
+    ][::std::mem::offset_of!(UnionWithDtor, mFoo) - 0usize];
+    [
+        "Offset of field: UnionWithDtor::mBar",
+    ][::std::mem::offset_of!(UnionWithDtor, mBar) - 0usize];
+};
 extern "C" {
     #[link_name = "\u{1}_ZN13UnionWithDtorD1Ev"]
     pub fn UnionWithDtor_UnionWithDtor_destructor(this: *mut UnionWithDtor);

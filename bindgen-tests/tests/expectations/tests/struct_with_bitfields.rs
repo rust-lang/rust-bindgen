@@ -92,26 +92,11 @@ pub struct bitfield {
     pub _bitfield_align_2: [u32; 0],
     pub _bitfield_2: __BindgenBitfieldUnit<[u8; 8usize]>,
 }
-#[test]
-fn bindgen_test_layout_bitfield() {
-    const UNINIT: ::std::mem::MaybeUninit<bitfield> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<bitfield>(),
-        16usize,
-        concat!("Size of: ", stringify!(bitfield)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<bitfield>(),
-        4usize,
-        concat!("Alignment of ", stringify!(bitfield)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).e) as usize - ptr as usize },
-        4usize,
-        concat!("Offset of field: ", stringify!(bitfield), "::", stringify!(e)),
-    );
-}
+const _: () = {
+    ["Size of bitfield"][::std::mem::size_of::<bitfield>() - 16usize];
+    ["Alignment of bitfield"][::std::mem::align_of::<bitfield>() - 4usize];
+    ["Offset of field: bitfield::e"][::std::mem::offset_of!(bitfield, e) - 4usize];
+};
 impl bitfield {
     #[inline]
     pub fn a(&self) -> ::std::os::raw::c_ushort {

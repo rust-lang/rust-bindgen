@@ -68,62 +68,42 @@ fn bindgen_test_layout_rte_mempool_ops() {
     assert_eq!(
         ::std::mem::size_of::<rte_mempool_ops>(),
         128usize,
-        concat!("Size of: ", stringify!(rte_mempool_ops)),
+        "Size of rte_mempool_ops",
     );
     assert_eq!(
         ::std::mem::align_of::<rte_mempool_ops>(),
         64usize,
-        concat!("Alignment of ", stringify!(rte_mempool_ops)),
+        "Alignment of rte_mempool_ops",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).name) as usize - ptr as usize },
         0usize,
-        concat!("Offset of field: ", stringify!(rte_mempool_ops), "::", stringify!(name)),
+        "Offset of field: rte_mempool_ops::name",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).alloc) as usize - ptr as usize },
         32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops),
-            "::",
-            stringify!(alloc),
-        ),
+        "Offset of field: rte_mempool_ops::alloc",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).free) as usize - ptr as usize },
         40usize,
-        concat!("Offset of field: ", stringify!(rte_mempool_ops), "::", stringify!(free)),
+        "Offset of field: rte_mempool_ops::free",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).enqueue) as usize - ptr as usize },
         48usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops),
-            "::",
-            stringify!(enqueue),
-        ),
+        "Offset of field: rte_mempool_ops::enqueue",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).dequeue) as usize - ptr as usize },
         56usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops),
-            "::",
-            stringify!(dequeue),
-        ),
+        "Offset of field: rte_mempool_ops::dequeue",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).get_count) as usize - ptr as usize },
         64usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops),
-            "::",
-            stringify!(get_count),
-        ),
+        "Offset of field: rte_mempool_ops::get_count",
     );
 }
 impl Default for rte_mempool_ops {
@@ -156,22 +136,17 @@ fn bindgen_test_layout_rte_spinlock_t() {
     assert_eq!(
         ::std::mem::size_of::<rte_spinlock_t>(),
         4usize,
-        concat!("Size of: ", stringify!(rte_spinlock_t)),
+        "Size of rte_spinlock_t",
     );
     assert_eq!(
         ::std::mem::align_of::<rte_spinlock_t>(),
         4usize,
-        concat!("Alignment of ", stringify!(rte_spinlock_t)),
+        "Alignment of rte_spinlock_t",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).locked) as usize - ptr as usize },
         0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_spinlock_t),
-            "::",
-            stringify!(locked),
-        ),
+        "Offset of field: rte_spinlock_t::locked",
     );
 }
 /** Structure storing the table of registered ops structs, each of which contain
@@ -200,42 +175,27 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
     assert_eq!(
         ::std::mem::size_of::<rte_mempool_ops_table>(),
         2112usize,
-        concat!("Size of: ", stringify!(rte_mempool_ops_table)),
+        "Size of rte_mempool_ops_table",
     );
     assert_eq!(
         ::std::mem::align_of::<rte_mempool_ops_table>(),
         64usize,
-        concat!("Alignment of ", stringify!(rte_mempool_ops_table)),
+        "Alignment of rte_mempool_ops_table",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).sl) as usize - ptr as usize },
         0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops_table),
-            "::",
-            stringify!(sl),
-        ),
+        "Offset of field: rte_mempool_ops_table::sl",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).num_ops) as usize - ptr as usize },
         4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops_table),
-            "::",
-            stringify!(num_ops),
-        ),
+        "Offset of field: rte_mempool_ops_table::num_ops",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).ops) as usize - ptr as usize },
         64usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_mempool_ops_table),
-            "::",
-            stringify!(ops),
-        ),
+        "Offset of field: rte_mempool_ops_table::ops",
     );
 }
 impl Default for rte_mempool_ops_table {
@@ -269,22 +229,17 @@ fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
     assert_eq!(
         ::std::mem::size_of::<malloc_heap__bindgen_ty_1>(),
         8usize,
-        concat!("Size of: ", stringify!(malloc_heap__bindgen_ty_1)),
+        "Size of malloc_heap__bindgen_ty_1",
     );
     assert_eq!(
         ::std::mem::align_of::<malloc_heap__bindgen_ty_1>(),
         8usize,
-        concat!("Alignment of ", stringify!(malloc_heap__bindgen_ty_1)),
+        "Alignment of malloc_heap__bindgen_ty_1",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).lh_first) as usize - ptr as usize },
         0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(malloc_heap__bindgen_ty_1),
-            "::",
-            stringify!(lh_first),
-        ),
+        "Offset of field: malloc_heap__bindgen_ty_1::lh_first",
     );
 }
 impl Default for malloc_heap__bindgen_ty_1 {
@@ -300,50 +255,31 @@ impl Default for malloc_heap__bindgen_ty_1 {
 fn bindgen_test_layout_malloc_heap() {
     const UNINIT: ::std::mem::MaybeUninit<malloc_heap> = ::std::mem::MaybeUninit::uninit();
     let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<malloc_heap>(),
-        128usize,
-        concat!("Size of: ", stringify!(malloc_heap)),
-    );
+    assert_eq!(::std::mem::size_of::<malloc_heap>(), 128usize, "Size of malloc_heap");
     assert_eq!(
         ::std::mem::align_of::<malloc_heap>(),
         64usize,
-        concat!("Alignment of ", stringify!(malloc_heap)),
+        "Alignment of malloc_heap",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).lock) as usize - ptr as usize },
         0usize,
-        concat!("Offset of field: ", stringify!(malloc_heap), "::", stringify!(lock)),
+        "Offset of field: malloc_heap::lock",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).free_head) as usize - ptr as usize },
         8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(malloc_heap),
-            "::",
-            stringify!(free_head),
-        ),
+        "Offset of field: malloc_heap::free_head",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).alloc_count) as usize - ptr as usize },
         112usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(malloc_heap),
-            "::",
-            stringify!(alloc_count),
-        ),
+        "Offset of field: malloc_heap::alloc_count",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).total_size) as usize - ptr as usize },
         120usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(malloc_heap),
-            "::",
-            stringify!(total_size),
-        ),
+        "Offset of field: malloc_heap::total_size",
     );
 }
 impl Default for malloc_heap {

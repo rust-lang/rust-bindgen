@@ -4,19 +4,8 @@
 pub struct A {
     pub foo: usize,
 }
-#[test]
-fn bindgen_test_layout_A() {
-    const UNINIT: ::std::mem::MaybeUninit<A> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<A>(), 8usize, concat!("Size of: ", stringify!(A)));
-    assert_eq!(
-        ::std::mem::align_of::<A>(),
-        8usize,
-        concat!("Alignment of ", stringify!(A)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(foo)),
-    );
-}
+const _: () = {
+    ["Size of A"][::std::mem::size_of::<A>() - 8usize];
+    ["Alignment of A"][::std::mem::align_of::<A>() - 8usize];
+    ["Offset of field: A::foo"][::std::mem::offset_of!(A, foo) - 0usize];
+};

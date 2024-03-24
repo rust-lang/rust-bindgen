@@ -95,19 +95,12 @@ pub struct foo__bindgen_ty_1 {
     pub _bitfield_align_1: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
-#[test]
-fn bindgen_test_layout_foo__bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<foo__bindgen_ty_1>(),
-        4usize,
-        concat!("Size of: ", stringify!(foo__bindgen_ty_1)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<foo__bindgen_ty_1>(),
-        4usize,
-        concat!("Alignment of ", stringify!(foo__bindgen_ty_1)),
-    );
-}
+const _: () = {
+    ["Size of foo__bindgen_ty_1"][::std::mem::size_of::<foo__bindgen_ty_1>() - 4usize];
+    [
+        "Alignment of foo__bindgen_ty_1",
+    ][::std::mem::align_of::<foo__bindgen_ty_1>() - 4usize];
+};
 impl foo__bindgen_ty_1 {
     #[inline]
     pub fn b(&self) -> ::std::os::raw::c_int {
@@ -158,26 +151,11 @@ impl foo__bindgen_ty_1 {
         __bindgen_bitfield_unit
     }
 }
-#[test]
-fn bindgen_test_layout_foo() {
-    const UNINIT: ::std::mem::MaybeUninit<foo> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<foo>(),
-        4usize,
-        concat!("Size of: ", stringify!(foo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<foo>(),
-        4usize,
-        concat!("Alignment of ", stringify!(foo)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(a)),
-    );
-}
+const _: () = {
+    ["Size of foo"][::std::mem::size_of::<foo>() - 4usize];
+    ["Alignment of foo"][::std::mem::align_of::<foo>() - 4usize];
+    ["Offset of field: foo::a"][::std::mem::offset_of!(foo, a) - 0usize];
+};
 impl Default for foo {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

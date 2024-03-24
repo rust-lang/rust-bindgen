@@ -90,19 +90,10 @@ pub struct HasBigBitfield {
     pub _bitfield_align_1: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
 }
-#[test]
-fn bindgen_test_layout_HasBigBitfield() {
-    assert_eq!(
-        ::std::mem::size_of::<HasBigBitfield>(),
-        16usize,
-        concat!("Size of: ", stringify!(HasBigBitfield)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<HasBigBitfield>(),
-        16usize,
-        concat!("Alignment of ", stringify!(HasBigBitfield)),
-    );
-}
+const _: () = {
+    ["Size of HasBigBitfield"][::std::mem::size_of::<HasBigBitfield>() - 16usize];
+    ["Alignment of HasBigBitfield"][::std::mem::align_of::<HasBigBitfield>() - 16usize];
+};
 impl HasBigBitfield {
     #[inline]
     pub fn x(&self) -> i128 {
@@ -137,19 +128,14 @@ pub struct HasTwoBigBitfields {
     pub _bitfield_align_1: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
 }
-#[test]
-fn bindgen_test_layout_HasTwoBigBitfields() {
-    assert_eq!(
-        ::std::mem::size_of::<HasTwoBigBitfields>(),
-        16usize,
-        concat!("Size of: ", stringify!(HasTwoBigBitfields)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<HasTwoBigBitfields>(),
-        16usize,
-        concat!("Alignment of ", stringify!(HasTwoBigBitfields)),
-    );
-}
+const _: () = {
+    [
+        "Size of HasTwoBigBitfields",
+    ][::std::mem::size_of::<HasTwoBigBitfields>() - 16usize];
+    [
+        "Alignment of HasTwoBigBitfields",
+    ][::std::mem::align_of::<HasTwoBigBitfields>() - 16usize];
+};
 impl HasTwoBigBitfields {
     #[inline]
     pub fn x(&self) -> i128 {
