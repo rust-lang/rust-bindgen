@@ -596,7 +596,6 @@ when a new cargo-dist is available:
 
 ```
 cargo dist init # from "cargo install cargo-dist"
-cargo dist generate-ci # to update .github/workflows/release.yml
 ```
 
 ### What to do if a Github release fails

@@ -17,17 +17,19 @@ default-members = [
 # Config for 'cargo dist'
 [workspace.metadata.dist]
 # The preferred cargo-dist version to use in CI (Cargo.toml SemVer syntax)
-cargo-dist-version = "0.3.1"
+cargo-dist-version = "0.12.0"
 # CI backends to support
 ci = ["github"]
 # The installers to generate for each app
 installers = ["shell", "powershell"]
 # Target platforms to build apps for (Rust target-triple syntax)
-targets = ["x86_64-unknown-linux-gnu", "aarch64-apple-darwin", "x86_64-apple-darwin"]
+targets = ["aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-unknown-linux-gnu"]
 # Whether to consider the binaries in a package for distribution (defaults true)
 dist = false
 # Publish jobs to run in CI
 pr-run-mode = "plan"
+# Whether to install an updater program
+install-updater = false
 
 # Config for 'cargo release'
 [workspace.metadata.release]
