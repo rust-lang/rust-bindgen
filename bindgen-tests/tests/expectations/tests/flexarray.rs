@@ -87,16 +87,16 @@ impl flexarray<[::std::os::raw::c_int; 0]> {
     ///
     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
     pub unsafe fn flex_ref(&self, len: usize) -> &flexarray<[::std::os::raw::c_int]> {
-        unsafe { Self::flex_ptr(self, len) }
+        Self::flex_ptr(self, len)
     }
     /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
-    pub unsafe fn flex_mut_ref(
+    pub unsafe fn flex_ref_mut(
         &mut self,
         len: usize,
     ) -> &mut flexarray<[::std::os::raw::c_int]> {
-        unsafe { Self::flex_ptr_mut(self, len).assume_init() }
+        Self::flex_ptr_mut(self, len).assume_init()
     }
     /// Construct DST variant from a pointer and a size.
     ///
@@ -106,7 +106,7 @@ impl flexarray<[::std::os::raw::c_int; 0]> {
         ptr: *const Self,
         len: usize,
     ) -> &'unbounded flexarray<[::std::os::raw::c_int]> {
-        unsafe { &*::std::ptr::from_raw_parts(ptr as *const (), len) }
+        &*::std::ptr::from_raw_parts(ptr as *const (), len)
     }
     /// Construct mutable DST variant from a pointer and a
     /// size. The returned `&mut` reference is initialized
@@ -119,14 +119,12 @@ impl flexarray<[::std::os::raw::c_int; 0]> {
         ptr: *mut Self,
         len: usize,
     ) -> ::std::mem::MaybeUninit<&'unbounded mut flexarray<[::std::os::raw::c_int]>> {
-        unsafe {
-            let mut uninit = ::std::mem::MaybeUninit::<
-                &mut flexarray<[::std::os::raw::c_int]>,
-            >::uninit();
-            (uninit.as_mut_ptr() as *mut *mut flexarray<[::std::os::raw::c_int]>)
-                .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
-            uninit
-        }
+        let mut uninit = ::std::mem::MaybeUninit::<
+            &mut flexarray<[::std::os::raw::c_int]>,
+        >::uninit();
+        (uninit.as_mut_ptr() as *mut *mut flexarray<[::std::os::raw::c_int]>)
+            .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
+        uninit
     }
 }
 #[repr(C)]
@@ -190,16 +188,16 @@ impl flexarray_zero<[::std::os::raw::c_int; 0]> {
         &self,
         len: usize,
     ) -> &flexarray_zero<[::std::os::raw::c_int]> {
-        unsafe { Self::flex_ptr(self, len) }
+        Self::flex_ptr(self, len)
     }
     /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
-    pub unsafe fn flex_mut_ref(
+    pub unsafe fn flex_ref_mut(
         &mut self,
         len: usize,
     ) -> &mut flexarray_zero<[::std::os::raw::c_int]> {
-        unsafe { Self::flex_ptr_mut(self, len).assume_init() }
+        Self::flex_ptr_mut(self, len).assume_init()
     }
     /// Construct DST variant from a pointer and a size.
     ///
@@ -209,7 +207,7 @@ impl flexarray_zero<[::std::os::raw::c_int; 0]> {
         ptr: *const Self,
         len: usize,
     ) -> &'unbounded flexarray_zero<[::std::os::raw::c_int]> {
-        unsafe { &*::std::ptr::from_raw_parts(ptr as *const (), len) }
+        &*::std::ptr::from_raw_parts(ptr as *const (), len)
     }
     /// Construct mutable DST variant from a pointer and a
     /// size. The returned `&mut` reference is initialized
@@ -224,14 +222,12 @@ impl flexarray_zero<[::std::os::raw::c_int; 0]> {
     ) -> ::std::mem::MaybeUninit<
         &'unbounded mut flexarray_zero<[::std::os::raw::c_int]>,
     > {
-        unsafe {
-            let mut uninit = ::std::mem::MaybeUninit::<
-                &mut flexarray_zero<[::std::os::raw::c_int]>,
-            >::uninit();
-            (uninit.as_mut_ptr() as *mut *mut flexarray_zero<[::std::os::raw::c_int]>)
-                .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
-            uninit
-        }
+        let mut uninit = ::std::mem::MaybeUninit::<
+            &mut flexarray_zero<[::std::os::raw::c_int]>,
+        >::uninit();
+        (uninit.as_mut_ptr() as *mut *mut flexarray_zero<[::std::os::raw::c_int]>)
+            .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
+        uninit
     }
 }
 #[repr(C)]
@@ -266,16 +262,16 @@ impl<T> flexarray_template<T, [T; 0]> {
     ///
     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
     pub unsafe fn flex_ref(&self, len: usize) -> &flexarray_template<T, [T]> {
-        unsafe { Self::flex_ptr(self, len) }
+        Self::flex_ptr(self, len)
     }
     /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
-    pub unsafe fn flex_mut_ref(
+    pub unsafe fn flex_ref_mut(
         &mut self,
         len: usize,
     ) -> &mut flexarray_template<T, [T]> {
-        unsafe { Self::flex_ptr_mut(self, len).assume_init() }
+        Self::flex_ptr_mut(self, len).assume_init()
     }
     /// Construct DST variant from a pointer and a size.
     ///
@@ -285,7 +281,7 @@ impl<T> flexarray_template<T, [T; 0]> {
         ptr: *const Self,
         len: usize,
     ) -> &'unbounded flexarray_template<T, [T]> {
-        unsafe { &*::std::ptr::from_raw_parts(ptr as *const (), len) }
+        &*::std::ptr::from_raw_parts(ptr as *const (), len)
     }
     /// Construct mutable DST variant from a pointer and a
     /// size. The returned `&mut` reference is initialized
@@ -298,14 +294,12 @@ impl<T> flexarray_template<T, [T; 0]> {
         ptr: *mut Self,
         len: usize,
     ) -> ::std::mem::MaybeUninit<&'unbounded mut flexarray_template<T, [T]>> {
-        unsafe {
-            let mut uninit = ::std::mem::MaybeUninit::<
-                &mut flexarray_template<T, [T]>,
-            >::uninit();
-            (uninit.as_mut_ptr() as *mut *mut flexarray_template<T, [T]>)
-                .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
-            uninit
-        }
+        let mut uninit = ::std::mem::MaybeUninit::<
+            &mut flexarray_template<T, [T]>,
+        >::uninit();
+        (uninit.as_mut_ptr() as *mut *mut flexarray_template<T, [T]>)
+            .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
+        uninit
     }
 }
 impl<T> Default for flexarray_template<T, [T; 0]> {
@@ -442,16 +436,16 @@ impl flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]> {
         &self,
         len: usize,
     ) -> &flexarray_bogus_zero_fam<[::std::os::raw::c_char]> {
-        unsafe { Self::flex_ptr(self, len) }
+        Self::flex_ptr(self, len)
     }
     /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
-    pub unsafe fn flex_mut_ref(
+    pub unsafe fn flex_ref_mut(
         &mut self,
         len: usize,
     ) -> &mut flexarray_bogus_zero_fam<[::std::os::raw::c_char]> {
-        unsafe { Self::flex_ptr_mut(self, len).assume_init() }
+        Self::flex_ptr_mut(self, len).assume_init()
     }
     /// Construct DST variant from a pointer and a size.
     ///
@@ -461,7 +455,7 @@ impl flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]> {
         ptr: *const Self,
         len: usize,
     ) -> &'unbounded flexarray_bogus_zero_fam<[::std::os::raw::c_char]> {
-        unsafe { &*::std::ptr::from_raw_parts(ptr as *const (), len) }
+        &*::std::ptr::from_raw_parts(ptr as *const (), len)
     }
     /// Construct mutable DST variant from a pointer and a
     /// size. The returned `&mut` reference is initialized
@@ -476,15 +470,13 @@ impl flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]> {
     ) -> ::std::mem::MaybeUninit<
         &'unbounded mut flexarray_bogus_zero_fam<[::std::os::raw::c_char]>,
     > {
-        unsafe {
-            let mut uninit = ::std::mem::MaybeUninit::<
-                &mut flexarray_bogus_zero_fam<[::std::os::raw::c_char]>,
-            >::uninit();
-            (uninit.as_mut_ptr()
-                as *mut *mut flexarray_bogus_zero_fam<[::std::os::raw::c_char]>)
-                .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
-            uninit
-        }
+        let mut uninit = ::std::mem::MaybeUninit::<
+            &mut flexarray_bogus_zero_fam<[::std::os::raw::c_char]>,
+        >::uninit();
+        (uninit.as_mut_ptr()
+            as *mut *mut flexarray_bogus_zero_fam<[::std::os::raw::c_char]>)
+            .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
+        uninit
     }
 }
 #[repr(C)]
@@ -554,16 +546,16 @@ impl flexarray_align<[::std::os::raw::c_int; 0]> {
         &self,
         len: usize,
     ) -> &flexarray_align<[::std::os::raw::c_int]> {
-        unsafe { Self::flex_ptr(self, len) }
+        Self::flex_ptr(self, len)
     }
     /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
-    pub unsafe fn flex_mut_ref(
+    pub unsafe fn flex_ref_mut(
         &mut self,
         len: usize,
     ) -> &mut flexarray_align<[::std::os::raw::c_int]> {
-        unsafe { Self::flex_ptr_mut(self, len).assume_init() }
+        Self::flex_ptr_mut(self, len).assume_init()
     }
     /// Construct DST variant from a pointer and a size.
     ///
@@ -573,7 +565,7 @@ impl flexarray_align<[::std::os::raw::c_int; 0]> {
         ptr: *const Self,
         len: usize,
     ) -> &'unbounded flexarray_align<[::std::os::raw::c_int]> {
-        unsafe { &*::std::ptr::from_raw_parts(ptr as *const (), len) }
+        &*::std::ptr::from_raw_parts(ptr as *const (), len)
     }
     /// Construct mutable DST variant from a pointer and a
     /// size. The returned `&mut` reference is initialized
@@ -588,14 +580,12 @@ impl flexarray_align<[::std::os::raw::c_int; 0]> {
     ) -> ::std::mem::MaybeUninit<
         &'unbounded mut flexarray_align<[::std::os::raw::c_int]>,
     > {
-        unsafe {
-            let mut uninit = ::std::mem::MaybeUninit::<
-                &mut flexarray_align<[::std::os::raw::c_int]>,
-            >::uninit();
-            (uninit.as_mut_ptr() as *mut *mut flexarray_align<[::std::os::raw::c_int]>)
-                .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
-            uninit
-        }
+        let mut uninit = ::std::mem::MaybeUninit::<
+            &mut flexarray_align<[::std::os::raw::c_int]>,
+        >::uninit();
+        (uninit.as_mut_ptr() as *mut *mut flexarray_align<[::std::os::raw::c_int]>)
+            .write(::std::ptr::from_raw_parts_mut(ptr as *mut (), len));
+        uninit
     }
 }
 impl Default for flexarray_align<[::std::os::raw::c_int; 0]> {
