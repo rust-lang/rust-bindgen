@@ -2747,6 +2747,7 @@ impl CompInfo {
 
             (
                 quote! {
+                    #[inline]
                     pub fn fixed(&self) -> (& #sized_ty_for_impl, usize) {
                         unsafe {
                             let (ptr, len) = (self as *const Self).to_raw_parts();
@@ -2754,6 +2755,7 @@ impl CompInfo {
                         }
                     }
 
+                    #[inline]
                     pub fn fixed_mut(&mut self) -> (&mut #sized_ty_for_impl, usize) {
                         unsafe {
                             let (ptr, len) = (self as *mut Self).to_raw_parts();
@@ -2773,6 +2775,7 @@ impl CompInfo {
                     /// Convert a mutable sized prefix to an unsized structure with the given length.
                     ///
                     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+                    #[inline]
                     pub unsafe fn flex_ref_mut(&mut self, len: usize) -> &mut #dst_ty_for_impl {
                         // SAFETY: Reference is always valid as pointer. Caller is guaranteeing `len`.
                         #flex_ref_mut_inner
@@ -2782,6 +2785,7 @@ impl CompInfo {
                     ///
                     /// NOTE: lifetime of returned reference is not tied to any underlying storage.
                     /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+                    #[inline]
                     pub unsafe fn flex_ptr<'unbounded>(ptr: *const Self, len: usize) -> &'unbounded #dst_ty_for_impl {
                        #flex_ptr_inner
                     }
@@ -2793,6 +2797,7 @@ impl CompInfo {
                     ///
                     /// NOTE: lifetime of returned reference is not tied to any underlying storage.
                     /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+                    #[inline]
                     pub unsafe fn flex_ptr_mut<'unbounded>(
                         ptr: *mut Self,
                         len: usize,
