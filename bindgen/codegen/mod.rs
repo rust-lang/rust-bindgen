@@ -1022,10 +1022,20 @@ impl CodeGenerator for Type {
                         let packed = false; // Types can't be packed in Rust.
                         let derivable_traits =
                             derives_of_item(item, ctx, packed);
-                        if !derivable_traits.is_empty() {
-                            let derives: Vec<_> = derivable_traits.into();
-                            attributes.push(attributes::derives(&derives))
-                        }
+                        let mut derives: Vec<_> = derivable_traits.into();
+                        // The custom derives callback may return a list of derive attributes;
+                        // add them to the end of the list.
+                        let custom_derives =
+                            ctx.options().all_callbacks(|cb| {
+                                cb.add_derives(&DeriveInfo {
+                                    name: &name,
+                                    kind: DeriveTypeKind::Struct,
+                                })
+                            });
+                        // In most cases this will be a no-op, since custom_derives will be empty.
+                        derives
+                            .extend(custom_derives.iter().map(|s| s.as_str()));
+                        attributes.push(attributes::derives(&derives));
 
                         quote! {
                             #( #attributes )*
@@ -1980,6 +1990,23 @@ impl CodeGenerator for CompInfo {
             packed,
         );
 
+        let mut generic_param_names = vec![];
+
+        for (idx, ty) in item.used_template_params(ctx).iter().enumerate() {
+            let param = ctx.resolve_type(*ty);
+            let name = param.name().unwrap();
+            let ident = ctx.rust_ident(name);
+            generic_param_names.push(ident.clone());
+
+            let prefix = ctx.trait_prefix();
+            let field_name = ctx.rust_ident(format!("_phantom_{}", idx));
+            fields.push(quote! {
+                pub #field_name : ::#prefix::marker::PhantomData<
+                    ::#prefix::cell::UnsafeCell<#ident>
+                > ,
+            });
+        }
+
         if !is_opaque {
             if item.has_vtable_ptr(ctx) {
                 let vtable = Vtable::new(item.id(), self);
@@ -2160,23 +2187,6 @@ impl CodeGenerator for CompInfo {
         if forward_decl {
             fields.push(quote! {
                 _unused: [u8; 0],
-            });
-        }
-
-        let mut generic_param_names = vec![];
-
-        for (idx, ty) in item.used_template_params(ctx).iter().enumerate() {
-            let param = ctx.resolve_type(*ty);
-            let name = param.name().unwrap();
-            let ident = ctx.rust_ident(name);
-            generic_param_names.push(ident.clone());
-
-            let prefix = ctx.trait_prefix();
-            let field_name = ctx.rust_ident(format!("_phantom_{}", idx));
-            fields.push(quote! {
-                pub #field_name : ::#prefix::marker::PhantomData<
-                    ::#prefix::cell::UnsafeCell<#ident>
-                > ,
             });
         }
 

@@ -5,9 +5,9 @@ pub struct BaseWithVtable__bindgen_vtable {}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct BaseWithVtable<T> {
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub vtable_: *const BaseWithVtable__bindgen_vtable,
     pub t: T,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl<T> Default for BaseWithVtable<T> {
     fn default() -> Self {
@@ -78,8 +78,8 @@ impl Default for DerivedWithVirtualMethods {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct BaseWithoutVtable<U> {
-    pub u: U,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
+    pub u: U,
 }
 impl<U> Default for BaseWithoutVtable<U> {
     fn default() -> Self {

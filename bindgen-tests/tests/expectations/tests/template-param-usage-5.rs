@@ -2,8 +2,8 @@
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct IndirectlyUsesTemplateParameter<T> {
-    pub aliased: IndirectlyUsesTemplateParameter_Aliased<T>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub aliased: IndirectlyUsesTemplateParameter_Aliased<T>,
 }
 pub type IndirectlyUsesTemplateParameter_Aliased<T> = T;
 impl<T> Default for IndirectlyUsesTemplateParameter<T> {

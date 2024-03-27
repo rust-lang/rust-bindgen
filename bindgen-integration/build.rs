@@ -128,6 +128,8 @@ impl ParseCallbacks for MacroCallback {
             vec!["PartialEq".into()]
         } else if info.name == "MyOrderedEnum" {
             vec!["std::cmp::PartialOrd".into()]
+        } else if info.name == "TestDeriveOnAlias" {
+            vec!["std::cmp::PartialEq".into(), "std::cmp::PartialOrd".into()]
         } else {
             vec![]
         }
@@ -193,6 +195,7 @@ fn setup_macro_test() {
         .blocklist_function("my_prefixed_function_to_remove")
         .constified_enum("my_prefixed_enum_to_be_constified")
         .opaque_type("my_prefixed_templated_foo<my_prefixed_baz>")
+        .new_type_alias("TestDeriveOnAlias")
         .depfile(out_rust_file_relative.display().to_string(), &out_dep_file)
         .generate()
         .expect("Unable to generate bindings");

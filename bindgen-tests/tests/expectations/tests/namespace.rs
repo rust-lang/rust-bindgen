@@ -49,11 +49,11 @@ pub mod root {
     #[repr(C)]
     #[derive(Debug)]
     pub struct C<T> {
+        pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
         pub _base: root::_bindgen_mod_id_17::A,
         pub m_c: T,
         pub m_c_ptr: *mut T,
         pub m_c_arr: [T; 10usize],
-        pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     }
     impl<T> Default for C<T> {
         fn default() -> Self {
@@ -71,8 +71,8 @@ pub mod root {
         #[repr(C)]
         #[derive(Debug)]
         pub struct D<T> {
-            pub m_c: root::C<T>,
             pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+            pub m_c: root::C<T>,
         }
         impl<T> Default for D<T> {
             fn default() -> Self {

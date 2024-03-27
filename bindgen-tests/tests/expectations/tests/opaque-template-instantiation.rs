@@ -2,8 +2,8 @@
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Template<T> {
-    pub member: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub member: T,
 }
 impl<T> Default for Template<T> {
     fn default() -> Self {

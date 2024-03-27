@@ -4,8 +4,8 @@ pub struct RefPtr<T>(T);
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct nsMainThreadPtrHolder<T> {
-    pub a: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub a: T,
 }
 impl<T> Default for nsMainThreadPtrHolder<T> {
     fn default() -> Self {
@@ -18,8 +18,8 @@ impl<T> Default for nsMainThreadPtrHolder<T> {
 }
 #[repr(C)]
 pub struct nsMainThreadPtrHandle<U> {
-    pub mPtr: RefPtr<nsMainThreadPtrHolder<U>>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
+    pub mPtr: RefPtr<nsMainThreadPtrHolder<U>>,
 }
 impl<U> Default for nsMainThreadPtrHandle<U> {
     fn default() -> Self {

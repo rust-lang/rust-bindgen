@@ -7,8 +7,8 @@ pub struct Thing {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Thing_Inner<T> {
-    pub ptr: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub ptr: *mut T,
 }
 impl<T> Default for Thing_Inner<T> {
     fn default() -> Self {
@@ -22,8 +22,8 @@ impl<T> Default for Thing_Inner<T> {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Thing_AnotherInner<T> {
-    pub _base: Thing_Inner<T>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _base: Thing_Inner<T>,
 }
 impl<T> Default for Thing_AnotherInner<T> {
     fn default() -> Self {

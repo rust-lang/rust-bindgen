@@ -3,8 +3,8 @@
 pub struct RefPtr<T>(T);
 #[repr(C)]
 pub struct HasRefPtr<T> {
-    pub refptr_member: RefPtr<HasRefPtr_TypedefOfT<T>>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub refptr_member: RefPtr<HasRefPtr_TypedefOfT<T>>,
 }
 pub type HasRefPtr_TypedefOfT<T> = T;
 impl<T> Default for HasRefPtr<T> {

@@ -17,8 +17,8 @@ fn bindgen_test_layout_A() {
 }
 #[repr(C)]
 pub struct e<c> {
-    pub d: RefPtr<c>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<c>>,
+    pub d: RefPtr<c>,
 }
 impl<c> Default for e<c> {
     fn default() -> Self {

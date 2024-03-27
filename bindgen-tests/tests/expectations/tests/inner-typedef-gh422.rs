@@ -7,8 +7,8 @@ pub struct Foo {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Foo_InnerType<T> {
-    pub t: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub t: T,
 }
 impl<T> Default for Foo_InnerType<T> {
     fn default() -> Self {

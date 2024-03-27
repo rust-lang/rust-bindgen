@@ -3,8 +3,8 @@ pub type JS_detail_Wrapped<T> = T;
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct JS_Rooted<T> {
-    pub ptr: JS_detail_Wrapped<T>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub ptr: JS_detail_Wrapped<T>,
 }
 impl<T> Default for JS_Rooted<T> {
     fn default() -> Self {
