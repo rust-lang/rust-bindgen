@@ -207,6 +207,8 @@
 - Add target mappings for riscv64imac and riscv32imafc.
 ## Removed
 ## Fixed
+- Fix `--formatter=prettyplease` not working in `bindgen-cli` by adding `prettyplease` feature and
+  enabling it by default for `bindgen-cli` (#2789) .
 ## Security
 
 # 0.69.4 (2024-02-04)
