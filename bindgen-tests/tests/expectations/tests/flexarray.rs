@@ -69,12 +69,14 @@ impl flexarray<[::std::os::raw::c_int]> {
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
+    #[inline]
     pub fn fixed(&self) -> (&flexarray<[::std::os::raw::c_int; 0]>, usize) {
         unsafe {
             let (ptr, len) = (self as *const Self).to_raw_parts();
             (&*(ptr as *const flexarray<[::std::os::raw::c_int; 0]>), len)
         }
     }
+    #[inline]
     pub fn fixed_mut(&mut self) -> (&mut flexarray<[::std::os::raw::c_int; 0]>, usize) {
         unsafe {
             let (ptr, len) = (self as *mut Self).to_raw_parts();
@@ -92,6 +94,7 @@ impl flexarray<[::std::os::raw::c_int; 0]> {
     /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ref_mut(
         &mut self,
         len: usize,
@@ -102,6 +105,7 @@ impl flexarray<[::std::os::raw::c_int; 0]> {
     ///
     /// NOTE: lifetime of returned reference is not tied to any underlying storage.
     /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ptr<'unbounded>(
         ptr: *const Self,
         len: usize,
@@ -115,6 +119,7 @@ impl flexarray<[::std::os::raw::c_int; 0]> {
     ///
     /// NOTE: lifetime of returned reference is not tied to any underlying storage.
     /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ptr_mut<'unbounded>(
         ptr: *mut Self,
         len: usize,
@@ -165,12 +170,14 @@ impl flexarray_zero<[::std::os::raw::c_int]> {
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
+    #[inline]
     pub fn fixed(&self) -> (&flexarray_zero<[::std::os::raw::c_int; 0]>, usize) {
         unsafe {
             let (ptr, len) = (self as *const Self).to_raw_parts();
             (&*(ptr as *const flexarray_zero<[::std::os::raw::c_int; 0]>), len)
         }
     }
+    #[inline]
     pub fn fixed_mut(
         &mut self,
     ) -> (&mut flexarray_zero<[::std::os::raw::c_int; 0]>, usize) {
@@ -193,6 +200,7 @@ impl flexarray_zero<[::std::os::raw::c_int; 0]> {
     /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ref_mut(
         &mut self,
         len: usize,
@@ -203,6 +211,7 @@ impl flexarray_zero<[::std::os::raw::c_int; 0]> {
     ///
     /// NOTE: lifetime of returned reference is not tied to any underlying storage.
     /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ptr<'unbounded>(
         ptr: *const Self,
         len: usize,
@@ -216,6 +225,7 @@ impl flexarray_zero<[::std::os::raw::c_int; 0]> {
     ///
     /// NOTE: lifetime of returned reference is not tied to any underlying storage.
     /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ptr_mut<'unbounded>(
         ptr: *mut Self,
         len: usize,
@@ -244,12 +254,14 @@ impl<T> flexarray_template<T, [T]> {
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
+    #[inline]
     pub fn fixed(&self) -> (&flexarray_template<T, [T; 0]>, usize) {
         unsafe {
             let (ptr, len) = (self as *const Self).to_raw_parts();
             (&*(ptr as *const flexarray_template<T, [T; 0]>), len)
         }
     }
+    #[inline]
     pub fn fixed_mut(&mut self) -> (&mut flexarray_template<T, [T; 0]>, usize) {
         unsafe {
             let (ptr, len) = (self as *mut Self).to_raw_parts();
@@ -267,6 +279,7 @@ impl<T> flexarray_template<T, [T; 0]> {
     /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ref_mut(
         &mut self,
         len: usize,
@@ -277,6 +290,7 @@ impl<T> flexarray_template<T, [T; 0]> {
     ///
     /// NOTE: lifetime of returned reference is not tied to any underlying storage.
     /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ptr<'unbounded>(
         ptr: *const Self,
         len: usize,
@@ -290,6 +304,7 @@ impl<T> flexarray_template<T, [T; 0]> {
     ///
     /// NOTE: lifetime of returned reference is not tied to any underlying storage.
     /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ptr_mut<'unbounded>(
         ptr: *mut Self,
         len: usize,
@@ -404,6 +419,7 @@ impl flexarray_bogus_zero_fam<[::std::os::raw::c_char]> {
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
+    #[inline]
     pub fn fixed(
         &self,
     ) -> (&flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]>, usize) {
@@ -415,6 +431,7 @@ impl flexarray_bogus_zero_fam<[::std::os::raw::c_char]> {
             )
         }
     }
+    #[inline]
     pub fn fixed_mut(
         &mut self,
     ) -> (&mut flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]>, usize) {
@@ -441,6 +458,7 @@ impl flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]> {
     /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ref_mut(
         &mut self,
         len: usize,
@@ -451,6 +469,7 @@ impl flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]> {
     ///
     /// NOTE: lifetime of returned reference is not tied to any underlying storage.
     /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ptr<'unbounded>(
         ptr: *const Self,
         len: usize,
@@ -464,6 +483,7 @@ impl flexarray_bogus_zero_fam<[::std::os::raw::c_char; 0]> {
     ///
     /// NOTE: lifetime of returned reference is not tied to any underlying storage.
     /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ptr_mut<'unbounded>(
         ptr: *mut Self,
         len: usize,
@@ -523,12 +543,14 @@ impl flexarray_align<[::std::os::raw::c_int]> {
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
+    #[inline]
     pub fn fixed(&self) -> (&flexarray_align<[::std::os::raw::c_int; 0]>, usize) {
         unsafe {
             let (ptr, len) = (self as *const Self).to_raw_parts();
             (&*(ptr as *const flexarray_align<[::std::os::raw::c_int; 0]>), len)
         }
     }
+    #[inline]
     pub fn fixed_mut(
         &mut self,
     ) -> (&mut flexarray_align<[::std::os::raw::c_int; 0]>, usize) {
@@ -551,6 +573,7 @@ impl flexarray_align<[::std::os::raw::c_int; 0]> {
     /// Convert a mutable sized prefix to an unsized structure with the given length.
     ///
     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ref_mut(
         &mut self,
         len: usize,
@@ -561,6 +584,7 @@ impl flexarray_align<[::std::os::raw::c_int; 0]> {
     ///
     /// NOTE: lifetime of returned reference is not tied to any underlying storage.
     /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ptr<'unbounded>(
         ptr: *const Self,
         len: usize,
@@ -574,6 +598,7 @@ impl flexarray_align<[::std::os::raw::c_int; 0]> {
     ///
     /// NOTE: lifetime of returned reference is not tied to any underlying storage.
     /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+    #[inline]
     pub unsafe fn flex_ptr_mut<'unbounded>(
         ptr: *mut Self,
         len: usize,
