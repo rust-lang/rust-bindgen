@@ -1,10 +1,3 @@
-extern crate bindgen;
-extern crate clap;
-#[cfg(feature = "logging")]
-extern crate env_logger;
-#[cfg(feature = "logging")]
-extern crate log;
-
 use std::env;
 
 mod options;
