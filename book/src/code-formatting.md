@@ -73,7 +73,7 @@ These two methods also apply to any other toolchain available in your system.
 The [`prettyplease`](https://github.com/dtolnay/prettyplease) crate is a
 minimal formatter for generated code. To format bindings using `prettyplease`
 you have to invoke `bindgen` with either the `--formatter=prettyplease` flag or
-the the `bindgen::Builder::formatter(bindgen::Formatter::Prettyplease)`. One of
+the `bindgen::Builder::formatter(bindgen::Formatter::Prettyplease)`. One of
 its advantages is that `prettyplease` can be used in minimal environments where
 the Rust toolchain is not installed.
 
