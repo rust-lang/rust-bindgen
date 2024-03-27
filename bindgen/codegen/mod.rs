@@ -2727,6 +2727,24 @@ impl CompInfo {
             .rust_features()
             .ptr_metadata
         {
+            let flex_ref_inner = ctx.wrap_unsafe_ops(quote! {
+                Self::flex_ptr(self, len)
+            });
+            let flex_ref_mut_inner = ctx.wrap_unsafe_ops(quote! {
+                Self::flex_ptr_mut(self, len).assume_init()
+            });
+            let flex_ptr_inner = ctx.wrap_unsafe_ops(quote! {
+                &*::#prefix::ptr::from_raw_parts(ptr as *const (), len)
+            });
+            let flex_ptr_mut_inner = ctx.wrap_unsafe_ops(quote! {
+                // Initialize reference without ever exposing it, as its possibly uninitialized
+                let mut uninit = ::#prefix::mem::MaybeUninit::<&mut #dst_ty_for_impl>::uninit();
+                (uninit.as_mut_ptr() as *mut *mut #dst_ty_for_impl)
+                    .write(::#prefix::ptr::from_raw_parts_mut(ptr as *mut (), len));
+
+                uninit
+            });
+
             (
                 quote! {
                     pub fn fixed(&self) -> (& #sized_ty_for_impl, usize) {
@@ -2740,7 +2758,6 @@ impl CompInfo {
                         unsafe {
                             let (ptr, len) = (self as *mut Self).to_raw_parts();
                             (&mut *(ptr as *mut #sized_ty_for_impl), len)
-
                         }
                     }
                 },
@@ -2750,15 +2767,15 @@ impl CompInfo {
                     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
                     pub unsafe fn flex_ref(&self, len: usize) -> &#dst_ty_for_impl {
                         // SAFETY: Reference is always valid as pointer. Caller is guaranteeing `len`.
-                        unsafe { Self::flex_ptr(self, len) }
+                        #flex_ref_inner
                     }
 
                     /// Convert a mutable sized prefix to an unsized structure with the given length.
                     ///
                     /// SAFETY: Underlying storage is initialized up to at least `len` elements.
-                    pub unsafe fn flex_mut_ref(&mut self, len: usize) -> &mut #dst_ty_for_impl {
+                    pub unsafe fn flex_ref_mut(&mut self, len: usize) -> &mut #dst_ty_for_impl {
                         // SAFETY: Reference is always valid as pointer. Caller is guaranteeing `len`.
-                        unsafe { Self::flex_ptr_mut(self, len).assume_init() }
+                        #flex_ref_mut_inner
                     }
 
                     /// Construct DST variant from a pointer and a size.
@@ -2766,7 +2783,7 @@ impl CompInfo {
                     /// NOTE: lifetime of returned reference is not tied to any underlying storage.
                     /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
                     pub unsafe fn flex_ptr<'unbounded>(ptr: *const Self, len: usize) -> &'unbounded #dst_ty_for_impl {
-                        unsafe { &*::#prefix::ptr::from_raw_parts(ptr as *const (), len) }
+                       #flex_ptr_inner
                     }
 
                     /// Construct mutable DST variant from a pointer and a
@@ -2780,14 +2797,7 @@ impl CompInfo {
                         ptr: *mut Self,
                         len: usize,
                     ) -> ::#prefix::mem::MaybeUninit<&'unbounded mut #dst_ty_for_impl> {
-                        unsafe {
-                            // Initialize reference without ever exposing it, as its possibly uninitialized
-                            let mut uninit = ::#prefix::mem::MaybeUninit::<&mut #dst_ty_for_impl>::uninit();
-                            (uninit.as_mut_ptr() as *mut *mut #dst_ty_for_impl)
-                                .write(::#prefix::ptr::from_raw_parts_mut(ptr as *mut (), len));
-
-                            uninit
-                        }
+                        #flex_ptr_mut_inner
                     }
                 },
             )
