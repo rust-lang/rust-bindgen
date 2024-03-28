@@ -10,7 +10,7 @@ use super::item::{IsOpaque, Item};
 use super::layout::Layout;
 use super::template::TemplateParameters;
 use super::traversal::{EdgeKind, Trace, Tracer};
-use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
+use super::ty::{TypeKind, RUST_DERIVE_IN_ARRAY_LIMIT};
 use crate::clang;
 use crate::codegen::struct_layout::{align_to, bytes_from_bits_pow2};
 use crate::ir::derive::CanDeriveCopy;
@@ -1049,6 +1049,10 @@ pub(crate) struct CompInfo {
     /// Used to indicate when a struct has been forward declared. Usually used
     /// in headers so that APIs can't modify them directly.
     is_forward_declaration: bool,
+
+    /// Heuristic for whether this type is likely to contain any types with an
+    /// explicit alignment attribute
+    may_contain_aligned_type: bool,
 }
 
 impl CompInfo {
@@ -1072,6 +1076,7 @@ impl CompInfo {
             packed_attr: false,
             found_unknown_attr: false,
             is_forward_declaration: false,
+            may_contain_aligned_type: false,
         }
     }
 
@@ -1235,6 +1240,7 @@ impl CompInfo {
         ty: &clang::Type,
         location: Option<clang::Cursor>,
         ctx: &mut BindgenContext,
+        outer_layout: Option<&Layout>,
     ) -> Result<Self, ParseError> {
         use clang_sys::*;
         assert!(
@@ -1252,6 +1258,7 @@ impl CompInfo {
         }
 
         let kind = kind?;
+        let mut max_field_align: Option<usize> = None;
 
         debug!("CompInfo::from_ty({:?}, {:?})", kind, cursor);
 
@@ -1329,6 +1336,29 @@ impl CompInfo {
                         Some(potential_id),
                         ctx,
                     );
+
+                    let field_comp_type = ctx.resolve_type(field_type);
+
+                    match field_comp_type.kind() {
+                        TypeKind::ResolvedTypeRef(inner_type) => {
+                            let inner_type = ctx.resolve_type(*inner_type);
+                            if let Some(inner_type) = inner_type.as_comp() {
+                                if inner_type.may_contain_aligned_type {
+                                    ci.may_contain_aligned_type = true;
+                                }
+                            }
+                        }
+                        _ => {}
+                    }
+
+                    if let Ok(field_layout) =
+                        cur.cur_type().fallible_layout(ctx)
+                    {
+                        max_field_align = Some(cmp::max(
+                            max_field_align.unwrap_or(0),
+                            field_layout.align,
+                        ));
+                    }
 
                     let comment = cur.raw_comment();
                     let annotations = Annotations::new(&cur);
@@ -1417,6 +1447,14 @@ impl CompInfo {
                             maybe_anonymous_struct_field =
                                 Some((inner, ty, public, offset));
                         }
+                    }
+                    if let Ok(field_layout) =
+                        cur.cur_type().fallible_layout(ctx)
+                    {
+                        max_field_align = Some(cmp::max(
+                            max_field_align.unwrap_or(0),
+                            field_layout.align,
+                        ));
                     }
                 }
                 CXCursor_PackedAttr => {
@@ -1566,6 +1604,15 @@ impl CompInfo {
             CXChildVisit_Continue
         });
 
+        if let Some(outer_layout) = outer_layout {
+            if let Some(max_field_align) = max_field_align {
+                if outer_layout.align > max_field_align || max_field_align >= 16
+                {
+                    ci.may_contain_aligned_type = true;
+                }
+            }
+        }
+
         if let Some((ty, _, public, offset)) = maybe_anonymous_struct_field {
             let field =
                 RawField::new(None, ty, None, None, None, public, offset);
@@ -1646,7 +1693,12 @@ impl CompInfo {
     /// "packed" attribute without changing the layout.
     /// This is useful for types that need an "align(N)" attribute since rustc won't compile
     /// structs that have both of those attributes.
-    pub(crate) fn already_packed(&self, ctx: &BindgenContext) -> Option<bool> {
+    pub(crate) fn already_packed(
+        &self,
+        ctx: &BindgenContext,
+        max_field_align: usize,
+        outer_layout: Option<Layout>,
+    ) -> Option<bool> {
         let mut total_size: usize = 0;
 
         for field in self.fields().iter() {
@@ -1659,12 +1711,34 @@ impl CompInfo {
             total_size += layout.size;
         }
 
+        if let Some(outer_layout) = outer_layout {
+            if max_field_align != 0 &&
+                outer_layout.size % max_field_align != 0
+            {
+                return Some(false);
+            }
+
+            if outer_layout.align < max_field_align {
+                return Some(false);
+            }
+        }
+
         Some(true)
     }
 
     /// Returns true if compound type has been forward declared
     pub(crate) fn is_forward_declaration(&self) -> bool {
         self.is_forward_declaration
+    }
+
+    /// Returns true if compound type might have a child type with an explicit alignment attribute.
+    ///
+    /// Note, this is not 100% accurate because it is based only on Clang layout information, but
+    /// the final determination to place an alignment attribute happens during code generation and
+    /// requires information not available at the time this is set. However, this is good enough
+    /// for most cases.
+    pub(crate) fn may_contain_aligned_type(&self) -> bool {
+        self.may_contain_aligned_type
     }
 
     /// Compute this compound structure's bitfield allocation units.

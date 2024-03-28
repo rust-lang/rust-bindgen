@@ -121,6 +121,10 @@ impl<'a> StructLayoutTracker<'a> {
         self.is_rust_union
     }
 
+    pub(crate) fn max_field_align(&self) -> usize {
+        self.max_field_align
+    }
+
     pub(crate) fn saw_vtable(&mut self) {
         debug!("saw vtable for {}", self.name);
 
