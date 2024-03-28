@@ -1,9 +1,3 @@
-extern crate bindgen;
-extern crate clap;
-#[cfg(feature = "logging")]
-extern crate env_logger;
-extern crate shlex;
-
 use bindgen::{clang_version, Builder};
 use owo_colors::{OwoColorize, Style};
 use similar::{ChangeTag, TextDiff};
