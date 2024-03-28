@@ -10,7 +10,7 @@ use super::item::{IsOpaque, Item};
 use super::layout::Layout;
 use super::template::TemplateParameters;
 use super::traversal::{EdgeKind, Trace, Tracer};
-use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
+use super::ty::{TypeKind, RUST_DERIVE_IN_ARRAY_LIMIT};
 use crate::clang;
 use crate::codegen::struct_layout::{align_to, bytes_from_bits_pow2};
 use crate::ir::derive::CanDeriveCopy;
@@ -1049,8 +1049,15 @@ pub(crate) struct CompInfo {
     /// Used to indicate when a struct has been forward declared. Usually used
     /// in headers so that APIs can't modify them directly.
     is_forward_declaration: bool,
+
+    /// Whether a type requires an explicit `align(N)` attribute.
+    needs_explicit_align: bool,
+
+    /// The largest alignment of any member of this type.
+    max_field_align: Option<usize>,
 }
 
+const MAX_GUARANTEED_ALIGN: usize = 8;
 impl CompInfo {
     /// Construct a new compound type.
     pub(crate) fn new(kind: CompKind) -> Self {
@@ -1072,6 +1079,8 @@ impl CompInfo {
             packed_attr: false,
             found_unknown_attr: false,
             is_forward_declaration: false,
+            needs_explicit_align: false,
+            max_field_align: None,
         }
     }
 
@@ -1646,7 +1655,11 @@ impl CompInfo {
     /// "packed" attribute without changing the layout.
     /// This is useful for types that need an "align(N)" attribute since rustc won't compile
     /// structs that have both of those attributes.
-    pub(crate) fn already_packed(&self, ctx: &BindgenContext) -> Option<bool> {
+    pub(crate) fn already_packed(
+        &self,
+        ctx: &BindgenContext,
+        outer_layout: Option<Layout>,
+    ) -> Option<bool> {
         let mut total_size: usize = 0;
 
         for field in self.fields().iter() {
@@ -1657,6 +1670,20 @@ impl CompInfo {
             }
 
             total_size += layout.size;
+        }
+
+        if let Some(outer_layout) = outer_layout {
+            if let Some(max_field_align) = self.max_field_align {
+                if outer_layout.align != 0 &&
+                    outer_layout.size % max_field_align != 0
+                {
+                    return Some(false);
+                }
+
+                if outer_layout.align < max_field_align {
+                    return Some(false);
+                }
+            }
         }
 
         Some(true)
@@ -1733,6 +1760,113 @@ impl CompInfo {
         }
 
         (true, all_can_copy)
+    }
+
+    /// Return true if this type requires an explicit `align(N)` attribute.
+    pub(crate) fn needs_explicit_align(&self) -> bool {
+        self.needs_explicit_align
+    }
+
+    /// Determine if this type requires an explicit `align(N)` attribute in order to have the
+    /// proper alignment.
+    pub(crate) fn check_alignment(
+        &mut self,
+        ctx: &BindgenContext,
+        has_vtable_ptr: bool,
+        zero_sized: bool,
+        is_opaque: bool,
+        layout: Option<Layout>,
+    ) {
+        let mut max_field_align: Option<usize> = None;
+
+        if !self.is_forward_declaration && zero_sized {
+            let has_address = if is_opaque {
+                layout.is_none()
+            } else {
+                layout.map_or(true, |l| l.size != 0)
+            };
+
+            if has_address {
+                max_field_align = Some(1);
+                self.max_field_align = max_field_align;
+            }
+        }
+
+        let Some(layout) = layout else {
+            return;
+        };
+
+        self.each_known_field_layout(ctx, |child_layout| {
+            if child_layout.align > max_field_align.unwrap_or(0) {
+                max_field_align = Some(child_layout.align);
+            }
+        });
+
+        if has_vtable_ptr {
+            let ptr_size = ctx.target_pointer_size();
+            max_field_align = Some(ptr_size);
+        }
+
+        for base in self.base_members() {
+            if let Some(layout) =
+                ctx.resolve_item(base.ty).expect_type().layout(ctx)
+            {
+                max_field_align =
+                    Some(cmp::max(max_field_align.unwrap_or(0), layout.align));
+            }
+        }
+
+        if let Some(max_field_align) = max_field_align {
+            if max_field_align >= 16 || max_field_align < layout.align {
+                self.needs_explicit_align = true;
+            }
+        } else {
+            if layout.align > 0 {
+                self.needs_explicit_align = true;
+            }
+        }
+
+        if !ctx.options().rust_features().repr_align {
+            if layout.align > MAX_GUARANTEED_ALIGN {
+                self.needs_explicit_align = false;
+            }
+        }
+
+        self.max_field_align = max_field_align;
+    }
+
+    /// Determine if this type contains any member type that has an explicit
+    /// `align(N)` attribute.
+    pub fn contains_aligned_type(&self, ctx: &BindgenContext) -> bool {
+        let mut stack: Vec<&CompInfo> = Vec::new();
+
+        stack.push(self);
+
+        while !stack.is_empty() {
+            let current_comp = stack.pop().unwrap();
+
+            for field in current_comp.fields().iter() {
+                if let Field::DataMember(field_data) = field {
+                    let id: ItemId = field_data.ty().into();
+                    let field_item =
+                        id.into_resolver().through_type_refs().resolve(ctx);
+                    let Some(field_type) = field_item.kind().as_type() else {
+                        continue;
+                    };
+                    let TypeKind::Comp(field_comp_info) = field_type.kind()
+                    else {
+                        continue;
+                    };
+                    if field_comp_info.needs_explicit_align() {
+                        return true;
+                    }
+
+                    stack.push(field_comp_info);
+                }
+            }
+        }
+
+        false
     }
 }
 
