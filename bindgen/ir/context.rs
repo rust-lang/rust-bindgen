@@ -2767,6 +2767,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let id = id.into();
 
         !self.lookup_has_type_param_in_array(id) &&
+            !self.lookup_is_type_param_after_resolve(id) &&
             !self.cannot_derive_copy.as_ref().unwrap().contains(&id)
     }
 
@@ -2794,6 +2795,25 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             .as_ref()
             .unwrap()
             .contains(&id.into())
+    }
+
+    /// Look up whether the item with `id` is type parameter after resolve.
+    fn lookup_is_type_param_after_resolve<Id: Into<ItemId>>(
+        &self,
+        id: Id,
+    ) -> bool {
+        if let Some(t) = id
+            .into()
+            .into_resolver()
+            .through_type_refs()
+            .resolve(self)
+            .kind()
+            .as_type()
+        {
+            t.is_type_param()
+        } else {
+            false
+        }
     }
 
     /// Compute whether the type has float.
