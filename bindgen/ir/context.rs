@@ -4,8 +4,8 @@ use super::super::time::Timer;
 use super::analysis::{
     analyze, as_cannot_derive_set, CannotDerive, DeriveTrait,
     HasDestructorAnalysis, HasFloat, HasTypeParameterInArray,
-    HasVtableAnalysis, HasVtableResult, SizednessAnalysis, SizednessResult,
-    UsedTemplateParameters,
+    HasVtableAnalysis, HasVtableResult, NeverByValue, SizednessAnalysis,
+    SizednessResult, UsedTemplateParameters,
 };
 use super::derive::{
     CanDerive, CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveEq,
@@ -21,6 +21,7 @@ use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
 use crate::clang::{self, ABIKind, Cursor};
 use crate::codegen::CodegenError;
+use crate::ir::layout::Layout;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 
@@ -388,6 +389,9 @@ pub(crate) struct BindgenContext {
     /// Whether a bindgen float16 was generated
     generated_bindgen_float16: Cell<bool>,
 
+    /// Whether a bindgen long double was generated
+    generated_bindgen_long_double: Cell<Option<Layout>>,
+
     /// The set of `ItemId`s that are allowlisted. This the very first thing
     /// computed after parsing our IR, and before running any of our analyses.
     allowlisted: Option<ItemSet>,
@@ -451,7 +455,7 @@ pub(crate) struct BindgenContext {
     /// and is always `None` before that and `Some` after.
     cannot_derive_hash: Option<HashSet<ItemId>>,
 
-    /// The map why specified `ItemId`s of) types that can't derive hash.
+    /// The map why specified `ItemId`s of types that can't derive hash.
     ///
     /// This is populated when we enter codegen by
     /// `compute_cannot_derive_partialord_partialeq_or_eq` and is always `None`
@@ -464,29 +468,37 @@ pub(crate) struct BindgenContext {
     /// that function is invoked and `Some` afterwards.
     sizedness: Option<HashMap<TypeId, SizednessResult>>,
 
-    /// The set of (`ItemId's of`) types that has vtable.
+    /// The set of (`ItemId`s of) types that have vtable.
     ///
     /// Populated when we enter codegen by `compute_has_vtable`; always `None`
     /// before that and `Some` after.
     have_vtable: Option<HashMap<ItemId, HasVtableResult>>,
 
-    /// The set of (`ItemId's of`) types that has destructor.
+    /// The set of (`ItemId`s of) types that have destructor.
     ///
     /// Populated when we enter codegen by `compute_has_destructor`; always `None`
     /// before that and `Some` after.
     have_destructor: Option<HashSet<ItemId>>,
 
-    /// The set of (`ItemId's of`) types that has array.
+    /// The set of (`ItemId`s of) types that have array.
     ///
     /// Populated when we enter codegen by `compute_has_type_param_in_array`; always `None`
     /// before that and `Some` after.
     has_type_param_in_array: Option<HashSet<ItemId>>,
 
-    /// The set of (`ItemId's of`) types that has float.
+    /// The set of (`ItemId`s of) types that have float.
     ///
     /// Populated when we enter codegen by `compute_has_float`; always `None`
     /// before that and `Some` after.
     has_float: Option<HashSet<ItemId>>,
+
+    /// The set of (`ItemId` of) types that cannot be reliably passed by value.
+    ///
+    /// These are or contain an extended float, which cannot be represented correctly for passing
+    /// by value in Rust. (In many contexts, anything of the right size and alignment will do, but
+    /// calling conventions depend on specifying the actual type.) The definition of extended float
+    /// used is simply not being 32 or 64 bits wide.
+    never_by_value: Option<HashSet<ItemId>>,
 }
 
 /// A traversal of allowlisted items.
@@ -588,6 +600,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             options,
             generated_bindgen_complex: Cell::new(false),
             generated_bindgen_float16: Cell::new(false),
+            generated_bindgen_long_double: Cell::new(None),
             allowlisted: None,
             blocklisted_types_implement_traits: Default::default(),
             codegen_items: None,
@@ -604,6 +617,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             have_destructor: None,
             has_type_param_in_array: None,
             has_float: None,
+            never_by_value: None,
         }
     }
 
@@ -1220,6 +1234,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.compute_cannot_derive_copy();
         self.compute_has_type_param_in_array();
         self.compute_has_float();
+        self.compute_never_by_value();
         self.compute_cannot_derive_hash();
         self.compute_cannot_derive_partialord_partialeq_or_eq();
 
@@ -2548,6 +2563,20 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.generated_bindgen_float16.get()
     }
 
+    /// Call if a bindgen long double is generated
+    pub fn generated_bindgen_long_double(&self, layout: Layout) {
+        if let Some(old) =
+            self.generated_bindgen_long_double.replace(Some(layout))
+        {
+            assert_eq!(layout, old, "long doubles had different layout");
+        }
+    }
+
+    /// Whether we need to generate the bindgen long double type (and if so, get its layout)
+    pub fn need_bindgen_long_double(&self) -> Option<Layout> {
+        self.generated_bindgen_long_double.get()
+    }
+
     /// Compute which `enum`s have an associated `typedef` definition.
     fn compute_enum_typedef_combos(&mut self) {
         let _t = self.timer("compute_enum_typedef_combos");
@@ -2815,6 +2844,18 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         // Look up the computed value for whether the item with `id` has
         // float or not.
         self.has_float.as_ref().unwrap().contains(&id.into())
+    }
+
+    /// Compute whether the type has float.
+    fn compute_never_by_value(&mut self) {
+        let _t = self.timer("compute_never_by_value");
+        assert!(self.never_by_value.is_none());
+        self.never_by_value = Some(analyze::<NeverByValue>(self));
+    }
+
+    /// Look up whether the item with `id` may never be passed by value.
+    pub fn lookup_never_by_value<Id: Into<ItemId>>(&self, id: Id) -> bool {
+        self.never_by_value.as_ref().unwrap().contains(&id.into())
     }
 
     /// Check if `--no-partialeq` flag is enabled for this item.
