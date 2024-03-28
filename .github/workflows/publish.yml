@@ -1,13 +1,16 @@
-# To trigger this:
-# - go to Actions > Publish
-# - click the Run Workflow dropdown in the top-right
-name: Publish
-on: workflow_dispatch
+# This is triggered after the Release workflow successfully completes its run
+on:
+  workflow_run:
+    workflows:
+      - Release
+    types:
+      - completed
 env:
   CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 jobs:
   cargo-publish:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
