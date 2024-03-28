@@ -4,15 +4,10 @@
 pub struct A {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_A() {
-    assert_eq!(::std::mem::size_of::<A>(), 1usize, concat!("Size of: ", stringify!(A)));
-    assert_eq!(
-        ::std::mem::align_of::<A>(),
-        1usize,
-        concat!("Alignment of ", stringify!(A)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<A>() == 1usize, "Size of A");
+    assert!(::std::mem::align_of::<A>() == 1usize, "Alignment of A");
+};
 extern "C" {
     #[link_name = "\u{1}_ZN1A17inline_definitionEv"]
     pub fn A_inline_definition(this: *mut A);
@@ -36,29 +31,19 @@ impl A {
 pub struct B {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_B() {
-    assert_eq!(::std::mem::size_of::<B>(), 1usize, concat!("Size of: ", stringify!(B)));
-    assert_eq!(
-        ::std::mem::align_of::<B>(),
-        1usize,
-        concat!("Alignment of ", stringify!(B)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<B>() == 1usize, "Size of B");
+    assert!(::std::mem::align_of::<B>() == 1usize, "Alignment of B");
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct C {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_C() {
-    assert_eq!(::std::mem::size_of::<C>(), 1usize, concat!("Size of: ", stringify!(C)));
-    assert_eq!(
-        ::std::mem::align_of::<C>(),
-        1usize,
-        concat!("Alignment of ", stringify!(C)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<C>() == 1usize, "Size of C");
+    assert!(::std::mem::align_of::<C>() == 1usize, "Alignment of C");
+};
 extern "C" {
     #[link_name = "\u{1}_ZN1CC1ERS_"]
     pub fn C_C(this: *mut C, arg1: *mut C);

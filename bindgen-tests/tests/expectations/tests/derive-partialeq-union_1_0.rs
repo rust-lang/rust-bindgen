@@ -57,32 +57,22 @@ fn bindgen_test_layout_ShouldDerivePartialEq() {
     assert_eq!(
         ::std::mem::size_of::<ShouldDerivePartialEq>(),
         152usize,
-        concat!("Size of: ", stringify!(ShouldDerivePartialEq)),
+        "Size of ShouldDerivePartialEq",
     );
     assert_eq!(
         ::std::mem::align_of::<ShouldDerivePartialEq>(),
         4usize,
-        concat!("Alignment of ", stringify!(ShouldDerivePartialEq)),
+        "Alignment of ShouldDerivePartialEq",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
         0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldDerivePartialEq),
-            "::",
-            stringify!(a),
-        ),
+        "Offset of field: ShouldDerivePartialEq::a",
     );
     assert_eq!(
         unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
         0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldDerivePartialEq),
-            "::",
-            stringify!(b),
-        ),
+        "Offset of field: ShouldDerivePartialEq::b",
     );
 }
 impl Clone for ShouldDerivePartialEq {

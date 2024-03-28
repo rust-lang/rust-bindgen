@@ -90,31 +90,24 @@ pub struct redundant_packed {
     pub a: u32,
     pub b: u32,
 }
-#[test]
-fn bindgen_test_layout_redundant_packed() {
-    const UNINIT: ::std::mem::MaybeUninit<redundant_packed> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<redundant_packed>(),
-        8usize,
-        concat!("Size of: ", stringify!(redundant_packed)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<redundant_packed>() == 8usize,
+        "Size of redundant_packed",
     );
-    assert_eq!(
-        ::std::mem::align_of::<redundant_packed>(),
-        8usize,
-        concat!("Alignment of ", stringify!(redundant_packed)),
+    assert!(
+        ::std::mem::align_of::<redundant_packed>() == 8usize,
+        "Alignment of redundant_packed",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(redundant_packed), "::", stringify!(a)),
+    assert!(
+        ::std::mem::offset_of!(redundant_packed, a) == 0usize,
+        "Offset of field: redundant_packed::a",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
-        4usize,
-        concat!("Offset of field: ", stringify!(redundant_packed), "::", stringify!(b)),
+    assert!(
+        ::std::mem::offset_of!(redundant_packed, b) == 4usize,
+        "Offset of field: redundant_packed::b",
     );
-}
+};
 #[repr(C)]
 #[repr(align(8))]
 #[derive(Debug, Default, Copy, Clone)]
@@ -124,41 +117,24 @@ pub struct redundant_packed_bitfield {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub c: u32,
 }
-#[test]
-fn bindgen_test_layout_redundant_packed_bitfield() {
-    const UNINIT: ::std::mem::MaybeUninit<redundant_packed_bitfield> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<redundant_packed_bitfield>(),
-        8usize,
-        concat!("Size of: ", stringify!(redundant_packed_bitfield)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<redundant_packed_bitfield>() == 8usize,
+        "Size of redundant_packed_bitfield",
     );
-    assert_eq!(
-        ::std::mem::align_of::<redundant_packed_bitfield>(),
-        8usize,
-        concat!("Alignment of ", stringify!(redundant_packed_bitfield)),
+    assert!(
+        ::std::mem::align_of::<redundant_packed_bitfield>() == 8usize,
+        "Alignment of redundant_packed_bitfield",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(redundant_packed_bitfield),
-            "::",
-            stringify!(a),
-        ),
+    assert!(
+        ::std::mem::offset_of!(redundant_packed_bitfield, a) == 0usize,
+        "Offset of field: redundant_packed_bitfield::a",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(redundant_packed_bitfield),
-            "::",
-            stringify!(c),
-        ),
+    assert!(
+        ::std::mem::offset_of!(redundant_packed_bitfield, c) == 4usize,
+        "Offset of field: redundant_packed_bitfield::c",
     );
-}
+};
 impl redundant_packed_bitfield {
     #[inline]
     pub fn b0(&self) -> u8 {
@@ -213,41 +189,24 @@ pub union redundant_packed_union {
     pub a: u64,
     pub b: u32,
 }
-#[test]
-fn bindgen_test_layout_redundant_packed_union() {
-    const UNINIT: ::std::mem::MaybeUninit<redundant_packed_union> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<redundant_packed_union>(),
-        16usize,
-        concat!("Size of: ", stringify!(redundant_packed_union)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<redundant_packed_union>() == 16usize,
+        "Size of redundant_packed_union",
     );
-    assert_eq!(
-        ::std::mem::align_of::<redundant_packed_union>(),
-        16usize,
-        concat!("Alignment of ", stringify!(redundant_packed_union)),
+    assert!(
+        ::std::mem::align_of::<redundant_packed_union>() == 16usize,
+        "Alignment of redundant_packed_union",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(redundant_packed_union),
-            "::",
-            stringify!(a),
-        ),
+    assert!(
+        ::std::mem::offset_of!(redundant_packed_union, a) == 0usize,
+        "Offset of field: redundant_packed_union::a",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(redundant_packed_union),
-            "::",
-            stringify!(b),
-        ),
+    assert!(
+        ::std::mem::offset_of!(redundant_packed_union, b) == 0usize,
+        "Offset of field: redundant_packed_union::b",
     );
-}
+};
 impl Default for redundant_packed_union {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -263,26 +222,11 @@ impl Default for redundant_packed_union {
 pub struct inner {
     pub a: u8,
 }
-#[test]
-fn bindgen_test_layout_inner() {
-    const UNINIT: ::std::mem::MaybeUninit<inner> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<inner>(),
-        2usize,
-        concat!("Size of: ", stringify!(inner)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<inner>(),
-        2usize,
-        concat!("Alignment of ", stringify!(inner)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(inner), "::", stringify!(a)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<inner>() == 2usize, "Size of inner");
+    assert!(::std::mem::align_of::<inner>() == 2usize, "Alignment of inner");
+    assert!(::std::mem::offset_of!(inner, a) == 0usize, "Offset of field: inner::a");
+};
 #[repr(C)]
 #[repr(align(8))]
 #[derive(Debug, Default, Copy, Clone)]
@@ -290,41 +234,24 @@ pub struct outer_redundant_packed {
     pub a: [inner; 2usize],
     pub b: u32,
 }
-#[test]
-fn bindgen_test_layout_outer_redundant_packed() {
-    const UNINIT: ::std::mem::MaybeUninit<outer_redundant_packed> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<outer_redundant_packed>(),
-        8usize,
-        concat!("Size of: ", stringify!(outer_redundant_packed)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<outer_redundant_packed>() == 8usize,
+        "Size of outer_redundant_packed",
     );
-    assert_eq!(
-        ::std::mem::align_of::<outer_redundant_packed>(),
-        8usize,
-        concat!("Alignment of ", stringify!(outer_redundant_packed)),
+    assert!(
+        ::std::mem::align_of::<outer_redundant_packed>() == 8usize,
+        "Alignment of outer_redundant_packed",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(outer_redundant_packed),
-            "::",
-            stringify!(a),
-        ),
+    assert!(
+        ::std::mem::offset_of!(outer_redundant_packed, a) == 0usize,
+        "Offset of field: outer_redundant_packed::a",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(outer_redundant_packed),
-            "::",
-            stringify!(b),
-        ),
+    assert!(
+        ::std::mem::offset_of!(outer_redundant_packed, b) == 4usize,
+        "Offset of field: outer_redundant_packed::b",
     );
-}
+};
 #[repr(C)]
 #[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
@@ -332,38 +259,21 @@ pub struct redundant_pragma_packed {
     pub a: u8,
     pub b: u16,
 }
-#[test]
-fn bindgen_test_layout_redundant_pragma_packed() {
-    const UNINIT: ::std::mem::MaybeUninit<redundant_pragma_packed> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<redundant_pragma_packed>(),
-        4usize,
-        concat!("Size of: ", stringify!(redundant_pragma_packed)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<redundant_pragma_packed>() == 4usize,
+        "Size of redundant_pragma_packed",
     );
-    assert_eq!(
-        ::std::mem::align_of::<redundant_pragma_packed>(),
-        4usize,
-        concat!("Alignment of ", stringify!(redundant_pragma_packed)),
+    assert!(
+        ::std::mem::align_of::<redundant_pragma_packed>() == 4usize,
+        "Alignment of redundant_pragma_packed",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(redundant_pragma_packed),
-            "::",
-            stringify!(a),
-        ),
+    assert!(
+        ::std::mem::offset_of!(redundant_pragma_packed, a) == 0usize,
+        "Offset of field: redundant_pragma_packed::a",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
-        2usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(redundant_pragma_packed),
-            "::",
-            stringify!(b),
-        ),
+    assert!(
+        ::std::mem::offset_of!(redundant_pragma_packed, b) == 2usize,
+        "Offset of field: redundant_pragma_packed::b",
     );
-}
+};

@@ -14,19 +14,13 @@ pub mod root {
             pub struct Helper {
                 pub _address: u8,
             }
-            #[test]
-            fn bindgen_test_layout_Helper() {
-                assert_eq!(
-                    ::std::mem::size_of::<Helper>(),
-                    1usize,
-                    concat!("Size of: ", stringify!(Helper)),
+            const _: () = {
+                assert!(::std::mem::size_of::<Helper>() == 1usize, "Size of Helper");
+                assert!(
+                    ::std::mem::align_of::<Helper>() == 1usize,
+                    "Alignment of Helper",
                 );
-                assert_eq!(
-                    ::std::mem::align_of::<Helper>(),
-                    1usize,
-                    concat!("Alignment of ", stringify!(Helper)),
-                );
-            }
+            };
         }
     }
 }

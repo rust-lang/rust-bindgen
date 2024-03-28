@@ -6,37 +6,23 @@
 pub struct D {
     pub _bindgen_opaque_blob: u32,
 }
-#[test]
-fn bindgen_test_layout_D() {
-    assert_eq!(::std::mem::size_of::<D>(), 4usize, concat!("Size of: ", stringify!(D)));
-    assert_eq!(
-        ::std::mem::align_of::<D>(),
-        4usize,
-        concat!("Alignment of ", stringify!(D)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<D>() == 4usize, "Size of D");
+    assert!(::std::mem::align_of::<D>() == 4usize, "Alignment of D");
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct NotAnnotated {
     pub f: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_NotAnnotated() {
-    const UNINIT: ::std::mem::MaybeUninit<NotAnnotated> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<NotAnnotated>(),
-        4usize,
-        concat!("Size of: ", stringify!(NotAnnotated)),
+const _: () = {
+    assert!(::std::mem::size_of::<NotAnnotated>() == 4usize, "Size of NotAnnotated");
+    assert!(
+        ::std::mem::align_of::<NotAnnotated>() == 4usize,
+        "Alignment of NotAnnotated",
     );
-    assert_eq!(
-        ::std::mem::align_of::<NotAnnotated>(),
-        4usize,
-        concat!("Alignment of ", stringify!(NotAnnotated)),
+    assert!(
+        ::std::mem::offset_of!(NotAnnotated, f) == 0usize,
+        "Offset of field: NotAnnotated::f",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).f) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(NotAnnotated), "::", stringify!(f)),
-    );
-}
+};

@@ -19,26 +19,17 @@ impl Default for LinkedList {
 pub struct InstantiateIt {
     pub m_list: LinkedList,
 }
-#[test]
-fn bindgen_test_layout_InstantiateIt() {
-    const UNINIT: ::std::mem::MaybeUninit<InstantiateIt> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<InstantiateIt>(),
-        16usize,
-        concat!("Size of: ", stringify!(InstantiateIt)),
+const _: () = {
+    assert!(::std::mem::size_of::<InstantiateIt>() == 16usize, "Size of InstantiateIt");
+    assert!(
+        ::std::mem::align_of::<InstantiateIt>() == 8usize,
+        "Alignment of InstantiateIt",
     );
-    assert_eq!(
-        ::std::mem::align_of::<InstantiateIt>(),
-        8usize,
-        concat!("Alignment of ", stringify!(InstantiateIt)),
+    assert!(
+        ::std::mem::offset_of!(InstantiateIt, m_list) == 0usize,
+        "Offset of field: InstantiateIt::m_list",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).m_list) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(InstantiateIt), "::", stringify!(m_list)),
-    );
-}
+};
 impl Default for InstantiateIt {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -48,16 +39,13 @@ impl Default for InstantiateIt {
         }
     }
 }
-#[test]
-fn __bindgen_test_layout_LinkedList_open0_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<LinkedList>(),
-        16usize,
-        concat!("Size of template specialization: ", stringify!(LinkedList)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<LinkedList>() == 16usize,
+        "Size of template specialization: LinkedList_open0_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<LinkedList>(),
-        8usize,
-        concat!("Alignment of template specialization: ", stringify!(LinkedList)),
+    assert!(
+        ::std::mem::align_of::<LinkedList>() == 8usize,
+        "Align of template specialization: LinkedList_open0_int_close0",
     );
-}
+};

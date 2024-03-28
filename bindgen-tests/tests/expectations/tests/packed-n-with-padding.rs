@@ -7,38 +7,11 @@ pub struct Packed {
     pub c: ::std::os::raw::c_char,
     pub d: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_Packed() {
-    const UNINIT: ::std::mem::MaybeUninit<Packed> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Packed>(),
-        10usize,
-        concat!("Size of: ", stringify!(Packed)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Packed>(),
-        2usize,
-        concat!("Alignment of ", stringify!(Packed)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Packed), "::", stringify!(a)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
-        2usize,
-        concat!("Offset of field: ", stringify!(Packed), "::", stringify!(b)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).c) as usize - ptr as usize },
-        4usize,
-        concat!("Offset of field: ", stringify!(Packed), "::", stringify!(c)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).d) as usize - ptr as usize },
-        6usize,
-        concat!("Offset of field: ", stringify!(Packed), "::", stringify!(d)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<Packed>() == 10usize, "Size of Packed");
+    assert!(::std::mem::align_of::<Packed>() == 2usize, "Alignment of Packed");
+    assert!(::std::mem::offset_of!(Packed, a) == 0usize, "Offset of field: Packed::a");
+    assert!(::std::mem::offset_of!(Packed, b) == 2usize, "Offset of field: Packed::b");
+    assert!(::std::mem::offset_of!(Packed, c) == 4usize, "Offset of field: Packed::c");
+    assert!(::std::mem::offset_of!(Packed, d) == 6usize, "Offset of field: Packed::d");
+};

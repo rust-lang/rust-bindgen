@@ -186,19 +186,16 @@ pub struct jsval_layout__bindgen_ty_1 {
     pub _bitfield_align_1: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
 }
-#[test]
-fn bindgen_test_layout_jsval_layout__bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<jsval_layout__bindgen_ty_1>(),
-        8usize,
-        concat!("Size of: ", stringify!(jsval_layout__bindgen_ty_1)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<jsval_layout__bindgen_ty_1>() == 8usize,
+        "Size of jsval_layout__bindgen_ty_1",
     );
-    assert_eq!(
-        ::std::mem::align_of::<jsval_layout__bindgen_ty_1>(),
-        8usize,
-        concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_1)),
+    assert!(
+        ::std::mem::align_of::<jsval_layout__bindgen_ty_1>() == 8usize,
+        "Alignment of jsval_layout__bindgen_ty_1",
     );
-}
+};
 impl Default for jsval_layout__bindgen_ty_1 {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -270,51 +267,28 @@ pub union jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     pub u32_: u32,
     pub why: JSWhyMagic,
 }
-#[test]
-fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
-    const UNINIT: ::std::mem::MaybeUninit<jsval_layout__bindgen_ty_2__bindgen_ty_1> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>(),
-        4usize,
-        concat!("Size of: ", stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>() == 4usize,
+        "Size of jsval_layout__bindgen_ty_2__bindgen_ty_1",
     );
-    assert_eq!(
-        ::std::mem::align_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>(),
-        4usize,
-        concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1)),
+    assert!(
+        ::std::mem::align_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>() == 4usize,
+        "Alignment of jsval_layout__bindgen_ty_2__bindgen_ty_1",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).i32_) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
-            "::",
-            stringify!(i32_),
-        ),
+    assert!(
+        ::std::mem::offset_of!(jsval_layout__bindgen_ty_2__bindgen_ty_1, i32_) == 0usize,
+        "Offset of field: jsval_layout__bindgen_ty_2__bindgen_ty_1::i32_",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).u32_) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
-            "::",
-            stringify!(u32_),
-        ),
+    assert!(
+        ::std::mem::offset_of!(jsval_layout__bindgen_ty_2__bindgen_ty_1, u32_) == 0usize,
+        "Offset of field: jsval_layout__bindgen_ty_2__bindgen_ty_1::u32_",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).why) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
-            "::",
-            stringify!(why),
-        ),
+    assert!(
+        ::std::mem::offset_of!(jsval_layout__bindgen_ty_2__bindgen_ty_1, why) == 0usize,
+        "Offset of field: jsval_layout__bindgen_ty_2__bindgen_ty_1::why",
     );
-}
+};
 impl Default for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -324,31 +298,20 @@ impl Default for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
         }
     }
 }
-#[test]
-fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
-    const UNINIT: ::std::mem::MaybeUninit<jsval_layout__bindgen_ty_2> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<jsval_layout__bindgen_ty_2>(),
-        4usize,
-        concat!("Size of: ", stringify!(jsval_layout__bindgen_ty_2)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<jsval_layout__bindgen_ty_2>() == 4usize,
+        "Size of jsval_layout__bindgen_ty_2",
     );
-    assert_eq!(
-        ::std::mem::align_of::<jsval_layout__bindgen_ty_2>(),
-        4usize,
-        concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_2)),
+    assert!(
+        ::std::mem::align_of::<jsval_layout__bindgen_ty_2>() == 4usize,
+        "Alignment of jsval_layout__bindgen_ty_2",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).payload) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout__bindgen_ty_2),
-            "::",
-            stringify!(payload),
-        ),
+    assert!(
+        ::std::mem::offset_of!(jsval_layout__bindgen_ty_2, payload) == 0usize,
+        "Offset of field: jsval_layout__bindgen_ty_2::payload",
     );
-}
+};
 impl Default for jsval_layout__bindgen_ty_2 {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -358,71 +321,41 @@ impl Default for jsval_layout__bindgen_ty_2 {
         }
     }
 }
-#[test]
-fn bindgen_test_layout_jsval_layout() {
-    const UNINIT: ::std::mem::MaybeUninit<jsval_layout> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<jsval_layout>(),
-        8usize,
-        concat!("Size of: ", stringify!(jsval_layout)),
+const _: () = {
+    assert!(::std::mem::size_of::<jsval_layout>() == 8usize, "Size of jsval_layout");
+    assert!(
+        ::std::mem::align_of::<jsval_layout>() == 8usize,
+        "Alignment of jsval_layout",
     );
-    assert_eq!(
-        ::std::mem::align_of::<jsval_layout>(),
-        8usize,
-        concat!("Alignment of ", stringify!(jsval_layout)),
+    assert!(
+        ::std::mem::offset_of!(jsval_layout, asBits) == 0usize,
+        "Offset of field: jsval_layout::asBits",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).asBits) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(jsval_layout), "::", stringify!(asBits)),
+    assert!(
+        ::std::mem::offset_of!(jsval_layout, debugView) == 0usize,
+        "Offset of field: jsval_layout::debugView",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).debugView) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(debugView),
-        ),
+    assert!(
+        ::std::mem::offset_of!(jsval_layout, s) == 0usize,
+        "Offset of field: jsval_layout::s",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).s) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(jsval_layout), "::", stringify!(s)),
+    assert!(
+        ::std::mem::offset_of!(jsval_layout, asDouble) == 0usize,
+        "Offset of field: jsval_layout::asDouble",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).asDouble) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(asDouble),
-        ),
+    assert!(
+        ::std::mem::offset_of!(jsval_layout, asPtr) == 0usize,
+        "Offset of field: jsval_layout::asPtr",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).asPtr) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(jsval_layout), "::", stringify!(asPtr)),
+    assert!(
+        ::std::mem::offset_of!(jsval_layout, asWord) == 0usize,
+        "Offset of field: jsval_layout::asWord",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).asWord) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(jsval_layout), "::", stringify!(asWord)),
+    assert!(
+        ::std::mem::offset_of!(jsval_layout, asUIntPtr) == 0usize,
+        "Offset of field: jsval_layout::asUIntPtr",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).asUIntPtr) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(asUIntPtr),
-        ),
-    );
-}
+};
 impl Default for jsval_layout {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -437,26 +370,14 @@ impl Default for jsval_layout {
 pub struct Value {
     pub data: jsval_layout,
 }
-#[test]
-fn bindgen_test_layout_Value() {
-    const UNINIT: ::std::mem::MaybeUninit<Value> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Value>(),
-        8usize,
-        concat!("Size of: ", stringify!(Value)),
+const _: () = {
+    assert!(::std::mem::size_of::<Value>() == 8usize, "Size of Value");
+    assert!(::std::mem::align_of::<Value>() == 8usize, "Alignment of Value");
+    assert!(
+        ::std::mem::offset_of!(Value, data) == 0usize,
+        "Offset of field: Value::data",
     );
-    assert_eq!(
-        ::std::mem::align_of::<Value>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Value)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).data) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Value), "::", stringify!(data)),
-    );
-}
+};
 impl Default for Value {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

@@ -8,48 +8,19 @@ pub struct UsesArray {
     pub array_bool_8: [u8; 8usize],
     pub array_int_4: ArrayInt4,
 }
-#[test]
-fn bindgen_test_layout_UsesArray() {
-    const UNINIT: ::std::mem::MaybeUninit<UsesArray> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<UsesArray>(),
-        40usize,
-        concat!("Size of: ", stringify!(UsesArray)),
+const _: () = {
+    assert!(::std::mem::size_of::<UsesArray>() == 40usize, "Size of UsesArray");
+    assert!(::std::mem::align_of::<UsesArray>() == 4usize, "Alignment of UsesArray");
+    assert!(
+        ::std::mem::offset_of!(UsesArray, array_char_16) == 0usize,
+        "Offset of field: UsesArray::array_char_16",
     );
-    assert_eq!(
-        ::std::mem::align_of::<UsesArray>(),
-        4usize,
-        concat!("Alignment of ", stringify!(UsesArray)),
+    assert!(
+        ::std::mem::offset_of!(UsesArray, array_bool_8) == 16usize,
+        "Offset of field: UsesArray::array_bool_8",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).array_char_16) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(UsesArray),
-            "::",
-            stringify!(array_char_16),
-        ),
+    assert!(
+        ::std::mem::offset_of!(UsesArray, array_int_4) == 24usize,
+        "Offset of field: UsesArray::array_int_4",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).array_bool_8) as usize - ptr as usize },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(UsesArray),
-            "::",
-            stringify!(array_bool_8),
-        ),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).array_int_4) as usize - ptr as usize },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(UsesArray),
-            "::",
-            stringify!(array_int_4),
-        ),
-    );
-}
+};

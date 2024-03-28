@@ -7,16 +7,8 @@ pub struct Foo {
 }
 #[test]
 fn bindgen_test_layout_Foo() {
-    assert_eq!(
-        ::std::mem::size_of::<Foo>(),
-        1usize,
-        concat!("Size of: ", stringify!(Foo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Foo>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Foo)),
-    );
+    assert_eq!(::std::mem::size_of::<Foo>(), 1usize, "Size of Foo");
+    assert_eq!(::std::mem::align_of::<Foo>(), 1usize, "Alignment of Foo");
 }
 extern "thiscall" {
     #[link_name = "\u{1}?test@Foo@@QAEXXZ"]

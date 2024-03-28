@@ -19,42 +19,25 @@ pub mod root {
         }
     }
     pub type AutoValueVector_Alias = ::std::os::raw::c_int;
-    #[test]
-    fn __bindgen_test_layout_Rooted_open0_int_close0_instantiation() {
-        assert_eq!(
-            ::std::mem::size_of::<root::Rooted<::std::os::raw::c_int>>(),
-            4usize,
-            concat!(
-                "Size of template specialization: ",
-                stringify!(root::Rooted < ::std::os::raw::c_int >),
-            ),
+    const _: () = {
+        assert!(
+            ::std::mem::size_of::<root::Rooted<::std::os::raw::c_int>>() == 4usize,
+            "Size of template specialization: Rooted_open0_int_close0",
         );
-        assert_eq!(
-            ::std::mem::align_of::<root::Rooted<::std::os::raw::c_int>>(),
-            4usize,
-            concat!(
-                "Alignment of template specialization: ",
-                stringify!(root::Rooted < ::std::os::raw::c_int >),
-            ),
+        assert!(
+            ::std::mem::align_of::<root::Rooted<::std::os::raw::c_int>>() == 4usize,
+            "Align of template specialization: Rooted_open0_int_close0",
         );
-    }
-    #[test]
-    fn __bindgen_test_layout_Rooted_open0_AutoValueVector_Alias_close0_instantiation() {
-        assert_eq!(
-            ::std::mem::size_of::<root::Rooted<root::AutoValueVector_Alias>>(),
-            4usize,
-            concat!(
-                "Size of template specialization: ",
-                stringify!(root::Rooted < root::AutoValueVector_Alias >),
-            ),
+    };
+    const _: () = {
+        assert!(
+            ::std::mem::size_of::<root::Rooted<root::AutoValueVector_Alias>>() == 4usize,
+            "Size of template specialization: Rooted_open0_AutoValueVector_Alias_close0",
         );
-        assert_eq!(
-            ::std::mem::align_of::<root::Rooted<root::AutoValueVector_Alias>>(),
-            4usize,
-            concat!(
-                "Alignment of template specialization: ",
-                stringify!(root::Rooted < root::AutoValueVector_Alias >),
-            ),
+        assert!(
+            ::std::mem::align_of::<root::Rooted<root::AutoValueVector_Alias>>()
+                == 4usize,
+            "Align of template specialization: Rooted_open0_AutoValueVector_Alias_close0",
         );
-    }
+    };
 }

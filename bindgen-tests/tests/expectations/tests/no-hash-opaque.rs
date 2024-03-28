@@ -5,16 +5,7 @@
 pub struct NoHash {
     pub _bindgen_opaque_blob: u32,
 }
-#[test]
-fn bindgen_test_layout_NoHash() {
-    assert_eq!(
-        ::std::mem::size_of::<NoHash>(),
-        4usize,
-        concat!("Size of: ", stringify!(NoHash)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<NoHash>(),
-        4usize,
-        concat!("Alignment of ", stringify!(NoHash)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<NoHash>() == 4usize, "Size of NoHash");
+    assert!(::std::mem::align_of::<NoHash>() == 4usize, "Alignment of NoHash");
+};

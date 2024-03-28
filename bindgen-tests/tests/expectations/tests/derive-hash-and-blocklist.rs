@@ -5,31 +5,20 @@ pub struct BlocklistMe(u8);
 pub struct ShouldNotDeriveHash {
     pub a: BlocklistMe,
 }
-#[test]
-fn bindgen_test_layout_ShouldNotDeriveHash() {
-    const UNINIT: ::std::mem::MaybeUninit<ShouldNotDeriveHash> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ShouldNotDeriveHash>(),
-        1usize,
-        concat!("Size of: ", stringify!(ShouldNotDeriveHash)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<ShouldNotDeriveHash>() == 1usize,
+        "Size of ShouldNotDeriveHash",
     );
-    assert_eq!(
-        ::std::mem::align_of::<ShouldNotDeriveHash>(),
-        1usize,
-        concat!("Alignment of ", stringify!(ShouldNotDeriveHash)),
+    assert!(
+        ::std::mem::align_of::<ShouldNotDeriveHash>() == 1usize,
+        "Alignment of ShouldNotDeriveHash",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldNotDeriveHash),
-            "::",
-            stringify!(a),
-        ),
+    assert!(
+        ::std::mem::offset_of!(ShouldNotDeriveHash, a) == 0usize,
+        "Offset of field: ShouldNotDeriveHash::a",
     );
-}
+};
 impl Default for ShouldNotDeriveHash {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

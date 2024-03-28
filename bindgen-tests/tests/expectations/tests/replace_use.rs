@@ -10,36 +10,18 @@ pub struct nsTArray {
 pub struct Test {
     pub a: nsTArray,
 }
-#[test]
-fn bindgen_test_layout_Test() {
-    const UNINIT: ::std::mem::MaybeUninit<Test> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Test>(),
-        4usize,
-        concat!("Size of: ", stringify!(Test)),
+const _: () = {
+    assert!(::std::mem::size_of::<Test>() == 4usize, "Size of Test");
+    assert!(::std::mem::align_of::<Test>() == 4usize, "Alignment of Test");
+    assert!(::std::mem::offset_of!(Test, a) == 0usize, "Offset of field: Test::a");
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<nsTArray>() == 4usize,
+        "Size of template specialization: nsTArray_open0_long_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<Test>(),
-        4usize,
-        concat!("Alignment of ", stringify!(Test)),
+    assert!(
+        ::std::mem::align_of::<nsTArray>() == 4usize,
+        "Align of template specialization: nsTArray_open0_long_close0",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Test), "::", stringify!(a)),
-    );
-}
-#[test]
-fn __bindgen_test_layout_nsTArray_open0_long_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<nsTArray>(),
-        4usize,
-        concat!("Size of template specialization: ", stringify!(nsTArray)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<nsTArray>(),
-        4usize,
-        concat!("Alignment of template specialization: ", stringify!(nsTArray)),
-    );
-}
+};

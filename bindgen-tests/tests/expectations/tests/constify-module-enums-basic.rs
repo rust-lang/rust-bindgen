@@ -12,26 +12,14 @@ pub use self::foo_alias1 as foo_alias2;
 pub struct bar {
     pub this_should_work: foo::Type,
 }
-#[test]
-fn bindgen_test_layout_bar() {
-    const UNINIT: ::std::mem::MaybeUninit<bar> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<bar>(),
-        4usize,
-        concat!("Size of: ", stringify!(bar)),
+const _: () = {
+    assert!(::std::mem::size_of::<bar>() == 4usize, "Size of bar");
+    assert!(::std::mem::align_of::<bar>() == 4usize, "Alignment of bar");
+    assert!(
+        ::std::mem::offset_of!(bar, this_should_work) == 0usize,
+        "Offset of field: bar::this_should_work",
     );
-    assert_eq!(
-        ::std::mem::align_of::<bar>(),
-        4usize,
-        concat!("Alignment of ", stringify!(bar)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).this_should_work) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(bar), "::", stringify!(this_should_work)),
-    );
-}
+};
 impl Default for bar {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

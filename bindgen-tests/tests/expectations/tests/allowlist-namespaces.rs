@@ -14,44 +14,26 @@ pub mod root {
             pub struct Helper {
                 pub _address: u8,
             }
-            #[test]
-            fn bindgen_test_layout_Helper() {
-                assert_eq!(
-                    ::std::mem::size_of::<Helper>(),
-                    1usize,
-                    concat!("Size of: ", stringify!(Helper)),
+            const _: () = {
+                assert!(::std::mem::size_of::<Helper>() == 1usize, "Size of Helper");
+                assert!(
+                    ::std::mem::align_of::<Helper>() == 1usize,
+                    "Alignment of Helper",
                 );
-                assert_eq!(
-                    ::std::mem::align_of::<Helper>(),
-                    1usize,
-                    concat!("Alignment of ", stringify!(Helper)),
-                );
-            }
+            };
         }
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct Test {
             pub helper: root::outer::inner::Helper,
         }
-        #[test]
-        fn bindgen_test_layout_Test() {
-            const UNINIT: ::std::mem::MaybeUninit<Test> = ::std::mem::MaybeUninit::uninit();
-            let ptr = UNINIT.as_ptr();
-            assert_eq!(
-                ::std::mem::size_of::<Test>(),
-                1usize,
-                concat!("Size of: ", stringify!(Test)),
+        const _: () = {
+            assert!(::std::mem::size_of::<Test>() == 1usize, "Size of Test");
+            assert!(::std::mem::align_of::<Test>() == 1usize, "Alignment of Test");
+            assert!(
+                ::std::mem::offset_of!(Test, helper) == 0usize,
+                "Offset of field: Test::helper",
             );
-            assert_eq!(
-                ::std::mem::align_of::<Test>(),
-                1usize,
-                concat!("Alignment of ", stringify!(Test)),
-            );
-            assert_eq!(
-                unsafe { ::std::ptr::addr_of!((*ptr).helper) as usize - ptr as usize },
-                0usize,
-                concat!("Offset of field: ", stringify!(Test), "::", stringify!(helper)),
-            );
-        }
+        };
     }
 }

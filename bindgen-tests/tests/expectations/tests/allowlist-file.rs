@@ -12,19 +12,10 @@ extern "C" {
 pub struct someClass {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_someClass() {
-    assert_eq!(
-        ::std::mem::size_of::<someClass>(),
-        1usize,
-        concat!("Size of: ", stringify!(someClass)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<someClass>(),
-        1usize,
-        concat!("Alignment of ", stringify!(someClass)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<someClass>() == 1usize, "Size of someClass");
+    assert!(::std::mem::align_of::<someClass>() == 1usize, "Alignment of someClass");
+};
 extern "C" {
     #[link_name = "\u{1}_ZN9someClass16somePublicMethodEi"]
     pub fn someClass_somePublicMethod(this: *mut someClass, foo: ::std::os::raw::c_int);
@@ -47,31 +38,20 @@ extern "C" {
 pub struct StructWithAllowlistedDefinition {
     pub other: *mut StructWithAllowlistedFwdDecl,
 }
-#[test]
-fn bindgen_test_layout_StructWithAllowlistedDefinition() {
-    const UNINIT: ::std::mem::MaybeUninit<StructWithAllowlistedDefinition> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<StructWithAllowlistedDefinition>(),
-        8usize,
-        concat!("Size of: ", stringify!(StructWithAllowlistedDefinition)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<StructWithAllowlistedDefinition>() == 8usize,
+        "Size of StructWithAllowlistedDefinition",
     );
-    assert_eq!(
-        ::std::mem::align_of::<StructWithAllowlistedDefinition>(),
-        8usize,
-        concat!("Alignment of ", stringify!(StructWithAllowlistedDefinition)),
+    assert!(
+        ::std::mem::align_of::<StructWithAllowlistedDefinition>() == 8usize,
+        "Alignment of StructWithAllowlistedDefinition",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).other) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(StructWithAllowlistedDefinition),
-            "::",
-            stringify!(other),
-        ),
+    assert!(
+        ::std::mem::offset_of!(StructWithAllowlistedDefinition, other) == 0usize,
+        "Offset of field: StructWithAllowlistedDefinition::other",
     );
-}
+};
 impl Default for StructWithAllowlistedDefinition {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -86,53 +66,30 @@ impl Default for StructWithAllowlistedDefinition {
 pub struct StructWithAllowlistedFwdDecl {
     pub b: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_StructWithAllowlistedFwdDecl() {
-    const UNINIT: ::std::mem::MaybeUninit<StructWithAllowlistedFwdDecl> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<StructWithAllowlistedFwdDecl>(),
-        4usize,
-        concat!("Size of: ", stringify!(StructWithAllowlistedFwdDecl)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<StructWithAllowlistedFwdDecl>() == 4usize,
+        "Size of StructWithAllowlistedFwdDecl",
     );
-    assert_eq!(
-        ::std::mem::align_of::<StructWithAllowlistedFwdDecl>(),
-        4usize,
-        concat!("Alignment of ", stringify!(StructWithAllowlistedFwdDecl)),
+    assert!(
+        ::std::mem::align_of::<StructWithAllowlistedFwdDecl>() == 4usize,
+        "Alignment of StructWithAllowlistedFwdDecl",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(StructWithAllowlistedFwdDecl),
-            "::",
-            stringify!(b),
-        ),
+    assert!(
+        ::std::mem::offset_of!(StructWithAllowlistedFwdDecl, b) == 0usize,
+        "Offset of field: StructWithAllowlistedFwdDecl::b",
     );
-}
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct AllowlistMe {
     pub foo: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_AllowlistMe() {
-    const UNINIT: ::std::mem::MaybeUninit<AllowlistMe> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<AllowlistMe>(),
-        4usize,
-        concat!("Size of: ", stringify!(AllowlistMe)),
+const _: () = {
+    assert!(::std::mem::size_of::<AllowlistMe>() == 4usize, "Size of AllowlistMe");
+    assert!(::std::mem::align_of::<AllowlistMe>() == 4usize, "Alignment of AllowlistMe");
+    assert!(
+        ::std::mem::offset_of!(AllowlistMe, foo) == 0usize,
+        "Offset of field: AllowlistMe::foo",
     );
-    assert_eq!(
-        ::std::mem::align_of::<AllowlistMe>(),
-        4usize,
-        concat!("Alignment of ", stringify!(AllowlistMe)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(AllowlistMe), "::", stringify!(foo)),
-    );
-}
+};

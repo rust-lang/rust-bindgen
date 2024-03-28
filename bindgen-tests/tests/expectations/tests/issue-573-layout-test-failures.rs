@@ -9,36 +9,24 @@ pub struct Outer {
 pub struct AutoIdVector {
     pub ar: Outer,
 }
-#[test]
-fn bindgen_test_layout_AutoIdVector() {
-    const UNINIT: ::std::mem::MaybeUninit<AutoIdVector> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<AutoIdVector>(),
-        1usize,
-        concat!("Size of: ", stringify!(AutoIdVector)),
+const _: () = {
+    assert!(::std::mem::size_of::<AutoIdVector>() == 1usize, "Size of AutoIdVector");
+    assert!(
+        ::std::mem::align_of::<AutoIdVector>() == 1usize,
+        "Alignment of AutoIdVector",
     );
-    assert_eq!(
-        ::std::mem::align_of::<AutoIdVector>(),
-        1usize,
-        concat!("Alignment of ", stringify!(AutoIdVector)),
+    assert!(
+        ::std::mem::offset_of!(AutoIdVector, ar) == 0usize,
+        "Offset of field: AutoIdVector::ar",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).ar) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(AutoIdVector), "::", stringify!(ar)),
+};
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<Outer>() == 1usize,
+        "Size of template specialization: Outer_open0_int_close0",
     );
-}
-#[test]
-fn __bindgen_test_layout_Outer_open0_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<Outer>(),
-        1usize,
-        concat!("Size of template specialization: ", stringify!(Outer)),
+    assert!(
+        ::std::mem::align_of::<Outer>() == 1usize,
+        "Align of template specialization: Outer_open0_int_close0",
     );
-    assert_eq!(
-        ::std::mem::align_of::<Outer>(),
-        1usize,
-        concat!("Alignment of template specialization: ", stringify!(Outer)),
-    );
-}
+};

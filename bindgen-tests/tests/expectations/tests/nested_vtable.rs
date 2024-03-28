@@ -10,19 +10,10 @@ pub struct nsISupports__bindgen_vtable {
 pub struct nsISupports {
     pub vtable_: *const nsISupports__bindgen_vtable,
 }
-#[test]
-fn bindgen_test_layout_nsISupports() {
-    assert_eq!(
-        ::std::mem::size_of::<nsISupports>(),
-        8usize,
-        concat!("Size of: ", stringify!(nsISupports)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<nsISupports>(),
-        8usize,
-        concat!("Alignment of ", stringify!(nsISupports)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<nsISupports>() == 8usize, "Size of nsISupports");
+    assert!(::std::mem::align_of::<nsISupports>() == 8usize, "Alignment of nsISupports");
+};
 impl Default for nsISupports {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -43,19 +34,10 @@ extern "C" {
 pub struct nsIRunnable {
     pub _base: nsISupports,
 }
-#[test]
-fn bindgen_test_layout_nsIRunnable() {
-    assert_eq!(
-        ::std::mem::size_of::<nsIRunnable>(),
-        8usize,
-        concat!("Size of: ", stringify!(nsIRunnable)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<nsIRunnable>(),
-        8usize,
-        concat!("Alignment of ", stringify!(nsIRunnable)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<nsIRunnable>() == 8usize, "Size of nsIRunnable");
+    assert!(::std::mem::align_of::<nsIRunnable>() == 8usize, "Alignment of nsIRunnable");
+};
 impl Default for nsIRunnable {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -70,19 +52,10 @@ impl Default for nsIRunnable {
 pub struct Runnable {
     pub _base: nsIRunnable,
 }
-#[test]
-fn bindgen_test_layout_Runnable() {
-    assert_eq!(
-        ::std::mem::size_of::<Runnable>(),
-        8usize,
-        concat!("Size of: ", stringify!(Runnable)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Runnable>(),
-        8usize,
-        concat!("Alignment of ", stringify!(Runnable)),
-    );
-}
+const _: () = {
+    assert!(::std::mem::size_of::<Runnable>() == 8usize, "Size of Runnable");
+    assert!(::std::mem::align_of::<Runnable>() == 8usize, "Alignment of Runnable");
+};
 impl Default for Runnable {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

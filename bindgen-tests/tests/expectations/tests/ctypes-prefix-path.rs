@@ -13,36 +13,13 @@ pub struct foo {
     pub b: libc::foo::c_int,
     pub bar: *mut libc::foo::c_void,
 }
-#[test]
-fn bindgen_test_layout_foo() {
-    const UNINIT: ::core::mem::MaybeUninit<foo> = ::core::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::core::mem::size_of::<foo>(),
-        16usize,
-        concat!("Size of: ", stringify!(foo)),
-    );
-    assert_eq!(
-        ::core::mem::align_of::<foo>(),
-        8usize,
-        concat!("Alignment of ", stringify!(foo)),
-    );
-    assert_eq!(
-        unsafe { ::core::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(a)),
-    );
-    assert_eq!(
-        unsafe { ::core::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
-        4usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(b)),
-    );
-    assert_eq!(
-        unsafe { ::core::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(foo), "::", stringify!(bar)),
-    );
-}
+const _: () = {
+    assert!(::core::mem::size_of::<foo>() == 16usize, "Size of foo");
+    assert!(::core::mem::align_of::<foo>() == 8usize, "Alignment of foo");
+    assert!(::core::mem::offset_of!(foo, a) == 0usize, "Offset of field: foo::a");
+    assert!(::core::mem::offset_of!(foo, b) == 4usize, "Offset of field: foo::b");
+    assert!(::core::mem::offset_of!(foo, bar) == 8usize, "Offset of field: foo::bar");
+};
 impl Default for foo {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();

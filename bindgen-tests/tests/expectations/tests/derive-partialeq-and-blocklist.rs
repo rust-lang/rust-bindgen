@@ -6,31 +6,20 @@ pub struct BlocklistMe(u8);
 pub struct ShouldNotDerivePartialEq {
     pub a: BlocklistMe,
 }
-#[test]
-fn bindgen_test_layout_ShouldNotDerivePartialEq() {
-    const UNINIT: ::std::mem::MaybeUninit<ShouldNotDerivePartialEq> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ShouldNotDerivePartialEq>(),
-        1usize,
-        concat!("Size of: ", stringify!(ShouldNotDerivePartialEq)),
+const _: () = {
+    assert!(
+        ::std::mem::size_of::<ShouldNotDerivePartialEq>() == 1usize,
+        "Size of ShouldNotDerivePartialEq",
     );
-    assert_eq!(
-        ::std::mem::align_of::<ShouldNotDerivePartialEq>(),
-        1usize,
-        concat!("Alignment of ", stringify!(ShouldNotDerivePartialEq)),
+    assert!(
+        ::std::mem::align_of::<ShouldNotDerivePartialEq>() == 1usize,
+        "Alignment of ShouldNotDerivePartialEq",
     );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ShouldNotDerivePartialEq),
-            "::",
-            stringify!(a),
-        ),
+    assert!(
+        ::std::mem::offset_of!(ShouldNotDerivePartialEq, a) == 0usize,
+        "Offset of field: ShouldNotDerivePartialEq::a",
     );
-}
+};
 impl Default for ShouldNotDerivePartialEq {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
