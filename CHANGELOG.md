@@ -204,7 +204,11 @@
 # Unreleased
 ## Added
 ## Changed
+
 - Add target mappings for riscv64imac and riscv32imafc.
+- `ParseCallbacks::int_macro` now takes an `i128` instead of an `i64`.
+- `ParseCallbacks::func_macro` was renamed to `ParseCallbacks::fn_macro` and now takes a single `FnMacroInfo` argument.
+
 ## Removed
 ## Fixed
 - Fix `--formatter=prettyplease` not working in `bindgen-cli` by adding `prettyplease` feature and
@@ -330,7 +334,7 @@ This version was skipped due to some problems on the release workflow.
 * The `--wrap-static-fns` option can now wrap `va_list` functions as variadic functions
   with the experimental `ParseCallbacks::wrap_as_variadic_fn` method.
 * Add target mappings for riscv32imc and riscv32imac.
-* Add the `ParseCallbacks::field_visibility` method to modify field visibility. 
+* Add the `ParseCallbacks::field_visibility` method to modify field visibility.
 
 ## Changed
 
@@ -354,7 +358,7 @@ This version was skipped due to some problems on the release workflow.
 * Compute visibility of bitfield unit based on actual field visibility: A
   bitfield unit field and its related functions now have their visibility
   determined based on the most private between the default visibility and the
-  actual visibility of the bitfields within the unit. 
+  actual visibility of the bitfields within the unit.
 
 ## Removed
 * Remove redundant Cargo features, which were all implicit:
