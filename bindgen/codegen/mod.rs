@@ -970,6 +970,14 @@ impl CodeGenerator for Type {
 
                 let rust_name = ctx.rust_ident(&name);
 
+                ctx.options().for_each_callback(|cb| {
+                    cb.new_alias_found(
+                        item.id().as_usize(),
+                        &rust_name,
+                        inner_item.id().as_usize(),
+                    );
+                });
+
                 let mut tokens = if let Some(comment) = item.comment(ctx) {
                     attributes::doc(comment)
                 } else {
@@ -2272,6 +2280,15 @@ impl CodeGenerator for CompInfo {
         derives.extend(item.annotations().derives().iter().map(String::as_str));
 
         let is_rust_union = is_union && struct_layout.is_rust_union();
+
+        ctx.options().for_each_callback(|cb| {
+            cb.new_composite_found(
+                item.id().as_usize(),
+                self.kind(),
+                item.kind().expect_type().name(),
+                &canonical_ident,
+            );
+        });
 
         // The custom derives callback may return a list of derive attributes;
         // add them to the end of the list.
