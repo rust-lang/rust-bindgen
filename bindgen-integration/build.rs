@@ -4,7 +4,7 @@ extern crate cc;
 use bindgen::callbacks::{
     DeriveInfo, IntKind, MacroParsingBehavior, ParseCallbacks,
 };
-use bindgen::{Builder, CargoCallbacks, EnumVariation, Formatter};
+use bindgen::{Builder, EnumVariation, Formatter};
 use std::collections::HashSet;
 use std::env;
 use std::path::PathBuf;
@@ -234,7 +234,9 @@ fn setup_wrap_static_fns_test() {
     // generate external bindings with the external .c and .h files
     let bindings = Builder::default()
         .header(input_header_file_path_str)
-        .parse_callbacks(Box::new(CargoCallbacks))
+        .parse_callbacks(Box::new(
+            bindgen::CargoCallbacks::new().rerun_on_header_files(true),
+        ))
         .parse_callbacks(Box::new(WrappedVaListCallback))
         .wrap_static_fns(true)
         .wrap_static_fns_path(
