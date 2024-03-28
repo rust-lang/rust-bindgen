@@ -30,6 +30,7 @@ use std::borrow::Cow;
 use std::cell::{Cell, RefCell};
 use std::collections::{BTreeSet, HashMap as StdHashMap};
 use std::mem;
+use std::path::Path;
 
 /// An identifier for some kind of IR item.
 #[derive(Debug, Copy, Clone, Eq, PartialOrd, Ord, Hash)]
@@ -376,6 +377,9 @@ pub(crate) struct BindgenContext {
     /// The translation unit for parsing.
     translation_unit: clang::TranslationUnit,
 
+    /// The translation unit for macro fallback parsing.
+    fallback_tu: Option<clang::FallbackTranslationUnit>,
+
     /// Target information that can be useful for some stuff.
     target_info: clang::TargetInfo,
 
@@ -584,6 +588,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             collected_typerefs: false,
             in_codegen: false,
             translation_unit,
+            fallback_tu: None,
             target_info,
             options,
             generated_bindgen_complex: Cell::new(false),
@@ -2058,6 +2063,77 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Get the current Clang translation unit that is being processed.
     pub(crate) fn translation_unit(&self) -> &clang::TranslationUnit {
         &self.translation_unit
+    }
+
+    /// Initialize fallback translation unit if it does not exist and
+    /// then return a mutable reference to the fallback translation unit.
+    pub(crate) fn try_ensure_fallback_translation_unit(
+        &mut self,
+    ) -> Option<&mut clang::FallbackTranslationUnit> {
+        if self.fallback_tu.is_none() {
+            let file = format!(
+                "{}/.macro_eval.c",
+                match self.options().clang_macro_fallback_build_dir {
+                    Some(ref path) => path.as_os_str().to_str()?,
+                    None => ".",
+                }
+            );
+
+            let index = clang::Index::new(false, false);
+
+            let mut c_args = Vec::new();
+            let mut pch_paths = Vec::new();
+            for input_header in self.options().input_headers.iter() {
+                let path = Path::new(input_header.as_ref());
+                let header_name = path
+                    .file_name()
+                    .and_then(|hn| hn.to_str())
+                    .map(|s| s.to_owned());
+                let header_path = path
+                    .parent()
+                    .and_then(|hp| hp.to_str())
+                    .map(|s| s.to_owned());
+
+                let (header, pch) = if let (Some(ref hp), Some(hn)) =
+                    (header_path, header_name)
+                {
+                    let header_path = if hp.is_empty() { "." } else { hp };
+                    let header = format!("{header_path}/{hn}");
+                    let pch_path = if let Some(ref path) =
+                        self.options().clang_macro_fallback_build_dir
+                    {
+                        path.as_os_str().to_str()?
+                    } else {
+                        header_path
+                    };
+                    (header, format!("{pch_path}/{hn}.pch"))
+                } else {
+                    return None;
+                };
+
+                let mut tu = clang::TranslationUnit::parse(
+                    &index,
+                    &header,
+                    &[
+                        "-x".to_owned().into_boxed_str(),
+                        "c-header".to_owned().into_boxed_str(),
+                    ],
+                    &[],
+                    clang_sys::CXTranslationUnit_ForSerialization,
+                )?;
+                tu.save(&pch).ok()?;
+
+                c_args.push("-include-pch".to_string().into_boxed_str());
+                c_args.push(pch.clone().into_boxed_str());
+                pch_paths.push(pch);
+            }
+
+            self.fallback_tu = Some(clang::FallbackTranslationUnit::new(
+                file, pch_paths, &c_args,
+            )?);
+        }
+
+        self.fallback_tu.as_mut()
     }
 
     /// Have we parsed the macro named `macro_name` already?
