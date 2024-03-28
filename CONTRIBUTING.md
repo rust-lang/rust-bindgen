@@ -563,7 +563,7 @@ cargo release [patch|minor] --no-publish --execute
 This does the following:
 
 - Bump the version.
-- Turn the `Unreleased` section of the changelog into the section for the version being published.
+- Turn the `Unreleased` section of the changelog into the section for the version being released.
 - Update the table of contents of the changelog using `doctoc`.
 - Tag (`git tag`) the HEAD commit
 - Push (`git push`) to GitHub
