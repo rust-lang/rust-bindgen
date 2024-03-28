@@ -1,3 +1,5 @@
+extern crate bindgen;
+
 use bindgen::callbacks::{
     DeriveInfo, IntKind, MacroParsingBehavior, ParseCallbacks,
 };
