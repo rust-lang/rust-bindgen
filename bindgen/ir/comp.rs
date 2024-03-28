@@ -825,6 +825,23 @@ impl CompFields {
             }
         }
     }
+
+    /// Return the flex array member for the struct/class, if any.
+    fn flex_array_member(&self, ctx: &BindgenContext) -> Option<TypeId> {
+        let fields = match self {
+            CompFields::Before(_) => panic!("raw fields"),
+            CompFields::After { fields, .. } => fields,
+            CompFields::Error => return None, // panic?
+        };
+
+        match fields.last()? {
+            Field::Bitfields(..) => None,
+            Field::DataMember(FieldData { ty, .. }) => ctx
+                .resolve_type(*ty)
+                .is_incomplete_array(ctx)
+                .map(|item| item.expect_type_id(ctx)),
+        }
+    }
 }
 
 impl Trace for CompFields {
@@ -1120,6 +1137,14 @@ impl CompInfo {
                 panic!("Should always have computed bitfield units first");
             }
         }
+    }
+
+    /// Return the flex array member and its element type if any
+    pub(crate) fn flex_array_member(
+        &self,
+        ctx: &BindgenContext,
+    ) -> Option<TypeId> {
+        self.fields.flex_array_member(ctx)
     }
 
     fn has_fields(&self) -> bool {

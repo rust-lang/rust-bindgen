@@ -1315,6 +1315,7 @@ trait FieldCodegen<'a> {
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         parent_item: &Item,
+        last_field: bool,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1335,6 +1336,7 @@ impl<'a> FieldCodegen<'a> for Field {
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         parent_item: &Item,
+        last_field: bool,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1352,6 +1354,7 @@ impl<'a> FieldCodegen<'a> for Field {
                     accessor_kind,
                     parent,
                     parent_item,
+                    last_field,
                     result,
                     struct_layout,
                     fields,
@@ -1366,6 +1369,7 @@ impl<'a> FieldCodegen<'a> for Field {
                     accessor_kind,
                     parent,
                     parent_item,
+                    last_field,
                     result,
                     struct_layout,
                     fields,
@@ -1410,6 +1414,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         parent_item: &Item,
+        last_field: bool,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1435,14 +1440,20 @@ impl<'a> FieldCodegen<'a> for FieldData {
         let ty = if parent.is_union() {
             wrap_union_field_if_needed(ctx, struct_layout, ty, result)
         } else if let Some(item) = field_ty.is_incomplete_array(ctx) {
-            result.saw_incomplete_array();
-
-            let inner = item.to_rust_ty_or_opaque(ctx, &());
-
-            if ctx.options().enable_cxx_namespaces {
-                syn::parse_quote! { root::__IncompleteArrayField<#inner> }
+            // Only FAM if its the last field
+            if ctx.options().flexarray_dst && last_field {
+                struct_layout.saw_flexible_array();
+                syn::parse_quote! { FAM }
             } else {
-                syn::parse_quote! { __IncompleteArrayField<#inner> }
+                result.saw_incomplete_array();
+
+                let inner = item.to_rust_ty_or_opaque(ctx, &());
+
+                if ctx.options().enable_cxx_namespaces {
+                    syn::parse_quote! { root::__IncompleteArrayField<#inner> }
+                } else {
+                    syn::parse_quote! { __IncompleteArrayField<#inner> }
+                }
             }
         } else {
             ty
@@ -1664,6 +1675,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         parent_item: &Item,
+        last_field: bool,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1724,7 +1736,8 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         let mut generate_ctor = layout.size <= RUST_DERIVE_IN_ARRAY_LIMIT;
 
         let mut unit_visibility = visibility_kind;
-        for bf in self.bitfields() {
+        let bfields = self.bitfields();
+        for (idx, bf) in bfields.iter().enumerate() {
             // Codegen not allowed for anonymous bitfields
             if bf.name().is_none() {
                 continue;
@@ -1744,6 +1757,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 accessor_kind,
                 parent,
                 parent_item,
+                last_field && idx == bfields.len() - 1,
                 result,
                 struct_layout,
                 fields,
@@ -1826,6 +1840,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         _accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
         parent_item: &Item,
+        _last_field: bool,
         _result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         _fields: &mut F,
@@ -2059,13 +2074,15 @@ impl CodeGenerator for CompInfo {
                 .annotations()
                 .accessor_kind()
                 .unwrap_or(FieldAccessorKind::None);
-            for field in self.fields() {
+            let field_decls = self.fields();
+            for (idx, field) in field_decls.iter().enumerate() {
                 field.codegen(
                     ctx,
                     visibility,
                     struct_accessor_kind,
                     self,
                     item,
+                    idx == field_decls.len() - 1,
                     result,
                     &mut struct_layout,
                     &mut fields,
@@ -2190,20 +2207,60 @@ impl CodeGenerator for CompInfo {
             });
         }
 
-        let generics = if !generic_param_names.is_empty() {
-            let generic_param_names = generic_param_names.clone();
-            quote! {
-                < #( #generic_param_names ),* >
+        let (flex_array_generic, flex_inner_ty) = if ctx.options().flexarray_dst
+        {
+            match self.flex_array_member(ctx) {
+                Some(ty) => {
+                    let inner = ty.to_rust_ty_or_opaque(ctx, &());
+                    (
+                        Some(quote! { FAM: ?Sized = [ #inner; 0 ] }),
+                        Some(quote! { #inner }),
+                    )
+                }
+                None => (None, None),
             }
         } else {
-            quote! {}
+            (None, None)
         };
+
+        // Generics, including the flexible array member.
+        //
+        // generics - generic parameters for the struct declaration
+        // impl_generics_labels - generic parameters for `impl<...>`
+        // impl_generics_params - generic parameters for `impl structname<...>`
+        //
+        // `impl` blocks are for non-FAM related impls like Default, etc
+        let (generics, impl_generics_labels, impl_generics_params) =
+            if !generic_param_names.is_empty() || flex_array_generic.is_some() {
+                let (flex_sized, flex_fam) = match flex_inner_ty.as_ref() {
+                    None => (None, None),
+                    Some(ty) => (
+                        Some(quote! { [ #ty; 0 ] }),
+                        Some(quote! { FAM: ?Sized = [ #ty; 0 ] }),
+                    ),
+                };
+
+                (
+                    quote! {
+                        < #( #generic_param_names , )* #flex_fam >
+                    },
+                    quote! {
+                        < #( #generic_param_names , )* >
+                    },
+                    quote! {
+                        < #( #generic_param_names , )* #flex_sized >
+                    },
+                )
+            } else {
+                (quote! {}, quote! {}, quote! {})
+            };
 
         let mut attributes = vec![];
         let mut needs_clone_impl = false;
         let mut needs_default_impl = false;
         let mut needs_debug_impl = false;
         let mut needs_partialeq_impl = false;
+        let needs_flexarray_impl = flex_array_generic.is_some();
         if let Some(comment) = item.comment(ctx) {
             attributes.push(attributes::doc(comment));
         }
@@ -2480,15 +2537,25 @@ impl CodeGenerator for CompInfo {
         // NB: We can't use to_rust_ty here since for opaque types this tries to
         // use the specialization knowledge to generate a blob field.
         let ty_for_impl = quote! {
-            #canonical_ident #generics
+            #canonical_ident #impl_generics_params
         };
 
         if needs_clone_impl {
             result.push(quote! {
-                impl #generics Clone for #ty_for_impl {
+                impl #impl_generics_labels Clone for #ty_for_impl {
                     fn clone(&self) -> Self { *self }
                 }
             });
+        }
+
+        if needs_flexarray_impl {
+            result.push(self.generate_flexarray(
+                ctx,
+                &canonical_ident,
+                flex_inner_ty,
+                &*generic_param_names,
+                &impl_generics_labels,
+            ));
         }
 
         if needs_default_impl {
@@ -2515,7 +2582,7 @@ impl CodeGenerator for CompInfo {
             // non-zero padding bytes, especially when forwards/backwards compatability is
             // involved.
             result.push(quote! {
-                impl #generics Default for #ty_for_impl {
+                impl #impl_generics_labels Default for #ty_for_impl {
                     fn default() -> Self {
                         #body
                     }
@@ -2534,7 +2601,7 @@ impl CodeGenerator for CompInfo {
             let prefix = ctx.trait_prefix();
 
             result.push(quote! {
-                impl #generics ::#prefix::fmt::Debug for #ty_for_impl {
+                impl #impl_generics_labels ::#prefix::fmt::Debug for #ty_for_impl {
                     #impl_
                 }
             });
@@ -2558,7 +2625,7 @@ impl CodeGenerator for CompInfo {
 
                 let prefix = ctx.trait_prefix();
                 result.push(quote! {
-                    impl #generics ::#prefix::cmp::PartialEq for #ty_for_impl #partialeq_bounds {
+                    impl #impl_generics_labels ::#prefix::cmp::PartialEq for #ty_for_impl #partialeq_bounds {
                         #impl_
                     }
                 });
@@ -2567,10 +2634,146 @@ impl CodeGenerator for CompInfo {
 
         if !methods.is_empty() {
             result.push(quote! {
-                impl #generics #ty_for_impl {
+                impl #impl_generics_labels #ty_for_impl {
                     #( #methods )*
                 }
             });
+        }
+    }
+}
+
+impl CompInfo {
+    fn generate_flexarray(
+        &self,
+        ctx: &BindgenContext,
+        canonical_ident: &Ident,
+        flex_inner_ty: Option<proc_macro2::TokenStream>,
+        generic_param_names: &[Ident],
+        impl_generics_labels: &proc_macro2::TokenStream,
+    ) -> proc_macro2::TokenStream {
+        let prefix = ctx.trait_prefix();
+
+        let flex_array = flex_inner_ty.as_ref().map(|ty| quote! { [ #ty ] });
+
+        let dst_ty_for_impl = quote! {
+            #canonical_ident < #( #generic_param_names , )* #flex_array >
+
+        };
+        let sized_ty_for_impl = quote! {
+            #canonical_ident < #( #generic_param_names , )* [ #flex_inner_ty; 0 ] >
+        };
+
+        let layout = if ctx.options().rust_features().layout_for_ptr {
+            quote! {
+                pub fn layout(len: usize) -> ::#prefix::alloc::Layout {
+                    // SAFETY: Null pointers are OK if we don't deref them
+                    unsafe {
+                        let p: *const Self = ::#prefix::ptr::from_raw_parts(::#prefix::ptr::null(), len);
+                        ::#prefix::alloc::Layout::for_value_raw(p)
+                    }
+                }
+            }
+        } else {
+            quote!()
+        };
+
+        let (from_ptr_dst, from_ptr_sized) = if ctx
+            .options()
+            .rust_features()
+            .ptr_metadata
+        {
+            let flex_ref_inner = ctx.wrap_unsafe_ops(quote! {
+                Self::flex_ptr(self, len)
+            });
+            let flex_ref_mut_inner = ctx.wrap_unsafe_ops(quote! {
+                Self::flex_ptr_mut(self, len).assume_init()
+            });
+            let flex_ptr_inner = ctx.wrap_unsafe_ops(quote! {
+                &*::#prefix::ptr::from_raw_parts(ptr as *const (), len)
+            });
+            let flex_ptr_mut_inner = ctx.wrap_unsafe_ops(quote! {
+                // Initialize reference without ever exposing it, as its possibly uninitialized
+                let mut uninit = ::#prefix::mem::MaybeUninit::<&mut #dst_ty_for_impl>::uninit();
+                (uninit.as_mut_ptr() as *mut *mut #dst_ty_for_impl)
+                    .write(::#prefix::ptr::from_raw_parts_mut(ptr as *mut (), len));
+
+                uninit
+            });
+
+            (
+                quote! {
+                    #[inline]
+                    pub fn fixed(&self) -> (& #sized_ty_for_impl, usize) {
+                        unsafe {
+                            let (ptr, len) = (self as *const Self).to_raw_parts();
+                            (&*(ptr as *const #sized_ty_for_impl), len)
+                        }
+                    }
+
+                    #[inline]
+                    pub fn fixed_mut(&mut self) -> (&mut #sized_ty_for_impl, usize) {
+                        unsafe {
+                            let (ptr, len) = (self as *mut Self).to_raw_parts();
+                            (&mut *(ptr as *mut #sized_ty_for_impl), len)
+                        }
+                    }
+                },
+                quote! {
+                    /// Convert a sized prefix to an unsized structure with the given length.
+                    ///
+                    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+                    pub unsafe fn flex_ref(&self, len: usize) -> &#dst_ty_for_impl {
+                        // SAFETY: Reference is always valid as pointer. Caller is guaranteeing `len`.
+                        #flex_ref_inner
+                    }
+
+                    /// Convert a mutable sized prefix to an unsized structure with the given length.
+                    ///
+                    /// SAFETY: Underlying storage is initialized up to at least `len` elements.
+                    #[inline]
+                    pub unsafe fn flex_ref_mut(&mut self, len: usize) -> &mut #dst_ty_for_impl {
+                        // SAFETY: Reference is always valid as pointer. Caller is guaranteeing `len`.
+                        #flex_ref_mut_inner
+                    }
+
+                    /// Construct DST variant from a pointer and a size.
+                    ///
+                    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+                    /// SAFETY: `ptr` is valid. Underlying storage is fully initialized up to at least `len` elements.
+                    #[inline]
+                    pub unsafe fn flex_ptr<'unbounded>(ptr: *const Self, len: usize) -> &'unbounded #dst_ty_for_impl {
+                       #flex_ptr_inner
+                    }
+
+                    /// Construct mutable DST variant from a pointer and a
+                    /// size. The returned `&mut` reference is initialized
+                    /// pointing to memory referenced by `ptr`, but there's
+                    /// no requirement that that memory be initialized.
+                    ///
+                    /// NOTE: lifetime of returned reference is not tied to any underlying storage.
+                    /// SAFETY: `ptr` is valid. Underlying storage has space for at least `len` elements.
+                    #[inline]
+                    pub unsafe fn flex_ptr_mut<'unbounded>(
+                        ptr: *mut Self,
+                        len: usize,
+                    ) -> ::#prefix::mem::MaybeUninit<&'unbounded mut #dst_ty_for_impl> {
+                        #flex_ptr_mut_inner
+                    }
+                },
+            )
+        } else {
+            (quote!(), quote!())
+        };
+
+        quote! {
+            impl #impl_generics_labels #dst_ty_for_impl {
+                #layout
+                #from_ptr_dst
+            }
+
+            impl #impl_generics_labels #sized_ty_for_impl {
+                #from_ptr_sized
+            }
         }
     }
 }
