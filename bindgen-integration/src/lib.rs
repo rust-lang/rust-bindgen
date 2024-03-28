@@ -12,7 +12,6 @@ use std::ffi::CStr;
 use std::mem;
 use std::os::raw::c_int;
 
-#[allow(unused)]
 use bindings::testing::Bar; // This type is generated from module_raw_line.
 
 type MacroInteger = isize;
