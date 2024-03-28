@@ -563,7 +563,7 @@ cargo release [patch|minor] --no-publish --execute
 This does the following:
 
 - Bump the version.
-- Turn the `Unreleased` section of the changelog into the section for the version being published.
+- Turn the `Unreleased` section of the changelog into the section for the version being released.
 - Update the table of contents of the changelog using `doctoc`.
 - Tag (`git tag`) the HEAD commit
 - Push (`git push`) to GitHub
@@ -572,6 +572,10 @@ The `patch` and `minor` refer to semver concepts:
 
 - `patch` would bump __v0.68.1__ to __v0.68.2__
 - `minor` would bump __v0.68.2__ to __v0.69.0__
+
+> NOTE:
+> We use the `--no-publish` so that the crates are only published after the release is complete.
+> This is automatic, provided the release CI job is successful.
 
 ### Create a new release on Github
 
