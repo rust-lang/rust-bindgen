@@ -1,5 +1,4 @@
 extern crate bindgen;
-extern crate cc;
 
 use bindgen::callbacks::{
     DeriveInfo, IntKind, MacroParsingBehavior, ParseCallbacks,

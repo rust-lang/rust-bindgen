@@ -14,8 +14,6 @@
 //! ```
 //!
 #![deny(missing_docs)]
-extern crate clap;
-extern crate quickchecking;
 
 use clap::{Arg, ArgAction, Command};
 use std::path::PathBuf;

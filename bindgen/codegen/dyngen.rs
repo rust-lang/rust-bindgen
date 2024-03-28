@@ -90,8 +90,6 @@ impl DynamicItems {
         };
 
         quote! {
-            extern crate libloading;
-
             pub struct #lib_ident {
                 __library: ::libloading::Library,
                 #(#struct_members)*
