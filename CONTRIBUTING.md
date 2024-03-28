@@ -573,6 +573,10 @@ The `patch` and `minor` refer to semver concepts:
 - `patch` would bump __v0.68.1__ to __v0.68.2__
 - `minor` would bump __v0.68.2__ to __v0.69.0__
 
+> NOTE:
+> We use the `--no-publish` so that the crates are only published after the release is complete.
+> This is automatic, provided the release CI job is successful.
+
 ### Create a new release on Github
 
 The release is automated with the help of `.github/workflows/release.yml`,
