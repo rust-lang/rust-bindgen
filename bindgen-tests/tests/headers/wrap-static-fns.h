@@ -1,7 +1,7 @@
 // bindgen-flags: --experimental --wrap-static-fns
 // bindgen-parse-callbacks: wrap-as-variadic-fn
 
-// to avoid poluting theexpectation tests we put the stdarg.h behind a conditional
+// to avoid polluting the expectation tests we put the stdarg.h behind a conditional
 // variable only used in bindgen-integration
 #ifdef USE_VA_HEADER
 #include <stdarg.h>

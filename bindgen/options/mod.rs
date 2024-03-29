@@ -1983,7 +1983,7 @@ options! {
         },
         as_args: "--wrap-unsafe-ops",
     },
-    /// Patterns for functions whose ABI should be overriden.
+    /// Patterns for functions whose ABI should be overridden.
     abi_overrides: HashMap<Abi, RegexSet> {
         methods: {
             regex_option! {

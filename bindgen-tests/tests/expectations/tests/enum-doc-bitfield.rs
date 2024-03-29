@@ -4,11 +4,11 @@ impl B {
     pub const VAR_A: B = B(0);
 }
 impl B {
-    /// Document field with preceeding star
+    /// Document field with preceding star
     pub const VAR_B: B = B(1);
 }
 impl B {
-    /// Document field with preceeding exclamation
+    /// Document field with preceding exclamation
     pub const VAR_C: B = B(2);
 }
 impl B {
@@ -20,7 +20,7 @@ impl B {
     pub const VAR_E: B = B(4);
 }
 impl B {
-    /** Document field with preceeding star, with a loong long multiline
+    /** Document field with preceding star, with a loong long multiline
  comment.
 
  Very interesting documentation, definitely.*/

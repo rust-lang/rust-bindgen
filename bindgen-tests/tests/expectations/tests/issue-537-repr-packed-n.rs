@@ -23,7 +23,7 @@ fn bindgen_test_layout_AlignedToOne() {
         "Offset of field: AlignedToOne::i",
     );
 }
-/// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
+/// This should be packed because Rust 1.33 has `#[repr(packed(N))]`.
 #[repr(C, packed(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct AlignedToTwo {
@@ -75,7 +75,7 @@ fn bindgen_test_layout_PackedToOne() {
         "Offset of field: PackedToOne::y",
     );
 }
-/// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
+/// This should be packed because Rust 1.33 has `#[repr(packed(N))]`.
 #[repr(C, packed(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct PackedToTwo {

@@ -17,7 +17,7 @@ use crate::{HashMap, HashSet};
 /// * If T is a type alias, a templated alias or an indirection to another type,
 ///   it has type parameter in array if the type T refers to has.
 /// * If T is a compound type, it has array if any of base memter or field
-///   has type paramter in array.
+///   has type parameter in array.
 /// * If T is an instantiation of an abstract template definition, T has
 ///   type parameter in array if any of the template arguments or template definition
 ///   has.
