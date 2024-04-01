@@ -580,9 +580,7 @@ containing</p>
 <p>Given that the library has not been compiled yet, we need to modify the
 <code>build.rs</code> build script to compile the <code>hello.c</code> source file into a static
 library:</p>
-<pre><code class="language-rust ignore">extern crate bindgen;
-
-use std::env;
+<pre><code class="language-rust ignore">use std::env;
 use std::path::PathBuf;
 
 use bindgen::CargoCallbacks;
