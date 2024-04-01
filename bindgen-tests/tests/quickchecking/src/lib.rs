@@ -3,8 +3,6 @@
 //! ## Example
 //!
 //! ```rust
-//! extern crate quickcheck;
-//! extern crate quickchecking;
 //! use quickcheck::{Arbitrary, Gen};
 //! use quickchecking::fuzzers;
 //!
@@ -20,8 +18,6 @@
 #![deny(missing_docs)]
 #[macro_use]
 extern crate lazy_static;
-extern crate quickcheck;
-extern crate tempfile;
 
 use quickcheck::{Gen, QuickCheck, TestResult};
 use std::error::Error;

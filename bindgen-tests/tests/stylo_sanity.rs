@@ -1,7 +1,3 @@
-// Don't want to copy that nasty `cfg` below...
-#[allow(unused_extern_crates)]
-extern crate bindgen;
-
 /// A sanity test that we can generate bindings for Stylo.
 ///
 /// We don't assert on expected output because its just too big. The output will

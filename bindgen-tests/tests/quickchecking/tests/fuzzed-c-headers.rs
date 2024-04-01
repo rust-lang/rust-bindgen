@@ -1,6 +1,3 @@
-extern crate quickcheck;
-extern crate quickchecking;
-
 use quickcheck::{Arbitrary, Gen};
 use quickchecking::fuzzers::{
     ArrayDimensionC, BaseTypeC, BasicTypeDeclarationC, DeclarationC,

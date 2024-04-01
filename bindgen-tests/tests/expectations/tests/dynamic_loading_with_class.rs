@@ -37,7 +37,6 @@ impl A {
         __bindgen_tmp.assume_init()
     }
 }
-extern crate libloading;
 pub struct TestLib {
     __library: ::libloading::Library,
     pub foo: Result<
