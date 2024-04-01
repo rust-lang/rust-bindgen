@@ -6,7 +6,7 @@ struct AlignedToOne {
     int i;
 } __attribute__ ((packed,aligned(1)));
 
-/// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
+/// This should be packed because Rust 1.33 has `#[repr(packed(N))]`.
 struct AlignedToTwo {
     int i;
 } __attribute__ ((packed,aligned(2)));
@@ -25,7 +25,7 @@ struct PackedToOne {
 
 #pragma pack(2)
 
-/// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
+/// This should be packed because Rust 1.33 has `#[repr(packed(N))]`.
 struct PackedToTwo {
     int x;
     int y;

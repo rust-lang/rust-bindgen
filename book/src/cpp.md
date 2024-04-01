@@ -154,6 +154,6 @@ instance.assume_init_mut().method();
 ```
 
 You can easily verify this fact if you provide a implementation for `MyClass`
-and `method` that prints the the `this` pointer address. However, you can
+and `method` that prints the `this` pointer address. However, you can
 ignore this fact if you know that the original C++ code does not rely on the
 instance address in its internal logic.

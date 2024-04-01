@@ -6,5 +6,5 @@ class DoesNotUseU {
     V v;
 };
 
-// The bool should go away becuase U is not used.
+// The bool should go away because U is not used.
 using Alias = DoesNotUseU<int, bool, char>;

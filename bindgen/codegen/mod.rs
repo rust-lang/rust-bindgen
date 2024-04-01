@@ -2557,7 +2557,7 @@ impl CodeGenerator for CompInfo {
             };
             // Note we use `ptr::write_bytes()` instead of `mem::zeroed()` because the latter does
             // not necessarily ensure padding bytes are zeroed. Some C libraries are sensitive to
-            // non-zero padding bytes, especially when forwards/backwards compatability is
+            // non-zero padding bytes, especially when forwards/backwards compatibility is
             // involved.
             result.push(quote! {
                 impl #generics Default for #ty_for_impl {
