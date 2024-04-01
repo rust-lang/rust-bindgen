@@ -35,57 +35,30 @@ impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
 pub struct ZeroSizedArray {
     pub arr: __IncompleteArrayField<::std::os::raw::c_char>,
 }
-#[test]
-fn bindgen_test_layout_ZeroSizedArray() {
-    const UNINIT: ::std::mem::MaybeUninit<ZeroSizedArray> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ZeroSizedArray>(),
-        0usize,
-        concat!("Size of: ", stringify!(ZeroSizedArray)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ZeroSizedArray>(),
-        1usize,
-        concat!("Alignment of ", stringify!(ZeroSizedArray)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arr) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(ZeroSizedArray), "::", stringify!(arr)),
-    );
-}
+const _: () = {
+    ["Size of ZeroSizedArray"][::std::mem::size_of::<ZeroSizedArray>() - 0usize];
+    ["Alignment of ZeroSizedArray"][::std::mem::align_of::<ZeroSizedArray>() - 1usize];
+    [
+        "Offset of field: ZeroSizedArray::arr",
+    ][::std::mem::offset_of!(ZeroSizedArray, arr) - 0usize];
+};
 /// And nor should this get an `_address` field.
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct ContainsZeroSizedArray {
     pub zsa: ZeroSizedArray,
 }
-#[test]
-fn bindgen_test_layout_ContainsZeroSizedArray() {
-    const UNINIT: ::std::mem::MaybeUninit<ContainsZeroSizedArray> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ContainsZeroSizedArray>(),
-        0usize,
-        concat!("Size of: ", stringify!(ContainsZeroSizedArray)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ContainsZeroSizedArray>(),
-        1usize,
-        concat!("Alignment of ", stringify!(ContainsZeroSizedArray)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).zsa) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ContainsZeroSizedArray),
-            "::",
-            stringify!(zsa),
-        ),
-    );
-}
+const _: () = {
+    [
+        "Size of ContainsZeroSizedArray",
+    ][::std::mem::size_of::<ContainsZeroSizedArray>() - 0usize];
+    [
+        "Alignment of ContainsZeroSizedArray",
+    ][::std::mem::align_of::<ContainsZeroSizedArray>() - 1usize];
+    [
+        "Offset of field: ContainsZeroSizedArray::zsa",
+    ][::std::mem::offset_of!(ContainsZeroSizedArray, zsa) - 0usize];
+};
 /** Inheriting from ZeroSizedArray shouldn't cause an `_address` to be inserted
  either.*/
 #[repr(C)]
@@ -93,78 +66,45 @@ fn bindgen_test_layout_ContainsZeroSizedArray() {
 pub struct InheritsZeroSizedArray {
     pub _base: ZeroSizedArray,
 }
-#[test]
-fn bindgen_test_layout_InheritsZeroSizedArray() {
-    assert_eq!(
-        ::std::mem::size_of::<InheritsZeroSizedArray>(),
-        0usize,
-        concat!("Size of: ", stringify!(InheritsZeroSizedArray)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<InheritsZeroSizedArray>(),
-        1usize,
-        concat!("Alignment of ", stringify!(InheritsZeroSizedArray)),
-    );
-}
+const _: () = {
+    [
+        "Size of InheritsZeroSizedArray",
+    ][::std::mem::size_of::<InheritsZeroSizedArray>() - 0usize];
+    [
+        "Alignment of InheritsZeroSizedArray",
+    ][::std::mem::align_of::<InheritsZeroSizedArray>() - 1usize];
+};
 /// And this should not get an `_address` field either.
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct DynamicallySizedArray {
     pub arr: __IncompleteArrayField<::std::os::raw::c_char>,
 }
-#[test]
-fn bindgen_test_layout_DynamicallySizedArray() {
-    const UNINIT: ::std::mem::MaybeUninit<DynamicallySizedArray> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<DynamicallySizedArray>(),
-        0usize,
-        concat!("Size of: ", stringify!(DynamicallySizedArray)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DynamicallySizedArray>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DynamicallySizedArray)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).arr) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DynamicallySizedArray),
-            "::",
-            stringify!(arr),
-        ),
-    );
-}
+const _: () = {
+    [
+        "Size of DynamicallySizedArray",
+    ][::std::mem::size_of::<DynamicallySizedArray>() - 0usize];
+    [
+        "Alignment of DynamicallySizedArray",
+    ][::std::mem::align_of::<DynamicallySizedArray>() - 1usize];
+    [
+        "Offset of field: DynamicallySizedArray::arr",
+    ][::std::mem::offset_of!(DynamicallySizedArray, arr) - 0usize];
+};
 /// No `_address` field here either.
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct ContainsDynamicallySizedArray {
     pub dsa: DynamicallySizedArray,
 }
-#[test]
-fn bindgen_test_layout_ContainsDynamicallySizedArray() {
-    const UNINIT: ::std::mem::MaybeUninit<ContainsDynamicallySizedArray> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ContainsDynamicallySizedArray>(),
-        0usize,
-        concat!("Size of: ", stringify!(ContainsDynamicallySizedArray)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ContainsDynamicallySizedArray>(),
-        1usize,
-        concat!("Alignment of ", stringify!(ContainsDynamicallySizedArray)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).dsa) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(ContainsDynamicallySizedArray),
-            "::",
-            stringify!(dsa),
-        ),
-    );
-}
+const _: () = {
+    [
+        "Size of ContainsDynamicallySizedArray",
+    ][::std::mem::size_of::<ContainsDynamicallySizedArray>() - 0usize];
+    [
+        "Alignment of ContainsDynamicallySizedArray",
+    ][::std::mem::align_of::<ContainsDynamicallySizedArray>() - 1usize];
+    [
+        "Offset of field: ContainsDynamicallySizedArray::dsa",
+    ][::std::mem::offset_of!(ContainsDynamicallySizedArray, dsa) - 0usize];
+};

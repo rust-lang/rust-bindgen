@@ -8,32 +8,13 @@ pub struct A {
     pub offset: ssize_t,
     pub next: *mut A,
 }
-#[test]
-fn bindgen_test_layout_A() {
-    const UNINIT: ::std::mem::MaybeUninit<A> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<A>(), 24usize, concat!("Size of: ", stringify!(A)));
-    assert_eq!(
-        ::std::mem::align_of::<A>(),
-        8usize,
-        concat!("Alignment of ", stringify!(A)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(len)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).offset) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(offset)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).next) as usize - ptr as usize },
-        16usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(next)),
-    );
-}
+const _: () = {
+    ["Size of A"][::std::mem::size_of::<A>() - 24usize];
+    ["Alignment of A"][::std::mem::align_of::<A>() - 8usize];
+    ["Offset of field: A::len"][::std::mem::offset_of!(A, len) - 0usize];
+    ["Offset of field: A::offset"][::std::mem::offset_of!(A, offset) - 8usize];
+    ["Offset of field: A::next"][::std::mem::offset_of!(A, next) - 16usize];
+};
 impl Default for A {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

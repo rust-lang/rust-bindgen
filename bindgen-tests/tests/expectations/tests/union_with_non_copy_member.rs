@@ -47,67 +47,33 @@ impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 pub struct NonCopyType {
     pub foo: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_NonCopyType() {
-    const UNINIT: ::std::mem::MaybeUninit<NonCopyType> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<NonCopyType>(),
-        4usize,
-        concat!("Size of: ", stringify!(NonCopyType)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<NonCopyType>(),
-        4usize,
-        concat!("Alignment of ", stringify!(NonCopyType)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(NonCopyType), "::", stringify!(foo)),
-    );
-}
+const _: () = {
+    ["Size of NonCopyType"][::std::mem::size_of::<NonCopyType>() - 4usize];
+    ["Alignment of NonCopyType"][::std::mem::align_of::<NonCopyType>() - 4usize];
+    [
+        "Offset of field: NonCopyType::foo",
+    ][::std::mem::offset_of!(NonCopyType, foo) - 0usize];
+};
 #[repr(C)]
 pub struct WithBindgenGeneratedWrapper {
     pub non_copy_type: __BindgenUnionField<NonCopyType>,
     pub bar: __BindgenUnionField<::std::os::raw::c_int>,
     pub bindgen_union_field: u32,
 }
-#[test]
-fn bindgen_test_layout_WithBindgenGeneratedWrapper() {
-    const UNINIT: ::std::mem::MaybeUninit<WithBindgenGeneratedWrapper> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<WithBindgenGeneratedWrapper>(),
-        4usize,
-        concat!("Size of: ", stringify!(WithBindgenGeneratedWrapper)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<WithBindgenGeneratedWrapper>(),
-        4usize,
-        concat!("Alignment of ", stringify!(WithBindgenGeneratedWrapper)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).non_copy_type) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithBindgenGeneratedWrapper),
-            "::",
-            stringify!(non_copy_type),
-        ),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithBindgenGeneratedWrapper),
-            "::",
-            stringify!(bar),
-        ),
-    );
-}
+const _: () = {
+    [
+        "Size of WithBindgenGeneratedWrapper",
+    ][::std::mem::size_of::<WithBindgenGeneratedWrapper>() - 4usize];
+    [
+        "Alignment of WithBindgenGeneratedWrapper",
+    ][::std::mem::align_of::<WithBindgenGeneratedWrapper>() - 4usize];
+    [
+        "Offset of field: WithBindgenGeneratedWrapper::non_copy_type",
+    ][::std::mem::offset_of!(WithBindgenGeneratedWrapper, non_copy_type) - 0usize];
+    [
+        "Offset of field: WithBindgenGeneratedWrapper::bar",
+    ][::std::mem::offset_of!(WithBindgenGeneratedWrapper, bar) - 0usize];
+};
 impl Default for WithBindgenGeneratedWrapper {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -122,36 +88,18 @@ pub union WithManuallyDrop {
     pub non_copy_type: ::std::mem::ManuallyDrop<NonCopyType>,
     pub bar: ::std::mem::ManuallyDrop<::std::os::raw::c_int>,
 }
-#[test]
-fn bindgen_test_layout_WithManuallyDrop() {
-    const UNINIT: ::std::mem::MaybeUninit<WithManuallyDrop> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<WithManuallyDrop>(),
-        4usize,
-        concat!("Size of: ", stringify!(WithManuallyDrop)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<WithManuallyDrop>(),
-        4usize,
-        concat!("Alignment of ", stringify!(WithManuallyDrop)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).non_copy_type) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithManuallyDrop),
-            "::",
-            stringify!(non_copy_type),
-        ),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(WithManuallyDrop), "::", stringify!(bar)),
-    );
-}
+const _: () = {
+    ["Size of WithManuallyDrop"][::std::mem::size_of::<WithManuallyDrop>() - 4usize];
+    [
+        "Alignment of WithManuallyDrop",
+    ][::std::mem::align_of::<WithManuallyDrop>() - 4usize];
+    [
+        "Offset of field: WithManuallyDrop::non_copy_type",
+    ][::std::mem::offset_of!(WithManuallyDrop, non_copy_type) - 0usize];
+    [
+        "Offset of field: WithManuallyDrop::bar",
+    ][::std::mem::offset_of!(WithManuallyDrop, bar) - 0usize];
+};
 impl Default for WithManuallyDrop {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -167,41 +115,18 @@ pub struct WithDefaultWrapper {
     pub bar: __BindgenUnionField<::std::os::raw::c_int>,
     pub bindgen_union_field: u32,
 }
-#[test]
-fn bindgen_test_layout_WithDefaultWrapper() {
-    const UNINIT: ::std::mem::MaybeUninit<WithDefaultWrapper> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<WithDefaultWrapper>(),
-        4usize,
-        concat!("Size of: ", stringify!(WithDefaultWrapper)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<WithDefaultWrapper>(),
-        4usize,
-        concat!("Alignment of ", stringify!(WithDefaultWrapper)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).non_copy_type) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithDefaultWrapper),
-            "::",
-            stringify!(non_copy_type),
-        ),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).bar) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithDefaultWrapper),
-            "::",
-            stringify!(bar),
-        ),
-    );
-}
+const _: () = {
+    ["Size of WithDefaultWrapper"][::std::mem::size_of::<WithDefaultWrapper>() - 4usize];
+    [
+        "Alignment of WithDefaultWrapper",
+    ][::std::mem::align_of::<WithDefaultWrapper>() - 4usize];
+    [
+        "Offset of field: WithDefaultWrapper::non_copy_type",
+    ][::std::mem::offset_of!(WithDefaultWrapper, non_copy_type) - 0usize];
+    [
+        "Offset of field: WithDefaultWrapper::bar",
+    ][::std::mem::offset_of!(WithDefaultWrapper, bar) - 0usize];
+};
 impl Default for WithDefaultWrapper {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

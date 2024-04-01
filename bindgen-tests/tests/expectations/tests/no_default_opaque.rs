@@ -5,16 +5,7 @@
 pub struct NoDefault {
     pub _bindgen_opaque_blob: u32,
 }
-#[test]
-fn bindgen_test_layout_NoDefault() {
-    assert_eq!(
-        ::std::mem::size_of::<NoDefault>(),
-        4usize,
-        concat!("Size of: ", stringify!(NoDefault)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<NoDefault>(),
-        4usize,
-        concat!("Alignment of ", stringify!(NoDefault)),
-    );
-}
+const _: () = {
+    ["Size of NoDefault"][::std::mem::size_of::<NoDefault>() - 4usize];
+    ["Alignment of NoDefault"][::std::mem::align_of::<NoDefault>() - 4usize];
+};

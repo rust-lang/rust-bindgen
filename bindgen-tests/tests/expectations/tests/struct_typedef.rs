@@ -4,61 +4,29 @@
 pub struct typedef_named_struct {
     pub has_name: bool,
 }
-#[test]
-fn bindgen_test_layout_typedef_named_struct() {
-    const UNINIT: ::std::mem::MaybeUninit<typedef_named_struct> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<typedef_named_struct>(),
-        1usize,
-        concat!("Size of: ", stringify!(typedef_named_struct)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<typedef_named_struct>(),
-        1usize,
-        concat!("Alignment of ", stringify!(typedef_named_struct)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).has_name) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(typedef_named_struct),
-            "::",
-            stringify!(has_name),
-        ),
-    );
-}
+const _: () = {
+    [
+        "Size of typedef_named_struct",
+    ][::std::mem::size_of::<typedef_named_struct>() - 1usize];
+    [
+        "Alignment of typedef_named_struct",
+    ][::std::mem::align_of::<typedef_named_struct>() - 1usize];
+    [
+        "Offset of field: typedef_named_struct::has_name",
+    ][::std::mem::offset_of!(typedef_named_struct, has_name) - 0usize];
+};
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct _bindgen_ty_1 {
     pub no_name: *mut ::std::os::raw::c_void,
 }
-#[test]
-fn bindgen_test_layout__bindgen_ty_1() {
-    const UNINIT: ::std::mem::MaybeUninit<_bindgen_ty_1> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<_bindgen_ty_1>(),
-        8usize,
-        concat!("Size of: ", stringify!(_bindgen_ty_1)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<_bindgen_ty_1>(),
-        8usize,
-        concat!("Alignment of ", stringify!(_bindgen_ty_1)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).no_name) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(_bindgen_ty_1),
-            "::",
-            stringify!(no_name),
-        ),
-    );
-}
+const _: () = {
+    ["Size of _bindgen_ty_1"][::std::mem::size_of::<_bindgen_ty_1>() - 8usize];
+    ["Alignment of _bindgen_ty_1"][::std::mem::align_of::<_bindgen_ty_1>() - 8usize];
+    [
+        "Offset of field: _bindgen_ty_1::no_name",
+    ][::std::mem::offset_of!(_bindgen_ty_1, no_name) - 0usize];
+};
 impl Default for _bindgen_ty_1 {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

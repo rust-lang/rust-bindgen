@@ -14,44 +14,22 @@ pub mod root {
             pub struct Helper {
                 pub _address: u8,
             }
-            #[test]
-            fn bindgen_test_layout_Helper() {
-                assert_eq!(
-                    ::std::mem::size_of::<Helper>(),
-                    1usize,
-                    concat!("Size of: ", stringify!(Helper)),
-                );
-                assert_eq!(
-                    ::std::mem::align_of::<Helper>(),
-                    1usize,
-                    concat!("Alignment of ", stringify!(Helper)),
-                );
-            }
+            const _: () = {
+                ["Size of Helper"][::std::mem::size_of::<Helper>() - 1usize];
+                ["Alignment of Helper"][::std::mem::align_of::<Helper>() - 1usize];
+            };
         }
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct Test {
             pub helper: root::outer::inner::Helper,
         }
-        #[test]
-        fn bindgen_test_layout_Test() {
-            const UNINIT: ::std::mem::MaybeUninit<Test> = ::std::mem::MaybeUninit::uninit();
-            let ptr = UNINIT.as_ptr();
-            assert_eq!(
-                ::std::mem::size_of::<Test>(),
-                1usize,
-                concat!("Size of: ", stringify!(Test)),
-            );
-            assert_eq!(
-                ::std::mem::align_of::<Test>(),
-                1usize,
-                concat!("Alignment of ", stringify!(Test)),
-            );
-            assert_eq!(
-                unsafe { ::std::ptr::addr_of!((*ptr).helper) as usize - ptr as usize },
-                0usize,
-                concat!("Offset of field: ", stringify!(Test), "::", stringify!(helper)),
-            );
-        }
+        const _: () = {
+            ["Size of Test"][::std::mem::size_of::<Test>() - 1usize];
+            ["Alignment of Test"][::std::mem::align_of::<Test>() - 1usize];
+            [
+                "Offset of field: Test::helper",
+            ][::std::mem::offset_of!(Test, helper) - 0usize];
+        };
     }
 }

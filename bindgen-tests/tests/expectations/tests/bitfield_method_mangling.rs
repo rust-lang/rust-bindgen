@@ -89,19 +89,14 @@ pub struct mach_msg_type_descriptor_t {
     pub _bitfield_align_1: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
-#[test]
-fn bindgen_test_layout_mach_msg_type_descriptor_t() {
-    assert_eq!(
-        ::std::mem::size_of::<mach_msg_type_descriptor_t>(),
-        4usize,
-        concat!("Size of: ", stringify!(mach_msg_type_descriptor_t)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<mach_msg_type_descriptor_t>(),
-        4usize,
-        concat!("Alignment of ", stringify!(mach_msg_type_descriptor_t)),
-    );
-}
+const _: () = {
+    [
+        "Size of mach_msg_type_descriptor_t",
+    ][::std::mem::size_of::<mach_msg_type_descriptor_t>() - 4usize];
+    [
+        "Alignment of mach_msg_type_descriptor_t",
+    ][::std::mem::align_of::<mach_msg_type_descriptor_t>() - 4usize];
+};
 impl mach_msg_type_descriptor_t {
     #[inline]
     pub fn pad3(&self) -> ::std::os::raw::c_uint {

@@ -20,31 +20,13 @@ pub type HandleValue = HandleWithDtor<::std::os::raw::c_int>;
 pub struct WithoutDtor {
     pub shouldBeWithDtor: HandleValue,
 }
-#[test]
-fn bindgen_test_layout_WithoutDtor() {
-    const UNINIT: ::std::mem::MaybeUninit<WithoutDtor> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<WithoutDtor>(),
-        8usize,
-        concat!("Size of: ", stringify!(WithoutDtor)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<WithoutDtor>(),
-        8usize,
-        concat!("Alignment of ", stringify!(WithoutDtor)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).shouldBeWithDtor) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(WithoutDtor),
-            "::",
-            stringify!(shouldBeWithDtor),
-        ),
-    );
-}
+const _: () = {
+    ["Size of WithoutDtor"][::std::mem::size_of::<WithoutDtor>() - 8usize];
+    ["Alignment of WithoutDtor"][::std::mem::align_of::<WithoutDtor>() - 8usize];
+    [
+        "Offset of field: WithoutDtor::shouldBeWithDtor",
+    ][::std::mem::offset_of!(WithoutDtor, shouldBeWithDtor) - 0usize];
+};
 impl Default for WithoutDtor {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -54,22 +36,11 @@ impl Default for WithoutDtor {
         }
     }
 }
-#[test]
-fn __bindgen_test_layout_HandleWithDtor_open0_int_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<HandleWithDtor<::std::os::raw::c_int>>(),
-        8usize,
-        concat!(
-            "Size of template specialization: ",
-            stringify!(HandleWithDtor < ::std::os::raw::c_int >),
-        ),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<HandleWithDtor<::std::os::raw::c_int>>(),
-        8usize,
-        concat!(
-            "Alignment of template specialization: ",
-            stringify!(HandleWithDtor < ::std::os::raw::c_int >),
-        ),
-    );
-}
+const _: () = {
+    [
+        "Size of template specialization: HandleWithDtor_open0_int_close0",
+    ][::std::mem::size_of::<HandleWithDtor<::std::os::raw::c_int>>() - 8usize];
+    [
+        "Align of template specialization: HandleWithDtor_open0_int_close0",
+    ][::std::mem::align_of::<HandleWithDtor<::std::os::raw::c_int>>() - 8usize];
+};

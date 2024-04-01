@@ -16,70 +16,27 @@ pub mod root {
         pub struct Bar_Baz {
             pub foo: ::std::os::raw::c_int,
         }
-        #[test]
-        fn bindgen_test_layout_Bar_Baz() {
-            const UNINIT: ::std::mem::MaybeUninit<Bar_Baz> = ::std::mem::MaybeUninit::uninit();
-            let ptr = UNINIT.as_ptr();
-            assert_eq!(
-                ::std::mem::size_of::<Bar_Baz>(),
-                4usize,
-                concat!("Size of: ", stringify!(Bar_Baz)),
-            );
-            assert_eq!(
-                ::std::mem::align_of::<Bar_Baz>(),
-                4usize,
-                concat!("Alignment of ", stringify!(Bar_Baz)),
-            );
-            assert_eq!(
-                unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
-                0usize,
-                concat!("Offset of field: ", stringify!(Bar_Baz), "::", stringify!(foo)),
-            );
-        }
-        #[test]
-        fn bindgen_test_layout_Bar() {
-            const UNINIT: ::std::mem::MaybeUninit<Bar> = ::std::mem::MaybeUninit::uninit();
-            let ptr = UNINIT.as_ptr();
-            assert_eq!(
-                ::std::mem::size_of::<Bar>(),
-                4usize,
-                concat!("Size of: ", stringify!(Bar)),
-            );
-            assert_eq!(
-                ::std::mem::align_of::<Bar>(),
-                4usize,
-                concat!("Alignment of ", stringify!(Bar)),
-            );
-            assert_eq!(
-                unsafe { ::std::ptr::addr_of!((*ptr).foo) as usize - ptr as usize },
-                0usize,
-                concat!("Offset of field: ", stringify!(Bar), "::", stringify!(foo)),
-            );
-        }
+        const _: () = {
+            ["Size of Bar_Baz"][::std::mem::size_of::<Bar_Baz>() - 4usize];
+            ["Alignment of Bar_Baz"][::std::mem::align_of::<Bar_Baz>() - 4usize];
+            [
+                "Offset of field: Bar_Baz::foo",
+            ][::std::mem::offset_of!(Bar_Baz, foo) - 0usize];
+        };
+        const _: () = {
+            ["Size of Bar"][::std::mem::size_of::<Bar>() - 4usize];
+            ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 4usize];
+            ["Offset of field: Bar::foo"][::std::mem::offset_of!(Bar, foo) - 0usize];
+        };
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct Baz {
             pub baz: ::std::os::raw::c_int,
         }
-        #[test]
-        fn bindgen_test_layout_Baz() {
-            const UNINIT: ::std::mem::MaybeUninit<Baz> = ::std::mem::MaybeUninit::uninit();
-            let ptr = UNINIT.as_ptr();
-            assert_eq!(
-                ::std::mem::size_of::<Baz>(),
-                4usize,
-                concat!("Size of: ", stringify!(Baz)),
-            );
-            assert_eq!(
-                ::std::mem::align_of::<Baz>(),
-                4usize,
-                concat!("Alignment of ", stringify!(Baz)),
-            );
-            assert_eq!(
-                unsafe { ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize },
-                0usize,
-                concat!("Offset of field: ", stringify!(Baz), "::", stringify!(baz)),
-            );
-        }
+        const _: () = {
+            ["Size of Baz"][::std::mem::size_of::<Baz>() - 4usize];
+            ["Alignment of Baz"][::std::mem::align_of::<Baz>() - 4usize];
+            ["Offset of field: Baz::baz"][::std::mem::offset_of!(Baz, baz) - 0usize];
+        };
     }
 }

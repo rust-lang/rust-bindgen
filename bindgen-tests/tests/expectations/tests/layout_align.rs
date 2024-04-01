@@ -127,51 +127,25 @@ pub struct rte_kni_fifo {
     ///< The buffer contains mbuf pointers
     pub buffer: __IncompleteArrayField<*mut ::std::os::raw::c_void>,
 }
-#[test]
-fn bindgen_test_layout_rte_kni_fifo() {
-    const UNINIT: ::std::mem::MaybeUninit<rte_kni_fifo> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<rte_kni_fifo>(),
-        16usize,
-        concat!("Size of: ", stringify!(rte_kni_fifo)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<rte_kni_fifo>(),
-        8usize,
-        concat!("Alignment of ", stringify!(rte_kni_fifo)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).write) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(rte_kni_fifo), "::", stringify!(write)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).read) as usize - ptr as usize },
-        4usize,
-        concat!("Offset of field: ", stringify!(rte_kni_fifo), "::", stringify!(read)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(rte_kni_fifo), "::", stringify!(len)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).elem_size) as usize - ptr as usize },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_kni_fifo),
-            "::",
-            stringify!(elem_size),
-        ),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).buffer) as usize - ptr as usize },
-        16usize,
-        concat!("Offset of field: ", stringify!(rte_kni_fifo), "::", stringify!(buffer)),
-    );
-}
+const _: () = {
+    ["Size of rte_kni_fifo"][::std::mem::size_of::<rte_kni_fifo>() - 16usize];
+    ["Alignment of rte_kni_fifo"][::std::mem::align_of::<rte_kni_fifo>() - 8usize];
+    [
+        "Offset of field: rte_kni_fifo::write",
+    ][::std::mem::offset_of!(rte_kni_fifo, write) - 0usize];
+    [
+        "Offset of field: rte_kni_fifo::read",
+    ][::std::mem::offset_of!(rte_kni_fifo, read) - 4usize];
+    [
+        "Offset of field: rte_kni_fifo::len",
+    ][::std::mem::offset_of!(rte_kni_fifo, len) - 8usize];
+    [
+        "Offset of field: rte_kni_fifo::elem_size",
+    ][::std::mem::offset_of!(rte_kni_fifo, elem_size) - 12usize];
+    [
+        "Offset of field: rte_kni_fifo::buffer",
+    ][::std::mem::offset_of!(rte_kni_fifo, buffer) - 16usize];
+};
 impl Default for rte_kni_fifo {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -191,31 +165,13 @@ pub struct rte_eth_link {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }
-#[test]
-fn bindgen_test_layout_rte_eth_link() {
-    const UNINIT: ::std::mem::MaybeUninit<rte_eth_link> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<rte_eth_link>(),
-        8usize,
-        concat!("Size of: ", stringify!(rte_eth_link)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<rte_eth_link>(),
-        8usize,
-        concat!("Alignment of ", stringify!(rte_eth_link)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).link_speed) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(rte_eth_link),
-            "::",
-            stringify!(link_speed),
-        ),
-    );
-}
+const _: () = {
+    ["Size of rte_eth_link"][::std::mem::size_of::<rte_eth_link>() - 8usize];
+    ["Alignment of rte_eth_link"][::std::mem::align_of::<rte_eth_link>() - 8usize];
+    [
+        "Offset of field: rte_eth_link::link_speed",
+    ][::std::mem::offset_of!(rte_eth_link, link_speed) - 0usize];
+};
 impl rte_eth_link {
     #[inline]
     pub fn link_duplex(&self) -> u16 {

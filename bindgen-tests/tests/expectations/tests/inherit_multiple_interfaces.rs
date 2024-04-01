@@ -7,22 +7,11 @@ pub struct A {
     pub vtable_: *const A__bindgen_vtable,
     pub member: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_A() {
-    const UNINIT: ::std::mem::MaybeUninit<A> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<A>(), 16usize, concat!("Size of: ", stringify!(A)));
-    assert_eq!(
-        ::std::mem::align_of::<A>(),
-        8usize,
-        concat!("Alignment of ", stringify!(A)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(A), "::", stringify!(member)),
-    );
-}
+const _: () = {
+    ["Size of A"][::std::mem::size_of::<A>() - 16usize];
+    ["Alignment of A"][::std::mem::align_of::<A>() - 8usize];
+    ["Offset of field: A::member"][::std::mem::offset_of!(A, member) - 8usize];
+};
 impl Default for A {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -40,22 +29,11 @@ pub struct B {
     pub vtable_: *const B__bindgen_vtable,
     pub member2: *mut ::std::os::raw::c_void,
 }
-#[test]
-fn bindgen_test_layout_B() {
-    const UNINIT: ::std::mem::MaybeUninit<B> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<B>(), 16usize, concat!("Size of: ", stringify!(B)));
-    assert_eq!(
-        ::std::mem::align_of::<B>(),
-        8usize,
-        concat!("Alignment of ", stringify!(B)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).member2) as usize - ptr as usize },
-        8usize,
-        concat!("Offset of field: ", stringify!(B), "::", stringify!(member2)),
-    );
-}
+const _: () = {
+    ["Size of B"][::std::mem::size_of::<B>() - 16usize];
+    ["Alignment of B"][::std::mem::align_of::<B>() - 8usize];
+    ["Offset of field: B::member2"][::std::mem::offset_of!(B, member2) - 8usize];
+};
 impl Default for B {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -72,22 +50,11 @@ pub struct C {
     pub _base_1: B,
     pub member3: f32,
 }
-#[test]
-fn bindgen_test_layout_C() {
-    const UNINIT: ::std::mem::MaybeUninit<C> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<C>(), 40usize, concat!("Size of: ", stringify!(C)));
-    assert_eq!(
-        ::std::mem::align_of::<C>(),
-        8usize,
-        concat!("Alignment of ", stringify!(C)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).member3) as usize - ptr as usize },
-        32usize,
-        concat!("Offset of field: ", stringify!(C), "::", stringify!(member3)),
-    );
-}
+const _: () = {
+    ["Size of C"][::std::mem::size_of::<C>() - 40usize];
+    ["Alignment of C"][::std::mem::align_of::<C>() - 8usize];
+    ["Offset of field: C::member3"][::std::mem::offset_of!(C, member3) - 32usize];
+};
 impl Default for C {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

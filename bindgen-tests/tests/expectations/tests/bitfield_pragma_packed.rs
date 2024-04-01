@@ -89,19 +89,10 @@ pub struct Struct {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
-#[test]
-fn bindgen_test_layout_Struct() {
-    assert_eq!(
-        ::std::mem::size_of::<Struct>(),
-        4usize,
-        concat!("Size of: ", stringify!(Struct)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Struct>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Struct)),
-    );
-}
+const _: () = {
+    ["Size of Struct"][::std::mem::size_of::<Struct>() - 4usize];
+    ["Alignment of Struct"][::std::mem::align_of::<Struct>() - 1usize];
+};
 impl Struct {
     #[inline]
     pub fn a(&self) -> ::std::os::raw::c_uchar {
@@ -221,19 +212,10 @@ pub struct Inner {
     pub _bitfield_align_1: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
-#[test]
-fn bindgen_test_layout_Inner() {
-    assert_eq!(
-        ::std::mem::size_of::<Inner>(),
-        4usize,
-        concat!("Size of: ", stringify!(Inner)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Inner>(),
-        2usize,
-        concat!("Alignment of ", stringify!(Inner)),
-    );
-}
+const _: () = {
+    ["Size of Inner"][::std::mem::size_of::<Inner>() - 4usize];
+    ["Alignment of Inner"][::std::mem::align_of::<Inner>() - 2usize];
+};
 impl Inner {
     #[inline]
     pub fn a(&self) -> ::std::os::raw::c_ushort {
@@ -289,23 +271,8 @@ impl Inner {
 pub struct Outer {
     pub inner: Inner,
 }
-#[test]
-fn bindgen_test_layout_Outer() {
-    const UNINIT: ::std::mem::MaybeUninit<Outer> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Outer>(),
-        4usize,
-        concat!("Size of: ", stringify!(Outer)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Outer>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Outer)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).inner) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Outer), "::", stringify!(inner)),
-    );
-}
+const _: () = {
+    ["Size of Outer"][::std::mem::size_of::<Outer>() - 4usize];
+    ["Alignment of Outer"][::std::mem::align_of::<Outer>() - 1usize];
+    ["Offset of field: Outer::inner"][::std::mem::offset_of!(Outer, inner) - 0usize];
+};

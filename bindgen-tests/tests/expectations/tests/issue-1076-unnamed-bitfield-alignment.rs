@@ -89,19 +89,10 @@ pub struct S1 {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize]>,
 }
-#[test]
-fn bindgen_test_layout_S1() {
-    assert_eq!(
-        ::std::mem::size_of::<S1>(),
-        3usize,
-        concat!("Size of: ", stringify!(S1)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<S1>(),
-        1usize,
-        concat!("Alignment of ", stringify!(S1)),
-    );
-}
+const _: () = {
+    ["Size of S1"][::std::mem::size_of::<S1>() - 3usize];
+    ["Alignment of S1"][::std::mem::align_of::<S1>() - 1usize];
+};
 impl S1 {
     #[inline]
     pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 3usize]> {

@@ -4,26 +4,11 @@
 pub struct Bar {
     pub m_baz: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_Bar() {
-    const UNINIT: ::std::mem::MaybeUninit<Bar> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Bar>(),
-        4usize,
-        concat!("Size of: ", stringify!(Bar)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Bar>(),
-        4usize,
-        concat!("Alignment of ", stringify!(Bar)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).m_baz) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(m_baz)),
-    );
-}
+const _: () = {
+    ["Size of Bar"][::std::mem::size_of::<Bar>() - 4usize];
+    ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 4usize];
+    ["Offset of field: Bar::m_baz"][::std::mem::offset_of!(Bar, m_baz) - 0usize];
+};
 extern "C" {
     #[link_name = "\u{1}_ZN3BarC1Ei"]
     pub fn Bar_Bar(this: *mut Bar, baz: ::std::os::raw::c_int);
@@ -45,16 +30,7 @@ extern "C" {
     #[link_name = "\u{1}_ZN3Baz3FOOE"]
     pub static Baz_FOO: [Bar; 0usize];
 }
-#[test]
-fn bindgen_test_layout_Baz() {
-    assert_eq!(
-        ::std::mem::size_of::<Baz>(),
-        1usize,
-        concat!("Size of: ", stringify!(Baz)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Baz>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Baz)),
-    );
-}
+const _: () = {
+    ["Size of Baz"][::std::mem::size_of::<Baz>() - 1usize];
+    ["Alignment of Baz"][::std::mem::align_of::<Baz>() - 1usize];
+};

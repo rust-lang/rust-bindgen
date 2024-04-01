@@ -4,23 +4,8 @@
 pub struct NoDefault {
     pub i: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_NoDefault() {
-    const UNINIT: ::std::mem::MaybeUninit<NoDefault> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<NoDefault>(),
-        4usize,
-        concat!("Size of: ", stringify!(NoDefault)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<NoDefault>(),
-        4usize,
-        concat!("Alignment of ", stringify!(NoDefault)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).i) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(NoDefault), "::", stringify!(i)),
-    );
-}
+const _: () = {
+    ["Size of NoDefault"][::std::mem::size_of::<NoDefault>() - 4usize];
+    ["Alignment of NoDefault"][::std::mem::align_of::<NoDefault>() - 4usize];
+    ["Offset of field: NoDefault::i"][::std::mem::offset_of!(NoDefault, i) - 0usize];
+};

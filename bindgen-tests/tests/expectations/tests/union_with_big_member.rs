@@ -5,31 +5,16 @@ pub union WithBigArray {
     pub a: ::std::os::raw::c_int,
     pub b: [::std::os::raw::c_int; 33usize],
 }
-#[test]
-fn bindgen_test_layout_WithBigArray() {
-    const UNINIT: ::std::mem::MaybeUninit<WithBigArray> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<WithBigArray>(),
-        132usize,
-        concat!("Size of: ", stringify!(WithBigArray)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<WithBigArray>(),
-        4usize,
-        concat!("Alignment of ", stringify!(WithBigArray)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(WithBigArray), "::", stringify!(a)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(WithBigArray), "::", stringify!(b)),
-    );
-}
+const _: () = {
+    ["Size of WithBigArray"][::std::mem::size_of::<WithBigArray>() - 132usize];
+    ["Alignment of WithBigArray"][::std::mem::align_of::<WithBigArray>() - 4usize];
+    [
+        "Offset of field: WithBigArray::a",
+    ][::std::mem::offset_of!(WithBigArray, a) - 0usize];
+    [
+        "Offset of field: WithBigArray::b",
+    ][::std::mem::offset_of!(WithBigArray, b) - 0usize];
+};
 impl Default for WithBigArray {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -45,31 +30,16 @@ pub union WithBigArray2 {
     pub a: ::std::os::raw::c_int,
     pub b: [::std::os::raw::c_char; 33usize],
 }
-#[test]
-fn bindgen_test_layout_WithBigArray2() {
-    const UNINIT: ::std::mem::MaybeUninit<WithBigArray2> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<WithBigArray2>(),
-        36usize,
-        concat!("Size of: ", stringify!(WithBigArray2)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<WithBigArray2>(),
-        4usize,
-        concat!("Alignment of ", stringify!(WithBigArray2)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(WithBigArray2), "::", stringify!(a)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(WithBigArray2), "::", stringify!(b)),
-    );
-}
+const _: () = {
+    ["Size of WithBigArray2"][::std::mem::size_of::<WithBigArray2>() - 36usize];
+    ["Alignment of WithBigArray2"][::std::mem::align_of::<WithBigArray2>() - 4usize];
+    [
+        "Offset of field: WithBigArray2::a",
+    ][::std::mem::offset_of!(WithBigArray2, a) - 0usize];
+    [
+        "Offset of field: WithBigArray2::b",
+    ][::std::mem::offset_of!(WithBigArray2, b) - 0usize];
+};
 impl Default for WithBigArray2 {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -85,31 +55,16 @@ pub union WithBigMember {
     pub a: ::std::os::raw::c_int,
     pub b: WithBigArray,
 }
-#[test]
-fn bindgen_test_layout_WithBigMember() {
-    const UNINIT: ::std::mem::MaybeUninit<WithBigMember> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<WithBigMember>(),
-        132usize,
-        concat!("Size of: ", stringify!(WithBigMember)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<WithBigMember>(),
-        4usize,
-        concat!("Alignment of ", stringify!(WithBigMember)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(WithBigMember), "::", stringify!(a)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).b) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(WithBigMember), "::", stringify!(b)),
-    );
-}
+const _: () = {
+    ["Size of WithBigMember"][::std::mem::size_of::<WithBigMember>() - 132usize];
+    ["Alignment of WithBigMember"][::std::mem::align_of::<WithBigMember>() - 4usize];
+    [
+        "Offset of field: WithBigMember::a",
+    ][::std::mem::offset_of!(WithBigMember, a) - 0usize];
+    [
+        "Offset of field: WithBigMember::b",
+    ][::std::mem::offset_of!(WithBigMember, b) - 0usize];
+};
 impl Default for WithBigMember {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

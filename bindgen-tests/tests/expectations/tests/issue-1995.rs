@@ -11,23 +11,8 @@ pub const FOO: ::std::os::raw::c_int = 1;
 pub struct Bar {
     pub baz: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_Bar() {
-    const UNINIT: ::std::mem::MaybeUninit<Bar> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<Bar>(),
-        4usize,
-        concat!("Size of: ", stringify!(Bar)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Bar>(),
-        4usize,
-        concat!("Alignment of ", stringify!(Bar)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).baz) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz)),
-    );
-}
+const _: () = {
+    ["Size of Bar"][::std::mem::size_of::<Bar>() - 4usize];
+    ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 4usize];
+    ["Offset of field: Bar::baz"][::std::mem::offset_of!(Bar, baz) - 0usize];
+};

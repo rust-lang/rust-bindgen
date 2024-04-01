@@ -76,19 +76,10 @@ impl Default for ClassC_ClassCInnerCRTP {
 pub struct ClassD {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_ClassD() {
-    assert_eq!(
-        ::std::mem::size_of::<ClassD>(),
-        1usize,
-        concat!("Size of: ", stringify!(ClassD)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ClassD>(),
-        1usize,
-        concat!("Alignment of ", stringify!(ClassD)),
-    );
-}
+const _: () = {
+    ["Size of ClassD"][::std::mem::size_of::<ClassD>() - 1usize];
+    ["Alignment of ClassD"][::std::mem::align_of::<ClassD>() - 1usize];
+};
 impl Default for ClassD {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -98,37 +89,23 @@ impl Default for ClassD {
         }
     }
 }
-#[test]
-fn __bindgen_test_layout_ClassB_open0_ClassD_ClassCInnerCRTP_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<ClassB>(),
-        1usize,
-        concat!("Size of template specialization: ", stringify!(ClassB)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ClassB>(),
-        1usize,
-        concat!("Alignment of template specialization: ", stringify!(ClassB)),
-    );
-}
+const _: () = {
+    [
+        "Size of template specialization: ClassB_open0_ClassD_ClassCInnerCRTP_close0",
+    ][::std::mem::size_of::<ClassB>() - 1usize];
+    [
+        "Align of template specialization: ClassB_open0_ClassD_ClassCInnerCRTP_close0",
+    ][::std::mem::align_of::<ClassB>() - 1usize];
+};
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ClassCInnerCRTP {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_ClassCInnerCRTP() {
-    assert_eq!(
-        ::std::mem::size_of::<ClassCInnerCRTP>(),
-        1usize,
-        concat!("Size of: ", stringify!(ClassCInnerCRTP)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ClassCInnerCRTP>(),
-        1usize,
-        concat!("Alignment of ", stringify!(ClassCInnerCRTP)),
-    );
-}
+const _: () = {
+    ["Size of ClassCInnerCRTP"][::std::mem::size_of::<ClassCInnerCRTP>() - 1usize];
+    ["Alignment of ClassCInnerCRTP"][::std::mem::align_of::<ClassCInnerCRTP>() - 1usize];
+};
 impl Default for ClassCInnerCRTP {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -138,44 +115,24 @@ impl Default for ClassCInnerCRTP {
         }
     }
 }
-#[test]
-fn __bindgen_test_layout_ClassB_open0_ClassCInnerCRTP_ClassAInner_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<ClassB>(),
-        1usize,
-        concat!("Size of template specialization: ", stringify!(ClassB)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ClassB>(),
-        1usize,
-        concat!("Alignment of template specialization: ", stringify!(ClassB)),
-    );
-}
+const _: () = {
+    [
+        "Size of template specialization: ClassB_open0_ClassCInnerCRTP_ClassAInner_close0",
+    ][::std::mem::size_of::<ClassB>() - 1usize];
+    [
+        "Align of template specialization: ClassB_open0_ClassCInnerCRTP_ClassAInner_close0",
+    ][::std::mem::align_of::<ClassB>() - 1usize];
+};
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ClassAInner {
     pub x: *mut ClassCInnerA,
 }
-#[test]
-fn bindgen_test_layout_ClassAInner() {
-    const UNINIT: ::std::mem::MaybeUninit<ClassAInner> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ClassAInner>(),
-        8usize,
-        concat!("Size of: ", stringify!(ClassAInner)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ClassAInner>(),
-        8usize,
-        concat!("Alignment of ", stringify!(ClassAInner)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(ClassAInner), "::", stringify!(x)),
-    );
-}
+const _: () = {
+    ["Size of ClassAInner"][::std::mem::size_of::<ClassAInner>() - 8usize];
+    ["Alignment of ClassAInner"][::std::mem::align_of::<ClassAInner>() - 8usize];
+    ["Offset of field: ClassAInner::x"][::std::mem::offset_of!(ClassAInner, x) - 0usize];
+};
 impl Default for ClassAInner {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -190,26 +147,13 @@ impl Default for ClassAInner {
 pub struct ClassCInnerA {
     pub member: *mut ClassCInnerB,
 }
-#[test]
-fn bindgen_test_layout_ClassCInnerA() {
-    const UNINIT: ::std::mem::MaybeUninit<ClassCInnerA> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ClassCInnerA>(),
-        8usize,
-        concat!("Size of: ", stringify!(ClassCInnerA)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ClassCInnerA>(),
-        8usize,
-        concat!("Alignment of ", stringify!(ClassCInnerA)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).member) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(ClassCInnerA), "::", stringify!(member)),
-    );
-}
+const _: () = {
+    ["Size of ClassCInnerA"][::std::mem::size_of::<ClassCInnerA>() - 8usize];
+    ["Alignment of ClassCInnerA"][::std::mem::align_of::<ClassCInnerA>() - 8usize];
+    [
+        "Offset of field: ClassCInnerA::member",
+    ][::std::mem::offset_of!(ClassCInnerA, member) - 0usize];
+};
 impl Default for ClassCInnerA {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -224,26 +168,13 @@ impl Default for ClassCInnerA {
 pub struct ClassCInnerB {
     pub cache: *mut ClassCInnerA,
 }
-#[test]
-fn bindgen_test_layout_ClassCInnerB() {
-    const UNINIT: ::std::mem::MaybeUninit<ClassCInnerB> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ClassCInnerB>(),
-        8usize,
-        concat!("Size of: ", stringify!(ClassCInnerB)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ClassCInnerB>(),
-        8usize,
-        concat!("Alignment of ", stringify!(ClassCInnerB)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).cache) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(ClassCInnerB), "::", stringify!(cache)),
-    );
-}
+const _: () = {
+    ["Size of ClassCInnerB"][::std::mem::size_of::<ClassCInnerB>() - 8usize];
+    ["Alignment of ClassCInnerB"][::std::mem::align_of::<ClassCInnerB>() - 8usize];
+    [
+        "Offset of field: ClassCInnerB::cache",
+    ][::std::mem::offset_of!(ClassCInnerB, cache) - 0usize];
+};
 impl Default for ClassCInnerB {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

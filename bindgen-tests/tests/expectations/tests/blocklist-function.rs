@@ -20,17 +20,8 @@ pub mod root {
     pub struct C {
         pub _address: u8,
     }
-    #[test]
-    fn bindgen_test_layout_C() {
-        assert_eq!(
-            ::std::mem::size_of::<C>(),
-            1usize,
-            concat!("Size of: ", stringify!(C)),
-        );
-        assert_eq!(
-            ::std::mem::align_of::<C>(),
-            1usize,
-            concat!("Alignment of ", stringify!(C)),
-        );
-    }
+    const _: () = {
+        ["Size of C"][::std::mem::size_of::<C>() - 1usize];
+        ["Alignment of C"][::std::mem::align_of::<C>() - 1usize];
+    };
 }

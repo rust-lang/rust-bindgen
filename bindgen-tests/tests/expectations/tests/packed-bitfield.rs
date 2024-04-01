@@ -89,19 +89,10 @@ pub struct Date {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize]>,
 }
-#[test]
-fn bindgen_test_layout_Date() {
-    assert_eq!(
-        ::std::mem::size_of::<Date>(),
-        3usize,
-        concat!("Size of: ", stringify!(Date)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<Date>(),
-        1usize,
-        concat!("Alignment of ", stringify!(Date)),
-    );
-}
+const _: () = {
+    ["Size of Date"][::std::mem::size_of::<Date>() - 3usize];
+    ["Alignment of Date"][::std::mem::align_of::<Date>() - 1usize];
+};
 impl Date {
     #[inline]
     pub fn day(&self) -> ::std::os::raw::c_uchar {
