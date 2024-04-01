@@ -37,31 +37,16 @@ pub struct flexarray<FAM: ?Sized = [::std::os::raw::c_int; 0]> {
     pub count: ::std::os::raw::c_int,
     pub data: FAM,
 }
-#[test]
-fn bindgen_test_layout_flexarray() {
-    const UNINIT: ::std::mem::MaybeUninit<flexarray> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<flexarray>(),
-        4usize,
-        concat!("Size of: ", stringify!(flexarray)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<flexarray>(),
-        4usize,
-        concat!("Alignment of ", stringify!(flexarray)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).count) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(flexarray), "::", stringify!(count)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).data) as usize - ptr as usize },
-        4usize,
-        concat!("Offset of field: ", stringify!(flexarray), "::", stringify!(data)),
-    );
-}
+const _: () = {
+    ["Size of flexarray"][::std::mem::size_of::<flexarray>() - 4usize];
+    ["Alignment of flexarray"][::std::mem::align_of::<flexarray>() - 4usize];
+    [
+        "Offset of field: flexarray::count",
+    ][::std::mem::offset_of!(flexarray, count) - 0usize];
+    [
+        "Offset of field: flexarray::data",
+    ][::std::mem::offset_of!(flexarray, data) - 4usize];
+};
 impl flexarray<[::std::os::raw::c_int]> {
     pub fn layout(len: usize) -> ::std::alloc::Layout {
         unsafe {
@@ -138,31 +123,16 @@ pub struct flexarray_zero<FAM: ?Sized = [::std::os::raw::c_int; 0]> {
     pub count: ::std::os::raw::c_int,
     pub data: FAM,
 }
-#[test]
-fn bindgen_test_layout_flexarray_zero() {
-    const UNINIT: ::std::mem::MaybeUninit<flexarray_zero> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<flexarray_zero>(),
-        4usize,
-        concat!("Size of: ", stringify!(flexarray_zero)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<flexarray_zero>(),
-        4usize,
-        concat!("Alignment of ", stringify!(flexarray_zero)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).count) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(flexarray_zero), "::", stringify!(count)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).data) as usize - ptr as usize },
-        4usize,
-        concat!("Offset of field: ", stringify!(flexarray_zero), "::", stringify!(data)),
-    );
-}
+const _: () = {
+    ["Size of flexarray_zero"][::std::mem::size_of::<flexarray_zero>() - 4usize];
+    ["Alignment of flexarray_zero"][::std::mem::align_of::<flexarray_zero>() - 4usize];
+    [
+        "Offset of field: flexarray_zero::count",
+    ][::std::mem::offset_of!(flexarray_zero, count) - 0usize];
+    [
+        "Offset of field: flexarray_zero::data",
+    ][::std::mem::offset_of!(flexarray_zero, data) - 4usize];
+};
 impl flexarray_zero<[::std::os::raw::c_int]> {
     pub fn layout(len: usize) -> ::std::alloc::Layout {
         unsafe {
@@ -331,26 +301,13 @@ impl<T> Default for flexarray_template<T, [T; 0]> {
 pub struct flexarray_ref {
     pub things: *mut flexarray,
 }
-#[test]
-fn bindgen_test_layout_flexarray_ref() {
-    const UNINIT: ::std::mem::MaybeUninit<flexarray_ref> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<flexarray_ref>(),
-        8usize,
-        concat!("Size of: ", stringify!(flexarray_ref)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<flexarray_ref>(),
-        8usize,
-        concat!("Alignment of ", stringify!(flexarray_ref)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).things) as usize - ptr as usize },
-        0usize,
-        concat!("Offset of field: ", stringify!(flexarray_ref), "::", stringify!(things)),
-    );
-}
+const _: () = {
+    ["Size of flexarray_ref"][::std::mem::size_of::<flexarray_ref>() - 8usize];
+    ["Alignment of flexarray_ref"][::std::mem::align_of::<flexarray_ref>() - 8usize];
+    [
+        "Offset of field: flexarray_ref::things",
+    ][::std::mem::offset_of!(flexarray_ref, things) - 0usize];
+};
 impl Default for flexarray_ref {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -367,51 +324,23 @@ pub struct flexarray_bogus_zero_fam<FAM: ?Sized = [::std::os::raw::c_char; 0]> {
     pub data1: __IncompleteArrayField<::std::os::raw::c_int>,
     pub data2: FAM,
 }
-#[test]
-fn bindgen_test_layout_flexarray_bogus_zero_fam() {
-    const UNINIT: ::std::mem::MaybeUninit<flexarray_bogus_zero_fam> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<flexarray_bogus_zero_fam>(),
-        4usize,
-        concat!("Size of: ", stringify!(flexarray_bogus_zero_fam)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<flexarray_bogus_zero_fam>(),
-        4usize,
-        concat!("Alignment of ", stringify!(flexarray_bogus_zero_fam)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).count) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(flexarray_bogus_zero_fam),
-            "::",
-            stringify!(count),
-        ),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).data1) as usize - ptr as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(flexarray_bogus_zero_fam),
-            "::",
-            stringify!(data1),
-        ),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).data2) as usize - ptr as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(flexarray_bogus_zero_fam),
-            "::",
-            stringify!(data2),
-        ),
-    );
-}
+const _: () = {
+    [
+        "Size of flexarray_bogus_zero_fam",
+    ][::std::mem::size_of::<flexarray_bogus_zero_fam>() - 4usize];
+    [
+        "Alignment of flexarray_bogus_zero_fam",
+    ][::std::mem::align_of::<flexarray_bogus_zero_fam>() - 4usize];
+    [
+        "Offset of field: flexarray_bogus_zero_fam::count",
+    ][::std::mem::offset_of!(flexarray_bogus_zero_fam, count) - 0usize];
+    [
+        "Offset of field: flexarray_bogus_zero_fam::data1",
+    ][::std::mem::offset_of!(flexarray_bogus_zero_fam, data1) - 4usize];
+    [
+        "Offset of field: flexarray_bogus_zero_fam::data2",
+    ][::std::mem::offset_of!(flexarray_bogus_zero_fam, data2) - 4usize];
+};
 impl flexarray_bogus_zero_fam<[::std::os::raw::c_char]> {
     pub fn layout(len: usize) -> ::std::alloc::Layout {
         unsafe {
@@ -506,36 +435,18 @@ pub struct flexarray_align<FAM: ?Sized = [::std::os::raw::c_int; 0]> {
     pub count: ::std::os::raw::c_int,
     pub data: FAM,
 }
-#[test]
-fn bindgen_test_layout_flexarray_align() {
-    const UNINIT: ::std::mem::MaybeUninit<flexarray_align> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<flexarray_align>(),
-        128usize,
-        concat!("Size of: ", stringify!(flexarray_align)),
-    );
-    assert_eq!(
-        ::std::mem::align_of::<flexarray_align>(),
-        128usize,
-        concat!("Alignment of ", stringify!(flexarray_align)),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).count) as usize - ptr as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(flexarray_align),
-            "::",
-            stringify!(count),
-        ),
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).data) as usize - ptr as usize },
-        4usize,
-        concat!("Offset of field: ", stringify!(flexarray_align), "::", stringify!(data)),
-    );
-}
+const _: () = {
+    ["Size of flexarray_align"][::std::mem::size_of::<flexarray_align>() - 128usize];
+    [
+        "Alignment of flexarray_align",
+    ][::std::mem::align_of::<flexarray_align>() - 128usize];
+    [
+        "Offset of field: flexarray_align::count",
+    ][::std::mem::offset_of!(flexarray_align, count) - 0usize];
+    [
+        "Offset of field: flexarray_align::data",
+    ][::std::mem::offset_of!(flexarray_align, data) - 4usize];
+};
 impl flexarray_align<[::std::os::raw::c_int]> {
     pub fn layout(len: usize) -> ::std::alloc::Layout {
         unsafe {
