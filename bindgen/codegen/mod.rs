@@ -2230,8 +2230,13 @@ impl CodeGenerator for CompInfo {
         // "packed" attr is redundant, and do not include it if so.
         if packed &&
             !is_opaque &&
-            !(explicit_align.is_some() &&
-                self.already_packed(ctx).unwrap_or(false))
+            !((explicit_align.is_some() || self.may_contain_aligned_type()) &&
+                self.already_packed(
+                    ctx,
+                    struct_layout.max_field_align(),
+                    layout,
+                )
+                .unwrap_or(false))
         {
             let n = layout.map_or(1, |l| l.align);
             assert!(ctx.options().rust_features().repr_packed_n || n == 1);
