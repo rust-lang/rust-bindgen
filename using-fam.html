@@ -1,0 +1,370 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Using Flexible Array Members - The bindgen User Guide</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="`bindgen` automatically generates Rust FFI bindings to C and C++ libraries.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <link rel="stylesheet" href="css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="requirements.html"><strong aria-hidden="true">2.</strong> Requirements</a></li><li class="chapter-item expanded "><a href="library-usage.html"><strong aria-hidden="true">3.</strong> Library Usage with build.rs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial-0.html"><strong aria-hidden="true">3.1.</strong> Tutorial</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial-1.html"><strong aria-hidden="true">3.1.1.</strong> Add bindgen as a Build Dependency</a></li><li class="chapter-item expanded "><a href="tutorial-2.html"><strong aria-hidden="true">3.1.2.</strong> Create a wrapper.h Header</a></li><li class="chapter-item expanded "><a href="tutorial-3.html"><strong aria-hidden="true">3.1.3.</strong> Create a build.rs File</a></li><li class="chapter-item expanded "><a href="tutorial-4.html"><strong aria-hidden="true">3.1.4.</strong> Include the Generated Bindings in src/lib.rs</a></li><li class="chapter-item expanded "><a href="tutorial-5.html"><strong aria-hidden="true">3.1.5.</strong> Write a Sanity Test</a></li><li class="chapter-item expanded "><a href="tutorial-6.html"><strong aria-hidden="true">3.1.6.</strong> Publish Your Crate!</a></li></ol></li><li class="chapter-item expanded "><a href="non-system-libraries.html"><strong aria-hidden="true">3.2.</strong> Bindings for non-system libraries</a></li></ol></li><li class="chapter-item expanded "><a href="command-line-usage.html"><strong aria-hidden="true">4.</strong> Command Line Usage</a></li><li class="chapter-item expanded "><a href="customizing-generated-bindings.html"><strong aria-hidden="true">5.</strong> Customizing the Generated Bindings</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="allowlisting.html"><strong aria-hidden="true">5.1.</strong> Allowlisting</a></li><li class="chapter-item expanded "><a href="blocklisting.html"><strong aria-hidden="true">5.2.</strong> Blocklisting</a></li><li class="chapter-item expanded "><a href="opaque.html"><strong aria-hidden="true">5.3.</strong> Treating a Type as an Opaque Blob of Bytes</a></li><li class="chapter-item expanded "><a href="replacing-types.html"><strong aria-hidden="true">5.4.</strong> Replacing One Type with Another</a></li><li class="chapter-item expanded "><a href="nocopy.html"><strong aria-hidden="true">5.5.</strong> Preventing the Derivation of Copy and Clone</a></li><li class="chapter-item expanded "><a href="nodebug.html"><strong aria-hidden="true">5.6.</strong> Preventing the Derivation of Debug</a></li><li class="chapter-item expanded "><a href="nodefault.html"><strong aria-hidden="true">5.7.</strong> Preventing the Derivation of Default</a></li><li class="chapter-item expanded "><a href="must-use-types.html"><strong aria-hidden="true">5.8.</strong> Annotating types with #[must-use]</a></li><li class="chapter-item expanded "><a href="visibility.html"><strong aria-hidden="true">5.9.</strong> Field visibility</a></li><li class="chapter-item expanded "><a href="code-formatting.html"><strong aria-hidden="true">5.10.</strong> Code formatting</a></li></ol></li><li class="chapter-item expanded "><a href="cpp.html"><strong aria-hidden="true">6.</strong> Generating Bindings to C++</a></li><li class="chapter-item expanded "><a href="objc.html"><strong aria-hidden="true">7.</strong> Generating Bindings to Objective-c</a></li><li class="chapter-item expanded "><a href="using-unions.html"><strong aria-hidden="true">8.</strong> Using Unions</a></li><li class="chapter-item expanded "><a href="using-bitfields.html"><strong aria-hidden="true">9.</strong> Using Bitfields</a></li><li class="chapter-item expanded "><a href="using-fam.html" class="active"><strong aria-hidden="true">10.</strong> Using Flexible Array Members</a></li><li class="chapter-item expanded "><a href="faq.html"><strong aria-hidden="true">11.</strong> FAQ</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">The bindgen User Guide</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                        <a href="https://github.com/rust-lang/rust-bindgen" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#using-c-structures-with-flexible-array-members" id="using-c-structures-with-flexible-array-members">Using C structures with Flexible Array Members</a></h1>
+<p>Since time immemorial, C programmers have been using what was called &quot;the struct
+hack&quot;. This is a technique for packing a fixed-size structure and a
+variable-sized tail within the same memory allocation. Typically this looks
+like:</p>
+<pre><code class="language-c">struct MyRecord {
+    time_t timestamp;
+    unsigned seq;
+    size_t len;
+    char payload[0];
+};
+</code></pre>
+<p>Because this is so useful, it was standardized in C99 as &quot;flexible array
+members&quot;, using almost identical syntax:</p>
+<pre><code class="language-c">struct MyRecord {
+    time_t timestamp;
+    unsigned seq;
+    size_t len;
+    char payload[]; // NOTE: empty []
+};
+</code></pre>
+<p>Bindgen supports these structures in two different ways.</p>
+<h2><a class="header" href="#__incompletearrayfield" id="__incompletearrayfield"><code>__IncompleteArrayField</code></a></h2>
+<p>By default, bindgen will generate the corresponding Rust structure:</p>
+<pre><code class="language-rust ignore">#[repr(C)]
+struct MyRecord {
+    pub timestamp: time_t,
+    pub seq: ::std::os::raw::c_uint,
+    pub len: usize,
+    pub payload: __IncompleteArrayField&lt;::std::os::raw::c_char&gt;,
+}
+</code></pre>
+<p>The <code>__IncompleteArrayField</code> type is zero-sized, so this structure represents
+the prefix without any trailing data. In order to access that data, it provides
+the <code>as_slice</code> unsafe method:</p>
+<pre><code class="language-rust ignore">    // SAFETY: there's at least `len` bytes allocated and initialized after `myrecord`
+    let payload = unsafe { myrecord.payload.as_slice(myrecord.len) };
+</code></pre>
+<p>There's also <code>as_mut_slice</code> which does the obvious.</p>
+<p>These are <code>unsafe</code> simply because it's up to you to provide the right length (in
+elements of whatever type <code>payload</code> is) as there's no way for Rust or Bindgen to
+know. In this example, the length is a very straightforward <code>len</code> field in the
+structure, but it could be encoded in any number of ways within the structure,
+or come from somewhere else entirely.</p>
+<p>One big caveat with this technique is that <code>std::mem::size_of</code> (or
+<code>size_of_val</code>) will <em>only</em> include the size of the prefix structure. if you're
+working out how much storage the whole structure is using, you'll need to add
+the suffix yourself.</p>
+<h2><a class="header" href="#using-dynamically-sized-types" id="using-dynamically-sized-types">Using Dynamically Sized Types</a></h2>
+<p>If you invoke bindgen with the <code>--flexarray-dst</code> option, it will generate
+something not quite like this:</p>
+<pre><code class="language-rust ignore">#[repr(C)]
+struct MyRecord {
+    pub timestamp: time_t,
+    pub seq: ::std::os::raw::c_uint,
+    pub len: usize,
+    pub payload: [::std::os::raw::c_char],
+}
+</code></pre>
+<p>Rust has a set of types which are almost exact analogs for these Flexible Array
+Member types: the Dynamically Sized Type (&quot;DST&quot;).</p>
+<p>This looks almost identical to a normal Rust structure, except that you'll note
+the type of the <code>payload</code> field is a raw slice <code>[...]</code> rather than the usual
+reference to slice <code>&amp;[...]</code>.</p>
+<p>That <code>payload: [c_char]</code> is telling Rust that it can't directly know the total
+size of this structure - the <code>payload</code> field takes an amount of space that's
+determined at runtime. This means you can't directly use values of this type,
+only references: <code>&amp;MyRecord</code>.</p>
+<p>In practice, this is very awkward. So instead, bindgen generates:</p>
+<pre><code class="language-rust ignore">#[repr(C)]
+struct MyRecord&lt;FAM: ?Sized = [::std::os::raw::c_char; 0]&gt; {
+    pub timestamp: time_t,
+    pub seq: ::std::os::raw::c_uint,
+    pub len: usize,
+    pub payload: FAM,
+}
+</code></pre>
+<p>That is:</p>
+<ol>
+<li>a type parameter <code>FAM</code> which represents the type of the <code>payload</code> field,</li>
+<li>it's <code>?Sized</code> meaning it can be unsized (ie, a DST)</li>
+<li>it has the default type of <code>[c_char; 0]</code> - that is a zero-sized array of characters</li>
+</ol>
+<p>This means that referencing plain <code>MyRecord</code> will be exactly like <code>MyRecord</code>
+with <code>__IncompleteArrayField</code>: it is a fixed-sized structure which you can
+manipulate like a normal Rust value.</p>
+<p>But how do you get to the DST part?</p>
+<p>Bindgen will also implement a set of helper methods for this:</p>
+<pre><code class="language-rust ignore">// Static sized variant
+impl MyRecord&lt;[::std::os::raw::c_char; 0]&gt; {
+    pub unsafe fn flex_ref(&amp;self, len: usize) -&gt; &amp;MyRecord&lt;[::std::os::raw::c_char]&gt; { ... }
+    pub unsafe fn flex_mut_ref(&amp;mut self, len: usize) -&gt; &amp;mut MyRecord&lt;[::std::os::raw::c_char]&gt; { ... }
+    // And some raw pointer variants
+}
+</code></pre>
+<p>These will take a sized <code>MyRecord&lt;[c_char; 0]&gt;</code> and a length in elements, and
+return a reference to a DST <code>MyRecord&lt;[c_char]&gt;</code> where the <code>payload</code> field is a
+fully usable slice of <code>len</code> characters.</p>
+<p>The magic here is that the reference is a fat pointer, which not only encodes
+the address, but also the dynamic size of the final field, just like a reference
+to a slice is. This means that you get full bounds checked access to the
+<code>payload</code> field like any other Rust slice.</p>
+<p>It also means that doing <code>mem::size_of_val(myrecord)</code> will return the <em>complete</em>
+size of this structure, including the suffix.</p>
+<p>You can go the other way:</p>
+<pre><code class="language-rust ignore">// Dynamic sized variant
+impl MyRecord&lt;[::std::os::raw::c_char]&gt; {
+    pub fn fixed(&amp;self) -&gt; (&amp;MyRecord&lt;[::std::os::raw::c_char; 0]&gt;, usize) { ... }
+    pub fn fixed_mut(&amp;mut self) -&gt; (&amp;mut MyRecord&lt;[::std::os::raw::c_char; 0]&gt;, usize) { ... }
+    pub fn layout(len: usize) -&gt; std::alloc::Layout { ... }
+}
+</code></pre>
+<p>which takes the DST variant of the structure and returns the sized variant,
+along with the number of elements are after it. These are all completely safe
+because all the information needed is part of the fat <code>&amp;self</code> reference.</p>
+<p>The <code>layout</code> function takes a length and returns the <code>Layout</code> - that is, size
+and alignment, so that you can allocate memory for the structure (for example,
+using <code>malloc</code> so you can pass it to a C function).</p>
+<p>Unfortunately the language features needed to support these methods are still unstable:</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/beta/unstable-book/library-features/ptr-metadata.html">ptr_metadata</a>,
+which enables all the fixed&lt;-&gt;DST conversions, and</li>
+<li><a href="https://doc.rust-lang.org/beta/unstable-book/library-features/layout-for-ptr.html">layout_for_ptr</a>,
+which allows he <code>layout</code> method</li>
+</ul>
+<p>As a result, if you don't specify <code>--rust-target nightly</code> you'll just get the
+bare type definitions, but no real way to use them. It's often convenient to add
+the</p>
+<pre><code class="language-bash">--raw-line '#![feature(ptr_metadata,layout_for_ptr)]'
+</code></pre>
+<p>option if you're generating Rust as a stand-alone crate. Otherwise you'll need
+to add the feature line to your containing crate.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="using-bitfields.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="faq.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="using-bitfields.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="faq.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
