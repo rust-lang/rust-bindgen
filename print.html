@@ -1210,7 +1210,7 @@ MyClass_MyClass(instance.as_mut_ptr());
 instance.assume_init_mut().method();
 </code></pre>
 <p>You can easily verify this fact if you provide a implementation for <code>MyClass</code>
-and <code>method</code> that prints the the <code>this</code> pointer address. However, you can
+and <code>method</code> that prints the <code>this</code> pointer address. However, you can
 ignore this fact if you know that the original C++ code does not rely on the
 instance address in its internal logic.</p>
 <h1><a class="header" href="#generating-bindings-to-objective-c" id="generating-bindings-to-objective-c">Generating Bindings to Objective-C</a></h1>
@@ -1335,11 +1335,11 @@ typedef union {
 <pre><code class="language-rust ignore">mod bindings_builtin_union;
 
 fn union_builtin() {
-    // Initalize the union to zero
+    // Initialize the union to zero
     let x = bindings_builtin_union::greek_t::default();
 
     // If `--with-derive-default` option is not used, the following may be used
-    //   to initalize the union to zero:
+    //   to initialize the union to zero:
     let x = unsafe { std::mem::zeroed::&lt;bindings_builtin_union::greek_t&gt;() };
 
     // Or, it is possible to initialize exactly one variant of the enum:

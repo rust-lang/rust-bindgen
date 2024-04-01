@@ -320,7 +320,7 @@ MyClass_MyClass(instance.as_mut_ptr());
 instance.assume_init_mut().method();
 </code></pre>
 <p>You can easily verify this fact if you provide a implementation for <code>MyClass</code>
-and <code>method</code> that prints the the <code>this</code> pointer address. However, you can
+and <code>method</code> that prints the <code>this</code> pointer address. However, you can
 ignore this fact if you know that the original C++ code does not rely on the
 instance address in its internal logic.</p>
 
