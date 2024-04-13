@@ -1,0 +1,16 @@
+FROM ubuntu:jammy
+
+ENV	DEBIAN_FRONTEND	noninteractive
+
+ARG	LLVM_VERSION=13
+
+RUN	apt-get update && apt-get install -y \
+	wget \
+	curl \
+	gnupg \
+	build-essential \
+	&& wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor | tee /usr/share/keyrings/llvm-archive-keyring.gpg > /dev/null \
+	&& echo "deb [signed-by=/usr/share/keyrings/llvm-archive-keyring.gpg] https://apt.llvm.org/jammy/ llvm-toolchain-jammy-${LLVM_VERSION} main" > /etc/apt/sources.list.d/llvm.list \
+	&& apt-get update && apt-get install -y \
+	clang-${LLVM_VERSION} \
+	libclang-${LLVM_VERSION}-dev
