@@ -19,7 +19,6 @@ owo-colors = "3.5.0"
 logging = ["bindgen/logging"]
 static = ["bindgen/static"]
 runtime = ["bindgen/runtime"]
-which-rustfmt = ["bindgen/which-rustfmt"]
 
 __testing_only_extra_assertions = ["bindgen/__testing_only_extra_assertions"]
 __testing_only_libclang_9 = ["bindgen/__testing_only_libclang_9"]

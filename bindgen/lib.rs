@@ -983,14 +983,6 @@ impl Bindings {
         if let Ok(rustfmt) = env::var("RUSTFMT") {
             return Ok(Cow::Owned(rustfmt.into()));
         }
-        #[cfg(feature = "which-rustfmt")]
-        match which::which("rustfmt") {
-            Ok(p) => Ok(Cow::Owned(p)),
-            Err(e) => {
-                Err(io::Error::new(io::ErrorKind::Other, format!("{}", e)))
-            }
-        }
-        #[cfg(not(feature = "which-rustfmt"))]
         // No rustfmt binary was specified, so assume that the binary is called
         // "rustfmt" and that it is in the user's PATH.
         Ok(Cow::Owned("rustfmt".into()))
