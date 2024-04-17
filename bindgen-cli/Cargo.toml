@@ -28,12 +28,10 @@ log = { version = "0.4", optional = true }
 shlex = "1"
 
 [features]
-default = ["logging", "runtime", "which-rustfmt"]
+default = ["logging", "runtime"]
 logging = ["bindgen/logging", "dep:env_logger", "dep:log"]
 static = ["bindgen/static"]
 runtime = ["bindgen/runtime"]
-# Dynamically discover a `rustfmt` binary using the `which` crate
-which-rustfmt = ["bindgen/which-rustfmt"]
 prettyplease = ["bindgen/prettyplease"]
 
 ## The following features are for internal use and they shouldn't be used if

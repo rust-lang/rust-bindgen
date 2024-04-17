@@ -40,15 +40,14 @@ regex = { version = "1.5.3", default-features = false, features = ["std", "unico
 rustc-hash = "1.0.1"
 shlex = "1"
 syn = { version = "2.0", features = ["full", "extra-traits", "visit-mut"] }
-which = { version = "4.2.1", optional = true, default-features = false }
 
 [features]
-default = ["logging", "prettyplease", "runtime", "which-rustfmt"]
+default = ["logging", "prettyplease", "runtime"]
 logging = ["dep:log"]
 static = ["clang-sys/static"]
 runtime = ["clang-sys/runtime"]
-# Dynamically discover a `rustfmt` binary using the `which` crate
-which-rustfmt = ["dep:which"]
+# This feature is no longer used for anything and should be removed in bindgen 0.70
+which-rustfmt = []
 experimental = ["dep:annotate-snippets"]
 
 ## The following features are for internal use and they shouldn't be used if
