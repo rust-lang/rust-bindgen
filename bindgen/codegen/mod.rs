@@ -53,7 +53,7 @@ use crate::ir::ty::{Type, TypeKind};
 use crate::ir::var::Var;
 
 use proc_macro2::{Ident, Span};
-use quote::TokenStreamExt;
+use quote::{ToTokens, TokenStreamExt};
 
 use crate::{Entry, HashMap, HashSet};
 use std::borrow::Cow;
@@ -799,7 +799,17 @@ impl CodeGenerator for Var {
                 }
             );
 
-            result.push(tokens);
+            if ctx.options().dynamic_library_name.is_some() {
+                result.dynamic_items().push_var(
+                    canonical_ident,
+                    self.ty()
+                        .to_rust_ty_or_opaque(ctx, &())
+                        .into_token_stream(),
+                    ctx.options().dynamic_link_require_all,
+                );
+            } else {
+                result.push(tokens);
+            }
         }
     }
 }
@@ -4576,7 +4586,7 @@ impl CodeGenerator for Function {
             let args_identifiers =
                 utils::fnsig_argument_identifiers(ctx, signature);
             let ret_ty = utils::fnsig_return_ty(ctx, signature);
-            result.dynamic_items().push(
+            result.dynamic_items().push_func(
                 ident,
                 abi,
                 signature.is_variadic(),
