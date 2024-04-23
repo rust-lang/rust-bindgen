@@ -1,7 +1,7 @@
 // bindgen-flags: --rust-target 1.33
 
 class TestOverload {
-  // This one shouldnt' be generated.
+  // This one shouldn't be generated.
   TestOverload();
 public:
   /// Calling this should use `mem::unintialized()` and not `MaybeUninit()` as only rust 1.36 includes that.
