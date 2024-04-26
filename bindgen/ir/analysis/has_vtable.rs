@@ -9,9 +9,10 @@ use std::cmp;
 use std::ops;
 
 /// The result of the `HasVtableAnalysis` for an individual item.
-#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub(crate) enum HasVtableResult {
     /// The item does not have a vtable pointer.
+    #[default]
     No,
 
     /// The item has a vtable and the actual vtable pointer is within this item.
@@ -20,12 +21,6 @@ pub(crate) enum HasVtableResult {
     /// The item has a vtable, but the actual vtable pointer is in a base
     /// member.
     BaseHasVtable,
-}
-
-impl Default for HasVtableResult {
-    fn default() -> Self {
-        HasVtableResult::No
-    }
 }
 
 impl HasVtableResult {
