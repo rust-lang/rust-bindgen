@@ -2608,7 +2608,7 @@ impl CodeGenerator for CompInfo {
                 ctx,
                 &canonical_ident,
                 flex_inner_ty,
-                &*generic_param_names,
+                &generic_param_names,
                 &impl_generics_labels,
             ));
         }
