@@ -14,10 +14,7 @@
 //!     println!("{}", header);
 //! }
 //! ```
-//!
 #![deny(missing_docs)]
-#[macro_use]
-extern crate lazy_static;
 
 use quickcheck::{Gen, QuickCheck, TestResult};
 use std::error::Error;
@@ -38,10 +35,7 @@ struct Context {
 }
 
 // Initialize global context.
-lazy_static! {
-    static ref CONTEXT: Mutex<Context> =
-        Mutex::new(Context { output_path: None });
-}
+static CONTEXT: Mutex<Context> = Mutex::new(Context { output_path: None });
 
 // Passes fuzzed header to the `csmith-fuzzing/predicate.py` script, returns
 // output of the associated command.
