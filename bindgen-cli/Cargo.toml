@@ -13,7 +13,7 @@ documentation = "https://docs.rs/bindgen"
 homepage = "https://rust-lang.github.io/rust-bindgen/"
 version = "0.69.4"
 edition = "2018"
-rust-version = "1.64.0"
+rust-version = "1.70.0"
 
 [[bin]]
 path = "main.rs"

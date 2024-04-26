@@ -3,7 +3,7 @@ name = "quickchecking"
 description = "Bindgen property tests with quickcheck. Generate random valid C code and pass it to the csmith/predicate.py script"
 version = "0.0.0"
 publish = false
-rust-version = "1.64"
+rust-version = "1.70"
 edition = "2018"
 
 [lib]

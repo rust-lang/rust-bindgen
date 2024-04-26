@@ -15,6 +15,7 @@ use std::hash::Hash;
 use std::hash::Hasher;
 use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong, c_ulonglong};
 use std::{mem, ptr, slice};
+use std::sync::OnceLock;
 
 /// Type representing a clang attribute.
 ///
@@ -1528,13 +1529,13 @@ impl Type {
     pub(crate) fn is_associated_type(&self) -> bool {
         // This is terrible :(
         fn hacky_parse_associated_type<S: AsRef<str>>(spelling: S) -> bool {
-            lazy_static! {
-                static ref ASSOC_TYPE_RE: regex::Regex = regex::Regex::new(
-                    r"typename type\-parameter\-\d+\-\d+::.+"
-                )
-                .unwrap();
-            }
-            ASSOC_TYPE_RE.is_match(spelling.as_ref())
+            static ASSOC_TYPE_RE: OnceLock<regex::Regex> = OnceLock::new();
+            ASSOC_TYPE_RE
+                .get_or_init(|| {
+                    regex::Regex::new(r"typename type\-parameter\-\d+\-\d+::.+")
+                        .unwrap()
+                })
+                .is_match(spelling.as_ref())
         }
 
         self.kind() == CXType_Unexposed &&
