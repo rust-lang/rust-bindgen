@@ -92,9 +92,10 @@ pub(crate) trait CanDeriveOrd {
 ///
 /// Initially we assume that we can derive trait for all types and then
 /// update our understanding as we learn more about each type.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub enum CanDerive {
     /// Yes, we can derive automatically.
+    #[default]
     Yes,
 
     /// The only thing that stops us from automatically deriving is that
@@ -105,12 +106,6 @@ pub enum CanDerive {
 
     /// No, we cannot.
     No,
-}
-
-impl Default for CanDerive {
-    fn default() -> CanDerive {
-        CanDerive::Yes
-    }
 }
 
 impl CanDerive {

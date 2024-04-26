@@ -14,8 +14,8 @@ use std::fs::OpenOptions;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong, c_ulonglong};
-use std::{mem, ptr, slice};
 use std::sync::OnceLock;
+use std::{mem, ptr, slice};
 
 /// Type representing a clang attribute.
 ///

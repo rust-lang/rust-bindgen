@@ -1807,8 +1807,9 @@ impl Item {
             spelling: &str,
         ) -> bool {
             static ANON_TYPE_PARAM_RE: OnceLock<regex::Regex> = OnceLock::new();
-            let anon_type_param_re = ANON_TYPE_PARAM_RE.get_or_init(||
-                    regex::Regex::new(r"^type\-parameter\-\d+\-\d+$").unwrap());
+            let anon_type_param_re = ANON_TYPE_PARAM_RE.get_or_init(|| {
+                regex::Regex::new(r"^type\-parameter\-\d+\-\d+$").unwrap()
+            });
 
             if refd.kind() != clang_sys::CXCursor_TemplateTypeParameter {
                 return false;

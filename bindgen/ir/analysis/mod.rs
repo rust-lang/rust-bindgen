@@ -125,20 +125,15 @@ pub(crate) trait MonotoneFramework: Sized + fmt::Debug {
 
 /// Whether an analysis's `constrain` function modified the incremental results
 /// or not.
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Default)]
 pub(crate) enum ConstrainResult {
     /// The incremental results were updated, and the fix-point computation
     /// should continue.
     Changed,
 
     /// The incremental results were not updated.
+    #[default]
     Same,
-}
-
-impl Default for ConstrainResult {
-    fn default() -> Self {
-        ConstrainResult::Same
-    }
 }
 
 impl ops::BitOr for ConstrainResult {
