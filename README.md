@@ -39,9 +39,9 @@ extern "C" {
 
 ## MSRV
 
-The `bindgen` minimum supported Rust version is **1.60.0**.
+The `bindgen` minimum supported Rust version is **1.70.0**.
 
-The `bindgen-cli` minimum supported Rust version is **1.64.0**.
+The `bindgen-cli` minimum supported Rust version is **1.70.0**.
 
 No MSRV bump policy has been established yet, so MSRV may increase in any release.
 

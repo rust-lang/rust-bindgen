@@ -20,13 +20,12 @@ use super::ty::{Type, TypeKind};
 use crate::clang;
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 
-use lazycell::LazyCell;
-
-use std::cell::Cell;
+use std::cell::{Cell, OnceCell};
 use std::collections::BTreeSet;
 use std::fmt::Write;
 use std::io;
 use std::iter;
+use std::sync::OnceLock;
 
 /// A trait to get the canonical name from an item.
 ///
@@ -380,7 +379,7 @@ pub(crate) struct Item {
     ///
     /// Note that only structs, unions, and enums get a local type ID. In any
     /// case this is an implementation detail.
-    local_id: LazyCell<usize>,
+    local_id: OnceCell<usize>,
 
     /// The next local ID to use for a child or template instantiation.
     next_child_local_id: Cell<usize>,
@@ -389,11 +388,11 @@ pub(crate) struct Item {
     ///
     /// This is a fairly used operation during codegen so this makes bindgen
     /// considerably faster in those cases.
-    canonical_name: LazyCell<String>,
+    canonical_name: OnceCell<String>,
 
     /// The path to use for allowlisting and other name-based checks, as
     /// returned by `path_for_allowlisting`, lazily constructed.
-    path_for_allowlisting: LazyCell<Vec<String>>,
+    path_for_allowlisting: OnceCell<Vec<String>>,
 
     /// A doc comment over the item, if any.
     comment: Option<String>,
@@ -431,10 +430,10 @@ impl Item {
         debug_assert!(id != parent_id || kind.is_module());
         Item {
             id,
-            local_id: LazyCell::new(),
+            local_id: OnceCell::new(),
             next_child_local_id: Cell::new(1),
-            canonical_name: LazyCell::new(),
-            path_for_allowlisting: LazyCell::new(),
+            canonical_name: OnceCell::new(),
+            path_for_allowlisting: OnceCell::new(),
             parent_id,
             comment,
             annotations: annotations.unwrap_or_default(),
@@ -535,7 +534,7 @@ impl Item {
     /// below this item's lexical scope, meaning that this can be useful for
     /// generating relatively stable identifiers within a scope.
     pub(crate) fn local_id(&self, ctx: &BindgenContext) -> usize {
-        *self.local_id.borrow_with(|| {
+        *self.local_id.get_or_init(|| {
             let parent = ctx.resolve_item(self.parent_id);
             parent.next_child_local_id()
         })
@@ -1037,7 +1036,7 @@ impl Item {
         ctx: &BindgenContext,
     ) -> &Vec<String> {
         self.path_for_allowlisting
-            .borrow_with(|| self.compute_path(ctx, UserMangled::No))
+            .get_or_init(|| self.compute_path(ctx, UserMangled::No))
     }
 
     fn compute_path(
@@ -1807,10 +1806,9 @@ impl Item {
             refd: &clang::Cursor,
             spelling: &str,
         ) -> bool {
-            lazy_static! {
-                static ref ANON_TYPE_PARAM_RE: regex::Regex =
-                    regex::Regex::new(r"^type\-parameter\-\d+\-\d+$").unwrap();
-            }
+            static ANON_TYPE_PARAM_RE: OnceLock<regex::Regex> = OnceLock::new();
+            let anon_type_param_re = ANON_TYPE_PARAM_RE.get_or_init(||
+                    regex::Regex::new(r"^type\-parameter\-\d+\-\d+$").unwrap());
 
             if refd.kind() != clang_sys::CXCursor_TemplateTypeParameter {
                 return false;
@@ -1819,7 +1817,7 @@ impl Item {
             let refd_spelling = refd.spelling();
             refd_spelling == spelling ||
                 // Allow for anonymous template parameters.
-                (refd_spelling.is_empty() && ANON_TYPE_PARAM_RE.is_match(spelling.as_ref()))
+                (refd_spelling.is_empty() && anon_type_param_re.is_match(spelling.as_ref()))
         }
 
         let definition = if is_template_with_spelling(&location, &ty_spelling) {
@@ -1909,7 +1907,7 @@ impl ItemCanonicalName for Item {
             "You're not supposed to call this yet"
         );
         self.canonical_name
-            .borrow_with(|| {
+            .get_or_init(|| {
                 let in_namespace = ctx.options().enable_cxx_namespaces ||
                     ctx.options().disable_name_namespacing;
 
