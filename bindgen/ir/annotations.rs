@@ -9,13 +9,14 @@ use std::str::FromStr;
 use crate::clang;
 
 /// What kind of visibility modifier should be used for a struct or field?
-#[derive(Copy, PartialEq, Eq, PartialOrd, Ord, Clone, Debug)]
+#[derive(Copy, PartialEq, Eq, PartialOrd, Ord, Clone, Debug, Default)]
 pub enum FieldVisibilityKind {
     /// Fields are marked as private, i.e., struct Foo {bar: bool}
     Private,
     /// Fields are marked as crate public, i.e., struct Foo {pub(crate) bar: bool}
     PublicCrate,
     /// Fields are marked as public, i.e., struct Foo {pub bar: bool}
+    #[default]
     Public,
 }
 
@@ -41,12 +42,6 @@ impl std::fmt::Display for FieldVisibilityKind {
         };
 
         s.fmt(f)
-    }
-}
-
-impl Default for FieldVisibilityKind {
-    fn default() -> Self {
-        FieldVisibilityKind::Public
     }
 }
 

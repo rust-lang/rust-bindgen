@@ -24,13 +24,14 @@ use std::{cmp, ops};
 ///
 /// We initially assume that all types are `ZeroSized` and then update our
 /// understanding as we learn more about each type.
-#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub(crate) enum SizednessResult {
     /// The type is zero-sized.
     ///
     /// This means that if it is a C++ type, and is not being used as a base
     /// member, then we must add an `_address` byte to enforce the
     /// unique-address-per-distinct-object-instance rule.
+    #[default]
     ZeroSized,
 
     /// Whether this type is zero-sized or not depends on whether a type
@@ -60,12 +61,6 @@ pub(crate) enum SizednessResult {
     /// it might contain an incomplete array or some other dynamically sized
     /// type.
     NonZeroSized,
-}
-
-impl Default for SizednessResult {
-    fn default() -> Self {
-        SizednessResult::ZeroSized
-    }
 }
 
 impl SizednessResult {

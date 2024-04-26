@@ -7,19 +7,14 @@ pub use crate::ir::int::IntKind;
 use std::fmt;
 
 /// An enum to allow ignoring parsing of macros.
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Default)]
 pub enum MacroParsingBehavior {
     /// Ignore the macro, generating no code for it, or anything that depends on
     /// it.
     Ignore,
     /// The default behavior bindgen would have otherwise.
+    #[default]
     Default,
-}
-
-impl Default for MacroParsingBehavior {
-    fn default() -> Self {
-        MacroParsingBehavior::Default
-    }
 }
 
 /// A trait to allow configuring different kinds of types in different
