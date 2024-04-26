@@ -50,20 +50,20 @@ jobs:
         with:
           # MSRV below is documented in Cargo.toml and README.md, please update those if you
           # change this.
-          toolchain: 1.60.0
+          toolchain: 1.70.0
 
       - name: Test lib with msrv
-        run: cargo +1.60.0 test --package bindgen
+        run: cargo +1.70.0 test --package bindgen
 
       - name: Install msrv for cli
         uses: dtolnay/rust-toolchain@master
         with:
           # MSRV below is documented in Cargo.toml and README.md, please update those if you
           # change this.
-          toolchain: 1.64.0
+          toolchain: 1.70.0
 
       - name: Test cli with msrv
-        run: cargo +1.64.0 build --package bindgen-cli
+        run: cargo +1.70.0 build --package bindgen-cli
 
   minimal:
     runs-on: ubuntu-latest

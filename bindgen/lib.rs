@@ -19,8 +19,6 @@
 #[macro_use]
 extern crate bitflags;
 #[macro_use]
-extern crate lazy_static;
-#[macro_use]
 extern crate quote;
 
 #[cfg(feature = "logging")]
@@ -77,6 +75,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::rc::Rc;
 use std::str::FromStr;
+use std::sync::{Arc, OnceLock};
 
 // Some convenient typedefs for a fast hash map and hash set.
 type HashMap<K, V> = rustc_hash::FxHashMap<K, V>;
@@ -617,17 +616,14 @@ fn ensure_libclang_is_loaded() {
     // doesn't get dropped prematurely, nor is loaded multiple times
     // across different threads.
 
-    lazy_static! {
-        static ref LIBCLANG: std::sync::Arc<clang_sys::SharedLibrary> = {
-            clang_sys::load().expect("Unable to find libclang");
-            clang_sys::get_library().expect(
-                "We just loaded libclang and it had better still be \
-                 here!",
-            )
-        };
-    }
+    static LIBCLANG: OnceLock<Arc<clang_sys::SharedLibrary>> = OnceLock::new();
+    let libclang = LIBCLANG.get_or_init(|| {
+        clang_sys::load().expect("Unable to find libclang");
+        clang_sys::get_library()
+            .expect("We just loaded libclang and it had better still be here!")
+    });
 
-    clang_sys::set_library(Some(LIBCLANG.clone()));
+    clang_sys::set_library(Some(libclang.clone()));
 }
 
 #[cfg(not(feature = "runtime"))]
