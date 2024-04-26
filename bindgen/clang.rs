@@ -2356,7 +2356,7 @@ impl EvalResult {
 
         if unsafe { clang_EvalResult_isUnsignedInt(self.x) } != 0 {
             let value = unsafe { clang_EvalResult_getAsUnsigned(self.x) };
-            if value > i64::max_value() as c_ulonglong {
+            if value > i64::MAX as c_ulonglong {
                 return None;
             }
 
@@ -2364,10 +2364,10 @@ impl EvalResult {
         }
 
         let value = unsafe { clang_EvalResult_getAsLongLong(self.x) };
-        if value > i64::max_value() as c_longlong {
+        if value > i64::MAX as c_longlong {
             return None;
         }
-        if value < i64::min_value() as c_longlong {
+        if value < i64::MIN as c_longlong {
             return None;
         }
         #[allow(clippy::unnecessary_cast)]
