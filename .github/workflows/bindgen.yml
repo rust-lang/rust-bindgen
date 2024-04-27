@@ -122,7 +122,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-12]
     steps:
       - uses: actions/checkout@v3
 
@@ -181,7 +181,7 @@ jobs:
           # FIXME: Ideally should use the latest llvm version, but llvm doesn't
           # provide releases for x86-64 macOS anymore which is what the runner uses.
           #
-          - os: macos-latest
+          - os: macos-12
             llvm_version: "9.0"
             release_build: 0
             no_default_features: 0
