@@ -29,6 +29,8 @@ use quote::ToTokens;
 use std::borrow::Cow;
 use std::cell::{Cell, RefCell};
 use std::collections::{BTreeSet, HashMap as StdHashMap};
+use std::fs::OpenOptions;
+use std::io::Write;
 use std::mem;
 use std::path::Path;
 
@@ -2081,55 +2083,91 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
             let index = clang::Index::new(false, false);
 
-            let mut c_args = Vec::new();
-            let mut pch_paths = Vec::new();
-            for input_header in self.options().input_headers.iter() {
+            let mut header_names_to_compile = Vec::new();
+            let mut header_paths = Vec::new();
+            let mut header_contents = String::new();
+            for input_header in self.options.input_headers.iter() {
                 let path = Path::new(input_header.as_ref());
-                let header_name = path
-                    .file_name()
-                    .and_then(|hn| hn.to_str())
-                    .map(|s| s.to_owned());
-                let header_path = path
-                    .parent()
-                    .and_then(|hp| hp.to_str())
-                    .map(|s| s.to_owned());
-
-                let (header, pch) = if let (Some(ref hp), Some(hn)) =
-                    (header_path, header_name)
-                {
-                    let header_path = if hp.is_empty() { "." } else { hp };
-                    let header = format!("{header_path}/{hn}");
-                    let pch_path = if let Some(ref path) =
-                        self.options().clang_macro_fallback_build_dir
-                    {
-                        path.as_os_str().to_str()?
+                if let Some(header_path) = path.parent() {
+                    if header_path == Path::new("") {
+                        header_paths.push(".");
                     } else {
-                        header_path
-                    };
-                    (header, format!("{pch_path}/{hn}.pch"))
+                        header_paths.push(header_path.as_os_str().to_str()?);
+                    }
                 } else {
-                    return None;
-                };
-
-                let mut tu = clang::TranslationUnit::parse(
-                    &index,
-                    &header,
-                    &[
-                        "-x".to_owned().into_boxed_str(),
-                        "c-header".to_owned().into_boxed_str(),
-                    ],
-                    &[],
-                    clang_sys::CXTranslationUnit_ForSerialization,
-                )?;
-                tu.save(&pch).ok()?;
-
-                c_args.push("-include-pch".to_string().into_boxed_str());
-                c_args.push(pch.clone().into_boxed_str());
-                pch_paths.push(pch);
+                    header_paths.push(".");
+                }
+                let header_name = path.file_name()?.to_str()?;
+                header_names_to_compile
+                    .push(header_name.split(".h").next()?.to_string());
+                header_contents +=
+                    format!("\n#include <{header_name}>").as_str();
             }
+            let header_to_precompile = format!(
+                "{}/{}",
+                match self.options().clang_macro_fallback_build_dir {
+                    Some(ref path) => path.as_os_str().to_str()?,
+                    None => ".",
+                },
+                header_names_to_compile.join("-") + "-precompile.h"
+            );
+            let pch = header_to_precompile.clone() + ".pch";
 
+            let mut header_to_precompile_file = OpenOptions::new()
+                .create(true)
+                .truncate(true)
+                .write(true)
+                .open(&header_to_precompile)
+                .ok()?;
+            header_to_precompile_file
+                .write_all(header_contents.as_bytes())
+                .ok()?;
+
+            let mut c_args = Vec::new();
+            c_args.push("-x".to_string().into_boxed_str());
+            c_args.push("c-header".to_string().into_boxed_str());
+            for header_path in header_paths {
+                c_args.push(format!("-I{header_path}").into_boxed_str());
+            }
+            c_args.extend(
+                self.options
+                    .clang_args
+                    .iter()
+                    .filter(|next| {
+                        !self.options.input_headers.contains(next) &&
+                            next.as_ref() != "-include"
+                    })
+                    .cloned(),
+            );
+            let mut tu = clang::TranslationUnit::parse(
+                &index,
+                &header_to_precompile,
+                &c_args,
+                &[],
+                clang_sys::CXTranslationUnit_ForSerialization,
+            )?;
+            tu.save(&pch).ok()?;
+
+            let mut c_args = vec![
+                "-include-pch".to_string().into_boxed_str(),
+                pch.clone().into_boxed_str(),
+            ];
+            c_args.extend(
+                self.options
+                    .clang_args
+                    .clone()
+                    .iter()
+                    .filter(|next| {
+                        !self.options.input_headers.contains(next) &&
+                            next.as_ref() != "-include"
+                    })
+                    .cloned(),
+            );
             self.fallback_tu = Some(clang::FallbackTranslationUnit::new(
-                file, pch_paths, &c_args,
+                file,
+                header_to_precompile,
+                pch,
+                &c_args,
             )?);
         }
 

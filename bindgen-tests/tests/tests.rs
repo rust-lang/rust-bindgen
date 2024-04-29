@@ -566,6 +566,61 @@ fn test_mixed_header_and_header_contents() {
 }
 
 #[test]
+fn test_macro_fallback_non_system_dir() {
+    let actual = builder()
+        .header(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/macro_fallback_test_headers/one_header.h"
+        ))
+        .header(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/macro_fallback_test_headers/another_header.h"
+        ))
+        .clang_macro_fallback()
+        .clang_arg(format!("-I{}/tests/headers", env!("CARGO_MANIFEST_DIR")))
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let actual = format_code(actual).unwrap();
+
+    let (expected_filename, expected) = match clang_version().parsed {
+        Some((9, _)) => {
+            let expected_filename = concat!(
+                env!("CARGO_MANIFEST_DIR"),
+                "/tests/expectations/tests/libclang-9/macro_fallback_non_system_dir.rs",
+            );
+            let expected = include_str!(concat!(
+                env!("CARGO_MANIFEST_DIR"),
+                "/tests/expectations/tests/libclang-9/macro_fallback_non_system_dir.rs",
+            ));
+            (expected_filename, expected)
+        }
+        _ => {
+            let expected_filename = concat!(
+                env!("CARGO_MANIFEST_DIR"),
+                "/tests/expectations/tests/test_macro_fallback_non_system_dir.rs",
+            );
+            let expected = include_str!(concat!(
+                env!("CARGO_MANIFEST_DIR"),
+                "/tests/expectations/tests/test_macro_fallback_non_system_dir.rs",
+            ));
+            (expected_filename, expected)
+        }
+    };
+    let expected = format_code(expected).unwrap();
+    if expected != actual {
+        error_diff_mismatch(
+            &actual,
+            &expected,
+            None,
+            Path::new(expected_filename),
+        )
+        .unwrap();
+    }
+}
+
+#[test]
 // Doesn't support executing sh file on Windows.
 // We may want to implement it in Rust so that we support all systems.
 #[cfg(not(target_os = "windows"))]
