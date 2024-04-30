@@ -2530,7 +2530,11 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                 );
                                 let name = prefix_path[1..].join("::");
                                 prefix_path.pop().unwrap();
-                                self.options().allowlisted_vars.matches(name)
+                                self.options().allowlisted_vars.matches(&name)
+                                    || self
+                                        .options()
+                                        .allowlisted_items
+                                        .matches(name)
                             })
                         }
                     }
