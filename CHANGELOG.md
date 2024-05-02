@@ -203,13 +203,20 @@
 --------------------------------------------------------------------------------
 # Unreleased
 ## Added
-## Changed
 - Add target mappings for riscv64imac and riscv32imafc.
+- Add a complex macro fallback API (#2779).
+- Add option to use DST structs for flexible arrays (--flexarray-dst, #2772).
+- Add option to dynamically load variables (#2812).
+## Changed
+- Remove which and lazy-static dependencies (#2809, #2817).
+- Generate compile-time layout tests (#2787).
 ## Removed
 ## Fixed
 - Fix `--formatter=prettyplease` not working in `bindgen-cli` by adding `prettyplease` feature and
   enabling it by default for `bindgen-cli` (#2789) .
 - Fix `--allowlist-item` so anonymous enums are no longer ignored.
+- Use clang_getFileLocation instead of clang_getSpellingLocation to fix clang-trunk (#2824)
+
 ## Security
 
 # 0.69.4 (2024-02-04)
