@@ -8,6 +8,11 @@ As Rust does not support bitfields, Bindgen generates a struct for each with the
 * For each contiguous block of bitfields, Bindgen emits an opaque physical field that contains one or more logical bitfields
 * A static constructor  ```new_bitfield_{1, 2, ...}``` with a parameter for each bitfield contained within the opaque physical field.
 
+To keep bindgen from generating the bitfield unit struct, it can be blocklisted like any
+other type, i.e. `--blocklist-type "__BindgenBitfieldUnit"`. This may be useful if
+you want to define a custom implementation, or your generated bindings import a
+pre-existing definition for the bitfield unit type.
+
 ## Bitfield examples
 
 For this discussion, we will use the following C type definitions and functions.
