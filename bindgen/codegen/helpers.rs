@@ -1,5 +1,7 @@
 //! Helpers for code generation that don't need macro expansion.
 
+use proc_macro2::{Ident, Span};
+
 use crate::ir::context::BindgenContext;
 use crate::ir::layout::Layout;
 
@@ -109,10 +111,13 @@ pub(crate) fn integer_type(
     Layout::known_type_for_size(ctx, layout.size)
 }
 
+pub(crate) const BITFIELD_UNIT: &str = "__BindgenBitfieldUnit";
+
 /// Generates a bitfield allocation unit type for a type with the given `Layout`.
 pub(crate) fn bitfield_unit(ctx: &BindgenContext, layout: Layout) -> syn::Type {
     let size = layout.size;
-    let ty = syn::parse_quote! { __BindgenBitfieldUnit<[u8; #size]> };
+    let bitfield_unit_name = Ident::new(BITFIELD_UNIT, Span::call_site());
+    let ty = syn::parse_quote! { #bitfield_unit_name<[u8; #size]> };
 
     if ctx.options().enable_cxx_namespaces {
         return syn::parse_quote! { root::#ty };

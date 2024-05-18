@@ -5017,6 +5017,7 @@ pub(crate) fn codegen(
 }
 
 pub(crate) mod utils {
+    use super::helpers::BITFIELD_UNIT;
     use super::serialize::CSerialize;
     use super::{error, CodegenError, CodegenResult, ToRustTyOrOpaque};
     use crate::ir::context::BindgenContext;
@@ -5153,6 +5154,12 @@ pub(crate) mod utils {
         ctx: &BindgenContext,
         result: &mut Vec<proc_macro2::TokenStream>,
     ) {
+        if ctx.options().blocklisted_items.matches(BITFIELD_UNIT) ||
+            ctx.options().blocklisted_types.matches(BITFIELD_UNIT)
+        {
+            return;
+        }
+
         let bitfield_unit_src = include_str!("./bitfield_unit.rs");
         let bitfield_unit_src = if ctx.options().rust_features().min_const_fn {
             Cow::Borrowed(bitfield_unit_src)
