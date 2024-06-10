@@ -114,6 +114,9 @@ struct BindgenCommand {
     /// Mark any enum whose name matches REGEX as a Rust enum.
     #[arg(long, value_name = "REGEX")]
     rustified_enum: Vec<String>,
+    /// Mark any enum whose name matches REGEX as a non-exhaustive Rust enum.
+    #[arg(long, value_name = "REGEX")]
+    rustified_non_exhaustive_enum: Vec<String>,
     /// Mark any enum whose name matches REGEX as a series of constants.
     #[arg(long, value_name = "REGEX")]
     constified_enum: Vec<String>,
@@ -469,6 +472,7 @@ where
         newtype_enum,
         newtype_global_enum,
         rustified_enum,
+        rustified_non_exhaustive_enum,
         constified_enum,
         constified_enum_module,
         default_macro_constant_type,
@@ -633,6 +637,10 @@ where
 
     for regex in rustified_enum {
         builder = builder.rustified_enum(regex);
+    }
+
+    for regex in rustified_non_exhaustive_enum {
+        builder = builder.rustified_non_exhaustive_enum(regex);
     }
 
     for regex in constified_enum {
@@ -1081,8 +1089,8 @@ where
             &self,
             info: &bindgen::callbacks::DeriveInfo<'_>,
         ) -> Vec<String> {
-            if self.kind.map(|kind| kind == info.kind).unwrap_or(true) &&
-                self.regex_set.matches(info.name)
+            if self.kind.map(|kind| kind == info.kind).unwrap_or(true)
+                && self.regex_set.matches(info.name)
             {
                 return self.derives.clone();
             }
