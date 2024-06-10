@@ -1089,8 +1089,8 @@ where
             &self,
             info: &bindgen::callbacks::DeriveInfo<'_>,
         ) -> Vec<String> {
-            if self.kind.map(|kind| kind == info.kind).unwrap_or(true)
-                && self.regex_set.matches(info.name)
+            if self.kind.map(|kind| kind == info.kind).unwrap_or(true) &&
+                self.regex_set.matches(info.name)
             {
                 return self.derives.clone();
             }
