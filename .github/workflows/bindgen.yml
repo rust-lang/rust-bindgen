@@ -209,6 +209,7 @@ jobs:
           BINDGEN_FEATURE_RUNTIME: ${{matrix.feature_runtime}}
           BINDGEN_FEATURE_EXTRA_ASSERTS: ${{matrix.feature_extra_asserts}}
           BINDGEN_NO_DEFAULT_FEATURES: ${{matrix.no_default_features}}
+          BINDGEN_RUST_FOR_LINUX_TEST: ${{matrix.os == 'ubuntu-latest' && matrix.llvm_version == '16.0' && matrix.feature_extra_asserts == 0 && 1 || 0}}
         run: ./ci/test.sh
 
   check-cfg:
