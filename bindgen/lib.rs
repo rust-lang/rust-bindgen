@@ -237,7 +237,7 @@ impl std::fmt::Display for Formatter {
 /// 2. [`bitfield_enum()`](#method.bitfield_enum)
 /// 3. [`newtype_enum()`](#method.newtype_enum)
 /// 4. [`rustified_enum()`](#method.rustified_enum)
-/// 4. [`rustified_non_exhaustive_enum()`](#method.rustified_non_exhaustive_enum)
+/// 5. [`rustified_non_exhaustive_enum()`](#method.rustified_non_exhaustive_enum)
 ///
 /// For each C enum, bindgen tries to match the pattern in the following order:
 ///
