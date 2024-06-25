@@ -322,11 +322,11 @@ pub(crate) mod ast_ty {
         if f.is_infinite() {
             return Ok(if f.is_sign_positive() {
                 quote! {
-                    ::#prefix::f64::INFINITY
+                    f64::INFINITY
                 }
             } else {
                 quote! {
-                    ::#prefix::f64::NEG_INFINITY
+                    f64::NEG_INFINITY
                 }
             });
         }
