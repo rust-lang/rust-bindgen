@@ -315,7 +315,7 @@ pub(crate) mod ast_ty {
 
         if f.is_nan() {
             return Ok(quote! {
-                ::#prefix::f64::NAN
+                f64::NAN
             });
         }
 
