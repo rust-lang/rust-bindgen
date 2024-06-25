@@ -311,8 +311,6 @@ pub(crate) mod ast_ty {
             return Ok(quote!(#val));
         }
 
-        let prefix = ctx.trait_prefix();
-
         if f.is_nan() {
             return Ok(quote! {
                 f64::NAN
