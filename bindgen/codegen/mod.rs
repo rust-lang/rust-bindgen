@@ -756,7 +756,7 @@ impl CodeGenerator for Var {
                     }
                 }
                 VarType::Float(f) => {
-                    if let Ok(expr) = helpers::ast_ty::float_expr(ctx, f) {
+                    if let Ok(expr) = helpers::ast_ty::float_expr(f) {
                         result.push(quote! {
                             #(#attrs)*
                             pub const #canonical_ident : #ty = #expr ;

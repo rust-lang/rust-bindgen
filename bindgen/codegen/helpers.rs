@@ -302,7 +302,6 @@ pub(crate) mod ast_ty {
     }
 
     pub(crate) fn float_expr(
-        ctx: &BindgenContext,
         f: f64,
     ) -> Result<TokenStream, ()> {
         if f.is_finite() {
