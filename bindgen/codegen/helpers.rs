@@ -301,9 +301,7 @@ pub(crate) mod ast_ty {
         }
     }
 
-    pub(crate) fn float_expr(
-        f: f64,
-    ) -> Result<TokenStream, ()> {
+    pub(crate) fn float_expr(f: f64) -> Result<TokenStream, ()> {
         if f.is_finite() {
             let val = proc_macro2::Literal::f64_unsuffixed(f);
 
