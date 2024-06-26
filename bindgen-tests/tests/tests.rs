@@ -535,9 +535,9 @@ fn test_mixed_header_and_header_contents() {
             env!("CARGO_MANIFEST_DIR"),
             "/tests/headers/func_ptr.h"
         ))
-        .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/char.h"))
         .header_contents("test.h", "int bar(const char* a);")
         .header_contents("test2.h", "float bar2(const char* b);")
+        .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/char.h"))
         .clang_arg("--target=x86_64-unknown-linux")
         .generate()
         .unwrap()
@@ -584,30 +584,14 @@ fn test_macro_fallback_non_system_dir() {
 
     let actual = format_code(actual).unwrap();
 
-    let (expected_filename, expected) = match clang_version().parsed {
-        Some((9, _)) => {
-            let expected_filename = concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/tests/expectations/tests/libclang-9/macro_fallback_non_system_dir.rs",
-            );
-            let expected = include_str!(concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/tests/expectations/tests/libclang-9/macro_fallback_non_system_dir.rs",
-            ));
-            (expected_filename, expected)
-        }
-        _ => {
-            let expected_filename = concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/tests/expectations/tests/test_macro_fallback_non_system_dir.rs",
-            );
-            let expected = include_str!(concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/tests/expectations/tests/test_macro_fallback_non_system_dir.rs",
-            ));
-            (expected_filename, expected)
-        }
-    };
+    let expected_filename = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/expectations/tests/macro_fallback_non_system_dir.rs",
+    );
+    let expected = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/expectations/tests/macro_fallback_non_system_dir.rs",
+    ));
     let expected = format_code(expected).unwrap();
     if expected != actual {
         error_diff_mismatch(

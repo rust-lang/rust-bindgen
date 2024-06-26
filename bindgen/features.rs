@@ -51,6 +51,14 @@ macro_rules! define_rust_targets {
                 }
             }
 
+            pub(crate) fn full_version(self) -> Option<String> {
+              if let Some(minor) = self.minor() {
+                Some(format!("1.{}.0", minor))
+              } else {
+                None
+              }
+            }
+
             const fn stable_releases() -> [(Self, u64); [$($minor,)*].len()] {
                 [$((Self::$variant, $minor),)*]
             }

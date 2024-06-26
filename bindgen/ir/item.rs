@@ -17,7 +17,8 @@ use super::module::Module;
 use super::template::{AsTemplateParam, TemplateParameters};
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{Type, TypeKind};
-use crate::clang;
+use crate::clang::{self, SourceLocation};
+use crate::ir::{macro_def::MacroDef, var::Var};
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 
 use std::cell::{Cell, OnceCell};
@@ -186,6 +187,7 @@ impl AsTemplateParam for ItemKind {
             ItemKind::Module(..) |
             ItemKind::Function(..) |
             ItemKind::Var(..) => None,
+            ItemKind::MacroDef(..) => None,
         }
     }
 }
@@ -289,6 +291,7 @@ impl Trace for Item {
             ItemKind::Var(ref var) => {
                 tracer.visit_kind(var.ty().into(), EdgeKind::VarType);
             }
+            ItemKind::MacroDef(_) => {}
             ItemKind::Module(_) => {
                 // Module -> children edges are "weak", and we do not want to
                 // trace them. If we did, then allowlisting wouldn't work as
@@ -640,12 +643,9 @@ impl Item {
         }
 
         if !ctx.options().blocklisted_files.is_empty() {
-            if let Some(location) = &self.location {
-                let (file, _, _, _) = location.location();
-                if let Some(filename) = file.name() {
-                    if ctx.options().blocklisted_files.matches(filename) {
-                        return true;
-                    }
+            if let Some(SourceLocation::File { file, .. }) = &self.location {
+                if ctx.options().blocklisted_files.matches(file.name()) {
+                    return true;
                 }
             }
         }
@@ -658,10 +658,11 @@ impl Item {
                     ctx.options().blocklisted_types.matches(&name) ||
                         ctx.is_replaced_type(path, self.id)
                 }
-                ItemKind::Function(..) => {
+                ItemKind::Function(..) |
+                ItemKind::MacroDef(MacroDef::Fn(..)) => {
                     ctx.options().blocklisted_functions.matches(&name)
                 }
-                ItemKind::Var(..) => {
+                ItemKind::Var(..) | ItemKind::MacroDef(MacroDef::Var(..)) => {
                     ctx.options().blocklisted_vars.matches(&name)
                 }
                 // TODO: Add namespace blocklisting?
@@ -786,6 +787,7 @@ impl Item {
 
         match *self.kind() {
             ItemKind::Var(ref var) => var.name().to_owned(),
+            ItemKind::MacroDef(ref macro_def) => macro_def.name().to_owned(),
             ItemKind::Module(ref module) => {
                 module.name().map(ToOwned::to_owned).unwrap_or_else(|| {
                     format!("_bindgen_mod_{}", self.exposed_id(ctx))
@@ -816,6 +818,7 @@ impl Item {
             ItemKind::Type(ty) => ty.name().is_none(),
             ItemKind::Function(_) => false,
             ItemKind::Var(_) => false,
+            ItemKind::MacroDef(_) => false,
         }
     }
 
@@ -1009,8 +1012,11 @@ impl Item {
         let cc = &ctx.options().codegen_config;
         match *self.kind() {
             ItemKind::Module(..) => true,
-            ItemKind::Var(_) => cc.vars(),
+            ItemKind::Var(_) | ItemKind::MacroDef(MacroDef::Var(_)) => {
+                cc.vars()
+            }
             ItemKind::Type(_) => cc.types(),
+            ItemKind::MacroDef(MacroDef::Fn(_)) => cc.functions(),
             ItemKind::Function(ref f) => match f.kind() {
                 FunctionKind::Function => cc.functions(),
                 FunctionKind::Method(MethodKind::Constructor) => {
@@ -1247,7 +1253,10 @@ impl TemplateParameters for ItemKind {
             // If we start emitting bindings to explicitly instantiated
             // functions, then we'll need to check ItemKind::Function for
             // template params.
-            ItemKind::Function(_) | ItemKind::Module(_) | ItemKind::Var(_) => {
+            ItemKind::Module(_) |
+            ItemKind::Function(_) |
+            ItemKind::Var(_) |
+            ItemKind::MacroDef(_) => {
                 vec![]
             }
         }
@@ -1313,7 +1322,6 @@ impl Item {
         parent_id: Option<ItemId>,
         ctx: &mut BindgenContext,
     ) -> Result<ItemId, ParseError> {
-        use crate::ir::var::Var;
         use clang_sys::*;
 
         if !cursor.is_valid() {
@@ -1367,6 +1375,7 @@ impl Item {
         // I guess we can try.
         try_parse!(Function);
         try_parse!(Var);
+        try_parse!(MacroDef);
 
         // Types are sort of special, so to avoid parsing template classes
         // twice, handle them separately.
@@ -1429,17 +1438,17 @@ impl Item {
             }
 
             CXCursor_InclusionDirective => {
-                let file = cursor.get_included_file_name();
+                let file = cursor.get_included_file();
                 match file {
-                    None => {
-                        warn!("Inclusion of a nameless file in {:?}", cursor);
-                    }
                     Some(included_file) => {
                         for cb in &ctx.options().parse_callbacks {
-                            cb.include_file(&included_file);
+                            cb.include_file(included_file.name());
                         }
 
-                        ctx.add_dep(included_file.into_boxed_str());
+                        ctx.add_dep(included_file);
+                    }
+                    None => {
+                        warn!("Inclusion of a nameless file in {:?}", cursor)
                     }
                 }
                 Err(ParseError::Continue)

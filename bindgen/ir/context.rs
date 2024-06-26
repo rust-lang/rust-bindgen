@@ -11,16 +11,23 @@ use super::derive::{
     CanDerive, CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveEq,
     CanDeriveHash, CanDeriveOrd, CanDerivePartialEq, CanDerivePartialOrd,
 };
-use super::function::Function;
+use super::function::{Function, FunctionSig, Linkage};
 use super::int::IntKind;
 use super::item::{IsOpaque, Item, ItemAncestors, ItemSet};
 use super::item_kind::ItemKind;
+use super::macro_def::MacroDef;
 use super::module::{Module, ModuleKind};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
-use crate::clang::{self, ABIKind, Cursor};
+use crate::clang::{self, ABIKind, Cursor, SourceFile, SourceLocation};
+use crate::codegen::utils::type_from_named;
+use crate::codegen::utils::{fnsig_argument_type, fnsig_return_ty_internal};
 use crate::codegen::CodegenError;
+use crate::codegen::ToRustTyOrOpaque;
+use crate::ir::comp::Field;
+use crate::ir::comp::FieldMethods;
+use crate::ir::item::ItemCanonicalName;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 
@@ -29,10 +36,8 @@ use quote::ToTokens;
 use std::borrow::Cow;
 use std::cell::{Cell, RefCell};
 use std::collections::{BTreeSet, HashMap as StdHashMap};
-use std::fs::OpenOptions;
-use std::io::Write;
-use std::mem;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::{cmp, mem};
 
 /// An identifier for some kind of IR item.
 #[derive(Debug, Copy, Clone, Eq, PartialOrd, Ord, Hash)]
@@ -307,6 +312,108 @@ enum TypeKey {
     Declaration(Cursor),
 }
 
+/// Specifies where a header was included from.
+#[derive(Debug)]
+pub(crate) enum IncludeLocation {
+    /// Include location of the main header file, i.e. none.
+    Main,
+    /// Include location of a header specified as a CLI argument.
+    Cli {
+        /// Offset of the include location.
+        offset: usize,
+    },
+    /// Include location of a header included with an `#include` directive.
+    File {
+        /// Source file name of the include location.
+        file: SourceFile,
+        /// Line of the include location.
+        line: usize,
+        /// Column of the include location.
+        column: usize,
+        /// Offset of the include location.
+        offset: usize,
+    },
+}
+
+impl IncludeLocation {
+    /// Header include locations are sorted in the order they appear in, which means
+    /// headers provided as command line arguments (`-include`) are sorted first,
+    /// followed by the main header file, and lastly headers included with `#include`
+    /// directives.
+    ///
+    /// Nested headers are sorted according to where they were transitively included first.
+    pub fn cmp_by_source_order(
+        &self,
+        other: &Self,
+        ctx: &BindgenContext,
+    ) -> cmp::Ordering {
+        match (self, other) {
+            // If both headers are included via CLI argument, compare their offset.
+            (
+                IncludeLocation::Cli { offset },
+                IncludeLocation::Cli {
+                    offset: other_offset,
+                },
+            ) => offset.cmp(other_offset),
+            // Headers included via CLI arguments come first.
+            (IncludeLocation::Cli { .. }, IncludeLocation::Main) => {
+                cmp::Ordering::Less
+            }
+            (IncludeLocation::Main, IncludeLocation::Cli { .. }) => {
+                cmp::Ordering::Greater
+            }
+            // If both includes refer to the main header file, they are equal.
+            (IncludeLocation::Main, IncludeLocation::Main) => {
+                cmp::Ordering::Equal
+            }
+            // If one is included via CLI arguments or the main header file,
+            // recursively compare with the other's include location.
+            (
+                IncludeLocation::Cli { .. } | IncludeLocation::Main,
+                IncludeLocation::File {
+                    file: other_file, ..
+                },
+            ) => {
+                let other_parent = ctx.include_location(other_file.path());
+                self.cmp_by_source_order(other_parent, ctx)
+            }
+            (
+                IncludeLocation::File { .. },
+                IncludeLocation::Cli { .. } | IncludeLocation::Main,
+            ) => other.cmp_by_source_order(self, ctx).reverse(),
+            // If both include locations are in files, compare them as `SourceLocation`s.
+            (
+                IncludeLocation::File {
+                    file,
+                    line,
+                    column,
+                    offset,
+                },
+                IncludeLocation::File {
+                    file: other_file,
+                    line: other_line,
+                    column: other_column,
+                    offset: other_offset,
+                },
+            ) => SourceLocation::File {
+                file: file.clone(),
+                line: *line,
+                column: *column,
+                offset: *offset,
+            }
+            .cmp_by_source_order(
+                &SourceLocation::File {
+                    file: other_file.clone(),
+                    line: *other_line,
+                    column: *other_column,
+                    offset: *other_offset,
+                },
+                ctx,
+            ),
+        }
+    }
+}
+
 /// A context used during parsing and generation of structs.
 #[derive(Debug)]
 pub(crate) struct BindgenContext {
@@ -351,12 +458,26 @@ pub(crate) struct BindgenContext {
     /// potentially break that assumption.
     currently_parsed_types: Vec<PartialType>,
 
-    /// A map with all the already parsed macro names. This is done to avoid
-    /// hard errors while parsing duplicated macros, as well to allow macro
-    /// expression parsing.
+    /// A map with all the already parsed macro names.
     ///
-    /// This needs to be an std::HashMap because the cexpr API requires it.
-    parsed_macros: StdHashMap<Vec<u8>, cexpr::expr::EvalResult>,
+    /// This is needed to handle redefined macros so they are not
+    /// generated multiple times.
+    parsed_macros: StdHashMap<String, ItemId>,
+
+    /// A set with all defined macros.
+    ///
+    /// This is needed to expand nested macros.
+    pub(crate) macro_set: cmacro::MacroSet,
+
+    /// A map with all defined functions.
+    ///
+    /// This is needed for inferring types for function calls in macros.
+    function_names: StdHashMap<String, FunctionId>,
+
+    /// A map with all defined types.
+    ///
+    /// This is needed to resolve types used in macros.
+    type_names: StdHashMap<String, TypeId>,
 
     /// A map with all include locations.
     ///
@@ -364,10 +485,10 @@ pub(crate) struct BindgenContext {
     ///
     /// The key is the included file, the value is a pair of the source file and
     /// the position of the `#include` directive in the source file.
-    includes: StdHashMap<String, (String, usize)>,
+    includes: StdHashMap<PathBuf, IncludeLocation>,
 
     /// A set of all the included filenames.
-    deps: BTreeSet<Box<str>>,
+    deps: BTreeSet<SourceFile>,
 
     /// The active replacements collected from replaces="xxx" annotations.
     replacements: HashMap<Vec<String>, ItemId>,
@@ -378,9 +499,6 @@ pub(crate) struct BindgenContext {
 
     /// The translation unit for parsing.
     translation_unit: clang::TranslationUnit,
-
-    /// The translation unit for macro fallback parsing.
-    fallback_tu: Option<clang::FallbackTranslationUnit>,
 
     /// Target information that can be useful for some stuff.
     target_info: clang::TargetInfo,
@@ -432,6 +550,10 @@ pub(crate) struct BindgenContext {
     /// This is populated when we enter codegen by `compute_enum_typedef_combos`
     /// and is always `None` before that and `Some` after.
     enum_typedef_combos: Option<HashSet<ItemId>>,
+
+    /// A map of all enum variants, mapping the variant name to
+    /// the generated constant name and/or path.
+    enum_variants: HashMap<String, (ItemId, syn::Expr)>,
 
     /// The set of (`ItemId`s of) types that can't derive debug.
     ///
@@ -572,7 +694,37 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let root_module_id = root_module.id().as_module_id_unchecked();
 
         // depfiles need to include the explicitly listed headers too
-        let deps = options.input_headers.iter().cloned().collect();
+        let deps = options.input_headers.iter().map(SourceFile::new).collect();
+
+        // Define macros added via command-line arguments so that
+        // dependent macros are generated correctly.
+        let mut macro_set = cmacro::MacroSet::new();
+        let mut next_is_define = false;
+        for arg in &options.clang_args {
+            let arg = if next_is_define {
+                next_is_define = false;
+                arg.as_ref()
+            } else if let Some(arg) = arg.strip_prefix("-D") {
+                if arg.is_empty() {
+                    next_is_define = true;
+                    continue;
+                }
+
+                arg
+            } else {
+                continue;
+            };
+
+            let (name, value) = if let Some((name, value)) = arg.split_once('=')
+            {
+                // FIXME: Value should be tokenized instead of taken verbatim.
+                (name, vec![value])
+            } else {
+                (arg, vec![])
+            };
+
+            macro_set.define_var_macro(name, value);
+        }
 
         BindgenContext {
             items: vec![Some(root_module)],
@@ -586,11 +738,13 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             semantic_parents: Default::default(),
             currently_parsed_types: vec![],
             parsed_macros: Default::default(),
+            macro_set,
+            function_names: Default::default(),
+            type_names: Default::default(),
             replacements: Default::default(),
             collected_typerefs: false,
             in_codegen: false,
             translation_unit,
-            fallback_tu: None,
             target_info,
             options,
             generated_bindgen_complex: Cell::new(false),
@@ -601,6 +755,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             used_template_parameters: None,
             need_bitfield_allocation: Default::default(),
             enum_typedef_combos: None,
+            enum_variants: Default::default(),
             cannot_derive_debug: None,
             cannot_derive_default: None,
             cannot_derive_copy: None,
@@ -658,33 +813,65 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         )
     }
 
-    /// Add the location of the `#include` directive for the `included_file`.
+    /// Add the location of where `included_file` is included.
     pub(crate) fn add_include(
         &mut self,
-        source_file: String,
-        included_file: String,
-        offset: usize,
+        included_file: SourceFile,
+        source_location: SourceLocation,
     ) {
-        self.includes
-            .entry(included_file)
-            .or_insert((source_file, offset));
+        let included_file_path = included_file.path();
+
+        if self.includes.contains_key(&included_file_path) {
+            return;
+        }
+
+        let include_location = {
+            // Recursively including the main header file doesn't count.
+            if self.translation_unit.file().path() == included_file_path {
+                IncludeLocation::Main
+            } else {
+                match source_location {
+                    // Include location is a built-in, so it must have been included via CLI arguments.
+                    SourceLocation::Builtin { offset } => {
+                        IncludeLocation::Cli { offset }
+                    }
+                    // Header was included with an `#include` directive.
+                    SourceLocation::File {
+                        file,
+                        line,
+                        column,
+                        offset,
+                    } => IncludeLocation::File {
+                        file,
+                        line,
+                        column,
+                        offset,
+                    },
+                }
+            }
+        };
+
+        self.includes.insert(included_file_path, include_location);
     }
 
-    /// Get the location of the first `#include` directive for the `included_file`.
-    pub(crate) fn included_file_location(
+    /// Get the location of the first `#include` directive for the `included_file_path`.
+    pub(crate) fn include_location<P: AsRef<Path>>(
         &self,
-        included_file: &str,
-    ) -> Option<(String, usize)> {
-        self.includes.get(included_file).cloned()
+        included_file_path: P,
+    ) -> &IncludeLocation {
+        self.includes.get(included_file_path.as_ref()).unwrap_or(
+            // Header was not included anywhere, so it must be the main header.
+            &IncludeLocation::Main,
+        )
     }
 
     /// Add an included file.
-    pub(crate) fn add_dep(&mut self, dep: Box<str>) {
+    pub(crate) fn add_dep(&mut self, dep: SourceFile) {
         self.deps.insert(dep);
     }
 
     /// Get any included files.
-    pub(crate) fn deps(&self) -> &BTreeSet<Box<str>> {
+    pub(crate) fn deps(&self) -> &BTreeSet<SourceFile> {
         &self.deps
     }
 
@@ -711,19 +898,41 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             "Adding a type without declaration?"
         );
 
+        let macro_name = if let ItemKind::MacroDef(ref m) = item.kind() {
+            if let Some(id) = self.parsed_macros.get(m.name()) {
+                self.items[id.0] = None;
+            }
+
+            Some(m.name().to_owned())
+        } else {
+            None
+        };
+
         let id = item.id();
-        let is_type = item.kind().is_type();
-        let is_unnamed = is_type && item.expect_type().name().is_none();
-        let is_template_instantiation =
-            is_type && item.expect_type().is_template_instantiation();
 
         if item.id() != self.root_module {
             self.add_item_to_module(&item);
         }
 
-        if is_type && item.expect_type().is_comp() {
-            self.need_bitfield_allocation.push(id);
+        if item.kind().is_function() {
+            let function = item.expect_function();
+            let function_id = id.as_function_id_unchecked();
+            self.function_names
+                .insert(function.name().to_owned(), function_id);
         }
+
+        let type_info: Option<(Option<String>, _, _)> = if item.kind().is_type()
+        {
+            let ty = item.expect_type();
+
+            Some((
+                ty.name().map(|n| n.to_owned()),
+                ty.is_comp(),
+                ty.is_template_instantiation(),
+            ))
+        } else {
+            None
+        };
 
         let old_item = mem::replace(&mut self.items[id.0], Some(item));
         assert!(
@@ -731,12 +940,27 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             "should not have already associated an item with the given id"
         );
 
+        if let Some(macro_name) = macro_name {
+            self.parsed_macros.insert(macro_name, id);
+        }
+
         // Unnamed items can have an USR, but they can't be referenced from
         // other sites explicitly and the USR can match if the unnamed items are
         // nested, so don't bother tracking them.
-        if !is_type || is_template_instantiation {
+        let (type_name, is_comp, is_template_instantiation) =
+            if let Some(type_info) = type_info {
+                type_info
+            } else {
+                return;
+            };
+        if is_comp {
+            self.need_bitfield_allocation.push(id);
+        }
+
+        if is_template_instantiation {
             return;
         }
+
         if let Some(mut declaration) = declaration {
             if !declaration.is_valid() {
                 if let Some(location) = location {
@@ -763,19 +987,25 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 return;
             }
 
-            let key = if is_unnamed {
-                TypeKey::Declaration(declaration)
-            } else if let Some(usr) = declaration.usr() {
-                TypeKey::Usr(usr)
+            let type_id = id.as_type_id_unchecked();
+
+            let key = if let Some(type_name) = type_name {
+                self.type_names.insert(type_name, type_id);
+
+                if let Some(usr) = declaration.usr() {
+                    TypeKey::Usr(usr)
+                } else {
+                    warn!(
+                        "Valid declaration with no USR: {:?}, {:?}",
+                        declaration, location
+                    );
+                    TypeKey::Declaration(declaration)
+                }
             } else {
-                warn!(
-                    "Valid declaration with no USR: {:?}, {:?}",
-                    declaration, location
-                );
                 TypeKey::Declaration(declaration)
             };
 
-            let old = self.types.insert(key, id.as_type_id_unchecked());
+            let old = self.types.insert(key, type_id);
             debug_assert_eq!(old, None);
         }
     }
@@ -1222,6 +1452,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.compute_has_destructor();
         self.find_used_template_parameters();
         self.compute_enum_typedef_combos();
+        self.compute_enum_variants();
         self.compute_cannot_derive_debug();
         self.compute_cannot_derive_default();
         self.compute_cannot_derive_copy();
@@ -1488,6 +1719,18 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// item is not a `Function`.
     pub(crate) fn resolve_func(&self, func_id: FunctionId) -> &Function {
         self.resolve_item(func_id).kind().expect_function()
+    }
+
+    /// Resolve a function signature with the given ID.
+    ///
+    /// Panics if there is no type for the given `TypeId` or if the resolved
+    /// `Type` is not a function.
+    pub(crate) fn resolve_sig(&self, sig_id: TypeId) -> &FunctionSig {
+        let signature = self.resolve_type(sig_id).canonical_type(self);
+        match *signature.kind() {
+            TypeKind::Function(ref sig) => sig,
+            _ => panic!("Signature kind is not a Function: {:?}", signature),
+        }
     }
 
     /// Resolve the given `ItemId` as a type, or `None` if there is no item with
@@ -1955,13 +2198,13 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Needed to handle const methods in C++, wrapping the type .
     pub(crate) fn build_const_wrapper(
         &mut self,
-        with_id: ItemId,
         wrapped_id: TypeId,
         parent_id: Option<ItemId>,
         ty: &clang::Type,
     ) -> TypeId {
+        let id = self.next_item_id();
         self.build_wrapper(
-            with_id, wrapped_id, parent_id, ty, /* is_const = */ true,
+            id, wrapped_id, parent_id, ty, /* is_const = */ true,
         )
     }
 
@@ -1977,6 +2220,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let layout = ty.fallible_layout(self).ok();
         let location = ty.declaration().location();
         let type_kind = TypeKind::ResolvedTypeRef(wrapped_id);
+
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
         let item = Item::new(
             with_id,
@@ -1987,7 +2231,20 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             Some(location),
         );
         self.add_builtin_item(item);
+
         with_id.as_type_id_unchecked()
+    }
+
+    /// Get a function signature by its name.
+    pub(crate) fn function_by_name(&self, name: &str) -> Option<&Function> {
+        self.function_names
+            .get(name)
+            .map(|id| self.resolve_func(*id))
+    }
+
+    /// Get a type by its name.
+    pub(crate) fn type_by_name(&self, name: &str) -> Option<&TypeId> {
+        self.type_names.get(name)
     }
 
     /// Returns the next item ID to be used for an item.
@@ -2067,135 +2324,6 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         &self.translation_unit
     }
 
-    /// Initialize fallback translation unit if it does not exist and
-    /// then return a mutable reference to the fallback translation unit.
-    pub(crate) fn try_ensure_fallback_translation_unit(
-        &mut self,
-    ) -> Option<&mut clang::FallbackTranslationUnit> {
-        if self.fallback_tu.is_none() {
-            let file = format!(
-                "{}/.macro_eval.c",
-                match self.options().clang_macro_fallback_build_dir {
-                    Some(ref path) => path.as_os_str().to_str()?,
-                    None => ".",
-                }
-            );
-
-            let index = clang::Index::new(false, false);
-
-            let mut header_names_to_compile = Vec::new();
-            let mut header_paths = Vec::new();
-            let mut header_contents = String::new();
-            for input_header in self.options.input_headers.iter() {
-                let path = Path::new(input_header.as_ref());
-                if let Some(header_path) = path.parent() {
-                    if header_path == Path::new("") {
-                        header_paths.push(".");
-                    } else {
-                        header_paths.push(header_path.as_os_str().to_str()?);
-                    }
-                } else {
-                    header_paths.push(".");
-                }
-                let header_name = path.file_name()?.to_str()?;
-                header_names_to_compile
-                    .push(header_name.split(".h").next()?.to_string());
-                header_contents +=
-                    format!("\n#include <{header_name}>").as_str();
-            }
-            let header_to_precompile = format!(
-                "{}/{}",
-                match self.options().clang_macro_fallback_build_dir {
-                    Some(ref path) => path.as_os_str().to_str()?,
-                    None => ".",
-                },
-                header_names_to_compile.join("-") + "-precompile.h"
-            );
-            let pch = header_to_precompile.clone() + ".pch";
-
-            let mut header_to_precompile_file = OpenOptions::new()
-                .create(true)
-                .truncate(true)
-                .write(true)
-                .open(&header_to_precompile)
-                .ok()?;
-            header_to_precompile_file
-                .write_all(header_contents.as_bytes())
-                .ok()?;
-
-            let mut c_args = Vec::new();
-            c_args.push("-x".to_string().into_boxed_str());
-            c_args.push("c-header".to_string().into_boxed_str());
-            for header_path in header_paths {
-                c_args.push(format!("-I{header_path}").into_boxed_str());
-            }
-            c_args.extend(
-                self.options
-                    .clang_args
-                    .iter()
-                    .filter(|next| {
-                        !self.options.input_headers.contains(next) &&
-                            next.as_ref() != "-include"
-                    })
-                    .cloned(),
-            );
-            let mut tu = clang::TranslationUnit::parse(
-                &index,
-                &header_to_precompile,
-                &c_args,
-                &[],
-                clang_sys::CXTranslationUnit_ForSerialization,
-            )?;
-            tu.save(&pch).ok()?;
-
-            let mut c_args = vec![
-                "-include-pch".to_string().into_boxed_str(),
-                pch.clone().into_boxed_str(),
-            ];
-            c_args.extend(
-                self.options
-                    .clang_args
-                    .clone()
-                    .iter()
-                    .filter(|next| {
-                        !self.options.input_headers.contains(next) &&
-                            next.as_ref() != "-include"
-                    })
-                    .cloned(),
-            );
-            self.fallback_tu = Some(clang::FallbackTranslationUnit::new(
-                file,
-                header_to_precompile,
-                pch,
-                &c_args,
-            )?);
-        }
-
-        self.fallback_tu.as_mut()
-    }
-
-    /// Have we parsed the macro named `macro_name` already?
-    pub(crate) fn parsed_macro(&self, macro_name: &[u8]) -> bool {
-        self.parsed_macros.contains_key(macro_name)
-    }
-
-    /// Get the currently parsed macros.
-    pub(crate) fn parsed_macros(
-        &self,
-    ) -> &StdHashMap<Vec<u8>, cexpr::expr::EvalResult> {
-        debug_assert!(!self.in_codegen_phase());
-        &self.parsed_macros
-    }
-
-    /// Mark the macro named `macro_name` as parsed.
-    pub(crate) fn note_parsed_macro(
-        &mut self,
-        id: Vec<u8>,
-        value: cexpr::expr::EvalResult,
-    ) {
-        self.parsed_macros.insert(id, value);
-    }
-
     /// Are we in the codegen phase?
     pub(crate) fn in_codegen_phase(&self) -> bool {
         self.in_codegen
@@ -2273,8 +2401,20 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let mut kind = ModuleKind::Normal;
         let mut looking_for_name = false;
         for token in cursor.tokens().iter() {
-            match token.spelling() {
-                b"inline" => {
+            let spelling = token.spelling();
+            let name = match spelling.to_str() {
+                Ok(name) => Cow::Borrowed(name),
+                Err(_) => {
+                    let name = spelling.to_string_lossy();
+                    warn!(
+                        "Lossy conversion of non-UTF8 token {:?} to {:?}.",
+                        spelling, name
+                    );
+                    name
+                }
+            };
+            match name.as_ref() {
+                "inline" => {
                     debug_assert!(
                         kind != ModuleKind::Inline,
                         "Multiple inline keywords?"
@@ -2291,39 +2431,34 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 // but the tokenization of the second begins with the double
                 // colon. That's ok, so we only need to handle the weird
                 // tokenization here.
-                b"namespace" | b"::" => {
+                "namespace" | "::" => {
                     looking_for_name = true;
                 }
-                b"{" => {
+                "{" => {
                     // This should be an anonymous namespace.
                     assert!(looking_for_name);
                     break;
                 }
-                name => {
-                    if looking_for_name {
-                        if module_name.is_none() {
-                            module_name = Some(
-                                String::from_utf8_lossy(name).into_owned(),
-                            );
-                        }
-                        break;
-                    } else {
-                        // This is _likely_, but not certainly, a macro that's
-                        // been placed just before the namespace keyword.
-                        // Unfortunately, clang tokens don't let us easily see
-                        // through the ifdef tokens, so we don't know what this
-                        // token should really be. Instead of panicking though,
-                        // we warn the user that we assumed the token was blank,
-                        // and then move on.
-                        //
-                        // See also https://github.com/rust-lang/rust-bindgen/issues/1676.
-                        warn!(
-                            "Ignored unknown namespace prefix '{}' at {:?} in {:?}",
-                            String::from_utf8_lossy(name),
-                            token,
-                            cursor
-                        );
+                name if looking_for_name => {
+                    if module_name.is_none() {
+                        module_name = Some(name.to_owned());
                     }
+                    break;
+                }
+                name => {
+                    // This is _likely_, but not certainly, a macro that's
+                    // been placed just before the namespace keyword.
+                    // Unfortunately, clang tokens don't let us easily see
+                    // through the ifdef tokens, so we don't know what this
+                    // token should really be. Instead of panicking though,
+                    // we warn the user that we assumed the token was blank,
+                    // and then move on.
+                    //
+                    // See also https://github.com/rust-lang/rust-bindgen/issues/1676.
+                    warn!(
+                        "Ignored unknown namespace prefix '{}' at {:?} in {:?}",
+                        name, token, cursor
+                    );
                 }
             }
         }
@@ -2482,16 +2617,15 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     // Items with a source location in an explicitly allowlisted file
                     // are always included.
                     if !self.options().allowlisted_files.is_empty() {
-                        if let Some(location) = item.location() {
-                            let (file, _, _, _) = location.location();
-                            if let Some(filename) = file.name() {
-                                if self
-                                    .options()
-                                    .allowlisted_files
-                                    .matches(filename)
-                                {
-                                    return true;
-                                }
+                        if let Some(SourceLocation::File { file, .. }) =
+                            item.location()
+                        {
+                            if self
+                                .options()
+                                .allowlisted_files
+                                .matches(file.name())
+                            {
+                                return true;
                             }
                         }
                     }
@@ -2511,6 +2645,15 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                         ItemKind::Var(_) => {
                             self.options().allowlisted_vars.matches(&name)
                         }
+                        ItemKind::MacroDef(ref macro_def) => match macro_def {
+                            MacroDef::Fn(_) => self
+                                .options()
+                                .allowlisted_functions
+                                .matches(&name),
+                            MacroDef::Var(_) => {
+                                self.options().allowlisted_vars.matches(&name)
+                            }
+                        },
                         ItemKind::Type(ref ty) => {
                             if self.options().allowlisted_types.matches(&name) {
                                 return true;
@@ -2666,6 +2809,89 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.generated_bindgen_float16.get()
     }
 
+    /// Generate the constant name for an enum variant.
+    pub(crate) fn enum_variant_const_name(
+        &self,
+        enum_canonical_name: Option<&Ident>,
+        variant_name: &Ident,
+    ) -> Ident {
+        if self.options().prepend_enum_name {
+            if let Some(enum_canonical_name) = enum_canonical_name {
+                return self.rust_ident(format!(
+                    "{}_{}",
+                    enum_canonical_name, variant_name
+                ));
+            }
+        }
+
+        variant_name.clone()
+    }
+
+    fn compute_enum_variants(&mut self) {
+        for item in &self.items {
+            if let Some(item) = item.as_ref() {
+                if let ItemKind::Type(ty) = item.kind() {
+                    if let TypeKind::Enum(enum_ty) = ty.kind() {
+                        let variation =
+                            enum_ty.computed_enum_variation(self, item);
+
+                        use crate::EnumVariation;
+
+                        let enum_canonical_name = if ty.name().is_some() {
+                            Some(self.rust_ident(item.canonical_name(self)))
+                        } else {
+                            None
+                        };
+
+                        for variant in enum_ty.variants() {
+                            let variant_name = self.rust_ident(variant.name());
+
+                            let variant_expr = if let Some(
+                                enum_canonical_name,
+                            ) = &enum_canonical_name
+                            {
+                                match variation {
+                                    EnumVariation::Rust { .. } |
+                                    EnumVariation::NewType {
+                                        is_global: false,
+                                        ..
+                                    } |
+                                    EnumVariation::ModuleConsts => {
+                                        syn::parse_quote! { #enum_canonical_name::#variant_name }
+                                    }
+                                    EnumVariation::NewType {
+                                        is_global: true,
+                                        ..
+                                    } |
+                                    EnumVariation::Consts { .. } => {
+                                        let constant_name = self
+                                            .enum_variant_const_name(
+                                                Some(enum_canonical_name),
+                                                &variant_name,
+                                            );
+                                        syn::parse_quote! { #constant_name }
+                                    }
+                                }
+                            } else {
+                                let constant_name = self
+                                    .enum_variant_const_name(
+                                        None,
+                                        &variant_name,
+                                    );
+                                syn::parse_quote! { #constant_name }
+                            };
+
+                            self.enum_variants.insert(
+                                variant.name().to_owned(),
+                                (item.id(), variant_expr),
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /// Compute which `enum`s have an associated `typedef` definition.
     fn compute_enum_typedef_combos(&mut self) {
         let _t = self.timer("compute_enum_typedef_combos");
@@ -2718,6 +2944,20 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         }
 
         self.enum_typedef_combos = Some(enum_typedef_combos);
+    }
+
+    /// Get the generated name of an enum variant.
+    pub(crate) fn enum_variant(
+        &self,
+        variant: &str,
+    ) -> Option<(ItemId, &syn::Expr)> {
+        assert!(
+            self.in_codegen_phase(),
+            "We only compute enum_variants when we enter codegen",
+        );
+        self.enum_variants
+            .get(variant)
+            .map(|(item_id, variant)| (*item_id, variant))
     }
 
     /// Look up whether `id` refers to an `enum` whose underlying type is
@@ -2987,6 +3227,126 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             .wrap_static_fns_suffix
             .as_deref()
             .unwrap_or(crate::DEFAULT_NON_EXTERN_FNS_SUFFIX)
+    }
+}
+
+impl cmacro::CodegenContext for BindgenContext {
+    fn ffi_prefix(&self) -> Option<syn::Path> {
+        Some(match self.options().ctypes_prefix {
+            Some(ref prefix) => syn::parse_str(prefix.as_str()).unwrap(),
+            None => syn::parse_quote! { ::std::os::raw },
+        })
+    }
+
+    fn trait_prefix(&self) -> Option<syn::Path> {
+        let trait_prefix = self.trait_prefix();
+        Some(syn::parse_quote! { ::#trait_prefix })
+    }
+
+    #[cfg(feature = "experimental")]
+    fn macro_arg_ty(&self, name: &str, arg: &str) -> Option<syn::Type> {
+        self.options()
+            .last_callback(|c| c.fn_macro_arg_type(name, arg))
+    }
+
+    fn resolve_enum_variant(
+        &self,
+        variant: &str,
+    ) -> Option<(syn::Type, syn::Expr)> {
+        let (item_id, enum_variant) = self.enum_variant(variant)?;
+
+        let item = self.resolve_item(item_id);
+        if item.is_blocklisted(self) {
+            return None;
+        }
+
+        let enum_ty = match item.kind() {
+            ItemKind::Type(enum_ty) => enum_ty.to_rust_ty_or_opaque(self, item),
+            _ => return None,
+        };
+
+        Some((enum_ty, enum_variant.clone()))
+    }
+
+    fn resolve_ty(&self, ty: &str) -> Option<syn::Type> {
+        if let Some(ty) = type_from_named(self, ty) {
+            return Some(ty);
+        }
+
+        if let Some(ty) = self.type_by_name(ty) {
+            return Some(ty.to_rust_ty_or_opaque(self, &()));
+        }
+
+        None
+    }
+
+    fn resolve_field_ty(&self, ty: &str, field: &str) -> Option<syn::Type> {
+        let field_name = field;
+
+        if let Some(ty) = self.type_by_name(ty) {
+            let ty = self.resolve_type(*ty).canonical_type(self);
+
+            if let TypeKind::Comp(comp_info) = ty.kind() {
+                for field in comp_info.fields() {
+                    match field {
+                        Field::DataMember(data_member)
+                            if data_member.name() == Some(field_name) =>
+                        {
+                            let field_ty = data_member.ty();
+                            return Some(
+                                field_ty.to_rust_ty_or_opaque(self, &()),
+                            );
+                        }
+                        _ => (),
+                    }
+                }
+            }
+        }
+
+        None
+    }
+
+    fn function(&self, name: &str) -> Option<(Vec<syn::Type>, syn::Type)> {
+        let allowlisted_functions = &self.options().allowlisted_functions;
+        if !allowlisted_functions.is_empty() &&
+            !allowlisted_functions.matches(name)
+        {
+            return None;
+        }
+
+        if let Some(f) = self.function_by_name(name) {
+            // Cannot call functions with internal linkage.
+            if matches!(f.linkage(), Linkage::Internal) {
+                return None;
+            }
+
+            let sig = self.resolve_sig(f.signature());
+
+            let arg_types = sig
+                .argument_types()
+                .iter()
+                .map(|(_, ty)| fnsig_argument_type(self, ty))
+                .collect();
+
+            let ret_type = fnsig_return_ty_internal(self, sig);
+
+            return Some((arg_types, ret_type));
+        }
+
+        None
+    }
+
+    fn rust_target(&self) -> Option<String> {
+        // FIXME: Workaround until `generate_cstr` is the default.
+        if !self.options().generate_cstr {
+            if self.options().rust_features.static_lifetime_elision {
+                return Some("1.17.0".into());
+            } else {
+                return Some("1.0.0".into());
+            }
+        }
+
+        self.options().rust_target.full_version()
     }
 }
 

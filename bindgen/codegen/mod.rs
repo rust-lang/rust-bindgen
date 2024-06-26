@@ -13,6 +13,7 @@ pub(crate) mod struct_layout;
 pub(crate) mod bitfield_unit;
 #[cfg(all(test, target_endian = "little"))]
 mod bitfield_unit_tests;
+mod macro_def;
 
 use self::dyngen::DynamicItems;
 use self::helpers::attributes;
@@ -269,7 +270,9 @@ struct CodegenResult<'a> {
     ///
     /// Being these two different declarations.
     functions_seen: HashSet<String>,
+    fn_macros_seen: HashSet<String>,
     vars_seen: HashSet<String>,
+    var_macros_seen: HashSet<String>,
 
     /// Used for making bindings to overloaded functions. Maps from a canonical
     /// function name to the number of overloads we have already codegen'd for
@@ -295,6 +298,8 @@ impl<'a> CodegenResult<'a> {
             items_seen: Default::default(),
             functions_seen: Default::default(),
             vars_seen: Default::default(),
+            fn_macros_seen: Default::default(),
+            var_macros_seen: Default::default(),
             overload_counters: Default::default(),
             items_to_serialize: Default::default(),
         }
@@ -340,6 +345,14 @@ impl<'a> CodegenResult<'a> {
         self.functions_seen.insert(name.into());
     }
 
+    fn seen_fn_macro(&self, name: &str) -> bool {
+        self.fn_macros_seen.contains(name)
+    }
+
+    fn saw_fn_macro(&mut self, name: &str) {
+        self.fn_macros_seen.insert(name.into());
+    }
+
     /// Get the overload number for the given function name. Increments the
     /// counter internally so the next time we ask for the overload for this
     /// name, we get the incremented value, and so on.
@@ -356,6 +369,14 @@ impl<'a> CodegenResult<'a> {
 
     fn saw_var(&mut self, name: &str) {
         self.vars_seen.insert(name.into());
+    }
+
+    fn seen_var_macro(&self, name: &str) -> bool {
+        self.var_macros_seen.contains(name)
+    }
+
+    fn saw_var_macro(&mut self, name: &str) {
+        self.var_macros_seen.insert(name.into());
     }
 
     fn inner<F>(&mut self, cb: F) -> Vec<proc_macro2::TokenStream>
@@ -540,6 +561,9 @@ impl CodeGenerator for Item {
             ItemKind::Var(ref var) => {
                 var.codegen(ctx, result, self);
             }
+            ItemKind::MacroDef(ref macro_def) => {
+                macro_def.codegen(ctx, result, self);
+            }
             ItemKind::Type(ref ty) => {
                 ty.codegen(ctx, result, self);
             }
@@ -660,6 +684,14 @@ impl CodeGenerator for Var {
         debug_assert!(item.is_enabled_for_codegen(ctx));
 
         let canonical_name = item.canonical_name(ctx);
+
+        // If there is a variable-like macro defined with the same name, it came
+        // after this variable, otherwise it would have been undefined.
+        if ctx.macro_set.expand_var_macro(&canonical_name) !=
+            Err(cmacro::ExpansionError::MacroNotFound)
+        {
+            return;
+        }
 
         if result.seen_var(&canonical_name) {
             return;
@@ -2316,7 +2348,7 @@ impl CodeGenerator for CompInfo {
             if let Some(explicit) = explicit_align {
                 // Ensure that the struct has the correct alignment even in
                 // presence of alignas.
-                let explicit = helpers::ast_ty::int_expr(explicit as i64);
+                let explicit = helpers::ast_ty::int_expr(explicit as i128);
                 attributes.push(quote! {
                     #[repr(align(#explicit))]
                 });
@@ -3226,7 +3258,7 @@ impl<'a> EnumBuilder<'a> {
                 helpers::ast_ty::uint_expr(v as u64)
             }
             EnumVariantValue::Boolean(v) => quote!(#v),
-            EnumVariantValue::Signed(v) => helpers::ast_ty::int_expr(v),
+            EnumVariantValue::Signed(v) => helpers::ast_ty::int_expr(v as i128),
             EnumVariantValue::Unsigned(v) => helpers::ast_ty::uint_expr(v),
         };
 
@@ -3584,20 +3616,12 @@ impl CodeGenerator for Enum {
             enum_rust_ty: syn::Type,
             result: &mut CodegenResult<'_>,
         ) {
-            let constant_name = if enum_.name().is_some() {
-                if ctx.options().prepend_enum_name {
-                    format!("{}_{}", enum_canonical_name, variant_name)
-                } else {
-                    format!("{}", variant_name)
-                }
-            } else {
-                format!("{}", variant_name)
-            };
-            let constant_name = ctx.rust_ident(constant_name);
-
+            let constant_name = ctx.enum_variant_const_name(
+                enum_.name().map(move |_| enum_canonical_name),
+                variant_name,
+            );
             result.push(quote! {
-                pub const #constant_name : #enum_rust_ty =
-                    #enum_canonical_name :: #referenced_name ;
+                pub const #constant_name: #enum_rust_ty = #enum_canonical_name::#referenced_name;
             });
         }
 
@@ -4372,12 +4396,7 @@ impl CodeGenerator for Function {
 
         let is_internal = matches!(self.linkage(), Linkage::Internal);
 
-        let signature_item = ctx.resolve_item(self.signature());
-        let signature = signature_item.kind().expect_type().canonical_type(ctx);
-        let signature = match *signature.kind() {
-            TypeKind::Function(ref sig) => sig,
-            _ => panic!("Signature kind is not a Function: {:?}", signature),
-        };
+        let signature = ctx.resolve_sig(self.signature());
 
         if is_internal {
             if !ctx.options().wrap_static_fns {
@@ -4631,17 +4650,21 @@ fn unsupported_abi_diagnostic(
             Level::Note,
         );
 
-        if let Some(loc) = location {
-            let (file, line, col, _) = loc.location();
-
-            if let Some(filename) = file.name() {
-                if let Ok(Some(source)) = get_line(&filename, line) {
-                    let mut slice = Slice::default();
-                    slice
-                        .with_source(source)
-                        .with_location(filename, line, col);
-                    diag.add_slice(slice);
-                }
+        if let Some(crate::clang::SourceLocation::File {
+            file,
+            line,
+            column,
+            ..
+        }) = location.cloned()
+        {
+            if let Ok(Some(source)) = get_line(file.path(), line) {
+                let mut slice = Slice::default();
+                slice.with_source(source).with_location(
+                    file.name(),
+                    line,
+                    column,
+                );
+                diag.add_slice(slice);
             }
         }
 
@@ -4649,10 +4672,11 @@ fn unsupported_abi_diagnostic(
     }
 }
 
+#[cfg_attr(not(feature = "experimental"), allow(unused_variables))]
 fn variadic_fn_diagnostic(
     fn_name: &str,
-    _location: Option<&crate::clang::SourceLocation>,
-    _ctx: &BindgenContext,
+    location: Option<&crate::clang::SourceLocation>,
+    ctx: &BindgenContext,
 ) {
     warn!(
         "Cannot generate wrapper for the static variadic function `{}`.",
@@ -4660,7 +4684,7 @@ fn variadic_fn_diagnostic(
     );
 
     #[cfg(feature = "experimental")]
-    if _ctx.options().emit_diagnostics {
+    if ctx.options().emit_diagnostics {
         use crate::diagnostics::{get_line, Diagnostic, Level, Slice};
 
         let mut diag = Diagnostic::default();
@@ -4669,17 +4693,21 @@ fn variadic_fn_diagnostic(
             .add_annotation("The `--wrap-static-fns` feature does not support variadic functions.", Level::Note)
             .add_annotation("No code will be generated for this function.", Level::Note);
 
-        if let Some(loc) = _location {
-            let (file, line, col, _) = loc.location();
-
-            if let Some(filename) = file.name() {
-                if let Ok(Some(source)) = get_line(&filename, line) {
-                    let mut slice = Slice::default();
-                    slice
-                        .with_source(source)
-                        .with_location(filename, line, col);
-                    diag.add_slice(slice);
-                }
+        if let Some(crate::clang::SourceLocation::File {
+            file,
+            line,
+            column,
+            ..
+        }) = location.cloned()
+        {
+            if let Ok(Some(source)) = get_line(file.path(), line) {
+                let mut slice = Slice::default();
+                slice.with_source(source).with_location(
+                    file.name(),
+                    line,
+                    column,
+                );
+                diag.add_slice(slice);
             }
         }
 
@@ -5474,7 +5502,6 @@ pub(crate) mod utils {
                 primitive_ty(ctx, "usize")
             }
             "uintptr_t" => primitive_ty(ctx, "usize"),
-
             "ssize_t" if ctx.options().size_t_is_usize => {
                 primitive_ty(ctx, "isize")
             }
@@ -5483,7 +5510,7 @@ pub(crate) mod utils {
         })
     }
 
-    fn fnsig_return_ty_internal(
+    pub(crate) fn fnsig_return_ty_internal(
         ctx: &BindgenContext,
         sig: &FunctionSig,
     ) -> syn::Type {

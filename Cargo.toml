@@ -42,3 +42,7 @@ release = false
 [profile.dist]
 inherits = "release"
 lto = "thin"
+
+[patch.crates-io]
+# cmacro = { path = "../cmacro-rs" }
+cmacro = { git = "https://github.com/reitermarkus/cmacro-rs" }

@@ -211,6 +211,8 @@
 ## Changed
 - Remove which and lazy-static dependencies (#2809, #2817).
 - Generate compile-time layout tests (#2787).
+- `ParseCallbacks::int_macro` now takes an `i128` instead of an `i64`.
+- `ParseCallbacks::func_macro` was renamed to `ParseCallbacks::fn_macro` and now takes a single `FnMacroInfo` argument.
 ## Removed
 ## Fixed
 - Fix `--formatter=prettyplease` not working in `bindgen-cli` by adding `prettyplease` feature and

@@ -27,7 +27,7 @@ path = "lib.rs"
 [dependencies]
 annotate-snippets = { version = "0.9.1", features = ["color"], optional = true }
 bitflags = "2.2.1"
-cexpr = "0.6"
+cmacro = "0.2.2"
 clang-sys = { version = "1", features = ["clang_6_0"] }
 itertools = { version = ">=0.10,<0.14", default-features = false }
 log = { version = "0.4", optional = true }

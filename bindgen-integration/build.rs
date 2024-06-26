@@ -1,7 +1,7 @@
 extern crate bindgen;
 
 use bindgen::callbacks::{
-    DeriveInfo, IntKind, MacroParsingBehavior, ParseCallbacks,
+    DeriveInfo, FnMacroInfo, IntKind, MacroParsingBehavior, ParseCallbacks,
 };
 use bindgen::{Builder, EnumVariation, Formatter};
 use std::collections::HashSet;
@@ -27,7 +27,7 @@ impl ParseCallbacks for MacroCallback {
         MacroParsingBehavior::Default
     }
 
-    fn int_macro(&self, name: &str, _value: i64) -> Option<IntKind> {
+    fn int_macro(&self, name: &str, _value: i128) -> Option<IntKind> {
         match name {
             "TESTMACRO_CUSTOMINTKIND_PATH" => Some(IntKind::Custom {
                 name: "crate::MacroInteger",
@@ -59,43 +59,45 @@ impl ParseCallbacks for MacroCallback {
         }
     }
 
-    fn func_macro(&self, name: &str, value: &[&[u8]]) {
-        match name {
+    fn fn_macro(&self, info: &FnMacroInfo) {
+        let args = info.args();
+        let body = info.body();
+
+        match info.name() {
             "TESTMACRO_NONFUNCTIONAL" => {
-                panic!("func_macro was called for a non-functional macro");
+                panic!("fn_macro was called for a non-functional macro");
             }
-            "TESTMACRO_FUNCTIONAL_NONEMPTY(TESTMACRO_INTEGER)" => {
+            "TESTMACRO_FUNCTIONAL_NONEMPTY" => {
                 // Spaces are inserted into the right-hand side of a functional
                 // macro during reconstruction from the tokenization. This might
                 // change in the future, but it is safe by the definition of a
                 // token in C, whereas leaving the spaces out could change
                 // tokenization.
-                assert_eq!(value, &[b"-" as &[u8], b"TESTMACRO_INTEGER"]);
+                assert_eq!(args, &["TESTMACRO_INTEGER"]);
+                assert_eq!(body, &["-", "TESTMACRO_INTEGER"]);
                 *self.seen_funcs.lock().unwrap() += 1;
             }
-            "TESTMACRO_FUNCTIONAL_EMPTY(TESTMACRO_INTEGER)" => {
-                assert_eq!(value, &[] as &[&[u8]]);
+            "TESTMACRO_FUNCTIONAL_EMPTY" => {
+                assert_eq!(args, &["TESTMACRO_INTEGER"]);
+                assert_eq!(body, &[] as &[&str]);
                 *self.seen_funcs.lock().unwrap() += 1;
             }
-            "TESTMACRO_FUNCTIONAL_TOKENIZED(a,b,c,d,e)" => {
-                assert_eq!(
-                    value,
-                    &[b"a" as &[u8], b"/", b"b", b"c", b"d", b"##", b"e"]
-                );
+            "TESTMACRO_FUNCTIONAL_TOKENIZED" => {
+                assert_eq!(args, &["a", "b", "c", "d", "e"]);
+                assert_eq!(body, &["a", "/", "b", "c", "d", "##", "e"]);
                 *self.seen_funcs.lock().unwrap() += 1;
             }
-            "TESTMACRO_FUNCTIONAL_SPLIT(a,b)" => {
-                assert_eq!(value, &[b"b", b",", b"a"]);
+            "TESTMACRO_FUNCTIONAL_SPLIT" => {
+                assert_eq!(args, &["a", "b"]);
+                assert_eq!(body, &["b", ",", "a"]);
                 *self.seen_funcs.lock().unwrap() += 1;
             }
-            "TESTMACRO_STRING_FUNC_NON_UTF8(x)" => {
-                assert_eq!(
-                    value,
-                    &[b"(" as &[u8], b"x", b"\"\xff\xff\"", b")"]
-                );
+            "TESTMACRO_STRING_FUNC_NON_UTF8" => {
+                assert_eq!(args, &["x"]);
+                assert_eq!(body, &["(", "x", r#""\xFF\xFF""#, ")"]);
                 *self.seen_funcs.lock().unwrap() += 1;
             }
-            _ => {
+            name => {
                 // The system might provide lots of functional macros.
                 // Ensure we did not miss handling one that we meant to handle.
                 assert!(!name.starts_with("TESTMACRO_"), "name = {}", name);
@@ -145,7 +147,7 @@ impl Drop for MacroCallback {
         assert_eq!(
             *self.seen_funcs.lock().unwrap(),
             5,
-            "func_macro handle was not called once for all relevant macros"
+            "fn_macro handle was not called once for all relevant macros"
         );
     }
 }

@@ -281,9 +281,9 @@ pub(crate) mod ast_ty {
         }
     }
 
-    pub(crate) fn int_expr(val: i64) -> TokenStream {
+    pub(crate) fn int_expr(val: i128) -> TokenStream {
         // Don't use quote! { #val } because that adds the type suffix.
-        let val = proc_macro2::Literal::i64_unsuffixed(val);
+        let val = proc_macro2::Literal::i128_unsuffixed(val);
         quote!(#val)
     }
 

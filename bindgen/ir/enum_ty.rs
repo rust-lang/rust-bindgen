@@ -136,6 +136,7 @@ impl Enum {
                         .unwrap_or_else(|| name.clone());
 
                     let comment = cursor.raw_comment();
+
                     variants.push(EnumVariant::new(
                         new_name,
                         name,

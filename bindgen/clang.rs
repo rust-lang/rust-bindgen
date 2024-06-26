@@ -4,16 +4,18 @@
 #![allow(non_upper_case_globals, dead_code)]
 #![deny(clippy::missing_docs_in_private_items)]
 
-use crate::ir::context::BindgenContext;
+use crate::ir::context::{BindgenContext, IncludeLocation};
 use clang_sys::*;
+use std::borrow::Cow;
 use std::cmp;
-
+use std::convert::{TryFrom, TryInto};
+use std::env::current_dir;
 use std::ffi::{CStr, CString};
 use std::fmt;
-use std::fs::OpenOptions;
 use std::hash::Hash;
 use std::hash::Hasher;
-use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong, c_ulonglong};
+use std::os::raw::c_char;
+use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 use std::{mem, ptr, slice};
 
@@ -123,7 +125,7 @@ impl Cursor {
             if manglings.is_null() {
                 return Err(());
             }
-            let count = (*manglings).Count as usize;
+            let count = (*manglings).Count.try_into().unwrap();
 
             let mut result = Vec::with_capacity(count);
             for i in 0..count {
@@ -137,8 +139,7 @@ impl Cursor {
 
     /// Returns whether the cursor refers to a built-in definition.
     pub(crate) fn is_builtin(&self) -> bool {
-        let (file, _, _, _) = self.location().location();
-        file.name().is_none()
+        matches!(self.location(), SourceLocation::Builtin { .. })
     }
 
     /// Get the `Cursor` for this cursor's referent's lexical parent.
@@ -196,7 +197,7 @@ impl Cursor {
     ///
     /// NOTE: This may not return `Some` for partial template specializations,
     /// see #193 and #194.
-    pub(crate) fn num_template_args(&self) -> Option<u32> {
+    pub(crate) fn num_template_args(&self) -> Option<usize> {
         // XXX: `clang_Type_getNumTemplateArguments` is sort of reliable, while
         // `clang_Cursor_getNumTemplateArguments` is totally unreliable.
         // Therefore, try former first, and only fallback to the latter if we
@@ -204,11 +205,9 @@ impl Cursor {
         self.cur_type()
             .num_template_args()
             .or_else(|| {
-                let n: c_int =
-                    unsafe { clang_Cursor_getNumTemplateArguments(self.x) };
-
+                let n = unsafe { clang_Cursor_getNumTemplateArguments(self.x) };
                 if n >= 0 {
-                    Some(n as u32)
+                    Some(n.try_into().unwrap())
                 } else {
                     debug_assert_eq!(n, -1);
                     None
@@ -378,8 +377,31 @@ impl Cursor {
     /// Get the source location for the referent.
     pub(crate) fn location(&self) -> SourceLocation {
         unsafe {
-            SourceLocation {
-                x: clang_getCursorLocation(self.x),
+            let location = clang_getCursorLocation(self.x);
+
+            let mut file = mem::zeroed();
+            let mut line = 0;
+            let mut column = 0;
+            let mut offset = 0;
+            clang_getSpellingLocation(
+                location,
+                &mut file,
+                &mut line,
+                &mut column,
+                &mut offset,
+            );
+
+            if file.is_null() {
+                SourceLocation::Builtin {
+                    offset: offset.try_into().unwrap(),
+                }
+            } else {
+                SourceLocation::File {
+                    file: SourceFile::from_raw(file),
+                    line: line.try_into().unwrap(),
+                    column: column.try_into().unwrap(),
+                    offset: offset.try_into().unwrap(),
+                }
             }
         }
     }
@@ -510,27 +532,11 @@ impl Cursor {
     ) where
         Visitor: FnMut(&mut BindgenContext, Cursor),
     {
-        // FIXME(#2556): The current source order stuff doesn't account well for different levels
-        // of includes, or includes that show up at the same byte offset because they are passed in
-        // via CLI.
-        const SOURCE_ORDER_ENABLED: bool = false;
-        if !SOURCE_ORDER_ENABLED {
-            return self.visit(|c| {
-                visitor(ctx, c);
-                CXChildVisit_Continue
-            });
-        }
-
         let mut children = self.collect_children();
         for child in &children {
             if child.kind() == CXCursor_InclusionDirective {
-                if let Some(included_file) = child.get_included_file_name() {
-                    let location = child.location();
-                    let (source_file, _, _, offset) = location.location();
-
-                    if let Some(source_file) = source_file.name() {
-                        ctx.add_include(source_file, included_file, offset);
-                    }
+                if let Some(included_file) = child.get_included_file() {
+                    ctx.add_include(included_file, child.location());
                 }
             }
         }
@@ -541,53 +547,16 @@ impl Cursor {
         }
     }
 
-    /// Compare source order of two cursors, considering `#include` directives.
-    ///
-    /// Built-in items provided by the compiler (which don't have a source file),
-    /// are sorted first. Remaining files are sorted by their position in the source file.
-    /// If the items' source files differ, they are sorted by the position of the first
-    /// `#include` for their source file. If no source files are included, `None` is returned.
+    /// Compare two cursors according how they appear in source files.
     fn cmp_by_source_order(
         &self,
         other: &Self,
         ctx: &BindgenContext,
     ) -> cmp::Ordering {
-        let (file, _, _, offset) = self.location().location();
-        let (other_file, _, _, other_offset) = other.location().location();
+        let location = self.location();
+        let other_location = other.location();
 
-        let (file, other_file) = match (file.name(), other_file.name()) {
-            (Some(file), Some(other_file)) => (file, other_file),
-            // Built-in definitions should come first.
-            (Some(_), None) => return cmp::Ordering::Greater,
-            (None, Some(_)) => return cmp::Ordering::Less,
-            (None, None) => return cmp::Ordering::Equal,
-        };
-
-        if file == other_file {
-            // Both items are in the same source file, compare by byte offset.
-            return offset.cmp(&other_offset);
-        }
-
-        let include_location = ctx.included_file_location(&file);
-        let other_include_location = ctx.included_file_location(&other_file);
-        match (include_location, other_include_location) {
-            (Some((file2, offset2)), _) if file2 == other_file => {
-                offset2.cmp(&other_offset)
-            }
-            (Some(_), None) => cmp::Ordering::Greater,
-            (_, Some((other_file2, other_offset2))) if file == other_file2 => {
-                offset.cmp(&other_offset2)
-            }
-            (None, Some(_)) => cmp::Ordering::Less,
-            (Some((file2, offset2)), Some((other_file2, other_offset2))) => {
-                if file2 == other_file2 {
-                    offset2.cmp(&other_offset2)
-                } else {
-                    cmp::Ordering::Equal
-                }
-            }
-            (None, None) => cmp::Ordering::Equal,
-        }
+        location.cmp_by_source_order(&other_location, ctx)
     }
 
     /// Collect all of this cursor's children into a vec and return them.
@@ -700,7 +669,7 @@ impl Cursor {
 
     /// Get the width of this cursor's referent bit field, or `None` if the
     /// referent is not a bit field or if the width could not be evaluated.
-    pub(crate) fn bit_width(&self) -> Option<u32> {
+    pub(crate) fn bit_width(&self) -> Option<usize> {
         // It is not safe to check the bit width without ensuring it doesn't
         // depend on a template parameter. See
         // https://github.com/rust-lang/rust-bindgen/issues/2239
@@ -709,11 +678,12 @@ impl Cursor {
         }
 
         unsafe {
-            let w = clang_getFieldDeclBitWidth(self.x);
-            if w == -1 {
-                None
+            let n = clang_getFieldDeclBitWidth(self.x);
+            if n >= 0 {
+                Some(n.try_into().unwrap())
             } else {
-                Some(w as u32)
+                debug_assert_eq!(n, -1);
+                None
             }
         }
     }
@@ -792,7 +762,7 @@ impl Cursor {
                         (kind == CXCursor_UnexposedAttr &&
                             cur.tokens().iter().any(|t| {
                                 t.kind == attr.token_kind &&
-                                    t.spelling() == attr.name
+                                    t.spelling().to_bytes() == attr.name
                             }))
                     {
                         *found_attr = true;
@@ -849,7 +819,9 @@ impl Cursor {
         self.num_args().ok().map(|num| {
             (0..num)
                 .map(|i| Cursor {
-                    x: unsafe { clang_Cursor_getArgument(self.x, i as c_uint) },
+                    x: unsafe {
+                        clang_Cursor_getArgument(self.x, i.try_into().unwrap())
+                    },
                 })
                 .collect()
         })
@@ -860,13 +832,14 @@ impl Cursor {
     ///
     /// Returns Err if the cursor's referent is not a function/method call or
     /// declaration.
-    pub(crate) fn num_args(&self) -> Result<u32, ()> {
+    pub(crate) fn num_args(&self) -> Result<usize, ()> {
         unsafe {
-            let w = clang_Cursor_getNumArguments(self.x);
-            if w == -1 {
-                Err(())
+            let n = clang_Cursor_getNumArguments(self.x);
+            if n >= 0 {
+                Ok(n.try_into().unwrap())
             } else {
-                Ok(w as u32)
+                debug_assert_eq!(n, -1);
+                Err(())
             }
         }
     }
@@ -896,9 +869,9 @@ impl Cursor {
         let offset = unsafe { clang_Cursor_getOffsetOfField(self.x) };
 
         if offset < 0 {
-            Err(LayoutError::from(offset as i32))
+            Err(LayoutError::from(i32::try_from(offset).unwrap()))
         } else {
-            Ok(offset as usize)
+            Ok(offset.try_into().unwrap())
         }
     }
 
@@ -949,25 +922,15 @@ impl Cursor {
         RawTokens::new(self)
     }
 
-    /// Gets the tokens that correspond to that cursor as  `cexpr` tokens.
-    pub(crate) fn cexpr_tokens(self) -> Vec<cexpr::token::Token> {
-        self.tokens()
-            .iter()
-            .filter_map(|token| token.as_cexpr_token())
-            .collect()
-    }
-
     /// Obtain the real path name of a cursor of InclusionDirective kind.
     ///
     /// Returns None if the cursor does not include a file, otherwise the file's full name
-    pub(crate) fn get_included_file_name(&self) -> Option<String> {
-        let file = unsafe { clang_sys::clang_getIncludedFile(self.x) };
+    pub(crate) fn get_included_file(&self) -> Option<SourceFile> {
+        let file = unsafe { clang_getIncludedFile(self.x) };
         if file.is_null() {
             None
         } else {
-            Some(unsafe {
-                cxstring_into_string(clang_sys::clang_getFileName(file))
-            })
+            Some(unsafe { SourceFile::from_raw(file) })
         }
     }
 }
@@ -977,7 +940,7 @@ pub(crate) struct RawTokens<'a> {
     cursor: &'a Cursor,
     tu: CXTranslationUnit,
     tokens: *mut CXToken,
-    token_count: c_uint,
+    token_count: usize,
 }
 
 impl<'a> RawTokens<'a> {
@@ -991,7 +954,7 @@ impl<'a> RawTokens<'a> {
             cursor,
             tu,
             tokens,
-            token_count,
+            token_count: token_count.try_into().unwrap(),
         }
     }
 
@@ -999,7 +962,7 @@ impl<'a> RawTokens<'a> {
         if self.tokens.is_null() {
             return &[];
         }
-        unsafe { slice::from_raw_parts(self.tokens, self.token_count as usize) }
+        unsafe { slice::from_raw_parts(self.tokens, self.token_count) }
     }
 
     /// Get an iterator over these tokens.
@@ -1018,7 +981,7 @@ impl<'a> Drop for RawTokens<'a> {
                 clang_disposeTokens(
                     self.tu,
                     self.tokens,
-                    self.token_count as c_uint,
+                    self.token_count.try_into().unwrap(),
                 );
             }
         }
@@ -1040,36 +1003,9 @@ pub(crate) struct ClangToken {
 }
 
 impl ClangToken {
-    /// Get the token spelling, without being converted to utf-8.
-    pub(crate) fn spelling(&self) -> &[u8] {
-        let c_str = unsafe {
-            CStr::from_ptr(clang_getCString(self.spelling) as *const _)
-        };
-        c_str.to_bytes()
-    }
-
-    /// Converts a ClangToken to a `cexpr` token if possible.
-    pub(crate) fn as_cexpr_token(&self) -> Option<cexpr::token::Token> {
-        use cexpr::token;
-
-        let kind = match self.kind {
-            CXToken_Punctuation => token::Kind::Punctuation,
-            CXToken_Literal => token::Kind::Literal,
-            CXToken_Identifier => token::Kind::Identifier,
-            CXToken_Keyword => token::Kind::Keyword,
-            // NB: cexpr is not too happy about comments inside
-            // expressions, so we strip them down here.
-            CXToken_Comment => return None,
-            _ => {
-                warn!("Found unexpected token kind: {:?}", self);
-                return None;
-            }
-        };
-
-        Some(token::Token {
-            kind,
-            raw: self.spelling().to_vec().into_boxed_slice(),
-        })
+    /// Returns the token spelling.
+    pub(crate) fn spelling(&self) -> &CStr {
+        unsafe { CStr::from_ptr(clang_getCString(self.spelling) as *const _) }
     }
 }
 
@@ -1185,11 +1121,13 @@ pub(crate) enum LayoutError {
     /// Asked for the layout of a field in a type that does not have such a
     /// field.
     InvalidFieldName,
+    /// The type is undeduced.
+    Undeduced,
     /// An unknown layout error.
     Unknown,
 }
 
-impl ::std::convert::From<i32> for LayoutError {
+impl From<i32> for LayoutError {
     fn from(val: i32) -> Self {
         use self::LayoutError::*;
 
@@ -1199,6 +1137,7 @@ impl ::std::convert::From<i32> for LayoutError {
             CXTypeLayoutError_Dependent => Dependent,
             CXTypeLayoutError_NotConstantSize => NotConstantSize,
             CXTypeLayoutError_InvalidFieldName => InvalidFieldName,
+            CXTypeLayoutError_Undeduced => Undeduced,
             _ => Unknown,
         }
     }
@@ -1270,41 +1209,10 @@ impl Type {
         self.canonical_type() == *self
     }
 
-    #[inline]
-    fn clang_size_of(&self, ctx: &BindgenContext) -> c_longlong {
-        match self.kind() {
-            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40975
-            CXType_RValueReference | CXType_LValueReference => {
-                ctx.target_pointer_size() as c_longlong
-            }
-            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40813
-            CXType_Auto if self.is_non_deductible_auto_type() => -6,
-            _ => unsafe { clang_Type_getSizeOf(self.x) },
-        }
-    }
-
-    #[inline]
-    fn clang_align_of(&self, ctx: &BindgenContext) -> c_longlong {
-        match self.kind() {
-            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40975
-            CXType_RValueReference | CXType_LValueReference => {
-                ctx.target_pointer_size() as c_longlong
-            }
-            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40813
-            CXType_Auto if self.is_non_deductible_auto_type() => -6,
-            _ => unsafe { clang_Type_getAlignOf(self.x) },
-        }
-    }
-
     /// What is the size of this type? Paper over invalid types by returning `0`
     /// for them.
     pub(crate) fn size(&self, ctx: &BindgenContext) -> usize {
-        let val = self.clang_size_of(ctx);
-        if val < 0 {
-            0
-        } else {
-            val as usize
-        }
+        self.fallible_size(ctx).unwrap_or(0)
     }
 
     /// What is the size of this type?
@@ -1312,23 +1220,30 @@ impl Type {
         &self,
         ctx: &BindgenContext,
     ) -> Result<usize, LayoutError> {
-        let val = self.clang_size_of(ctx);
-        if val < 0 {
-            Err(LayoutError::from(val as i32))
-        } else {
-            Ok(val as usize)
+        match self.kind() {
+            // Work-around for https://github.com/llvm/llvm-project/issues/40320.
+            CXType_RValueReference | CXType_LValueReference => {
+                Ok(ctx.target_pointer_size())
+            }
+            // Work-around for https://github.com/llvm/llvm-project/issues/40159.
+            CXType_Auto if self.is_non_deductible_auto_type() => {
+                Err(LayoutError::Undeduced)
+            }
+            _ => {
+                let size = unsafe { clang_Type_getSizeOf(self.x) };
+                if size < 0 {
+                    Err(LayoutError::from(i32::try_from(size).unwrap()))
+                } else {
+                    Ok(size.try_into().unwrap())
+                }
+            }
         }
     }
 
     /// What is the alignment of this type? Paper over invalid types by
     /// returning `0`.
     pub(crate) fn align(&self, ctx: &BindgenContext) -> usize {
-        let val = self.clang_align_of(ctx);
-        if val < 0 {
-            0
-        } else {
-            val as usize
-        }
+        self.fallible_align(ctx).unwrap_or(0)
     }
 
     /// What is the alignment of this type?
@@ -1336,11 +1251,23 @@ impl Type {
         &self,
         ctx: &BindgenContext,
     ) -> Result<usize, LayoutError> {
-        let val = self.clang_align_of(ctx);
-        if val < 0 {
-            Err(LayoutError::from(val as i32))
-        } else {
-            Ok(val as usize)
+        match self.kind() {
+            // Work-around for https://github.com/llvm/llvm-project/issues/40320.
+            CXType_RValueReference | CXType_LValueReference => {
+                Ok(ctx.target_pointer_size())
+            }
+            // Work-around for https://github.com/llvm/llvm-project/issues/40159.
+            CXType_Auto if self.is_non_deductible_auto_type() => {
+                Err(LayoutError::Undeduced)
+            }
+            _ => {
+                let alignment = unsafe { clang_Type_getAlignOf(self.x) };
+                if alignment < 0 {
+                    Err(LayoutError::from(i32::try_from(alignment).unwrap()))
+                } else {
+                    Ok(alignment.try_into().unwrap())
+                }
+            }
         }
     }
 
@@ -1358,10 +1285,10 @@ impl Type {
 
     /// Get the number of template arguments this type has, or `None` if it is
     /// not some kind of template.
-    pub(crate) fn num_template_args(&self) -> Option<u32> {
+    pub(crate) fn num_template_args(&self) -> Option<usize> {
         let n = unsafe { clang_Type_getNumTemplateArguments(self.x) };
         if n >= 0 {
-            Some(n as u32)
+            Some(n.try_into().unwrap())
         } else {
             debug_assert_eq!(n, -1);
             None
@@ -1385,7 +1312,9 @@ impl Type {
         self.num_args().ok().map(|num| {
             (0..num)
                 .map(|i| Type {
-                    x: unsafe { clang_getArgType(self.x, i as c_uint) },
+                    x: unsafe {
+                        clang_getArgType(self.x, i.try_into().unwrap())
+                    },
                 })
                 .collect()
         })
@@ -1394,13 +1323,14 @@ impl Type {
     /// Given that this type is a function prototype, return the number of arguments it takes.
     ///
     /// Returns Err if the type is not a function prototype.
-    pub(crate) fn num_args(&self) -> Result<u32, ()> {
+    pub(crate) fn num_args(&self) -> Result<usize, ()> {
         unsafe {
-            let w = clang_getNumArgTypes(self.x);
-            if w == -1 {
-                Err(())
+            let n = clang_getNumArgTypes(self.x);
+            if n >= 0 {
+                Ok(n.try_into().unwrap())
             } else {
-                Ok(w as u32)
+                debug_assert_eq!(n, -1);
+                Err(())
             }
         }
     }
@@ -1441,10 +1371,11 @@ impl Type {
     /// Given that this type is an array or vector type, return its number of
     /// elements.
     pub(crate) fn num_elements(&self) -> Option<usize> {
-        let num_elements_returned = unsafe { clang_getNumElements(self.x) };
-        if num_elements_returned != -1 {
-            Some(num_elements_returned as usize)
+        let n = unsafe { clang_getNumElements(self.x) };
+        if n >= 0 {
+            Some(n.try_into().unwrap())
         } else {
+            debug_assert_eq!(n, -1);
             None
         }
     }
@@ -1569,18 +1500,23 @@ impl CanonicalTypeDeclaration {
 /// An iterator for a type's template arguments.
 pub(crate) struct TypeTemplateArgIterator {
     x: CXType,
-    length: u32,
-    index: u32,
+    length: usize,
+    index: usize,
 }
 
 impl Iterator for TypeTemplateArgIterator {
     type Item = Type;
     fn next(&mut self) -> Option<Type> {
         if self.index < self.length {
-            let idx = self.index as c_uint;
+            let idx = self.index;
             self.index += 1;
             Some(Type {
-                x: unsafe { clang_Type_getTemplateArgumentAsType(self.x, idx) },
+                x: unsafe {
+                    clang_Type_getTemplateArgumentAsType(
+                        self.x,
+                        idx.try_into().unwrap(),
+                    )
+                },
             })
         } else {
             None
@@ -1591,40 +1527,125 @@ impl Iterator for TypeTemplateArgIterator {
 impl ExactSizeIterator for TypeTemplateArgIterator {
     fn len(&self) -> usize {
         assert!(self.index <= self.length);
-        (self.length - self.index) as usize
+        self.length - self.index
     }
 }
 
-/// A `SourceLocation` is a file, line, column, and byte offset location for
-/// some source text.
-pub(crate) struct SourceLocation {
-    x: CXSourceLocation,
+/// A location of some source code.
+#[derive(Clone)]
+pub(crate) enum SourceLocation {
+    /// Location of a built-in.
+    Builtin {
+        /// Offset.
+        offset: usize,
+    },
+    /// Location in a source file.
+    File {
+        /// The source file.
+        file: SourceFile,
+        /// Line in the source file.
+        line: usize,
+        /// Column in the source file.
+        column: usize,
+        /// Offset in the source file.
+        offset: usize,
+    },
 }
 
 impl SourceLocation {
-    /// Get the (file, line, column, byte offset) tuple for this source
-    /// location.
-    pub(crate) fn location(&self) -> (File, usize, usize, usize) {
-        unsafe {
-            let mut file = mem::zeroed();
-            let mut line = 0;
-            let mut col = 0;
-            let mut off = 0;
-            clang_getFileLocation(
-                self.x, &mut file, &mut line, &mut col, &mut off,
-            );
-            (File { x: file }, line as usize, col as usize, off as usize)
+    /// Locations of built-in items provided by the compiler (which don't have a source file),
+    /// are sorted first. Remaining locations are sorted by their position in the source file.
+    /// If the locations' source files differ, they are sorted by the position of where the
+    /// source files are first transitively included, see `IncludeLocation::cmp_by_source_order`.
+    pub fn cmp_by_source_order(
+        &self,
+        other: &Self,
+        ctx: &BindgenContext,
+    ) -> cmp::Ordering {
+        match (self, other) {
+            (
+                SourceLocation::Builtin { offset },
+                SourceLocation::Builtin {
+                    offset: other_offset,
+                },
+            ) => offset.cmp(other_offset),
+            // Built-ins come first.
+            (SourceLocation::Builtin { .. }, _) => cmp::Ordering::Less,
+            (_, SourceLocation::Builtin { .. }) => {
+                other.cmp_by_source_order(self, ctx).reverse()
+            }
+            (
+                SourceLocation::File { file, offset, .. },
+                SourceLocation::File {
+                    file: other_file,
+                    offset: other_offset,
+                    ..
+                },
+            ) => {
+                let file_path = file.path();
+                let other_file_path = other_file.path();
+
+                if file_path == other_file_path {
+                    return offset.cmp(other_offset);
+                }
+
+                // If `file` is transitively included via `ancestor_file`,
+                // find the offset of the include directive in `ancestor_file`.
+                let offset_in_ancestor =
+                    |file_path: &Path, ancestor_file_path: &Path| {
+                        let mut file_path = Cow::Borrowed(file_path);
+                        while file_path != ancestor_file_path {
+                            let include_location =
+                                ctx.include_location(file_path);
+                            file_path = if let IncludeLocation::File {
+                                file,
+                                offset,
+                                ..
+                            } = include_location
+                            {
+                                let file_path = Cow::Owned(file.path());
+
+                                if file_path == ancestor_file_path {
+                                    return Some(offset);
+                                }
+
+                                file_path
+                            } else {
+                                break;
+                            }
+                        }
+
+                        None
+                    };
+
+                if let Some(offset) =
+                    offset_in_ancestor(&file_path, &other_file_path)
+                {
+                    return offset.cmp(other_offset);
+                }
+
+                if let Some(other_offset) =
+                    offset_in_ancestor(&other_file_path, &file_path)
+                {
+                    return offset.cmp(other_offset);
+                }
+
+                // If the source files are siblings, compare their include locations.
+                let parent = ctx.include_location(file_path);
+                let other_parent = ctx.include_location(&other_file_path);
+                parent.cmp_by_source_order(other_parent, ctx)
+            }
         }
     }
 }
 
 impl fmt::Display for SourceLocation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let (file, line, col, _) = self.location();
-        if let Some(name) = file.name() {
-            write!(f, "{}:{}:{}", name, line, col)
-        } else {
-            "builtin definitions".fmt(f)
+        match self {
+            Self::Builtin { .. } => "built-in".fmt(f),
+            Self::File {
+                file, line, column, ..
+            } => write!(f, "{}:{}:{}", file.path().display(), line, column),
         }
     }
 }
@@ -1652,7 +1673,9 @@ impl Comment {
     pub(crate) fn get_children(&self) -> CommentChildrenIterator {
         CommentChildrenIterator {
             parent: self.x,
-            length: unsafe { clang_Comment_getNumChildren(self.x) },
+            length: unsafe {
+                clang_Comment_getNumChildren(self.x).try_into().unwrap()
+            },
             index: 0,
         }
     }
@@ -1667,7 +1690,9 @@ impl Comment {
     pub(crate) fn get_tag_attrs(&self) -> CommentAttributesIterator {
         CommentAttributesIterator {
             x: self.x,
-            length: unsafe { clang_HTMLStartTag_getNumAttrs(self.x) },
+            length: unsafe {
+                clang_HTMLStartTag_getNumAttrs(self.x).try_into().unwrap()
+            },
             index: 0,
         }
     }
@@ -1676,8 +1701,8 @@ impl Comment {
 /// An iterator for a comment's children
 pub(crate) struct CommentChildrenIterator {
     parent: CXComment,
-    length: c_uint,
-    index: c_uint,
+    length: usize,
+    index: usize,
 }
 
 impl Iterator for CommentChildrenIterator {
@@ -1687,7 +1712,9 @@ impl Iterator for CommentChildrenIterator {
             let idx = self.index;
             self.index += 1;
             Some(Comment {
-                x: unsafe { clang_Comment_getChild(self.parent, idx) },
+                x: unsafe {
+                    clang_Comment_getChild(self.parent, idx.try_into().unwrap())
+                },
             })
         } else {
             None
@@ -1706,15 +1733,15 @@ pub(crate) struct CommentAttribute {
 /// An iterator for a comment's attributes
 pub(crate) struct CommentAttributesIterator {
     x: CXComment,
-    length: c_uint,
-    index: c_uint,
+    length: usize,
+    index: usize,
 }
 
 impl Iterator for CommentAttributesIterator {
     type Item = CommentAttribute;
     fn next(&mut self) -> Option<CommentAttribute> {
         if self.index < self.length {
-            let idx = self.index;
+            let idx = self.index.try_into().unwrap();
             self.index += 1;
             Some(CommentAttribute {
                 name: unsafe {
@@ -1735,31 +1762,62 @@ impl Iterator for CommentAttributesIterator {
 }
 
 /// A source file.
-pub(crate) struct File {
-    x: CXFile,
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct SourceFile {
+    name: Box<str>,
 }
 
-impl File {
-    /// Get the name of this source file.
-    pub(crate) fn name(&self) -> Option<String> {
-        if self.x.is_null() {
-            return None;
+impl SourceFile {
+    /// Creates a new `SourceFile` from a file name.
+    #[inline]
+    pub fn new<P: AsRef<str>>(name: P) -> Self {
+        Self {
+            name: name.as_ref().to_owned().into_boxed_str(),
         }
-        Some(unsafe { cxstring_into_string(clang_getFileName(self.x)) })
+    }
+
+    /// Creates a new `SourceFile` from a raw pointer.
+    ///
+    /// # Safety
+    ///
+    /// `file` must point to a valid `CXFile`.
+    pub unsafe fn from_raw(file: CXFile) -> Self {
+        let name = unsafe { cxstring_into_string(clang_getFileName(file)) };
+
+        Self::new(name)
+    }
+
+    #[inline]
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Get the path of this source file.
+    pub fn path(&self) -> PathBuf {
+        let path = Path::new(self.name());
+        if path.is_relative() {
+            current_dir()
+                .expect("Cannot retrieve current directory")
+                .join(path)
+        } else {
+            path.to_owned()
+        }
     }
 }
 
-fn cxstring_to_string_leaky(s: CXString) -> String {
+unsafe fn cxstring_to_string_leaky(s: CXString) -> String {
     if s.data.is_null() {
-        return "".to_owned();
+        Cow::Borrowed("")
+    } else {
+        let c_str = CStr::from_ptr(clang_getCString(s) as *const _);
+        c_str.to_string_lossy()
     }
-    let c_str = unsafe { CStr::from_ptr(clang_getCString(s) as *const _) };
-    c_str.to_string_lossy().into_owned()
+    .into_owned()
 }
 
-fn cxstring_into_string(s: CXString) -> String {
+unsafe fn cxstring_into_string(s: CXString) -> String {
     let ret = cxstring_to_string_leaky(s);
-    unsafe { clang_disposeString(s) };
+    clang_disposeString(s);
     ret
 }
 
@@ -1779,7 +1837,7 @@ impl Index {
     pub(crate) fn new(pch: bool, diag: bool) -> Index {
         unsafe {
             Index {
-                x: clang_createIndex(pch as c_int, diag as c_int),
+                x: clang_createIndex(pch.into(), diag.into()),
             }
         }
     }
@@ -1833,9 +1891,9 @@ impl TranslationUnit {
                 ix.x,
                 fname.as_ptr(),
                 c_args.as_ptr(),
-                c_args.len() as c_int,
+                c_args.len().try_into().unwrap(),
                 c_unsaved.as_mut_ptr(),
-                c_unsaved.len() as c_uint,
+                c_unsaved.len().try_into().unwrap(),
                 opts,
             )
         };
@@ -1850,11 +1908,11 @@ impl TranslationUnit {
     /// unit.
     pub(crate) fn diags(&self) -> Vec<Diagnostic> {
         unsafe {
-            let num = clang_getNumDiagnostics(self.x) as usize;
+            let num = clang_getNumDiagnostics(self.x);
             let mut diags = vec![];
             for i in 0..num {
                 diags.push(Diagnostic {
-                    x: clang_getDiagnostic(self.x, i as c_uint),
+                    x: clang_getDiagnostic(self.x, i),
                 });
             }
             diags
@@ -1868,6 +1926,15 @@ impl TranslationUnit {
                 x: clang_getTranslationUnitCursor(self.x),
             }
         }
+    }
+
+    /// Get the source file of this.
+    pub fn file(&self) -> SourceFile {
+        let name = unsafe {
+            cxstring_into_string(clang_getTranslationUnitSpelling(self.x))
+        };
+
+        SourceFile::new(name)
     }
 
     /// Save a translation unit to the given file.
@@ -1902,91 +1969,6 @@ impl Drop for TranslationUnit {
         unsafe {
             clang_disposeTranslationUnit(self.x);
         }
-    }
-}
-
-/// Translation unit used for macro fallback parsing
-pub(crate) struct FallbackTranslationUnit {
-    file_path: String,
-    header_path: String,
-    pch_path: String,
-    idx: Box<Index>,
-    tu: TranslationUnit,
-}
-
-impl fmt::Debug for FallbackTranslationUnit {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        write!(fmt, "FallbackTranslationUnit {{ }}")
-    }
-}
-
-impl FallbackTranslationUnit {
-    /// Create a new fallback translation unit
-    pub(crate) fn new(
-        file: String,
-        header_path: String,
-        pch_path: String,
-        c_args: &[Box<str>],
-    ) -> Option<Self> {
-        // Create empty file
-        OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .open(&file)
-            .ok()?;
-
-        let f_index = Box::new(Index::new(true, false));
-        let f_translation_unit = TranslationUnit::parse(
-            &f_index,
-            &file,
-            c_args,
-            &[],
-            CXTranslationUnit_None,
-        )?;
-        Some(FallbackTranslationUnit {
-            file_path: file,
-            header_path,
-            pch_path,
-            tu: f_translation_unit,
-            idx: f_index,
-        })
-    }
-
-    /// Get reference to underlying translation unit.
-    pub(crate) fn translation_unit(&self) -> &TranslationUnit {
-        &self.tu
-    }
-
-    /// Reparse a translation unit.
-    pub(crate) fn reparse(
-        &mut self,
-        unsaved_contents: &str,
-    ) -> Result<(), CXErrorCode> {
-        let unsaved = &[UnsavedFile::new(&self.file_path, unsaved_contents)];
-        let mut c_unsaved: Vec<CXUnsavedFile> =
-            unsaved.iter().map(|f| f.x).collect();
-        let ret = unsafe {
-            clang_reparseTranslationUnit(
-                self.tu.x,
-                unsaved.len() as c_uint,
-                c_unsaved.as_mut_ptr(),
-                clang_defaultReparseOptions(self.tu.x),
-            )
-        };
-        if ret != 0 {
-            Err(ret)
-        } else {
-            Ok(())
-        }
-    }
-}
-
-impl Drop for FallbackTranslationUnit {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_file(&self.file_path);
-        let _ = std::fs::remove_file(&self.header_path);
-        let _ = std::fs::remove_file(&self.pch_path);
     }
 }
 
@@ -2037,7 +2019,7 @@ impl UnsavedFile {
         let x = CXUnsavedFile {
             Filename: name.as_ptr(),
             Contents: contents.as_ptr(),
-            Length: contents.as_bytes().len() as c_ulong,
+            Length: contents.as_bytes().len().try_into().unwrap(),
         };
         UnsavedFile { x, name, contents }
     }
@@ -2351,29 +2333,20 @@ impl EvalResult {
     }
 
     /// Try to get back the result as an integer.
-    pub(crate) fn as_int(&self) -> Option<i64> {
+    pub(crate) fn as_int(&self) -> Option<i128> {
         if self.kind() != CXEval_Int {
             return None;
         }
 
         if unsafe { clang_EvalResult_isUnsignedInt(self.x) } != 0 {
             let value = unsafe { clang_EvalResult_getAsUnsigned(self.x) };
-            if value > i64::MAX as c_ulonglong {
-                return None;
-            }
-
-            return Some(value as i64);
+            #[allow(clippy::unnecessary_fallible_conversions)]
+            return i128::try_from(value).ok();
         }
 
         let value = unsafe { clang_EvalResult_getAsLongLong(self.x) };
-        if value > i64::MAX as c_longlong {
-            return None;
-        }
-        if value < i64::MIN as c_longlong {
-            return None;
-        }
-        #[allow(clippy::unnecessary_cast)]
-        Some(value as i64)
+        #[allow(clippy::unnecessary_fallible_conversions)]
+        i128::try_from(value).ok()
     }
 
     /// Evaluates the expression as a literal string, that may or may not be
@@ -2448,7 +2421,7 @@ impl TargetInfo {
 
         TargetInfo {
             triple,
-            pointer_width: pointer_width as usize,
+            pointer_width: pointer_width.try_into().unwrap(),
             abi,
         }
     }
