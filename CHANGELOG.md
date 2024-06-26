@@ -207,6 +207,7 @@
 - Add a complex macro fallback API (#2779).
 - Add option to use DST structs for flexible arrays (--flexarray-dst, #2772).
 - Add option to dynamically load variables (#2812).
+- Add option in CLI to use rustified non-exhaustive enums (--rustified-non-exhaustive-enum, #2847).
 ## Changed
 - Remove which and lazy-static dependencies (#2809, #2817).
 - Generate compile-time layout tests (#2787).
