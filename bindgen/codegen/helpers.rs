@@ -131,6 +131,7 @@ pub(crate) mod ast_ty {
     use crate::ir::function::FunctionSig;
     use crate::ir::layout::Layout;
     use crate::ir::ty::{FloatKind, IntKind};
+    use crate::RustTarget;
     use proc_macro2::TokenStream;
     use std::str::FromStr;
 
@@ -312,35 +313,44 @@ pub(crate) mod ast_ty {
         }
 
         let prefix = ctx.trait_prefix();
+        let rust_target = ctx.options().rust_target;
 
         if f.is_nan() {
-            return Ok(quote! {
-                if rust_target >= RustTarget::Stable_1_43 {
-                    f64::NAN
-                } else {
-                    ::#prefix::f64::NAN
-                }
-            });
-        }
-
-        if f.is_infinite() {
-            return Ok(if f.is_sign_positive() {
+            let tokens = if rust_target >= RustTarget::Stable_1_43 {
                 quote! {
-                    if rust_target >= RustTarget::Stable_1_43 {
-                        f64::INFINITY
-                    } else {
-                        ::#prefix::f64::INFINITY
-                    }
+                    f64::NAN
                 }
             } else {
                 quote! {
-                    if rust_target >= RustTarget::Stable_1_43 {
+                    ::#prefix::f64::NAN
+                }
+            };
+            return Ok(tokens);
+        }
+
+        if f.is_infinite() {
+            let tokens = if f.is_sign_positive() {
+                if rust_target >= RustTarget::Stable_1_43 {
+                    quote! {
+                        f64::INFINITY
+                    }
+                } else {
+                    quote! {
+                        ::#prefix::f64::INFINITY
+                    }
+                }
+            } else { // sign_negative
+                if rust_target >= RustTarget::Stable_1_43 {
+                    quote! {
                         f64::NEG_INFINITY
-                    } else {
+                    }
+                } else {
+                    quote! {
                         ::#prefix::f64::NEG_INFINITY
                     }
                 }
-            });
+            };
+            return Ok(tokens);
         }
 
         warn!("Unknown non-finite float number: {:?}", f);
