@@ -301,27 +301,44 @@ pub(crate) mod ast_ty {
         }
     }
 
-    pub(crate) fn float_expr(f: f64) -> Result<TokenStream, ()> {
+    pub(crate) fn float_expr(
+        ctx: &BindgenContext,
+        f: f64,
+    ) -> Result<TokenStream, ()> {
         if f.is_finite() {
             let val = proc_macro2::Literal::f64_unsuffixed(f);
 
             return Ok(quote!(#val));
         }
 
+        let prefix = ctx.trait_prefix();
+
         if f.is_nan() {
             return Ok(quote! {
-                f64::NAN
+                if rust_target >= RustTarget::Stable_1_43 {
+                    f64::NAN
+                } else {
+                    ::#prefix::f64::NAN
+                }
             });
         }
 
         if f.is_infinite() {
             return Ok(if f.is_sign_positive() {
                 quote! {
-                    f64::INFINITY
+                    if rust_target >= RustTarget::Stable_1_43 {
+                        f64::INFINITY
+                    } else {
+                        ::#prefix::f64::INFINITY
+                    }
                 }
             } else {
                 quote! {
-                    f64::NEG_INFINITY
+                    if rust_target >= RustTarget::Stable_1_43 {
+                        f64::NEG_INFINITY
+                    } else {
+                        ::#prefix::f64::NEG_INFINITY
+                    }
                 }
             });
         }
