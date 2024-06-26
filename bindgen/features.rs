@@ -107,7 +107,7 @@ define_rust_targets! {
     Stable_1_59(59) => { const_cstr: #54745 },
     Stable_1_47(47) => { larger_arrays: #74060 },
     Stable_1_43(43) => { non_exhaustive: #44109 },
-    Stable_1_40(40) => {},
+    Stable_1_40(40) => { associated_constants: #68952},
     Stable_1_36(36) => { maybe_uninit: #60445 },
     Stable_1_33(33) => { repr_packed_n: #57049 },
     #[deprecated]
