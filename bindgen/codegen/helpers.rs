@@ -339,7 +339,7 @@ pub(crate) mod ast_ty {
                         ::#prefix::f64::INFINITY
                     }
                 }
-            } else { // sign_negative
+            } else {
                 if rust_target >= RustTarget::Stable_1_43 {
                     quote! {
                         f64::NEG_INFINITY
