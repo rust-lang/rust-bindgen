@@ -44,6 +44,9 @@ mod clang;
 mod diagnostics;
 mod features;
 mod ir;
+
+pub use ir::comp::CompKind;
+
 mod parse;
 mod regex_set;
 

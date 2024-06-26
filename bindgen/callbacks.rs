@@ -1,9 +1,11 @@
 //! A public API for more fine-grained customization of bindgen behavior.
 
 pub use crate::ir::analysis::DeriveTrait;
+use crate::ir::comp::CompKind;
 pub use crate::ir::derive::CanDerive as ImplementsTrait;
 pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
 pub use crate::ir::int::IntKind;
+use proc_macro2::Ident;
 use std::fmt;
 
 /// An enum to allow ignoring parsing of macros.
@@ -154,6 +156,27 @@ pub trait ParseCallbacks: fmt::Debug {
     fn wrap_as_variadic_fn(&self, _name: &str) -> Option<String> {
         None
     }
+
+    /// This will get called everytime a composite type is found with some information about it
+    fn new_composite_found(
+        &self,
+        _id: usize,
+        _kind: CompKind,
+        _original_name: Option<&str>,
+        _final_ident: &Ident,
+    ) {
+    }
+
+    /// This will get called everytime an alias is found with some information about it
+    fn new_alias_found(
+        &self,
+        _id: usize,
+        _alias_name: &Ident,
+        _alias_for: usize,
+    ) {
+    }
+
+    // TODO add callback for ResolvedTypeRef
 }
 
 /// Relevant information about a type to which new derive attributes will be added using
