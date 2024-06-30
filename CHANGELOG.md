@@ -217,6 +217,7 @@
   enabling it by default for `bindgen-cli` (#2789) .
 - Fix `--allowlist-item` so anonymous enums are no longer ignored.
 - Use clang_getFileLocation instead of clang_getSpellingLocation to fix clang-trunk (#2824)
+- Fix generated constants: `f64::INFINITY`, `f64::NEG_ INFINITY`, `f64::NAN`. 
 
 ## Security
 
