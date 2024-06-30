@@ -37,7 +37,9 @@ and introduce yourself.
   - [Updating the changelog](#updating-the-changelog)
   - [Merge to `main`](#merge-to-main)
   - [Tag and publish](#tag-and-publish)
-  - [Create a new release on GitHub](create-a-new-relese-on-github)
+  - [Create a new release on Github](#create-a-new-release-on-github)
+  - [What to do if a Github release fails](#what-to-do-if-a-github-release-fails)
+  - [Create a new crates.io release](#create-a-new-cratesio-release)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
