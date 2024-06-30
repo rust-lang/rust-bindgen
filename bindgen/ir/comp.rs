@@ -948,7 +948,7 @@ pub(crate) struct Base {
     pub(crate) kind: BaseKind,
     /// Name of the field in which this base should be stored.
     pub(crate) field_name: String,
-    /// Whether this base is inherited from publically.
+    /// Whether this base is inherited from publicly.
     pub(crate) is_pub: bool,
 }
 
@@ -978,7 +978,7 @@ impl Base {
         true
     }
 
-    /// Whether this base is inherited from publically.
+    /// Whether this base is inherited from publicly.
     pub(crate) fn is_public(&self) -> bool {
         self.is_pub
     }
