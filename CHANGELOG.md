@@ -448,7 +448,7 @@ This version was skipped due to some problems on the release workflow.
  * The `ParseCallbacks::generated_name_override` method now receives `ItemInfo<'_>` as
    argument instead of a `&str`.
  * Updated the `clang-sys` crate version to 1.4.0 to support clang 15.
- * The return type is now ommited in signatures of functions returning `void`.
+ * The return type is now omitted in signatures of functions returning `void`.
  * Updated the `clap` dependency for `bindgen-cli` to 4.
  * Rewrote the `bindgen-cli` argument parser which could introduce unexpected
    behavior changes.
@@ -1485,7 +1485,7 @@ Released 2017/10/27
   We <3 folks who [help us find and fix issues via fuzzing][fuzzing]! *hint
   hint*
 
-* Added experimental support for the `thiscall` ABI when targetting Rust
+* Added experimental support for the `thiscall` ABI when targeting Rust
   nightly. [#1065][]
 
 ## Changed

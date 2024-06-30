@@ -376,7 +376,7 @@ struct BindgenCommand {
     /// Prefix the name of exported symbols.
     #[arg(long)]
     prefix_link_name: Option<String>,
-    /// Makes generated bindings `pub` only for items if the items are publically accessible in C++.
+    /// Makes generated bindings `pub` only for items if the items are publicly accessible in C++.
     #[arg(long)]
     respect_cxx_access_specs: bool,
     /// Always translate enum integer types to native Rust integer types.
