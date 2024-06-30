@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install stable
         uses: actions-rs/toolchain@v1
@@ -43,7 +43,7 @@ jobs:
   msrv:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install msrv for lib
         uses: dtolnay/rust-toolchain@master
@@ -70,7 +70,7 @@ jobs:
     env:
       RUSTFLAGS: -D warnings
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install stable
         uses: actions-rs/toolchain@v1
@@ -87,7 +87,7 @@ jobs:
     env:
       RUSTDOCFLAGS: -D warnings
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install stable
         uses: actions-rs/toolchain@v1
@@ -105,7 +105,7 @@ jobs:
   quickchecking:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install stable
         uses: actions-rs/toolchain@v1
@@ -124,7 +124,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-12]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install stable
         uses: actions-rs/toolchain@v1
@@ -187,7 +187,7 @@ jobs:
             no_default_features: 0
             feature_extra_asserts: 0
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install multiarch packages
         if: matrix.target.debian
@@ -234,7 +234,7 @@ jobs:
     env:
       RUSTFLAGS: -D warnings
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Install nightly
         uses: actions-rs/toolchain@v1
@@ -249,7 +249,7 @@ jobs:
   test-book:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # NOTE(emilio): Change deploy-book as well if you change this.
       - name: Test book
