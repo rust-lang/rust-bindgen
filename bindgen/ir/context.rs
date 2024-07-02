@@ -19,7 +19,7 @@ use super::module::{Module, ModuleKind};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
-use crate::clang::{self, ABIKind, Cursor};
+use crate::clang::{self, ABIKind, Cursor, SourceFile, SourceLocation};
 use crate::codegen::CodegenError;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
@@ -31,8 +31,8 @@ use std::cell::{Cell, RefCell};
 use std::collections::{BTreeSet, HashMap as StdHashMap};
 use std::fs::OpenOptions;
 use std::io::Write;
-use std::mem;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::{cmp, mem};
 
 /// An identifier for some kind of IR item.
 #[derive(Debug, Copy, Clone, Eq, PartialOrd, Ord, Hash)]
@@ -307,6 +307,108 @@ enum TypeKey {
     Declaration(Cursor),
 }
 
+/// Specifies where a header was included from.
+#[derive(Debug)]
+pub(crate) enum IncludeLocation {
+    /// Include location of the main header file, i.e. none.
+    Main,
+    /// Include location of a header specified as a CLI argument.
+    Cli {
+        /// Offset of the include location.
+        offset: usize,
+    },
+    /// Include location of a header included with an `#include` directive.
+    File {
+        /// Source file name of the include location.
+        file: SourceFile,
+        /// Line of the include location.
+        line: usize,
+        /// Column of the include location.
+        column: usize,
+        /// Offset of the include location.
+        offset: usize,
+    },
+}
+
+impl IncludeLocation {
+    /// Header include locations are sorted in the order they appear in, which means
+    /// headers provided as command line arguments (`-include`) are sorted first,
+    /// followed by the main header file, and lastly headers included with `#include`
+    /// directives.
+    ///
+    /// Nested headers are sorted according to where they were transitively included first.
+    pub fn cmp_by_source_order(
+        &self,
+        other: &Self,
+        ctx: &BindgenContext,
+    ) -> cmp::Ordering {
+        match (self, other) {
+            // If both headers are included via CLI argument, compare their offset.
+            (
+                IncludeLocation::Cli { offset },
+                IncludeLocation::Cli {
+                    offset: other_offset,
+                },
+            ) => offset.cmp(other_offset),
+            // Headers included via CLI arguments come first.
+            (IncludeLocation::Cli { .. }, IncludeLocation::Main) => {
+                cmp::Ordering::Less
+            }
+            (IncludeLocation::Main, IncludeLocation::Cli { .. }) => {
+                cmp::Ordering::Greater
+            }
+            // If both includes refer to the main header file, they are equal.
+            (IncludeLocation::Main, IncludeLocation::Main) => {
+                cmp::Ordering::Equal
+            }
+            // If one is included via CLI arguments or the main header file,
+            // recursively compare with the other's include location.
+            (
+                IncludeLocation::Cli { .. } | IncludeLocation::Main,
+                IncludeLocation::File {
+                    file: other_file, ..
+                },
+            ) => {
+                let other_parent = ctx.include_location(other_file.path());
+                self.cmp_by_source_order(other_parent, ctx)
+            }
+            (
+                IncludeLocation::File { .. },
+                IncludeLocation::Cli { .. } | IncludeLocation::Main,
+            ) => other.cmp_by_source_order(self, ctx).reverse(),
+            // If both include locations are in files, compare them as `SourceLocation`s.
+            (
+                IncludeLocation::File {
+                    file,
+                    line,
+                    column,
+                    offset,
+                },
+                IncludeLocation::File {
+                    file: other_file,
+                    line: other_line,
+                    column: other_column,
+                    offset: other_offset,
+                },
+            ) => SourceLocation::File {
+                file: file.clone(),
+                line: *line,
+                column: *column,
+                offset: *offset,
+            }
+            .cmp_by_source_order(
+                &SourceLocation::File {
+                    file: other_file.clone(),
+                    line: *other_line,
+                    column: *other_column,
+                    offset: *other_offset,
+                },
+                ctx,
+            ),
+        }
+    }
+}
+
 /// A context used during parsing and generation of structs.
 #[derive(Debug)]
 pub(crate) struct BindgenContext {
@@ -364,10 +466,10 @@ pub(crate) struct BindgenContext {
     ///
     /// The key is the included file, the value is a pair of the source file and
     /// the position of the `#include` directive in the source file.
-    includes: StdHashMap<String, (String, usize)>,
+    includes: StdHashMap<PathBuf, IncludeLocation>,
 
     /// A set of all the included filenames.
-    deps: BTreeSet<Box<str>>,
+    deps: BTreeSet<SourceFile>,
 
     /// The active replacements collected from replaces="xxx" annotations.
     replacements: HashMap<Vec<String>, ItemId>,
@@ -572,7 +674,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let root_module_id = root_module.id().as_module_id_unchecked();
 
         // depfiles need to include the explicitly listed headers too
-        let deps = options.input_headers.iter().cloned().collect();
+        let deps = options.input_headers.iter().map(SourceFile::new).collect();
 
         BindgenContext {
             items: vec![Some(root_module)],
@@ -658,33 +760,65 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         )
     }
 
-    /// Add the location of the `#include` directive for the `included_file`.
+    /// Add the location of where `included_file` is included.
     pub(crate) fn add_include(
         &mut self,
-        source_file: String,
-        included_file: String,
-        offset: usize,
+        included_file: SourceFile,
+        source_location: SourceLocation,
     ) {
-        self.includes
-            .entry(included_file)
-            .or_insert((source_file, offset));
+        let included_file_path = included_file.path();
+
+        if self.includes.contains_key(&included_file_path) {
+            return;
+        }
+
+        let include_location = {
+            // Recursively including the main header file doesn't count.
+            if self.translation_unit.file().path() == included_file_path {
+                IncludeLocation::Main
+            } else {
+                match source_location {
+                    // Include location is a built-in, so it must have been included via CLI arguments.
+                    SourceLocation::Builtin { offset } => {
+                        IncludeLocation::Cli { offset }
+                    }
+                    // Header was included with an `#include` directive.
+                    SourceLocation::File {
+                        file,
+                        line,
+                        column,
+                        offset,
+                    } => IncludeLocation::File {
+                        file,
+                        line,
+                        column,
+                        offset,
+                    },
+                }
+            }
+        };
+
+        self.includes.insert(included_file_path, include_location);
     }
 
-    /// Get the location of the first `#include` directive for the `included_file`.
-    pub(crate) fn included_file_location(
+    /// Get the location of the first `#include` directive for the `included_file_path`.
+    pub(crate) fn include_location<P: AsRef<Path>>(
         &self,
-        included_file: &str,
-    ) -> Option<(String, usize)> {
-        self.includes.get(included_file).cloned()
+        included_file_path: P,
+    ) -> &IncludeLocation {
+        self.includes.get(included_file_path.as_ref()).unwrap_or(
+            // Header was not included anywhere, so it must be the main header.
+            &IncludeLocation::Main,
+        )
     }
 
     /// Add an included file.
-    pub(crate) fn add_dep(&mut self, dep: Box<str>) {
+    pub(crate) fn add_dep(&mut self, dep: SourceFile) {
         self.deps.insert(dep);
     }
 
     /// Get any included files.
-    pub(crate) fn deps(&self) -> &BTreeSet<Box<str>> {
+    pub(crate) fn deps(&self) -> &BTreeSet<SourceFile> {
         &self.deps
     }
 
@@ -2482,16 +2616,15 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     // Items with a source location in an explicitly allowlisted file
                     // are always included.
                     if !self.options().allowlisted_files.is_empty() {
-                        if let Some(location) = item.location() {
-                            let (file, _, _, _) = location.location();
-                            if let Some(filename) = file.name() {
-                                if self
-                                    .options()
-                                    .allowlisted_files
-                                    .matches(filename)
-                                {
-                                    return true;
-                                }
+                        if let Some(SourceLocation::File { file, .. }) =
+                            item.location()
+                        {
+                            if self
+                                .options()
+                                .allowlisted_files
+                                .matches(file.name())
+                            {
+                                return true;
                             }
                         }
                     }

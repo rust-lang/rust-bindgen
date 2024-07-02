@@ -2,8 +2,8 @@
 //!
 //! The entry point of this module is the [`Diagnostic`] type.
 
-use std::fmt::Write;
 use std::io::{self, BufRead, BufReader};
+use std::path::Path;
 use std::{borrow::Cow, fs::File};
 
 use annotate_snippets::{
@@ -110,7 +110,7 @@ impl<'a> Diagnostic<'a> {
                 slices.push(ExtSlice {
                     source: source.as_ref(),
                     line_start: slice.line.unwrap_or_default(),
-                    origin: slice.filename.as_deref(),
+                    origin: slice.origin.as_deref(),
                     annotations: vec![],
                     fold: false,
                 })
@@ -146,9 +146,9 @@ impl<'a> Diagnostic<'a> {
 /// A slice of source code.
 #[derive(Default)]
 pub(crate) struct Slice<'a> {
-    source: Option<Cow<'a, str>>,
-    filename: Option<String>,
     line: Option<usize>,
+    origin: Option<String>,
+    source: Option<Cow<'a, str>>,
 }
 
 impl<'a> Slice<'a> {
@@ -164,23 +164,21 @@ impl<'a> Slice<'a> {
     /// Set the file, line and column.
     pub(crate) fn with_location(
         &mut self,
-        mut name: String,
+        file_name: &str,
         line: usize,
-        col: usize,
+        column: usize,
     ) -> &mut Self {
-        write!(name, ":{}:{}", line, col)
-            .expect("Writing to a string cannot fail");
-        self.filename = Some(name);
         self.line = Some(line);
+        self.origin = Some(format!("{file_name}:{line}:{column}"));
         self
     }
 }
 
-pub(crate) fn get_line(
-    filename: &str,
+pub(crate) fn get_line<P: AsRef<Path>>(
+    file_path: P,
     line: usize,
 ) -> io::Result<Option<String>> {
-    let file = BufReader::new(File::open(filename)?);
+    let file = BufReader::new(File::open(file_path.as_ref())?);
     if let Some(line) = file.lines().nth(line.wrapping_sub(1)) {
         return line.map(Some);
     }
