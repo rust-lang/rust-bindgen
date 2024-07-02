@@ -19,26 +19,18 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install stable
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           # TODO: Should ideally be stable, but we use some nightly-only
           # features.
           toolchain: nightly
-          override: true
           components: rustfmt, clippy
 
       - name: Run rustfmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: -- --check
+        run: cargo fmt -- --check
 
       - name: Run clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --tests
+        run: cargo clippy --tests
 
   msrv:
     runs-on: ubuntu-latest
@@ -73,11 +65,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install stable
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: stable
-          override: true
 
       - name: Check without default features 
         run: cargo check -p bindgen --no-default-features --features=runtime 
@@ -90,11 +80,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install stable
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: stable
-          override: true
 
       - name: Generate documentation for `bindgen` 
         run: cargo doc --document-private-items --no-deps -p bindgen 
@@ -108,11 +96,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install stable
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: stable
-          override: true
 
       # TODO: Actually run quickchecks once `bindgen` is reliable enough.
       - name: Build quickcheck tests
@@ -127,11 +113,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install stable
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: stable
-          override: true
 
       - name: Test expectations
         run: cd bindgen-tests/tests/expectations && cargo test
@@ -205,12 +189,10 @@ jobs:
           sudo apt-get install libc6:${{matrix.target.debian}} libstdc++6:${{matrix.target.debian}}
 
       - name: Install stable
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: stable
           target: ${{matrix.target.rust}}
-          override: true
       - name: Install libtinfo
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -237,11 +219,9 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Install nightly
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: nightly
-          override: true
       
       - name: Check cfg
         run: cargo check -Z unstable-options -Z check-cfg
