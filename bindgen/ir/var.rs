@@ -7,7 +7,7 @@ use super::function::cursor_mangling;
 use super::int::IntKind;
 use super::item::Item;
 use super::ty::{FloatKind, TypeKind};
-use crate::callbacks::{ItemInfo, ItemKind, MacroParsingBehavior};
+use crate::callbacks::{FnMacroInfo, ItemInfo, ItemKind, MacroParsingBehavior};
 use crate::clang;
 use crate::clang::ClangToken;
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
@@ -160,18 +160,43 @@ fn handle_function_macro(
 ) {
     let is_closing_paren = |t: &ClangToken| {
         // Test cheap token kind before comparing exact spellings.
-        t.kind == clang_sys::CXToken_Punctuation && t.spelling() == b")"
+        t.kind == clang_sys::CXToken_Punctuation &&
+            t.spelling().to_bytes() == b")"
     };
-    let tokens: Vec<_> = cursor.tokens().iter().collect();
-    if let Some(boundary) = tokens.iter().position(is_closing_paren) {
-        let mut spelled = tokens.iter().map(ClangToken::spelling);
-        // Add 1, to convert index to length.
-        let left = spelled.by_ref().take(boundary + 1);
-        let left = left.collect::<Vec<_>>().concat();
-        if let Ok(left) = String::from_utf8(left) {
-            let right: Vec<_> = spelled.collect();
-            callbacks.func_macro(&left, &right);
-        }
+    let mut raw_tokens: Vec<_> = cursor.tokens().iter().collect();
+    if let Some(boundary) = raw_tokens.iter().position(is_closing_paren) {
+        let tokens: Result<Vec<_>, _> = raw_tokens
+            .iter()
+            .map(|token| token.spelling().to_str())
+            .collect();
+
+        let mut tokens = if let Ok(tokens) = tokens {
+            tokens
+        } else {
+            let raw_name = raw_tokens.remove(0);
+            warn!(
+                "Ignoring macro {:?} containing invalid UTF-8 tokens.",
+                raw_name.spelling()
+            );
+            return;
+        };
+
+        let name = tokens.remove(0);
+        let args: Vec<_> = tokens
+            .drain(..boundary)
+            .skip(1)
+            .take(boundary - 2)
+            .filter(|&token| token != ",")
+            .collect();
+        let body = tokens;
+
+        let info = FnMacroInfo {
+            name,
+            args: &args,
+            body: &body,
+        };
+
+        callbacks.fn_macro(&info);
     }
 }
 
@@ -260,7 +285,7 @@ impl ClangSubItemParser for Var {
                     EvalResult::Int(Wrapping(value)) => {
                         let kind = ctx
                             .options()
-                            .last_callback(|c| c.int_macro(&name, value))
+                            .last_callback(|c| c.int_macro(&name, value.into()))
                             .unwrap_or_else(|| {
                                 default_macro_constant_type(ctx, value)
                             });

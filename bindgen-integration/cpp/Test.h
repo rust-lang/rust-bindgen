@@ -20,7 +20,7 @@
         a
 //#define TESTMACRO_INVALID("string") // A conforming preprocessor rejects this
 #define TESTMACRO_STRING_EXPR ("string")
-#define TESTMACRO_STRING_FUNC_NON_UTF8(x) (x "ÿÿ") /* invalid UTF-8 on purpose */
+#define TESTMACRO_STRING_FUNC_NON_UTF8(x) (x "\xFF\xFF") /* invalid UTF-8 on purpose */
 
 enum {
   MY_ANNOYING_MACRO =

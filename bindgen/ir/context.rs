@@ -2273,8 +2273,20 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let mut kind = ModuleKind::Normal;
         let mut looking_for_name = false;
         for token in cursor.tokens().iter() {
-            match token.spelling() {
-                b"inline" => {
+            let spelling = token.spelling();
+            let name = match spelling.to_str() {
+                Ok(name) => Cow::Borrowed(name),
+                Err(_) => {
+                    let name = spelling.to_string_lossy();
+                    warn!(
+                        "Lossy conversion of non-UTF8 token {:?} to {:?}.",
+                        spelling, name
+                    );
+                    name
+                }
+            };
+            match name.as_ref() {
+                "inline" => {
                     debug_assert!(
                         kind != ModuleKind::Inline,
                         "Multiple inline keywords?"
@@ -2291,39 +2303,34 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 // but the tokenization of the second begins with the double
                 // colon. That's ok, so we only need to handle the weird
                 // tokenization here.
-                b"namespace" | b"::" => {
+                "namespace" | "::" => {
                     looking_for_name = true;
                 }
-                b"{" => {
+                "{" => {
                     // This should be an anonymous namespace.
                     assert!(looking_for_name);
                     break;
                 }
-                name => {
-                    if looking_for_name {
-                        if module_name.is_none() {
-                            module_name = Some(
-                                String::from_utf8_lossy(name).into_owned(),
-                            );
-                        }
-                        break;
-                    } else {
-                        // This is _likely_, but not certainly, a macro that's
-                        // been placed just before the namespace keyword.
-                        // Unfortunately, clang tokens don't let us easily see
-                        // through the ifdef tokens, so we don't know what this
-                        // token should really be. Instead of panicking though,
-                        // we warn the user that we assumed the token was blank,
-                        // and then move on.
-                        //
-                        // See also https://github.com/rust-lang/rust-bindgen/issues/1676.
-                        warn!(
-                            "Ignored unknown namespace prefix '{}' at {:?} in {:?}",
-                            String::from_utf8_lossy(name),
-                            token,
-                            cursor
-                        );
+                name if looking_for_name => {
+                    if module_name.is_none() {
+                        module_name = Some(name.to_owned());
                     }
+                    break;
+                }
+                name => {
+                    // This is _likely_, but not certainly, a macro that's
+                    // been placed just before the namespace keyword.
+                    // Unfortunately, clang tokens don't let us easily see
+                    // through the ifdef tokens, so we don't know what this
+                    // token should really be. Instead of panicking though,
+                    // we warn the user that we assumed the token was blank,
+                    // and then move on.
+                    //
+                    // See also https://github.com/rust-lang/rust-bindgen/issues/1676.
+                    warn!(
+                        "Ignored unknown namespace prefix '{}' at {:?} in {:?}",
+                        name, token, cursor
+                    );
                 }
             }
         }
