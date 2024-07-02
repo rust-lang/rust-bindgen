@@ -4,7 +4,7 @@
 //! brief definitions:
 //!
 //! * "Template definition": a class/struct/alias/function definition that takes
-//! generic template parameters. For example:
+//!   generic template parameters. For example:
 //!
 //! ```c++
 //! template<typename T>
@@ -14,11 +14,11 @@
 //! ```
 //!
 //! * "Template instantiation": an instantiation is a use of a template with
-//! concrete template arguments. For example, `List<int>`.
+//!   concrete template arguments. For example, `List<int>`.
 //!
 //! * "Template specialization": an alternative template definition providing a
-//! custom definition for instantiations with the matching template
-//! arguments. This C++ feature is unsupported by bindgen. For example:
+//!   custom definition for instantiations with the matching template
+//!   arguments. This C++ feature is unsupported by bindgen. For example:
 //!
 //! ```c++
 //! template<>

@@ -3,10 +3,10 @@
 //! These traits tend to come in pairs:
 //!
 //! 1. A "trivial" version, whose implementations aren't allowed to recursively
-//! look at other types or the results of fix point analyses.
+//!    look at other types or the results of fix point analyses.
 //!
 //! 2. A "normal" version, whose implementations simply query the results of a
-//! fix point analysis.
+//!    fix point analysis.
 //!
 //! The former is used by the analyses when creating the results queried by the
 //! second.

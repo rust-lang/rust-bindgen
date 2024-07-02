@@ -124,8 +124,8 @@ use crate::{HashMap, HashSet};
 /// ```
 ///
 /// * Finally, for all other IR item kinds, we use our lattice's `join`
-/// operation: set union with each successor of the given item's template
-/// parameter usage:
+///   operation: set union with each successor of the given item's template
+///   parameter usage:
 ///
 /// ```ignore
 /// template_param_usage(v) =

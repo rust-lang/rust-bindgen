@@ -35,20 +35,20 @@ use helpers::ignore;
 /// a block of code with the following items:
 ///
 /// - `default`: The default value for the field. If this item is omitted, `Default::default()` is
-/// used instead, meaning that the type of the field must implement `Default`.
+///   used instead, meaning that the type of the field must implement `Default`.
 /// - `methods`: A block of code containing methods for the `Builder` type. These methods should be
-/// related to the field being declared.
+///   related to the field being declared.
 /// - `as_args`: This item declares how the field should be converted into a valid CLI argument for
-/// `bindgen` and is used in the [`Builder::command_line_flags`] method which is used to do a
-/// roundtrip test of the CLI args in the `bindgen-test` crate. This item can take one of the
-/// following:
+///   `bindgen` and is used in the [`Builder::command_line_flags`] method which is used to do a
+///   roundtrip test of the CLI args in the `bindgen-test` crate. This item can take one of the
+///   following:
 ///   - A string literal with the flag if the type of the field implements the [`AsArgs`] trait.
 ///   - A closure with the signature `|field, args: &mut Vec<String>| -> ()` that pushes arguments
-///   into the `args` buffer based on the value of the field. This is used if the field does not
-///   implement `AsArgs` or if the implementation of the trait is not logically correct for the
-///   option and a custom behavior must be taken into account.
+///     into the `args` buffer based on the value of the field. This is used if the field does not
+///     implement `AsArgs` or if the implementation of the trait is not logically correct for the
+///     option and a custom behavior must be taken into account.
 ///   - The `ignore` literal, which does not emit any CLI arguments for this field. This is useful
-///   if the field cannot be used from the `bindgen` CLI.
+///     if the field cannot be used from the `bindgen` CLI.
 ///
 /// As an example, this would be the declaration of a `bool` field called `be_fun` whose default
 /// value is `false` (the `Default` value for `bool`):

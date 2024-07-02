@@ -87,13 +87,13 @@ impl ops::BitOrAssign for SizednessResult {
 /// An analysis that computes the sizedness of all types.
 ///
 /// * For types with known sizes -- for example pointers, scalars, etc... --
-/// they are assigned `NonZeroSized`.
+///   they are assigned `NonZeroSized`.
 ///
 /// * For compound structure types with one or more fields, they are assigned
-/// `NonZeroSized`.
+///   `NonZeroSized`.
 ///
 /// * For compound structure types without any fields, the results of the bases
-/// are `join`ed.
+///   are `join`ed.
 ///
 /// * For type parameters, `DependsOnTypeParam` is assigned.
 #[derive(Debug)]

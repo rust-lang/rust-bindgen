@@ -1658,13 +1658,13 @@ fn access_specifier(
 
 /// Compute a fields or structs visibility based on multiple conditions.
 /// 1. If the element was declared public, and we respect such CXX accesses specs
-/// (context option) => By default Public, but this can be overruled by an `annotation`.
+///    (context option) => By default Public, but this can be overruled by an `annotation`.
 ///
 /// 2. If the element was declared private, and we respect such CXX accesses specs
-/// (context option) => By default Private, but this can be overruled by an `annotation`.
+///    (context option) => By default Private, but this can be overruled by an `annotation`.
 ///
 /// 3. If we do not respect visibility modifiers, the result depends on the `annotation`,
-/// if any, or the passed `default_kind`.
+///    if any, or the passed `default_kind`.
 ///
 fn compute_visibility(
     ctx: &BindgenContext,
