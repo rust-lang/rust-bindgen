@@ -280,4 +280,6 @@ pub struct FieldInfo<'a> {
     pub type_name: &'a str,
     /// The name of the field.
     pub field_name: &'a str,
+    /// The name of the type of the field.
+    pub field_type_name: Option<&'a str>,
 }
