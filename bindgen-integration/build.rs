@@ -1,9 +1,13 @@
 extern crate bindgen;
+extern crate proc_macro2;
+extern crate quote;
 
 use bindgen::callbacks::{
     DeriveInfo, IntKind, MacroParsingBehavior, ParseCallbacks,
 };
 use bindgen::{Builder, EnumVariation, Formatter};
+use proc_macro2::TokenStream;
+use quote::quote;
 use std::collections::HashSet;
 use std::env;
 use std::path::PathBuf;
@@ -129,6 +133,18 @@ impl ParseCallbacks for MacroCallback {
             vec!["std::cmp::PartialOrd".into()]
         } else if info.name == "TestDeriveOnAlias" {
             vec!["std::cmp::PartialEq".into(), "std::cmp::PartialOrd".into()]
+        } else {
+            vec![]
+        }
+    }
+
+    // Test the "custom derives" capability.
+    fn add_attributes(
+        &self,
+        info: &bindgen::callbacks::AttributeInfo<'_>,
+    ) -> Vec<TokenStream> {
+        if info.name == "Test" {
+            vec![quote!(#[cfg_attr(test, derive(PartialOrd))])]
         } else {
             vec![]
         }

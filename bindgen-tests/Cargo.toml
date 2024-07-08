@@ -10,6 +10,7 @@ clap = { version = "4", features = ["derive"] }
 clap_complete = "4"
 shlex = "1"
 prettyplease = { version = "0.2.7", features = ["verbatim"] }
+proc-macro2 = { version = "1", default-features = false }
 syn = { version = "2.0" }
 tempfile = "3"
 similar = { version = "2.2.1", features = ["inline"] }

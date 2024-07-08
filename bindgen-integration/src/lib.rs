@@ -298,6 +298,15 @@ fn test_custom_derive() {
 }
 
 #[test]
+fn test_custom_attributes() {
+    // The `add_attributes` callback should have added `#[cfg_attr(test, derive(PartialOrd))])`
+    // to the `Test` struct. If it didn't, this will fail to compile.
+    let test1 = unsafe { bindings::Test::new(5) };
+    let test2 = unsafe { bindings::Test::new(6) };
+    assert!(test1 < test2);
+}
+
+#[test]
 fn test_wrap_static_fns() {
     // GH-1090: https://github.com/rust-lang/rust-bindgen/issues/1090
     unsafe {

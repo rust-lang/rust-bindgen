@@ -1,5 +1,7 @@
 //! A public API for more fine-grained customization of bindgen behavior.
 
+use proc_macro2::TokenStream;
+
 pub use crate::ir::analysis::DeriveTrait;
 pub use crate::ir::derive::CanDerive as ImplementsTrait;
 pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
@@ -129,6 +131,14 @@ pub trait ParseCallbacks: fmt::Debug {
         vec![]
     }
 
+    /// Provide a list of custom attributes.
+    ///
+    /// If no additional attributes are wanted, this function should return an
+    /// empty `Vec`.
+    fn add_attributes(&self, _info: &AttributeInfo<'_>) -> Vec<TokenStream> {
+        vec![]
+    }
+
     /// Process a source code comment.
     fn process_comment(&self, _comment: &str) -> Option<String> {
         None
@@ -161,6 +171,17 @@ pub trait ParseCallbacks: fmt::Debug {
 #[derive(Debug)]
 #[non_exhaustive]
 pub struct DeriveInfo<'a> {
+    /// The name of the type.
+    pub name: &'a str,
+    /// The kind of the type.
+    pub kind: TypeKind,
+}
+
+/// Relevant information about a type to which new attributes will be added using
+/// [`ParseCallbacks::add_attributes`].
+#[derive(Debug)]
+#[non_exhaustive]
+pub struct AttributeInfo<'a> {
     /// The name of the type.
     pub name: &'a str,
     /// The kind of the type.
