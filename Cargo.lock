@@ -49,6 +49,7 @@ dependencies = [
  "clap_complete",
  "env_logger 0.10.0",
  "log",
+ "proc-macro2",
  "shlex",
 ]
 
@@ -69,6 +70,7 @@ dependencies = [
  "clap_complete",
  "owo-colors",
  "prettyplease",
+ "proc-macro2",
  "shlex",
  "similar",
  "syn 2.0.18",

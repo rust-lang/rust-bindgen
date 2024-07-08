@@ -102,6 +102,8 @@ pub(crate) struct Annotations {
     constify_enum_variant: bool,
     /// List of explicit derives for this type.
     derives: Vec<String>,
+    /// List of explicit attributes for this type.
+    attributes: Vec<String>,
 }
 
 fn parse_accessor(s: &str) -> FieldAccessorKind {
@@ -169,6 +171,11 @@ impl Annotations {
         &self.derives
     }
 
+    /// The list of attributes that have been specified in this annotation.
+    pub(crate) fn attributes(&self) -> &[String] {
+        &self.attributes
+    }
+
     /// Should we avoid implementing the `Copy` trait?
     pub(crate) fn disallow_copy(&self) -> bool {
         self.disallow_copy
@@ -223,6 +230,7 @@ impl Annotations {
                         )
                     }
                     "derive" => self.derives.push(attr.value),
+                    "attribute" => self.attributes.push(attr.value),
                     "private" => {
                         self.visibility_kind = if attr.value != "false" {
                             Some(FieldVisibilityKind::Private)
