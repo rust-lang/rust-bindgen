@@ -133,6 +133,18 @@ impl ParseCallbacks for MacroCallback {
             vec![]
         }
     }
+
+    // Test the "custom attributes" capability.
+    fn add_attributes(
+        &self,
+        info: &bindgen::callbacks::AttributeInfo<'_>,
+    ) -> Vec<String> {
+        if info.name == "Test" {
+            vec!["#[cfg_attr(test, derive(PartialOrd))]".into()]
+        } else {
+            vec![]
+        }
+    }
 }
 
 impl Drop for MacroCallback {

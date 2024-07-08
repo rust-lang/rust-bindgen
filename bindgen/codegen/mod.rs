@@ -20,7 +20,9 @@ use self::struct_layout::StructLayoutTracker;
 
 use super::BindgenOptions;
 
-use crate::callbacks::{DeriveInfo, FieldInfo, TypeKind as DeriveTypeKind};
+use crate::callbacks::{
+    AttributeInfo, DeriveInfo, FieldInfo, TypeKind as DeriveTypeKind,
+};
 use crate::codegen::error::Error;
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::{
@@ -1046,6 +1048,19 @@ impl CodeGenerator for Type {
                         derives
                             .extend(custom_derives.iter().map(|s| s.as_str()));
                         attributes.push(attributes::derives(&derives));
+
+                        let custom_attributes =
+                            ctx.options().all_callbacks(|cb| {
+                                cb.add_attributes(&AttributeInfo {
+                                    name: &name,
+                                    kind: DeriveTypeKind::Struct,
+                                })
+                            });
+                        attributes.extend(
+                            custom_attributes
+                                .iter()
+                                .map(|s| s.parse().unwrap()),
+                        );
 
                         quote! {
                             #( #attributes )*
@@ -2378,6 +2393,25 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::derives(&derives))
         }
 
+        attributes.extend(
+            item.annotations()
+                .attributes()
+                .iter()
+                .map(|s| s.parse().unwrap()),
+        );
+
+        let custom_attributes = ctx.options().all_callbacks(|cb| {
+            cb.add_attributes(&AttributeInfo {
+                name: &canonical_name,
+                kind: if is_rust_union {
+                    DeriveTypeKind::Union
+                } else {
+                    DeriveTypeKind::Struct
+                },
+            })
+        });
+        attributes.extend(custom_attributes.iter().map(|s| s.parse().unwrap()));
+
         if item.must_use(ctx) {
             attributes.push(attributes::must_use());
         }
@@ -3569,6 +3603,23 @@ impl CodeGenerator for Enum {
             });
             // In most cases this will be a no-op, since custom_derives will be empty.
             derives.extend(custom_derives.iter().map(|s| s.as_str()));
+
+            attrs.extend(
+                item.annotations()
+                    .attributes()
+                    .iter()
+                    .map(|s| s.parse().unwrap()),
+            );
+
+            // The custom attribute callback may return a list of attributes;
+            // add them to the end of the list.
+            let custom_attributes = ctx.options().all_callbacks(|cb| {
+                cb.add_attributes(&AttributeInfo {
+                    name: &name,
+                    kind: DeriveTypeKind::Enum,
+                })
+            });
+            attrs.extend(custom_attributes.iter().map(|s| s.parse().unwrap()));
 
             attrs.push(attributes::derives(&derives));
         }
