@@ -95,7 +95,7 @@ macro_rules! define_rust_targets {
 // not stable.
 define_rust_targets! {
     Nightly => {
-        vectorcall_abi,
+        vectorcall_abi: #124485,
         ptr_metadata: #81513,
         layout_for_ptr: #69835,
     },
