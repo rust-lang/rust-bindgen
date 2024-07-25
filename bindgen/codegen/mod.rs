@@ -2216,7 +2216,9 @@ impl CodeGenerator for CompInfo {
         } else if is_union && !forward_decl {
             // TODO(emilio): It'd be nice to unify this with the struct path
             // above somehow.
-            let layout = layout.expect("Unable to get layout information?");
+            let layout = layout.unwrap_or_else(|| {
+                panic!("Unable to get layout information for item\n{:#?}", item)
+            });
             if struct_layout.requires_explicit_align(layout) {
                 explicit_align = Some(layout.align);
             }
