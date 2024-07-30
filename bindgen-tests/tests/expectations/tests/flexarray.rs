@@ -50,7 +50,10 @@ const _: () = {
 impl flexarray<[::std::os::raw::c_int]> {
     pub fn layout(len: usize) -> ::std::alloc::Layout {
         unsafe {
-            let p: *const Self = ::std::ptr::from_raw_parts(::std::ptr::null(), len);
+            let p: *const Self = ::std::ptr::from_raw_parts(
+                ::std::ptr::null::<()>(),
+                len,
+            );
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
@@ -136,7 +139,10 @@ const _: () = {
 impl flexarray_zero<[::std::os::raw::c_int]> {
     pub fn layout(len: usize) -> ::std::alloc::Layout {
         unsafe {
-            let p: *const Self = ::std::ptr::from_raw_parts(::std::ptr::null(), len);
+            let p: *const Self = ::std::ptr::from_raw_parts(
+                ::std::ptr::null::<()>(),
+                len,
+            );
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
@@ -220,7 +226,10 @@ pub struct flexarray_template<T, FAM: ?Sized = [T; 0]> {
 impl<T> flexarray_template<T, [T]> {
     pub fn layout(len: usize) -> ::std::alloc::Layout {
         unsafe {
-            let p: *const Self = ::std::ptr::from_raw_parts(::std::ptr::null(), len);
+            let p: *const Self = ::std::ptr::from_raw_parts(
+                ::std::ptr::null::<()>(),
+                len,
+            );
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
@@ -344,7 +353,10 @@ const _: () = {
 impl flexarray_bogus_zero_fam<[::std::os::raw::c_char]> {
     pub fn layout(len: usize) -> ::std::alloc::Layout {
         unsafe {
-            let p: *const Self = ::std::ptr::from_raw_parts(::std::ptr::null(), len);
+            let p: *const Self = ::std::ptr::from_raw_parts(
+                ::std::ptr::null::<()>(),
+                len,
+            );
             ::std::alloc::Layout::for_value_raw(p)
         }
     }
@@ -450,7 +462,10 @@ const _: () = {
 impl flexarray_align<[::std::os::raw::c_int]> {
     pub fn layout(len: usize) -> ::std::alloc::Layout {
         unsafe {
-            let p: *const Self = ::std::ptr::from_raw_parts(::std::ptr::null(), len);
+            let p: *const Self = ::std::ptr::from_raw_parts(
+                ::std::ptr::null::<()>(),
+                len,
+            );
             ::std::alloc::Layout::for_value_raw(p)
         }
     }

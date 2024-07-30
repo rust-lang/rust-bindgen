@@ -2723,7 +2723,7 @@ impl CompInfo {
                 pub fn layout(len: usize) -> ::#prefix::alloc::Layout {
                     // SAFETY: Null pointers are OK if we don't deref them
                     unsafe {
-                        let p: *const Self = ::#prefix::ptr::from_raw_parts(::#prefix::ptr::null(), len);
+                        let p: *const Self = ::#prefix::ptr::from_raw_parts(::#prefix::ptr::null::<()>(), len);
                         ::#prefix::alloc::Layout::for_value_raw(p)
                     }
                 }
