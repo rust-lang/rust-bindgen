@@ -6,6 +6,9 @@ pub struct foo {
 }
 pub const foo_FOO_A: foo__bindgen_ty_1 = foo__bindgen_ty_1::FOO_A;
 pub const foo_FOO_B: foo__bindgen_ty_1 = foo__bindgen_ty_1::FOO_B;
+pub type foo__bindgen_ty_1_ctype = ::std::os::raw::c_uint;
+pub const foo__bindgen_ty_1_FOO_A: foo__bindgen_ty_1_ctype = 0;
+pub const foo__bindgen_ty_1_FOO_B: foo__bindgen_ty_1_ctype = 1;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum foo__bindgen_ty_1 {
@@ -27,6 +30,9 @@ impl Default for foo {
         }
     }
 }
+pub type Foo_ctype = ::std::os::raw::c_uint;
+pub const Foo_Bar: Foo_ctype = 0;
+pub const Foo_Qux: Foo_ctype = 1;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Foo {
@@ -38,6 +44,9 @@ pub mod Neg {
     pub const MinusOne: Type = -1;
     pub const One: Type = 1;
 }
+pub type NoDebug_ctype = ::std::os::raw::c_uint;
+pub const NoDebug_NoDebug1: NoDebug_ctype = 0;
+pub const NoDebug_NoDebug2: NoDebug_ctype = 1;
 #[repr(u32)]
 /// <div rustbindgen nodebug></div>
 #[derive(Copy, Clone, Hash, PartialEq, Eq)]
@@ -45,6 +54,9 @@ pub enum NoDebug {
     NoDebug1 = 0,
     NoDebug2 = 1,
 }
+pub type Debug_ctype = ::std::os::raw::c_uint;
+pub const Debug_Debug1: Debug_ctype = 0;
+pub const Debug_Debug2: Debug_ctype = 1;
 #[repr(u32)]
 /// <div rustbindgen derive="Debug"></div>
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]

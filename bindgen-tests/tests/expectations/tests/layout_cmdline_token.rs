@@ -104,6 +104,15 @@ const _: () = {
         "Offset of field: cmdline_token_ops::get_help",
     ][::std::mem::offset_of!(cmdline_token_ops, get_help) - 24usize];
 };
+pub type cmdline_numtype_ctype = ::std::os::raw::c_uint;
+pub const cmdline_numtype_UINT8: cmdline_numtype_ctype = 0;
+pub const cmdline_numtype_UINT16: cmdline_numtype_ctype = 1;
+pub const cmdline_numtype_UINT32: cmdline_numtype_ctype = 2;
+pub const cmdline_numtype_UINT64: cmdline_numtype_ctype = 3;
+pub const cmdline_numtype_INT8: cmdline_numtype_ctype = 4;
+pub const cmdline_numtype_INT16: cmdline_numtype_ctype = 5;
+pub const cmdline_numtype_INT32: cmdline_numtype_ctype = 6;
+pub const cmdline_numtype_INT64: cmdline_numtype_ctype = 7;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum cmdline_numtype {

@@ -51,6 +51,8 @@ pub struct TErrorResult {
     pub mUnionState: TErrorResult_UnionState,
 }
 pub const TErrorResult_UnionState_HasException: TErrorResult_UnionState = TErrorResult_UnionState::HasMessage;
+pub type TErrorResult_UnionState_ctype = i32;
+pub const TErrorResult_UnionState_HasMessage: TErrorResult_UnionState_ctype = 0;
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum TErrorResult_UnionState {

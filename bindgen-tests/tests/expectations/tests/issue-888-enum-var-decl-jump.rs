@@ -21,6 +21,7 @@ pub mod root {
             ["Alignment of Type"][::std::mem::align_of::<Type>() - 1usize];
         };
     }
+    pub type a_ctype = ::std::os::raw::c_uint;
     #[repr(u32)]
     #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
     pub enum a {

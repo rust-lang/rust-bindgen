@@ -3054,6 +3054,12 @@ pub enum EnumVariation {
     Rust {
         /// Indicates whether the generated struct should be `#[non_exhaustive]`
         non_exhaustive: bool,
+        /// Indicates whether the generated struct should have a safe conversion from an integer
+        /// value.
+        safe_conversion: bool,
+        /// Indicates whether the generated struct should have an unsafe conversion from an integer
+        /// value.
+        unsafe_conversion: bool,
     },
     /// The code for this enum will use a newtype
     NewType {
@@ -3085,11 +3091,20 @@ impl fmt::Display for EnumVariation {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
             Self::Rust {
-                non_exhaustive: false,
-            } => "rust",
-            Self::Rust {
-                non_exhaustive: true,
-            } => "rust_non_exhaustive",
+                non_exhaustive,
+                safe_conversion,
+                unsafe_conversion,
+                ..
+            } => match (non_exhaustive, safe_conversion, unsafe_conversion) {
+                (false, false, false) => "rust",
+                (false, true, true) => "rust_conversions",
+                (false, true, _) => "rust_safe_conversion",
+                (false, _, true) => "rust_unsafe_conversion",
+                (true, false, false) => "rust_non_exhaustive",
+                (true, true, true) => "rust_non_exhaustive_conversions",
+                (true, true, _) => "rust_non_exhaustive_safe_conversion",
+                (true, _, true) => "rust_non_exhaustive_unsafe_conversion",
+            },
             Self::NewType {
                 is_bitfield: true, ..
             } => "bitfield",
@@ -3118,10 +3133,46 @@ impl std::str::FromStr for EnumVariation {
         match s {
             "rust" => Ok(EnumVariation::Rust {
                 non_exhaustive: false,
+                safe_conversion: false,
+                unsafe_conversion: false,
+            }),
+            "rust_conversions" => Ok(EnumVariation::Rust {
+                non_exhaustive: false,
+                safe_conversion: true,
+                unsafe_conversion: true,
+            }),
+            "rust_safe_conversion" => Ok(EnumVariation::Rust {
+                non_exhaustive: false,
+                safe_conversion: true,
+                unsafe_conversion: false,
+            }),
+            "rust_unsafe_conversion" => Ok(EnumVariation::Rust {
+                non_exhaustive: false,
+                safe_conversion: false,
+                unsafe_conversion: true,
             }),
             "rust_non_exhaustive" => Ok(EnumVariation::Rust {
                 non_exhaustive: true,
+                safe_conversion: false,
+                unsafe_conversion: false,
             }),
+            "rust_non_exhaustive_conversions" => Ok(EnumVariation::Rust {
+                non_exhaustive: true,
+                safe_conversion: true,
+                unsafe_conversion: true,
+            }),
+            "rust_non_exhaustive_safe_conversion" => Ok(EnumVariation::Rust {
+                non_exhaustive: true,
+                safe_conversion: true,
+                unsafe_conversion: false,
+            }),
+            "rust_non_exhaustive_unsafe_conversion" => {
+                Ok(EnumVariation::Rust {
+                    non_exhaustive: true,
+                    safe_conversion: false,
+                    unsafe_conversion: true,
+                })
+            }
             "bitfield" => Ok(EnumVariation::NewType {
                 is_bitfield: true,
                 is_global: false,
@@ -3153,8 +3204,13 @@ enum EnumBuilder<'a> {
     Rust {
         attrs: Vec<proc_macro2::TokenStream>,
         ident: Ident,
-        tokens: proc_macro2::TokenStream,
+        typedef: syn::Ident,
+        const_tokens: Vec<proc_macro2::TokenStream>,
+        rustified_tokens: Vec<proc_macro2::TokenStream>,
+        safe_conversion_tokens: Vec<proc_macro2::TokenStream>,
         emitted_any_variants: bool,
+        safe_conversion: bool,
+        unsafe_conversion: bool,
     },
     NewType {
         canonical_name: &'a str,
@@ -3182,7 +3238,7 @@ impl<'a> EnumBuilder<'a> {
     fn new(
         name: &'a str,
         mut attrs: Vec<proc_macro2::TokenStream>,
-        repr: syn::Type,
+        repr: EnumRepr,
         enum_variation: EnumVariation,
         has_typedef: bool,
     ) -> Self {
@@ -3192,29 +3248,64 @@ impl<'a> EnumBuilder<'a> {
             EnumVariation::NewType {
                 is_bitfield,
                 is_global,
-            } => EnumBuilder::NewType {
-                canonical_name: name,
-                tokens: quote! {
-                    #( #attrs )*
-                    pub struct #ident (pub #repr);
-                },
-                is_bitfield,
-                is_global,
-            },
+            } => {
+                let repr = match repr {
+                    EnumRepr::Other(r) => r,
+                    _ => panic!(
+                        "Should never get this variant for new type enum"
+                    ),
+                };
+                EnumBuilder::NewType {
+                    canonical_name: name,
+                    tokens: quote! {
+                        #( #attrs )*
+                        pub struct #ident (pub #repr);
+                    },
+                    is_bitfield,
+                    is_global,
+                }
+            }
 
-            EnumVariation::Rust { .. } => {
+            EnumVariation::Rust {
+                safe_conversion,
+                unsafe_conversion,
+                ..
+            } => {
+                let (untranslated_repr, translated_repr) = match repr {
+                    EnumRepr::Rust(un_r, t_r) => (un_r, t_r),
+                    _ => panic!(
+                        "Should never get this variant for rustified enum"
+                    ),
+                };
+                let ctype = Ident::new(
+                    format!("{}_ctype", ident.to_string()).as_str(),
+                    Span::call_site(),
+                );
                 // `repr` is guaranteed to be Rustified in Enum::codegen
-                attrs.insert(0, quote! { #[repr( #repr )] });
-                let tokens = quote!();
+                attrs.insert(0, quote! { #[repr( #translated_repr)] });
                 EnumBuilder::Rust {
                     attrs,
+                    const_tokens: vec![quote! {
+                        pub type #ctype = #untranslated_repr;
+                    }],
                     ident,
-                    tokens,
+                    typedef: ctype,
+                    rustified_tokens: vec![],
+                    safe_conversion_tokens: vec![],
                     emitted_any_variants: false,
+                    safe_conversion,
+                    unsafe_conversion,
                 }
             }
 
             EnumVariation::Consts => {
+                let repr = match repr {
+                    EnumRepr::Other(r) => r,
+                    _ => {
+                        panic!("Should never get this variant for consts enum")
+                    }
+                };
+
                 let mut variants = Vec::new();
 
                 if !has_typedef {
@@ -3228,6 +3319,13 @@ impl<'a> EnumBuilder<'a> {
             }
 
             EnumVariation::ModuleConsts => {
+                let repr = match repr {
+                    EnumRepr::Other(r) => r,
+                    _ => {
+                        panic!("Should never get this variant for module consts enum")
+                    }
+                };
+
                 let ident = Ident::new(
                     CONSTIFIED_ENUM_MODULE_REPR_NAME,
                     Span::call_site(),
@@ -3247,7 +3345,7 @@ impl<'a> EnumBuilder<'a> {
 
     /// Add a variant to this enum.
     fn with_variant(
-        self,
+        mut self,
         ctx: &BindgenContext,
         variant: &EnumVariant,
         mangling_prefix: Option<&str>,
@@ -3257,13 +3355,17 @@ impl<'a> EnumBuilder<'a> {
     ) -> Self {
         let variant_name = ctx.rust_mangle(variant.name());
         let is_rust_enum = self.is_rust_enum();
-        let expr = match variant.val() {
+        let (is_bool, expr) = match variant.val() {
             EnumVariantValue::Boolean(v) if is_rust_enum => {
-                helpers::ast_ty::uint_expr(v as u64)
+                (true, helpers::ast_ty::uint_expr(v as u64))
             }
-            EnumVariantValue::Boolean(v) => quote!(#v),
-            EnumVariantValue::Signed(v) => helpers::ast_ty::int_expr(v),
-            EnumVariantValue::Unsigned(v) => helpers::ast_ty::uint_expr(v),
+            EnumVariantValue::Boolean(v) => (true, quote!(#v)),
+            EnumVariantValue::Signed(v) => {
+                (false, helpers::ast_ty::int_expr(v))
+            }
+            EnumVariantValue::Unsigned(v) => {
+                (false, helpers::ast_ty::uint_expr(v))
+            }
         };
 
         let mut doc = quote! {};
@@ -3276,22 +3378,40 @@ impl<'a> EnumBuilder<'a> {
 
         match self {
             EnumBuilder::Rust {
-                attrs,
-                ident,
-                tokens,
-                emitted_any_variants: _,
+                ref ident,
+                ref typedef,
+                ref mut const_tokens,
+                ref mut rustified_tokens,
+                ref mut safe_conversion_tokens,
+                ref mut emitted_any_variants,
+                ..
             } => {
                 let name = ctx.rust_ident(variant_name);
-                EnumBuilder::Rust {
-                    attrs,
-                    ident,
-                    tokens: quote! {
-                        #tokens
-                        #doc
-                        #name = #expr,
-                    },
-                    emitted_any_variants: true,
-                }
+                let const_name = Ident::new(
+                    format!("{}_{}", ident.to_string(), name.to_string())
+                        .as_str(),
+                    Span::call_site(),
+                );
+                let add_cmp = if is_bool {
+                    quote! { != 0 }
+                } else {
+                    quote!()
+                };
+                const_tokens.push(quote! {
+                    #doc
+                    pub const #const_name: #typedef = #expr #add_cmp;
+                });
+                rustified_tokens.push(quote! {
+                    #doc
+                    #name = #expr ,
+                });
+                safe_conversion_tokens.push(quote! {
+                    #expr => Ok(#ident::#name) ,
+                });
+
+                *emitted_any_variants = true;
+
+                self
             }
 
             EnumBuilder::NewType {
@@ -3373,21 +3493,75 @@ impl<'a> EnumBuilder<'a> {
             EnumBuilder::Rust {
                 attrs,
                 ident,
-                tokens,
+                typedef,
+                const_tokens,
+                rustified_tokens,
+                safe_conversion_tokens,
                 emitted_any_variants,
+                safe_conversion,
+                unsafe_conversion,
                 ..
             } => {
                 let variants = if !emitted_any_variants {
-                    quote!(__bindgen_cannot_repr_c_on_empty_enum = 0)
+                    vec![quote!(__bindgen_cannot_repr_c_on_empty_enum = 0)]
                 } else {
-                    tokens
+                    rustified_tokens
+                };
+
+                let safe_conversion = if safe_conversion {
+                    let prefix = ctx.trait_prefix();
+                    let error_type = Ident::new(
+                        format!("{}Error", ident.to_string()).as_str(),
+                        Span::call_site(),
+                    );
+                    quote! {
+                        pub struct #error_type(#typedef);
+
+                        impl #error_type {
+                            #[must_use]
+                            pub fn value(&self) -> #typedef {
+                                self.0
+                            }
+                        }
+
+                        impl #prefix::convert::TryFrom<#typedef> for #ident {
+                            type Error = #error_type;
+
+                            fn try_from(v: #typedef) -> Result<Self, Self::Error> {
+                                match v {
+                                    #( #safe_conversion_tokens )*
+                                    _ => #error_type(v)
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    quote!()
+                };
+
+                let unsafe_conversion = if unsafe_conversion {
+                    quote! {
+                        impl #ident {
+                            const unsafe fn from_ctype_unchecked(v: #typedef) -> Self {
+                                std::mem::transmute(v)
+                            }
+                        }
+                    }
+                } else {
+                    quote!()
                 };
 
                 quote! {
+                    #( #const_tokens )*
+
                     #( #attrs )*
                     pub enum #ident {
-                        #variants
+                        #( #variants )*
                     }
+
+                    #safe_conversion
+
+                    #unsafe_conversion
                 }
             }
             EnumBuilder::NewType {
@@ -3462,6 +3636,76 @@ impl<'a> EnumBuilder<'a> {
     }
 }
 
+fn handle_tranlation<'a>(
+    ctx: &BindgenContext,
+    layout: Option<&Layout>,
+    item: &Item,
+    repr: Option<&Type>,
+    translate: bool,
+) -> syn::Type {
+    match repr {
+        Some(repr)
+            if !ctx.options().translate_enum_integer_types && !translate =>
+        {
+            repr.to_rust_ty_or_opaque(ctx, item)
+        }
+        repr => {
+            // An enum's integer type is translated to a native Rust
+            // integer type in 3 cases:
+            // * the enum is Rustified and we need a translated type for
+            //   the repr attribute
+            // * the representation couldn't be determined from the C source
+            // * it was explicitly requested as a bindgen option
+
+            let kind = match repr {
+                Some(repr) => match *repr.canonical_type(ctx).kind() {
+                    TypeKind::Int(int_kind) => int_kind,
+                    _ => panic!("Unexpected type as enum repr"),
+                },
+                None => {
+                    warn!(
+                        "Guessing type of enum! Forward declarations of enums \
+                             shouldn't be legal!"
+                    );
+                    IntKind::Int
+                }
+            };
+
+            let signed = kind.is_signed();
+            let size = layout
+                .map(|l| l.size)
+                .or_else(|| kind.known_size())
+                .unwrap_or(0);
+
+            let translated = match (signed, size) {
+                (true, 1) => IntKind::I8,
+                (false, 1) => IntKind::U8,
+                (true, 2) => IntKind::I16,
+                (false, 2) => IntKind::U16,
+                (true, 4) => IntKind::I32,
+                (false, 4) => IntKind::U32,
+                (true, 8) => IntKind::I64,
+                (false, 8) => IntKind::U64,
+                _ => {
+                    warn!(
+                        "invalid enum decl: signed: {}, size: {}",
+                        signed, size
+                    );
+                    IntKind::I32
+                }
+            };
+
+            Type::new(None, None, TypeKind::Int(translated), false)
+                .to_rust_ty_or_opaque(ctx, item)
+        }
+    }
+}
+
+enum EnumRepr {
+    Rust(syn::Type, syn::Type),
+    Other(syn::Type),
+}
+
 impl CodeGenerator for Enum {
     type Extra = Item;
     type Return = ();
@@ -3481,71 +3725,37 @@ impl CodeGenerator for Enum {
         let layout = enum_ty.layout(ctx);
         let variation = self.computed_enum_variation(ctx, item);
 
-        let repr_translated;
-        let repr = match self.repr().map(|repr| ctx.resolve_type(repr)) {
-            Some(repr)
-                if !ctx.options().translate_enum_integer_types &&
-                    !variation.is_rust() =>
-            {
-                repr
-            }
-            repr => {
-                // An enum's integer type is translated to a native Rust
-                // integer type in 3 cases:
-                // * the enum is Rustified and we need a translated type for
-                //   the repr attribute
-                // * the representation couldn't be determined from the C source
-                // * it was explicitly requested as a bindgen option
-
-                let kind = match repr {
-                    Some(repr) => match *repr.canonical_type(ctx).kind() {
-                        TypeKind::Int(int_kind) => int_kind,
-                        _ => panic!("Unexpected type as enum repr"),
-                    },
-                    None => {
-                        warn!(
-                            "Guessing type of enum! Forward declarations of enums \
-                             shouldn't be legal!"
-                        );
-                        IntKind::Int
-                    }
-                };
-
-                let signed = kind.is_signed();
-                let size = layout
-                    .map(|l| l.size)
-                    .or_else(|| kind.known_size())
-                    .unwrap_or(0);
-
-                let translated = match (signed, size) {
-                    (true, 1) => IntKind::I8,
-                    (false, 1) => IntKind::U8,
-                    (true, 2) => IntKind::I16,
-                    (false, 2) => IntKind::U16,
-                    (true, 4) => IntKind::I32,
-                    (false, 4) => IntKind::U32,
-                    (true, 8) => IntKind::I64,
-                    (false, 8) => IntKind::U64,
-                    _ => {
-                        warn!(
-                            "invalid enum decl: signed: {}, size: {}",
-                            signed, size
-                        );
-                        IntKind::I32
-                    }
-                };
-
-                repr_translated =
-                    Type::new(None, None, TypeKind::Int(translated), false);
-                &repr_translated
-            }
+        let repr = if variation.is_rust() {
+            EnumRepr::Rust(
+                handle_tranlation(
+                    ctx,
+                    layout.as_ref(),
+                    item,
+                    self.repr().map(|repr| ctx.resolve_type(repr)),
+                    false,
+                ),
+                handle_tranlation(
+                    ctx,
+                    layout.as_ref(),
+                    item,
+                    self.repr().map(|repr| ctx.resolve_type(repr)),
+                    true,
+                ),
+            )
+        } else {
+            EnumRepr::Other(handle_tranlation(
+                ctx,
+                layout.as_ref(),
+                item,
+                self.repr().map(|repr| ctx.resolve_type(repr)),
+                false,
+            ))
         };
-
         let mut attrs = vec![];
 
         // TODO(emilio): Delegate this to the builders?
         match variation {
-            EnumVariation::Rust { non_exhaustive } => {
+            EnumVariation::Rust { non_exhaustive, .. } => {
                 if non_exhaustive &&
                     ctx.options().rust_features().non_exhaustive
                 {
@@ -3654,7 +3864,6 @@ impl CodeGenerator for Enum {
             });
         }
 
-        let repr = repr.to_rust_ty_or_opaque(ctx, item);
         let has_typedef = ctx.is_enum_typedef_combo(item.id());
 
         let mut builder =

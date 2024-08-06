@@ -67,6 +67,8 @@ impl Default for basic_string___long {
     }
 }
 pub const basic_string___min_cap: basic_string__bindgen_ty_1 = basic_string__bindgen_ty_1::__min_cap;
+pub type basic_string__bindgen_ty_1_ctype = i32;
+pub const basic_string__bindgen_ty_1___min_cap: basic_string__bindgen_ty_1_ctype = 0;
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum basic_string__bindgen_ty_1 {
@@ -117,6 +119,8 @@ impl Default for basic_string___ulx {
     }
 }
 pub const basic_string___n_words: basic_string__bindgen_ty_2 = basic_string__bindgen_ty_2::__n_words;
+pub type basic_string__bindgen_ty_2_ctype = i32;
+pub const basic_string__bindgen_ty_2___n_words: basic_string__bindgen_ty_2_ctype = 0;
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum basic_string__bindgen_ty_2 {

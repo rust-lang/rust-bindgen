@@ -9,6 +9,8 @@ pub struct TErrorResult {
 impl TErrorResult_UnionState {
     pub const HasException: TErrorResult_UnionState = TErrorResult_UnionState::HasMessage;
 }
+pub type TErrorResult_UnionState_ctype = i32;
+pub const TErrorResult_UnionState_HasMessage: TErrorResult_UnionState_ctype = 0;
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum TErrorResult_UnionState {
