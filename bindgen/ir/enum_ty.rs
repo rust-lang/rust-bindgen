@@ -9,6 +9,75 @@ use crate::ir::annotations::Annotations;
 use crate::parse::ParseError;
 use crate::regex_set::RegexSet;
 
+use std::fmt::{self, Display};
+use std::ops::Deref;
+use std::str::FromStr;
+
+/// Represents option for rustified enum generation.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum RustEnumOption {
+    /// Add non-exhaustive attribute to Rust enum.
+    NonExhaustive,
+    /// Add safe TryFrom conversion from integer value.
+    TryFromRaw,
+    /// Provide an unsafe wrapper for transmute from integer value.
+    FromRawUnchecked,
+}
+
+impl FromStr for RustEnumOption {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "non_exhaustive" => Ok(Self::NonExhaustive),
+            "try_from_raw" => Ok(Self::TryFromRaw),
+            "from_raw_unchecked" => Ok(Self::FromRawUnchecked),
+            _ => Err(format!(
+                "Invalid or unknown rustified struct option {:?}",
+                s
+            )),
+        }
+    }
+}
+
+/// Collection of RustEnumOption values.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub struct RustEnumOptions(Vec<RustEnumOption>);
+
+impl Deref for RustEnumOptions {
+    type Target = Vec<RustEnumOption>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl FromStr for RustEnumOptions {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(RustEnumOptions(
+            s.split(",").filter(|s| s != &"").try_fold(
+                Vec::new(),
+                |mut vec, opt| {
+                    vec.push(RustEnumOption::from_str(opt)?);
+                    Result::<_, String>::Ok(vec)
+                },
+            )?,
+        ))
+    }
+}
+
+impl Display for RustEnumOption {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            RustEnumOption::NonExhaustive => write!(f, "non_exhaustive"),
+            RustEnumOption::TryFromRaw => write!(f, "try_from_raw"),
+            RustEnumOption::FromRawUnchecked => write!(f, "from_raw_unchecked"),
+        }
+    }
+}
+
 /// An enum representing custom handling that can be given to a variant.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum EnumVariantCustomBehavior {
@@ -211,28 +280,27 @@ impl Enum {
             }
         } else if self.is_matching_enum(
             ctx,
-            &ctx.options().rustified_enums,
-            item,
-        ) {
-            EnumVariation::Rust {
-                non_exhaustive: false,
-            }
-        } else if self.is_matching_enum(
-            ctx,
-            &ctx.options().rustified_non_exhaustive_enums,
-            item,
-        ) {
-            EnumVariation::Rust {
-                non_exhaustive: true,
-            }
-        } else if self.is_matching_enum(
-            ctx,
             &ctx.options().constified_enums,
             item,
         ) {
             EnumVariation::Consts
         } else {
-            ctx.options().default_enum_style
+            let matches = ctx
+                .options()
+                .rustified_enums
+                .iter()
+                .find(|(_, regex)| self.is_matching_enum(ctx, regex, item));
+            match matches {
+                Some((options, _)) => EnumVariation::Rust {
+                    non_exhaustive: options
+                        .contains(&RustEnumOption::NonExhaustive),
+                    safe_conversion: options
+                        .contains(&RustEnumOption::TryFromRaw),
+                    unsafe_conversion: options
+                        .contains(&RustEnumOption::FromRawUnchecked),
+                },
+                None => ctx.options().default_enum_style,
+            }
         }
     }
 }
