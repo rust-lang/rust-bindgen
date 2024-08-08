@@ -792,7 +792,7 @@ impl Cursor {
                         (kind == CXCursor_UnexposedAttr &&
                             cur.tokens().iter().any(|t| {
                                 t.kind == attr.token_kind &&
-                                    t.spelling() == attr.name
+                                    t.spelling().to_bytes() == attr.name
                             }))
                     {
                         *found_attr = true;
@@ -1040,12 +1040,9 @@ pub(crate) struct ClangToken {
 }
 
 impl ClangToken {
-    /// Get the token spelling, without being converted to utf-8.
-    pub(crate) fn spelling(&self) -> &[u8] {
-        let c_str = unsafe {
-            CStr::from_ptr(clang_getCString(self.spelling) as *const _)
-        };
-        c_str.to_bytes()
+    /// Returns the token spelling.
+    pub(crate) fn spelling(&self) -> &CStr {
+        unsafe { CStr::from_ptr(clang_getCString(self.spelling) as *const _) }
     }
 
     /// Converts a ClangToken to a `cexpr` token if possible.
@@ -1068,7 +1065,7 @@ impl ClangToken {
 
         Some(token::Token {
             kind,
-            raw: self.spelling().to_vec().into_boxed_slice(),
+            raw: self.spelling().to_bytes().to_vec().into_boxed_slice(),
         })
     }
 }
