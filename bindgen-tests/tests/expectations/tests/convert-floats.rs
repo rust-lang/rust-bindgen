@@ -1,5 +1,8 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
+#[repr(C, align(16))]
+pub struct __BindgenLongDouble([u8; 16]);
+#[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
 #[repr(C)]
 pub struct __BindgenComplex<T> {
     pub re: T,
@@ -11,7 +14,7 @@ pub struct foo {
     pub bar: ::std::os::raw::c_float,
     pub baz: ::std::os::raw::c_float,
     pub bazz: ::std::os::raw::c_double,
-    pub bazzz: *mut u128,
+    pub bazzz: *mut __BindgenLongDouble,
     pub complexFloat: __BindgenComplex<::std::os::raw::c_float>,
     pub complexDouble: __BindgenComplex<::std::os::raw::c_double>,
 }
