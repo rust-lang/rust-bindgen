@@ -11,13 +11,10 @@ impl<T> Default for __BindgenOpaqueArray<T, 0> {
         Self([])
     }
 }
-#[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
-pub struct C {
-    pub arr: __BindgenOpaqueArray<u32, 3usize>,
+pub type va_list = __BindgenOpaqueArray<u64, 4usize>;
+extern "C" {
+    pub fn vprintf(
+        format: *const ::std::os::raw::c_char,
+        vlist: __BindgenOpaqueArray<u64, 4usize>,
+    ) -> ::std::os::raw::c_int;
 }
-const _: () = {
-    ["Size of C"][::std::mem::size_of::<C>() - 12usize];
-    ["Alignment of C"][::std::mem::align_of::<C>() - 4usize];
-    ["Offset of field: C::arr"][::std::mem::offset_of!(C, arr) - 0usize];
-};
