@@ -8,12 +8,13 @@ use crate::ir::context::BindgenContext;
 use clang_sys::*;
 use std::cmp;
 
+use std::convert::{TryFrom, TryInto};
 use std::ffi::{CStr, CString};
 use std::fmt;
 use std::fs::OpenOptions;
 use std::hash::Hash;
 use std::hash::Hasher;
-use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong, c_ulonglong};
+use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulonglong};
 use std::sync::OnceLock;
 use std::{mem, ptr, slice};
 
@@ -123,13 +124,14 @@ impl Cursor {
             if manglings.is_null() {
                 return Err(());
             }
-            let count = (*manglings).Count as usize;
-
-            let mut result = Vec::with_capacity(count);
-            for i in 0..count {
-                let string_ptr = (*manglings).Strings.add(i);
-                result.push(cxstring_to_string_leaky(*string_ptr));
-            }
+            let string_set = slice::from_raw_parts(
+                (*manglings).Strings,
+                (*manglings).Count.try_into().unwrap(),
+            );
+            let result = string_set
+                .iter()
+                .map(|string_ptr| cxstring_to_string_leaky(*string_ptr))
+                .collect();
             clang_disposeStringSet(manglings);
             Ok(result)
         }
@@ -196,7 +198,7 @@ impl Cursor {
     ///
     /// NOTE: This may not return `Some` for partial template specializations,
     /// see #193 and #194.
-    pub(crate) fn num_template_args(&self) -> Option<u32> {
+    pub(crate) fn num_template_args(&self) -> Option<c_uint> {
         // XXX: `clang_Type_getNumTemplateArguments` is sort of reliable, while
         // `clang_Cursor_getNumTemplateArguments` is totally unreliable.
         // Therefore, try former first, and only fallback to the latter if we
@@ -206,12 +208,15 @@ impl Cursor {
             .or_else(|| {
                 let n: c_int =
                     unsafe { clang_Cursor_getNumTemplateArguments(self.x) };
-
-                if n >= 0 {
-                    Some(n as u32)
-                } else {
-                    debug_assert_eq!(n, -1);
-                    None
+                match c_uint::try_from(n) {
+                    Ok(n) => Some(n),
+                    Err(_) => {
+                        debug_assert_eq!(
+                            n, -1,
+                            "-1 is the only expected error"
+                        );
+                        None
+                    }
                 }
             })
             .or_else(|| {
@@ -700,7 +705,7 @@ impl Cursor {
 
     /// Get the width of this cursor's referent bit field, or `None` if the
     /// referent is not a bit field or if the width could not be evaluated.
-    pub(crate) fn bit_width(&self) -> Option<u32> {
+    pub(crate) fn bit_width(&self) -> Option<usize> {
         // It is not safe to check the bit width without ensuring it doesn't
         // depend on a template parameter. See
         // https://github.com/rust-lang/rust-bindgen/issues/2239
@@ -709,11 +714,13 @@ impl Cursor {
         }
 
         unsafe {
-            let w = clang_getFieldDeclBitWidth(self.x);
-            if w == -1 {
-                None
-            } else {
-                Some(w as u32)
+            let n: c_int = clang_getFieldDeclBitWidth(self.x);
+            match c_uint::try_from(n) {
+                Ok(n) => Some(n.try_into().unwrap()),
+                Err(_) => {
+                    debug_assert_eq!(n, -1, "-1 is the only expected error");
+                    None
+                }
             }
         }
     }
@@ -752,8 +759,7 @@ impl Cursor {
     pub(crate) fn enum_val_signed(&self) -> Option<i64> {
         unsafe {
             if self.kind() == CXCursor_EnumConstantDecl {
-                #[allow(clippy::unnecessary_cast)]
-                Some(clang_getEnumConstantDeclValue(self.x) as i64)
+                Some(clang_getEnumConstantDeclValue(self.x).try_into().unwrap())
             } else {
                 None
             }
@@ -766,8 +772,11 @@ impl Cursor {
     pub(crate) fn enum_val_unsigned(&self) -> Option<u64> {
         unsafe {
             if self.kind() == CXCursor_EnumConstantDecl {
-                #[allow(clippy::unnecessary_cast)]
-                Some(clang_getEnumConstantDeclUnsignedValue(self.x) as u64)
+                Some(
+                    clang_getEnumConstantDeclUnsignedValue(self.x)
+                        .try_into()
+                        .unwrap(),
+                )
             } else {
                 None
             }
@@ -846,10 +855,10 @@ impl Cursor {
         // match self.kind() {
         // CXCursor_FunctionDecl |
         // CXCursor_CXXMethod => {
-        self.num_args().ok().map(|num| {
+        self.num_args().map(|num| {
             (0..num)
                 .map(|i| Cursor {
-                    x: unsafe { clang_Cursor_getArgument(self.x, i as c_uint) },
+                    x: unsafe { clang_Cursor_getArgument(self.x, i) },
                 })
                 .collect()
         })
@@ -860,13 +869,15 @@ impl Cursor {
     ///
     /// Returns Err if the cursor's referent is not a function/method call or
     /// declaration.
-    pub(crate) fn num_args(&self) -> Result<u32, ()> {
+    pub(crate) fn num_args(&self) -> Option<c_uint> {
         unsafe {
-            let w = clang_Cursor_getNumArguments(self.x);
-            if w == -1 {
-                Err(())
-            } else {
-                Ok(w as u32)
+            let n: c_int = clang_Cursor_getNumArguments(self.x);
+            match c_uint::try_from(n) {
+                Ok(n) => Some(n),
+                Err(_) => {
+                    debug_assert_eq!(n, -1, "-1 is the only expected error");
+                    None
+                }
             }
         }
     }
@@ -893,12 +904,10 @@ impl Cursor {
 
     /// Get the offset of the field represented by the Cursor.
     pub(crate) fn offset_of_field(&self) -> Result<usize, LayoutError> {
-        let offset = unsafe { clang_Cursor_getOffsetOfField(self.x) };
-
-        if offset < 0 {
-            Err(LayoutError::from(offset as i32))
-        } else {
-            Ok(offset as usize)
+        let n: c_longlong = unsafe { clang_Cursor_getOffsetOfField(self.x) };
+        match c_ulonglong::try_from(n) {
+            Ok(offset) => Ok(offset.try_into().unwrap()),
+            Err(_) => Err(LayoutError::from(n)),
         }
     }
 
@@ -999,7 +1008,12 @@ impl<'a> RawTokens<'a> {
         if self.tokens.is_null() {
             return &[];
         }
-        unsafe { slice::from_raw_parts(self.tokens, self.token_count as usize) }
+        unsafe {
+            slice::from_raw_parts(
+                self.tokens,
+                self.token_count.try_into().unwrap(),
+            )
+        }
     }
 
     /// Get an iterator over these tokens.
@@ -1015,11 +1029,7 @@ impl<'a> Drop for RawTokens<'a> {
     fn drop(&mut self) {
         if !self.tokens.is_null() {
             unsafe {
-                clang_disposeTokens(
-                    self.tu,
-                    self.tokens,
-                    self.token_count as c_uint,
-                );
+                clang_disposeTokens(self.tu, self.tokens, self.token_count);
             }
         }
     }
@@ -1185,22 +1195,29 @@ pub(crate) enum LayoutError {
     /// Asked for the layout of a field in a type that does not have such a
     /// field.
     InvalidFieldName,
+    /// The type is undeduced.
+    Undeduced,
     /// An unknown layout error.
     Unknown,
 }
 
-impl ::std::convert::From<i32> for LayoutError {
+impl From<i32> for LayoutError {
     fn from(val: i32) -> Self {
-        use self::LayoutError::*;
-
         match val {
-            CXTypeLayoutError_Invalid => Invalid,
-            CXTypeLayoutError_Incomplete => Incomplete,
-            CXTypeLayoutError_Dependent => Dependent,
-            CXTypeLayoutError_NotConstantSize => NotConstantSize,
-            CXTypeLayoutError_InvalidFieldName => InvalidFieldName,
-            _ => Unknown,
+            CXTypeLayoutError_Invalid => Self::Invalid,
+            CXTypeLayoutError_Incomplete => Self::Incomplete,
+            CXTypeLayoutError_Dependent => Self::Dependent,
+            CXTypeLayoutError_NotConstantSize => Self::NotConstantSize,
+            CXTypeLayoutError_InvalidFieldName => Self::InvalidFieldName,
+            CXTypeLayoutError_Undeduced => Self::Undeduced,
+            _ => Self::Unknown,
         }
+    }
+}
+
+impl From<i64> for LayoutError {
+    fn from(val: i64) -> Self {
+        i32::try_from(val).map(Self::from).unwrap_or(Self::Unknown)
     }
 }
 
@@ -1270,41 +1287,10 @@ impl Type {
         self.canonical_type() == *self
     }
 
-    #[inline]
-    fn clang_size_of(&self, ctx: &BindgenContext) -> c_longlong {
-        match self.kind() {
-            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40975
-            CXType_RValueReference | CXType_LValueReference => {
-                ctx.target_pointer_size() as c_longlong
-            }
-            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40813
-            CXType_Auto if self.is_non_deductible_auto_type() => -6,
-            _ => unsafe { clang_Type_getSizeOf(self.x) },
-        }
-    }
-
-    #[inline]
-    fn clang_align_of(&self, ctx: &BindgenContext) -> c_longlong {
-        match self.kind() {
-            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40975
-            CXType_RValueReference | CXType_LValueReference => {
-                ctx.target_pointer_size() as c_longlong
-            }
-            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40813
-            CXType_Auto if self.is_non_deductible_auto_type() => -6,
-            _ => unsafe { clang_Type_getAlignOf(self.x) },
-        }
-    }
-
     /// What is the size of this type? Paper over invalid types by returning `0`
     /// for them.
     pub(crate) fn size(&self, ctx: &BindgenContext) -> usize {
-        let val = self.clang_size_of(ctx);
-        if val < 0 {
-            0
-        } else {
-            val as usize
-        }
+        self.fallible_size(ctx).unwrap_or(0)
     }
 
     /// What is the size of this type?
@@ -1312,23 +1298,29 @@ impl Type {
         &self,
         ctx: &BindgenContext,
     ) -> Result<usize, LayoutError> {
-        let val = self.clang_size_of(ctx);
-        if val < 0 {
-            Err(LayoutError::from(val as i32))
-        } else {
-            Ok(val as usize)
+        match self.kind() {
+            // Work-around for https://github.com/llvm/llvm-project/issues/40320.
+            CXType_RValueReference | CXType_LValueReference => {
+                Ok(ctx.target_pointer_size())
+            }
+            // Work-around for https://github.com/llvm/llvm-project/issues/40159.
+            CXType_Auto if self.is_non_deductible_auto_type() => {
+                Err(LayoutError::Undeduced)
+            }
+            _ => {
+                let n: c_longlong = unsafe { clang_Type_getSizeOf(self.x) };
+                match c_ulonglong::try_from(n) {
+                    Ok(size) => Ok(size.try_into().unwrap()),
+                    Err(_) => Err(LayoutError::from(n)),
+                }
+            }
         }
     }
 
     /// What is the alignment of this type? Paper over invalid types by
     /// returning `0`.
     pub(crate) fn align(&self, ctx: &BindgenContext) -> usize {
-        let val = self.clang_align_of(ctx);
-        if val < 0 {
-            0
-        } else {
-            val as usize
-        }
+        self.fallible_align(ctx).unwrap_or(0)
     }
 
     /// What is the alignment of this type?
@@ -1336,11 +1328,22 @@ impl Type {
         &self,
         ctx: &BindgenContext,
     ) -> Result<usize, LayoutError> {
-        let val = self.clang_align_of(ctx);
-        if val < 0 {
-            Err(LayoutError::from(val as i32))
-        } else {
-            Ok(val as usize)
+        match self.kind() {
+            // Work-around for https://github.com/llvm/llvm-project/issues/40320.
+            CXType_RValueReference | CXType_LValueReference => {
+                Ok(ctx.target_pointer_size())
+            }
+            // Work-around for https://github.com/llvm/llvm-project/issues/40159.
+            CXType_Auto if self.is_non_deductible_auto_type() => {
+                Err(LayoutError::Undeduced)
+            }
+            _ => {
+                let n: c_longlong = unsafe { clang_Type_getAlignOf(self.x) };
+                match c_ulonglong::try_from(n) {
+                    Ok(alignment) => Ok(alignment.try_into().unwrap()),
+                    Err(_) => Err(LayoutError::from(n)),
+                }
+            }
         }
     }
 
@@ -1358,13 +1361,14 @@ impl Type {
 
     /// Get the number of template arguments this type has, or `None` if it is
     /// not some kind of template.
-    pub(crate) fn num_template_args(&self) -> Option<u32> {
-        let n = unsafe { clang_Type_getNumTemplateArguments(self.x) };
-        if n >= 0 {
-            Some(n as u32)
-        } else {
-            debug_assert_eq!(n, -1);
-            None
+    pub(crate) fn num_template_args(&self) -> Option<c_uint> {
+        let n: c_int = unsafe { clang_Type_getNumTemplateArguments(self.x) };
+        match c_uint::try_from(n) {
+            Ok(n) => Some(n),
+            Err(_) => {
+                debug_assert_eq!(n, -1, "-1 is the only expected error");
+                None
+            }
         }
     }
 
@@ -1382,10 +1386,10 @@ impl Type {
     ///
     /// Returns None if the type is not a function prototype.
     pub(crate) fn args(&self) -> Option<Vec<Type>> {
-        self.num_args().ok().map(|num| {
+        self.num_args().map(|num| {
             (0..num)
                 .map(|i| Type {
-                    x: unsafe { clang_getArgType(self.x, i as c_uint) },
+                    x: unsafe { clang_getArgType(self.x, i) },
                 })
                 .collect()
         })
@@ -1394,13 +1398,15 @@ impl Type {
     /// Given that this type is a function prototype, return the number of arguments it takes.
     ///
     /// Returns Err if the type is not a function prototype.
-    pub(crate) fn num_args(&self) -> Result<u32, ()> {
+    pub(crate) fn num_args(&self) -> Option<c_uint> {
         unsafe {
-            let w = clang_getNumArgTypes(self.x);
-            if w == -1 {
-                Err(())
-            } else {
-                Ok(w as u32)
+            let n: c_int = clang_getNumArgTypes(self.x);
+            match c_uint::try_from(n) {
+                Ok(n) => Some(n),
+                Err(_) => {
+                    debug_assert_eq!(n, -1, "-1 is the only expected error");
+                    None
+                }
             }
         }
     }
@@ -1441,11 +1447,13 @@ impl Type {
     /// Given that this type is an array or vector type, return its number of
     /// elements.
     pub(crate) fn num_elements(&self) -> Option<usize> {
-        let num_elements_returned = unsafe { clang_getNumElements(self.x) };
-        if num_elements_returned != -1 {
-            Some(num_elements_returned as usize)
-        } else {
-            None
+        let n: c_longlong = unsafe { clang_getNumElements(self.x) };
+        match c_ulonglong::try_from(n) {
+            Ok(n) => Some(n.try_into().unwrap()),
+            Err(_) => {
+                debug_assert_eq!(n, -1, "-1 is the only expected error");
+                None
+            }
         }
     }
 
@@ -1569,15 +1577,15 @@ impl CanonicalTypeDeclaration {
 /// An iterator for a type's template arguments.
 pub(crate) struct TypeTemplateArgIterator {
     x: CXType,
-    length: u32,
-    index: u32,
+    length: c_uint,
+    index: c_uint,
 }
 
 impl Iterator for TypeTemplateArgIterator {
     type Item = Type;
     fn next(&mut self) -> Option<Type> {
         if self.index < self.length {
-            let idx = self.index as c_uint;
+            let idx = self.index;
             self.index += 1;
             Some(Type {
                 x: unsafe { clang_Type_getTemplateArgumentAsType(self.x, idx) },
@@ -1591,7 +1599,7 @@ impl Iterator for TypeTemplateArgIterator {
 impl ExactSizeIterator for TypeTemplateArgIterator {
     fn len(&self) -> usize {
         assert!(self.index <= self.length);
-        (self.length - self.index) as usize
+        (self.length - self.index).try_into().unwrap()
     }
 }
 
@@ -1613,7 +1621,12 @@ impl SourceLocation {
             clang_getFileLocation(
                 self.x, &mut file, &mut line, &mut col, &mut off,
             );
-            (File { x: file }, line as usize, col as usize, off as usize)
+            (
+                File { x: file },
+                line.try_into().unwrap(),
+                col.try_into().unwrap(),
+                off.try_into().unwrap(),
+            )
         }
     }
 }
@@ -1779,7 +1792,7 @@ impl Index {
     pub(crate) fn new(pch: bool, diag: bool) -> Index {
         unsafe {
             Index {
-                x: clang_createIndex(pch as c_int, diag as c_int),
+                x: clang_createIndex(pch.into(), diag.into()),
             }
         }
     }
@@ -1833,9 +1846,9 @@ impl TranslationUnit {
                 ix.x,
                 fname.as_ptr(),
                 c_args.as_ptr(),
-                c_args.len() as c_int,
+                c_args.len().try_into().unwrap(),
                 c_unsaved.as_mut_ptr(),
-                c_unsaved.len() as c_uint,
+                c_unsaved.len().try_into().unwrap(),
                 opts,
             )
         };
@@ -1850,11 +1863,11 @@ impl TranslationUnit {
     /// unit.
     pub(crate) fn diags(&self) -> Vec<Diagnostic> {
         unsafe {
-            let num = clang_getNumDiagnostics(self.x) as usize;
+            let num = clang_getNumDiagnostics(self.x);
             let mut diags = vec![];
             for i in 0..num {
                 diags.push(Diagnostic {
-                    x: clang_getDiagnostic(self.x, i as c_uint),
+                    x: clang_getDiagnostic(self.x, i),
                 });
             }
             diags
@@ -1969,7 +1982,7 @@ impl FallbackTranslationUnit {
         let ret = unsafe {
             clang_reparseTranslationUnit(
                 self.tu.x,
-                unsaved.len() as c_uint,
+                unsaved.len().try_into().unwrap(),
                 c_unsaved.as_mut_ptr(),
                 clang_defaultReparseOptions(self.tu.x),
             )
@@ -2037,7 +2050,7 @@ impl UnsavedFile {
         let x = CXUnsavedFile {
             Filename: name.as_ptr(),
             Contents: contents.as_ptr(),
-            Length: contents.as_bytes().len() as c_ulong,
+            Length: contents.as_bytes().len().try_into().unwrap(),
         };
         UnsavedFile { x, name, contents }
     }
@@ -2114,7 +2127,7 @@ pub(crate) fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
         if let Some(usr) = c.usr() {
             print_indent(depth, format!(" {}usr = \"{}\"", prefix, usr));
         }
-        if let Ok(num) = c.num_args() {
+        if let Some(num) = c.num_args() {
             print_indent(depth, format!(" {}number-of-args = {}", prefix, num));
         }
         if let Some(num) = c.num_template_args() {
@@ -2358,22 +2371,13 @@ impl EvalResult {
 
         if unsafe { clang_EvalResult_isUnsignedInt(self.x) } != 0 {
             let value = unsafe { clang_EvalResult_getAsUnsigned(self.x) };
-            if value > i64::MAX as c_ulonglong {
-                return None;
-            }
-
-            return Some(value as i64);
+            #[allow(clippy::useless_conversion)]
+            return value.try_into().ok();
         }
 
         let value = unsafe { clang_EvalResult_getAsLongLong(self.x) };
-        if value > i64::MAX as c_longlong {
-            return None;
-        }
-        if value < i64::MIN as c_longlong {
-            return None;
-        }
-        #[allow(clippy::unnecessary_cast)]
-        Some(value as i64)
+        #[allow(clippy::useless_conversion)]
+        value.try_into().ok()
     }
 
     /// Evaluates the expression as a literal string, that may or may not be
@@ -2430,14 +2434,14 @@ impl TargetInfo {
     /// Tries to obtain target information from libclang.
     pub(crate) fn new(tu: &TranslationUnit) -> Self {
         let triple;
-        let pointer_width;
+        let pointer_width: c_int;
         unsafe {
             let ti = clang_getTranslationUnitTargetInfo(tu.x);
             triple = cxstring_into_string(clang_TargetInfo_getTriple(ti));
             pointer_width = clang_TargetInfo_getPointerWidth(ti);
             clang_TargetInfo_dispose(ti);
         }
-        assert!(pointer_width > 0);
+        let pointer_width = c_uint::try_from(pointer_width).unwrap();
         assert_eq!(pointer_width % 8, 0);
 
         let abi = if triple.contains("msvc") {
@@ -2448,7 +2452,7 @@ impl TargetInfo {
 
         TargetInfo {
             triple,
-            pointer_width: pointer_width as usize,
+            pointer_width: pointer_width.try_into().unwrap(),
             abi,
         }
     }
