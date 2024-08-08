@@ -1,0 +1,33 @@
+name: bindgen-tests with different versions of clang
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        llvm_version: [13, 14, 15, 16, 17, 18]
+
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout code
+
+      - name: Build Clang Docker Image
+        run: |
+          docker build ./dockerfiles/ -f dockerfiles/Dockerfile-clang -t clang:${{ matrix.llvm_version }}-ubuntu --build-arg LLVM_VERSION=${{ matrix.llvm_version }}
+
+      - name: Build Bindgen Docker Image
+        run: |
+          docker build . -f dockerfiles/Dockerfile-bindgen -t bindgen:clang-${{ matrix.llvm_version }}-ubuntu --build-arg LLVM_VERSION=${{ matrix.llvm_version }}
+
+      - name: Run Tests in Docker Container
+        run: |
+          docker run bindgen:clang-${{ matrix.llvm_version }}-ubuntu
