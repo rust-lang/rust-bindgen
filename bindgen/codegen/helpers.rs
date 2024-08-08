@@ -84,7 +84,11 @@ pub(crate) mod attributes {
 /// just noise.
 /// TODO: Should this be `MaybeUninit`, since padding bytes are effectively
 /// uninitialized?
-pub(crate) fn blob(ctx: &BindgenContext, layout: Layout, ffi_safe: bool) -> syn::Type {
+pub(crate) fn blob(
+    ctx: &BindgenContext,
+    layout: Layout,
+    ffi_safe: bool,
+) -> syn::Type {
     let opaque = layout.opaque();
 
     // FIXME(emilio, #412): We fall back to byte alignment, but there are
