@@ -1,5 +1,4 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-pub const FooDefault: u32 = 0;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Foo {
@@ -13,3 +12,4 @@ const _: () = {
 extern "C" {
     pub fn FooNew(value: ::std::os::raw::c_int) -> Foo;
 }
+pub const FooDefault: u32 = 0;

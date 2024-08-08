@@ -4,16 +4,20 @@
 #![allow(non_upper_case_globals, dead_code)]
 #![deny(clippy::missing_docs_in_private_items)]
 
-use crate::ir::context::BindgenContext;
+use crate::ir::context::{BindgenContext, IncludeLocation};
 use clang_sys::*;
+use std::borrow::Cow;
 use std::cmp;
-
+use std::convert::TryInto;
+use std::env::current_dir;
 use std::ffi::{CStr, CString};
 use std::fmt;
 use std::fs::OpenOptions;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong, c_ulonglong};
+use std::path::Path;
+use std::path::PathBuf;
 use std::sync::OnceLock;
 use std::{mem, ptr, slice};
 
@@ -137,8 +141,7 @@ impl Cursor {
 
     /// Returns whether the cursor refers to a built-in definition.
     pub(crate) fn is_builtin(&self) -> bool {
-        let (file, _, _, _) = self.location().location();
-        file.name().is_none()
+        matches!(self.location(), SourceLocation::Builtin { .. })
     }
 
     /// Get the `Cursor` for this cursor's referent's lexical parent.
@@ -378,8 +381,31 @@ impl Cursor {
     /// Get the source location for the referent.
     pub(crate) fn location(&self) -> SourceLocation {
         unsafe {
-            SourceLocation {
-                x: clang_getCursorLocation(self.x),
+            let location = clang_getCursorLocation(self.x);
+
+            let mut file = mem::zeroed();
+            let mut line = 0;
+            let mut column = 0;
+            let mut offset = 0;
+            clang_getSpellingLocation(
+                location,
+                &mut file,
+                &mut line,
+                &mut column,
+                &mut offset,
+            );
+
+            if file.is_null() {
+                SourceLocation::Builtin {
+                    offset: offset.try_into().unwrap(),
+                }
+            } else {
+                SourceLocation::File {
+                    file: SourceFile::from_raw(file),
+                    line: line.try_into().unwrap(),
+                    column: column.try_into().unwrap(),
+                    offset: offset.try_into().unwrap(),
+                }
             }
         }
     }
@@ -510,27 +536,11 @@ impl Cursor {
     ) where
         Visitor: FnMut(&mut BindgenContext, Cursor),
     {
-        // FIXME(#2556): The current source order stuff doesn't account well for different levels
-        // of includes, or includes that show up at the same byte offset because they are passed in
-        // via CLI.
-        const SOURCE_ORDER_ENABLED: bool = false;
-        if !SOURCE_ORDER_ENABLED {
-            return self.visit(|c| {
-                visitor(ctx, c);
-                CXChildVisit_Continue
-            });
-        }
-
         let mut children = self.collect_children();
         for child in &children {
             if child.kind() == CXCursor_InclusionDirective {
-                if let Some(included_file) = child.get_included_file_name() {
-                    let location = child.location();
-                    let (source_file, _, _, offset) = location.location();
-
-                    if let Some(source_file) = source_file.name() {
-                        ctx.add_include(source_file, included_file, offset);
-                    }
+                if let Some(included_file) = child.get_included_file() {
+                    ctx.add_include(included_file, child.location());
                 }
             }
         }
@@ -541,53 +551,16 @@ impl Cursor {
         }
     }
 
-    /// Compare source order of two cursors, considering `#include` directives.
-    ///
-    /// Built-in items provided by the compiler (which don't have a source file),
-    /// are sorted first. Remaining files are sorted by their position in the source file.
-    /// If the items' source files differ, they are sorted by the position of the first
-    /// `#include` for their source file. If no source files are included, `None` is returned.
+    /// Compare two cursors according how they appear in source files.
     fn cmp_by_source_order(
         &self,
         other: &Self,
         ctx: &BindgenContext,
     ) -> cmp::Ordering {
-        let (file, _, _, offset) = self.location().location();
-        let (other_file, _, _, other_offset) = other.location().location();
+        let location = self.location();
+        let other_location = other.location();
 
-        let (file, other_file) = match (file.name(), other_file.name()) {
-            (Some(file), Some(other_file)) => (file, other_file),
-            // Built-in definitions should come first.
-            (Some(_), None) => return cmp::Ordering::Greater,
-            (None, Some(_)) => return cmp::Ordering::Less,
-            (None, None) => return cmp::Ordering::Equal,
-        };
-
-        if file == other_file {
-            // Both items are in the same source file, compare by byte offset.
-            return offset.cmp(&other_offset);
-        }
-
-        let include_location = ctx.included_file_location(&file);
-        let other_include_location = ctx.included_file_location(&other_file);
-        match (include_location, other_include_location) {
-            (Some((file2, offset2)), _) if file2 == other_file => {
-                offset2.cmp(&other_offset)
-            }
-            (Some(_), None) => cmp::Ordering::Greater,
-            (_, Some((other_file2, other_offset2))) if file == other_file2 => {
-                offset.cmp(&other_offset2)
-            }
-            (None, Some(_)) => cmp::Ordering::Less,
-            (Some((file2, offset2)), Some((other_file2, other_offset2))) => {
-                if file2 == other_file2 {
-                    offset2.cmp(&other_offset2)
-                } else {
-                    cmp::Ordering::Equal
-                }
-            }
-            (None, None) => cmp::Ordering::Equal,
-        }
+        location.cmp_by_source_order(&other_location, ctx)
     }
 
     /// Collect all of this cursor's children into a vec and return them.
@@ -960,14 +933,12 @@ impl Cursor {
     /// Obtain the real path name of a cursor of InclusionDirective kind.
     ///
     /// Returns None if the cursor does not include a file, otherwise the file's full name
-    pub(crate) fn get_included_file_name(&self) -> Option<String> {
-        let file = unsafe { clang_sys::clang_getIncludedFile(self.x) };
+    pub(crate) fn get_included_file(&self) -> Option<SourceFile> {
+        let file = unsafe { clang_getIncludedFile(self.x) };
         if file.is_null() {
             None
         } else {
-            Some(unsafe {
-                cxstring_into_string(clang_sys::clang_getFileName(file))
-            })
+            Some(unsafe { SourceFile::from_raw(file) })
         }
     }
 }
@@ -1595,36 +1566,121 @@ impl ExactSizeIterator for TypeTemplateArgIterator {
     }
 }
 
-/// A `SourceLocation` is a file, line, column, and byte offset location for
-/// some source text.
-pub(crate) struct SourceLocation {
-    x: CXSourceLocation,
+/// A location of some source code.
+#[derive(Clone)]
+pub(crate) enum SourceLocation {
+    /// Location of a built-in.
+    Builtin {
+        /// Offset.
+        offset: usize,
+    },
+    /// Location in a source file.
+    File {
+        /// The source file.
+        file: SourceFile,
+        /// Line in the source file.
+        line: usize,
+        /// Column in the source file.
+        column: usize,
+        /// Offset in the source file.
+        offset: usize,
+    },
 }
 
 impl SourceLocation {
-    /// Get the (file, line, column, byte offset) tuple for this source
-    /// location.
-    pub(crate) fn location(&self) -> (File, usize, usize, usize) {
-        unsafe {
-            let mut file = mem::zeroed();
-            let mut line = 0;
-            let mut col = 0;
-            let mut off = 0;
-            clang_getFileLocation(
-                self.x, &mut file, &mut line, &mut col, &mut off,
-            );
-            (File { x: file }, line as usize, col as usize, off as usize)
+    /// Locations of built-in items provided by the compiler (which don't have a source file),
+    /// are sorted first. Remaining locations are sorted by their position in the source file.
+    /// If the locations' source files differ, they are sorted by the position of where the
+    /// source files are first transitively included, see `IncludeLocation::cmp_by_source_order`.
+    pub fn cmp_by_source_order(
+        &self,
+        other: &Self,
+        ctx: &BindgenContext,
+    ) -> cmp::Ordering {
+        match (self, other) {
+            (
+                SourceLocation::Builtin { offset },
+                SourceLocation::Builtin {
+                    offset: other_offset,
+                },
+            ) => offset.cmp(other_offset),
+            // Built-ins come first.
+            (SourceLocation::Builtin { .. }, _) => cmp::Ordering::Less,
+            (_, SourceLocation::Builtin { .. }) => {
+                other.cmp_by_source_order(self, ctx).reverse()
+            }
+            (
+                SourceLocation::File { file, offset, .. },
+                SourceLocation::File {
+                    file: other_file,
+                    offset: other_offset,
+                    ..
+                },
+            ) => {
+                let file_path = file.path();
+                let other_file_path = other_file.path();
+
+                if file_path == other_file_path {
+                    return offset.cmp(other_offset);
+                }
+
+                // If `file` is transitively included via `ancestor_file`,
+                // find the offset of the include directive in `ancestor_file`.
+                let offset_in_ancestor =
+                    |file_path: &Path, ancestor_file_path: &Path| {
+                        let mut file_path = Cow::Borrowed(file_path);
+                        while file_path != ancestor_file_path {
+                            let include_location =
+                                ctx.include_location(file_path);
+                            file_path = if let IncludeLocation::File {
+                                file,
+                                offset,
+                                ..
+                            } = include_location
+                            {
+                                let file_path = Cow::Owned(file.path());
+
+                                if file_path == ancestor_file_path {
+                                    return Some(offset);
+                                }
+
+                                file_path
+                            } else {
+                                break;
+                            }
+                        }
+
+                        None
+                    };
+
+                if let Some(offset) =
+                    offset_in_ancestor(&file_path, &other_file_path)
+                {
+                    return offset.cmp(other_offset);
+                }
+
+                if let Some(other_offset) =
+                    offset_in_ancestor(&other_file_path, &file_path)
+                {
+                    return offset.cmp(other_offset);
+                }
+
+                // If the source files are siblings, compare their include locations.
+                let parent = ctx.include_location(file_path);
+                let other_parent = ctx.include_location(&other_file_path);
+                parent.cmp_by_source_order(other_parent, ctx)
+            }
         }
     }
 }
 
 impl fmt::Display for SourceLocation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let (file, line, col, _) = self.location();
-        if let Some(name) = file.name() {
-            write!(f, "{}:{}:{}", name, line, col)
-        } else {
-            "builtin definitions".fmt(f)
+        match self {
+            Self::Builtin { .. } => "built-in".fmt(f),
+            Self::File {
+                file, line, column, ..
+            } => write!(f, "{}:{}:{}", file.path().display(), line, column),
         }
     }
 }
@@ -1735,31 +1791,62 @@ impl Iterator for CommentAttributesIterator {
 }
 
 /// A source file.
-pub(crate) struct File {
-    x: CXFile,
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct SourceFile {
+    name: Box<str>,
 }
 
-impl File {
-    /// Get the name of this source file.
-    pub(crate) fn name(&self) -> Option<String> {
-        if self.x.is_null() {
-            return None;
+impl SourceFile {
+    /// Creates a new `SourceFile` from a file name.
+    #[inline]
+    pub fn new<P: AsRef<str>>(name: P) -> Self {
+        Self {
+            name: name.as_ref().to_owned().into_boxed_str(),
         }
-        Some(unsafe { cxstring_into_string(clang_getFileName(self.x)) })
+    }
+
+    /// Creates a new `SourceFile` from a raw pointer.
+    ///
+    /// # Safety
+    ///
+    /// `file` must point to a valid `CXFile`.
+    pub unsafe fn from_raw(file: CXFile) -> Self {
+        let name = unsafe { cxstring_into_string(clang_getFileName(file)) };
+
+        Self::new(name)
+    }
+
+    #[inline]
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Get the path of this source file.
+    pub fn path(&self) -> PathBuf {
+        let path = Path::new(self.name());
+        if path.is_relative() {
+            current_dir()
+                .expect("Cannot retrieve current directory")
+                .join(path)
+        } else {
+            path.to_owned()
+        }
     }
 }
 
-fn cxstring_to_string_leaky(s: CXString) -> String {
+unsafe fn cxstring_to_string_leaky(s: CXString) -> String {
     if s.data.is_null() {
-        return "".to_owned();
+        Cow::Borrowed("")
+    } else {
+        let c_str = CStr::from_ptr(clang_getCString(s) as *const _);
+        c_str.to_string_lossy()
     }
-    let c_str = unsafe { CStr::from_ptr(clang_getCString(s) as *const _) };
-    c_str.to_string_lossy().into_owned()
+    .into_owned()
 }
 
-fn cxstring_into_string(s: CXString) -> String {
+unsafe fn cxstring_into_string(s: CXString) -> String {
     let ret = cxstring_to_string_leaky(s);
-    unsafe { clang_disposeString(s) };
+    clang_disposeString(s);
     ret
 }
 
@@ -1868,6 +1955,15 @@ impl TranslationUnit {
                 x: clang_getTranslationUnitCursor(self.x),
             }
         }
+    }
+
+    /// Get the source file of this.
+    pub fn file(&self) -> SourceFile {
+        let name = unsafe {
+            cxstring_into_string(clang_getTranslationUnitSpelling(self.x))
+        };
+
+        SourceFile::new(name)
     }
 
     /// Save a translation unit to the given file.

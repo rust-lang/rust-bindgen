@@ -4,10 +4,6 @@
 pub struct Foo {
     pub _address: u8,
 }
-extern "C" {
-    #[link_name = "\u{1}_Z1fv"]
-    pub fn f();
-}
 const _: () = {
     [
         "Size of template specialization: Foo_open0_Bar_close0",
@@ -16,6 +12,18 @@ const _: () = {
         "Align of template specialization: Foo_open0_Bar_close0",
     ][::std::mem::align_of::<Foo>() - 1usize];
 };
+const _: () = {
+    [
+        "Size of template specialization: Foo_open0_Boo_close0",
+    ][::std::mem::size_of::<Foo>() - 1usize];
+    [
+        "Align of template specialization: Foo_open0_Boo_close0",
+    ][::std::mem::align_of::<Foo>() - 1usize];
+};
+extern "C" {
+    #[link_name = "\u{1}_Z1fv"]
+    pub fn f();
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Baz {
@@ -24,14 +32,6 @@ pub struct Baz {
 const _: () = {
     ["Size of Baz"][::std::mem::size_of::<Baz>() - 1usize];
     ["Alignment of Baz"][::std::mem::align_of::<Baz>() - 1usize];
-};
-const _: () = {
-    [
-        "Size of template specialization: Foo_open0_Boo_close0",
-    ][::std::mem::size_of::<Foo>() - 1usize];
-    [
-        "Align of template specialization: Foo_open0_Boo_close0",
-    ][::std::mem::align_of::<Foo>() - 1usize];
 };
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
