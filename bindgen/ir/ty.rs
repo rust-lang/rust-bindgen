@@ -582,7 +582,7 @@ pub(crate) enum TypeKind {
     /// A compound type, that is, a class, struct, or union.
     Comp(CompInfo),
 
-    /// An opaque type that we just don't understand. All usage of this shoulf
+    /// An opaque type that we just don't understand. All usage of this should
     /// result in an opaque blob of bytes generated from the containing type's
     /// layout.
     Opaque,
