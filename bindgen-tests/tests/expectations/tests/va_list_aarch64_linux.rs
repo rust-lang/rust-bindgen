@@ -3,7 +3,7 @@
 /// type, it is represented like this.
 #[derive(PartialEq, Copy, Clone, Debug, Hash)]
 #[repr(C)]
-struct __BindgenOpaqueArray<T: Copy, const N: usize>(pub [T; N]);
+pub struct __BindgenOpaqueArray<T: Copy, const N: usize>(pub [T; N]);
 impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<T, N> {
     fn default() -> Self {
         Self([<T as Default>::default(); N])
