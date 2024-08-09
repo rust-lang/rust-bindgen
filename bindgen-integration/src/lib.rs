@@ -254,7 +254,7 @@ fn test_item_rename() {
 #[test]
 fn test_matching_with_rename() {
     assert_eq!(bindings::enum_to_be_constified_THREE, 3);
-    assert_eq!(unsafe { bindings::TEMPLATED_CONST_VALUE.len() }, 30);
+    assert_eq!(unsafe { bindings::TEMPLATED_CONST_VALUE.0.len() }, 30);
 }
 
 #[test]

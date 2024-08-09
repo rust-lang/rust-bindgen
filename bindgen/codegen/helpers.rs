@@ -75,9 +75,16 @@ pub(crate) mod attributes {
     }
 }
 
-/// Generates a proper type for a field or type with a given `Layout`, that is,
-/// a type with the correct size and alignment restrictions.
-pub(crate) fn blob(layout: Layout) -> syn::Type {
+/// The `ffi_safe` argument should be true if this is a type that the user might
+/// reasonably use, e.g. not struct padding, where the __BindgenOpaqueArray is
+/// just noise.
+/// TODO: Should this be `MaybeUninit`, since padding bytes are effectively
+/// uninitialized?
+pub(crate) fn blob(
+    ctx: &BindgenContext,
+    layout: Layout,
+    ffi_safe: bool,
+) -> syn::Type {
     let opaque = layout.opaque();
 
     // FIXME(emilio, #412): We fall back to byte alignment, but there are
@@ -93,7 +100,12 @@ pub(crate) fn blob(layout: Layout) -> syn::Type {
 
     if data_len == 1 {
         ty
+    } else if ffi_safe && ctx.options().rust_features().min_const_generics {
+        ctx.generated_opaque_array();
+        syn::parse_quote! { __BindgenOpaqueArray<#ty, #data_len> }
     } else {
+        // This is not FFI safe as an argument; the struct above is
+        // preferable.
         syn::parse_quote! { [ #ty ; #data_len ] }
     }
 }

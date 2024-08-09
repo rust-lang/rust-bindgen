@@ -393,7 +393,7 @@ impl<'a> StructLayoutTracker<'a> {
     }
 
     fn padding_field(&mut self, layout: Layout) -> proc_macro2::TokenStream {
-        let ty = helpers::blob(layout);
+        let ty = helpers::blob(self.ctx, layout, false);
         let padding_count = self.padding_count;
 
         self.padding_count += 1;

@@ -388,6 +388,9 @@ pub(crate) struct BindgenContext {
     /// The options given by the user via cli or other medium.
     options: BindgenOptions,
 
+    /// Whether an opaque array was generated
+    generated_opaque_array: Cell<bool>,
+
     /// Whether a bindgen complex was generated
     generated_bindgen_complex: Cell<bool>,
 
@@ -595,6 +598,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             options,
             generated_bindgen_complex: Cell::new(false),
             generated_bindgen_float16: Cell::new(false),
+            generated_opaque_array: Cell::new(false),
             allowlisted: None,
             blocklisted_types_implement_traits: Default::default(),
             codegen_items: None,
@@ -2605,6 +2609,16 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         } else {
             self.rust_ident_raw("std")
         }
+    }
+
+    /// Call if an opaque array is generated
+    pub(crate) fn generated_opaque_array(&self) {
+        self.generated_opaque_array.set(true)
+    }
+
+    /// Whether we need to generate the opaque array type
+    pub(crate) fn need_opaque_array_type(&self) -> bool {
+        self.generated_opaque_array.get()
     }
 
     /// Call if a bindgen complex is generated
