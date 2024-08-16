@@ -1,3 +1,5 @@
+name: Create release PR
+
 on:
   workflow_dispatch:
     inputs:
@@ -13,7 +15,7 @@ on:
           - patch   
 
 jobs:
-  Create Release PR:
+  create-release-pr:
     permissions:
       id-token: write # Enable OIDC
       pull-requests: write
