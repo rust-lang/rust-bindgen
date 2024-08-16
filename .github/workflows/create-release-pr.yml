@@ -1,0 +1,44 @@
+on:
+  workflow_dispatch:
+    inputs:
+      level:
+        description: |
+          Select the level of the release:
+            - minor: Increase the minor version (x.y.0)
+            - patch: Increase the patch version (x.y.z)
+        required: true
+        type: choice
+        options:
+          - minor
+          - patch   
+
+jobs:
+  Create Release PR:
+    permissions:
+      id-token: write # Enable OIDC
+      pull-requests: write
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Configure gitsign
+        uses: chainguard-dev/actions/setup-gitsign@main
+
+      - name: Install `cargo-release`
+        uses: taiki-e/install-action@v1
+        with:
+          tool: cargo-release
+      
+      - name: Install `npm`
+        uses: actions/setup-node@v4
+
+      - name: Install `doctoc`
+        run: npm install doctoc
+
+      - name: Create a release pull request
+        uses: cargo-bins/release-pr@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ github.event.inputs.level }}
