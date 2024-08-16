@@ -1,0 +1,68 @@
+name: Bump version for release 
+
+on:
+  workflow_dispatch:
+    inputs:
+      level:
+        description: |
+          Select the level of the release
+        required: true
+        type: choice
+        options:
+          - minor
+          - patch   
+
+jobs:
+  bump-version:
+    permissions:
+      id-token: write 
+      pull-requests: write
+      contents: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure gitsign
+        uses: chainguard-dev/actions/setup-gitsign@main
+
+      - name: Install cargo-release
+        uses: taiki-e/install-action@v1
+        with:
+          tool: cargo-release
+
+      - name: Install sd
+        uses: taiki-e/install-action@v1
+        with:
+          tool: sd
+      
+      - name: Install npm
+        uses: actions/setup-node@v4
+
+      - name: Install doctoc
+        run: npm install doctoc
+
+      - name: Bump version 
+        run: |
+          cargo release version ${{ inputs.level }} --execute --no-confirm
+
+      - name: Extract version
+        run: |
+          echo "version=$(cargo pkgid -p bindgen | cut -d '#' -f 2)" >> $GITHUB_ENV
+
+      - name: Update changelog
+        run: |
+          sd "# Unreleased" "# Unreleased\n## Added\n## Changed\n## Removed\n## Fixed\n## Security\n\n# ${{ env.version }} ($(date -I))" CHANGELOG.md
+          ./node_modules/doctoc/doctoc.js CHANGELOG.md
+
+      - name: Create PR 
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: bump-version/${{ env.version }}
+          base: main
+          commit-message: "Bump crates version to ${{ env.version }}"
+          title: "Bump crates version to ${{ env.version }}"
+          body: |
+            This pull request was created automatically by GitHub Actions.
