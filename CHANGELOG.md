@@ -211,15 +211,16 @@
 ## Changed
 - Remove which and lazy-static dependencies (#2809, #2817).
 - Generate compile-time layout tests (#2787).
+- Print `bindgen-cli` errors to stderr instead of stdout (#2840)
 ## Removed
 ## Fixed
 - Fix `--formatter=prettyplease` not working in `bindgen-cli` by adding `prettyplease` feature and
   enabling it by default for `bindgen-cli` (#2789) .
-- Fix `--allowlist-item` so anonymous enums are no longer ignored.
-- Use clang_getFileLocation instead of clang_getSpellingLocation to fix clang-trunk (#2824)
+- Fix `--allowlist-item` so anonymous enums are no longer ignored (#2827).
+- Use clang_getFileLocation instead of clang_getSpellingLocation to fix clang-trunk (#2824).
 - Fix generated constants: `f64::INFINITY`, `f64::NEG_ INFINITY`, `f64::NAN` (#2854).
-
 ## Security
+- Update `tempfile` and `rustix` due to [GHSA-c827-hfw6-qwvm](https://github.com/advisories/GHSA-c827-hfw6-qwvm).
 
 # 0.69.4 (2024-02-04)
 ## Added
