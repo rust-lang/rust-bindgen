@@ -13,8 +13,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Extract version
+      - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Extract version
         run: |
           echo "version=$(cargo pkgid -p bindgen | cut -d '#' -f 2)" >> $GITHUB_ENV
  
