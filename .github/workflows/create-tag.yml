@@ -1,0 +1,27 @@
+name: Create tag for release
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  create-tag:
+    if: github.event.pull_request.merged == true && github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name && startsWith(github.event.pull_request.head.ref, 'bump-version')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Extract version
+        run: |
+          echo "version=$(cargo pkgid -p bindgen | cut -d '#' -f 2)" >> $GITHUB_ENV
+ 
+      - name: Create tag
+        run: |
+          TAG_NAME="v${{ env.VERSION }}"
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
