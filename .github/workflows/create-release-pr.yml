@@ -1,6 +1,9 @@
 name: Create release PR
 
 on:
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       level:
