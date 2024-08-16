@@ -46,5 +46,5 @@ jobs:
         uses: cargo-bins/release-pr@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ github.event.inputs.level }}
+          version: minor 
           crate-release-all: true
