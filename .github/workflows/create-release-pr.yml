@@ -44,3 +44,4 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ github.event.inputs.level }}
+          crate-release-all: true
