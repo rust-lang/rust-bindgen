@@ -7,11 +7,8 @@ use std::io::{self, BufRead, BufReader};
 use std::{borrow::Cow, fs::File};
 
 use annotate_snippets::{
-    display_list::{DisplayList, FormatOptions},
-    snippet::{Annotation, Slice as ExtSlice, Snippet},
+    Annotation, AnnotationType, Renderer, Slice as ExtSlice, Snippet,
 };
-
-use annotate_snippets::snippet::AnnotationType;
 
 #[derive(Clone, Copy, Debug)]
 pub(crate) enum Level {
@@ -121,12 +118,9 @@ impl<'a> Diagnostic<'a> {
             title,
             footer,
             slices,
-            opt: FormatOptions {
-                color: true,
-                ..Default::default()
-            },
         };
-        let dl = DisplayList::from(snippet);
+        let renderer = Renderer::styled();
+        let dl = renderer.render(snippet);
 
         if INVOKED_BY_BUILD_SCRIPT.with(Clone::clone) {
             // This is just a hack which hides the `warning:` added by cargo at the beginning of
