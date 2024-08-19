@@ -25,7 +25,7 @@ name = "bindgen"
 path = "lib.rs"
 
 [dependencies]
-annotate-snippets = { version = "0.10.2", optional = true }
+annotate-snippets = { version = "0.11.4", optional = true }
 bitflags = "2.2.1"
 cexpr = "0.6"
 clang-sys = { version = "1", features = ["clang_6_0"] }

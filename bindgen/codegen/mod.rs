@@ -4617,11 +4617,11 @@ fn unsupported_abi_diagnostic(
                 fn_name,
                 error
             ),
-            Level::Warn,
+            Level::Warning,
         )
         .add_annotation(
             "No code will be generated for this function.",
-            Level::Warn,
+            Level::Warning,
         )
         .add_annotation(
             format!(
@@ -4665,7 +4665,7 @@ fn variadic_fn_diagnostic(
 
         let mut diag = Diagnostic::default();
 
-        diag.with_title(format!("Cannot generate wrapper for the static function `{}`.", fn_name), Level::Warn)
+        diag.with_title(format!("Cannot generate wrapper for the static function `{}`.", fn_name), Level::Warning)
             .add_annotation("The `--wrap-static-fns` feature does not support variadic functions.", Level::Note)
             .add_annotation("No code will be generated for this function.", Level::Note);
 
