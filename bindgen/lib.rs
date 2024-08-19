@@ -596,7 +596,7 @@ fn deprecated_target_diagnostic(target: RustTarget, _options: &BindgenOptions) {
         let mut diagnostic = Diagnostic::default();
         diagnostic.with_title(
             format!("The {} Rust target is deprecated.", target),
-            Level::Warn,
+            Level::Warning,
         );
         diagnostic.add_annotation(
             "This Rust target was passed to `--rust-target`",
@@ -1057,7 +1057,7 @@ fn rustfmt_non_fatal_error_diagnostic(msg: &str, _options: &BindgenOptions) {
         use crate::diagnostics::{Diagnostic, Level};
 
         Diagnostic::default()
-            .with_title(msg, Level::Warn)
+            .with_title(msg, Level::Warning)
             .add_annotation(
                 "The bindings will be generated but not formatted.",
                 Level::Note,

@@ -3144,7 +3144,7 @@ fn unused_regex_diagnostic(item: &str, name: &str, _ctx: &BindgenContext) {
         Diagnostic::default()
             .with_title(
                 format!("Unused regular expression: `{}`.", item),
-                Level::Warn,
+                Level::Warning,
             )
             .add_annotation(
                 format!("This regular expression was passed to `{}`.", name),

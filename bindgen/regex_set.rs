@@ -180,15 +180,15 @@ fn invalid_regex_warning(
 
                 diagnostic.with_title(
                     "Error while parsing a regular expression.",
-                    Level::Warn,
+                    Level::Warning,
                 );
             } else {
-                diagnostic.with_title(string, Level::Warn);
+                diagnostic.with_title(string, Level::Warning);
             }
         }
         err => {
             let err = err.to_string();
-            diagnostic.with_title(err, Level::Warn);
+            diagnostic.with_title(err, Level::Warning);
         }
     }
 
