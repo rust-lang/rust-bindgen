@@ -17,7 +17,7 @@ use super::module::Module;
 use super::template::{AsTemplateParam, TemplateParameters};
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{Type, TypeKind};
-use crate::clang;
+use crate::clang::{self, SourceLocation};
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 
 use std::cell::{Cell, OnceCell};
@@ -640,12 +640,9 @@ impl Item {
         }
 
         if !ctx.options().blocklisted_files.is_empty() {
-            if let Some(location) = &self.location {
-                let (file, _, _, _) = location.location();
-                if let Some(filename) = file.name() {
-                    if ctx.options().blocklisted_files.matches(filename) {
-                        return true;
-                    }
+            if let Some(SourceLocation::File { file, .. }) = &self.location {
+                if ctx.options().blocklisted_files.matches(file.name()) {
+                    return true;
                 }
             }
         }
@@ -1429,17 +1426,17 @@ impl Item {
             }
 
             CXCursor_InclusionDirective => {
-                let file = cursor.get_included_file_name();
+                let file = cursor.get_included_file();
                 match file {
-                    None => {
-                        warn!("Inclusion of a nameless file in {:?}", cursor);
-                    }
                     Some(included_file) => {
                         for cb in &ctx.options().parse_callbacks {
-                            cb.include_file(&included_file);
+                            cb.include_file(included_file.name());
                         }
 
-                        ctx.add_dep(included_file.into_boxed_str());
+                        ctx.add_dep(included_file);
+                    }
+                    None => {
+                        warn!("Inclusion of a nameless file in {:?}", cursor)
                     }
                 }
                 Err(ParseError::Continue)

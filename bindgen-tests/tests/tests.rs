@@ -535,9 +535,9 @@ fn test_mixed_header_and_header_contents() {
             env!("CARGO_MANIFEST_DIR"),
             "/tests/headers/func_ptr.h"
         ))
-        .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/char.h"))
         .header_contents("test.h", "int bar(const char* a);")
         .header_contents("test2.h", "float bar2(const char* b);")
+        .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/char.h"))
         .clang_arg("--target=x86_64-unknown-linux")
         .generate()
         .unwrap()
