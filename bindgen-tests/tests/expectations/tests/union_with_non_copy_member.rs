@@ -47,6 +47,7 @@ impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 pub struct NonCopyType {
     pub foo: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of NonCopyType"][::std::mem::size_of::<NonCopyType>() - 4usize];
     ["Alignment of NonCopyType"][::std::mem::align_of::<NonCopyType>() - 4usize];
@@ -60,6 +61,7 @@ pub struct WithBindgenGeneratedWrapper {
     pub bar: __BindgenUnionField<::std::os::raw::c_int>,
     pub bindgen_union_field: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of WithBindgenGeneratedWrapper",
@@ -88,6 +90,7 @@ pub union WithManuallyDrop {
     pub non_copy_type: ::std::mem::ManuallyDrop<NonCopyType>,
     pub bar: ::std::mem::ManuallyDrop<::std::os::raw::c_int>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of WithManuallyDrop"][::std::mem::size_of::<WithManuallyDrop>() - 4usize];
     [
@@ -115,6 +118,7 @@ pub struct WithDefaultWrapper {
     pub bar: __BindgenUnionField<::std::os::raw::c_int>,
     pub bindgen_union_field: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of WithDefaultWrapper"][::std::mem::size_of::<WithDefaultWrapper>() - 4usize];
     [

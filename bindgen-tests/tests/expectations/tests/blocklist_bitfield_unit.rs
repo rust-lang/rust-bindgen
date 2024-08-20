@@ -10,6 +10,7 @@ pub struct C {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub baz: ::std::os::raw::c_uint,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of C"][::std::mem::size_of::<C>() - 8usize];
     ["Alignment of C"][::std::mem::align_of::<C>() - 4usize];

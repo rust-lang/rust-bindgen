@@ -9,6 +9,7 @@ pub mod foo__bindgen_ty_1 {
     pub const FOO_A: Type = 0;
     pub const FOO_B: Type = 1;
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::std::mem::size_of::<foo>() - 4usize];
     ["Alignment of foo"][::std::mem::align_of::<foo>() - 4usize];

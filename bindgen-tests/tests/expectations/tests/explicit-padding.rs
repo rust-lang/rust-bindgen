@@ -8,6 +8,7 @@ pub struct pad_me {
     pub third: u16,
     pub __bindgen_padding_1: [u8; 2usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of pad_me"][::std::mem::size_of::<pad_me>() - 12usize];
     ["Alignment of pad_me"][::std::mem::align_of::<pad_me>() - 4usize];
@@ -22,6 +23,7 @@ pub union dont_pad_me {
     pub second: u32,
     pub third: u16,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of dont_pad_me"][::std::mem::size_of::<dont_pad_me>() - 4usize];
     ["Alignment of dont_pad_me"][::std::mem::align_of::<dont_pad_me>() - 4usize];

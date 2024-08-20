@@ -19,10 +19,12 @@ pub mod root {
     pub struct Foo_Bar {
         pub _address: u8,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of Foo_Bar"][::std::mem::size_of::<Foo_Bar>() - 1usize];
         ["Alignment of Foo_Bar"][::std::mem::align_of::<Foo_Bar>() - 1usize];
     };
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of Foo"][::std::mem::size_of::<Foo>() - 1usize];
         ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 1usize];
@@ -44,6 +46,7 @@ pub mod root {
  +------+          +-------+*/
             pub member: ::std::os::raw::c_int,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of Baz"][::std::mem::size_of::<Baz>() - 4usize];
             ["Alignment of Baz"][::std::mem::align_of::<Baz>() - 4usize];
@@ -59,6 +62,7 @@ pub mod root {
         pub struct InInlineNS {
             pub _address: u8,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of InInlineNS"][::std::mem::size_of::<InInlineNS>() - 1usize];
             ["Alignment of InInlineNS"][::std::mem::align_of::<InInlineNS>() - 1usize];
@@ -68,6 +72,7 @@ pub mod root {
         pub struct Bazz {
             pub _address: u8,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of Bazz"][::std::mem::size_of::<Bazz>() - 1usize];
             ["Alignment of Bazz"][::std::mem::align_of::<Bazz>() - 1usize];

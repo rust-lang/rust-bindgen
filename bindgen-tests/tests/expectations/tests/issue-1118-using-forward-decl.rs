@@ -5,6 +5,7 @@ pub type c = nsTArray;
 pub struct nsTArray_base {
     pub d: *mut ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of nsTArray_base"][::std::mem::size_of::<nsTArray_base>() - 8usize];
     ["Alignment of nsTArray_base"][::std::mem::align_of::<nsTArray_base>() - 8usize];
@@ -40,6 +41,7 @@ impl Default for nsTArray {
 pub struct nsIContent {
     pub foo: nsTArray,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of nsIContent"][::std::mem::size_of::<nsIContent>() - 8usize];
     ["Alignment of nsIContent"][::std::mem::align_of::<nsIContent>() - 8usize];
@@ -60,6 +62,7 @@ extern "C" {
     #[link_name = "\u{1}_Z35Gecko_GetAnonymousContentForElementv"]
     pub fn Gecko_GetAnonymousContentForElement() -> *mut nsTArray;
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: nsTArray_open0_ptr_nsIContent_close0",
@@ -68,6 +71,7 @@ const _: () = {
         "Align of template specialization: nsTArray_open0_ptr_nsIContent_close0",
     ][::std::mem::align_of::<nsTArray>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: nsTArray_open0_ptr_nsIContent_close0",

@@ -4,6 +4,7 @@
 pub struct TestOverload {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of TestOverload"][::std::mem::size_of::<TestOverload>() - 1usize];
     ["Alignment of TestOverload"][::std::mem::align_of::<TestOverload>() - 1usize];
@@ -38,6 +39,7 @@ impl TestOverload {
 pub struct TestPublicNoArgs {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of TestPublicNoArgs"][::std::mem::size_of::<TestPublicNoArgs>() - 1usize];
     [

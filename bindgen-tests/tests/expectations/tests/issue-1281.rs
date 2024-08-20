@@ -9,11 +9,13 @@ pub struct bar {
 pub struct foo {
     pub foo: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::std::mem::size_of::<foo>() - 4usize];
     ["Alignment of foo"][::std::mem::align_of::<foo>() - 4usize];
     ["Offset of field: foo::foo"][::std::mem::offset_of!(foo, foo) - 0usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of bar"][::std::mem::size_of::<bar>() - 4usize];
     ["Alignment of bar"][::std::mem::align_of::<bar>() - 4usize];
@@ -25,6 +27,7 @@ pub type bar_t = bar;
 pub struct baz {
     pub f: foo,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of baz"][::std::mem::size_of::<baz>() - 4usize];
     ["Alignment of baz"][::std::mem::align_of::<baz>() - 4usize];

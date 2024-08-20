@@ -30,6 +30,7 @@ pub const Foo_Baz: Foo__bindgen_ty_1 = Foo__bindgen_ty_1::Bar;
 pub enum Foo__bindgen_ty_1 {
     Bar = 0,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 1usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 1usize];

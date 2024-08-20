@@ -12,6 +12,7 @@ extern "C" {
     #[link_name = "\u{1}_ZN7MyClass26example_check_no_collisionE"]
     pub static mut MyClass_example_check_no_collision: *const ::std::os::raw::c_int;
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of MyClass"][::std::mem::size_of::<MyClass>() - 1usize];
     ["Alignment of MyClass"][::std::mem::align_of::<MyClass>() - 1usize];

@@ -10,6 +10,7 @@ pub struct nsISupports__bindgen_vtable {
 pub struct nsISupports {
     pub vtable_: *const nsISupports__bindgen_vtable,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of nsISupports"][::std::mem::size_of::<nsISupports>() - 8usize];
     ["Alignment of nsISupports"][::std::mem::align_of::<nsISupports>() - 8usize];
@@ -34,6 +35,7 @@ extern "C" {
 pub struct nsIRunnable {
     pub _base: nsISupports,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of nsIRunnable"][::std::mem::size_of::<nsIRunnable>() - 8usize];
     ["Alignment of nsIRunnable"][::std::mem::align_of::<nsIRunnable>() - 8usize];
@@ -52,6 +54,7 @@ impl Default for nsIRunnable {
 pub struct Runnable {
     pub _base: nsIRunnable,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Runnable"][::std::mem::size_of::<Runnable>() - 8usize];
     ["Alignment of Runnable"][::std::mem::align_of::<Runnable>() - 8usize];

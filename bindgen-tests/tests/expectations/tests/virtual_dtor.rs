@@ -6,6 +6,7 @@ pub struct nsSlots__bindgen_vtable(::std::os::raw::c_void);
 pub struct nsSlots {
     pub vtable_: *const nsSlots__bindgen_vtable,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of nsSlots"][::std::mem::size_of::<nsSlots>() - 8usize];
     ["Alignment of nsSlots"][::std::mem::align_of::<nsSlots>() - 8usize];

@@ -6,6 +6,7 @@ pub struct SizedIntegers {
     pub y: u16,
     pub z: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of SizedIntegers"][::std::mem::size_of::<SizedIntegers>() - 8usize];
     ["Alignment of SizedIntegers"][::std::mem::align_of::<SizedIntegers>() - 4usize];
@@ -24,6 +25,7 @@ const _: () = {
 pub struct StructWithBlocklistedFwdDecl {
     pub b: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of StructWithBlocklistedFwdDecl",

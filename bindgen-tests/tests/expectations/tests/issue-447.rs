@@ -14,6 +14,7 @@ pub mod root {
             pub struct GuardObjectNotifier {
                 pub _address: u8,
             }
+            #[allow(clippy::unnecessary_operation, clippy::identity_op)]
             const _: () = {
                 [
                     "Size of GuardObjectNotifier",
@@ -29,6 +30,7 @@ pub mod root {
     pub struct JSAutoCompartment {
         pub _address: u8,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         [
             "Size of JSAutoCompartment",

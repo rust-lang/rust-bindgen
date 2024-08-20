@@ -12,6 +12,7 @@ extern "C" {
     #[link_name = "\u{1}_ZN3Foo8whateverE"]
     pub static mut Foo_whatever: Foo;
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 4usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 4usize];

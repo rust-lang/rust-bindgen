@@ -4,6 +4,7 @@
 pub struct S {
     pub large_array: [::std::os::raw::c_char; 33usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of S"][::std::mem::size_of::<S>() - 33usize];
     ["Alignment of S"][::std::mem::align_of::<S>() - 1usize];

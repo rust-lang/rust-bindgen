@@ -4,6 +4,7 @@
 pub struct NoCopy {
     pub i: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of NoCopy"][::std::mem::size_of::<NoCopy>() - 4usize];
     ["Alignment of NoCopy"][::std::mem::align_of::<NoCopy>() - 4usize];

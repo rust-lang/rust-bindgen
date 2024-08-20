@@ -11,6 +11,7 @@ pub struct Foo {
         unsafe extern "C" fn(x: ::std::os::raw::c_int, y: ::std::os::raw::c_int) -> baz,
     >,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 8usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 8usize];

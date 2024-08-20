@@ -5,6 +5,7 @@
 pub struct whatever {
     pub replacement: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of whatever"][::std::mem::size_of::<whatever>() - 4usize];
     ["Alignment of whatever"][::std::mem::align_of::<whatever>() - 4usize];
@@ -17,6 +18,7 @@ const _: () = {
 pub struct container {
     pub c: whatever,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of container"][::std::mem::size_of::<container>() - 4usize];
     ["Alignment of container"][::std::mem::align_of::<container>() - 4usize];

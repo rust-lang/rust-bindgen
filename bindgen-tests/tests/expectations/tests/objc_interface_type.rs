@@ -25,6 +25,7 @@ pub trait IFoo: Sized + std::ops::Deref {}
 pub struct FooStruct {
     pub foo: Foo,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of FooStruct"][::std::mem::size_of::<FooStruct>() - 8usize];
     ["Alignment of FooStruct"][::std::mem::align_of::<FooStruct>() - 8usize];

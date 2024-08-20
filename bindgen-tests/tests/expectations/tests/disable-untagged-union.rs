@@ -49,6 +49,7 @@ pub struct Foo {
     pub baz: __BindgenUnionField<::std::os::raw::c_uint>,
     pub bindgen_union_field: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 4usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 4usize];

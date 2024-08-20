@@ -4,6 +4,7 @@
 pub struct Rooted {
     pub ptr: MaybeWrapped<::std::os::raw::c_int>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Rooted"][::std::mem::size_of::<Rooted>() - 4usize];
     ["Alignment of Rooted"][::std::mem::align_of::<Rooted>() - 4usize];
@@ -20,6 +21,7 @@ impl Default for Rooted {
 }
 /// <div rustbindgen replaces="MaybeWrapped"></div>
 pub type MaybeWrapped<a> = a;
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: MaybeWrapped_open0_int_close0",

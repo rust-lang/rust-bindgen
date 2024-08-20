@@ -4,6 +4,7 @@
 pub struct foo {
     pub mMember: [::std::os::raw::c_longlong; 1usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::std::mem::size_of::<foo>() - 8usize];
     ["Alignment of foo"][::std::mem::align_of::<foo>() - 8usize];

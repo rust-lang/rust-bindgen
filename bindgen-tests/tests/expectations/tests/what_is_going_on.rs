@@ -4,6 +4,7 @@
 pub struct UnknownUnits {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of UnknownUnits"][::std::mem::size_of::<UnknownUnits>() - 1usize];
     ["Alignment of UnknownUnits"][::std::mem::align_of::<UnknownUnits>() - 1usize];

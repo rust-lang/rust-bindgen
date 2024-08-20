@@ -96,6 +96,7 @@ pub struct V56AMDY {
     pub _bitfield_2: __BindgenBitfieldUnit<[u8; 3usize]>,
     pub _rB_: U8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of V56AMDY"][::std::mem::size_of::<V56AMDY>() - 8usize];
     ["Alignment of V56AMDY"][::std::mem::align_of::<V56AMDY>() - 2usize];

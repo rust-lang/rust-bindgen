@@ -11,6 +11,7 @@ pub mod root {
         pub struct Value {
             pub _address: u8,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of Value"][::std::mem::size_of::<Value>() - 1usize];
             ["Alignment of Value"][::std::mem::align_of::<Value>() - 1usize];

@@ -27,6 +27,7 @@ impl Default for JS_Base {
 pub struct JS_AutoIdVector {
     pub _base: JS_Base,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of JS_AutoIdVector"][::std::mem::size_of::<JS_AutoIdVector>() - 1usize];
     ["Alignment of JS_AutoIdVector"][::std::mem::align_of::<JS_AutoIdVector>() - 1usize];
@@ -40,6 +41,7 @@ impl Default for JS_AutoIdVector {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: JS_Base_open0_int_close0",

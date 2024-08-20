@@ -6,6 +6,7 @@
 pub struct AlignedToOne {
     pub i: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of AlignedToOne"][::std::mem::size_of::<AlignedToOne>() - 4usize];
     ["Alignment of AlignedToOne"][::std::mem::align_of::<AlignedToOne>() - 1usize];
@@ -20,6 +21,7 @@ const _: () = {
 pub struct AlignedToTwo {
     pub i: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of AlignedToTwo"][::std::mem::size_of::<AlignedToTwo>() - 4usize];
     ["Alignment of AlignedToTwo"][::std::mem::align_of::<AlignedToTwo>() - 2usize];
@@ -36,6 +38,7 @@ pub struct PackedToOne {
     pub x: ::std::os::raw::c_int,
     pub y: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of PackedToOne"][::std::mem::size_of::<PackedToOne>() - 8usize];
     ["Alignment of PackedToOne"][::std::mem::align_of::<PackedToOne>() - 1usize];
@@ -51,6 +54,7 @@ pub struct PackedToTwo {
     pub x: ::std::os::raw::c_int,
     pub y: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of PackedToTwo"][::std::mem::size_of::<PackedToTwo>() - 8usize];
     ["Alignment of PackedToTwo"][::std::mem::align_of::<PackedToTwo>() - 2usize];

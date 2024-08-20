@@ -35,6 +35,7 @@ impl ::std::ops::BitAndAssign for foo__bindgen_ty_1 {
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct foo__bindgen_ty_1(pub ::std::os::raw::c_uint);
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::std::mem::size_of::<foo>() - 4usize];
     ["Alignment of foo"][::std::mem::align_of::<foo>() - 4usize];

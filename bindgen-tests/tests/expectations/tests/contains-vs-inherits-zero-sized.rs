@@ -5,6 +5,7 @@
 pub struct Empty {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Empty"][::std::mem::size_of::<Empty>() - 1usize];
     ["Alignment of Empty"][::std::mem::align_of::<Empty>() - 1usize];
@@ -16,6 +17,7 @@ const _: () = {
 pub struct Inherits {
     pub b: bool,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Inherits"][::std::mem::size_of::<Inherits>() - 1usize];
     ["Alignment of Inherits"][::std::mem::align_of::<Inherits>() - 1usize];
@@ -29,6 +31,7 @@ pub struct Contains {
     pub empty: Empty,
     pub b: bool,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Contains"][::std::mem::size_of::<Contains>() - 2usize];
     ["Alignment of Contains"][::std::mem::align_of::<Contains>() - 1usize];

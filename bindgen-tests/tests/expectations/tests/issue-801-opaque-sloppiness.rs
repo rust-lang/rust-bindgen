@@ -10,6 +10,7 @@ pub struct A {
 pub struct B {
     pub _bindgen_opaque_blob: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of B"][::std::mem::size_of::<B>() - 1usize];
     ["Alignment of B"][::std::mem::align_of::<B>() - 1usize];
@@ -23,6 +24,7 @@ extern "C" {
 pub struct C {
     pub b: B,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of C"][::std::mem::size_of::<C>() - 1usize];
     ["Alignment of C"][::std::mem::align_of::<C>() - 1usize];

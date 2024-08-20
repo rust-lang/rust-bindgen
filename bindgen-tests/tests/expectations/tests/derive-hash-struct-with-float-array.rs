@@ -5,6 +5,7 @@
 pub struct foo {
     pub bar: [f32; 3usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::std::mem::size_of::<foo>() - 12usize];
     ["Alignment of foo"][::std::mem::align_of::<foo>() - 4usize];

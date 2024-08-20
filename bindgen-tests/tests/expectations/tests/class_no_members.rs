@@ -4,6 +4,7 @@
 pub struct whatever {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of whatever"][::std::mem::size_of::<whatever>() - 1usize];
     ["Alignment of whatever"][::std::mem::align_of::<whatever>() - 1usize];
@@ -13,6 +14,7 @@ const _: () = {
 pub struct whatever_child {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of whatever_child"][::std::mem::size_of::<whatever_child>() - 1usize];
     ["Alignment of whatever_child"][::std::mem::align_of::<whatever_child>() - 1usize];
@@ -22,6 +24,7 @@ const _: () = {
 pub struct whatever_child_with_member {
     pub m_member: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of whatever_child_with_member",

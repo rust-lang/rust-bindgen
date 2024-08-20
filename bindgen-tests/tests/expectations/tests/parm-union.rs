@@ -4,6 +4,7 @@
 pub struct Struct {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Struct"][::std::mem::size_of::<Struct>() - 1usize];
     ["Alignment of Struct"][::std::mem::align_of::<Struct>() - 1usize];

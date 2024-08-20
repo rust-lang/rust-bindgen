@@ -89,6 +89,7 @@ pub struct Date {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Date"][::std::mem::size_of::<Date>() - 3usize];
     ["Alignment of Date"][::std::mem::align_of::<Date>() - 1usize];

@@ -6,6 +6,7 @@ pub union ShouldNotDerivePartialEq {
     pub a: ::std::os::raw::c_char,
     pub b: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of ShouldNotDerivePartialEq",

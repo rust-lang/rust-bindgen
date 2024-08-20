@@ -4,6 +4,7 @@
 pub struct Bar {
     pub b: *mut a,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Bar"][::std::mem::size_of::<Bar>() - 8usize];
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 8usize];
@@ -28,6 +29,7 @@ pub struct c {
 pub union c__bindgen_ty_1 {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of c__bindgen_ty_1"][::std::mem::size_of::<c__bindgen_ty_1>() - 1usize];
     ["Alignment of c__bindgen_ty_1"][::std::mem::align_of::<c__bindgen_ty_1>() - 1usize];
@@ -41,6 +43,7 @@ impl Default for c__bindgen_ty_1 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of c"][::std::mem::size_of::<c>() - 1usize];
     ["Alignment of c"][::std::mem::align_of::<c>() - 1usize];
@@ -59,6 +62,7 @@ impl Default for c {
 pub struct a {
     pub d: c,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of a"][::std::mem::size_of::<a>() - 1usize];
     ["Alignment of a"][::std::mem::align_of::<a>() - 1usize];

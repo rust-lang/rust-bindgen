@@ -25,6 +25,7 @@ pub mod root {
         pub struct A {
             pub b: root::whatever::whatever_int_t,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of A"][::std::mem::size_of::<A>() - 4usize];
             ["Alignment of A"][::std::mem::align_of::<A>() - 4usize];

@@ -24,6 +24,7 @@ impl<T> Default for RefPtr<T> {
 pub struct Bar {
     pub m_member: RefPtr<Foo>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Bar"][::std::mem::size_of::<Bar>() - 8usize];
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 8usize];
@@ -38,6 +39,7 @@ impl Default for Bar {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: RefPtr_open0_Foo_close0",

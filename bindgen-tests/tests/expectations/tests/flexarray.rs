@@ -37,6 +37,7 @@ pub struct flexarray<FAM: ?Sized = [::std::os::raw::c_int; 0]> {
     pub count: ::std::os::raw::c_int,
     pub data: FAM,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of flexarray"][::std::mem::size_of::<flexarray>() - 4usize];
     ["Alignment of flexarray"][::std::mem::align_of::<flexarray>() - 4usize];
@@ -126,6 +127,7 @@ pub struct flexarray_zero<FAM: ?Sized = [::std::os::raw::c_int; 0]> {
     pub count: ::std::os::raw::c_int,
     pub data: FAM,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of flexarray_zero"][::std::mem::size_of::<flexarray_zero>() - 4usize];
     ["Alignment of flexarray_zero"][::std::mem::align_of::<flexarray_zero>() - 4usize];
@@ -310,6 +312,7 @@ impl<T> Default for flexarray_template<T, [T; 0]> {
 pub struct flexarray_ref {
     pub things: *mut flexarray,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of flexarray_ref"][::std::mem::size_of::<flexarray_ref>() - 8usize];
     ["Alignment of flexarray_ref"][::std::mem::align_of::<flexarray_ref>() - 8usize];
@@ -333,6 +336,7 @@ pub struct flexarray_bogus_zero_fam<FAM: ?Sized = [::std::os::raw::c_char; 0]> {
     pub data1: __IncompleteArrayField<::std::os::raw::c_int>,
     pub data2: FAM,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of flexarray_bogus_zero_fam",
@@ -447,6 +451,7 @@ pub struct flexarray_align<FAM: ?Sized = [::std::os::raw::c_int; 0]> {
     pub count: ::std::os::raw::c_int,
     pub data: FAM,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of flexarray_align"][::std::mem::size_of::<flexarray_align>() - 128usize];
     [

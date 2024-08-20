@@ -20,6 +20,7 @@ pub struct Bar {
     pub baz_ptr3: *mut Foo_alias2,
     pub baz_ptr4: *mut Foo_alias3,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Bar"][::std::mem::size_of::<Bar>() - 48usize];
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 8usize];

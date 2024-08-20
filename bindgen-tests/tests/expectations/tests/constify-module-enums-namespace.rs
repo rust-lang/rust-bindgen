@@ -24,6 +24,7 @@ pub mod root {
             pub struct bar {
                 pub this_should_work: root::ns1::ns2::foo::Type,
             }
+            #[allow(clippy::unnecessary_operation, clippy::identity_op)]
             const _: () = {
                 ["Size of bar"][::std::mem::size_of::<bar>() - 4usize];
                 ["Alignment of bar"][::std::mem::align_of::<bar>() - 4usize];

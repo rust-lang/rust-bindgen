@@ -10,6 +10,7 @@ pub struct JS_shadow_Zone {
     pub x: ::std::os::raw::c_int,
     pub y: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of JS_shadow_Zone"][::std::mem::size_of::<JS_shadow_Zone>() - 8usize];
     ["Alignment of JS_shadow_Zone"][::std::mem::align_of::<JS_shadow_Zone>() - 4usize];

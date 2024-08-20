@@ -24,6 +24,7 @@ impl<T> Default for BaseWithVtable<T> {
 pub struct DerivedWithNoVirtualMethods {
     pub _base: BaseWithVtable<*mut ::std::os::raw::c_char>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of DerivedWithNoVirtualMethods",
@@ -47,6 +48,7 @@ impl Default for DerivedWithNoVirtualMethods {
 pub struct DerivedWithVirtualMethods {
     pub _base: BaseWithVtable<*mut ::std::os::raw::c_char>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of DerivedWithVirtualMethods",
@@ -89,6 +91,7 @@ pub struct DerivedWithVtable {
     pub vtable_: *const DerivedWithVtable__bindgen_vtable,
     pub _base: BaseWithoutVtable<*mut ::std::os::raw::c_char>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of DerivedWithVtable"][::std::mem::size_of::<DerivedWithVtable>() - 16usize];
     [
@@ -110,6 +113,7 @@ impl Default for DerivedWithVtable {
 pub struct DerivedWithoutVtable {
     pub _base: BaseWithoutVtable<*mut ::std::os::raw::c_char>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of DerivedWithoutVtable",
@@ -127,6 +131,7 @@ impl Default for DerivedWithoutVtable {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: BaseWithVtable_open0_ptr_char_close0",
@@ -135,6 +140,7 @@ const _: () = {
         "Align of template specialization: BaseWithVtable_open0_ptr_char_close0",
     ][::std::mem::align_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: BaseWithVtable_open0_ptr_char_close0",
@@ -143,6 +149,7 @@ const _: () = {
         "Align of template specialization: BaseWithVtable_open0_ptr_char_close0",
     ][::std::mem::align_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: BaseWithoutVtable_open0_ptr_char_close0",
@@ -151,6 +158,7 @@ const _: () = {
         "Align of template specialization: BaseWithoutVtable_open0_ptr_char_close0",
     ][::std::mem::align_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: BaseWithoutVtable_open0_ptr_char_close0",
