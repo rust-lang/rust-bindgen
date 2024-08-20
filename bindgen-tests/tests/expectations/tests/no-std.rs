@@ -11,6 +11,7 @@ pub struct foo {
     pub b: libc::c_int,
     pub bar: *mut libc::c_void,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::core::mem::size_of::<foo>() - 16usize];
     ["Alignment of foo"][::core::mem::align_of::<foo>() - 8usize];

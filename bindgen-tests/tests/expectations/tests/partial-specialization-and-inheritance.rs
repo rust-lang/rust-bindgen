@@ -18,6 +18,7 @@ extern "C" {
     #[link_name = "\u{1}_ZN5Usage13static_memberE"]
     pub static mut Usage_static_member: [u32; 2usize];
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Usage"][::std::mem::size_of::<Usage>() - 1usize];
     ["Alignment of Usage"][::std::mem::align_of::<Usage>() - 1usize];

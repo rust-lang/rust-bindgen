@@ -8,6 +8,7 @@ extern "C" {
     #[link_name = "\u{1}_Z1fv"]
     pub fn f();
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: Foo_open0_Bar_close0",
@@ -21,10 +22,12 @@ const _: () = {
 pub struct Baz {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Baz"][::std::mem::size_of::<Baz>() - 1usize];
     ["Alignment of Baz"][::std::mem::align_of::<Baz>() - 1usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: Foo_open0_Boo_close0",
@@ -38,6 +41,7 @@ const _: () = {
 pub struct Bar {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Bar"][::std::mem::size_of::<Bar>() - 1usize];
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 1usize];
@@ -47,6 +51,7 @@ const _: () = {
 pub struct Boo {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Boo"][::std::mem::size_of::<Boo>() - 1usize];
     ["Alignment of Boo"][::std::mem::align_of::<Boo>() - 1usize];

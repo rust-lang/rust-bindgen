@@ -15,6 +15,7 @@ pub mod root {
             #[link_name = "\u{1}_ZN6Halide4Type1bE"]
             pub static mut Type_b: root::a;
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of Type"][::std::mem::size_of::<Type>() - 1usize];
             ["Alignment of Type"][::std::mem::align_of::<Type>() - 1usize];

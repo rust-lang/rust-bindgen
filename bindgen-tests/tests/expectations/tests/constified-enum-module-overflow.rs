@@ -15,11 +15,13 @@ pub type C_U = B;
 pub struct A {
     pub u: B,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of A"][::std::mem::size_of::<A>() - 1usize];
     ["Alignment of A"][::std::mem::align_of::<A>() - 1usize];
     ["Offset of field: A::u"][::std::mem::offset_of!(A, u) - 0usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: C_open0_A_close0",
@@ -28,6 +30,7 @@ const _: () = {
         "Align of template specialization: C_open0_A_close0",
     ][::std::mem::align_of::<C>() - 1usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_A_close0",

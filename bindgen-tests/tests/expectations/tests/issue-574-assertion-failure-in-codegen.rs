@@ -9,6 +9,7 @@ pub struct a {
 pub struct _bindgen_ty_1 {
     pub ar: a,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of _bindgen_ty_1"][::std::mem::size_of::<_bindgen_ty_1>() - 1usize];
     ["Alignment of _bindgen_ty_1"][::std::mem::align_of::<_bindgen_ty_1>() - 1usize];
@@ -19,6 +20,7 @@ const _: () = {
 extern "C" {
     pub static mut AutoIdVector: _bindgen_ty_1;
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: a_open0_int_close0",

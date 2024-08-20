@@ -4,6 +4,7 @@ pub union UnionWithDtor {
     pub mFoo: ::std::os::raw::c_int,
     pub mBar: *mut ::std::os::raw::c_void,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of UnionWithDtor"][::std::mem::size_of::<UnionWithDtor>() - 8usize];
     ["Alignment of UnionWithDtor"][::std::mem::align_of::<UnionWithDtor>() - 8usize];

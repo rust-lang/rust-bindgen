@@ -25,6 +25,7 @@ pub struct Test {
     pub Ccu: UChar,
     pub Ccd: SChar,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Test"][::std::mem::size_of::<Test>() - 12usize];
     ["Alignment of Test"][::std::mem::align_of::<Test>() - 1usize];

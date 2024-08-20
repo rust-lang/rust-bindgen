@@ -24,6 +24,7 @@ pub union rte_memseg__bindgen_ty_1 {
     ///< Makes sure addr is always 64 bits
     pub addr_64: u64,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_memseg__bindgen_ty_1",
@@ -47,6 +48,7 @@ impl Default for rte_memseg__bindgen_ty_1 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of rte_memseg"][::std::mem::size_of::<rte_memseg>() - 44usize];
     ["Alignment of rte_memseg"][::std::mem::align_of::<rte_memseg>() - 1usize];

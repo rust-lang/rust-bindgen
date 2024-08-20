@@ -5,6 +5,7 @@ pub struct BlocklistMe(u8);
 pub struct ShouldNotBeCopy {
     pub a: BlocklistMe,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ShouldNotBeCopy"][::std::mem::size_of::<ShouldNotBeCopy>() - 1usize];
     ["Alignment of ShouldNotBeCopy"][::std::mem::align_of::<ShouldNotBeCopy>() - 1usize];

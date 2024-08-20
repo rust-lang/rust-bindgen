@@ -7,6 +7,7 @@ pub struct foo {
 pub const foo_FOO_A: foo__bindgen_ty_1 = 0;
 pub const foo_FOO_B: foo__bindgen_ty_1 = 1;
 pub type foo__bindgen_ty_1 = ::std::os::raw::c_uint;
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::std::mem::size_of::<foo>() - 4usize];
     ["Alignment of foo"][::std::mem::align_of::<foo>() - 4usize];

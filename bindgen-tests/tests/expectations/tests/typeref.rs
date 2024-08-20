@@ -4,6 +4,7 @@
 pub struct mozilla_FragmentOrURL {
     pub mIsLocalRef: bool,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of mozilla_FragmentOrURL",
@@ -20,6 +21,7 @@ const _: () = {
 pub struct mozilla_Position {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of mozilla_Position"][::std::mem::size_of::<mozilla_Position>() - 1usize];
     [
@@ -58,6 +60,7 @@ impl Default for mozilla_StyleShapeSource {
 pub struct Bar {
     pub mFoo: *mut nsFoo,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Bar"][::std::mem::size_of::<Bar>() - 8usize];
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 8usize];
@@ -76,6 +79,7 @@ impl Default for Bar {
 pub struct nsFoo {
     pub mBar: mozilla_StyleShapeSource,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of nsFoo"][::std::mem::size_of::<nsFoo>() - 8usize];
     ["Alignment of nsFoo"][::std::mem::align_of::<nsFoo>() - 8usize];
@@ -90,6 +94,7 @@ impl Default for nsFoo {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: mozilla_StyleShapeSource_open0_int_close0",

@@ -4,6 +4,7 @@
 pub struct Bar {
     pub m_baz: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Bar"][::std::mem::size_of::<Bar>() - 4usize];
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 4usize];
@@ -30,6 +31,7 @@ extern "C" {
     #[link_name = "\u{1}_ZN3Baz3FOOE"]
     pub static Baz_FOO: [Bar; 0usize];
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Baz"][::std::mem::size_of::<Baz>() - 1usize];
     ["Alignment of Baz"][::std::mem::align_of::<Baz>() - 1usize];

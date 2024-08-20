@@ -89,6 +89,7 @@ pub struct MuchBitfield {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 5usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of MuchBitfield"][::std::mem::size_of::<MuchBitfield>() - 5usize];
     ["Alignment of MuchBitfield"][::std::mem::align_of::<MuchBitfield>() - 1usize];

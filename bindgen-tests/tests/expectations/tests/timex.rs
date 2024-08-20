@@ -90,6 +90,7 @@ pub struct timex {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 44usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of timex"][::std::mem::size_of::<timex>() - 48usize];
     ["Alignment of timex"][::std::mem::align_of::<timex>() - 4usize];
@@ -111,6 +112,7 @@ pub struct timex_named {
     pub _bitfield_align_1: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 44usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of timex_named"][::std::mem::size_of::<timex_named>() - 48usize];
     ["Alignment of timex_named"][::std::mem::align_of::<timex_named>() - 4usize];

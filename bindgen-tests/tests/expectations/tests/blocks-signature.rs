@@ -28,6 +28,7 @@ pub struct contains_block_pointers {
     pub val: contains_block_pointers__bindgen_ty_id_61,
     pub ptr_val: *mut _bindgen_ty_id_68,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of contains_block_pointers",

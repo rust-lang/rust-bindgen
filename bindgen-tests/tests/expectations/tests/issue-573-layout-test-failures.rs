@@ -9,6 +9,7 @@ pub struct Outer {
 pub struct AutoIdVector {
     pub ar: Outer,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of AutoIdVector"][::std::mem::size_of::<AutoIdVector>() - 1usize];
     ["Alignment of AutoIdVector"][::std::mem::align_of::<AutoIdVector>() - 1usize];
@@ -16,6 +17,7 @@ const _: () = {
         "Offset of field: AutoIdVector::ar",
     ][::std::mem::offset_of!(AutoIdVector, ar) - 0usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: Outer_open0_int_close0",

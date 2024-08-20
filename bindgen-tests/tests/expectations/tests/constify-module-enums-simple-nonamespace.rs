@@ -10,6 +10,7 @@ pub struct Bar {
     pub baz1: one_Foo::Type,
     pub baz2: *mut one_Foo::Type,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Bar"][::std::mem::size_of::<Bar>() - 16usize];
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 8usize];

@@ -186,6 +186,7 @@ pub struct jsval_layout__bindgen_ty_1 {
     pub _bitfield_align_1: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of jsval_layout__bindgen_ty_1",
@@ -265,6 +266,7 @@ pub union jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     pub u32_: u32,
     pub why: JSWhyMagic,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of jsval_layout__bindgen_ty_2__bindgen_ty_1",
@@ -291,6 +293,7 @@ impl Default for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of jsval_layout__bindgen_ty_2",
@@ -311,6 +314,7 @@ impl Default for jsval_layout__bindgen_ty_2 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of jsval_layout"][::std::mem::size_of::<jsval_layout>() - 8usize];
     ["Alignment of jsval_layout"][::std::mem::align_of::<jsval_layout>() - 8usize];
@@ -350,6 +354,7 @@ impl Default for jsval_layout {
 pub struct Value {
     pub data: jsval_layout,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Value"][::std::mem::size_of::<Value>() - 8usize];
     ["Alignment of Value"][::std::mem::align_of::<Value>() - 8usize];

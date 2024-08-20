@@ -8,6 +8,7 @@ pub struct A {
     pub offset: ssize_t,
     pub next: *mut A,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of A"][::std::mem::size_of::<A>() - 24usize];
     ["Alignment of A"][::std::mem::align_of::<A>() - 8usize];

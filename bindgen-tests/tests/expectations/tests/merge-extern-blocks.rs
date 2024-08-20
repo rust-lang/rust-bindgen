@@ -8,6 +8,7 @@ pub mod root {
     pub struct Point {
         pub x: ::std::os::raw::c_int,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of Point"][::std::mem::size_of::<Point>() - 4usize];
         ["Alignment of Point"][::std::mem::align_of::<Point>() - 4usize];
@@ -21,6 +22,7 @@ pub mod root {
         pub struct Point {
             pub x: ::std::os::raw::c_int,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of Point"][::std::mem::size_of::<Point>() - 4usize];
             ["Alignment of Point"][::std::mem::align_of::<Point>() - 4usize];

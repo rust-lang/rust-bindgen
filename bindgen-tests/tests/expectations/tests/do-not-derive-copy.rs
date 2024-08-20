@@ -4,6 +4,7 @@
 pub struct WouldBeCopyButWeAreNotDerivingCopy {
     pub x: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of WouldBeCopyButWeAreNotDerivingCopy",

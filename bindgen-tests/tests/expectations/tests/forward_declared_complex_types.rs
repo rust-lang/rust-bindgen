@@ -4,6 +4,7 @@
 pub struct Foo_empty {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Foo_empty"][::std::mem::size_of::<Foo_empty>() - 1usize];
     ["Alignment of Foo_empty"][::std::mem::align_of::<Foo_empty>() - 1usize];
@@ -18,6 +19,7 @@ pub struct Foo {
 pub struct Bar {
     pub f: *mut Foo,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Bar"][::std::mem::size_of::<Bar>() - 8usize];
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 8usize];

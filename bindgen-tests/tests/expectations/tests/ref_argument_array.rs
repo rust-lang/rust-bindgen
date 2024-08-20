@@ -12,6 +12,7 @@ pub struct nsID__bindgen_vtable {
 pub struct nsID {
     pub vtable_: *const nsID__bindgen_vtable,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of nsID"][::std::mem::size_of::<nsID>() - 8usize];
     ["Alignment of nsID"][::std::mem::align_of::<nsID>() - 8usize];

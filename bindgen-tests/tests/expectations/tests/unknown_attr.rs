@@ -7,6 +7,7 @@ pub struct max_align_t {
     pub __bindgen_padding_0: u64,
     pub __clang_max_align_nonce2: ::std::os::raw::c_longlong,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of max_align_t"][::std::mem::size_of::<max_align_t>() - 32usize];
     ["Alignment of max_align_t"][::std::mem::align_of::<max_align_t>() - 16usize];

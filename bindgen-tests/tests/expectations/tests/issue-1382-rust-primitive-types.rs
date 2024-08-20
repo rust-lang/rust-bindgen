@@ -25,6 +25,7 @@ pub struct Foo {
     pub f32_: ::std::os::raw::c_int,
     pub f64_: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 56usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 4usize];

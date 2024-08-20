@@ -12,6 +12,7 @@ extern "C" {
 pub struct someClass {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of someClass"][::std::mem::size_of::<someClass>() - 1usize];
     ["Alignment of someClass"][::std::mem::align_of::<someClass>() - 1usize];
@@ -38,6 +39,7 @@ extern "C" {
 pub struct StructWithAllowlistedDefinition {
     pub other: *mut StructWithAllowlistedFwdDecl,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of StructWithAllowlistedDefinition",
@@ -63,6 +65,7 @@ impl Default for StructWithAllowlistedDefinition {
 pub struct StructWithAllowlistedFwdDecl {
     pub b: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of StructWithAllowlistedFwdDecl",
@@ -79,6 +82,7 @@ const _: () = {
 pub struct AllowlistMe {
     pub foo: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of AllowlistMe"][::std::mem::size_of::<AllowlistMe>() - 4usize];
     ["Alignment of AllowlistMe"][::std::mem::align_of::<AllowlistMe>() - 4usize];

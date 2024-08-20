@@ -35,6 +35,7 @@ impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
 pub struct ZeroSizedArray {
     pub arr: __IncompleteArrayField<::std::os::raw::c_char>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ZeroSizedArray"][::std::mem::size_of::<ZeroSizedArray>() - 0usize];
     ["Alignment of ZeroSizedArray"][::std::mem::align_of::<ZeroSizedArray>() - 1usize];
@@ -48,6 +49,7 @@ const _: () = {
 pub struct ContainsZeroSizedArray {
     pub zsa: ZeroSizedArray,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of ContainsZeroSizedArray",
@@ -66,6 +68,7 @@ const _: () = {
 pub struct InheritsZeroSizedArray {
     pub _base: ZeroSizedArray,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of InheritsZeroSizedArray",
@@ -80,6 +83,7 @@ const _: () = {
 pub struct DynamicallySizedArray {
     pub arr: __IncompleteArrayField<::std::os::raw::c_char>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of DynamicallySizedArray",
@@ -97,6 +101,7 @@ const _: () = {
 pub struct ContainsDynamicallySizedArray {
     pub dsa: DynamicallySizedArray,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of ContainsDynamicallySizedArray",

@@ -7,6 +7,7 @@ pub struct cmdline_token_hdr {
     pub ops: *mut cmdline_token_ops,
     pub offset: ::std::os::raw::c_uint,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of cmdline_token_hdr"][::std::mem::size_of::<cmdline_token_hdr>() - 16usize];
     [
@@ -84,6 +85,7 @@ pub struct cmdline_token_ops {
         ) -> ::std::os::raw::c_int,
     >,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of cmdline_token_ops"][::std::mem::size_of::<cmdline_token_ops>() - 32usize];
     [
@@ -119,6 +121,7 @@ pub enum cmdline_numtype {
 pub struct cmdline_token_num_data {
     pub type_: cmdline_numtype,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of cmdline_token_num_data",
@@ -145,6 +148,7 @@ pub struct cmdline_token_num {
     pub hdr: cmdline_token_hdr,
     pub num_data: cmdline_token_num_data,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of cmdline_token_num"][::std::mem::size_of::<cmdline_token_num>() - 24usize];
     [

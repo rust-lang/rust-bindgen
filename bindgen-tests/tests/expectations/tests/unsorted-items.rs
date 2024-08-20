@@ -12,6 +12,7 @@ pub struct Point {
     pub x: number,
     pub y: number,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Point"][::std::mem::size_of::<Point>() - 8usize];
     ["Alignment of Point"][::std::mem::align_of::<Point>() - 4usize];
@@ -24,6 +25,7 @@ pub struct Angle {
     pub a: number,
     pub b: number,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Angle"][::std::mem::size_of::<Angle>() - 8usize];
     ["Alignment of Angle"][::std::mem::align_of::<Angle>() - 4usize];

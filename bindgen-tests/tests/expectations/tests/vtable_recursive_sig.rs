@@ -8,6 +8,7 @@ pub struct Base__bindgen_vtable {
 pub struct Base {
     pub vtable_: *const Base__bindgen_vtable,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Base"][::std::mem::size_of::<Base>() - 8usize];
     ["Alignment of Base"][::std::mem::align_of::<Base>() - 8usize];
@@ -30,6 +31,7 @@ extern "C" {
 pub struct Derived {
     pub _base: Base,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Derived"][::std::mem::size_of::<Derived>() - 8usize];
     ["Alignment of Derived"][::std::mem::align_of::<Derived>() - 8usize];

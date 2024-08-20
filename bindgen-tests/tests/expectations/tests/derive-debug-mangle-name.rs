@@ -12,6 +12,7 @@ pub union perf_event_attr__bindgen_ty_1 {
     pub b: ::std::os::raw::c_int,
     pub c: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of perf_event_attr__bindgen_ty_1",
@@ -40,6 +41,7 @@ impl ::std::fmt::Debug for perf_event_attr__bindgen_ty_1 {
         write!(f, "perf_event_attr__bindgen_ty_1 {{ union }}")
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of perf_event_attr"][::std::mem::size_of::<perf_event_attr>() - 12usize];
     ["Alignment of perf_event_attr"][::std::mem::align_of::<perf_event_attr>() - 4usize];

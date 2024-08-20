@@ -90,6 +90,7 @@ pub struct redundant_packed {
     pub a: u32,
     pub b: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of redundant_packed"][::std::mem::size_of::<redundant_packed>() - 8usize];
     [
@@ -111,6 +112,7 @@ pub struct redundant_packed_bitfield {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub c: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of redundant_packed_bitfield",
@@ -179,6 +181,7 @@ pub union redundant_packed_union {
     pub a: u64,
     pub b: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of redundant_packed_union",
@@ -208,6 +211,7 @@ impl Default for redundant_packed_union {
 pub struct inner {
     pub a: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of inner"][::std::mem::size_of::<inner>() - 2usize];
     ["Alignment of inner"][::std::mem::align_of::<inner>() - 2usize];
@@ -220,6 +224,7 @@ pub struct outer_redundant_packed {
     pub a: [inner; 2usize],
     pub b: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of outer_redundant_packed",
@@ -241,6 +246,7 @@ pub struct redundant_pragma_packed {
     pub a: u8,
     pub b: u16,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of redundant_pragma_packed",

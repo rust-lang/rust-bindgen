@@ -5,6 +5,7 @@ pub struct BlocklistMe(u8);
 pub struct ShouldManuallyImplDebug {
     pub a: BlocklistMe,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of ShouldManuallyImplDebug",

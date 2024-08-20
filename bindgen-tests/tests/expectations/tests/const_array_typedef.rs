@@ -4,6 +4,7 @@
 pub struct strct {
     pub field: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of strct"][::std::mem::size_of::<strct>() - 4usize];
     ["Alignment of strct"][::std::mem::align_of::<strct>() - 4usize];

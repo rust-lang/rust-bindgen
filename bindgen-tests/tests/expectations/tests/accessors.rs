@@ -10,6 +10,7 @@ pub struct SomeAccessors {
     /// <div rustbindgen accessor="immutable"></div>
     pub mImmutableAccessor: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of SomeAccessors"][::std::mem::size_of::<SomeAccessors>() - 16usize];
     ["Alignment of SomeAccessors"][::std::mem::align_of::<SomeAccessors>() - 4usize];
@@ -55,6 +56,7 @@ pub struct AllAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     pub mAlsoBothAccessors: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of AllAccessors"][::std::mem::size_of::<AllAccessors>() - 8usize];
     ["Alignment of AllAccessors"][::std::mem::align_of::<AllAccessors>() - 4usize];
@@ -90,6 +92,7 @@ pub struct AllUnsafeAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     pub mAlsoBothAccessors: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of AllUnsafeAccessors"][::std::mem::size_of::<AllUnsafeAccessors>() - 8usize];
     [
@@ -132,6 +135,7 @@ pub struct ContradictAccessors {
     /// <div rustbindgen accessor="immutable"></div>
     pub mImmutableAccessor: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of ContradictAccessors",
@@ -180,6 +184,7 @@ impl ContradictAccessors {
 pub struct Replaced {
     pub mAccessor: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Replaced"][::std::mem::size_of::<Replaced>() - 4usize];
     ["Alignment of Replaced"][::std::mem::align_of::<Replaced>() - 4usize];
@@ -203,6 +208,7 @@ impl Replaced {
 pub struct Wrapper {
     pub mReplaced: Replaced,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Wrapper"][::std::mem::size_of::<Wrapper>() - 4usize];
     ["Alignment of Wrapper"][::std::mem::align_of::<Wrapper>() - 4usize];

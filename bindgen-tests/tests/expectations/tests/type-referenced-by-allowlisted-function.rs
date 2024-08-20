@@ -4,6 +4,7 @@
 pub struct dl_phdr_info {
     pub x: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of dl_phdr_info"][::std::mem::size_of::<dl_phdr_info>() - 4usize];
     ["Alignment of dl_phdr_info"][::std::mem::align_of::<dl_phdr_info>() - 4usize];

@@ -11,6 +11,7 @@ pub const Test_T_NONE: Test__bindgen_ty_1 = Test__bindgen_ty_1::T_NONE;
 pub enum Test__bindgen_ty_1 {
     T_NONE = 0,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Test"][::std::mem::size_of::<Test>() - 8usize];
     ["Alignment of Test"][::std::mem::align_of::<Test>() - 4usize];

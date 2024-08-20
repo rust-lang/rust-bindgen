@@ -8,6 +8,7 @@ pub struct foo {
     pub b: ::core::ffi::c_int,
     pub bar: *mut ::core::ffi::c_void,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::core::mem::size_of::<foo>() - 16usize];
     ["Alignment of foo"][::core::mem::align_of::<foo>() - 8usize];
@@ -30,6 +31,7 @@ pub union _bindgen_ty_1 {
     pub bar: ::core::ffi::c_int,
     pub baz: ::core::ffi::c_long,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of _bindgen_ty_1"][::core::mem::size_of::<_bindgen_ty_1>() - 8usize];
     ["Alignment of _bindgen_ty_1"][::core::mem::align_of::<_bindgen_ty_1>() - 8usize];

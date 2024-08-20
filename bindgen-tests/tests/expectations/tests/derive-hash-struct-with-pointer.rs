@@ -5,6 +5,7 @@
 pub struct ConstPtrMutObj {
     pub bar: *mut ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ConstPtrMutObj"][::std::mem::size_of::<ConstPtrMutObj>() - 8usize];
     ["Alignment of ConstPtrMutObj"][::std::mem::align_of::<ConstPtrMutObj>() - 8usize];
@@ -26,6 +27,7 @@ impl Default for ConstPtrMutObj {
 pub struct MutPtrMutObj {
     pub bar: *mut ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of MutPtrMutObj"][::std::mem::size_of::<MutPtrMutObj>() - 8usize];
     ["Alignment of MutPtrMutObj"][::std::mem::align_of::<MutPtrMutObj>() - 8usize];
@@ -47,6 +49,7 @@ impl Default for MutPtrMutObj {
 pub struct MutPtrConstObj {
     pub bar: *const ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of MutPtrConstObj"][::std::mem::size_of::<MutPtrConstObj>() - 8usize];
     ["Alignment of MutPtrConstObj"][::std::mem::align_of::<MutPtrConstObj>() - 8usize];
@@ -68,6 +71,7 @@ impl Default for MutPtrConstObj {
 pub struct ConstPtrConstObj {
     pub bar: *const ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ConstPtrConstObj"][::std::mem::size_of::<ConstPtrConstObj>() - 8usize];
     [

@@ -51,6 +51,7 @@ impl Default for TErrorResult {
 pub struct ErrorResult {
     pub _base: TErrorResult,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ErrorResult"][::std::mem::size_of::<ErrorResult>() - 24usize];
     ["Alignment of ErrorResult"][::std::mem::align_of::<ErrorResult>() - 8usize];
@@ -64,6 +65,7 @@ impl Default for ErrorResult {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: TErrorResult_open0_int_close0",

@@ -6,6 +6,7 @@
 pub struct OtherOpaque {
     pub _bindgen_opaque_blob: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of OtherOpaque"][::std::mem::size_of::<OtherOpaque>() - 4usize];
     ["Alignment of OtherOpaque"][::std::mem::align_of::<OtherOpaque>() - 4usize];
@@ -23,6 +24,7 @@ pub struct WithOpaquePtr {
     pub other: u32,
     pub t: OtherOpaque,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of WithOpaquePtr"][::std::mem::size_of::<WithOpaquePtr>() - 16usize];
     ["Alignment of WithOpaquePtr"][::std::mem::align_of::<WithOpaquePtr>() - 8usize];

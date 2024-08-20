@@ -4,6 +4,7 @@
 pub struct BitStream {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of BitStream"][::std::mem::size_of::<BitStream>() - 1usize];
     ["Alignment of BitStream"][::std::mem::align_of::<BitStream>() - 1usize];

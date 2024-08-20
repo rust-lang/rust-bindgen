@@ -42,6 +42,7 @@ pub struct rte_ring {
 pub struct rte_ring_prod {
     pub watermark: ::std::os::raw::c_uint,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of rte_ring_prod"][::std::mem::size_of::<rte_ring_prod>() - 4usize];
     ["Alignment of rte_ring_prod"][::std::mem::align_of::<rte_ring_prod>() - 4usize];
@@ -54,6 +55,7 @@ const _: () = {
 pub struct rte_ring_cons {
     pub sc_dequeue: ::std::os::raw::c_uint,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of rte_ring_cons"][::std::mem::size_of::<rte_ring_cons>() - 4usize];
     ["Alignment of rte_ring_cons"][::std::mem::align_of::<rte_ring_cons>() - 4usize];
@@ -61,6 +63,7 @@ const _: () = {
         "Offset of field: rte_ring_cons::sc_dequeue",
     ][::std::mem::offset_of!(rte_ring_cons, sc_dequeue) - 0usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of rte_ring"][::std::mem::size_of::<rte_ring>() - 16usize];
     ["Alignment of rte_ring"][::std::mem::align_of::<rte_ring>() - 8usize];

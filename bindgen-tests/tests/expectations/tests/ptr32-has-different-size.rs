@@ -4,6 +4,7 @@
 pub struct TEST_STRUCT {
     pub ptr_32bit: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of TEST_STRUCT"][::std::mem::size_of::<TEST_STRUCT>() - 4usize];
     ["Alignment of TEST_STRUCT"][::std::mem::align_of::<TEST_STRUCT>() - 4usize];

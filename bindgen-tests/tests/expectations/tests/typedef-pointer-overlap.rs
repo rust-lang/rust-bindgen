@@ -4,6 +4,7 @@
 pub struct foo {
     pub inner: ::std::os::raw::c_char,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::std::mem::size_of::<foo>() - 1usize];
     ["Alignment of foo"][::std::mem::align_of::<foo>() - 1usize];
@@ -15,6 +16,7 @@ pub type foo_ptr = *const foo;
 pub struct bar {
     pub inner: ::std::os::raw::c_char,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of bar"][::std::mem::size_of::<bar>() - 1usize];
     ["Alignment of bar"][::std::mem::align_of::<bar>() - 1usize];
@@ -32,6 +34,7 @@ pub type baz_ptr = *mut baz;
 pub union cat {
     pub standard_issue: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of cat"][::std::mem::size_of::<cat>() - 4usize];
     ["Alignment of cat"][::std::mem::align_of::<cat>() - 4usize];

@@ -6,6 +6,7 @@ pub union nsStyleUnion {
     pub mFloat: f32,
     pub mPointer: *mut ::std::os::raw::c_void,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of nsStyleUnion"][::std::mem::size_of::<nsStyleUnion>() - 8usize];
     ["Alignment of nsStyleUnion"][::std::mem::align_of::<nsStyleUnion>() - 8usize];

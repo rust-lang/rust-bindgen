@@ -10,6 +10,7 @@ pub struct JNINativeInterface_ {
     >,
     pub __hack: ::std::os::raw::c_ulonglong,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of JNINativeInterface_",
