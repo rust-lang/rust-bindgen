@@ -9,6 +9,7 @@ pub mod root {
         pub width: ::std::os::raw::c_int,
         pub height: ::std::os::raw::c_int,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of nsSize"][::std::mem::size_of::<nsSize>() - 8usize];
         ["Alignment of nsSize"][::std::mem::align_of::<nsSize>() - 4usize];

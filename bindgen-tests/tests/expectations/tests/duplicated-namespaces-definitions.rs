@@ -12,6 +12,7 @@ pub mod root {
             pub foo: ::std::os::raw::c_int,
             pub baz: bool,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of Bar"][::std::mem::size_of::<Bar>() - 8usize];
             ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 4usize];
@@ -27,6 +28,7 @@ pub mod root {
         pub struct Foo {
             pub ptr: *mut root::foo::Bar,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of Foo"][::std::mem::size_of::<Foo>() - 8usize];
             ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 8usize];

@@ -35,6 +35,7 @@ pub struct test {
     pub a: ::std::os::raw::c_int,
     pub zero_length_array: __IncompleteArrayField<::std::os::raw::c_char>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of test"][::std::mem::size_of::<test>() - 4usize];
     ["Alignment of test"][::std::mem::align_of::<test>() - 4usize];
@@ -49,6 +50,7 @@ pub struct test2 {
     pub a: ::std::os::raw::c_int,
     pub incomplete_array: __IncompleteArrayField<::std::os::raw::c_char>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of test2"][::std::mem::size_of::<test2>() - 4usize];
     ["Alignment of test2"][::std::mem::align_of::<test2>() - 4usize];
@@ -64,6 +66,7 @@ pub struct test3 {
     pub zero_length_array: __IncompleteArrayField<::std::os::raw::c_char>,
     pub incomplete_array: __IncompleteArrayField<::std::os::raw::c_char>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of test3"][::std::mem::size_of::<test3>() - 4usize];
     ["Alignment of test3"][::std::mem::align_of::<test3>() - 4usize];

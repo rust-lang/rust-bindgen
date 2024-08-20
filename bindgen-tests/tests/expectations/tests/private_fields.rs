@@ -89,6 +89,7 @@ pub struct PubPriv {
     pub x: ::std::os::raw::c_int,
     y: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of PubPriv"][::std::mem::size_of::<PubPriv>() - 8usize];
     ["Alignment of PubPriv"][::std::mem::align_of::<PubPriv>() - 4usize];
@@ -103,6 +104,7 @@ pub struct PrivateBitFields {
     _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of PrivateBitFields"][::std::mem::size_of::<PrivateBitFields>() - 4usize];
     [
@@ -167,6 +169,7 @@ pub struct PublicBitFields {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of PublicBitFields"][::std::mem::size_of::<PublicBitFields>() - 4usize];
     ["Alignment of PublicBitFields"][::std::mem::align_of::<PublicBitFields>() - 4usize];
@@ -229,6 +232,7 @@ pub struct MixedBitFields {
     _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of MixedBitFields"][::std::mem::size_of::<MixedBitFields>() - 4usize];
     ["Alignment of MixedBitFields"][::std::mem::align_of::<MixedBitFields>() - 4usize];
@@ -288,6 +292,7 @@ impl MixedBitFields {
 pub struct Base {
     pub member: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Base"][::std::mem::size_of::<Base>() - 4usize];
     ["Alignment of Base"][::std::mem::align_of::<Base>() - 4usize];
@@ -298,6 +303,7 @@ const _: () = {
 pub struct InheritsPrivately {
     _base: Base,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of InheritsPrivately"][::std::mem::size_of::<InheritsPrivately>() - 4usize];
     [
@@ -309,6 +315,7 @@ const _: () = {
 pub struct InheritsPublically {
     pub _base: Base,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of InheritsPublically"][::std::mem::size_of::<InheritsPublically>() - 4usize];
     [
@@ -326,6 +333,7 @@ pub struct WithAnonStruct {
 pub struct WithAnonStruct__bindgen_ty_1 {
     pub a: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of WithAnonStruct__bindgen_ty_1",
@@ -342,6 +350,7 @@ const _: () = {
 pub struct WithAnonStruct__bindgen_ty_2 {
     pub b: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of WithAnonStruct__bindgen_ty_2",
@@ -353,6 +362,7 @@ const _: () = {
         "Offset of field: WithAnonStruct__bindgen_ty_2::b",
     ][::std::mem::offset_of!(WithAnonStruct__bindgen_ty_2, b) - 0usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of WithAnonStruct"][::std::mem::size_of::<WithAnonStruct>() - 8usize];
     ["Alignment of WithAnonStruct"][::std::mem::align_of::<WithAnonStruct>() - 4usize];
@@ -367,6 +377,7 @@ pub struct WithAnonUnion {
 pub union WithAnonUnion__bindgen_ty_1 {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of WithAnonUnion__bindgen_ty_1",
@@ -384,6 +395,7 @@ impl Default for WithAnonUnion__bindgen_ty_1 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of WithAnonUnion"][::std::mem::size_of::<WithAnonUnion>() - 1usize];
     ["Alignment of WithAnonUnion"][::std::mem::align_of::<WithAnonUnion>() - 1usize];
@@ -408,6 +420,7 @@ pub struct Override {
     _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub __bindgen_padding_0: u16,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Override"][::std::mem::size_of::<Override>() - 16usize];
     ["Alignment of Override"][::std::mem::align_of::<Override>() - 4usize];

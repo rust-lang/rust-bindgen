@@ -148,6 +148,7 @@ impl ::std::ops::BitAndAssign for Dummy__bindgen_ty_1 {
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Dummy__bindgen_ty_1(pub ::std::os::raw::c_uint);
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Dummy"][::std::mem::size_of::<Dummy>() - 1usize];
     ["Alignment of Dummy"][::std::mem::align_of::<Dummy>() - 1usize];

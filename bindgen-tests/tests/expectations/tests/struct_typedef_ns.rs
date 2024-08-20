@@ -11,6 +11,7 @@ pub mod root {
         pub struct typedef_struct {
             pub foo: ::std::os::raw::c_int,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of typedef_struct"][::std::mem::size_of::<typedef_struct>() - 4usize];
             [
@@ -34,6 +35,7 @@ pub mod root {
         pub struct typedef_struct {
             pub foo: ::std::os::raw::c_int,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of typedef_struct"][::std::mem::size_of::<typedef_struct>() - 4usize];
             [

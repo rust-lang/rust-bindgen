@@ -16,6 +16,7 @@ impl<T, U> Default for Foo<T, U> {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: Foo_open0_bool__int_close0",

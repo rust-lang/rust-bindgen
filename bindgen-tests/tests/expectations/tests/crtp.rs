@@ -9,6 +9,7 @@ pub struct Base {
 pub struct Derived {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Derived"][::std::mem::size_of::<Derived>() - 1usize];
     ["Alignment of Derived"][::std::mem::align_of::<Derived>() - 1usize];
@@ -23,6 +24,7 @@ pub struct BaseWithDestructor {
 pub struct DerivedFromBaseWithDestructor {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of DerivedFromBaseWithDestructor",
@@ -31,6 +33,7 @@ const _: () = {
         "Alignment of DerivedFromBaseWithDestructor",
     ][::std::mem::align_of::<DerivedFromBaseWithDestructor>() - 1usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: Base_open0_Derived_close0",
@@ -39,6 +42,7 @@ const _: () = {
         "Align of template specialization: Base_open0_Derived_close0",
     ][::std::mem::align_of::<Base>() - 1usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: BaseWithDestructor_open0_DerivedFromBaseWithDestructor_close0",

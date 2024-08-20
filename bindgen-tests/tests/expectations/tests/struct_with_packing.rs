@@ -5,6 +5,7 @@ pub struct a {
     pub b: ::std::os::raw::c_char,
     pub c: ::std::os::raw::c_short,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of a"][::std::mem::size_of::<a>() - 3usize];
     ["Alignment of a"][::std::mem::align_of::<a>() - 1usize];

@@ -7,6 +7,7 @@ extern "C" {
 pub struct Struct {
     pub field: u64,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Struct"][::std::mem::size_of::<Struct>() - 8usize];
     ["Alignment of Struct"][::std::mem::align_of::<Struct>() - 8usize];

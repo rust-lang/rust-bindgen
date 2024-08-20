@@ -28,6 +28,7 @@ extern "C" {
 #[derive(Debug, Default, Copy, Clone)]
 #[must_use]
 pub struct AnnotatedStruct {}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of AnnotatedStruct"][::std::mem::size_of::<AnnotatedStruct>() - 0usize];
     ["Alignment of AnnotatedStruct"][::std::mem::align_of::<AnnotatedStruct>() - 1usize];
@@ -39,6 +40,7 @@ extern "C" {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct PlainStruct {}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of PlainStruct"][::std::mem::size_of::<PlainStruct>() - 0usize];
     ["Alignment of PlainStruct"][::std::mem::align_of::<PlainStruct>() - 1usize];

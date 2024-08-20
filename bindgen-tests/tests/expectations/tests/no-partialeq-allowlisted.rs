@@ -4,6 +4,7 @@
 pub struct NoPartialEq {
     pub i: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of NoPartialEq"][::std::mem::size_of::<NoPartialEq>() - 4usize];
     ["Alignment of NoPartialEq"][::std::mem::align_of::<NoPartialEq>() - 4usize];

@@ -111,6 +111,7 @@ pub struct Weird {
     pub _bitfield_2: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Weird"][::std::mem::size_of::<Weird>() - 24usize];
     ["Alignment of Weird"][::std::mem::align_of::<Weird>() - 4usize];

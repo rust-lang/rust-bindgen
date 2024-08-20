@@ -6,6 +6,7 @@ pub struct A {
     pub _address: u8,
 }
 pub const A_k: bool = false;
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of A"][::std::mem::size_of::<A>() - 1usize];
     ["Alignment of A"][::std::mem::align_of::<A>() - 1usize];

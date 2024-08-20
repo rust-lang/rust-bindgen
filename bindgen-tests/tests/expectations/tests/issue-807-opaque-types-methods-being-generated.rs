@@ -4,6 +4,7 @@
 pub struct Pupper {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Pupper"][::std::mem::size_of::<Pupper>() - 1usize];
     ["Alignment of Pupper"][::std::mem::align_of::<Pupper>() - 1usize];
@@ -13,6 +14,7 @@ const _: () = {
 pub struct Doggo {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Doggo"][::std::mem::size_of::<Doggo>() - 1usize];
     ["Alignment of Doggo"][::std::mem::align_of::<Doggo>() - 1usize];
@@ -22,6 +24,7 @@ const _: () = {
 pub struct SuchWow {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of SuchWow"][::std::mem::size_of::<SuchWow>() - 1usize];
     ["Alignment of SuchWow"][::std::mem::align_of::<SuchWow>() - 1usize];
@@ -32,6 +35,7 @@ const _: () = {
 pub struct Opaque {
     pub _bindgen_opaque_blob: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Opaque"][::std::mem::size_of::<Opaque>() - 1usize];
     ["Alignment of Opaque"][::std::mem::align_of::<Opaque>() - 1usize];
@@ -65,6 +69,7 @@ extern "C" {
 pub struct Allowlisted {
     pub some_member: Opaque,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Allowlisted"][::std::mem::size_of::<Allowlisted>() - 1usize];
     ["Alignment of Allowlisted"][::std::mem::align_of::<Allowlisted>() - 1usize];

@@ -4,6 +4,7 @@
 pub struct A {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of A"][::std::mem::size_of::<A>() - 1usize];
     ["Alignment of A"][::std::mem::align_of::<A>() - 1usize];
@@ -31,6 +32,7 @@ impl A {
 pub struct B {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of B"][::std::mem::size_of::<B>() - 1usize];
     ["Alignment of B"][::std::mem::align_of::<B>() - 1usize];
@@ -40,6 +42,7 @@ const _: () = {
 pub struct C {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of C"][::std::mem::size_of::<C>() - 1usize];
     ["Alignment of C"][::std::mem::align_of::<C>() - 1usize];

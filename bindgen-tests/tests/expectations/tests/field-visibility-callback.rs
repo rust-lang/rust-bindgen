@@ -92,6 +92,7 @@ pub struct my_struct {
     _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     __bindgen_padding_0: [u8; 3usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of my_struct"][::std::mem::size_of::<my_struct>() - 12usize];
     ["Alignment of my_struct"][::std::mem::align_of::<my_struct>() - 4usize];

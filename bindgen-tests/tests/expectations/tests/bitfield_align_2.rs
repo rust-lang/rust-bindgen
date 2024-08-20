@@ -98,6 +98,7 @@ pub struct TaggedPtr {
     pub _bitfield_align_1: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of TaggedPtr"][::std::mem::size_of::<TaggedPtr>() - 8usize];
     ["Alignment of TaggedPtr"][::std::mem::align_of::<TaggedPtr>() - 8usize];

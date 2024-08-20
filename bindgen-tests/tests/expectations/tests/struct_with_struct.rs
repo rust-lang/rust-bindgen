@@ -10,6 +10,7 @@ pub struct foo__bindgen_ty_1 {
     pub x: ::std::os::raw::c_uint,
     pub y: ::std::os::raw::c_uint,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo__bindgen_ty_1"][::std::mem::size_of::<foo__bindgen_ty_1>() - 8usize];
     [
@@ -22,6 +23,7 @@ const _: () = {
         "Offset of field: foo__bindgen_ty_1::y",
     ][::std::mem::offset_of!(foo__bindgen_ty_1, y) - 4usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::std::mem::size_of::<foo>() - 8usize];
     ["Alignment of foo"][::std::mem::align_of::<foo>() - 4usize];

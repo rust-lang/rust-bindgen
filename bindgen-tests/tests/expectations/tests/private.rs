@@ -6,6 +6,7 @@ pub struct HasPrivate {
     /// <div rustbindgen private></div>
     mIsPrivate: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of HasPrivate"][::std::mem::size_of::<HasPrivate>() - 8usize];
     ["Alignment of HasPrivate"][::std::mem::align_of::<HasPrivate>() - 4usize];
@@ -23,6 +24,7 @@ pub struct VeryPrivate {
     mIsPrivate: ::std::os::raw::c_int,
     mIsAlsoPrivate: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of VeryPrivate"][::std::mem::size_of::<VeryPrivate>() - 8usize];
     ["Alignment of VeryPrivate"][::std::mem::align_of::<VeryPrivate>() - 4usize];
@@ -41,6 +43,7 @@ pub struct ContradictPrivate {
     pub mNotPrivate: ::std::os::raw::c_int,
     mIsPrivate: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ContradictPrivate"][::std::mem::size_of::<ContradictPrivate>() - 8usize];
     [

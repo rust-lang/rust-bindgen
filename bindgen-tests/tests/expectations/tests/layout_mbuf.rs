@@ -96,6 +96,7 @@ pub struct rte_atomic16_t {
     ///< An internal counter value.
     pub cnt: i16,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of rte_atomic16_t"][::std::mem::size_of::<rte_atomic16_t>() - 2usize];
     ["Alignment of rte_atomic16_t"][::std::mem::align_of::<rte_atomic16_t>() - 2usize];
@@ -164,6 +165,7 @@ pub union rte_mbuf__bindgen_ty_1 {
     ///< Non-atomically accessed refcnt
     pub refcnt: u16,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_mbuf__bindgen_ty_1",
@@ -201,6 +203,7 @@ pub struct rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_mbuf__bindgen_ty_2__bindgen_ty_1",
@@ -370,6 +373,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         __bindgen_bitfield_unit
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_mbuf__bindgen_ty_2",
@@ -420,6 +424,7 @@ pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
     pub hash: u16,
     pub id: u16,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1",
@@ -442,6 +447,7 @@ const _: () = {
         rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1, id
     ) - 2usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1",
@@ -465,6 +471,7 @@ impl Default for rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_mbuf__bindgen_ty_3__bindgen_ty_1",
@@ -491,6 +498,7 @@ pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_2 {
     pub lo: u32,
     pub hi: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_mbuf__bindgen_ty_3__bindgen_ty_2",
@@ -505,6 +513,7 @@ const _: () = {
         "Offset of field: rte_mbuf__bindgen_ty_3__bindgen_ty_2::hi",
     ][::std::mem::offset_of!(rte_mbuf__bindgen_ty_3__bindgen_ty_2, hi) - 4usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_mbuf__bindgen_ty_3",
@@ -542,6 +551,7 @@ pub union rte_mbuf__bindgen_ty_4 {
     ///< Allow 8-byte userdata on 32-bit
     pub udata64: u64,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_mbuf__bindgen_ty_4",
@@ -579,6 +589,7 @@ pub struct rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     pub _bitfield_align_1: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 7usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_mbuf__bindgen_ty_5__bindgen_ty_1",
@@ -725,6 +736,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         __bindgen_bitfield_unit
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_mbuf__bindgen_ty_5",
@@ -745,6 +757,7 @@ impl Default for rte_mbuf__bindgen_ty_5 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of rte_mbuf"][::std::mem::size_of::<rte_mbuf>() - 128usize];
     ["Alignment of rte_mbuf"][::std::mem::align_of::<rte_mbuf>() - 64usize];

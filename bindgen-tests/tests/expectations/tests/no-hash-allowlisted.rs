@@ -4,6 +4,7 @@
 pub struct NoHash {
     pub i: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of NoHash"][::std::mem::size_of::<NoHash>() - 4usize];
     ["Alignment of NoHash"][::std::mem::align_of::<NoHash>() - 4usize];

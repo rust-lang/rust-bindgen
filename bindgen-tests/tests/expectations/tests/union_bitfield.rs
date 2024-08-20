@@ -90,6 +90,7 @@ pub union U4 {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of U4"][::std::mem::size_of::<U4>() - 4usize];
     ["Alignment of U4"][::std::mem::align_of::<U4>() - 4usize];
@@ -138,6 +139,7 @@ pub union B {
     pub _bitfield_align_1: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of B"][::std::mem::size_of::<B>() - 4usize];
     ["Alignment of B"][::std::mem::align_of::<B>() - 4usize];

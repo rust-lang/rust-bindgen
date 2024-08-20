@@ -10,6 +10,7 @@ extern "C" {
 pub struct Test__Float16 {
     pub f: __BindgenFloat16,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Test__Float16"][::std::mem::size_of::<Test__Float16>() - 2usize];
     ["Alignment of Test__Float16"][::std::mem::align_of::<Test__Float16>() - 2usize];
@@ -22,6 +23,7 @@ const _: () = {
 pub struct Test__Float16Ref {
     pub f: *mut __BindgenFloat16,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Test__Float16Ref"][::std::mem::size_of::<Test__Float16Ref>() - 8usize];
     [

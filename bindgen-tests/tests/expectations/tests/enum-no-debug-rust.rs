@@ -12,6 +12,7 @@ pub enum foo__bindgen_ty_1 {
     FOO_A = 0,
     FOO_B = 1,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::std::mem::size_of::<foo>() - 4usize];
     ["Alignment of foo"][::std::mem::align_of::<foo>() - 4usize];

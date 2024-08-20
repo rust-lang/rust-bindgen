@@ -4,6 +4,7 @@
 pub struct A {
     pub _x: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of A"][::std::mem::size_of::<A>() - 4usize];
     ["Alignment of A"][::std::mem::align_of::<A>() - 4usize];

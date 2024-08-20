@@ -212,6 +212,7 @@
 ## Changed
 ## Removed
 ## Fixed
+- Fix regression where the `const` layout tests were triggering the `unnecessary_operation` and `identity_op` clippy warnings.
 ## Security
 
 # 0.70.0 (2024-08-16)

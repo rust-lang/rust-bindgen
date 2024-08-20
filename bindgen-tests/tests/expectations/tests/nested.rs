@@ -4,6 +4,7 @@
 pub struct Calc {
     pub w: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Calc"][::std::mem::size_of::<Calc>() - 4usize];
     ["Alignment of Calc"][::std::mem::align_of::<Calc>() - 4usize];
@@ -25,6 +26,7 @@ pub struct Test_Size {
 pub struct Test_Size_Dimension {
     pub _base: Calc,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of Test_Size_Dimension",
@@ -33,6 +35,7 @@ const _: () = {
         "Alignment of Test_Size_Dimension",
     ][::std::mem::align_of::<Test_Size_Dimension>() - 4usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Test_Size"][::std::mem::size_of::<Test_Size>() - 8usize];
     ["Alignment of Test_Size"][::std::mem::align_of::<Test_Size>() - 4usize];
@@ -43,6 +46,7 @@ const _: () = {
         "Offset of field: Test_Size::mHeight",
     ][::std::mem::offset_of!(Test_Size, mHeight) - 4usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Test"][::std::mem::size_of::<Test>() - 1usize];
     ["Alignment of Test"][::std::mem::align_of::<Test>() - 1usize];

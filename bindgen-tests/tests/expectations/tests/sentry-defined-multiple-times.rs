@@ -21,6 +21,7 @@ pub mod root {
         pub struct sentry {
             pub i_am_plain_sentry: bool,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of sentry"][::std::mem::size_of::<sentry>() - 1usize];
             ["Alignment of sentry"][::std::mem::align_of::<sentry>() - 1usize];
@@ -33,6 +34,7 @@ pub mod root {
         pub struct NotTemplateWrapper {
             pub _address: u8,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             [
                 "Size of NotTemplateWrapper",
@@ -46,6 +48,7 @@ pub mod root {
         pub struct NotTemplateWrapper_sentry {
             pub i_am_not_template_wrapper_sentry: ::std::os::raw::c_char,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             [
                 "Size of NotTemplateWrapper_sentry",
@@ -69,6 +72,7 @@ pub mod root {
         pub struct InlineNotTemplateWrapper_sentry {
             pub i_am_inline_not_template_wrapper_sentry: bool,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             [
                 "Size of InlineNotTemplateWrapper_sentry",
@@ -82,6 +86,7 @@ pub mod root {
                 InlineNotTemplateWrapper_sentry, i_am_inline_not_template_wrapper_sentry
             ) - 0usize];
         };
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             [
                 "Size of InlineNotTemplateWrapper",
@@ -110,6 +115,7 @@ pub mod root {
         pub struct OuterDoubleWrapper_InnerDoubleWrapper {
             pub _address: u8,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             [
                 "Size of OuterDoubleWrapper_InnerDoubleWrapper",
@@ -118,6 +124,7 @@ pub mod root {
                 "Alignment of OuterDoubleWrapper_InnerDoubleWrapper",
             ][::std::mem::align_of::<OuterDoubleWrapper_InnerDoubleWrapper>() - 1usize];
         };
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             [
                 "Size of OuterDoubleWrapper",
@@ -131,6 +138,7 @@ pub mod root {
         pub struct OuterDoubleWrapper_InnerDoubleWrapper_sentry {
             pub i_am_double_wrapper_sentry: ::std::os::raw::c_int,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             [
                 "Size of OuterDoubleWrapper_InnerDoubleWrapper_sentry",
@@ -161,6 +169,7 @@ pub mod root {
         pub struct OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry {
             pub i_am_double_wrapper_inline_sentry: ::std::os::raw::c_int,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             [
                 "Size of OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry",
@@ -179,6 +188,7 @@ pub mod root {
                 i_am_double_wrapper_inline_sentry
             ) - 0usize];
         };
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             [
                 "Size of OuterDoubleInlineWrapper_InnerDoubleInlineWrapper",
@@ -189,6 +199,7 @@ pub mod root {
             ][::std::mem::align_of::<OuterDoubleInlineWrapper_InnerDoubleInlineWrapper>()
                 - 1usize];
         };
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             [
                 "Size of OuterDoubleInlineWrapper",
@@ -213,6 +224,7 @@ pub mod root {
     pub struct sentry {
         pub i_am_outside_namespace_sentry: ::std::os::raw::c_int,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of sentry"][::std::mem::size_of::<sentry>() - 4usize];
         ["Alignment of sentry"][::std::mem::align_of::<sentry>() - 4usize];

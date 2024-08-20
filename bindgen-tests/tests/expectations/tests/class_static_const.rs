@@ -7,6 +7,7 @@ pub struct A {
 pub const A_a: ::std::os::raw::c_int = 0;
 pub const A_b: i32 = 63;
 pub const A_c: u32 = 255;
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of A"][::std::mem::size_of::<A>() - 1usize];
     ["Alignment of A"][::std::mem::align_of::<A>() - 1usize];

@@ -45,6 +45,7 @@ pub struct bar {
     pub member9: anon_enum_alias2,
     pub member10: anon_enum_alias3,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of bar"][::std::mem::size_of::<bar>() - 48usize];
     ["Alignment of bar"][::std::mem::align_of::<bar>() - 8usize];
@@ -73,6 +74,7 @@ impl Default for bar {
 pub struct Baz {
     pub member1: ns2_Foo::Type,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Baz"][::std::mem::size_of::<Baz>() - 4usize];
     ["Alignment of Baz"][::std::mem::align_of::<Baz>() - 4usize];
@@ -97,6 +99,7 @@ pub mod one_Foo {
 pub struct Bar {
     pub baz: *mut one_Foo::Type,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Bar"][::std::mem::size_of::<Bar>() - 8usize];
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 8usize];

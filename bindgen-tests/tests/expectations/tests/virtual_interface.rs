@@ -12,6 +12,7 @@ pub struct PureVirtualIFace__bindgen_vtable {
 pub struct PureVirtualIFace {
     pub vtable_: *const PureVirtualIFace__bindgen_vtable,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of PureVirtualIFace"][::std::mem::size_of::<PureVirtualIFace>() - 8usize];
     [
@@ -36,6 +37,7 @@ pub struct AnotherInterface__bindgen_vtable {
 pub struct AnotherInterface {
     pub vtable_: *const AnotherInterface__bindgen_vtable,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of AnotherInterface"][::std::mem::size_of::<AnotherInterface>() - 8usize];
     [
@@ -56,6 +58,7 @@ impl Default for AnotherInterface {
 pub struct Implementation {
     pub _base: PureVirtualIFace,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Implementation"][::std::mem::size_of::<Implementation>() - 8usize];
     ["Alignment of Implementation"][::std::mem::align_of::<Implementation>() - 8usize];
@@ -75,6 +78,7 @@ pub struct DoubleImpl {
     pub _base: PureVirtualIFace,
     pub _base_1: AnotherInterface,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of DoubleImpl"][::std::mem::size_of::<DoubleImpl>() - 16usize];
     ["Alignment of DoubleImpl"][::std::mem::align_of::<DoubleImpl>() - 8usize];

@@ -18,6 +18,7 @@ pub struct rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1 {
     pub dport: u16,
     pub sport: u16,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1",
@@ -34,6 +35,7 @@ const _: () = {
     ][::std::mem::offset_of!(rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1, sport)
         - 2usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_ipv4_tuple__bindgen_ty_1",
@@ -54,6 +56,7 @@ impl Default for rte_ipv4_tuple__bindgen_ty_1 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of rte_ipv4_tuple"][::std::mem::size_of::<rte_ipv4_tuple>() - 12usize];
     ["Alignment of rte_ipv4_tuple"][::std::mem::align_of::<rte_ipv4_tuple>() - 4usize];
@@ -92,6 +95,7 @@ pub struct rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1 {
     pub dport: u16,
     pub sport: u16,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1",
@@ -108,6 +112,7 @@ const _: () = {
     ][::std::mem::offset_of!(rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1, sport)
         - 2usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_ipv6_tuple__bindgen_ty_1",
@@ -128,6 +133,7 @@ impl Default for rte_ipv6_tuple__bindgen_ty_1 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of rte_ipv6_tuple"][::std::mem::size_of::<rte_ipv6_tuple>() - 36usize];
     ["Alignment of rte_ipv6_tuple"][::std::mem::align_of::<rte_ipv6_tuple>() - 4usize];
@@ -154,6 +160,7 @@ pub union rte_thash_tuple {
     pub v4: rte_ipv4_tuple,
     pub v6: rte_ipv6_tuple,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of rte_thash_tuple"][::std::mem::size_of::<rte_thash_tuple>() - 48usize];
     [

@@ -7,6 +7,7 @@ pub struct Packed {
     pub c: ::std::os::raw::c_char,
     pub d: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Packed"][::std::mem::size_of::<Packed>() - 10usize];
     ["Alignment of Packed"][::std::mem::align_of::<Packed>() - 2usize];

@@ -18,6 +18,7 @@ pub mod root {
     pub struct CapturingContentInfo {
         pub a: u8,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         [
             "Size of CapturingContentInfo",

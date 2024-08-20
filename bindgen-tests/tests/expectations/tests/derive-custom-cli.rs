@@ -4,6 +4,7 @@
 pub struct foo_struct {
     pub inner: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo_struct"][::std::mem::size_of::<foo_struct>() - 4usize];
     ["Alignment of foo_struct"][::std::mem::align_of::<foo_struct>() - 4usize];
@@ -22,6 +23,7 @@ pub union foo_union {
     pub fst: ::std::mem::ManuallyDrop<::std::os::raw::c_int>,
     pub snd: ::std::mem::ManuallyDrop<f32>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo_union"][::std::mem::size_of::<foo_union>() - 4usize];
     ["Alignment of foo_union"][::std::mem::align_of::<foo_union>() - 4usize];
@@ -32,6 +34,7 @@ const _: () = {
 pub struct non_matching {
     pub inner: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of non_matching"][::std::mem::size_of::<non_matching>() - 4usize];
     ["Alignment of non_matching"][::std::mem::align_of::<non_matching>() - 4usize];

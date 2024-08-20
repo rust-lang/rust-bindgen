@@ -5,6 +5,7 @@
 pub struct Empty {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Empty"][::std::mem::size_of::<Empty>() - 1usize];
     ["Alignment of Empty"][::std::mem::align_of::<Empty>() - 1usize];
@@ -16,6 +17,7 @@ const _: () = {
 pub struct HasArrayOfEmpty {
     pub empties: [Empty; 10usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of HasArrayOfEmpty"][::std::mem::size_of::<HasArrayOfEmpty>() - 10usize];
     ["Alignment of HasArrayOfEmpty"][::std::mem::align_of::<HasArrayOfEmpty>() - 1usize];

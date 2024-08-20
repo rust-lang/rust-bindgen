@@ -92,6 +92,7 @@ pub struct A {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub y: ::std::os::raw::c_uchar,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of A"][::std::mem::size_of::<A>() - 4usize];
     ["Alignment of A"][::std::mem::align_of::<A>() - 4usize];
@@ -322,6 +323,7 @@ pub struct B {
     pub _bitfield_align_1: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of B"][::std::mem::size_of::<B>() - 4usize];
     ["Alignment of B"][::std::mem::align_of::<B>() - 4usize];
@@ -384,6 +386,7 @@ pub struct C {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub baz: ::std::os::raw::c_uint,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of C"][::std::mem::size_of::<C>() - 8usize];
     ["Alignment of C"][::std::mem::align_of::<C>() - 4usize];
@@ -448,6 +451,7 @@ pub struct Date1 {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize]>,
     pub __bindgen_padding_0: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Date1"][::std::mem::size_of::<Date1>() - 4usize];
     ["Alignment of Date1"][::std::mem::align_of::<Date1>() - 2usize];
@@ -551,6 +555,7 @@ pub struct Date2 {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Date2"][::std::mem::size_of::<Date2>() - 4usize];
     ["Alignment of Date2"][::std::mem::align_of::<Date2>() - 2usize];
@@ -676,6 +681,7 @@ pub struct Date3 {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize]>,
     pub byte: ::std::os::raw::c_uchar,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Date3"][::std::mem::size_of::<Date3>() - 4usize];
     ["Alignment of Date3"][::std::mem::align_of::<Date3>() - 2usize];

@@ -20,6 +20,7 @@ pub type HandleValue = HandleWithDtor<::std::os::raw::c_int>;
 pub struct WithoutDtor {
     pub shouldBeWithDtor: HandleValue,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of WithoutDtor"][::std::mem::size_of::<WithoutDtor>() - 8usize];
     ["Alignment of WithoutDtor"][::std::mem::align_of::<WithoutDtor>() - 8usize];
@@ -36,6 +37,7 @@ impl Default for WithoutDtor {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: HandleWithDtor_open0_int_close0",

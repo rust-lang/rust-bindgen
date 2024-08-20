@@ -36,6 +36,7 @@ pub struct dm_deps {
     pub filler: ::std::os::raw::c_uint,
     pub device: __IncompleteArrayField<::std::os::raw::c_ulonglong>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of dm_deps"][::std::mem::size_of::<dm_deps>() - 8usize];
     ["Alignment of dm_deps"][::std::mem::align_of::<dm_deps>() - 8usize];

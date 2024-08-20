@@ -10,11 +10,13 @@ pub struct nsTArray {
 pub struct Test {
     pub a: nsTArray,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Test"][::std::mem::size_of::<Test>() - 4usize];
     ["Alignment of Test"][::std::mem::align_of::<Test>() - 4usize];
     ["Offset of field: Test::a"][::std::mem::offset_of!(Test, a) - 0usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: nsTArray_open0_long_close0",

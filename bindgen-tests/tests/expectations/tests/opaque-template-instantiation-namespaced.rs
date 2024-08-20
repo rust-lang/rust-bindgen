@@ -26,6 +26,7 @@ pub mod root {
         pub struct Foo {
             pub c: ::std::os::raw::c_char,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of Foo"][::std::mem::size_of::<Foo>() - 1usize];
             ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 1usize];
@@ -36,6 +37,7 @@ pub mod root {
         pub struct Bar {
             pub i: ::std::os::raw::c_int,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of Bar"][::std::mem::size_of::<Bar>() - 4usize];
             ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 4usize];
@@ -46,6 +48,7 @@ pub mod root {
         pub struct ContainsInstantiation {
             pub not_opaque: root::zoidberg::Template<root::zoidberg::Foo>,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             [
                 "Size of ContainsInstantiation",
@@ -71,6 +74,7 @@ pub mod root {
         pub struct ContainsOpaqueInstantiation {
             pub opaque: u32,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             [
                 "Size of ContainsOpaqueInstantiation",
@@ -83,6 +87,7 @@ pub mod root {
             ][::std::mem::offset_of!(ContainsOpaqueInstantiation, opaque) - 0usize];
         };
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         [
             "Size of template specialization: Template_open0_Foo_close0",

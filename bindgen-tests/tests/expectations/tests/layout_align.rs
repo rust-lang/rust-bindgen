@@ -127,6 +127,7 @@ pub struct rte_kni_fifo {
     ///< The buffer contains mbuf pointers
     pub buffer: __IncompleteArrayField<*mut ::std::os::raw::c_void>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of rte_kni_fifo"][::std::mem::size_of::<rte_kni_fifo>() - 16usize];
     ["Alignment of rte_kni_fifo"][::std::mem::align_of::<rte_kni_fifo>() - 8usize];
@@ -165,6 +166,7 @@ pub struct rte_eth_link {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of rte_eth_link"][::std::mem::size_of::<rte_eth_link>() - 8usize];
     ["Alignment of rte_eth_link"][::std::mem::align_of::<rte_eth_link>() - 8usize];

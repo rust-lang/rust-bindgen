@@ -9,11 +9,13 @@ pub struct Foo {
 pub struct Foo_Bar {
     pub abc: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Foo_Bar"][::std::mem::size_of::<Foo_Bar>() - 4usize];
     ["Alignment of Foo_Bar"][::std::mem::align_of::<Foo_Bar>() - 4usize];
     ["Offset of field: Foo_Bar::abc"][::std::mem::offset_of!(Foo_Bar, abc) - 0usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 4usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 4usize];
@@ -29,11 +31,13 @@ pub struct Baz {
 pub struct Baz_Bar {
     pub abc: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Baz_Bar"][::std::mem::size_of::<Baz_Bar>() - 4usize];
     ["Alignment of Baz_Bar"][::std::mem::align_of::<Baz_Bar>() - 4usize];
     ["Offset of field: Baz_Bar::abc"][::std::mem::offset_of!(Baz_Bar, abc) - 0usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Baz"][::std::mem::size_of::<Baz>() - 1usize];
     ["Alignment of Baz"][::std::mem::align_of::<Baz>() - 1usize];

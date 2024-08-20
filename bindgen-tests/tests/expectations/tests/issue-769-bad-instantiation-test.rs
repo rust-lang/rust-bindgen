@@ -19,6 +19,7 @@ pub mod root {
         }
     }
     pub type AutoValueVector_Alias = ::std::os::raw::c_int;
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         [
             "Size of template specialization: Rooted_open0_int_close0",
@@ -27,6 +28,7 @@ pub mod root {
             "Align of template specialization: Rooted_open0_int_close0",
         ][::std::mem::align_of::<root::Rooted<::std::os::raw::c_int>>() - 4usize];
     };
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         [
             "Size of template specialization: Rooted_open0_AutoValueVector_Alias_close0",

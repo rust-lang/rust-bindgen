@@ -19,6 +19,7 @@ impl Default for LinkedList {
 pub struct InstantiateIt {
     pub m_list: LinkedList,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of InstantiateIt"][::std::mem::size_of::<InstantiateIt>() - 16usize];
     ["Alignment of InstantiateIt"][::std::mem::align_of::<InstantiateIt>() - 8usize];
@@ -35,6 +36,7 @@ impl Default for InstantiateIt {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: LinkedList_open0_int_close0",

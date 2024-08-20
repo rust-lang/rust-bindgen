@@ -2,6 +2,7 @@
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Foo {}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 0usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 1usize];

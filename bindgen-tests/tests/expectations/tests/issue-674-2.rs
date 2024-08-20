@@ -18,6 +18,7 @@ pub mod root {
     pub struct c {
         pub b: u8,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of c"][::std::mem::size_of::<c>() - 1usize];
         ["Alignment of c"][::std::mem::align_of::<c>() - 1usize];
@@ -28,6 +29,7 @@ pub mod root {
     pub struct B {
         pub a: root::c,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of B"][::std::mem::size_of::<B>() - 1usize];
         ["Alignment of B"][::std::mem::align_of::<B>() - 1usize];
@@ -38,6 +40,7 @@ pub mod root {
     pub struct StaticRefPtr {
         pub _address: u8,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         [
             "Size of template specialization: StaticRefPtr_open0_B_close0",

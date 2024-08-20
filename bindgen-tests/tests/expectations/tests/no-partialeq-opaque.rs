@@ -5,6 +5,7 @@
 pub struct NoPartialEq {
     pub _bindgen_opaque_blob: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of NoPartialEq"][::std::mem::size_of::<NoPartialEq>() - 4usize];
     ["Alignment of NoPartialEq"][::std::mem::align_of::<NoPartialEq>() - 4usize];

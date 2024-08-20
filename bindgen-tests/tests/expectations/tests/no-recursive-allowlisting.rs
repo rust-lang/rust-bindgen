@@ -5,6 +5,7 @@ pub enum Bar {}
 pub struct Foo {
     pub baz: *mut Bar,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 8usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 8usize];

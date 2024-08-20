@@ -4,6 +4,7 @@
 pub struct C {
     pub arr: [u32; 3usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of C"][::std::mem::size_of::<C>() - 12usize];
     ["Alignment of C"][::std::mem::align_of::<C>() - 4usize];

@@ -89,6 +89,7 @@ pub struct Struct {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Struct"][::std::mem::size_of::<Struct>() - 4usize];
     ["Alignment of Struct"][::std::mem::align_of::<Struct>() - 1usize];
@@ -212,6 +213,7 @@ pub struct Inner {
     pub _bitfield_align_1: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Inner"][::std::mem::size_of::<Inner>() - 4usize];
     ["Alignment of Inner"][::std::mem::align_of::<Inner>() - 2usize];
@@ -271,6 +273,7 @@ impl Inner {
 pub struct Outer {
     pub inner: Inner,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Outer"][::std::mem::size_of::<Outer>() - 4usize];
     ["Alignment of Outer"][::std::mem::align_of::<Outer>() - 1usize];

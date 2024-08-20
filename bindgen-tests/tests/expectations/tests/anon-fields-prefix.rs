@@ -13,6 +13,7 @@ pub struct color__bindgen_ty_1 {
     pub g: ::std::os::raw::c_uchar,
     pub b: ::std::os::raw::c_uchar,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of color__bindgen_ty_1",
@@ -37,6 +38,7 @@ pub struct color__bindgen_ty_2 {
     pub u: ::std::os::raw::c_uchar,
     pub v: ::std::os::raw::c_uchar,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of color__bindgen_ty_2",
@@ -54,6 +56,7 @@ const _: () = {
         "Offset of field: color__bindgen_ty_2::v",
     ][::std::mem::offset_of!(color__bindgen_ty_2, v) - 2usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of color"][::std::mem::size_of::<color>() - 3usize];
     ["Alignment of color"][::std::mem::align_of::<color>() - 1usize];
