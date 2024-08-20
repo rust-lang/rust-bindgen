@@ -425,7 +425,7 @@ $ brew install creduce
 $ # Etc...
 ```
 
-Otherwise, follow [these instructions](https://github.com/csmith-project/creduce/blob/main/INSTALL.md) for building and/or installing `creduce`.
+Otherwise, follow [these instructions](https://github.com/csmith-project/creduce/blob/master/INSTALL.md) for building and/or installing `creduce`.
 
 Running `creduce` requires two things:
 
