@@ -1,4 +1,5 @@
 # This is triggered after the Release workflow successfully completes its run
+name: Publish on crates.io
 on:
   workflow_run:
     workflows:
@@ -10,8 +11,10 @@ env:
 jobs:
   cargo-publish:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ (github.event.workflow_run.conclusion == 'success') && (github.event.workflow.name == 'Release') }}
     steps:
+      - name: Print workflow event name
+        run: echo "${{ github.event.workflow.name }}"
       - name: Checkout sources
         uses: actions/checkout@v4
       - name: Install stable toolchain
