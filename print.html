@@ -1611,6 +1611,7 @@ to add the feature line to your containing crate.</p>
 <li><a href="faq.html#does-bindgen-support-the-c-standard-template-library-stl">Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</a></li>
 <li><a href="faq.html#how-to-deal-with-bindgen-generated-padding-fields">How to deal with bindgen generated padding fields?</a></li>
 <li><a href="faq.html#how-to-generate-bindings-for-a-custom-target">How to generate bindings for a custom target?</a></li>
+<li><a href="faq.html#why-isnt-bindgen-generating-documentation-for-system-headers">Why isn't <code>bindgen</code> generating documentation for system headers?</a></li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <h3><a class="header" href="#why-isnt-bindgen-generating-methods-for-this-allowlisted-class" id="why-isnt-bindgen-generating-methods-for-this-allowlisted-class">Why isn't <code>bindgen</code> generating methods for this allowlisted class?</a></h3>
@@ -1692,6 +1693,10 @@ like so:</p>
 </code></pre>
 <p>If you are using <code>bindgen</code> as a library, you should call
 <code>builder.clang_arg(&quot;--target=armv7a-none-eabi&quot;)</code> on your <code>builder</code>.</p>
+<h3><a class="header" href="#why-isnt-bindgen-generating-documentation-for-system-headers" id="why-isnt-bindgen-generating-documentation-for-system-headers">Why isn't <code>bindgen</code> generating documentation for system headers?</a></h3>
+<p>By default, Bindgen does not generate documentation for system headers because
+<code>libclang</code> does not provide this information. To address this, you should call
+<code>builder.clang_arg(&quot;-fretain-comments-from-system-headers&quot;)</code> on your <code>builder</code>.</p>
 
                     </main>
 
