@@ -36,6 +36,7 @@ proc-macro2 = { version = "1", default-features = false }
 quote = { version = "1", default-features = false }
 regex = { version = "1.5.3", default-features = false, features = ["std", "unicode-perl"] }
 rustc-hash = "1.0.1"
+serde = { version = "1.0.209", features = ["derive"], optional = true }
 shlex = "1"
 syn = { version = "2.0", features = ["full", "extra-traits", "visit-mut"] }
 
@@ -51,7 +52,7 @@ experimental = ["dep:annotate-snippets"]
 ## The following features are for internal use and they shouldn't be used if
 ## you're not hacking on bindgen
 # Features used by `bindgen-cli`
-__cli = []
+__cli = ["dep:serde", "bitflags/serde"]
 # Features used for CI testing
 __testing_only_extra_assertions = []
 __testing_only_libclang_9 = []

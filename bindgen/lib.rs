@@ -111,6 +111,7 @@ fn args_are_cpp(clang_args: &[Box<str>]) -> bool {
 bitflags! {
     /// A type used to indicate which kind of items we have to generate.
     #[derive(Copy, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[cfg_attr(feature = "__cli", derive(serde::Serialize, serde::Deserialize))]
     pub struct CodegenConfig: u32 {
         /// Whether to generate functions.
         const FUNCTIONS = 1 << 0;
@@ -167,6 +168,7 @@ impl Default for CodegenConfig {
 
 /// Formatting tools that can be used to format the bindings
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(feature = "__cli", derive(serde::Serialize, serde::Deserialize))]
 #[non_exhaustive]
 pub enum Formatter {
     /// Do not format the bindings.

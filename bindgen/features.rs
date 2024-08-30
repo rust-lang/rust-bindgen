@@ -25,6 +25,7 @@ macro_rules! define_rust_targets {
         /// This enum will have more variants added as necessary.
         #[allow(non_camel_case_types)]
         #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+        #[cfg_attr(feature = "__cli", derive(serde::Serialize, serde::Deserialize))]
         pub enum RustTarget {
             /// Rust Nightly
             $(#[doc = concat!(

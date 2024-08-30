@@ -171,6 +171,7 @@ impl DotAttributes for Function {
 
 /// A valid rust ABI.
 #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
+#[cfg_attr(feature = "__cli", derive(serde::Serialize, serde::Deserialize))]
 pub enum Abi {
     /// The default C ABI.
     C,
