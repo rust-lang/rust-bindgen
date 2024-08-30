@@ -104,6 +104,15 @@ struct BindgenCommand {
     #[arg(long)]
     #[serde(skip)]
     config_path: Option<String>,
+    #[serde(skip)]
+    #[arg(long)]
+    /// Dump the passed configuration into stdout in TOML format.
+    dump_config: bool,
+    #[serde(skip)]
+    #[arg(long)]
+    /// Ignore any configuration file, including the default `bindgen.toml` in the current
+    /// directory.
+    ignore_config_file: bool,
     /// Path to write depfile to.
     #[arg(long)]
     depfile: Option<String>,
@@ -477,33 +486,53 @@ where
     let command = {
         let mut matches = BindgenCommand::command().get_matches_from(args);
 
-        let config_path = match matches.get_one::<String>("config_path") {
-            Some(path) => path.into(),
-            None => {
-                let mut cwd = std::env::current_dir()?;
-                cwd.push("bindgen.toml");
-                cwd
-            }
-        };
+        let ignore_config_file = matches
+            .get_one::<bool>("ignore_config_file")
+            .copied()
+            .unwrap_or_default();
 
-        let res = if config_path.try_exists()? {
-            let contents = std::fs::read_to_string(config_path)?;
-            let mut command = toml::from_str::<BindgenCommand>(&contents)
-                .map_err(|err| io::Error::new(io::ErrorKind::Other, err))?;
-
-            command
-                .update_from_arg_matches_mut(&mut matches)
-                .map(|()| command)
-        } else {
+        let res = if ignore_config_file {
             BindgenCommand::from_arg_matches_mut(&mut matches)
+        } else {
+            let config_path = match matches.get_one::<String>("config_path") {
+                Some(path) => path.into(),
+                None => {
+                    let mut cwd = std::env::current_dir()?;
+                    cwd.push("bindgen.toml");
+                    cwd
+                }
+            };
+
+            if config_path.try_exists()? {
+                let contents = std::fs::read_to_string(config_path)?;
+                let mut command = toml::from_str::<BindgenCommand>(&contents)
+                    .map_err(|err| {
+                    io::Error::new(io::ErrorKind::Other, err)
+                })?;
+
+                command
+                    .update_from_arg_matches_mut(&mut matches)
+                    .map(|()| command)
+            } else {
+                BindgenCommand::from_arg_matches_mut(&mut matches)
+            }
         };
 
         res.unwrap_or_else(|err| err.exit())
     };
 
+    if command.dump_config {
+        let contents = toml::to_string_pretty(&command)
+            .map_err(|err| io::Error::new(io::ErrorKind::Other, err))?;
+        println!("{}", contents);
+        exit(0);
+    }
+
     let BindgenCommand {
         header,
         config_path: _,
+        ignore_config_file: _,
+        dump_config: _,
         depfile,
         default_enum_style,
         bitfield_enum,
