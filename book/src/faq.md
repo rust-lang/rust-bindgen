@@ -8,6 +8,7 @@
 - [Does `bindgen` support the C++ Standard Template Library (STL)?](#does-bindgen-support-the-c-standard-template-library-stl)
 - [How to deal with bindgen generated padding fields?](#how-to-deal-with-bindgen-generated-padding-fields)
 - [How to generate bindings for a custom target?](#how-to-generate-bindings-for-a-custom-target)
+- [Why isn't `bindgen` generating documentation for system headers?](#why-isnt-bindgen-generating-documentation-for-system-headers)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -115,3 +116,9 @@ $ bindgen <input_headers> -- --target=armv7a-none-eabi
 ```
 If you are using `bindgen` as a library, you should call
 `builder.clang_arg("--target=armv7a-none-eabi")` on your `builder`.
+
+### Why isn't `bindgen` generating documentation for system headers?
+
+By default, Bindgen does not generate documentation for system headers because
+`libclang` does not provide this information. To address this, you should call
+`builder.clang_arg("-fretain-comments-from-system-headers")` on your `builder`.
