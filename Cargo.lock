@@ -72,10 +72,12 @@ dependencies = [
  "clap_complete",
  "owo-colors",
  "prettyplease",
+ "serde",
  "shlex",
  "similar",
  "syn 2.0.76",
  "tempfile",
+ "toml",
 ]
 
 [[package]]
