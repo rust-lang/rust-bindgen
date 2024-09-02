@@ -320,7 +320,8 @@ impl ClangSubItemParser for Var {
                             matches!(ty.kind(), CXType_Auto | CXType_Unexposed),
                             "Couldn't resolve constant type, and it \
                              wasn't an nondeductible auto type or unexposed \
-                             type!"
+                             type: {:?}",
+                            ty
                         );
                         return Err(e);
                     }
