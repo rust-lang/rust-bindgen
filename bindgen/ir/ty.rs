@@ -1167,6 +1167,18 @@ impl Type {
                     .expect("Not able to resolve array element?");
                     TypeKind::Array(inner, ty.num_elements().unwrap())
                 }
+                CXType_Atomic => {
+                    // TODO(emilio): Maybe we can preserve the "is atomic" bit somehow and generate
+                    // something more useful... But for now this is better than panicking or
+                    // generating nothing.
+                    return Self::from_clang_ty(
+                        potential_id,
+                        &ty.atomic_value_type(),
+                        location,
+                        parent_id,
+                        ctx,
+                    );
+                }
                 CXType_Elaborated => {
                     return Self::from_clang_ty(
                         potential_id,
