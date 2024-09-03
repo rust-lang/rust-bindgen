@@ -23,3 +23,7 @@ runtime = ["bindgen/runtime"]
 __testing_only_extra_assertions = ["bindgen/__testing_only_extra_assertions"]
 __testing_only_libclang_9 = ["bindgen/__testing_only_libclang_9"]
 __testing_only_libclang_16 = ["bindgen/__testing_only_libclang_16"]
+
+[dependencies]
+serde = { version = "1.0.209", features = ["derive"] }
+toml = "0.8.19"

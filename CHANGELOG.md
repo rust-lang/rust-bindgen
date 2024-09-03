@@ -215,6 +215,7 @@
 --------------------------------------------------------------------------------
 # Unreleased
 ## Added
+- Add support for a configuration file in the TOML format.
 ## Changed
 ## Removed
 ## Fixed

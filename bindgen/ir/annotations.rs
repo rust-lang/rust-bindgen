@@ -10,6 +10,7 @@ use crate::clang;
 
 /// What kind of visibility modifier should be used for a struct or field?
 #[derive(Copy, PartialEq, Eq, PartialOrd, Ord, Clone, Debug, Default)]
+#[cfg_attr(feature = "__cli", derive(serde::Serialize, serde::Deserialize))]
 pub enum FieldVisibilityKind {
     /// Fields are marked as private, i.e., struct Foo {bar: bool}
     Private,

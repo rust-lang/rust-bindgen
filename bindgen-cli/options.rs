@@ -5,7 +5,8 @@ use bindgen::{
     RegexSet, RustTarget, DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
 };
 use clap::error::{Error, ErrorKind};
-use clap::{CommandFactory, Parser};
+use clap::{CommandFactory, FromArgMatches, Parser};
+use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io;
 use std::path::{Path, PathBuf};
@@ -87,15 +88,31 @@ fn parse_custom_derive(
     Ok((derives, regex.to_owned()))
 }
 
-#[derive(Parser, Debug)]
+#[derive(Parser, Debug, Serialize, Deserialize, Default)]
 #[clap(
     about = "Generates Rust bindings from C/C++ headers.",
     override_usage = "bindgen <FLAGS> <OPTIONS> <HEADER> -- <CLANG_ARGS>...",
     trailing_var_arg = true
 )]
+#[serde(default)]
 struct BindgenCommand {
     /// C or C++ header file.
+    #[serde(skip)]
     header: Option<String>,
+    /// Path for the configuration file. If the path is not provided, the `bindgen.toml` file in
+    /// the current directory will be used by default.
+    #[arg(long)]
+    #[serde(skip)]
+    config_path: Option<String>,
+    #[serde(skip)]
+    #[arg(long)]
+    /// Dump the passed configuration into stdout in TOML format.
+    dump_config: bool,
+    #[serde(skip)]
+    #[arg(long)]
+    /// Ignore any configuration file, including the default `bindgen.toml` in the current
+    /// directory.
+    ignore_config_file: bool,
     /// Path to write depfile to.
     #[arg(long)]
     depfile: Option<String>,
@@ -316,9 +333,11 @@ struct BindgenCommand {
     allowlist_item: Vec<String>,
     /// Print verbose error messages.
     #[arg(long)]
+    #[serde(skip)]
     verbose: bool,
     /// Preprocess and dump the input header files to disk. Useful when debugging bindgen, using C-Reduce, or when filing issues. The resulting file will be named something like `__bindgen.i` or `__bindgen.ii`.
     #[arg(long)]
+    #[serde(skip)]
     dump_preprocessed_input: bool,
     /// Do not record matching items in the regex sets. This disables reporting of unused items.
     #[arg(long)]
@@ -444,12 +463,14 @@ struct BindgenCommand {
     emit_diagnostics: bool,
     /// Generates completions for the specified SHELL, sends them to `stdout` and exits.
     #[arg(long, value_name = "SHELL")]
+    #[serde(skip)]
     generate_shell_completions: Option<clap_complete::Shell>,
     /// Enables experimental features.
     #[arg(long)]
     experimental: bool,
     /// Prints the version, and exits
     #[arg(short = 'V', long)]
+    #[serde(skip)]
     version: bool,
     /// Arguments to be passed straight through to clang.
     clang_args: Vec<String>,
@@ -462,10 +483,56 @@ pub fn builder_from_flags<I>(
 where
     I: Iterator<Item = String>,
 {
-    let command = BindgenCommand::parse_from(args);
+    let command = {
+        let mut matches = BindgenCommand::command().get_matches_from(args);
+
+        let ignore_config_file = matches
+            .get_one::<bool>("ignore_config_file")
+            .copied()
+            .unwrap_or_default();
+
+        let res = if ignore_config_file {
+            BindgenCommand::from_arg_matches_mut(&mut matches)
+        } else {
+            let config_path = match matches.get_one::<String>("config_path") {
+                Some(path) => path.into(),
+                None => {
+                    let mut cwd = std::env::current_dir()?;
+                    cwd.push("bindgen.toml");
+                    cwd
+                }
+            };
+
+            if config_path.try_exists()? {
+                let contents = std::fs::read_to_string(config_path)?;
+                let mut command = toml::from_str::<BindgenCommand>(&contents)
+                    .map_err(|err| {
+                    io::Error::new(io::ErrorKind::Other, err)
+                })?;
+
+                command
+                    .update_from_arg_matches_mut(&mut matches)
+                    .map(|()| command)
+            } else {
+                BindgenCommand::from_arg_matches_mut(&mut matches)
+            }
+        };
+
+        res.unwrap_or_else(|err| err.exit())
+    };
+
+    if command.dump_config {
+        let contents = toml::to_string_pretty(&command)
+            .map_err(|err| io::Error::new(io::ErrorKind::Other, err))?;
+        println!("{}", contents);
+        exit(0);
+    }
 
     let BindgenCommand {
         header,
+        config_path: _,
+        ignore_config_file: _,
+        dump_config: _,
         depfile,
         default_enum_style,
         bitfield_enum,

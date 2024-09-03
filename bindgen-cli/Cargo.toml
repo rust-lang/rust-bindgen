@@ -25,7 +25,9 @@ clap = { version = "4", features = ["derive"] }
 clap_complete = "4"
 env_logger = { version = "0.10.0", optional = true }
 log = { version = "0.4", optional = true }
+serde = { version = "1.0.209", features = ["derive"] }
 shlex = "1"
+toml = "0.8.19"
 
 [features]
 default = ["logging", "runtime"]
