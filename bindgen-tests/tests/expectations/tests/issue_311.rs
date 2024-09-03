@@ -13,6 +13,7 @@ pub mod root {
     pub struct jsval_layout__bindgen_ty_1 {
         pub _address: u8,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         [
             "Size of jsval_layout__bindgen_ty_1",
@@ -21,6 +22,7 @@ pub mod root {
             "Alignment of jsval_layout__bindgen_ty_1",
         ][::std::mem::align_of::<jsval_layout__bindgen_ty_1>() - 1usize];
     };
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of jsval_layout"][::std::mem::size_of::<jsval_layout>() - 1usize];
         ["Alignment of jsval_layout"][::std::mem::align_of::<jsval_layout>() - 1usize];

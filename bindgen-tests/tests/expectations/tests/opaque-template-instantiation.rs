@@ -19,6 +19,7 @@ impl<T> Default for Template<T> {
 pub struct ContainsInstantiation {
     pub not_opaque: Template<::std::os::raw::c_char>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of ContainsInstantiation",
@@ -44,6 +45,7 @@ impl Default for ContainsInstantiation {
 pub struct ContainsOpaqueInstantiation {
     pub opaque: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of ContainsOpaqueInstantiation",
@@ -55,6 +57,7 @@ const _: () = {
         "Offset of field: ContainsOpaqueInstantiation::opaque",
     ][::std::mem::offset_of!(ContainsOpaqueInstantiation, opaque) - 0usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: Template_open0_char_close0",

@@ -11,6 +11,7 @@ pub struct Blocklisted<T> {
 pub struct AllowlistedOne {
     pub a: Blocklisted<::std::os::raw::c_int>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of AllowlistedOne"][::std::mem::size_of::<AllowlistedOne>() - 4usize];
     ["Alignment of AllowlistedOne"][::std::mem::align_of::<AllowlistedOne>() - 4usize];
@@ -32,6 +33,7 @@ impl Default for AllowlistedOne {
 pub struct AllowlistedTwo {
     pub b: Blocklisted<f32>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of AllowlistedTwo"][::std::mem::size_of::<AllowlistedTwo>() - 4usize];
     ["Alignment of AllowlistedTwo"][::std::mem::align_of::<AllowlistedTwo>() - 4usize];

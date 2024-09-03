@@ -4,6 +4,7 @@
 pub struct NoCopy {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of NoCopy"][::std::mem::size_of::<NoCopy>() - 1usize];
     ["Alignment of NoCopy"][::std::mem::align_of::<NoCopy>() - 1usize];
@@ -13,6 +14,7 @@ const _: () = {
 pub struct AllowlistMe {
     pub a: NoCopy,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of AllowlistMe"][::std::mem::size_of::<AllowlistMe>() - 1usize];
     ["Alignment of AllowlistMe"][::std::mem::align_of::<AllowlistMe>() - 1usize];

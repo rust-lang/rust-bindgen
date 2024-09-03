@@ -5,6 +5,7 @@ pub union WithBigArray {
     pub a: ::std::os::raw::c_int,
     pub b: [::std::os::raw::c_int; 33usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of WithBigArray"][::std::mem::size_of::<WithBigArray>() - 132usize];
     ["Alignment of WithBigArray"][::std::mem::align_of::<WithBigArray>() - 4usize];
@@ -30,6 +31,7 @@ pub union WithBigArray2 {
     pub a: ::std::os::raw::c_int,
     pub b: [::std::os::raw::c_char; 33usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of WithBigArray2"][::std::mem::size_of::<WithBigArray2>() - 36usize];
     ["Alignment of WithBigArray2"][::std::mem::align_of::<WithBigArray2>() - 4usize];
@@ -55,6 +57,7 @@ pub union WithBigMember {
     pub a: ::std::os::raw::c_int,
     pub b: WithBigArray,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of WithBigMember"][::std::mem::size_of::<WithBigMember>() - 132usize];
     ["Alignment of WithBigMember"][::std::mem::align_of::<WithBigMember>() - 4usize];

@@ -60,6 +60,7 @@ pub struct C {
     pub mArrayRef: B<*mut [::std::os::raw::c_int; 1usize]>,
     pub mBConstArray: B<[::std::os::raw::c_int; 1usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of C"][::std::mem::size_of::<C>() - 104usize];
     ["Alignment of C"][::std::mem::align_of::<C>() - 8usize];
@@ -152,6 +153,7 @@ impl<T> Default for Rooted<T> {
 pub struct RootedContainer {
     pub root: Rooted<*mut ::std::os::raw::c_void>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of RootedContainer"][::std::mem::size_of::<RootedContainer>() - 24usize];
     ["Alignment of RootedContainer"][::std::mem::align_of::<RootedContainer>() - 8usize];
@@ -189,6 +191,7 @@ impl<T> Default for WithDtor<T> {
 pub struct PODButContainsDtor {
     pub member: WithDtorIntFwd,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of PODButContainsDtor"][::std::mem::size_of::<PODButContainsDtor>() - 4usize];
     [
@@ -218,6 +221,7 @@ pub struct Opaque {
 pub struct POD {
     pub opaque_member: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of POD"][::std::mem::size_of::<POD>() - 4usize];
     ["Alignment of POD"][::std::mem::align_of::<POD>() - 4usize];
@@ -293,6 +297,7 @@ impl<T> Default for Incomplete<T> {
 pub struct Untemplated {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Untemplated"][::std::mem::size_of::<Untemplated>() - 1usize];
     ["Alignment of Untemplated"][::std::mem::align_of::<Untemplated>() - 1usize];
@@ -370,6 +375,7 @@ impl<T> Default for ReplacedWithoutDestructorFwd<T> {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: Foo_open0_int_int_close0",
@@ -378,6 +384,7 @@ const _: () = {
         "Align of template specialization: Foo_open0_int_int_close0",
     ][::std::mem::align_of::<Foo<::std::os::raw::c_int>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_unsigned_int_close0",
@@ -386,6 +393,7 @@ const _: () = {
         "Align of template specialization: B_open0_unsigned_int_close0",
     ][::std::mem::align_of::<B<::std::os::raw::c_uint>>() - 4usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_ptr_const_int_close0",
@@ -394,6 +402,7 @@ const _: () = {
         "Align of template specialization: B_open0_ptr_const_int_close0",
     ][::std::mem::align_of::<B<*const ::std::os::raw::c_int>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_ptr_const_mozilla__Foo_close0",
@@ -402,6 +411,7 @@ const _: () = {
         "Align of template specialization: B_open0_ptr_const_mozilla__Foo_close0",
     ][::std::mem::align_of::<B<*const mozilla_Foo>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_array1_ptr_const_mozilla__Foo_close0",
@@ -410,6 +420,7 @@ const _: () = {
         "Align of template specialization: B_open0_array1_ptr_const_mozilla__Foo_close0",
     ][::std::mem::align_of::<B<[*const mozilla_Foo; 1usize]>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_const_int_close0",
@@ -418,6 +429,7 @@ const _: () = {
         "Align of template specialization: B_open0_const_int_close0",
     ][::std::mem::align_of::<B<::std::os::raw::c_int>>() - 4usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_volatile_int_close0",
@@ -426,6 +438,7 @@ const _: () = {
         "Align of template specialization: B_open0_volatile_int_close0",
     ][::std::mem::align_of::<B<::std::os::raw::c_int>>() - 4usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_const_bool_close0",
@@ -434,6 +447,7 @@ const _: () = {
         "Align of template specialization: B_open0_const_bool_close0",
     ][::std::mem::align_of::<B<bool>>() - 1usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_const_char16_t_close0",
@@ -442,6 +456,7 @@ const _: () = {
         "Align of template specialization: B_open0_const_char16_t_close0",
     ][::std::mem::align_of::<B<u16>>() - 2usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_array1_int_close0",
@@ -450,6 +465,7 @@ const _: () = {
         "Align of template specialization: B_open0_array1_int_close0",
     ][::std::mem::align_of::<B<[::std::os::raw::c_int; 1usize]>>() - 4usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_array1_ptr_int_close0",
@@ -458,6 +474,7 @@ const _: () = {
         "Align of template specialization: B_open0_array1_ptr_int_close0",
     ][::std::mem::align_of::<B<[*mut ::std::os::raw::c_int; 1usize]>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_ptr_array1_int_close0",
@@ -466,6 +483,7 @@ const _: () = {
         "Align of template specialization: B_open0_ptr_array1_int_close0",
     ][::std::mem::align_of::<B<*mut [::std::os::raw::c_int; 1usize]>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_ref_int_close0",
@@ -474,6 +492,7 @@ const _: () = {
         "Align of template specialization: B_open0_ref_int_close0",
     ][::std::mem::align_of::<B<*mut ::std::os::raw::c_int>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_ref_const_int_close0",
@@ -482,6 +501,7 @@ const _: () = {
         "Align of template specialization: B_open0_ref_const_int_close0",
     ][::std::mem::align_of::<B<*const ::std::os::raw::c_int>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_ref_ptr_int_close0",
@@ -490,6 +510,7 @@ const _: () = {
         "Align of template specialization: B_open0_ref_ptr_int_close0",
     ][::std::mem::align_of::<B<*mut *mut ::std::os::raw::c_int>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_ref_array1_int_close0",
@@ -498,6 +519,7 @@ const _: () = {
         "Align of template specialization: B_open0_ref_array1_int_close0",
     ][::std::mem::align_of::<B<*mut [::std::os::raw::c_int; 1usize]>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: B_open0_array1_const_int_close0",
@@ -506,6 +528,7 @@ const _: () = {
         "Align of template specialization: B_open0_array1_const_int_close0",
     ][::std::mem::align_of::<B<[::std::os::raw::c_int; 1usize]>>() - 4usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: Foo_open0_int_int_close0",
@@ -514,6 +537,7 @@ const _: () = {
         "Align of template specialization: Foo_open0_int_int_close0",
     ][::std::mem::align_of::<Foo<::std::os::raw::c_int>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: Rooted_open0_ptr_void_close0",
@@ -522,6 +546,7 @@ const _: () = {
         "Align of template specialization: Rooted_open0_ptr_void_close0",
     ][::std::mem::align_of::<Rooted<*mut ::std::os::raw::c_void>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: Rooted_open0_ptr_void_close0",
@@ -530,6 +555,7 @@ const _: () = {
         "Align of template specialization: Rooted_open0_ptr_void_close0",
     ][::std::mem::align_of::<Rooted<*mut ::std::os::raw::c_void>>() - 8usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: WithDtor_open0_int_close0",

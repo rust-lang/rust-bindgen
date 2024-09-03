@@ -12,6 +12,7 @@ pub struct A_Segment {
     pub begin: ::std::os::raw::c_int,
     pub end: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of A_Segment"][::std::mem::size_of::<A_Segment>() - 8usize];
     ["Alignment of A_Segment"][::std::mem::align_of::<A_Segment>() - 4usize];
@@ -25,6 +26,7 @@ const _: () = {
 pub union A__bindgen_ty_1 {
     pub f: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of A__bindgen_ty_1"][::std::mem::size_of::<A__bindgen_ty_1>() - 4usize];
     ["Alignment of A__bindgen_ty_1"][::std::mem::align_of::<A__bindgen_ty_1>() - 4usize];
@@ -46,6 +48,7 @@ impl Default for A__bindgen_ty_1 {
 pub union A__bindgen_ty_2 {
     pub d: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of A__bindgen_ty_2"][::std::mem::size_of::<A__bindgen_ty_2>() - 4usize];
     ["Alignment of A__bindgen_ty_2"][::std::mem::align_of::<A__bindgen_ty_2>() - 4usize];
@@ -62,6 +65,7 @@ impl Default for A__bindgen_ty_2 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of A"][::std::mem::size_of::<A>() - 12usize];
     ["Alignment of A"][::std::mem::align_of::<A>() - 4usize];
@@ -88,6 +92,7 @@ pub struct B_Segment {
     pub begin: ::std::os::raw::c_int,
     pub end: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of B_Segment"][::std::mem::size_of::<B_Segment>() - 8usize];
     ["Alignment of B_Segment"][::std::mem::align_of::<B_Segment>() - 4usize];
@@ -96,6 +101,7 @@ const _: () = {
     ][::std::mem::offset_of!(B_Segment, begin) - 0usize];
     ["Offset of field: B_Segment::end"][::std::mem::offset_of!(B_Segment, end) - 4usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of B"][::std::mem::size_of::<B>() - 4usize];
     ["Alignment of B"][::std::mem::align_of::<B>() - 4usize];
@@ -129,6 +135,7 @@ pub struct C__bindgen_ty_1__bindgen_ty_1 {
     pub mX2: f32,
     pub mY2: f32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of C__bindgen_ty_1__bindgen_ty_1",
@@ -155,6 +162,7 @@ pub struct C__bindgen_ty_1__bindgen_ty_2 {
     pub mStepSyntax: StepSyntax,
     pub mSteps: ::std::os::raw::c_uint,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of C__bindgen_ty_1__bindgen_ty_2",
@@ -178,6 +186,7 @@ impl Default for C__bindgen_ty_1__bindgen_ty_2 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of C__bindgen_ty_1"][::std::mem::size_of::<C__bindgen_ty_1>() - 16usize];
     ["Alignment of C__bindgen_ty_1"][::std::mem::align_of::<C__bindgen_ty_1>() - 4usize];
@@ -200,6 +209,7 @@ pub struct C_Segment {
     pub begin: ::std::os::raw::c_int,
     pub end: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of C_Segment"][::std::mem::size_of::<C_Segment>() - 8usize];
     ["Alignment of C_Segment"][::std::mem::align_of::<C_Segment>() - 4usize];
@@ -208,6 +218,7 @@ const _: () = {
     ][::std::mem::offset_of!(C_Segment, begin) - 0usize];
     ["Offset of field: C_Segment::end"][::std::mem::offset_of!(C_Segment, end) - 4usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of C"][::std::mem::size_of::<C>() - 20usize];
     ["Alignment of C"][::std::mem::align_of::<C>() - 4usize];

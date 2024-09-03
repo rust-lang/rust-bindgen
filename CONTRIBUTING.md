@@ -425,7 +425,7 @@ $ brew install creduce
 $ # Etc...
 ```
 
-Otherwise, follow [these instructions](https://github.com/csmith-project/creduce/blob/main/INSTALL.md) for building and/or installing `creduce`.
+Otherwise, follow [these instructions](https://github.com/csmith-project/creduce/blob/master/INSTALL.md) for building and/or installing `creduce`.
 
 Running `creduce` requires two things:
 
@@ -490,10 +490,11 @@ to fail to compile `bindgen`'s emitted bindings, you can invoke `predicate.py`
 like this:
 
 ```bash
+# the rustc-grep argument expects a regex, thus escape where necessary
 path/to/rust-bindgen/csmith-fuzzing/predicate.py \
     --bindings-grep NameOfTheStructThatIsErroneouslyDerivingEq \
     --expect-compile-fail \
-    --rustc-grep 'error[E0277]: the trait bound `f64: std::cmp::Eq` is not satisfied' \
+    --rustc-grep 'error\[E0277\]: the trait bound `f64: std::cmp::Eq` is not satisfied' \
     ./isolated-test-case.h
 ```
 

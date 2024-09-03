@@ -4,6 +4,7 @@
 pub struct struct_a {
     pub a: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of struct_a"][::std::mem::size_of::<struct_a>() - 4usize];
     ["Alignment of struct_a"][::std::mem::align_of::<struct_a>() - 4usize];
@@ -16,6 +17,7 @@ pub union union_b {
     pub a: ::std::os::raw::c_int,
     pub b: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of union_b"][::std::mem::size_of::<union_b>() - 4usize];
     ["Alignment of union_b"][::std::mem::align_of::<union_b>() - 4usize];

@@ -22,6 +22,7 @@ pub struct ether_addr {
     ///< Addr bytes in tx order
     pub addr_bytes: [u8; 6usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ether_addr"][::std::mem::size_of::<ether_addr>() - 6usize];
     ["Alignment of ether_addr"][::std::mem::align_of::<ether_addr>() - 1usize];
@@ -42,6 +43,7 @@ pub struct arp_ipv4 {
     ///< target IP address
     pub arp_tip: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of arp_ipv4"][::std::mem::size_of::<arp_ipv4>() - 20usize];
     ["Alignment of arp_ipv4"][::std::mem::align_of::<arp_ipv4>() - 1usize];
@@ -69,6 +71,7 @@ pub struct arp_hdr {
     pub arp_op: u16,
     pub arp_data: arp_ipv4,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of arp_hdr"][::std::mem::size_of::<arp_hdr>() - 28usize];
     ["Alignment of arp_hdr"][::std::mem::align_of::<arp_hdr>() - 1usize];

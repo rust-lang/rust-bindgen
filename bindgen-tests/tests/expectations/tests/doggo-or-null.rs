@@ -4,6 +4,7 @@
 pub struct Doggo {
     pub x: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Doggo"][::std::mem::size_of::<Doggo>() - 4usize];
     ["Alignment of Doggo"][::std::mem::align_of::<Doggo>() - 4usize];
@@ -14,6 +15,7 @@ const _: () = {
 pub struct Null {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Null"][::std::mem::size_of::<Null>() - 1usize];
     ["Alignment of Null"][::std::mem::align_of::<Null>() - 1usize];
@@ -30,6 +32,7 @@ const _: () = {
 pub union DoggoOrNull {
     pub _bindgen_opaque_blob: u32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of DoggoOrNull"][::std::mem::size_of::<DoggoOrNull>() - 4usize];
     ["Alignment of DoggoOrNull"][::std::mem::align_of::<DoggoOrNull>() - 4usize];

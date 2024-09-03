@@ -6,6 +6,7 @@ pub struct Foo__bindgen_vtable(::std::os::raw::c_void);
 pub struct Foo {
     pub vtable_: *const Foo__bindgen_vtable,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 8usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 8usize];

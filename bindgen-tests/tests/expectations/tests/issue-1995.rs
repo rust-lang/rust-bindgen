@@ -11,6 +11,7 @@ pub const FOO: ::std::os::raw::c_int = 1;
 pub struct Bar {
     pub baz: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Bar"][::std::mem::size_of::<Bar>() - 4usize];
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 4usize];

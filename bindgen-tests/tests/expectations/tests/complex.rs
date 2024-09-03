@@ -10,6 +10,7 @@ pub struct __BindgenComplex<T> {
 pub struct TestDouble {
     pub mMember: __BindgenComplex<f64>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of TestDouble"][::std::mem::size_of::<TestDouble>() - 16usize];
     ["Alignment of TestDouble"][::std::mem::align_of::<TestDouble>() - 8usize];
@@ -22,6 +23,7 @@ const _: () = {
 pub struct TestDoublePtr {
     pub mMember: *mut __BindgenComplex<f64>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of TestDoublePtr"][::std::mem::size_of::<TestDoublePtr>() - 8usize];
     ["Alignment of TestDoublePtr"][::std::mem::align_of::<TestDoublePtr>() - 8usize];
@@ -43,6 +45,7 @@ impl Default for TestDoublePtr {
 pub struct TestFloat {
     pub mMember: __BindgenComplex<f32>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of TestFloat"][::std::mem::size_of::<TestFloat>() - 8usize];
     ["Alignment of TestFloat"][::std::mem::align_of::<TestFloat>() - 4usize];
@@ -55,6 +58,7 @@ const _: () = {
 pub struct TestFloatPtr {
     pub mMember: *mut __BindgenComplex<f32>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of TestFloatPtr"][::std::mem::size_of::<TestFloatPtr>() - 8usize];
     ["Alignment of TestFloatPtr"][::std::mem::align_of::<TestFloatPtr>() - 8usize];

@@ -5,6 +5,7 @@
 pub struct _bindgen_ty_1 {
     pub _bindgen_opaque_blob: [u64; 10usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of _bindgen_ty_1"][::std::mem::size_of::<_bindgen_ty_1>() - 80usize];
     ["Alignment of _bindgen_ty_1"][::std::mem::align_of::<_bindgen_ty_1>() - 8usize];

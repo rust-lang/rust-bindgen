@@ -6,6 +6,7 @@ pub struct VirtualMethods__bindgen_vtable {}
 pub struct VirtualMethods {
     pub vtable_: *const VirtualMethods__bindgen_vtable,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of VirtualMethods"][::std::mem::size_of::<VirtualMethods>() - 8usize];
     ["Alignment of VirtualMethods"][::std::mem::align_of::<VirtualMethods>() - 8usize];
@@ -29,6 +30,7 @@ pub struct Set {
 pub struct ServoElementSnapshotTable {
     pub _base: Set,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of ServoElementSnapshotTable",
@@ -46,6 +48,7 @@ impl Default for ServoElementSnapshotTable {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: Set_open0_VirtualMethods_close0",

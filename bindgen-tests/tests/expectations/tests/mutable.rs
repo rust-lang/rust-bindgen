@@ -5,6 +5,7 @@ pub struct C {
     pub m_member: ::std::os::raw::c_int,
     pub m_other: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of C"][::std::mem::size_of::<C>() - 8usize];
     ["Alignment of C"][::std::mem::align_of::<C>() - 4usize];
@@ -16,6 +17,7 @@ const _: () = {
 pub struct NonCopiable {
     pub m_member: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of NonCopiable"][::std::mem::size_of::<NonCopiable>() - 4usize];
     ["Alignment of NonCopiable"][::std::mem::align_of::<NonCopiable>() - 4usize];
@@ -28,6 +30,7 @@ const _: () = {
 pub struct NonCopiableWithNonCopiableMutableMember {
     pub m_member: NonCopiable,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of NonCopiableWithNonCopiableMutableMember",

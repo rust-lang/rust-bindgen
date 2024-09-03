@@ -20,6 +20,7 @@ pub mod root {
     pub struct C {
         pub _address: u8,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of C"][::std::mem::size_of::<C>() - 1usize];
         ["Alignment of C"][::std::mem::align_of::<C>() - 1usize];

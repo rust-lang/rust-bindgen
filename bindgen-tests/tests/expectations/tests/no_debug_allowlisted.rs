@@ -4,6 +4,7 @@
 pub struct NoDebug {
     pub i: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of NoDebug"][::std::mem::size_of::<NoDebug>() - 4usize];
     ["Alignment of NoDebug"][::std::mem::align_of::<NoDebug>() - 4usize];

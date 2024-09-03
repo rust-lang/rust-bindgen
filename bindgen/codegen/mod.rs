@@ -1313,6 +1313,7 @@ impl CodeGenerator for TemplateInstantiation {
                 // #size_of_expr < #size, the subtraction will overflow, both
                 // of which print enough information to see what has gone wrong.
                 result.push(quote! {
+                    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
                     const _: () = {
                         [#size_of_err][#size_of_expr - #size];
                         [#align_of_err][#align_of_expr - #align];
@@ -2523,6 +2524,7 @@ impl CodeGenerator for CompInfo {
 
                     if compile_time {
                         result.push(quote! {
+                            #[allow(clippy::unnecessary_operation, clippy::identity_op)]
                             const _: () = {
                                 [#size_of_err][#size_of_expr - #size];
                                 #check_struct_align

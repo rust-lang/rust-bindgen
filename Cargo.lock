@@ -29,7 +29,7 @@ checksum = "1bec1de6f59aedf83baf9ff929c98f2ad654b97c9510f4e70cf6f661d49fd5b1"
 
 [[package]]
 name = "bindgen"
-version = "0.70.0"
+version = "0.70.1"
 dependencies = [
  "annotate-snippets",
  "bitflags 2.2.1",
@@ -48,7 +48,7 @@ dependencies = [
 
 [[package]]
 name = "bindgen-cli"
-version = "0.70.0"
+version = "0.70.1"
 dependencies = [
  "bindgen",
  "clap",

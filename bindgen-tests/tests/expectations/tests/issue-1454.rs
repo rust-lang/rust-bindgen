@@ -7,6 +7,7 @@ pub struct extern_type;
 pub struct local_type {
     pub inner: extern_type,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of local_type"][::std::mem::size_of::<local_type>() - 0usize];
     ["Alignment of local_type"][::std::mem::align_of::<local_type>() - 1usize];

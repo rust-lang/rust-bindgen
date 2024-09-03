@@ -15,6 +15,7 @@ pub struct foo {
     pub complexFloat: __BindgenComplex<::std::os::raw::c_float>,
     pub complexDouble: __BindgenComplex<::std::os::raw::c_double>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::std::mem::size_of::<foo>() - 48usize];
     ["Alignment of foo"][::std::mem::align_of::<foo>() - 8usize];

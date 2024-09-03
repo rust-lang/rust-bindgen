@@ -27,6 +27,7 @@ pub struct contains_block_pointers {
     pub val: *mut ::std::os::raw::c_void,
     pub ptr_val: *mut *mut ::std::os::raw::c_void,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of contains_block_pointers",

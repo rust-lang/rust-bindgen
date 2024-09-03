@@ -14,6 +14,7 @@ pub union s__bindgen_ty_1 {
 pub struct s__bindgen_ty_1_inner {
     pub b: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of s__bindgen_ty_1_inner",
@@ -25,6 +26,7 @@ const _: () = {
         "Offset of field: s__bindgen_ty_1_inner::b",
     ][::std::mem::offset_of!(s__bindgen_ty_1_inner, b) - 0usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of s__bindgen_ty_1"][::std::mem::size_of::<s__bindgen_ty_1>() - 4usize];
     ["Alignment of s__bindgen_ty_1"][::std::mem::align_of::<s__bindgen_ty_1>() - 4usize];
@@ -41,6 +43,7 @@ impl Default for s__bindgen_ty_1 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of s"][::std::mem::size_of::<s>() - 4usize];
     ["Alignment of s"][::std::mem::align_of::<s>() - 4usize];

@@ -8,6 +8,7 @@ pub struct UsesArray {
     pub array_bool_8: [u8; 8usize],
     pub array_int_4: ArrayInt4,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of UsesArray"][::std::mem::size_of::<UsesArray>() - 40usize];
     ["Alignment of UsesArray"][::std::mem::align_of::<UsesArray>() - 4usize];

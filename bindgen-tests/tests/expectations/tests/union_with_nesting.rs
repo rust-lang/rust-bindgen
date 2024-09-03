@@ -17,6 +17,7 @@ pub union foo__bindgen_ty_1__bindgen_ty_1 {
     pub b1: ::std::os::raw::c_ushort,
     pub b2: ::std::os::raw::c_ushort,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of foo__bindgen_ty_1__bindgen_ty_1",
@@ -46,6 +47,7 @@ pub union foo__bindgen_ty_1__bindgen_ty_2 {
     pub c1: ::std::os::raw::c_ushort,
     pub c2: ::std::os::raw::c_ushort,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of foo__bindgen_ty_1__bindgen_ty_2",
@@ -69,6 +71,7 @@ impl Default for foo__bindgen_ty_1__bindgen_ty_2 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo__bindgen_ty_1"][::std::mem::size_of::<foo__bindgen_ty_1>() - 4usize];
     [
@@ -84,6 +87,7 @@ impl Default for foo__bindgen_ty_1 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::std::mem::size_of::<foo>() - 4usize];
     ["Alignment of foo"][::std::mem::align_of::<foo>() - 4usize];

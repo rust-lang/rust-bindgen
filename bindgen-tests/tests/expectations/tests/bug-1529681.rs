@@ -4,6 +4,7 @@
 pub struct BrowsingContext {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of BrowsingContext"][::std::mem::size_of::<BrowsingContext>() - 1usize];
     ["Alignment of BrowsingContext"][::std::mem::align_of::<BrowsingContext>() - 1usize];

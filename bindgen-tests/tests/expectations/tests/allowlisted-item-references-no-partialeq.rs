@@ -4,6 +4,7 @@
 pub struct NoPartialEq {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of NoPartialEq"][::std::mem::size_of::<NoPartialEq>() - 1usize];
     ["Alignment of NoPartialEq"][::std::mem::align_of::<NoPartialEq>() - 1usize];
@@ -13,6 +14,7 @@ const _: () = {
 pub struct AllowlistMe {
     pub a: NoPartialEq,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of AllowlistMe"][::std::mem::size_of::<AllowlistMe>() - 1usize];
     ["Alignment of AllowlistMe"][::std::mem::align_of::<AllowlistMe>() - 1usize];

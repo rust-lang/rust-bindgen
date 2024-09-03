@@ -4,6 +4,7 @@
 pub struct typedef_named_struct {
     pub has_name: bool,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of typedef_named_struct",
@@ -20,6 +21,7 @@ const _: () = {
 pub struct _bindgen_ty_1 {
     pub no_name: *mut ::std::os::raw::c_void,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of _bindgen_ty_1"][::std::mem::size_of::<_bindgen_ty_1>() - 8usize];
     ["Alignment of _bindgen_ty_1"][::std::mem::align_of::<_bindgen_ty_1>() - 8usize];

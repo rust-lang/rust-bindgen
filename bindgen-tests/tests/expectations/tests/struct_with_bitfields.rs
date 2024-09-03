@@ -92,6 +92,7 @@ pub struct bitfield {
     pub _bitfield_align_2: [u32; 0],
     pub _bitfield_2: __BindgenBitfieldUnit<[u8; 8usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of bitfield"][::std::mem::size_of::<bitfield>() - 16usize];
     ["Alignment of bitfield"][::std::mem::align_of::<bitfield>() - 4usize];

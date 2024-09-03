@@ -14,6 +14,7 @@ pub mod root {
     pub struct a {
         pub b: u8,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of a"][::std::mem::size_of::<a>() - 1usize];
         ["Alignment of a"][::std::mem::align_of::<a>() - 1usize];
@@ -24,6 +25,7 @@ pub mod root {
     pub struct nsCSSValue {
         pub c: root::a,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of nsCSSValue"][::std::mem::size_of::<nsCSSValue>() - 1usize];
         ["Alignment of nsCSSValue"][::std::mem::align_of::<nsCSSValue>() - 1usize];

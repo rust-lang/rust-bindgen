@@ -76,6 +76,7 @@ impl Default for ClassC_ClassCInnerCRTP {
 pub struct ClassD {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ClassD"][::std::mem::size_of::<ClassD>() - 1usize];
     ["Alignment of ClassD"][::std::mem::align_of::<ClassD>() - 1usize];
@@ -89,6 +90,7 @@ impl Default for ClassD {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: ClassB_open0_ClassD_ClassCInnerCRTP_close0",
@@ -102,6 +104,7 @@ const _: () = {
 pub struct ClassCInnerCRTP {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ClassCInnerCRTP"][::std::mem::size_of::<ClassCInnerCRTP>() - 1usize];
     ["Alignment of ClassCInnerCRTP"][::std::mem::align_of::<ClassCInnerCRTP>() - 1usize];
@@ -115,6 +118,7 @@ impl Default for ClassCInnerCRTP {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: ClassB_open0_ClassCInnerCRTP_ClassAInner_close0",
@@ -128,6 +132,7 @@ const _: () = {
 pub struct ClassAInner {
     pub x: *mut ClassCInnerA,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ClassAInner"][::std::mem::size_of::<ClassAInner>() - 8usize];
     ["Alignment of ClassAInner"][::std::mem::align_of::<ClassAInner>() - 8usize];
@@ -147,6 +152,7 @@ impl Default for ClassAInner {
 pub struct ClassCInnerA {
     pub member: *mut ClassCInnerB,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ClassCInnerA"][::std::mem::size_of::<ClassCInnerA>() - 8usize];
     ["Alignment of ClassCInnerA"][::std::mem::align_of::<ClassCInnerA>() - 8usize];
@@ -168,6 +174,7 @@ impl Default for ClassCInnerA {
 pub struct ClassCInnerB {
     pub cache: *mut ClassCInnerA,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ClassCInnerB"][::std::mem::size_of::<ClassCInnerB>() - 8usize];
     ["Alignment of ClassCInnerB"][::std::mem::align_of::<ClassCInnerB>() - 8usize];

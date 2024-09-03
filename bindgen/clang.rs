@@ -1493,6 +1493,15 @@ impl Type {
         }
     }
 
+    /// For atomic types, get the underlying type.
+    pub(crate) fn atomic_value_type(&self) -> Type {
+        unsafe {
+            Type {
+                x: clang_Type_getValueType(self.x),
+            }
+        }
+    }
+
     /// Is this a valid type?
     pub(crate) fn is_valid(&self) -> bool {
         self.kind() != CXType_Invalid

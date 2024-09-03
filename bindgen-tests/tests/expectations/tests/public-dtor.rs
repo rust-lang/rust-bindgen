@@ -4,6 +4,7 @@
 pub struct cv_Foo {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of cv_Foo"][::std::mem::size_of::<cv_Foo>() - 1usize];
     ["Alignment of cv_Foo"][::std::mem::align_of::<cv_Foo>() - 1usize];
@@ -23,6 +24,7 @@ impl cv_Foo {
 pub struct cv_Bar {
     pub _address: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of cv_Bar"][::std::mem::size_of::<cv_Bar>() - 1usize];
     ["Alignment of cv_Bar"][::std::mem::align_of::<cv_Bar>() - 1usize];

@@ -24,6 +24,7 @@ pub type my_fun_t = ::std::option::Option<
 pub struct Foo {
     pub callback: my_fun_t,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 8usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 8usize];
@@ -50,6 +51,7 @@ pub type my_fun2_t = ::std::option::Option<
 pub struct Bar {
     pub callback: my_fun2_t,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Bar"][::std::mem::size_of::<Bar>() - 8usize];
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 8usize];

@@ -13,6 +13,7 @@ pub struct ContainsOpaqueTemplate {
     pub mBlah: u32,
     pub mBaz: ::std::os::raw::c_int,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of ContainsOpaqueTemplate",
@@ -34,6 +35,7 @@ pub struct InheritsOpaqueTemplate {
     pub _base: u8,
     pub wow: *mut ::std::os::raw::c_char,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of InheritsOpaqueTemplate",

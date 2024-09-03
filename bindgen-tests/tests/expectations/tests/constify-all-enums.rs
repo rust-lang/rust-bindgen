@@ -8,6 +8,7 @@ pub type foo = ::std::os::raw::c_uint;
 pub struct bar {
     pub this_should_work: foo,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of bar"][::std::mem::size_of::<bar>() - 4usize];
     ["Alignment of bar"][::std::mem::align_of::<bar>() - 4usize];

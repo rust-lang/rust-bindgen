@@ -940,13 +940,13 @@ impl Item {
         // Only use local ids for enums, classes, structs and union types.  All
         // other items use their global ID.
         let ty_kind = self.kind().as_type().map(|t| t.kind());
-        if let Some(ty_kind) = ty_kind {
-            match *ty_kind {
-                TypeKind::Comp(..) |
-                TypeKind::TemplateInstantiation(..) |
-                TypeKind::Enum(..) => return self.local_id(ctx).to_string(),
-                _ => {}
-            }
+        if let Some(
+            TypeKind::Comp(..) |
+            TypeKind::TemplateInstantiation(..) |
+            TypeKind::Enum(..),
+        ) = ty_kind
+        {
+            return self.local_id(ctx).to_string();
         }
 
         // Note that this `id_` prefix prevents (really unlikely) collisions

@@ -8,6 +8,7 @@ pub struct Test {
     pub c: ::std::os::raw::c_char,
     pub __bindgen_padding_0: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Test"][::std::mem::size_of::<Test>() - 12usize];
     ["Alignment of Test"][::std::mem::align_of::<Test>() - 2usize];

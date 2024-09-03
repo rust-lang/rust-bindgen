@@ -13,6 +13,7 @@ pub mod root {
     pub struct Bar {
         pub baz: root::foo::Ty,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of Bar"][::std::mem::size_of::<Bar>() - 4usize];
         ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 4usize];

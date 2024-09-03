@@ -10,6 +10,7 @@ pub struct Bar {
     pub f: *const Foo,
     pub m: ::std::os::raw::c_uint,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Bar"][::std::mem::size_of::<Bar>() - 16usize];
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 8usize];
@@ -31,6 +32,7 @@ pub struct Baz {
     pub f: *mut Foo,
     pub m: ::std::os::raw::c_uint,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Baz"][::std::mem::size_of::<Baz>() - 16usize];
     ["Alignment of Baz"][::std::mem::align_of::<Baz>() - 8usize];
@@ -52,6 +54,7 @@ pub struct Tar {
     pub f: *const Foo,
     pub m: ::std::os::raw::c_uint,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Tar"][::std::mem::size_of::<Tar>() - 16usize];
     ["Alignment of Tar"][::std::mem::align_of::<Tar>() - 8usize];
@@ -73,6 +76,7 @@ pub struct Taz {
     pub f: *mut Foo,
     pub m: ::std::os::raw::c_uint,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Taz"][::std::mem::size_of::<Taz>() - 16usize];
     ["Alignment of Taz"][::std::mem::align_of::<Taz>() - 8usize];

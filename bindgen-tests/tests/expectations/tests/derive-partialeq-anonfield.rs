@@ -11,6 +11,7 @@ pub struct rte_mbuf {
 pub struct rte_mbuf__bindgen_ty_1 {
     pub bindgen_union_field: [u8; 0usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of rte_mbuf__bindgen_ty_1",
@@ -28,6 +29,7 @@ impl Default for rte_mbuf__bindgen_ty_1 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of rte_mbuf"][::std::mem::size_of::<rte_mbuf>() - 0usize];
     ["Alignment of rte_mbuf"][::std::mem::align_of::<rte_mbuf>() - 64usize];

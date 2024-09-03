@@ -14,12 +14,14 @@ pub mod root {
         pub a: root::number,
         pub b: root::number,
     }
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of Point"][::std::mem::size_of::<Point>() - 8usize];
         ["Alignment of Point"][::std::mem::align_of::<Point>() - 4usize];
         ["Offset of field: Point::x"][::std::mem::offset_of!(Point, x) - 0usize];
         ["Offset of field: Point::y"][::std::mem::offset_of!(Point, y) - 4usize];
     };
+    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
         ["Size of Angle"][::std::mem::size_of::<Angle>() - 8usize];
         ["Alignment of Angle"][::std::mem::align_of::<Angle>() - 4usize];
@@ -41,12 +43,14 @@ pub mod root {
             pub a: root::ns::number,
             pub b: root::ns::number,
         }
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of Point"][::std::mem::size_of::<Point>() - 8usize];
             ["Alignment of Point"][::std::mem::align_of::<Point>() - 4usize];
             ["Offset of field: Point::x"][::std::mem::offset_of!(Point, x) - 0usize];
             ["Offset of field: Point::y"][::std::mem::offset_of!(Point, y) - 4usize];
         };
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {
             ["Size of Angle"][::std::mem::size_of::<Angle>() - 8usize];
             ["Alignment of Angle"][::std::mem::align_of::<Angle>() - 4usize];

@@ -21,6 +21,7 @@ impl<T> Default for foo<T> {
 pub struct IntStr {
     pub a: foo<::std::os::raw::c_int>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of IntStr"][::std::mem::size_of::<IntStr>() - 4usize];
     ["Alignment of IntStr"][::std::mem::align_of::<IntStr>() - 4usize];
@@ -41,6 +42,7 @@ impl Default for IntStr {
 pub struct FloatStr {
     pub a: foo<f32>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of FloatStr"][::std::mem::size_of::<FloatStr>() - 4usize];
     ["Alignment of FloatStr"][::std::mem::align_of::<FloatStr>() - 4usize];
@@ -55,6 +57,7 @@ impl Default for FloatStr {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: foo_open0_int_close0",
@@ -63,6 +66,7 @@ const _: () = {
         "Align of template specialization: foo_open0_int_close0",
     ][::std::mem::align_of::<foo<::std::os::raw::c_int>>() - 4usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of template specialization: foo_open0_float_close0",

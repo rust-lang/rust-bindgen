@@ -95,6 +95,7 @@ pub struct foo__bindgen_ty_1 {
     pub _bitfield_align_1: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo__bindgen_ty_1"][::std::mem::size_of::<foo__bindgen_ty_1>() - 4usize];
     [
@@ -151,6 +152,7 @@ impl foo__bindgen_ty_1 {
         __bindgen_bitfield_unit
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of foo"][::std::mem::size_of::<foo>() - 4usize];
     ["Alignment of foo"][::std::mem::align_of::<foo>() - 4usize];

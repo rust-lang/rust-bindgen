@@ -9,6 +9,7 @@ extern "C" {
 pub struct Container {
     pub _bindgen_opaque_blob: [u32; 2usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Container"][::std::mem::size_of::<Container>() - 8usize];
     ["Alignment of Container"][::std::mem::align_of::<Container>() - 4usize];

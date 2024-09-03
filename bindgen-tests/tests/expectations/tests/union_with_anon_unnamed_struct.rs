@@ -13,6 +13,7 @@ pub struct pixel__bindgen_ty_1 {
     pub b: ::std::os::raw::c_uchar,
     pub a: ::std::os::raw::c_uchar,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     [
         "Size of pixel__bindgen_ty_1",
@@ -33,6 +34,7 @@ const _: () = {
         "Offset of field: pixel__bindgen_ty_1::a",
     ][::std::mem::offset_of!(pixel__bindgen_ty_1, a) - 3usize];
 };
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of pixel"][::std::mem::size_of::<pixel>() - 4usize];
     ["Alignment of pixel"][::std::mem::align_of::<pixel>() - 4usize];
