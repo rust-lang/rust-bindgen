@@ -1516,6 +1516,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
                 cb.field_visibility(FieldInfo {
                     type_name: &parent_item.canonical_name(ctx),
                     field_name,
+                    field_type_name: field_ty.name(),
                 })
             }),
             self.annotations(),
@@ -1890,6 +1891,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
 
         let bitfield_ty_item = ctx.resolve_item(self.ty());
         let bitfield_ty = bitfield_ty_item.expect_type();
+        let bitfield_ty_ident = bitfield_ty.name();
 
         let bitfield_ty_layout = bitfield_ty
             .layout(ctx)
@@ -1917,6 +1919,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 cb.field_visibility(FieldInfo {
                     type_name: &parent_item.canonical_name(ctx),
                     field_name,
+                    field_type_name: bitfield_ty_ident,
                 })
             })
         });
