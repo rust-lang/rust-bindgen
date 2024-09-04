@@ -218,6 +218,7 @@
 ## Changed
 ## Removed
 ## Fixed
+- Use the right characters for newlines on windows.
 ## Security
 
 # 0.70.1 (2024-08-20)
