@@ -476,15 +476,15 @@ struct BindgenCommand {
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_attribute)]
     with_attribute_custom_union: Vec<(Vec<String>, String)>,
     /// Generate wrappers for `static` and `static inline` functions.
-    #[arg(long, requires = "experimental")]
+    #[arg(long)]
     wrap_static_fns: bool,
     /// Sets the PATH for the source file that must be created due to the presence of `static` and
     /// `static inline` functions.
-    #[arg(long, requires = "experimental", value_name = "PATH")]
+    #[arg(long, value_name = "PATH")]
     wrap_static_fns_path: Option<PathBuf>,
     /// Sets the SUFFIX added to the extern wrapper functions generated for `static` and `static
     /// inline` functions.
-    #[arg(long, requires = "experimental", value_name = "SUFFIX")]
+    #[arg(long, value_name = "SUFFIX")]
     wrap_static_fns_suffix: Option<String>,
     /// Set the default VISIBILITY of fields, including bitfields and accessor methods for
     /// bitfields. This flag is ignored if the `--respect-cxx-access-specs` flag is used.
