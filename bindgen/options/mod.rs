@@ -1419,10 +1419,8 @@ options! {
             /// Note that they will usually not work. However you can use `-fkeep-inline-functions`
             /// or `-fno-inline-functions` if you are responsible of compiling the library to make
             /// them callable.
-            #[cfg_attr(
-                feature = "experimental",
-                doc = "\nCheck the [`Builder::wrap_static_fns`] method for an alternative."
-            )]
+            ///
+            /// Check the [`Builder::wrap_static_fns`] method for an alternative.
             pub fn generate_inline_functions(mut self, doit: bool) -> Self {
                 self.options.generate_inline_functions = doit;
                 self
@@ -2021,7 +2019,6 @@ options! {
     /// Whether to generate wrappers for `static` functions.
     wrap_static_fns: bool {
         methods: {
-            #[cfg(feature = "experimental")]
             /// Set whether to generate wrappers for `static`` functions.
             ///
             /// Passing `true` to this method will generate a C source file with non-`static`
@@ -2040,7 +2037,6 @@ options! {
     /// The suffix to be added to the function wrappers for `static` functions.
     wrap_static_fns_suffix: Option<String> {
         methods: {
-            #[cfg(feature = "experimental")]
             /// Set the suffix added to the wrappers for `static` functions.
             ///
             /// This option only comes into effect if `true` is passed to the
@@ -2057,7 +2053,6 @@ options! {
     /// The path of the file where the wrappers for `static` functions will be emitted.
     wrap_static_fns_path: Option<PathBuf> {
         methods: {
-            #[cfg(feature = "experimental")]
             /// Set the path for the source code file that would be created if any wrapper
             /// functions must be generated due to the presence of `static` functions.
             ///
