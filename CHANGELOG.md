@@ -216,6 +216,7 @@
 # Unreleased
 ## Added
 ## Changed
+- The `--wrap-static-fns` related options no longer require the experimental feature or flag.
 ## Removed
 ## Fixed
 - Use the right characters for newlines on windows.
