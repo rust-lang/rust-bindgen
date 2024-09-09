@@ -12,6 +12,7 @@ bindgen = { workspace = true, default-features = true, features = ["__cli", "exp
 owo-colors.workspace = true
 prettyplease = { workspace = true, features = ["verbatim"] }
 proc-macro2.workspace = true
+regex.workspace = true
 shlex.workspace = true
 similar = { workspace = true, features = ["inline"] }
 syn.workspace = true
