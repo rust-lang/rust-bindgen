@@ -745,6 +745,18 @@ impl Bindings {
         ensure_libclang_is_loaded();
 
         #[cfg(feature = "runtime")]
+        match clang_sys::get_library().unwrap().version() {
+            None => {
+                warn!("Could not detect a Clang version, make sure you are using libclang 9 or newer");
+            }
+            Some(version) => {
+                if version < clang_sys::Version::V9_0 {
+                    warn!("Detected Clang version {version:?} which is unsupported and can cause invalid code generation, use libclang 9 or newer");
+                }
+            }
+        }
+
+        #[cfg(feature = "runtime")]
         debug!(
             "Generating bindings, libclang at {}",
             clang_sys::get_library().unwrap().path().display()
