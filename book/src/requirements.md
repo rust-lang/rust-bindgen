@@ -48,10 +48,10 @@ $ port install clang
 #### Debian-based Linuxes
 
 ```bash
-# apt install llvm-dev libclang-dev clang
+# apt install libclang-dev
 ```
 
-Ubuntu 18.04 provides the necessary packages directly.
+If you want to use the function `bindgen::Builder::dump_preprocessed_input`, then you also need the package `clang`.
 
 #### Arch
 
