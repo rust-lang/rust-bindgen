@@ -228,9 +228,9 @@ to <code>D:\programs\LLVM</code>, then you'd set the value to be <code>D:\progra
 <pre><code class="language-bash">$ port install clang
 </code></pre>
 <h4><a class="header" href="#debian-based-linuxes" id="debian-based-linuxes">Debian-based Linuxes</a></h4>
-<pre><code class="language-bash"># apt install llvm-dev libclang-dev clang
+<pre><code class="language-bash"># apt install libclang-dev
 </code></pre>
-<p>Ubuntu 18.04 provides the necessary packages directly.</p>
+<p>If you want to use the function <code>bindgen::Builder::dump_preprocessed_input</code>, then you also need the package <code>clang</code>.</p>
 <h4><a class="header" href="#arch" id="arch">Arch</a></h4>
 <pre><code class="language-bash"># pacman -S clang
 </code></pre>
