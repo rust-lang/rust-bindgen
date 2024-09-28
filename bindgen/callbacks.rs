@@ -162,6 +162,62 @@ pub trait ParseCallbacks: fmt::Debug {
     fn wrap_as_variadic_fn(&self, _name: &str) -> Option<String> {
         None
     }
+
+    /// This will get called everytime an item (currently struct, union, and alias) is found with some information about it
+    fn new_item_found(&self, _id: DiscoveredItemId, _item: DiscoveredItem) {}
+
+    // TODO add callback for ResolvedTypeRef
+}
+
+/// An identifier for a discovered item. Used to identify an aliased type (see [DiscoveredItem::Alias])
+#[derive(Ord, PartialOrd, PartialEq, Eq, Hash, Debug, Clone, Copy)]
+pub struct DiscoveredItemId(usize);
+
+impl DiscoveredItemId {
+    /// Constructor
+    pub fn new(value: usize) -> Self {
+        Self(value)
+    }
+}
+
+/// Struct passed to [ParseCallbacks::new_item_found] containing information about discovered
+/// items (struct, union, and alias)
+#[derive(Debug, Hash, Clone, Ord, PartialOrd, Eq, PartialEq)]
+pub enum DiscoveredItem {
+    /// Represents a struct with its original name in C and its generated binding name
+    Struct {
+        /// The original name (learnt from C) of the structure
+        /// Can be None if the union is anonymous.
+        original_name: Option<String>,
+
+        /// The name of the generated binding
+        final_name: String,
+    },
+
+    /// Represents a union with its original name in C and its generated binding name
+    Union {
+        /// The original name (learnt from C) of the structure.
+        /// Can be None if the union is anonymous.
+        original_name: Option<String>,
+
+        /// The name of the generated binding
+        final_name: String,
+    },
+
+    /// Represents an alias like a typedef
+    /// ```c
+    ///     typedef struct MyStruct {
+    ///         ...
+    ///     } StructAlias;
+    /// ```
+    /// Here, the name of the alias is `StructAlias` and it's an alias for `MyStruct`
+    Alias {
+        /// The name of the alias in C (`StructAlias`)
+        alias_name: String,
+
+        /// The identifier of the discovered type
+        alias_for: DiscoveredItemId,
+    }, // functions, modules, etc.
 }
 
 /// Relevant information about a type to which new derive attributes will be added using
