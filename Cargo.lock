@@ -23,7 +23,7 @@ dependencies = [
 
 [[package]]
 name = "bindgen"
-version = "0.69.4"
+version = "0.69.5"
 dependencies = [
  "annotate-snippets",
  "bitflags 2.2.1",
@@ -45,7 +45,7 @@ dependencies = [
 
 [[package]]
 name = "bindgen-cli"
-version = "0.69.4"
+version = "0.69.5"
 dependencies = [
  "bindgen",
  "clap",
