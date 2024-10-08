@@ -1,6 +1,9 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub const foo: _bindgen_ty_1 = _bindgen_ty_1::foo;
 pub const bar: _bindgen_ty_1 = _bindgen_ty_1::bar;
+pub type _bindgen_ty_1_ctype = ::std::os::raw::c_uint;
+pub const _bindgen_ty_1_foo: _bindgen_ty_1_ctype = 4;
+pub const _bindgen_ty_1_bar: _bindgen_ty_1_ctype = 8;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum _bindgen_ty_1 {

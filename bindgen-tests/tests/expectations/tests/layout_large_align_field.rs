@@ -35,6 +35,14 @@ pub const IP_LAST_FRAG_IDX: _bindgen_ty_1 = _bindgen_ty_1::IP_LAST_FRAG_IDX;
 pub const IP_FIRST_FRAG_IDX: _bindgen_ty_1 = _bindgen_ty_1::IP_FIRST_FRAG_IDX;
 pub const IP_MIN_FRAG_NUM: _bindgen_ty_1 = _bindgen_ty_1::IP_MIN_FRAG_NUM;
 pub const IP_MAX_FRAG_NUM: _bindgen_ty_1 = _bindgen_ty_1::IP_MAX_FRAG_NUM;
+pub type _bindgen_ty_1_ctype = ::std::os::raw::c_uint;
+///< index of last fragment
+pub const _bindgen_ty_1_IP_LAST_FRAG_IDX: _bindgen_ty_1_ctype = 0;
+///< index of first fragment
+pub const _bindgen_ty_1_IP_FIRST_FRAG_IDX: _bindgen_ty_1_ctype = 1;
+///< minimum number of fragments
+pub const _bindgen_ty_1_IP_MIN_FRAG_NUM: _bindgen_ty_1_ctype = 2;
+pub const _bindgen_ty_1_IP_MAX_FRAG_NUM: _bindgen_ty_1_ctype = 4;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum _bindgen_ty_1 {

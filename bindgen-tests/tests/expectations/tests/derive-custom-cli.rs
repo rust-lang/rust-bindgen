@@ -12,6 +12,8 @@ const _: () = {
         "Offset of field: foo_struct::inner",
     ][::std::mem::offset_of!(foo_struct, inner) - 0usize];
 };
+pub type foo_enum_ctype = ::std::os::raw::c_uint;
+pub const foo_enum_inner: foo_enum_ctype = 0;
 #[repr(u32)]
 #[derive(Clone, Hash, PartialEq, Eq, Copy)]
 pub enum foo_enum {

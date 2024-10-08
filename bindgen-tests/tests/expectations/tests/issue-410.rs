@@ -27,6 +27,7 @@ pub mod root {
             }
         }
     }
+    pub type JSWhyMagic_ctype = ::std::os::raw::c_uint;
     #[repr(u32)]
     #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
     pub enum JSWhyMagic {

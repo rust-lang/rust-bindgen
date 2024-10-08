@@ -141,6 +141,10 @@ where
         }
     }
 }
+pub type nsStyleSVGOpacitySource_ctype = ::std::os::raw::c_uint;
+pub const nsStyleSVGOpacitySource_eStyleSVGOpacitySource_Normal: nsStyleSVGOpacitySource_ctype = 0;
+pub const nsStyleSVGOpacitySource_eStyleSVGOpacitySource_ContextFillOpacity: nsStyleSVGOpacitySource_ctype = 1;
+pub const nsStyleSVGOpacitySource_eStyleSVGOpacitySource_ContextStrokeOpacity: nsStyleSVGOpacitySource_ctype = 2;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum nsStyleSVGOpacitySource {

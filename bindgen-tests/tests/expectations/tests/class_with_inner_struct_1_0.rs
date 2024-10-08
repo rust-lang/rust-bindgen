@@ -211,6 +211,11 @@ impl Clone for B {
         *self
     }
 }
+pub type StepSyntax_ctype = ::std::os::raw::c_int;
+pub const StepSyntax_Keyword: StepSyntax_ctype = 0;
+pub const StepSyntax_FunctionalWithoutKeyword: StepSyntax_ctype = 1;
+pub const StepSyntax_FunctionalWithStartKeyword: StepSyntax_ctype = 2;
+pub const StepSyntax_FunctionalWithEndKeyword: StepSyntax_ctype = 3;
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum StepSyntax {

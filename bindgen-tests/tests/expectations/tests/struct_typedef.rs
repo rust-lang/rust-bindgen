@@ -40,12 +40,16 @@ impl Default for _bindgen_ty_1 {
 }
 pub type struct_ptr_t = *mut _bindgen_ty_1;
 pub type struct_ptr_ptr_t = *mut *mut _bindgen_ty_1;
+pub type typedef_named_enum_ctype = ::std::os::raw::c_uint;
+pub const typedef_named_enum_ENUM_HAS_NAME: typedef_named_enum_ctype = 1;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum typedef_named_enum {
     ENUM_HAS_NAME = 1,
 }
 pub const ENUM_IS_ANON: _bindgen_ty_2 = _bindgen_ty_2::ENUM_IS_ANON;
+pub type _bindgen_ty_2_ctype = ::std::os::raw::c_uint;
+pub const _bindgen_ty_2_ENUM_IS_ANON: _bindgen_ty_2_ctype = 0;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum _bindgen_ty_2 {

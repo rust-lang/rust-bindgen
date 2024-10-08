@@ -12,6 +12,9 @@ pub mod root {
         impl root::foo::Bar {
             pub const Foo3: root::foo::Bar = Bar::Foo2;
         }
+        pub type Bar_ctype = ::std::os::raw::c_uint;
+        pub const Bar_Foo: Bar_ctype = 0;
+        pub const Bar_Foo2: Bar_ctype = 1;
         #[repr(u32)]
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub enum Bar {

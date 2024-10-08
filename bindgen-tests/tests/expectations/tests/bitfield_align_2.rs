@@ -142,6 +142,11 @@ where
         }
     }
 }
+pub type MyEnum_ctype = ::std::os::raw::c_uint;
+pub const MyEnum_ONE: MyEnum_ctype = 0;
+pub const MyEnum_TWO: MyEnum_ctype = 1;
+pub const MyEnum_THREE: MyEnum_ctype = 2;
+pub const MyEnum_FOUR: MyEnum_ctype = 3;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum MyEnum {
