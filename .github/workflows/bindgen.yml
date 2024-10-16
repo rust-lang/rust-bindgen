@@ -196,8 +196,8 @@ jobs:
       - name: Install libtinfo
         if: matrix.os == 'ubuntu-latest'
         run: |
-          sudo apt-get update
-          sudo apt-get install libtinfo5
+          wget https://mirrors.kernel.org/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
+          sudo dpkg -i libtinfo5_6.3-2ubuntu0.1_amd64.deb
       - name: Run all the tests
         env:
           GITHUB_ACTIONS_OS: ${{matrix.os}}
