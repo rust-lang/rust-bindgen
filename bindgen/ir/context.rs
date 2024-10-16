@@ -2328,6 +2328,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             }
         }
 
+        if cursor.is_inline_namespace() {
+            kind = ModuleKind::Inline;
+        }
+
         (module_name, kind)
     }
 

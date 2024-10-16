@@ -970,6 +970,11 @@ impl Cursor {
             })
         }
     }
+
+    /// Is this cursor's referent a namespace that is inline?
+    pub(crate) fn is_inline_namespace(&self) -> bool {
+        unsafe { clang_Cursor_isInlineNamespace(self.x) != 0 }
+    }
 }
 
 /// A struct that owns the tokenizer result from a given cursor.
