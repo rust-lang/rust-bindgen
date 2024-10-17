@@ -21,6 +21,8 @@ pub struct nsStyleAutoArray<T> {
     pub mFirstElement: T,
     pub mOtherElements: nsTArray<T>,
 }
+pub type nsStyleAutoArray_WithSingleInitialElement_ctype = i32;
+pub const nsStyleAutoArray_WithSingleInitialElement_WITH_SINGLE_INITIAL_ELEMENT: nsStyleAutoArray_WithSingleInitialElement_ctype = 0;
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum nsStyleAutoArray_WithSingleInitialElement {

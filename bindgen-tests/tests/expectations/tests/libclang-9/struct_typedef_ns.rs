@@ -21,6 +21,8 @@ pub mod root {
                 "Offset of field: typedef_struct::foo",
             ][::std::mem::offset_of!(typedef_struct, foo) - 0usize];
         };
+        pub type typedef_enum_ctype = ::std::os::raw::c_uint;
+        pub const typedef_enum_BAR: typedef_enum_ctype = 1;
         #[repr(u32)]
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub enum typedef_enum {
@@ -47,6 +49,8 @@ pub mod root {
         };
         pub type typedef_struct = root::_bindgen_mod_id_12::_bindgen_ty_1;
         pub const _bindgen_mod_id_12_BAR: root::_bindgen_mod_id_12::_bindgen_ty_2 = _bindgen_ty_2::BAR;
+        pub type _bindgen_ty_2_ctype = ::std::os::raw::c_uint;
+        pub const _bindgen_ty_2_BAR: _bindgen_ty_2_ctype = 1;
         #[repr(u32)]
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub enum _bindgen_ty_2 {

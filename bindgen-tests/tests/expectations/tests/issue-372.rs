@@ -67,6 +67,19 @@ pub mod root {
             }
         }
     }
+    pub type n_ctype = ::std::os::raw::c_uint;
+    pub const n_o: n_ctype = 0;
+    pub const n_p: n_ctype = 1;
+    pub const n_q: n_ctype = 2;
+    pub const n_r: n_ctype = 3;
+    pub const n_s: n_ctype = 4;
+    pub const n_t: n_ctype = 5;
+    pub const n_b: n_ctype = 6;
+    pub const n_ae: n_ctype = 7;
+    pub const n_e: n_ctype = 8;
+    pub const n_ag: n_ctype = 9;
+    pub const n_ah: n_ctype = 10;
+    pub const n_ai: n_ctype = 11;
     #[repr(u32)]
     #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
     pub enum n {

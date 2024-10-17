@@ -18,6 +18,7 @@ use crate::CodegenConfig;
 use crate::FieldVisibilityKind;
 use crate::Formatter;
 use crate::HashMap;
+use crate::RustEnumOptions;
 use crate::DEFAULT_ANON_FIELDS_PREFIX;
 
 use std::env;
@@ -454,7 +455,7 @@ options! {
         as_args: "--newtype-global-enum",
     },
     /// `enum`s marked as Rust `enum`s.
-    rustified_enums: RegexSet {
+    rustified_enums: HashMap<RustEnumOptions, RegexSet> {
         methods: {
             regex_option! {
                 /// Mark the given `enum` as a Rust `enum`.
@@ -465,13 +466,21 @@ options! {
                 /// **Use this with caution**, creating an instance of a Rust `enum` with an
                 /// invalid value will cause undefined behaviour. To avoid this, use the
                 /// [`Builder::newtype_enum`] style instead.
-                pub fn rustified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
-                    self.options.rustified_enums.insert(arg);
+                pub fn rustified_enum<T: Into<String>>(mut self, options: RustEnumOptions, arg: T) -> Builder {
+                    self.options.rustified_enums.entry(options).or_default().insert(arg.into());
                     self
                 }
             }
         },
-        as_args: "--rustified-enum",
+        as_args: |overrides, args| {
+            for (options, set) in overrides {
+                let options = options.iter().map(|item| item.to_string()).collect::<Vec<_>>();
+                for item in set.get_items() {
+                    args.push("--rustified-enum".to_owned());
+                    args.push(format!("{}={}", item, options.join(",")));
+                }
+            }
+        },
     },
     /// `enum`s marked as non-exhaustive Rust `enum`s.
     rustified_non_exhaustive_enums: RegexSet {

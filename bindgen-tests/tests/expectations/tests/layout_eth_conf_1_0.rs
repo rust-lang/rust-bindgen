@@ -216,6 +216,23 @@ pub const RTE_ETH_FLOW_VXLAN: u32 = 19;
 pub const RTE_ETH_FLOW_GENEVE: u32 = 20;
 pub const RTE_ETH_FLOW_NVGRE: u32 = 21;
 pub const RTE_ETH_FLOW_MAX: u32 = 22;
+pub type rte_eth_rx_mq_mode_ctype = ::std::os::raw::c_uint;
+/// None of DCB,RSS or VMDQ mode
+pub const rte_eth_rx_mq_mode_ETH_MQ_RX_NONE: rte_eth_rx_mq_mode_ctype = 0;
+/// For RX side, only RSS is on
+pub const rte_eth_rx_mq_mode_ETH_MQ_RX_RSS: rte_eth_rx_mq_mode_ctype = 1;
+/// For RX side,only DCB is on.
+pub const rte_eth_rx_mq_mode_ETH_MQ_RX_DCB: rte_eth_rx_mq_mode_ctype = 2;
+/// Both DCB and RSS enable
+pub const rte_eth_rx_mq_mode_ETH_MQ_RX_DCB_RSS: rte_eth_rx_mq_mode_ctype = 3;
+/// Only VMDQ, no RSS nor DCB
+pub const rte_eth_rx_mq_mode_ETH_MQ_RX_VMDQ_ONLY: rte_eth_rx_mq_mode_ctype = 4;
+/// RSS mode with VMDQ
+pub const rte_eth_rx_mq_mode_ETH_MQ_RX_VMDQ_RSS: rte_eth_rx_mq_mode_ctype = 5;
+/// Use VMDQ+DCB to route traffic to queues
+pub const rte_eth_rx_mq_mode_ETH_MQ_RX_VMDQ_DCB: rte_eth_rx_mq_mode_ctype = 6;
+/// Enable both VMDQ and DCB in VMDq
+pub const rte_eth_rx_mq_mode_ETH_MQ_RX_VMDQ_DCB_RSS: rte_eth_rx_mq_mode_ctype = 7;
 #[repr(u32)]
 /**  A set of values to identify what method is to be used to route
   packets to multiple queues.*/
@@ -731,6 +748,15 @@ impl rte_eth_rxmode {
         __bindgen_bitfield_unit
     }
 }
+pub type rte_eth_tx_mq_mode_ctype = ::std::os::raw::c_uint;
+///< It is in neither DCB nor VT mode.
+pub const rte_eth_tx_mq_mode_ETH_MQ_TX_NONE: rte_eth_tx_mq_mode_ctype = 0;
+///< For TX side,only DCB is on.
+pub const rte_eth_tx_mq_mode_ETH_MQ_TX_DCB: rte_eth_tx_mq_mode_ctype = 1;
+///< For TX side,both DCB and VT is on.
+pub const rte_eth_tx_mq_mode_ETH_MQ_TX_VMDQ_DCB: rte_eth_tx_mq_mode_ctype = 2;
+///< Only VT on, no DCB
+pub const rte_eth_tx_mq_mode_ETH_MQ_TX_VMDQ_ONLY: rte_eth_tx_mq_mode_ctype = 3;
 #[repr(u32)]
 /** A set of values to identify what method is to be used to transmit
  packets using multi-TCs.*/
@@ -1013,6 +1039,11 @@ impl Default for rte_eth_rss_conf {
         }
     }
 }
+pub type rte_eth_nb_tcs_ctype = ::std::os::raw::c_uint;
+///< 4 TCs with DCB.
+pub const rte_eth_nb_tcs_ETH_4_TCS: rte_eth_nb_tcs_ctype = 4;
+///< 8 TCs with DCB.
+pub const rte_eth_nb_tcs_ETH_8_TCS: rte_eth_nb_tcs_ctype = 8;
 #[repr(u32)]
 /** This enum indicates the possible number of traffic classes
  in DCB configratioins*/
@@ -1023,6 +1054,15 @@ pub enum rte_eth_nb_tcs {
     ///< 8 TCs with DCB.
     ETH_8_TCS = 8,
 }
+pub type rte_eth_nb_pools_ctype = ::std::os::raw::c_uint;
+///< 8 VMDq pools.
+pub const rte_eth_nb_pools_ETH_8_POOLS: rte_eth_nb_pools_ctype = 8;
+///< 16 VMDq pools.
+pub const rte_eth_nb_pools_ETH_16_POOLS: rte_eth_nb_pools_ctype = 16;
+///< 32 VMDq pools.
+pub const rte_eth_nb_pools_ETH_32_POOLS: rte_eth_nb_pools_ctype = 32;
+///< 64 VMDq pools.
+pub const rte_eth_nb_pools_ETH_64_POOLS: rte_eth_nb_pools_ctype = 64;
 #[repr(u32)]
 /** This enum indicates the possible number of queue pools
  in VMDQ configurations.*/
@@ -1463,6 +1503,17 @@ impl Default for rte_eth_vmdq_rx_conf {
         }
     }
 }
+pub type rte_fdir_mode_ctype = ::std::os::raw::c_uint;
+///< Disable FDIR support.
+pub const rte_fdir_mode_RTE_FDIR_MODE_NONE: rte_fdir_mode_ctype = 0;
+///< Enable FDIR signature filter mode.
+pub const rte_fdir_mode_RTE_FDIR_MODE_SIGNATURE: rte_fdir_mode_ctype = 1;
+///< Enable FDIR perfect filter mode.
+pub const rte_fdir_mode_RTE_FDIR_MODE_PERFECT: rte_fdir_mode_ctype = 2;
+///< Enable FDIR filter mode - MAC VLAN.
+pub const rte_fdir_mode_RTE_FDIR_MODE_PERFECT_MAC_VLAN: rte_fdir_mode_ctype = 3;
+///< Enable FDIR filter mode - tunnel.
+pub const rte_fdir_mode_RTE_FDIR_MODE_PERFECT_TUNNEL: rte_fdir_mode_ctype = 4;
 #[repr(u32)]
 ///  Flow Director setting modes: none, signature or perfect.
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -1478,6 +1529,13 @@ pub enum rte_fdir_mode {
     ///< Enable FDIR filter mode - tunnel.
     RTE_FDIR_MODE_PERFECT_TUNNEL = 4,
 }
+pub type rte_fdir_pballoc_type_ctype = ::std::os::raw::c_uint;
+///< 64k.
+pub const rte_fdir_pballoc_type_RTE_FDIR_PBALLOC_64K: rte_fdir_pballoc_type_ctype = 0;
+///< 128k.
+pub const rte_fdir_pballoc_type_RTE_FDIR_PBALLOC_128K: rte_fdir_pballoc_type_ctype = 1;
+///< 256k.
+pub const rte_fdir_pballoc_type_RTE_FDIR_PBALLOC_256K: rte_fdir_pballoc_type_ctype = 2;
 #[repr(u32)]
 /**  Memory space that can be configured to store Flow Director filters
   in the board memory.*/
@@ -1490,6 +1548,13 @@ pub enum rte_fdir_pballoc_type {
     ///< 256k.
     RTE_FDIR_PBALLOC_256K = 2,
 }
+pub type rte_fdir_status_mode_ctype = ::std::os::raw::c_uint;
+///< Never report FDIR hash.
+pub const rte_fdir_status_mode_RTE_FDIR_NO_REPORT_STATUS: rte_fdir_status_mode_ctype = 0;
+///< Only report FDIR hash for matching pkts.
+pub const rte_fdir_status_mode_RTE_FDIR_REPORT_STATUS: rte_fdir_status_mode_ctype = 1;
+///< Always report FDIR hash.
+pub const rte_fdir_status_mode_RTE_FDIR_REPORT_STATUS_ALWAYS: rte_fdir_status_mode_ctype = 2;
 #[repr(u32)]
 ///  Select report mode of FDIR hash information in RX descriptors.
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -1707,6 +1772,13 @@ impl Clone for rte_eth_fdir_masks {
         *self
     }
 }
+pub type rte_eth_payload_type_ctype = ::std::os::raw::c_uint;
+pub const rte_eth_payload_type_RTE_ETH_PAYLOAD_UNKNOWN: rte_eth_payload_type_ctype = 0;
+pub const rte_eth_payload_type_RTE_ETH_RAW_PAYLOAD: rte_eth_payload_type_ctype = 1;
+pub const rte_eth_payload_type_RTE_ETH_L2_PAYLOAD: rte_eth_payload_type_ctype = 2;
+pub const rte_eth_payload_type_RTE_ETH_L3_PAYLOAD: rte_eth_payload_type_ctype = 3;
+pub const rte_eth_payload_type_RTE_ETH_L4_PAYLOAD: rte_eth_payload_type_ctype = 4;
+pub const rte_eth_payload_type_RTE_ETH_PAYLOAD_MAX: rte_eth_payload_type_ctype = 8;
 #[repr(u32)]
 /// Payload type
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]

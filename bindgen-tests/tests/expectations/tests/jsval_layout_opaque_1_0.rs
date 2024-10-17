@@ -187,6 +187,18 @@ impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 pub const JSVAL_TAG_SHIFT: u32 = 47;
 pub const JSVAL_PAYLOAD_MASK: u64 = 140737488355327;
 pub const JSVAL_TAG_MASK: i64 = -140737488355328;
+pub type JSValueType_ctype = ::std::os::raw::c_uchar;
+pub const JSValueType_JSVAL_TYPE_DOUBLE: JSValueType_ctype = 0;
+pub const JSValueType_JSVAL_TYPE_INT32: JSValueType_ctype = 1;
+pub const JSValueType_JSVAL_TYPE_UNDEFINED: JSValueType_ctype = 2;
+pub const JSValueType_JSVAL_TYPE_BOOLEAN: JSValueType_ctype = 3;
+pub const JSValueType_JSVAL_TYPE_MAGIC: JSValueType_ctype = 4;
+pub const JSValueType_JSVAL_TYPE_STRING: JSValueType_ctype = 5;
+pub const JSValueType_JSVAL_TYPE_SYMBOL: JSValueType_ctype = 6;
+pub const JSValueType_JSVAL_TYPE_NULL: JSValueType_ctype = 7;
+pub const JSValueType_JSVAL_TYPE_OBJECT: JSValueType_ctype = 8;
+pub const JSValueType_JSVAL_TYPE_UNKNOWN: JSValueType_ctype = 32;
+pub const JSValueType_JSVAL_TYPE_MISSING: JSValueType_ctype = 33;
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSValueType {
@@ -202,6 +214,16 @@ pub enum JSValueType {
     JSVAL_TYPE_UNKNOWN = 32,
     JSVAL_TYPE_MISSING = 33,
 }
+pub type JSValueTag_ctype = ::std::os::raw::c_uint;
+pub const JSValueTag_JSVAL_TAG_MAX_DOUBLE: JSValueTag_ctype = 131056;
+pub const JSValueTag_JSVAL_TAG_INT32: JSValueTag_ctype = 131057;
+pub const JSValueTag_JSVAL_TAG_UNDEFINED: JSValueTag_ctype = 131058;
+pub const JSValueTag_JSVAL_TAG_STRING: JSValueTag_ctype = 131061;
+pub const JSValueTag_JSVAL_TAG_SYMBOL: JSValueTag_ctype = 131062;
+pub const JSValueTag_JSVAL_TAG_BOOLEAN: JSValueTag_ctype = 131059;
+pub const JSValueTag_JSVAL_TAG_MAGIC: JSValueTag_ctype = 131060;
+pub const JSValueTag_JSVAL_TAG_NULL: JSValueTag_ctype = 131063;
+pub const JSValueTag_JSVAL_TAG_OBJECT: JSValueTag_ctype = 131064;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSValueTag {
@@ -215,6 +237,16 @@ pub enum JSValueTag {
     JSVAL_TAG_NULL = 131063,
     JSVAL_TAG_OBJECT = 131064,
 }
+pub type JSValueShiftedTag_ctype = ::std::os::raw::c_ulong;
+pub const JSValueShiftedTag_JSVAL_SHIFTED_TAG_MAX_DOUBLE: JSValueShiftedTag_ctype = 18444492278190833663;
+pub const JSValueShiftedTag_JSVAL_SHIFTED_TAG_INT32: JSValueShiftedTag_ctype = 18444633011384221696;
+pub const JSValueShiftedTag_JSVAL_SHIFTED_TAG_UNDEFINED: JSValueShiftedTag_ctype = 18444773748872577024;
+pub const JSValueShiftedTag_JSVAL_SHIFTED_TAG_STRING: JSValueShiftedTag_ctype = 18445195961337643008;
+pub const JSValueShiftedTag_JSVAL_SHIFTED_TAG_SYMBOL: JSValueShiftedTag_ctype = 18445336698825998336;
+pub const JSValueShiftedTag_JSVAL_SHIFTED_TAG_BOOLEAN: JSValueShiftedTag_ctype = 18444914486360932352;
+pub const JSValueShiftedTag_JSVAL_SHIFTED_TAG_MAGIC: JSValueShiftedTag_ctype = 18445055223849287680;
+pub const JSValueShiftedTag_JSVAL_SHIFTED_TAG_NULL: JSValueShiftedTag_ctype = 18445477436314353664;
+pub const JSValueShiftedTag_JSVAL_SHIFTED_TAG_OBJECT: JSValueShiftedTag_ctype = 18445618173802708992;
 #[repr(u64)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSValueShiftedTag {
@@ -228,6 +260,45 @@ pub enum JSValueShiftedTag {
     JSVAL_SHIFTED_TAG_NULL = 18445477436314353664,
     JSVAL_SHIFTED_TAG_OBJECT = 18445618173802708992,
 }
+pub type JSWhyMagic_ctype = ::std::os::raw::c_uint;
+/// a hole in a native object's elements
+pub const JSWhyMagic_JS_ELEMENTS_HOLE: JSWhyMagic_ctype = 0;
+/// there is not a pending iterator value
+pub const JSWhyMagic_JS_NO_ITER_VALUE: JSWhyMagic_ctype = 1;
+/// exception value thrown when closing a generator
+pub const JSWhyMagic_JS_GENERATOR_CLOSING: JSWhyMagic_ctype = 2;
+/// compiler sentinel value
+pub const JSWhyMagic_JS_NO_CONSTANT: JSWhyMagic_ctype = 3;
+/// used in debug builds to catch tracing errors
+pub const JSWhyMagic_JS_THIS_POISON: JSWhyMagic_ctype = 4;
+/// used in debug builds to catch tracing errors
+pub const JSWhyMagic_JS_ARG_POISON: JSWhyMagic_ctype = 5;
+/// an empty subnode in the AST serializer
+pub const JSWhyMagic_JS_SERIALIZE_NO_NODE: JSWhyMagic_ctype = 6;
+/// lazy arguments value on the stack
+pub const JSWhyMagic_JS_LAZY_ARGUMENTS: JSWhyMagic_ctype = 7;
+/// optimized-away 'arguments' value
+pub const JSWhyMagic_JS_OPTIMIZED_ARGUMENTS: JSWhyMagic_ctype = 8;
+/// magic value passed to natives to indicate construction
+pub const JSWhyMagic_JS_IS_CONSTRUCTING: JSWhyMagic_ctype = 9;
+/// arguments.callee has been overwritten
+pub const JSWhyMagic_JS_OVERWRITTEN_CALLEE: JSWhyMagic_ctype = 10;
+/// value of static block object slot
+pub const JSWhyMagic_JS_BLOCK_NEEDS_CLONE: JSWhyMagic_ctype = 11;
+/// see class js::HashableValue
+pub const JSWhyMagic_JS_HASH_KEY_EMPTY: JSWhyMagic_ctype = 12;
+/// error while running Ion code
+pub const JSWhyMagic_JS_ION_ERROR: JSWhyMagic_ctype = 13;
+/// missing recover instruction result
+pub const JSWhyMagic_JS_ION_BAILOUT: JSWhyMagic_ctype = 14;
+/// optimized out slot
+pub const JSWhyMagic_JS_OPTIMIZED_OUT: JSWhyMagic_ctype = 15;
+/// uninitialized lexical bindings that produce ReferenceError on touch.
+pub const JSWhyMagic_JS_UNINITIALIZED_LEXICAL: JSWhyMagic_ctype = 16;
+/// for local use
+pub const JSWhyMagic_JS_GENERIC_MAGIC: JSWhyMagic_ctype = 17;
+/// for local use
+pub const JSWhyMagic_JS_WHY_MAGIC_COUNT: JSWhyMagic_ctype = 18;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum JSWhyMagic {

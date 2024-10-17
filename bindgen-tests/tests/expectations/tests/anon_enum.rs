@@ -6,6 +6,8 @@ pub struct Test {
     pub bar: f32,
 }
 pub const Test_T_NONE: Test__bindgen_ty_1 = Test__bindgen_ty_1::T_NONE;
+pub type Test__bindgen_ty_1_ctype = ::std::os::raw::c_uint;
+pub const Test__bindgen_ty_1_T_NONE: Test__bindgen_ty_1_ctype = 0;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Test__bindgen_ty_1 {
@@ -18,6 +20,9 @@ const _: () = {
     ["Offset of field: Test::foo"][::std::mem::offset_of!(Test, foo) - 0usize];
     ["Offset of field: Test::bar"][::std::mem::offset_of!(Test, bar) - 4usize];
 };
+pub type Baz_ctype = ::std::os::raw::c_uint;
+pub const Baz_Foo: Baz_ctype = 0;
+pub const Baz_Bar: Baz_ctype = 1;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Baz {

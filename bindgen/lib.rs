@@ -54,6 +54,7 @@ pub use codegen::{
 pub use features::RUST_TARGET_STRINGS;
 pub use features::{RustTarget, LATEST_STABLE_RUST};
 pub use ir::annotations::FieldVisibilityKind;
+pub use ir::enum_ty::RustEnumOptions;
 pub use ir::function::Abi;
 pub use regex_set::RegexSet;
 
@@ -440,7 +441,7 @@ impl Builder {
 
 impl BindgenOptions {
     fn build(&mut self) {
-        const REGEX_SETS_LEN: usize = 29;
+        const REGEX_SETS_LEN: usize = 27;
 
         let regex_sets: [_; REGEX_SETS_LEN] = [
             &mut self.blocklisted_types,
@@ -459,8 +460,6 @@ impl BindgenOptions {
             &mut self.constified_enum_modules,
             &mut self.newtype_enums,
             &mut self.newtype_global_enums,
-            &mut self.rustified_enums,
-            &mut self.rustified_non_exhaustive_enums,
             &mut self.type_alias,
             &mut self.new_type_alias,
             &mut self.new_type_alias_deref,
@@ -477,7 +476,9 @@ impl BindgenOptions {
         let record_matches = self.record_matches;
         #[cfg(feature = "experimental")]
         {
-            let sets_len = REGEX_SETS_LEN + self.abi_overrides.len();
+            let sets_len = REGEX_SETS_LEN +
+                self.abi_overrides.len() +
+                self.rustified_enums.len();
             let names = if self.emit_diagnostics {
                 <[&str; REGEX_SETS_LEN]>::into_iter([
                     "--blocklist-type",
@@ -494,8 +495,6 @@ impl BindgenOptions {
                     "--bitfield-enum",
                     "--newtype-enum",
                     "--newtype-global-enum",
-                    "--rustified-enum",
-                    "--rustified-enum-non-exhaustive",
                     "--constified-enum-module",
                     "--constified-enum",
                     "--type-alias",
@@ -511,6 +510,9 @@ impl BindgenOptions {
                     "--must-use",
                 ])
                 .chain((0..self.abi_overrides.len()).map(|_| "--override-abi"))
+                .chain(
+                    (0..self.rustified_enums.len()).map(|_| "--rustified-enum"),
+                )
                 .map(Some)
                 .collect()
             } else {
@@ -525,6 +527,9 @@ impl BindgenOptions {
         }
         #[cfg(not(feature = "experimental"))]
         for regex_set in self.abi_overrides.values_mut().chain(regex_sets) {
+            regex_set.build(record_matches);
+        }
+        for regex_set in self.rustified_enums.values_mut() {
             regex_set.build(record_matches);
         }
 

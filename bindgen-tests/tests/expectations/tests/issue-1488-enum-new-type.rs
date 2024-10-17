@@ -13,6 +13,9 @@ pub mod Bar {
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone)]
 pub struct BarAlias(pub Bar::Type);
+pub type Qux_ctype = ::std::os::raw::c_uint;
+pub const Qux_E: Qux_ctype = 0;
+pub const Qux_F: Qux_ctype = 1;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Qux {

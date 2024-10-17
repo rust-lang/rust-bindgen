@@ -2,7 +2,8 @@ use bindgen::callbacks::TypeKind;
 use bindgen::{
     builder, Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
     FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
-    RegexSet, RustTarget, DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
+    RegexSet, RustEnumOptions, RustTarget, DEFAULT_ANON_FIELDS_PREFIX,
+    RUST_TARGET_STRINGS,
 };
 use clap::error::{Error, ErrorKind};
 use clap::{CommandFactory, Parser};
@@ -75,6 +76,21 @@ fn parse_abi_override(abi_override: &str) -> Result<(Abi, String), Error> {
         .map_err(|err| Error::raw(ErrorKind::InvalidValue, err))?;
 
     Ok((abi, regex.to_owned()))
+}
+
+fn parse_rustified_enum(
+    rustified_enum: &str,
+) -> Result<(RustEnumOptions, String), Error> {
+    let (regex, options) = match rustified_enum.rsplit_once('=') {
+        Some((regex, options)) => (regex, options),
+        None => (rustified_enum, ""),
+    };
+
+    let options = options
+        .parse()
+        .map_err(|err| Error::raw(ErrorKind::InvalidValue, err))?;
+
+    Ok((options, regex.to_owned()))
 }
 
 fn parse_custom_derive(
@@ -150,12 +166,11 @@ struct BindgenCommand {
     /// Mark any enum whose name matches REGEX as a global newtype.
     #[arg(long, value_name = "REGEX")]
     newtype_global_enum: Vec<String>,
-    /// Mark any enum whose name matches REGEX as a Rust enum.
-    #[arg(long, value_name = "REGEX")]
-    rustified_enum: Vec<String>,
-    /// Mark any enum whose name matches REGEX as a non-exhaustive Rust enum.
-    #[arg(long, value_name = "REGEX")]
-    rustified_non_exhaustive_enum: Vec<String>,
+    /// Mark any enum whose name matches the provided regex as a Rust enum. This parameter takes
+    /// options in the shape REGEX or REGEX=OPTIONS where OPTIONS can be a comma separated list of
+    /// options from non_exhaustive, try_from_raw, and from_raw_unchecked.
+    #[arg(long, value_parser = parse_rustified_enum)]
+    rustified_enum: Vec<(RustEnumOptions, String)>,
     /// Mark any enum whose name matches REGEX as a series of constants.
     #[arg(long, value_name = "REGEX")]
     constified_enum: Vec<String>,
@@ -523,7 +538,6 @@ where
         newtype_enum,
         newtype_global_enum,
         rustified_enum,
-        rustified_non_exhaustive_enum,
         constified_enum,
         constified_enum_module,
         default_macro_constant_type,
@@ -690,12 +704,8 @@ where
         builder = builder.newtype_global_enum(regex);
     }
 
-    for regex in rustified_enum {
-        builder = builder.rustified_enum(regex);
-    }
-
-    for regex in rustified_non_exhaustive_enum {
-        builder = builder.rustified_non_exhaustive_enum(regex);
+    for (options, regex) in rustified_enum {
+        builder = builder.rustified_enum(options, regex);
     }
 
     for regex in constified_enum {

@@ -2,6 +2,8 @@
 impl Foo {
     pub const Dupe: Foo = Foo::Bar;
 }
+pub type Foo_ctype = ::std::os::raw::c_uint;
+pub const Foo_Bar: Foo_ctype = 1;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Foo {

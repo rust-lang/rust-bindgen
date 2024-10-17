@@ -1,5 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub type EmptyConstified = ::std::os::raw::c_uint;
+pub type EmptyRustified_ctype = ::std::os::raw::c_uint;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum EmptyRustified {
@@ -8,6 +9,7 @@ pub enum EmptyRustified {
 pub mod EmptyModule {
     pub type Type = ::std::os::raw::c_uint;
 }
+pub type EmptyClassRustified_ctype = ::std::os::raw::c_char;
 #[repr(i8)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum EmptyClassRustified {
@@ -17,6 +19,7 @@ pub type EmptyClassConstified = ::std::os::raw::c_char;
 pub mod EmptyClassModule {
     pub type Type = ::std::os::raw::c_char;
 }
+pub type ForwardClassRustified_ctype = ::std::os::raw::c_char;
 #[repr(i8)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum ForwardClassRustified {

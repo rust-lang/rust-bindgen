@@ -2,6 +2,9 @@
 impl MyDupeEnum {
     pub const A_alias: MyDupeEnum = MyDupeEnum::A;
 }
+pub type MyDupeEnum_ctype = ::std::os::raw::c_uint;
+pub const MyDupeEnum_A: MyDupeEnum_ctype = 0;
+pub const MyDupeEnum_B: MyDupeEnum_ctype = 1;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum MyDupeEnum {
@@ -11,6 +14,9 @@ pub enum MyDupeEnum {
 impl MyOtherDupeEnum {
     pub const C_alias: MyOtherDupeEnum = MyOtherDupeEnum::C;
 }
+pub type MyOtherDupeEnum_ctype = ::std::os::raw::c_uint;
+pub const MyOtherDupeEnum_C: MyOtherDupeEnum_ctype = 0;
+pub const MyOtherDupeEnum_D: MyOtherDupeEnum_ctype = 1;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum MyOtherDupeEnum {
