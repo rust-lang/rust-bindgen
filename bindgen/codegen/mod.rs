@@ -586,6 +586,9 @@ impl CodeGenerator for Module {
                 if ctx.need_bindgen_complex_type() {
                     utils::prepend_complex_type(&mut *result);
                 }
+                if ctx.need_opaque_array_type() {
+                    utils::prepend_opaque_array_type(&mut *result);
+                }
                 if result.saw_objc {
                     utils::prepend_objc_header(ctx, &mut *result);
                 }
@@ -2258,7 +2261,7 @@ impl CodeGenerator for CompInfo {
 
             if has_address {
                 let layout = Layout::new(1, 1);
-                let ty = helpers::blob(ctx, Layout::new(1, 1));
+                let ty = helpers::blob(ctx, Layout::new(1, 1), false);
                 struct_layout.saw_field_with_layout(
                     "_address",
                     layout,
@@ -2275,7 +2278,7 @@ impl CodeGenerator for CompInfo {
                 Some(l) => {
                     explicit_align = Some(l.align);
 
-                    let ty = helpers::blob(ctx, l);
+                    let ty = helpers::blob(ctx, l, false);
                     fields.push(quote! {
                         pub _bindgen_opaque_blob: #ty ,
                     });
@@ -2301,6 +2304,7 @@ impl CodeGenerator for CompInfo {
                             let ty = helpers::blob(
                                 ctx,
                                 Layout::new(0, layout.align),
+                                false,
                             );
                             fields.push(quote! {
                                 pub __bindgen_align: #ty ,
@@ -2318,7 +2322,7 @@ impl CodeGenerator for CompInfo {
             }
 
             if !struct_layout.is_rust_union() {
-                let ty = helpers::blob(ctx, layout);
+                let ty = helpers::blob(ctx, layout, false);
                 fields.push(quote! {
                     pub bindgen_union_field: #ty ,
                 })
@@ -4036,7 +4040,7 @@ pub(crate) trait TryToOpaque {
         extra: &Self::Extra,
     ) -> error::Result<syn::Type> {
         self.try_get_layout(ctx, extra)
-            .map(|layout| helpers::blob(ctx, layout))
+            .map(|layout| helpers::blob(ctx, layout, true))
     }
 }
 
@@ -4062,7 +4066,7 @@ pub(crate) trait ToOpaque: TryToOpaque {
         extra: &Self::Extra,
     ) -> syn::Type {
         let layout = self.get_layout(ctx, extra);
-        helpers::blob(ctx, layout)
+        helpers::blob(ctx, layout, true)
     }
 }
 
@@ -4113,7 +4117,7 @@ where
     ) -> error::Result<syn::Type> {
         self.try_to_rust_ty(ctx, extra).or_else(|_| {
             if let Ok(layout) = self.try_get_layout(ctx, extra) {
-                Ok(helpers::blob(ctx, layout))
+                Ok(helpers::blob(ctx, layout, true))
             } else {
                 Err(error::Error::NoLayoutForOpaqueBlob)
             }
@@ -5569,6 +5573,25 @@ pub(crate) mod utils {
         let items = vec![complex_type];
         let old_items = mem::replace(result, items);
         result.extend(old_items);
+    }
+
+    pub(crate) fn prepend_opaque_array_type(
+        result: &mut Vec<proc_macro2::TokenStream>,
+    ) {
+        let ty = quote! {
+            /// If Bindgen could only determine the size and alignment of a
+            /// type, it is represented like this.
+            #[derive(PartialEq, Copy, Clone, Debug, Hash)]
+            #[repr(C)]
+            pub struct __BindgenOpaqueArray<T: Copy, const N: usize>(pub [T; N]);
+            impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<T, N> {
+                fn default() -> Self {
+                    Self([<T as Default>::default(); N])
+                }
+            }
+        };
+
+        result.insert(0, ty);
     }
 
     pub(crate) fn build_path(
