@@ -77,6 +77,7 @@ dependencies = [
  "owo-colors",
  "prettyplease",
  "proc-macro2",
+ "regex",
  "shlex",
  "similar",
  "syn 2.0.18",

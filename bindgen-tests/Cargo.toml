@@ -15,6 +15,7 @@ syn = { version = "2.0" }
 tempfile = "3"
 similar = { version = "2.2.1", features = ["inline"] }
 owo-colors = "3.5.0"
+regex = "1.7.1"
 
 [features]
 logging = ["bindgen/logging"]
