@@ -34,8 +34,7 @@ impl TestLib {
         let foo = unsafe { __library.get(b"foo\0") }.map(|sym| *sym);
         let bar = unsafe { __library.get(b"bar\0") }.map(|sym| *sym);
         let baz = unsafe { __library.get(b"baz\0") }.map(|sym| *sym);
-        let FLUX = __library
-            .get::<*mut ::std::os::raw::c_int>(b"FLUX\0")
+        let FLUX = unsafe { __library.get::<*mut ::std::os::raw::c_int>(b"FLUX\0") }
             .map(|sym| *sym);
         Ok(TestLib {
             __library,

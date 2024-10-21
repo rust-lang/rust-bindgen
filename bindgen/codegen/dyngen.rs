@@ -208,6 +208,7 @@ impl DynamicItems {
         ident: Ident,
         ty: TokenStream,
         is_required: bool,
+        wrap_unsafe_ops: bool,
     ) {
         let member = if is_required {
             quote! { *mut #ty }
@@ -231,15 +232,20 @@ impl DynamicItems {
         });
 
         let ident_str = codegen::helpers::ast_ty::cstr_expr(ident.to_string());
-        self.constructor_inits.push(if is_required {
-            quote! {
-                let #ident = __library.get::<*mut #ty>(#ident_str).map(|sym| *sym)?;
-            }
+
+        let library_get = if wrap_unsafe_ops {
+            quote!(unsafe { __library.get::<*mut #ty>(#ident_str) })
         } else {
-            quote! {
-                let #ident = __library.get::<*mut #ty>(#ident_str).map(|sym| *sym);
-            }
-        });
+            quote!(__library.get::<*mut #ty>(#ident_str))
+        };
+
+        let qmark = if is_required { quote!(?) } else { quote!() };
+
+        let var_get = quote! {
+            let #ident = #library_get.map(|sym| *sym)#qmark;
+        };
+
+        self.constructor_inits.push(var_get);
 
         self.init_fields.push(quote! {
             #ident
