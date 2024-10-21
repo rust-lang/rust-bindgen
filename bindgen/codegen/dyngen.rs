@@ -83,6 +83,12 @@ impl DynamicItems {
         let init_fields = &self.init_fields;
         let struct_implementation = &self.struct_implementation;
 
+        let library_new = if ctx.options().wrap_unsafe_ops {
+            quote!(unsafe { ::libloading::Library::new(path) })
+        } else {
+            quote!(::libloading::Library::new(path))
+        };
+
         let from_library = if ctx.options().wrap_unsafe_ops {
             quote!(unsafe { Self::from_library(library) })
         } else {
@@ -100,7 +106,7 @@ impl DynamicItems {
                     path: P
                 ) -> Result<Self, ::libloading::Error>
                 where P: AsRef<::std::ffi::OsStr> {
-                    let library = ::libloading::Library::new(path)?;
+                    let library = #library_new?;
                     #from_library
                 }
 
