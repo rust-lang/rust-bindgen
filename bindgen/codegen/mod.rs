@@ -808,6 +808,7 @@ impl CodeGenerator for Var {
                         .to_rust_ty_or_opaque(ctx, &())
                         .into_token_stream(),
                     ctx.options().dynamic_link_require_all,
+                    ctx.options().wrap_unsafe_ops,
                 );
             } else {
                 result.push(tokens);
