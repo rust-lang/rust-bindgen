@@ -1100,13 +1100,21 @@ impl CodeGenerator for Type {
                     });
                 }
 
-                let access_spec =
-                    access_specifier(ctx.options().default_visibility);
                 tokens.append_all(match alias_style {
                     AliasVariation::TypeAlias => quote! {
                         = #inner_rust_type ;
                     },
                     AliasVariation::NewType | AliasVariation::NewTypeDeref => {
+                        let visibility = ctx
+                            .options()
+                            .last_callback(|cb| {
+                                cb.field_visibility(FieldInfo {
+                                    type_name: &item.canonical_name(ctx),
+                                    field_name: "0",
+                                })
+                            })
+                            .unwrap_or(ctx.options().default_visibility);
+                        let access_spec = access_specifier(visibility);
                         quote! {
                             (#access_spec #inner_rust_type) ;
                         }

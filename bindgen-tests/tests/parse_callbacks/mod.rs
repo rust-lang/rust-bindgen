@@ -93,8 +93,8 @@ struct FieldVisibility {
 }
 
 /// Implements the `field_visibility` function of the trait by checking if the
-/// field name starts with `private_`. If it does it makes it private, if it
-/// doesn't it makes it public, taking into account the default visibility.
+/// field name starts with `private_`. If it does, it makes it private, if it
+/// doesn't, it makes it public, taking into account the default visibility.
 impl ParseCallbacks for FieldVisibility {
     fn field_visibility(
         &self,
@@ -109,6 +109,28 @@ impl ParseCallbacks for FieldVisibility {
             }
             (FieldVisibilityKind::PublicCrate, _) => unimplemented!(),
             _ => None,
+        }
+    }
+}
+
+#[derive(Debug)]
+struct TypeVisibility;
+
+/// Implements the `field_visibility` function of the trait by checking the
+/// type name. Depending on name prefix, it will return a different visibility.
+impl ParseCallbacks for TypeVisibility {
+    fn field_visibility(
+        &self,
+        FieldInfo { type_name, .. }: FieldInfo,
+    ) -> Option<FieldVisibilityKind> {
+        if type_name.starts_with("private_") {
+            Some(FieldVisibilityKind::Private)
+        } else if type_name.starts_with("pubcrate_") {
+            Some(FieldVisibilityKind::PublicCrate)
+        } else if type_name.starts_with("pub_") {
+            Some(FieldVisibilityKind::Public)
+        } else {
+            None
         }
     }
 }
@@ -129,6 +151,7 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
             Box::new(BlocklistedTypeImplementsTrait)
         }
         "wrap-as-variadic-fn" => Box::new(WrapAsVariadicFn),
+        "type-visibility" => Box::new(TypeVisibility),
         call_back => {
             if let Some(prefix) =
                 call_back.strip_prefix("remove-function-prefix-")
