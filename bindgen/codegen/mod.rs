@@ -4130,7 +4130,7 @@ where
 /// ### Fallible vs. Infallible Conversions to Rust Types
 ///
 /// When should one use this infallible `ToRustTyOrOpaque` trait versus the
-/// fallible `TryTo{RustTy, Opaque, RustTyOrOpaque}` triats? All fallible trait
+/// fallible `TryTo{RustTy, Opaque, RustTyOrOpaque}` traits? All fallible trait
 /// implementations that need to convert another thing into a Rust type or
 /// opaque blob in a nested manner should also use fallible trait methods and
 /// propagate failure up the stack. Only infallible functions and methods like
