@@ -6,15 +6,16 @@ publish = false
 
 [dev-dependencies]
 bindgen = { path = "../bindgen", features = ["__cli", "experimental"] }
-clap = { version = "4", features = ["derive"] }
-clap_complete = "4"
-shlex = "1"
-prettyplease = { version = "0.2.7", features = ["verbatim"] }
-proc-macro2 = { version = "1", default-features = false }
-syn = { version = "2.0" }
-tempfile = "3"
-similar = { version = "2.2.1", features = ["inline"] }
 owo-colors = "3.5.0"
+prettyplease = { version = "0.2.7", features = ["verbatim"] }
+similar = { version = "2.2.1", features = ["inline"] }
+tempfile = "3"
+
+clap.workspace = true
+clap_complete.workspace = true
+proc-macro2.workspace = true
+shlex.workspace = true
+syn.workspace = true
 
 [features]
 logging = ["bindgen/logging"]
