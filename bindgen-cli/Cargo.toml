@@ -21,12 +21,13 @@ name = "bindgen"
 
 [dependencies]
 bindgen = { path = "../bindgen", version = "=0.70.1",  default-features = false, features = ["__cli", "experimental", "prettyplease"] }
-clap = { version = "4", features = ["derive"] }
-clap_complete = "4"
 env_logger = { version = "0.10.0", optional = true }
 log = { version = "0.4", optional = true }
-proc-macro2 = { version = "1", default-features = false }
-shlex = "1"
+
+clap.workspace = true
+clap_complete.workspace = true
+proc-macro2.workspace = true
+shlex.workspace = true
 
 [features]
 default = ["logging", "runtime"]
