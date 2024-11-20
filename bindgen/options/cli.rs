@@ -679,446 +679,20 @@ where
         return Err(io::Error::new(io::ErrorKind::Other, "Header not found"));
     }
 
-    if let Some(rust_target) = rust_target {
-        builder = builder.rust_target(rust_target);
-    }
-
-    if let Some(variant) = default_enum_style {
-        builder = builder.default_enum_style(variant);
-    }
-
-    for regex in bitfield_enum {
-        builder = builder.bitfield_enum(regex);
-    }
-
-    for regex in newtype_enum {
-        builder = builder.newtype_enum(regex);
-    }
-
-    for regex in newtype_global_enum {
-        builder = builder.newtype_global_enum(regex);
-    }
-
-    for regex in rustified_enum {
-        builder = builder.rustified_enum(regex);
-    }
-
-    for regex in rustified_non_exhaustive_enum {
-        builder = builder.rustified_non_exhaustive_enum(regex);
-    }
-
-    for regex in constified_enum {
-        builder = builder.constified_enum(regex);
-    }
-
-    for regex in constified_enum_module {
-        builder = builder.constified_enum_module(regex);
-    }
-
-    if let Some(default_macro_constant_type) = default_macro_constant_type {
-        builder =
-            builder.default_macro_constant_type(default_macro_constant_type)
-    }
-
-    if let Some(variant) = default_alias_style {
-        builder = builder.default_alias_style(variant);
-    }
-
-    for regex in normal_alias {
-        builder = builder.type_alias(regex);
-    }
-
-    for regex in new_type_alias {
-        builder = builder.new_type_alias(regex);
-    }
-
-    for regex in new_type_alias_deref {
-        builder = builder.new_type_alias_deref(regex);
-    }
-
-    if let Some(variant) = default_non_copy_union_style {
-        builder = builder.default_non_copy_union_style(variant);
-    }
-
-    for regex in bindgen_wrapper_union {
-        builder = builder.bindgen_wrapper_union(regex);
-    }
-
-    for regex in manually_drop_union {
-        builder = builder.manually_drop_union(regex);
-    }
-
-    for ty in blocklist_type {
-        builder = builder.blocklist_type(ty);
-    }
-
-    for fun in blocklist_function {
-        builder = builder.blocklist_function(fun);
-    }
-
-    for id in blocklist_item {
-        builder = builder.blocklist_item(id);
-    }
-
-    for file in blocklist_file {
-        builder = builder.blocklist_file(file);
-    }
-
-    for var in blocklist_var {
-        builder = builder.blocklist_var(var);
-    }
-
-    if builtins {
-        builder = builder.emit_builtins();
-    }
-
-    if no_layout_tests {
-        builder = builder.layout_tests(false);
-    }
-
-    if no_derive_copy {
-        builder = builder.derive_copy(false);
-    }
-
-    if no_derive_debug {
-        builder = builder.derive_debug(false);
-    }
-
-    if impl_debug {
-        builder = builder.impl_debug(true);
-    }
-
-    if impl_partialeq {
-        builder = builder.impl_partialeq(true);
-    }
-
-    if with_derive_default {
-        builder = builder.derive_default(true);
-    }
-
-    if with_derive_hash {
-        builder = builder.derive_hash(true);
-    }
-
-    if with_derive_partialeq {
-        builder = builder.derive_partialeq(true);
-    }
-
-    if with_derive_partialord {
-        builder = builder.derive_partialord(true);
-    }
-
-    if with_derive_eq {
-        builder = builder.derive_eq(true);
-    }
-
-    if with_derive_ord {
-        builder = builder.derive_ord(true);
-    }
-
-    if no_derive_default {
-        builder = builder.derive_default(false);
-    }
-
-    if no_prepend_enum_name {
-        builder = builder.prepend_enum_name(false);
-    }
-
-    if no_include_path_detection {
-        builder = builder.detect_include_paths(false);
-    }
-
-    if fit_macro_constant_types {
-        builder = builder.fit_macro_constants(true);
-    }
-
-    if time_phases {
-        builder = builder.time_phases(true);
-    }
-
-    if use_array_pointers_in_arguments {
-        builder = builder.array_pointers_in_arguments(true);
-    }
-
-    if let Some(wasm_import_name) = wasm_import_module_name {
-        builder = builder.wasm_import_module_name(wasm_import_name);
-    }
-
-    if let Some(prefix) = ctypes_prefix {
-        builder = builder.ctypes_prefix(prefix);
-    }
-
-    if let Some(prefix) = anon_fields_prefix {
-        builder = builder.anon_fields_prefix(prefix);
-    }
-
-    if let Some(config) = generate {
-        builder = builder.with_codegen_config(config);
-    }
-
-    if emit_clang_ast {
-        builder = builder.emit_clang_ast();
-    }
-
-    if emit_ir {
-        builder = builder.emit_ir();
-    }
-
-    if let Some(path) = emit_ir_graphviz {
-        builder = builder.emit_ir_graphviz(path);
-    }
-
-    if enable_cxx_namespaces {
-        builder = builder.enable_cxx_namespaces();
-    }
-
-    if enable_function_attribute_detection {
-        builder = builder.enable_function_attribute_detection();
-    }
-
-    if disable_name_namespacing {
-        builder = builder.disable_name_namespacing();
-    }
-
-    if disable_nested_struct_naming {
-        builder = builder.disable_nested_struct_naming();
-    }
-
-    if disable_untagged_union {
-        builder = builder.disable_untagged_union();
-    }
-
-    if disable_header_comment {
-        builder = builder.disable_header_comment();
-    }
-
-    if ignore_functions {
-        builder = builder.ignore_functions();
-    }
-
-    if ignore_methods {
-        builder = builder.ignore_methods();
-    }
-
-    if no_convert_floats {
-        builder = builder.no_convert_floats();
-    }
-
-    if no_doc_comments {
-        builder = builder.generate_comments(false);
-    }
-
-    if no_recursive_allowlist {
-        builder = builder.allowlist_recursively(false);
-    }
-
-    if objc_extern_crate {
-        builder = builder.objc_extern_crate(true);
-    }
-
-    if generate_block {
-        builder = builder.generate_block(true);
-    }
-
-    if generate_cstr {
-        builder = builder.generate_cstr(true);
-    }
-
-    if block_extern_crate {
-        builder = builder.block_extern_crate(true);
-    }
-
-    for ty in opaque_type {
-        builder = builder.opaque_type(ty);
-    }
-
-    for line in raw_line {
-        builder = builder.raw_line(line);
-    }
-
-    let mut values = module_raw_line.into_iter();
-    while let Some(module) = values.next() {
-        let line = values.next().unwrap();
-        builder = builder.module_raw_line(module, line);
-    }
-
-    if use_core {
-        builder = builder.use_core();
-    }
-
-    if distrust_clang_mangling {
-        builder = builder.trust_clang_mangling(false);
-    }
-
-    if conservative_inline_namespaces {
-        builder = builder.conservative_inline_namespaces();
-    }
-
-    if generate_inline_functions {
-        builder = builder.generate_inline_functions(true);
-    }
-
-    for regex in allowlist_function {
-        builder = builder.allowlist_function(regex);
-    }
-
-    for regex in allowlist_type {
-        builder = builder.allowlist_type(regex);
-    }
-
-    for regex in allowlist_var {
-        builder = builder.allowlist_var(regex);
-    }
-
-    for file in allowlist_file {
-        builder = builder.allowlist_file(file);
-    }
-
-    for item in allowlist_item {
-        builder = builder.allowlist_item(item);
-    }
-
-    for arg in clang_args {
-        builder = builder.clang_arg(arg);
-    }
-
-    let output = if let Some(path) = &output {
-        let file = File::create(path)?;
-        if let Some(depfile) = depfile {
-            builder = builder.depfile(path, depfile);
+    #[derive(Debug)]
+    struct PrefixLinkNameCallback {
+        prefix: String,
+    }
+
+    impl ParseCallbacks for PrefixLinkNameCallback {
+        fn generated_link_name_override(
+            &self,
+            item_info: ItemInfo<'_>,
+        ) -> Option<String> {
+            let mut prefix = self.prefix.clone();
+            prefix.push_str(item_info.name);
+            Some(prefix)
         }
-        Box::new(io::BufWriter::new(file)) as Box<dyn io::Write>
-    } else {
-        if let Some(depfile) = depfile {
-            builder = builder.depfile("-", depfile);
-        }
-        Box::new(io::BufWriter::new(io::stdout())) as Box<dyn io::Write>
-    };
-
-    if dump_preprocessed_input {
-        builder.dump_preprocessed_input()?;
-    }
-
-    if no_record_matches {
-        builder = builder.record_matches(false);
-    }
-
-    if no_size_t_is_usize {
-        builder = builder.size_t_is_usize(false);
-    }
-
-    if no_rustfmt_bindings {
-        builder = builder.formatter(Formatter::None);
-    }
-
-    if let Some(formatter) = formatter {
-        builder = builder.formatter(formatter);
-    }
-
-    if let Some(path) = rustfmt_configuration_file {
-        builder = builder.rustfmt_configuration_file(Some(path));
-    }
-
-    for regex in no_partialeq {
-        builder = builder.no_partialeq(regex);
-    }
-
-    for regex in no_copy {
-        builder = builder.no_copy(regex);
-    }
-
-    for regex in no_debug {
-        builder = builder.no_debug(regex);
-    }
-
-    for regex in no_default {
-        builder = builder.no_default(regex);
-    }
-
-    for regex in no_hash {
-        builder = builder.no_hash(regex);
-    }
-
-    for regex in must_use_type {
-        builder = builder.must_use_type(regex);
-    }
-
-    if let Some(dynamic_library_name) = dynamic_loading {
-        builder = builder.dynamic_library_name(dynamic_library_name);
-    }
-
-    if dynamic_link_require_all {
-        builder = builder.dynamic_link_require_all(true);
-    }
-
-    if let Some(prefix_link_name) = prefix_link_name {
-        #[derive(Debug)]
-        struct PrefixLinkNameCallback {
-            prefix: String,
-        }
-
-        impl ParseCallbacks for PrefixLinkNameCallback {
-            fn generated_link_name_override(
-                &self,
-                item_info: ItemInfo<'_>,
-            ) -> Option<String> {
-                let mut prefix = self.prefix.clone();
-                prefix.push_str(item_info.name);
-                Some(prefix)
-            }
-        }
-
-        builder = builder.parse_callbacks(Box::new(PrefixLinkNameCallback {
-            prefix: prefix_link_name,
-        }))
-    }
-
-    if respect_cxx_access_specs {
-        builder = builder.respect_cxx_access_specs(true);
-    }
-
-    if translate_enum_integer_types {
-        builder = builder.translate_enum_integer_types(true);
-    }
-
-    if c_naming {
-        builder = builder.c_naming(true);
-    }
-
-    if explicit_padding {
-        builder = builder.explicit_padding(true);
-    }
-
-    if vtable_generation {
-        builder = builder.vtable_generation(true);
-    }
-
-    if sort_semantically {
-        builder = builder.sort_semantically(true);
-    }
-
-    if merge_extern_blocks {
-        builder = builder.merge_extern_blocks(true);
-    }
-
-    for (abi, regex) in override_abi {
-        builder = builder.override_abi(abi, regex);
-    }
-
-    if wrap_unsafe_ops {
-        builder = builder.wrap_unsafe_ops(true);
-    }
-
-    if clang_macro_fallback {
-        builder = builder.clang_macro_fallback();
-    }
-
-    if let Some(path) = clang_macro_fallback_build_dir {
-        builder = builder.clang_macro_fallback_build_dir(path);
-    }
-
-    if flexarray_dst {
-        builder = builder.flexarray_dst(true);
     }
 
     #[derive(Debug)]
@@ -1158,44 +732,6 @@ where
                 return self.derives.clone();
             }
             vec![]
-        }
-    }
-
-    for (custom_derives, kind, _name) in [
-        (with_derive_custom, None, "--with-derive-custom"),
-        (
-            with_derive_custom_struct,
-            Some(TypeKind::Struct),
-            "--with-derive-custom-struct",
-        ),
-        (
-            with_derive_custom_enum,
-            Some(TypeKind::Enum),
-            "--with-derive-custom-enum",
-        ),
-        (
-            with_derive_custom_union,
-            Some(TypeKind::Union),
-            "--with-derive-custom-union",
-        ),
-    ] {
-        #[cfg(feature = "experimental")]
-        let name = emit_diagnostics.then_some(_name);
-
-        for (derives, regex) in custom_derives {
-            let mut regex_set = RegexSet::default();
-            regex_set.insert(regex);
-
-            #[cfg(feature = "experimental")]
-            regex_set.build_with_diagnostics(false, name);
-            #[cfg(not(feature = "experimental"))]
-            regex_set.build(false);
-
-            builder = builder.parse_callbacks(Box::new(CustomDeriveCallback {
-                derives,
-                kind,
-                regex_set,
-            }));
         }
     }
 
@@ -1239,6 +775,228 @@ where
         }
     }
 
+    /// Macro used to apply CLI arguments to a builder.
+    ///
+    /// This is done by passing an identifier for each argument and a function to be applied over
+    /// the builder. For example:
+    /// ```rust,ignore
+    /// fn apply_arg(builder: Builder, arg_value: Value) -> Builder {
+    ///     todo!()
+    /// }
+    ///
+    /// apply_args!(
+    ///     builder {
+    ///         arg => apply_arg,
+    ///     }
+    /// );
+    /// ```
+    ///
+    /// If the identifier of the argument is the same as an already existing builder method then
+    /// you can omit the second part:
+    /// ```rust,ignore
+    /// apply_args!(
+    ///     builder {
+    ///         arg
+    ///     }
+    /// );
+    /// ```
+    /// Which expands to the same code as:
+    /// ```rust,ignore
+    /// apply_args!(
+    ///     builder {
+    ///         arg => Builder::arg,
+    ///     }
+    /// );
+    /// ```
+    macro_rules! apply_args {
+        ($builder:ident {}) => { $builder };
+        ($builder:ident {$arg:ident => $function:expr, $($token:tt)*}) => {
+            {
+                $builder = CliArg::apply($arg, $builder, $function);
+                apply_args!($builder {$($token)*})
+            }
+        };
+        ($builder:ident {$arg:ident, $($token:tt)*}) => {
+            {
+                $builder = CliArg::apply($arg, $builder, Builder::$arg);
+                apply_args!($builder {$($token)*})
+            }
+        }
+    }
+
+    builder = apply_args!(
+        builder {
+            rust_target,
+            default_enum_style,
+            bitfield_enum,
+            newtype_enum,
+            newtype_global_enum,
+            rustified_enum,
+            rustified_non_exhaustive_enum,
+            constified_enum,
+            constified_enum_module,
+            default_macro_constant_type,
+            default_alias_style,
+            normal_alias => Builder::type_alias,
+            new_type_alias,
+            new_type_alias_deref,
+            default_non_copy_union_style,
+            bindgen_wrapper_union,
+            manually_drop_union,
+            blocklist_type,
+            blocklist_function,
+            blocklist_item,
+            blocklist_file,
+            blocklist_var,
+            builtins => |b, _| b.emit_builtins(),
+            no_layout_tests => |b, _| b.layout_tests(false),
+            no_derive_copy => |b, _| b.derive_copy(false),
+            no_derive_debug => |b, _| b.derive_debug(false),
+            impl_debug,
+            impl_partialeq,
+            with_derive_default => Builder::derive_default,
+            with_derive_hash => Builder::derive_hash,
+            with_derive_partialeq => Builder::derive_partialeq,
+            with_derive_partialord => Builder::derive_partialord,
+            with_derive_eq => Builder::derive_eq,
+            with_derive_ord => Builder::derive_ord,
+            no_derive_default => |b, _| b.derive_default(false),
+            no_prepend_enum_name => |b, _| b.prepend_enum_name(false),
+            no_include_path_detection => |b, _| b.detect_include_paths(false),
+            fit_macro_constant_types => Builder::fit_macro_constants,
+            time_phases,
+            use_array_pointers_in_arguments => Builder::array_pointers_in_arguments,
+            wasm_import_module_name,
+            ctypes_prefix,
+            anon_fields_prefix,
+            generate => Builder::with_codegen_config,
+            emit_clang_ast => |b, _| b.emit_clang_ast(),
+            emit_ir => |b, _| b.emit_ir(),
+            emit_ir_graphviz,
+            enable_cxx_namespaces => |b, _| b.enable_cxx_namespaces(),
+            enable_function_attribute_detection => |b, _| b.enable_function_attribute_detection(),
+            disable_name_namespacing => |b, _| b.disable_name_namespacing(),
+            disable_nested_struct_naming => |b, _| b.disable_nested_struct_naming(),
+            disable_untagged_union => |b, _| b.disable_untagged_union(),
+            disable_header_comment => |b, _| b.disable_header_comment(),
+            ignore_functions => |b, _| b.ignore_functions(),
+            ignore_methods => |b, _| b.ignore_methods(),
+            no_convert_floats => |b, _| b.no_convert_floats(),
+            no_doc_comments => |b, _| b.generate_comments(false),
+            no_recursive_allowlist => |b, _| b.allowlist_recursively(false),
+            objc_extern_crate,
+            generate_block,
+            generate_cstr,
+            block_extern_crate,
+            opaque_type,
+            raw_line,
+            use_core => |b, _| b.use_core(),
+            distrust_clang_mangling => |b, _| b.trust_clang_mangling(false),
+            conservative_inline_namespaces => |b, _| b.conservative_inline_namespaces(),
+            generate_inline_functions,
+            allowlist_function,
+            allowlist_type,
+            allowlist_var,
+            allowlist_file,
+            allowlist_item,
+            clang_args => Builder::clang_arg,
+            no_record_matches => |b, _| b.record_matches(false),
+            no_size_t_is_usize => |b, _| b.size_t_is_usize(false),
+            no_rustfmt_bindings => |b, _| b.formatter(Formatter::None),
+            formatter,
+            no_partialeq,
+            no_copy,
+            no_debug,
+            no_default,
+            no_hash,
+            must_use_type,
+            dynamic_loading => Builder::dynamic_library_name,
+            dynamic_link_require_all,
+            prefix_link_name => |b, prefix| b.parse_callbacks(Box::new(PrefixLinkNameCallback { prefix })),
+            respect_cxx_access_specs,
+            translate_enum_integer_types,
+            c_naming,
+            explicit_padding,
+            vtable_generation,
+            sort_semantically,
+            merge_extern_blocks,
+            override_abi => |b, (abi, regex)| b.override_abi(abi, regex),
+            wrap_unsafe_ops,
+            clang_macro_fallback => |b, _| b.clang_macro_fallback(),
+            clang_macro_fallback_build_dir,
+            flexarray_dst,
+            wrap_static_fns,
+            wrap_static_fns_path,
+            wrap_static_fns_suffix,
+            default_visibility,
+        }
+    );
+
+    let mut values = module_raw_line.into_iter();
+    while let Some(module) = values.next() {
+        let line = values.next().unwrap();
+        builder = builder.module_raw_line(module, line);
+    }
+
+    let output = if let Some(path) = &output {
+        let file = File::create(path)?;
+        if let Some(depfile) = depfile {
+            builder = builder.depfile(path, depfile);
+        }
+        Box::new(io::BufWriter::new(file)) as Box<dyn io::Write>
+    } else {
+        if let Some(depfile) = depfile {
+            builder = builder.depfile("-", depfile);
+        }
+        Box::new(io::BufWriter::new(io::stdout())) as Box<dyn io::Write>
+    };
+
+    if dump_preprocessed_input {
+        builder.dump_preprocessed_input()?;
+    }
+
+    if let Some(path) = rustfmt_configuration_file {
+        builder = builder.rustfmt_configuration_file(Some(path));
+    }
+
+    for (custom_derives, kind, _name) in [
+        (with_derive_custom, None, "--with-derive-custom"),
+        (
+            with_derive_custom_struct,
+            Some(TypeKind::Struct),
+            "--with-derive-custom-struct",
+        ),
+        (
+            with_derive_custom_enum,
+            Some(TypeKind::Enum),
+            "--with-derive-custom-enum",
+        ),
+        (
+            with_derive_custom_union,
+            Some(TypeKind::Union),
+            "--with-derive-custom-union",
+        ),
+    ] {
+        #[cfg(feature = "experimental")]
+        let name = emit_diagnostics.then_some(_name);
+
+        for (derives, regex) in custom_derives {
+            let mut regex_set = RegexSet::default();
+            regex_set.insert(regex);
+
+            #[cfg(feature = "experimental")]
+            regex_set.build_with_diagnostics(false, name);
+            #[cfg(not(feature = "experimental"))]
+            regex_set.build(false);
+
+            builder = builder.parse_callbacks(Box::new(CustomDeriveCallback {
+                derives,
+                kind,
+                regex_set,
+            }));
+        }
+    }
+
     for (custom_attributes, kind, _name) in [
         (with_attribute_custom, None, "--with-attribute-custom"),
         (
@@ -1278,26 +1036,74 @@ where
         }
     }
 
-    if wrap_static_fns {
-        builder = builder.wrap_static_fns(true);
-    }
-
-    if let Some(path) = wrap_static_fns_path {
-        builder = builder.wrap_static_fns_path(path);
-    }
-
-    if let Some(suffix) = wrap_static_fns_suffix {
-        builder = builder.wrap_static_fns_suffix(suffix);
-    }
-
-    if let Some(visibility) = default_visibility {
-        builder = builder.default_visibility(visibility);
-    }
-
     #[cfg(feature = "experimental")]
     if emit_diagnostics {
         builder = builder.emit_diagnostics();
     }
 
     Ok((builder, output, verbose))
+}
+
+/// Trait for CLI arguments that can be applied to a [`Builder`].
+trait CliArg {
+    /// The value of this argument.
+    type Value;
+
+    /// Apply the current argument to the passed [`Builder`].
+    fn apply(
+        self,
+        builder: Builder,
+        f: impl Fn(Builder, Self::Value) -> Builder,
+    ) -> Builder;
+}
+
+/// Boolean arguments are applied when they evaluate to `true`.
+impl CliArg for bool {
+    type Value = bool;
+
+    fn apply(
+        self,
+        mut builder: Builder,
+        f: impl Fn(Builder, Self::Value) -> Builder,
+    ) -> Builder {
+        if self {
+            builder = f(builder, self)
+        }
+
+        builder
+    }
+}
+
+/// Optional arguments are applied when they are `Some`.
+impl<T> CliArg for Option<T> {
+    type Value = T;
+
+    fn apply(
+        self,
+        mut builder: Builder,
+        f: impl Fn(Builder, Self::Value) -> Builder,
+    ) -> Builder {
+        if let Some(value) = self {
+            builder = f(builder, value);
+        }
+
+        builder
+    }
+}
+
+/// Multiple valued arguments are applied once for each value.
+impl<T> CliArg for Vec<T> {
+    type Value = T;
+
+    fn apply(
+        self,
+        mut builder: Builder,
+        f: impl Fn(Builder, Self::Value) -> Builder,
+    ) -> Builder {
+        for value in self {
+            builder = f(builder, value);
+        }
+
+        builder
+    }
 }
