@@ -6,7 +6,7 @@ use std::cell::Cell;
 
 /// A dynamic set of regular expressions.
 #[derive(Clone, Debug, Default)]
-pub struct RegexSet {
+pub(crate) struct RegexSet {
     items: Vec<Box<str>>,
     /// Whether any of the items in the set was ever matched. The length of this
     /// vector is exactly the length of `items`.
@@ -17,18 +17,13 @@ pub struct RegexSet {
 }
 
 impl RegexSet {
-    /// Create a new RegexSet
-    pub fn new() -> RegexSet {
-        RegexSet::default()
-    }
-
     /// Is this set empty?
-    pub fn is_empty(&self) -> bool {
+    pub(crate) fn is_empty(&self) -> bool {
         self.items.is_empty()
     }
 
     /// Insert a new regex into this set.
-    pub fn insert<S>(&mut self, string: S)
+    pub(crate) fn insert<S>(&mut self, string: S)
     where
         S: AsRef<str>,
     {
@@ -38,13 +33,13 @@ impl RegexSet {
     }
 
     /// Returns slice of String from its field 'items'
-    pub fn get_items(&self) -> &[Box<str>] {
+    pub(crate) fn get_items(&self) -> &[Box<str>] {
         &self.items
     }
 
     /// Returns an iterator over regexes in the set which didn't match any
     /// strings yet.
-    pub fn unmatched_items(&self) -> impl Iterator<Item = &str> {
+    pub(crate) fn unmatched_items(&self) -> impl Iterator<Item = &str> {
         self.items.iter().enumerate().filter_map(move |(i, item)| {
             if !self.record_matches || self.matched[i].get() {
                 return None;
@@ -59,7 +54,8 @@ impl RegexSet {
     /// Must be called before calling `matches()`, or it will always return
     /// false.
     #[inline]
-    pub fn build(&mut self, record_matches: bool) {
+    #[allow(unused)]
+    pub(crate) fn build(&mut self, record_matches: bool) {
         self.build_inner(record_matches, None)
     }
 
@@ -70,7 +66,7 @@ impl RegexSet {
     /// Must be called before calling `matches()`, or it will always return
     /// false.
     #[inline]
-    pub fn build_with_diagnostics(
+    pub(crate) fn build_with_diagnostics(
         &mut self,
         record_matches: bool,
         name: Option<&'static str>,
@@ -114,7 +110,7 @@ impl RegexSet {
     }
 
     /// Does the given `string` match any of the regexes in this set?
-    pub fn matches<S>(&self, string: S) -> bool
+    pub(crate) fn matches<S>(&self, string: S) -> bool
     where
         S: AsRef<str>,
     {

@@ -4,9 +4,10 @@ use crate::{
         AttributeInfo, DeriveInfo, ItemInfo, ParseCallbacks, TypeKind,
     },
     features::RUST_TARGET_STRINGS,
+    regex_set::RegexSet,
     Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
     FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
-    RegexSet, RustTarget, DEFAULT_ANON_FIELDS_PREFIX,
+    RustTarget, DEFAULT_ANON_FIELDS_PREFIX,
 };
 use clap::{
     error::{Error, ErrorKind},
@@ -1180,7 +1181,7 @@ where
         let name = emit_diagnostics.then_some(_name);
 
         for (derives, regex) in custom_derives {
-            let mut regex_set = RegexSet::new();
+            let mut regex_set = RegexSet::default();
             regex_set.insert(regex);
 
             #[cfg(feature = "experimental")]
@@ -1258,7 +1259,7 @@ where
         let name = emit_diagnostics.then_some(_name);
 
         for (attributes, regex) in custom_attributes {
-            let mut regex_set = RegexSet::new();
+            let mut regex_set = RegexSet::default();
             regex_set.insert(regex);
 
             #[cfg(feature = "experimental")]

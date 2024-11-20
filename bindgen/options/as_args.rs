@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use crate::RegexSet;
+use crate::regex_set::RegexSet;
 
 /// Trait used to turn [`crate::BindgenOptions`] fields into CLI args.
 pub(super) trait AsArgs {
