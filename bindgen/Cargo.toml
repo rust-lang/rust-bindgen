@@ -29,6 +29,8 @@ annotate-snippets = { version = "0.11.4", optional = true }
 bitflags = "2.2.1"
 cexpr = "0.6"
 clang-sys = { version = "1", features = ["clang_11_0"] }
+clap = { version = "4", features = ["derive"], optional = true }
+clap_complete = { version = "4", optional = true}
 itertools = { version = ">=0.10,<0.14", default-features = false }
 log = { version = "0.4", optional = true }
 prettyplease = { version = "0.2.7", optional = true, features = ["verbatim"] }
@@ -52,7 +54,7 @@ experimental = ["dep:annotate-snippets"]
 ## The following features are for internal use and they shouldn't be used if
 ## you're not hacking on bindgen
 # Features used by `bindgen-cli`
-__cli = []
+__cli = ["dep:clap", "dep:clap_complete"]
 # Features used for CI testing
 __testing_only_extra_assertions = []
 __testing_only_libclang_9 = []

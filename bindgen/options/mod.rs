@@ -4,6 +4,8 @@
 #[macro_use]
 mod helpers;
 mod as_args;
+#[cfg(feature = "__cli")]
+pub(crate) mod cli;
 
 use crate::callbacks::ParseCallbacks;
 use crate::codegen::{

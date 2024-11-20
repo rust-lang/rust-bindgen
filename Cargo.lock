@@ -35,6 +35,8 @@ dependencies = [
  "bitflags 2.2.1",
  "cexpr",
  "clang-sys",
+ "clap",
+ "clap_complete",
  "itertools",
  "log",
  "prettyplease",
@@ -51,8 +53,6 @@ name = "bindgen-cli"
 version = "0.70.1"
 dependencies = [
  "bindgen",
- "clap",
- "clap_complete",
  "env_logger 0.10.0",
  "log",
  "proc-macro2",
@@ -72,8 +72,6 @@ name = "bindgen-tests"
 version = "0.1.0"
 dependencies = [
  "bindgen",
- "clap",
- "clap_complete",
  "owo-colors",
  "prettyplease",
  "proc-macro2",

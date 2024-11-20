@@ -1,7 +1,6 @@
 use std::env;
 
-mod options;
-use crate::options::builder_from_flags;
+use bindgen::builder_from_flags;
 
 #[cfg(feature = "logging")]
 fn clang_version_check() {

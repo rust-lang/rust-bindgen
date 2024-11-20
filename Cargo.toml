@@ -16,8 +16,6 @@ default-members = [
 
 # Dependencies shared between crates
 [workspace.dependencies]
-clap = { version = "4", features = ["derive"] }
-clap_complete = "4"
 shlex = "1"
 syn = "2.0" 
 proc-macro2 = { version = "1", default-features = false }

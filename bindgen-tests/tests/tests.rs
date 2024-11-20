@@ -7,10 +7,7 @@ use std::fs;
 use std::io::{BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::{Path, PathBuf};
 
-use crate::options::builder_from_flags;
-
-#[path = "../../bindgen-cli/options.rs"]
-mod options;
+use bindgen::builder_from_flags;
 
 mod parse_callbacks;
 
@@ -709,8 +706,7 @@ fn build_flags_output_helper(builder: &bindgen::Builder) {
     println!("{}", flags_str);
 
     let (builder, _output, _verbose) =
-        crate::options::builder_from_flags(command_line_flags.into_iter())
-            .unwrap();
+        builder_from_flags(command_line_flags.into_iter()).unwrap();
     builder.generate().expect("failed to generate bindings");
 }
 
