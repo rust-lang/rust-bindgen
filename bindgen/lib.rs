@@ -55,7 +55,6 @@ pub use ir::annotations::FieldVisibilityKind;
 pub use ir::function::Abi;
 #[cfg(feature = "__cli")]
 pub use options::cli::builder_from_flags;
-pub use regex_set::RegexSet;
 
 use codegen::CodegenError;
 use features::RustFeatures;
