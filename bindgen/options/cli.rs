@@ -7,7 +7,7 @@ use crate::{
     regex_set::RegexSet,
     Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
     FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
-    RustTarget, DEFAULT_ANON_FIELDS_PREFIX,
+    RustTarget,
 };
 use clap::{
     error::{Error, ErrorKind},
@@ -272,8 +272,8 @@ struct BindgenCommand {
     #[arg(long, value_name = "PREFIX")]
     ctypes_prefix: Option<String>,
     /// Use the given PREFIX for anonymous fields.
-    #[arg(long, default_value = DEFAULT_ANON_FIELDS_PREFIX, value_name = "PREFIX")]
-    anon_fields_prefix: String,
+    #[arg(long, value_name = "PREFIX")]
+    anon_fields_prefix: Option<String>,
     /// Time the different bindgen phases and print to stderr
     #[arg(long)]
     time_phases: bool,
@@ -848,7 +848,9 @@ where
         builder = builder.ctypes_prefix(prefix);
     }
 
-    builder = builder.anon_fields_prefix(anon_fields_prefix);
+    if let Some(prefix) = anon_fields_prefix {
+        builder = builder.anon_fields_prefix(prefix);
+    }
 
     if let Some(config) = generate {
         builder = builder.with_codegen_config(config);
