@@ -1,11 +1,17 @@
-use bindgen::callbacks::TypeKind;
-use bindgen::{
-    builder, Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
+use crate::{
+    builder,
+    callbacks::{
+        AttributeInfo, DeriveInfo, ItemInfo, ParseCallbacks, TypeKind,
+    },
+    features::RUST_TARGET_STRINGS,
+    Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
     FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
-    RegexSet, RustTarget, DEFAULT_ANON_FIELDS_PREFIX, RUST_TARGET_STRINGS,
+    RegexSet, RustTarget, DEFAULT_ANON_FIELDS_PREFIX,
 };
-use clap::error::{Error, ErrorKind};
-use clap::{CommandFactory, Parser};
+use clap::{
+    error::{Error, ErrorKind},
+    CommandFactory, Parser,
+};
 use proc_macro2::TokenStream;
 use std::fs::File;
 use std::io;
@@ -491,6 +497,7 @@ struct BindgenCommand {
     #[arg(long, value_name = "VISIBILITY")]
     default_visibility: Option<FieldVisibilityKind>,
     /// Whether to emit diagnostics or not.
+    #[cfg(feature = "experimental")]
     #[arg(long, requires = "experimental")]
     emit_diagnostics: bool,
     /// Generates completions for the specified SHELL, sends them to `stdout` and exits.
@@ -633,6 +640,7 @@ where
         wrap_static_fns_path,
         wrap_static_fns_suffix,
         default_visibility,
+        #[cfg(feature = "experimental")]
         emit_diagnostics,
         generate_shell_completions,
         experimental: _,
@@ -657,7 +665,7 @@ where
             option_env!("CARGO_PKG_VERSION").unwrap_or("unknown")
         );
         if verbose {
-            println!("Clang: {}", bindgen::clang_version().full);
+            println!("Clang: {}", crate::clang_version().full);
         }
         std::process::exit(0);
     }
@@ -1046,10 +1054,10 @@ where
             prefix: String,
         }
 
-        impl bindgen::callbacks::ParseCallbacks for PrefixLinkNameCallback {
+        impl ParseCallbacks for PrefixLinkNameCallback {
             fn generated_link_name_override(
                 &self,
-                item_info: bindgen::callbacks::ItemInfo<'_>,
+                item_info: ItemInfo<'_>,
             ) -> Option<String> {
                 let mut prefix = self.prefix.clone();
                 prefix.push_str(item_info.name);
@@ -1114,10 +1122,10 @@ where
     struct CustomDeriveCallback {
         derives: Vec<String>,
         kind: Option<TypeKind>,
-        regex_set: bindgen::RegexSet,
+        regex_set: RegexSet,
     }
 
-    impl bindgen::callbacks::ParseCallbacks for CustomDeriveCallback {
+    impl ParseCallbacks for CustomDeriveCallback {
         fn cli_args(&self) -> Vec<String> {
             let mut args = vec![];
 
@@ -1140,10 +1148,7 @@ where
             args
         }
 
-        fn add_derives(
-            &self,
-            info: &bindgen::callbacks::DeriveInfo<'_>,
-        ) -> Vec<String> {
+        fn add_derives(&self, info: &DeriveInfo<'_>) -> Vec<String> {
             if self.kind.map(|kind| kind == info.kind).unwrap_or(true) &&
                 self.regex_set.matches(info.name)
             {
@@ -1153,7 +1158,7 @@ where
         }
     }
 
-    for (custom_derives, kind, name) in [
+    for (custom_derives, kind, _name) in [
         (with_derive_custom, None, "--with-derive-custom"),
         (
             with_derive_custom_struct,
@@ -1171,11 +1176,17 @@ where
             "--with-derive-custom-union",
         ),
     ] {
-        let name = emit_diagnostics.then_some(name);
+        #[cfg(feature = "experimental")]
+        let name = emit_diagnostics.then_some(_name);
+
         for (derives, regex) in custom_derives {
             let mut regex_set = RegexSet::new();
             regex_set.insert(regex);
+
+            #[cfg(feature = "experimental")]
             regex_set.build_with_diagnostics(false, name);
+            #[cfg(not(feature = "experimental"))]
+            regex_set.build(false);
 
             builder = builder.parse_callbacks(Box::new(CustomDeriveCallback {
                 derives,
@@ -1189,10 +1200,10 @@ where
     struct CustomAttributeCallback {
         attributes: Vec<String>,
         kind: Option<TypeKind>,
-        regex_set: bindgen::RegexSet,
+        regex_set: RegexSet,
     }
 
-    impl bindgen::callbacks::ParseCallbacks for CustomAttributeCallback {
+    impl ParseCallbacks for CustomAttributeCallback {
         fn cli_args(&self) -> Vec<String> {
             let mut args = vec![];
 
@@ -1215,10 +1226,7 @@ where
             args
         }
 
-        fn add_attributes(
-            &self,
-            info: &bindgen::callbacks::AttributeInfo<'_>,
-        ) -> Vec<String> {
+        fn add_attributes(&self, info: &AttributeInfo<'_>) -> Vec<String> {
             if self.kind.map(|kind| kind == info.kind).unwrap_or(true) &&
                 self.regex_set.matches(info.name)
             {
@@ -1228,7 +1236,7 @@ where
         }
     }
 
-    for (custom_attributes, kind, name) in [
+    for (custom_attributes, kind, _name) in [
         (with_attribute_custom, None, "--with-attribute-custom"),
         (
             with_attribute_custom_struct,
@@ -1246,11 +1254,17 @@ where
             "--with-attribute-custom-union",
         ),
     ] {
-        let name = emit_diagnostics.then_some(name);
+        #[cfg(feature = "experimental")]
+        let name = emit_diagnostics.then_some(_name);
+
         for (attributes, regex) in custom_attributes {
             let mut regex_set = RegexSet::new();
             regex_set.insert(regex);
+
+            #[cfg(feature = "experimental")]
             regex_set.build_with_diagnostics(false, name);
+            #[cfg(not(feature = "experimental"))]
+            regex_set.build(false);
 
             builder =
                 builder.parse_callbacks(Box::new(CustomAttributeCallback {
@@ -1277,6 +1291,7 @@ where
         builder = builder.default_visibility(visibility);
     }
 
+    #[cfg(feature = "experimental")]
     if emit_diagnostics {
         builder = builder.emit_diagnostics();
     }

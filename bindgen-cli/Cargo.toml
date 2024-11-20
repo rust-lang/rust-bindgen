@@ -24,8 +24,6 @@ bindgen = { path = "../bindgen", version = "=0.70.1",  default-features = false,
 env_logger = { version = "0.10.0", optional = true }
 log = { version = "0.4", optional = true }
 
-clap.workspace = true
-clap_complete.workspace = true
 proc-macro2.workspace = true
 shlex.workspace = true
 

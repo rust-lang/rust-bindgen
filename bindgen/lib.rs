@@ -50,11 +50,11 @@ mod regex_set;
 pub use codegen::{
     AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle,
 };
-#[cfg(feature = "__cli")]
-pub use features::RUST_TARGET_STRINGS;
 pub use features::{RustTarget, LATEST_STABLE_RUST};
 pub use ir::annotations::FieldVisibilityKind;
 pub use ir::function::Abi;
+#[cfg(feature = "__cli")]
+pub use options::cli::builder_from_flags;
 pub use regex_set::RegexSet;
 
 use codegen::CodegenError;
