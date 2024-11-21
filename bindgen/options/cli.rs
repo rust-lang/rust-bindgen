@@ -141,7 +141,7 @@ fn parse_custom_attribute(
 )]
 struct BindgenCommand {
     /// C or C++ header file.
-    header: Option<String>,
+    header: String,
     /// Path to write depfile to.
     #[arg(long)]
     depfile: Option<String>,
@@ -673,12 +673,6 @@ where
 
     let mut builder = builder();
 
-    if let Some(header) = header {
-        builder = builder.header(header);
-    } else {
-        return Err(io::Error::new(io::ErrorKind::Other, "Header not found"));
-    }
-
     #[derive(Debug)]
     struct PrefixLinkNameCallback {
         prefix: String,
@@ -824,8 +818,11 @@ where
         }
     }
 
+    let header = Some(header);
+
     builder = apply_args!(
         builder {
+            header,
             rust_target,
             default_enum_style,
             bitfield_enum,
