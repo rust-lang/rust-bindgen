@@ -14,11 +14,10 @@ use clap::{
     CommandFactory, Parser,
 };
 use proc_macro2::TokenStream;
-use std::fs::File;
 use std::io;
 use std::path::{Path, PathBuf};
-use std::process::exit;
 use std::str::FromStr;
+use std::{fs::File, process::exit};
 
 fn rust_target_help() -> String {
     format!(
@@ -649,28 +648,6 @@ where
         clang_args,
     } = command;
 
-    if let Some(shell) = generate_shell_completions {
-        clap_complete::generate(
-            shell,
-            &mut BindgenCommand::command(),
-            "bindgen",
-            &mut std::io::stdout(),
-        );
-
-        exit(0);
-    }
-
-    if version {
-        println!(
-            "bindgen {}",
-            option_env!("CARGO_PKG_VERSION").unwrap_or("unknown")
-        );
-        if verbose {
-            println!("Clang: {}", crate::clang_version().full);
-        }
-        std::process::exit(0);
-    }
-
     let mut builder = builder();
 
     #[derive(Debug)]
@@ -822,6 +799,27 @@ where
 
     builder = apply_args!(
         builder {
+            generate_shell_completions => |_, shell| {
+                clap_complete::generate(
+                    shell,
+                    &mut BindgenCommand::command(),
+                    "bindgen",
+                    &mut std::io::stdout(),
+                );
+
+                exit(0)
+            },
+            version => |_, _| {
+                println!(
+                    "bindgen {}",
+                    option_env!("CARGO_PKG_VERSION").unwrap_or("unknown")
+                );
+                if verbose {
+                    println!("Clang: {}", crate::clang_version().full);
+                }
+
+                exit(0)
+            },
             header,
             rust_target,
             default_enum_style,
