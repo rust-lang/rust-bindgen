@@ -54,18 +54,18 @@ We abide by the [Rust Code of Conduct][coc] and ask that you do as well.
 Think you've found a bug? File an issue! To help us understand and reproduce the
 issue, provide us with:
 
-* A (preferably reduced) C/C++ header file that reproduces the issue
-* The `bindgen` flags used to reproduce the issue with the header file
-* The expected `bindgen` output
-* The actual `bindgen` output
-* The [debugging logs](#debug-logging) generated when running `bindgen` on this testcase
+- A (preferably reduced) C/C++ header file that reproduces the issue
+- The `bindgen` flags used to reproduce the issue with the header file
+- The expected `bindgen` output
+- The actual `bindgen` output
+- The [debugging logs](#debug-logging) generated when running `bindgen` on this testcase
 
 ## Looking to Start Contributing to `bindgen`?
 
-* [Issues labeled "easy"](https://github.com/rust-lang/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-easy)
-* [Issues labeled "less easy"](https://github.com/rust-lang/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-less-easy)
-* [Issues labeled "help wanted"](https://github.com/rust-lang/rust-bindgen/labels/help%20wanted)
-* Still can't find something to work on? [Drop a comment here](https://github.com/rust-lang/rust-bindgen/issues/747)
+- [Issues labeled "easy"](https://github.com/rust-lang/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-easy)
+- [Issues labeled "less easy"](https://github.com/rust-lang/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-less-easy)
+- [Issues labeled "help wanted"](https://github.com/rust-lang/rust-bindgen/labels/help%20wanted)
+- Still can't find something to work on? [Drop a comment here](https://github.com/rust-lang/rust-bindgen/issues/747)
 
 ## Prerequisites
 
@@ -82,16 +82,16 @@ To check via command line, you can run `cargo +nightly fmt --check`.
 
 To build the `bindgen` library and the `bindgen` executable:
 
-```
-$ cargo build
+```sh
+cargo build
 ```
 
 If you installed multiple versions of llvm, it may not be able to locate the
-latest version of libclang. In that case, you may want to either uninstall other
-versions of llvm, or specify the path of the desired libclang explicitly:
+latest version of `libclang`. In that case, you may want to either uninstall other
+versions of llvm, or specify the path of the desired `libclang` explicitly:
 
-```
-$ export LIBCLANG_PATH=path/to/clang-9.0/lib
+```sh
+export LIBCLANG_PATH=path/to/clang-9.0/lib
 ```
 
 ## Testing
@@ -107,7 +107,7 @@ There are also some integration tests in the `./bindgen-integration` crate, whic
 generate bindings to some C++ code, and then uses the bindings, asserting that
 values are what we expect them to be, both on the Rust and C++ side.
 
-The generated and expected bindings are formatted with [prettyplease] before they are
+The generated and expected bindings are formatted with [`prettyplease`] before they are
 compared. It is a default (but optional) dependency of `bindgen`,
 so be sure to keep that in mind
 (if you built `bindgen` with the `--no-default-features` option of Cargo).
@@ -118,14 +118,13 @@ Note: running `cargo test` from the root directory of `bindgen`'s repository doe
 automatically test the generated bindings or run the integration tests.
 These steps must be performed manually when needed.
 
-
 ### Testing Bindings Generation
 
 To regenerate bindings from the corpus of test headers in `bindgen-tests/tests/headers` and
 compare them against the expected bindings in `bindgen-tests/tests/expectations/tests`, run:
 
-```
-$ cargo test
+```sh
+cargo test
 ```
 
 As long as you aren't making any changes to `bindgen`'s output, running this
@@ -134,12 +133,12 @@ should be sufficient to test your local modifications.
 You may set the `BINDGEN_OVERWRITE_EXPECTED` environment variable to overwrite
 the expected bindings with `bindgen`'s current output:
 
-```
-$ BINDGEN_OVERWRITE_EXPECTED=1 cargo test
+```sh
+BINDGEN_OVERWRITE_EXPECTED=1 cargo test
 ```
 
-If you set the BINDGEN_TESTS_DIFFTOOL environment variable, `cargo test` will
-execute $BINDGEN_TESTS_DIFFTOOL /path/of/expected/output /path/of/actual/output
+If you set the `BINDGEN_TESTS_DIFFTOOL` environment variable, `cargo test` will
+execute `BINDGEN_TESTS_DIFFTOOL /path/of/expected/output /path/of/actual/output`
 when the expected output differs from the actual output. You can use this to
 hand check differences by setting it to e.g. "meld" (assuming you have meld
 installed).
@@ -157,14 +156,14 @@ pass. Also, run the integration tests (see below).
 
 You can do this with these commands:
 
-```
-$ cd bindgen-tests/tests/expectations
-$ cargo test
+```sh
+cd bindgen-tests/tests/expectations
+cargo test
 ```
 
 ### Testing a Single Header's Bindings Generation and Compiling its Bindings
 
-Note: You will need to install [Graphviz](https://graphviz.org/) since that
+Note: You will need to install [graphviz](https://graphviz.org/) since that
 is a dependency for running `test-one.sh`.
 
 Sometimes it's useful to work with one test header from start (generating
@@ -173,8 +172,8 @@ tests). This can be done with the `bindgen-tests/tests/test-one.sh` script. It s
 searching for test headers. For example, to test
 `tests/headers/what_is_going_on.hpp`, execute this command:
 
-```
-$ ./bindgen-tests/tests/test-one.sh going
+```sh
+./bindgen-tests/tests/test-one.sh going
 ```
 
 Note that `test-one.sh` does not recompile `bindgen`, so if you change the code,
@@ -197,9 +196,9 @@ specify them at the top of the test header, with a comment like this:
 
 Then verify the new Rust bindings compile and pass their layout tests:
 
-```
-$ cd bindgen-tests/tests/expectations
-$ cargo test new_test_header
+```sh
+cd bindgen-tests/tests/expectations
+cargo test new_test_header
 ```
 
 ### Test Expectations and `libclang` Versions
@@ -210,8 +209,8 @@ can add multiple test expectations, one for each supported `libclang`
 version. Instead of having a single `bindgen-tests/tests/expectations/tests/my_test.rs` file,
 add each of:
 
-* `bindgen-tests/tests/expectations/tests/libclang-16/my_test.rs`
-* `bindgen-tests/tests/expectations/tests/libclang-9/my_test.rs`
+- `bindgen-tests/tests/expectations/tests/libclang-16/my_test.rs`
+- `bindgen-tests/tests/expectations/tests/libclang-9/my_test.rs`
 
 If you need to update the test expectations for a test file that generates
 different bindings for different `libclang` versions, you *don't* need to have
@@ -224,8 +223,8 @@ Usually, `bindgen`'s test runner can infer which version of `libclang` you
 have. If for some reason it can't, you can force a specific `libclang` version
 to check the bindings against with a cargo feature:
 
-```
-$ cargo test --features __testing_only_libclang_$VERSION
+```sh
+cargo test --features __testing_only_libclang_$VERSION
 ```
 
 depending on which version of `libclang` you have installed.
@@ -238,9 +237,9 @@ values are what we expect them to be, both on the Rust and C++ side.
 
 To run the integration tests, issue the following:
 
-```
-$ cd bindgen-integration
-$ cargo test
+```sh
+cd bindgen-integration
+cargo test
 ```
 
 ### Fuzzing `bindgen` with `csmith`
@@ -257,7 +256,7 @@ The `tests/quickchecking` crate generates property tests for `bindgen`.
 From the crate's directory you can run the tests with `cargo run`. For details
 on additional configuration including how to preserve / inspect the generated
 property tests, see
-[./tests/quickchecking/README.md](./tests/quickchecking/README.md).
+[`./tests/quickchecking/README.md`](./tests/quickchecking/README.md).
 
 ## Code Overview
 
@@ -274,39 +273,39 @@ The umbrella IR type is the `Item`. It contains various nested `enum`s that let
 us drill down and get more specific about the kind of construct that we're
 looking at. Here is a summary of the IR types and their relationships:
 
-* `Item` contains:
-    * An `ItemId` to uniquely identify it.
-    * An `ItemKind`, which is one of:
-        * A `Module`, which is originally a C++ namespace and becomes a Rust
+- `Item` contains:
+  - An `ItemId` to uniquely identify it.
+  - An `ItemKind`, which is one of:
+    - A `Module`, which is originally a C++ namespace and becomes a Rust
           module. It contains the set of `ItemId`s of `Item`s that are defined
           within it.
-        * A `Type`, which contains:
-            * A `Layout`, describing the type's size and alignment.
-            * A `TypeKind`, which is one of:
-                * Some integer type.
-                * Some float type.
-                * A `Pointer` to another type.
-                * A function pointer type, with `ItemId`s of its parameter types
+    - A `Type`, which contains:
+      - A `Layout`, describing the type's size and alignment.
+      - A `TypeKind`, which is one of:
+        - Some integer type.
+        - Some float type.
+        - A `Pointer` to another type.
+        - A function pointer type, with `ItemId`s of its parameter types
                   and return type.
-                * An `Alias` to another type (`typedef` or `using X = ...`).
-                * A fixed size `Array` of `n` elements of another type.
-                * A `Comp` compound type, which is either a `struct`, `class`,
+        - An `Alias` to another type (`typedef` or `using X = ...`).
+        - A fixed size `Array` of `n` elements of another type.
+        - A `Comp` compound type, which is either a `struct`, `class`,
                   or `union`. This is potentially a template definition.
-                * A `TemplateInstantiation` referencing some template definition
+        - A `TemplateInstantiation` referencing some template definition
                   and a set of template argument types.
-                * Etc...
-        * A `Function`, which contains:
-            * An ABI
-            * A mangled name
-            * a `FunctionKind`, which describes whether this function is a plain
+        - Etc...
+    - A `Function`, which contains:
+      - An ABI
+      - A mangled name
+      - a `FunctionKind`, which describes whether this function is a plain
               function, method, static method, constructor, destructor, etc.
-            * The `ItemId` of its function pointer type.
-        * A `Var` representing a static variable or `#define` constant, which
+      - The `ItemId` of its function pointer type.
+    - A `Var` representing a static variable or `#define` constant, which
           contains:
-            * Its type's `ItemId`
-            * Optionally, a mangled name
-            * Optionally, a value
-    * An optional `clang::SourceLocation` that holds the first source code
+      - Its type's `ItemId`
+      - Optionally, a mangled name
+      - Optionally, a value
+  - An optional `clang::SourceLocation` that holds the first source code
       location where the `Item` was encountered.
 
 The IR forms a graph of interconnected and inter-referencing types and
@@ -323,8 +322,8 @@ parameters a given type uses. The analyses are defined in
 `ir::analysis::MonotoneFramework` trait.
 
 The final phase is generating Rust source text from the analyzed IR, and it is
-defined in `src/codegen/*`. We use the `quote` crate, which provides the `quote!
-{ ... }` macro for quasi-quoting Rust forms. Some options that affect the
+defined in `src/codegen/*`. We use the `quote` crate, which provides the `quote!{ ... }`
+macro for quasi-quoting Rust forms. Some options that affect the
 generated Rust code are implemented using the [`syn`](https://docs.rs/syn) crate.
 
 ### Implementing new options using `syn`
@@ -351,13 +350,13 @@ changes should be squashed into the original commit.
 
 Unsure who to ask for review? Ask any of:
 
-* `@emilio`
-* `@pvdrz`
+- `@emilio`
+- `@pvdrz`
 
 More resources:
 
-* [Servo's GitHub Workflow](https://github.com/servo/servo/wiki/Github-workflow)
-* [Beginner's Guide to Rebasing and Squashing](https://github.com/servo/servo/wiki/Beginner's-guide-to-rebasing-and-squashing)
+- [Servo's GitHub Workflow](https://github.com/servo/servo/wiki/Github-workflow)
+- [Beginner's Guide to Rebasing and Squashing](https://github.com/servo/servo/wiki/Beginner's-guide-to-rebasing-and-squashing)
 
 ## Generating Graphviz Dot Files
 
@@ -368,22 +367,22 @@ debugging bindgen!
 
 First, make sure you have Graphviz and `dot` installed:
 
-```
-$ brew install graphviz         # OS X
-$ sudo dnf install graphviz     # Fedora
-$ # Etc...
+```sh
+brew install graphviz         # OS X
+sudo dnf install graphviz     # Fedora
+# Etc...
 ```
 
 Then, use the `--emit-ir-graphviz` flag to generate a `dot` file from our IR:
 
-```
-$ cargo run -- example.hpp --emit-ir-graphviz output.dot
+```sh
+cargo run -- example.hpp --emit-ir-graphviz output.dot
 ```
 
 Finally, convert the `dot` file to an image:
 
-```
-$ dot -Tpng output.dot -o output.png
+```sh
+dot -Tpng output.dot -o output.png
 ```
 
 The final result will look something like this:
@@ -395,14 +394,14 @@ The final result will look something like this:
 To help debug what `bindgen` is doing, you can define the environment variable
 `RUST_LOG=bindgen` to get a bunch of debugging log spew.
 
-```
-$ RUST_LOG=bindgen ./target/debug/bindgen [flags...] ~/path/to/some/header.h
+```sh
+RUST_LOG=bindgen ./target/debug/bindgen [flags...] ~/path/to/some/header.h
 ```
 
 This logging can also be used when debugging failing tests:
 
-```
-$ RUST_LOG=bindgen cargo test
+```sh
+RUST_LOG=bindgen cargo test
 ```
 
 ## Using `creduce` to Minimize Test Cases
@@ -419,10 +418,10 @@ that same bad behavior.
 
 Often, you can install `creduce` from your OS's package manager:
 
-```
-$ sudo apt install creduce
-$ brew install creduce
-$ # Etc...
+```sh
+sudo apt install creduce
+brew install creduce
+# Etc...
 ```
 
 Otherwise, follow [these instructions](https://github.com/csmith-project/creduce/blob/master/INSTALL.md) for building and/or installing `creduce`.
@@ -436,7 +435,9 @@ Running `creduce` requires two things:
 
 With those two things in hand, running `creduce` looks like this:
 
-    $ creduce ./predicate.sh ./isolated-test-case.h
+```sh
+creduce ./predicate.sh ./isolated-test-case.h
+```
 
 ### Isolating Your Test Case
 
@@ -511,8 +512,8 @@ path/to/rust-bindgen/csmith-fuzzing/predicate.py \
 
 For details on all the flags that you can pass to `predicate.py`, run:
 
-```
-$ path/to/rust-bindgen/csmith-fuzzing/predicate.py --help
+```sh
+path/to/rust-bindgen/csmith-fuzzing/predicate.py --help
 ```
 
 And you can always write your own, arbitrary predicate script if you prefer.
@@ -535,9 +536,9 @@ To cut a release, the following needs to happen:
 Update the CHANGELOG.md file with the changes from the last release. Something
 like the following is a useful way to check what has landed:
 
- ```
- $ git log --oneline v0.62.0..HEAD
- ```
+```sh
+git log --oneline v0.62.0..HEAD
+```
 
 Also worth checking the [next-release
 tag](https://github.com/rust-lang/rust-bindgen/pulls?q=is%3Apr+label%3Anext-release).
@@ -554,12 +555,14 @@ important fix) you can skip this.
 ### Tag and publish
 
 Once you're in `main`. Remember to install `doctoc` by running:
-```
+
+```sh
 npm install doctoc
 ```
 
 And then run:
-```
+
+```sh
 cargo release [patch|minor] --no-publish --execute
 ```
 
@@ -573,8 +576,8 @@ This does the following:
 
 The `patch` and `minor` refer to semver concepts:
 
-- `patch` would bump __v0.68.1__ to __v0.68.2__
-- `minor` would bump __v0.68.2__ to __v0.69.0__
+- `patch` would bump **v0.68.1** to **v0.68.2**
+- `minor` would bump **v0.68.2** to **v0.69.0**
 
 > NOTE:
 > We use the `--no-publish` so that the crates are only published after the release is complete.
@@ -595,12 +598,12 @@ to avoid notifying watchers of the repo should a CI step fail.
 If everything succeeds,
 tarballs containing bindgen cli executables for Linux and MacOS
 (both for x86 and Arm) will be created.
-See `[workspace.metadata.dist]` section in Cargo.toml for the configuration.
+See `[workspace.metadata.dist]` section in `Cargo.toml` for the configuration.
 
 To update the release configuration,
-when a new cargo-dist is available:
+when a new `cargo-dist` is available:
 
-```
+```sh
 cargo dist init # from "cargo install cargo-dist"
 ```
 
@@ -620,4 +623,4 @@ and run a new workflow using the "Run Workflow" button.
 
 Remember that crates.io releases cannot be deleted!
 
-[prettyplease]: https://github.com/dtolnay/prettyplease
+[`prettyplease`]: https://github.com/dtolnay/prettyplease
