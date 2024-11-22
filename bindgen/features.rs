@@ -104,6 +104,7 @@ define_rust_targets! {
     Stable_1_71(71) => { c_unwind_abi: #106075 },
     Stable_1_68(68) => { abi_efiapi: #105795 },
     Stable_1_64(64) => { core_ffi_c: #94503 },
+    Stable_1_51(51) => { raw_ref_macros: #80886 },
     Stable_1_59(59) => { const_cstr: #54745 },
     Stable_1_47(47) => { larger_arrays: #74060 },
     Stable_1_43(43) => { associated_constants: #68952 },

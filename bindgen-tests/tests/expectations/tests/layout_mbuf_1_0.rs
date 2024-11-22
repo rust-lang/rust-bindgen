@@ -32,14 +32,6 @@ where
         Self::extract_bit(byte, index)
     }
     #[inline]
-    pub unsafe fn raw_get_bit(this: *const Self, index: usize) -> bool {
-        debug_assert!(index / 8 < core::mem::size_of::<Storage>());
-        let byte_index = index / 8;
-        let byte = *(core::ptr::addr_of!((*this).storage) as *const u8)
-            .offset(byte_index as isize);
-        Self::extract_bit(byte, index)
-    }
-    #[inline]
     fn change_bit(byte: u8, index: usize, val: bool) -> u8 {
         let bit_index = if cfg!(target_endian = "big") {
             7 - (index % 8)
@@ -57,14 +49,6 @@ where
         *byte = Self::change_bit(*byte, index, val);
     }
     #[inline]
-    pub unsafe fn raw_set_bit(this: *mut Self, index: usize, val: bool) {
-        debug_assert!(index / 8 < core::mem::size_of::<Storage>());
-        let byte_index = index / 8;
-        let byte = (core::ptr::addr_of_mut!((*this).storage) as *mut u8)
-            .offset(byte_index as isize);
-        *byte = Self::change_bit(*byte, index, val);
-    }
-    #[inline]
     pub fn get(&self, bit_offset: usize, bit_width: u8) -> u64 {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
@@ -74,26 +58,6 @@ where
         let mut val = 0;
         for i in 0..(bit_width as usize) {
             if self.get_bit(i + bit_offset) {
-                let index = if cfg!(target_endian = "big") {
-                    bit_width as usize - 1 - i
-                } else {
-                    i
-                };
-                val |= 1 << index;
-            }
-        }
-        val
-    }
-    #[inline]
-    pub unsafe fn raw_get(this: *const Self, bit_offset: usize, bit_width: u8) -> u64 {
-        debug_assert!(bit_width <= 64);
-        debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
-        debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= core::mem::size_of::<Storage>(),
-        );
-        let mut val = 0;
-        for i in 0..(bit_width as usize) {
-            if Self::raw_get_bit(this, i + bit_offset) {
                 let index = if cfg!(target_endian = "big") {
                     bit_width as usize - 1 - i
                 } else {
@@ -120,24 +84,6 @@ where
                 i
             };
             self.set_bit(index + bit_offset, val_bit_is_set);
-        }
-    }
-    #[inline]
-    pub unsafe fn raw_set(this: *mut Self, bit_offset: usize, bit_width: u8, val: u64) {
-        debug_assert!(bit_width <= 64);
-        debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
-        debug_assert!(
-            (bit_offset + (bit_width as usize)) / 8 <= core::mem::size_of::<Storage>(),
-        );
-        for i in 0..(bit_width as usize) {
-            let mask = 1 << i;
-            let val_bit_is_set = val & mask == mask;
-            let index = if cfg!(target_endian = "big") {
-                bit_width as usize - 1 - i
-            } else {
-                i
-            };
-            Self::raw_set_bit(this, index + bit_offset, val_bit_is_set);
         }
     }
 }
@@ -360,31 +306,6 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         }
     }
     #[inline]
-    pub unsafe fn l2_type_raw(this: *const Self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 4usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 4u8)
-                    as u32,
-            )
-        }
-    }
-    #[inline]
-    pub unsafe fn set_l2_type_raw(this: *mut Self, val: u32) {
-        unsafe {
-            let val: u32 = ::std::mem::transmute(val);
-            <__BindgenBitfieldUnit<
-                [u8; 4usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                0usize,
-                4u8,
-                val as u64,
-            )
-        }
-    }
-    #[inline]
     pub fn l3_type(&self) -> u32 {
         unsafe { ::std::mem::transmute(self._bitfield_1.get(4usize, 4u8) as u32) }
     }
@@ -393,31 +314,6 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
             self._bitfield_1.set(4usize, 4u8, val as u64)
-        }
-    }
-    #[inline]
-    pub unsafe fn l3_type_raw(this: *const Self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 4usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 4usize, 4u8)
-                    as u32,
-            )
-        }
-    }
-    #[inline]
-    pub unsafe fn set_l3_type_raw(this: *mut Self, val: u32) {
-        unsafe {
-            let val: u32 = ::std::mem::transmute(val);
-            <__BindgenBitfieldUnit<
-                [u8; 4usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                4usize,
-                4u8,
-                val as u64,
-            )
         }
     }
     #[inline]
@@ -432,31 +328,6 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         }
     }
     #[inline]
-    pub unsafe fn l4_type_raw(this: *const Self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 4usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 8usize, 4u8)
-                    as u32,
-            )
-        }
-    }
-    #[inline]
-    pub unsafe fn set_l4_type_raw(this: *mut Self, val: u32) {
-        unsafe {
-            let val: u32 = ::std::mem::transmute(val);
-            <__BindgenBitfieldUnit<
-                [u8; 4usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                8usize,
-                4u8,
-                val as u64,
-            )
-        }
-    }
-    #[inline]
     pub fn tun_type(&self) -> u32 {
         unsafe { ::std::mem::transmute(self._bitfield_1.get(12usize, 4u8) as u32) }
     }
@@ -465,31 +336,6 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
             self._bitfield_1.set(12usize, 4u8, val as u64)
-        }
-    }
-    #[inline]
-    pub unsafe fn tun_type_raw(this: *const Self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 4usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 12usize, 4u8)
-                    as u32,
-            )
-        }
-    }
-    #[inline]
-    pub unsafe fn set_tun_type_raw(this: *mut Self, val: u32) {
-        unsafe {
-            let val: u32 = ::std::mem::transmute(val);
-            <__BindgenBitfieldUnit<
-                [u8; 4usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                12usize,
-                4u8,
-                val as u64,
-            )
         }
     }
     #[inline]
@@ -504,31 +350,6 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         }
     }
     #[inline]
-    pub unsafe fn inner_l2_type_raw(this: *const Self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 4usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 16usize, 4u8)
-                    as u32,
-            )
-        }
-    }
-    #[inline]
-    pub unsafe fn set_inner_l2_type_raw(this: *mut Self, val: u32) {
-        unsafe {
-            let val: u32 = ::std::mem::transmute(val);
-            <__BindgenBitfieldUnit<
-                [u8; 4usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                16usize,
-                4u8,
-                val as u64,
-            )
-        }
-    }
-    #[inline]
     pub fn inner_l3_type(&self) -> u32 {
         unsafe { ::std::mem::transmute(self._bitfield_1.get(20usize, 4u8) as u32) }
     }
@@ -540,31 +361,6 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         }
     }
     #[inline]
-    pub unsafe fn inner_l3_type_raw(this: *const Self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 4usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 20usize, 4u8)
-                    as u32,
-            )
-        }
-    }
-    #[inline]
-    pub unsafe fn set_inner_l3_type_raw(this: *mut Self, val: u32) {
-        unsafe {
-            let val: u32 = ::std::mem::transmute(val);
-            <__BindgenBitfieldUnit<
-                [u8; 4usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                20usize,
-                4u8,
-                val as u64,
-            )
-        }
-    }
-    #[inline]
     pub fn inner_l4_type(&self) -> u32 {
         unsafe { ::std::mem::transmute(self._bitfield_1.get(24usize, 4u8) as u32) }
     }
@@ -573,31 +369,6 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
             self._bitfield_1.set(24usize, 4u8, val as u64)
-        }
-    }
-    #[inline]
-    pub unsafe fn inner_l4_type_raw(this: *const Self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 4usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 24usize, 4u8)
-                    as u32,
-            )
-        }
-    }
-    #[inline]
-    pub unsafe fn set_inner_l4_type_raw(this: *mut Self, val: u32) {
-        unsafe {
-            let val: u32 = ::std::mem::transmute(val);
-            <__BindgenBitfieldUnit<
-                [u8; 4usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                24usize,
-                4u8,
-                val as u64,
-            )
         }
     }
     #[inline]
@@ -991,31 +762,6 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         }
     }
     #[inline]
-    pub unsafe fn l2_len_raw(this: *const Self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 7usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 7u8)
-                    as u64,
-            )
-        }
-    }
-    #[inline]
-    pub unsafe fn set_l2_len_raw(this: *mut Self, val: u64) {
-        unsafe {
-            let val: u64 = ::std::mem::transmute(val);
-            <__BindgenBitfieldUnit<
-                [u8; 7usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                0usize,
-                7u8,
-                val as u64,
-            )
-        }
-    }
-    #[inline]
     pub fn l3_len(&self) -> u64 {
         unsafe { ::std::mem::transmute(self._bitfield_1.get(7usize, 9u8) as u64) }
     }
@@ -1024,31 +770,6 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             let val: u64 = ::std::mem::transmute(val);
             self._bitfield_1.set(7usize, 9u8, val as u64)
-        }
-    }
-    #[inline]
-    pub unsafe fn l3_len_raw(this: *const Self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 7usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 7usize, 9u8)
-                    as u64,
-            )
-        }
-    }
-    #[inline]
-    pub unsafe fn set_l3_len_raw(this: *mut Self, val: u64) {
-        unsafe {
-            let val: u64 = ::std::mem::transmute(val);
-            <__BindgenBitfieldUnit<
-                [u8; 7usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                7usize,
-                9u8,
-                val as u64,
-            )
         }
     }
     #[inline]
@@ -1063,31 +784,6 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         }
     }
     #[inline]
-    pub unsafe fn l4_len_raw(this: *const Self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 7usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 16usize, 8u8)
-                    as u64,
-            )
-        }
-    }
-    #[inline]
-    pub unsafe fn set_l4_len_raw(this: *mut Self, val: u64) {
-        unsafe {
-            let val: u64 = ::std::mem::transmute(val);
-            <__BindgenBitfieldUnit<
-                [u8; 7usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                16usize,
-                8u8,
-                val as u64,
-            )
-        }
-    }
-    #[inline]
     pub fn tso_segsz(&self) -> u64 {
         unsafe { ::std::mem::transmute(self._bitfield_1.get(24usize, 16u8) as u64) }
     }
@@ -1096,31 +792,6 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             let val: u64 = ::std::mem::transmute(val);
             self._bitfield_1.set(24usize, 16u8, val as u64)
-        }
-    }
-    #[inline]
-    pub unsafe fn tso_segsz_raw(this: *const Self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 7usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 24usize, 16u8)
-                    as u64,
-            )
-        }
-    }
-    #[inline]
-    pub unsafe fn set_tso_segsz_raw(this: *mut Self, val: u64) {
-        unsafe {
-            let val: u64 = ::std::mem::transmute(val);
-            <__BindgenBitfieldUnit<
-                [u8; 7usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                24usize,
-                16u8,
-                val as u64,
-            )
         }
     }
     #[inline]
@@ -1135,31 +806,6 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         }
     }
     #[inline]
-    pub unsafe fn outer_l3_len_raw(this: *const Self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 7usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 40usize, 9u8)
-                    as u64,
-            )
-        }
-    }
-    #[inline]
-    pub unsafe fn set_outer_l3_len_raw(this: *mut Self, val: u64) {
-        unsafe {
-            let val: u64 = ::std::mem::transmute(val);
-            <__BindgenBitfieldUnit<
-                [u8; 7usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                40usize,
-                9u8,
-                val as u64,
-            )
-        }
-    }
-    #[inline]
     pub fn outer_l2_len(&self) -> u64 {
         unsafe { ::std::mem::transmute(self._bitfield_1.get(49usize, 7u8) as u64) }
     }
@@ -1168,31 +814,6 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             let val: u64 = ::std::mem::transmute(val);
             self._bitfield_1.set(49usize, 7u8, val as u64)
-        }
-    }
-    #[inline]
-    pub unsafe fn outer_l2_len_raw(this: *const Self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 7usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 49usize, 7u8)
-                    as u64,
-            )
-        }
-    }
-    #[inline]
-    pub unsafe fn set_outer_l2_len_raw(this: *mut Self, val: u64) {
-        unsafe {
-            let val: u64 = ::std::mem::transmute(val);
-            <__BindgenBitfieldUnit<
-                [u8; 7usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                49usize,
-                7u8,
-                val as u64,
-            )
         }
     }
     #[inline]

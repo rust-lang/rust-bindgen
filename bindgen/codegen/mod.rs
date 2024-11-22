@@ -2008,31 +2008,35 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                         )
                     }
                 }
-
-                #[inline]
-                #access_spec unsafe fn #raw_getter_name(this: *const Self) -> #bitfield_ty {
-                    unsafe {
-                        ::#prefix::mem::transmute(<#unit_field_ty>::raw_get(
-                            (*::#prefix::ptr::addr_of!((*this).#unit_field_ident)).as_ref() as *const _,
-                            #offset,
-                            #width,
-                        ) as #bitfield_int_ty)
-                    }
-                }
-
-                #[inline]
-                #access_spec unsafe fn #raw_setter_name(this: *mut Self, val: #bitfield_ty) {
-                    unsafe {
-                        let val: #bitfield_int_ty = ::#prefix::mem::transmute(val);
-                        <#unit_field_ty>::raw_set(
-                            (*::#prefix::ptr::addr_of_mut!((*this).#unit_field_ident)).as_mut() as *mut _,
-                            #offset,
-                            #width,
-                            val as u64,
-                        )
-                    }
-                }
             }));
+
+            if ctx.options().rust_features.raw_ref_macros {
+                methods.extend(Some(quote! {
+                    #[inline]
+                    #access_spec unsafe fn #raw_getter_name(this: *const Self) -> #bitfield_ty {
+                        unsafe {
+                            ::#prefix::mem::transmute(<#unit_field_ty>::raw_get(
+                                (*::#prefix::ptr::addr_of!((*this).#unit_field_ident)).as_ref() as *const _,
+                                #offset,
+                                #width,
+                            ) as #bitfield_int_ty)
+                        }
+                    }
+
+                    #[inline]
+                    #access_spec unsafe fn #raw_setter_name(this: *mut Self, val: #bitfield_ty) {
+                        unsafe {
+                            let val: #bitfield_int_ty = ::#prefix::mem::transmute(val);
+                            <#unit_field_ty>::raw_set(
+                                (*::#prefix::ptr::addr_of_mut!((*this).#unit_field_ident)).as_mut() as *mut _,
+                                #offset,
+                                #width,
+                                val as u64,
+                            )
+                        }
+                    }
+                }));
+            }
         } else {
             methods.extend(Some(quote! {
                 #[inline]
@@ -2056,7 +2060,10 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                         )
                     }
                 }
+            }));
 
+            if ctx.options().rust_features.raw_ref_macros {
+                methods.extend(Some(quote! {
                 #[inline]
                 #access_spec unsafe fn #raw_getter_name(this: *const Self) -> #bitfield_ty {
                     unsafe {
@@ -2081,6 +2088,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                     }
                 }
             }));
+            }
         }
     }
 }
@@ -5302,7 +5310,11 @@ pub(crate) mod utils {
             return;
         }
 
-        let bitfield_unit_src = include_str!("./bitfield_unit.rs");
+        let bitfield_unit_src = if ctx.options().rust_features().raw_ref_macros {
+            include_str!("./bitfield_unit_raw_ref_macros.rs")
+        } else {
+            include_str!("./bitfield_unit.rs")
+        };
         let bitfield_unit_src = if ctx.options().rust_features().min_const_fn {
             Cow::Borrowed(bitfield_unit_src)
         } else {
