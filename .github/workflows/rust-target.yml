@@ -1,0 +1,43 @@
+name: rust-target
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  merge_group:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rust-version: ["1.33", "1.36", "1.40", "1.43", "1.47", "1.59", "1.64", "1.68", "1.71", "1.73", "1.77", "nightly"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{matrix.rust-version}}
+
+      - name: Install packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install libtinfo5 ripgrep
+
+      - name: Check headers
+        run: |
+          HEADERS=$(rg -l '\-\-rust-target[\s=]${{matrix.rust-version}}' bindgen-tests/tests/headers/ | cut -d '/' -f 4 | cut -d '.' -f 1)
+
+          for HEADER in $HEADERS; do 
+            FILE="bindgen-tests/tests/expectations/tests/$HEADER.rs"
+            echo "Checking $FILE"
+            rustup run ${{matrix.rust-version}} rustc --edition=2018 --crate-type=rlib --emit=metadata $FILE
+          done
+
