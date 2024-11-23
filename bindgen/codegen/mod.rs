@@ -2309,7 +2309,7 @@ impl CodeGenerator for CompInfo {
             }
 
             if let Some(layout) = layout {
-                if struct_layout.requires_explicit_align(layout) {
+                if self.needs_explicit_align() {
                     if layout.align == 1 {
                         packed = true;
                     } else {
@@ -2330,7 +2330,7 @@ impl CodeGenerator for CompInfo {
             // TODO(emilio): It'd be nice to unify this with the struct path
             // above somehow.
             let layout = layout.expect("Unable to get layout information?");
-            if struct_layout.requires_explicit_align(layout) {
+            if self.needs_explicit_align() {
                 explicit_align = Some(layout.align);
             }
 
@@ -2410,8 +2410,8 @@ impl CodeGenerator for CompInfo {
         // "packed" attr is redundant, and do not include it if so.
         if packed &&
             !is_opaque &&
-            !(explicit_align.is_some() &&
-                self.already_packed(ctx).unwrap_or(false))
+            !((explicit_align.is_some() || self.contains_aligned_type(ctx)) &&
+                self.already_packed(ctx, layout).unwrap_or(false))
         {
             let n = layout.map_or(1, |l| l.align);
             assert!(ctx.options().rust_features().repr_packed_n || n == 1);
