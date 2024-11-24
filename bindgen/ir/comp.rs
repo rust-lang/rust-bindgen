@@ -145,7 +145,7 @@ pub(crate) trait FieldMethods {
     fn comment(&self) -> Option<&str>;
 
     /// If this is a bitfield, how many bits does it need?
-    fn bitfield_width(&self) -> Option<u32>;
+    fn bitfield_width(&self) -> Option<usize>;
 
     /// Is this field declared public?
     fn is_public(&self) -> bool;
@@ -347,7 +347,7 @@ impl Bitfield {
     }
 
     /// Get the bit width of this bitfield.
-    pub(crate) fn width(&self) -> u32 {
+    pub(crate) fn width(&self) -> usize {
         self.data.bitfield_width().unwrap()
     }
 
@@ -395,7 +395,7 @@ impl FieldMethods for Bitfield {
         self.data.comment()
     }
 
-    fn bitfield_width(&self) -> Option<u32> {
+    fn bitfield_width(&self) -> Option<usize> {
         self.data.bitfield_width()
     }
 
@@ -426,7 +426,7 @@ impl RawField {
         ty: TypeId,
         comment: Option<String>,
         annotations: Option<Annotations>,
-        bitfield_width: Option<u32>,
+        bitfield_width: Option<usize>,
         public: bool,
         offset: Option<usize>,
     ) -> RawField {
@@ -455,7 +455,7 @@ impl FieldMethods for RawField {
         self.0.comment()
     }
 
-    fn bitfield_width(&self) -> Option<u32> {
+    fn bitfield_width(&self) -> Option<usize> {
         self.0.bitfield_width()
     }
 
@@ -592,7 +592,7 @@ where
     const is_ms_struct: bool = false;
 
     for bitfield in raw_bitfields {
-        let bitfield_width = bitfield.bitfield_width().unwrap() as usize;
+        let bitfield_width = bitfield.bitfield_width().unwrap();
         let bitfield_layout =
             ctx.resolve_type(bitfield.ty()).layout(ctx).ok_or(())?;
         let bitfield_size = bitfield_layout.size;
@@ -883,7 +883,7 @@ pub(crate) struct FieldData {
     annotations: Annotations,
 
     /// If this field is a bitfield, and how many bits does it contain if it is.
-    bitfield_width: Option<u32>,
+    bitfield_width: Option<usize>,
 
     /// If the C++ field is declared `public`
     public: bool,
@@ -905,7 +905,7 @@ impl FieldMethods for FieldData {
         self.comment.as_deref()
     }
 
-    fn bitfield_width(&self) -> Option<u32> {
+    fn bitfield_width(&self) -> Option<usize> {
         self.bitfield_width
     }
 
@@ -1842,7 +1842,7 @@ impl IsOpaque for CompInfo {
                     .resolve_type(bf.ty())
                     .layout(ctx)
                     .expect("Bitfield without layout? Gah!");
-                bf.width() / 8 > bitfield_layout.size as u32
+                bf.width() / 8 > bitfield_layout.size
             }),
         }) {
             return true;
