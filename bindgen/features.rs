@@ -4,9 +4,55 @@
 #![deny(clippy::missing_docs_in_private_items)]
 #![allow(deprecated)]
 
-use std::cmp::Ordering;
 use std::io;
 use std::str::FromStr;
+
+/// Represents the version of the Rust language to target.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[repr(transparent)]
+pub struct RustTarget(Version);
+
+impl RustTarget {
+    const fn minor(&self) -> Option<u64> {
+        match self.0 {
+            Version::Nightly => None,
+            Version::Stable(minor, _) => Some(minor),
+        }
+    }
+
+    const fn is_compatible(&self, other: &Self) -> bool {
+        match (self.0, other.0) {
+            (Version::Stable(minor, _), Version::Stable(other_minor, _)) => {
+                // We ignore the patch version number as they only include backwards compatible bug
+                // fixes.
+                minor >= other_minor
+            }
+            (_, Version::Nightly) => false,
+            (Version::Nightly, _) => true,
+        }
+    }
+}
+
+impl Default for RustTarget {
+    fn default() -> Self {
+        LATEST_STABLE_RUST
+    }
+}
+
+impl std::fmt::Display for RustTarget {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self.0 {
+            Version::Stable(minor, patch) => write!(f, "1.{minor}.{patch}"),
+            Version::Nightly => "nightly".fmt(f),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+enum Version {
+    Stable(u64, u64),
+    Nightly,
+}
 
 /// This macro defines the [`RustTarget`] and [`RustFeatures`] types.
 macro_rules! define_rust_targets {
@@ -18,38 +64,24 @@ macro_rules! define_rust_targets {
         )*
         $(,)?
     ) => {
-        /// Represents the version of the Rust language to target.
-        ///
-        /// To support a beta release, use the corresponding stable release.
-        ///
-        /// This enum will have more variants added as necessary.
-        #[allow(non_camel_case_types)]
-        #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-        pub enum RustTarget {
-            /// Rust Nightly
+
+        impl RustTarget {
+            /// The nightly version of Rust, which introduces the following features:"
             $(#[doc = concat!(
                 "- [`", stringify!($nightly_feature), "`]",
                 "(", $("https://github.com/rust-lang/rust/pull/", stringify!($issue),)* ")",
             )])*
-            Nightly,
+            pub const Nightly: Self = Self(Version::Nightly);
+
             $(
-                #[doc = concat!("Rust 1.", stringify!($minor))]
+                #[doc = concat!("Version 1.", stringify!($minor), " of Rust, which introduced the following features:")]
                 $(#[doc = concat!(
                     "- [`", stringify!($feature), "`]",
                     "(", $("https://github.com/rust-lang/rust/pull/", stringify!($pull),)* ")",
                 )])*
                 $(#[$attrs])*
-                $variant,
+                pub const $variant: Self = Self(Version::Stable($minor, 0));
             )*
-        }
-
-        impl RustTarget {
-            const fn minor(self) -> Option<u64> {
-                match self {
-                    $( Self::$variant => Some($minor),)*
-                    Self::Nightly => None
-                }
-            }
 
             const fn stable_releases() -> [(Self, u64); [$($minor,)*].len()] {
                 [$((Self::$variant, $minor),)*]
@@ -58,7 +90,7 @@ macro_rules! define_rust_targets {
 
         #[cfg(feature = "__cli")]
         /// Strings of allowed `RustTarget` values
-        pub const RUST_TARGET_STRINGS: &[&str] = &[$(concat!("1.", stringify!($minor)),)*];
+        pub(crate) const RUST_TARGET_STRINGS: &[&str] = &[$(concat!("1.", stringify!($minor)),)*];
 
         #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
         pub(crate) struct RustFeatures {
@@ -80,7 +112,7 @@ macro_rules! define_rust_targets {
                     $($nightly_feature: false,)*
                 };
 
-                $(if target >= RustTarget::$variant {
+                $(if target.is_compatible(&RustTarget::$variant) {
                     $(features.$feature = true;)*
                 })*
 
@@ -206,29 +238,6 @@ pub const EARLIEST_STABLE_RUST: RustTarget = {
     }
 };
 
-impl Default for RustTarget {
-    fn default() -> Self {
-        LATEST_STABLE_RUST
-    }
-}
-
-impl PartialOrd for RustTarget {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for RustTarget {
-    fn cmp(&self, other: &Self) -> Ordering {
-        match (self.minor(), other.minor()) {
-            (Some(a), Some(b)) => a.cmp(&b),
-            (Some(_), None) => Ordering::Less,
-            (None, Some(_)) => Ordering::Greater,
-            (None, None) => Ordering::Equal,
-        }
-    }
-}
-
 fn invalid_input<T>(input: &str, msg: impl std::fmt::Display) -> io::Result<T> {
     Err(io::Error::new(
         io::ErrorKind::InvalidInput,
@@ -255,8 +264,7 @@ impl FromStr for RustTarget {
             );
         }
 
-        // We ignore the patch version number as they only include backwards compatible bug fixes.
-        let (minor, _patch) = match tail.split_once('.') {
+        let (minor, patch) = match tail.split_once('.') {
             Some((minor_str, patch_str)) => {
                 let Ok(minor) = minor_str.parse::<u64>() else {
                     return invalid_input(input, "the minor version number must be an unsigned 64-bit integer");
@@ -274,26 +282,7 @@ impl FromStr for RustTarget {
             }
         };
 
-        let Some(target) = Self::stable_releases()
-            .iter()
-            .filter(|(_, target_minor)| minor >= *target_minor)
-            .max_by_key(|(_, target_minor)| target_minor)
-            .map(|(target, _)| target)
-            .cloned()
-        else {
-            return invalid_input(input, format!("the earliest Rust target supported by bindgen is {EARLIEST_STABLE_RUST}"));
-        };
-
-        Ok(target)
-    }
-}
-
-impl std::fmt::Display for RustTarget {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self.minor() {
-            Some(minor) => write!(f, "1.{}", minor),
-            None => "nightly".fmt(f),
-        }
+        Ok(Self(Version::Stable(minor, patch)))
     }
 }
 
@@ -351,16 +340,23 @@ mod test {
         );
     }
 
-    fn test_target(target_str: &str, target: RustTarget) {
+    fn test_target(input: &str, expected: RustTarget) {
+        // Two targets are equivalent if they enable the same set of features
+        let expected = RustFeatures::from(expected);
+        let found = RustFeatures::from(input.parse::<RustTarget>().unwrap());
         assert_eq!(
-            target,
-            target_str.parse::<RustTarget>().unwrap(),
-            "{target_str}"
+            expected,
+            found,
+            "target {input} enables features:\n{found:#?}\nand should enable features:\n{expected:#?}"
         );
     }
 
-    fn test_invalid_target(target_str: &str) {
-        assert!(target_str.parse::<RustTarget>().is_err(), "{}", target_str);
+    fn test_invalid_target(input: &str) {
+        assert!(
+            input.parse::<RustTarget>().is_err(),
+            "{} should be an invalid target",
+            input
+        );
     }
 
     #[test]
