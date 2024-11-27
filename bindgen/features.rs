@@ -4,8 +4,8 @@
 #![deny(clippy::missing_docs_in_private_items)]
 #![allow(deprecated)]
 
-use std::io;
 use std::str::FromStr;
+use std::{fmt, io};
 
 /// Represents the version of the Rust language to target.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -13,6 +13,17 @@ use std::str::FromStr;
 pub struct RustTarget(Version);
 
 impl RustTarget {
+    /// Create a new [`RustTarget`] for a stable release of Rust.
+    pub fn stable(minor: u64, patch: u64) -> Result<Self, InvalidRustTarget> {
+        let target = Self(Version::Stable(minor, patch));
+
+        if target < EARLIEST_STABLE_RUST {
+            return Err(InvalidRustTarget::TooEarly);
+        }
+
+        Ok(target)
+    }
+
     const fn minor(&self) -> Option<u64> {
         match self.0 {
             Version::Nightly => None,
@@ -39,8 +50,8 @@ impl Default for RustTarget {
     }
 }
 
-impl std::fmt::Display for RustTarget {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl fmt::Display for RustTarget {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self.0 {
             Version::Stable(minor, patch) => write!(f, "1.{minor}.{patch}"),
             Version::Nightly => "nightly".fmt(f),
@@ -52,6 +63,18 @@ impl std::fmt::Display for RustTarget {
 enum Version {
     Stable(u64, u64),
     Nightly,
+}
+
+pub enum InvalidRustTarget {
+    TooEarly,
+}
+
+impl fmt::Display for InvalidRustTarget {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::TooEarly => write!(f, "the earliest Rust version supported by bindgen is {EARLIEST_STABLE_RUST}"),
+        }
+    }
 }
 
 /// This macro defines the [`RustTarget`] and [`RustFeatures`] types.
@@ -71,7 +94,16 @@ macro_rules! define_rust_targets {
                 "- [`", stringify!($nightly_feature), "`]",
                 "(", $("https://github.com/rust-lang/rust/pull/", stringify!($issue),)* ")",
             )])*
-            pub const Nightly: Self = Self(Version::Nightly);
+            pub const Nightly: Self = Self::nightly();
+
+            /// The nightly version of Rust, which introduces the following features:"
+            $(#[doc = concat!(
+                "- [`", stringify!($nightly_feature), "`]",
+                "(", $("https://github.com/rust-lang/rust/pull/", stringify!($issue),)* ")",
+            )])*
+            pub const fn nightly() -> Self {
+                Self(Version::Nightly)
+            }
 
             $(
                 #[doc = concat!("Version 1.", stringify!($minor), " of Rust, which introduced the following features:")]
@@ -238,11 +270,11 @@ pub const EARLIEST_STABLE_RUST: RustTarget = {
     }
 };
 
-fn invalid_input<T>(input: &str, msg: impl std::fmt::Display) -> io::Result<T> {
-    Err(io::Error::new(
+fn invalid_input(input: &str, msg: impl fmt::Display) -> io::Error {
+    io::Error::new(
         io::ErrorKind::InvalidInput,
         format!("\"{input}\" is not a valid Rust target, {msg}"),
-    ))
+    )
 }
 
 impl FromStr for RustTarget {
@@ -254,35 +286,35 @@ impl FromStr for RustTarget {
         }
 
         let Some((major_str, tail)) = input.split_once('.') else {
-            return invalid_input(input, "accepted values are of the form \"1.71\", \"1.71.1\" or \"nightly\"." );
+            return Err(invalid_input(input, "accepted values are of the form \"1.71\", \"1.71.1\" or \"nightly\"." ) );
         };
 
         if major_str != "1" {
-            return invalid_input(
+            return Err(invalid_input(
                 input,
                 "The largest major version of Rust released is \"1\"",
-            );
+            ));
         }
 
         let (minor, patch) = match tail.split_once('.') {
             Some((minor_str, patch_str)) => {
                 let Ok(minor) = minor_str.parse::<u64>() else {
-                    return invalid_input(input, "the minor version number must be an unsigned 64-bit integer");
+                    return Err(invalid_input(input, "the minor version number must be an unsigned 64-bit integer"));
                 };
                 let Ok(patch) = patch_str.parse::<u64>() else {
-                    return invalid_input(input, "the patch version number must be an unsigned 64-bit integer");
+                    return Err(invalid_input(input, "the patch version number must be an unsigned 64-bit integer"));
                 };
                 (minor, patch)
             }
             None => {
                 let Ok(minor) = tail.parse::<u64>() else {
-                    return invalid_input(input, "the minor version number must be an unsigned 64-bit integer");
+                    return Err(invalid_input(input, "the minor version number must be an unsigned 64-bit integer"));
                 };
                 (minor, 0)
             }
         };
 
-        Ok(Self(Version::Stable(minor, patch)))
+        Self::stable(minor, patch).map_err(|err| invalid_input(input, err))
     }
 }
 
