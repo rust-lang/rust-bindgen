@@ -183,7 +183,7 @@ impl<'ctx> CannotDerive<'ctx> {
 
             let layout_can_derive =
                 ty.layout(self.ctx).map_or(CanDerive::Yes, |l| {
-                    l.opaque().array_size_within_derive_limit(self.ctx)
+                    l.opaque().array_size_within_derive_limit()
                 });
 
             match layout_can_derive {
@@ -344,8 +344,7 @@ impl<'ctx> CannotDerive<'ctx> {
 
                         let layout_can_derive =
                             ty.layout(self.ctx).map_or(CanDerive::Yes, |l| {
-                                l.opaque()
-                                    .array_size_within_derive_limit(self.ctx)
+                                l.opaque().array_size_within_derive_limit()
                             });
                         match layout_can_derive {
                             CanDerive::Yes => {

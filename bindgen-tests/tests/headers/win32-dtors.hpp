@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.0 -- --target=x86_64-pc-windows-msvc
+// bindgen-flags: \-\-rust-target=1.33 -- --target=x86_64-pc-windows-msvc
 
 struct CppObj {
     int x;

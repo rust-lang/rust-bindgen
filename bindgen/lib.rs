@@ -526,17 +526,6 @@ impl BindgenOptions {
         for regex_set in self.abi_overrides.values_mut().chain(regex_sets) {
             regex_set.build(record_matches);
         }
-
-        let rust_target = self.rust_target;
-        #[allow(deprecated)]
-        if rust_target <= RustTarget::Stable_1_30 {
-            deprecated_target_diagnostic(rust_target, self);
-        }
-
-        // Disable `untagged_union` if the target does not support it.
-        if !self.rust_features.untagged_union {
-            self.untagged_union = false;
-        }
     }
 
     /// Update rust target version
@@ -582,27 +571,6 @@ impl BindgenOptions {
             .last()
             .and_then(|cb| cb.process_comment(&comment))
             .unwrap_or(comment)
-    }
-}
-
-fn deprecated_target_diagnostic(target: RustTarget, _options: &BindgenOptions) {
-    warn!("The {} Rust target is deprecated. If you have a need to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues", target);
-
-    #[cfg(feature = "experimental")]
-    if _options.emit_diagnostics {
-        use crate::diagnostics::{Diagnostic, Level};
-
-        let mut diagnostic = Diagnostic::default();
-        diagnostic.with_title(
-            format!("The {} Rust target is deprecated.", target),
-            Level::Warning,
-        );
-        diagnostic.add_annotation(
-            "This Rust target was passed to `--rust-target`",
-            Level::Info,
-        );
-        diagnostic.add_annotation("If you have a good reason to use this target please report it at https://github.com/rust-lang/rust-bindgen/issues", Level::Help);
-        diagnostic.display();
     }
 }
 

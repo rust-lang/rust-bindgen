@@ -37,6 +37,6 @@ impl ::std::ops::BitAndAssign for Foo {
         self.0 &= rhs.0;
     }
 }
-#[repr(C)]
+#[repr(transparent)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Foo(pub ::std::os::raw::c_int);

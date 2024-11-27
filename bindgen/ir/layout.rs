@@ -34,14 +34,9 @@ fn test_layout_for_size() {
 
 impl Layout {
     /// Gets the integer type name for a given known size.
-    pub(crate) fn known_type_for_size(
-        ctx: &BindgenContext,
-        size: usize,
-    ) -> Option<syn::Type> {
+    pub(crate) fn known_type_for_size(size: usize) -> Option<syn::Type> {
         Some(match size {
-            16 if ctx.options().rust_features.i128_and_u128 => {
-                syn::parse_quote! { u128 }
-            }
+            16 => syn::parse_quote! { u128 },
             8 => syn::parse_quote! { u64 },
             4 => syn::parse_quote! { u32 },
             2 => syn::parse_quote! { u16 },
@@ -102,17 +97,14 @@ impl Opaque {
 
     /// Return the known rust type we should use to create a correctly-aligned
     /// field with this layout.
-    pub(crate) fn known_rust_type_for_array(
-        &self,
-        ctx: &BindgenContext,
-    ) -> Option<syn::Type> {
-        Layout::known_type_for_size(ctx, self.0.align)
+    pub(crate) fn known_rust_type_for_array(&self) -> Option<syn::Type> {
+        Layout::known_type_for_size(self.0.align)
     }
 
     /// Return the array size that an opaque type for this layout should have if
     /// we know the correct type for it, or `None` otherwise.
-    pub(crate) fn array_size(&self, ctx: &BindgenContext) -> Option<usize> {
-        if self.known_rust_type_for_array(ctx).is_some() {
+    pub(crate) fn array_size(&self) -> Option<usize> {
+        if self.known_rust_type_for_array().is_some() {
             Some(self.0.size / cmp::max(self.0.align, 1))
         } else {
             None
@@ -122,12 +114,9 @@ impl Opaque {
     /// Return `true` if this opaque layout's array size will fit within the
     /// maximum number of array elements that Rust allows deriving traits
     /// with. Return `false` otherwise.
-    pub(crate) fn array_size_within_derive_limit(
-        &self,
-        ctx: &BindgenContext,
-    ) -> CanDerive {
+    pub(crate) fn array_size_within_derive_limit(&self) -> CanDerive {
         if self
-            .array_size(ctx)
+            .array_size()
             .map_or(false, |size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
         {
             CanDerive::Yes

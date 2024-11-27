@@ -82,7 +82,6 @@ macro_rules! define_rust_targets {
     (
         Nightly => {$($nightly_feature:ident $(: #$issue:literal)?),* $(,)?} $(,)?
         $(
-            $(#[$attrs:meta])*
             $variant:ident($minor:literal) => {$($feature:ident $(: #$pull:literal)?),* $(,)?},
         )*
         $(,)?
@@ -94,6 +93,7 @@ macro_rules! define_rust_targets {
                 "- [`", stringify!($nightly_feature), "`]",
                 "(", $("https://github.com/rust-lang/rust/pull/", stringify!($issue),)* ")",
             )])*
+            #[deprecated = "The use of this constant is deprecated, please use `RustTarget::nightly` instead."]
             pub const Nightly: Self = Self::nightly();
 
             /// The nightly version of Rust, which introduces the following features:"
@@ -111,7 +111,7 @@ macro_rules! define_rust_targets {
                     "- [`", stringify!($feature), "`]",
                     "(", $("https://github.com/rust-lang/rust/pull/", stringify!($pull),)* ")",
                 )])*
-                $(#[$attrs])*
+                #[deprecated = "The use of this constant is deprecated, please use `RustTarget::stable` instead."]
                 pub const $variant: Self = Self(Version::Stable($minor, 0));
             )*
 
@@ -175,29 +175,6 @@ define_rust_targets! {
     Stable_1_40(40) => { non_exhaustive: #44109 },
     Stable_1_36(36) => { maybe_uninit: #60445 },
     Stable_1_33(33) => { repr_packed_n: #57049 },
-    #[deprecated]
-    Stable_1_30(30) => {
-        core_ffi_c_void: #53910,
-        min_const_fn: #54835,
-    },
-    #[deprecated]
-    Stable_1_28(28) => { repr_transparent: #51562 },
-    #[deprecated]
-    Stable_1_27(27) => { must_use_function: #48925 },
-    #[deprecated]
-    Stable_1_26(26) => { i128_and_u128: #49101 },
-    #[deprecated]
-    Stable_1_25(25) => { repr_align: #47006 },
-    #[deprecated]
-    Stable_1_21(21) => { builtin_clone_impls: #43690 },
-    #[deprecated]
-    Stable_1_20(20) => { associated_const: #42809 },
-    #[deprecated]
-    Stable_1_19(19) => { untagged_union: #42068 },
-    #[deprecated]
-    Stable_1_17(17) => { static_lifetime_elision: #39265 },
-    #[deprecated]
-    Stable_1_0(0) => {},
 }
 
 /// Latest stable release of Rust that is supported by bindgen
@@ -330,28 +307,6 @@ mod test {
 
     #[test]
     fn target_features() {
-        let f_1_0 = RustFeatures::from(RustTarget::Stable_1_0);
-        assert!(
-            !f_1_0.static_lifetime_elision &&
-                !f_1_0.core_ffi_c_void &&
-                !f_1_0.untagged_union &&
-                !f_1_0.associated_const &&
-                !f_1_0.builtin_clone_impls &&
-                !f_1_0.repr_align &&
-                !f_1_0.thiscall_abi &&
-                !f_1_0.vectorcall_abi
-        );
-        let f_1_21 = RustFeatures::from(RustTarget::Stable_1_21);
-        assert!(
-            f_1_21.static_lifetime_elision &&
-                !f_1_21.core_ffi_c_void &&
-                f_1_21.untagged_union &&
-                f_1_21.associated_const &&
-                f_1_21.builtin_clone_impls &&
-                !f_1_21.repr_align &&
-                !f_1_21.thiscall_abi &&
-                !f_1_21.vectorcall_abi
-        );
         let features = RustFeatures::from(RustTarget::Stable_1_71);
         assert!(
             features.c_unwind_abi &&
@@ -360,13 +315,7 @@ mod test {
         );
         let f_nightly = RustFeatures::from(RustTarget::Nightly);
         assert!(
-            f_nightly.static_lifetime_elision &&
-                f_nightly.core_ffi_c_void &&
-                f_nightly.untagged_union &&
-                f_nightly.associated_const &&
-                f_nightly.builtin_clone_impls &&
-                f_nightly.maybe_uninit &&
-                f_nightly.repr_align &&
+            f_nightly.maybe_uninit &&
                 f_nightly.thiscall_abi &&
                 f_nightly.vectorcall_abi
         );
@@ -412,5 +361,7 @@ mod test {
         test_invalid_target("1.-1.0");
         test_invalid_target("1.0.-1");
         test_invalid_target("beta");
+        test_invalid_target("1.0.0");
+        test_invalid_target("1.32.0");
     }
 }

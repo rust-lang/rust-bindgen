@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.0 -- -std=c++11
+// bindgen-flags: \-\-rust-target=1.33 -- -std=c++11
 
 typedef unsigned char uint8_t;
 typedef int int32_t;
