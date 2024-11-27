@@ -344,7 +344,7 @@ impl<'a> StructLayoutTracker<'a> {
             return None;
         }
 
-        let repr_align = self.ctx.options().rust_features().repr_align;
+        let repr_align = true;
 
         // We always pad to get to the correct size if the struct is one of
         // those we can't align properly.
@@ -377,7 +377,7 @@ impl<'a> StructLayoutTracker<'a> {
     }
 
     pub(crate) fn requires_explicit_align(&self, layout: Layout) -> bool {
-        let repr_align = self.ctx.options().rust_features().repr_align;
+        let repr_align = true;
 
         // Always force explicit repr(align) for stuff more than 16-byte aligned
         // to work-around https://github.com/rust-lang/rust/issues/54341.
@@ -401,7 +401,7 @@ impl<'a> StructLayoutTracker<'a> {
     }
 
     fn padding_field(&mut self, layout: Layout) -> proc_macro2::TokenStream {
-        let ty = helpers::blob(self.ctx, layout);
+        let ty = helpers::blob(layout);
         let padding_count = self.padding_count;
 
         self.padding_count += 1;

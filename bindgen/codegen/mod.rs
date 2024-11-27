@@ -151,22 +151,16 @@ fn derives_of_item(
 ) -> DerivableTraits {
     let mut derivable_traits = DerivableTraits::empty();
 
-    let all_template_params = item.all_template_params(ctx);
-
     if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() {
         derivable_traits |= DerivableTraits::COPY;
 
-        if ctx.options().rust_features().builtin_clone_impls ||
-            !all_template_params.is_empty()
-        {
-            // FIXME: This requires extra logic if you have a big array in a
-            // templated struct. The reason for this is that the magic:
-            //     fn clone(&self) -> Self { *self }
-            // doesn't work for templates.
-            //
-            // It's not hard to fix though.
-            derivable_traits |= DerivableTraits::CLONE;
-        }
+        // FIXME: This requires extra logic if you have a big array in a
+        // templated struct. The reason for this is that the magic:
+        //     fn clone(&self) -> Self { *self }
+        // doesn't work for templates.
+        //
+        // It's not hard to fix though.
+        derivable_traits |= DerivableTraits::CLONE;
     } else if packed {
         // If the struct or union is packed, deriving from Copy is required for
         // deriving from any other trait.
@@ -743,13 +737,9 @@ impl CodeGenerator for Var {
                             };
                         });
                     } else {
-                        let lifetime = if rust_features.static_lifetime_elision
-                        {
-                            None
-                        } else {
-                            Some(quote! { 'static })
-                        }
-                        .into_iter();
+                        let lifetime =
+                            if true { None } else { Some(quote! { 'static }) }
+                                .into_iter();
 
                         result.push(quote! {
                             #(#attrs)*
@@ -1024,12 +1014,6 @@ impl CodeGenerator for Type {
                         pub type #rust_name
                     },
                     AliasVariation::NewType | AliasVariation::NewTypeDeref => {
-                        assert!(
-                            ctx.options().rust_features().repr_transparent,
-                            "repr_transparent feature is required to use {:?}",
-                            alias_style
-                        );
-
                         let mut attributes =
                             vec![attributes::repr("transparent")];
                         let packed = false; // Types can't be packed in Rust.
@@ -1644,11 +1628,10 @@ impl Bitfield {
         let bitfield_ty_layout = bitfield_ty
             .layout(ctx)
             .expect("Bitfield without layout? Gah!");
-        let bitfield_int_ty = helpers::integer_type(ctx, bitfield_ty_layout)
-            .expect(
-                "Should already have verified that the bitfield is \
+        let bitfield_int_ty = helpers::integer_type(bitfield_ty_layout).expect(
+            "Should already have verified that the bitfield is \
                  representable as an int",
-            );
+        );
 
         let offset = self.offset_into_unit();
         let width = self.width() as u8;
@@ -1950,17 +1933,16 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         let bitfield_ty_layout = bitfield_ty
             .layout(ctx)
             .expect("Bitfield without layout? Gah!");
-        let bitfield_int_ty =
-            match helpers::integer_type(ctx, bitfield_ty_layout) {
-                Some(int_ty) => {
-                    *bitfield_representable_as_int = true;
-                    int_ty
-                }
-                None => {
-                    *bitfield_representable_as_int = false;
-                    return;
-                }
-            };
+        let bitfield_int_ty = match helpers::integer_type(bitfield_ty_layout) {
+            Some(int_ty) => {
+                *bitfield_representable_as_int = true;
+                int_ty
+            }
+            None => {
+                *bitfield_representable_as_int = false;
+                return;
+            }
+        };
 
         let bitfield_ty =
             bitfield_ty.to_rust_ty_or_opaque(ctx, bitfield_ty_item);
@@ -2275,7 +2257,7 @@ impl CodeGenerator for CompInfo {
 
             if has_address {
                 let layout = Layout::new(1, 1);
-                let ty = helpers::blob(ctx, Layout::new(1, 1));
+                let ty = helpers::blob(Layout::new(1, 1));
                 struct_layout.saw_field_with_layout(
                     "_address",
                     layout,
@@ -2292,7 +2274,7 @@ impl CodeGenerator for CompInfo {
                 Some(l) => {
                     explicit_align = Some(l.align);
 
-                    let ty = helpers::blob(ctx, l);
+                    let ty = helpers::blob(l);
                     fields.push(quote! {
                         pub _bindgen_opaque_blob: #ty ,
                     });
@@ -2314,15 +2296,6 @@ impl CodeGenerator for CompInfo {
                         packed = true;
                     } else {
                         explicit_align = Some(layout.align);
-                        if !ctx.options().rust_features.repr_align {
-                            let ty = helpers::blob(
-                                ctx,
-                                Layout::new(0, layout.align),
-                            );
-                            fields.push(quote! {
-                                pub __bindgen_align: #ty ,
-                            });
-                        }
                     }
                 }
             }
@@ -2335,7 +2308,7 @@ impl CodeGenerator for CompInfo {
             }
 
             if !struct_layout.is_rust_union() {
-                let ty = helpers::blob(ctx, layout);
+                let ty = helpers::blob(layout);
                 fields.push(quote! {
                     pub bindgen_union_field: #ty ,
                 })
@@ -2425,7 +2398,7 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::repr("C"));
         }
 
-        if ctx.options().rust_features().repr_align {
+        if true {
             if let Some(explicit) = explicit_align {
                 // Ensure that the struct has the correct alignment even in
                 // presence of alignas.
@@ -2582,19 +2555,14 @@ impl CodeGenerator for CompInfo {
                     let align_of_err =
                         format!("Alignment of {canonical_ident}");
 
-                    let check_struct_align = if align >
-                        ctx.target_pointer_size() &&
-                        !ctx.options().rust_features().repr_align
-                    {
-                        None
-                    } else if compile_time {
-                        Some(quote! {
+                    let check_struct_align = if compile_time {
+                        quote! {
                             [#align_of_err][#align_of_expr - #align];
-                        })
+                        }
                     } else {
-                        Some(quote! {
+                        quote! {
                             assert_eq!(#align_of_expr, #align, #align_of_err);
-                        })
+                        }
                     };
 
                     let should_skip_field_offset_checks = is_opaque;
@@ -3126,9 +3094,7 @@ impl Method {
 
         let mut attrs = vec![attributes::inline()];
 
-        if signature.must_use() &&
-            ctx.options().rust_features().must_use_function
-        {
+        if signature.must_use() {
             attrs.push(attributes::must_use());
         }
 
@@ -3396,10 +3362,7 @@ impl<'a> EnumBuilder<'a> {
                 is_global,
                 ..
             } => {
-                if ctx.options().rust_features().associated_const &&
-                    is_ty_named &&
-                    !is_global
-                {
+                if is_ty_named && !is_global {
                     let enum_ident = ctx.rust_ident(canonical_name);
                     let variant_ident = ctx.rust_ident(variant_name);
 
@@ -3654,7 +3617,7 @@ impl CodeGenerator for Enum {
                 }
             }
             EnumVariation::NewType { .. } => {
-                if ctx.options().rust_features.repr_transparent {
+                if true {
                     attrs.push(attributes::repr("transparent"));
                 } else {
                     attrs.push(attributes::repr("C"));
@@ -3816,9 +3779,7 @@ impl CodeGenerator for Enum {
 
                         let existing_variant_name = entry.get();
                         // Use associated constants for named enums.
-                        if enum_ty.name().is_some() &&
-                            ctx.options().rust_features().associated_const
-                        {
+                        if enum_ty.name().is_some() {
                             let enum_canonical_name = &ident;
                             let variant_name =
                                 ctx.rust_ident_raw(&*mangled_name);
@@ -4052,8 +4013,7 @@ pub(crate) trait TryToOpaque {
         ctx: &BindgenContext,
         extra: &Self::Extra,
     ) -> error::Result<syn::Type> {
-        self.try_get_layout(ctx, extra)
-            .map(|layout| helpers::blob(ctx, layout))
+        self.try_get_layout(ctx, extra).map(helpers::blob)
     }
 }
 
@@ -4079,7 +4039,7 @@ pub(crate) trait ToOpaque: TryToOpaque {
         extra: &Self::Extra,
     ) -> syn::Type {
         let layout = self.get_layout(ctx, extra);
-        helpers::blob(ctx, layout)
+        helpers::blob(layout)
     }
 }
 
@@ -4130,7 +4090,7 @@ where
     ) -> error::Result<syn::Type> {
         self.try_to_rust_ty(ctx, extra).or_else(|_| {
             if let Ok(layout) = self.try_get_layout(ctx, extra) {
-                Ok(helpers::blob(ctx, layout))
+                Ok(helpers::blob(layout))
             } else {
                 Err(error::Error::NoLayoutForOpaqueBlob)
             }
@@ -4583,7 +4543,7 @@ impl CodeGenerator for Function {
 
         let mut attributes = vec![];
 
-        if ctx.options().rust_features().must_use_function {
+        if true {
             let must_use = signature.must_use() || {
                 let ret_ty = signature
                     .return_type()
@@ -5316,7 +5276,7 @@ pub(crate) mod utils {
         } else {
             include_str!("./bitfield_unit.rs")
         };
-        let bitfield_unit_src = if ctx.options().rust_features().min_const_fn {
+        let bitfield_unit_src = if true {
             Cow::Borrowed(bitfield_unit_src)
         } else {
             Cow::Owned(bitfield_unit_src.replace("const fn ", "fn "))
@@ -5382,7 +5342,7 @@ pub(crate) mod utils {
 
         // If the target supports `const fn`, declare eligible functions
         // as `const fn` else just `fn`.
-        let const_fn = if ctx.options().rust_features().min_const_fn {
+        let const_fn = if true {
             quote! { const fn }
         } else {
             quote! { fn }
@@ -5494,7 +5454,7 @@ pub(crate) mod utils {
 
         // If the target supports `const fn`, declare eligible functions
         // as `const fn` else just `fn`.
-        let const_fn = if ctx.options().rust_features().min_const_fn {
+        let const_fn = if true {
             quote! { const fn }
         } else {
             quote! { fn }

@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.27
+// bindgen-flags: \-\-rust-target=1.33
 
 class Foo {
 public:

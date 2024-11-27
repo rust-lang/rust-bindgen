@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.25
+// bindgen-flags: \-\-rust-target=1.33
 // bindgen-unstable
 
 struct __attribute__((aligned(16))) RTCRay

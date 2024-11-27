@@ -1,4 +1,4 @@
-// bindgen-flags: --bitfield-enum "Foo" --rust-target 1.28  -- -std=c++11
+// bindgen-flags: --bitfield-enum "Foo" \-\-rust-target=1.33  -- -std=c++11
 
 enum Foo {
   Bar = 1 << 1,

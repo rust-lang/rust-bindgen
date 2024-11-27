@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.27 --enable-function-attribute-detection
+// bindgen-flags: \-\-rust-target=1.33 --enable-function-attribute-detection
 
 class Foo {
 public:

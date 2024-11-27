@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.0 --enable-cxx-namespaces
+// bindgen-flags: \-\-rust-target=1.33 --enable-cxx-namespaces
 
 namespace foo {
   union Bar {
