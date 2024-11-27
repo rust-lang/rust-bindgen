@@ -248,7 +248,7 @@ impl Type {
             return Cow::Borrowed(name);
         }
 
-        let name = name.replace(|c| c == ' ' || c == ':' || c == '.', "_");
+        let name = name.replace([' ', ':', '.'], "_");
         Cow::Owned(name)
     }
 
