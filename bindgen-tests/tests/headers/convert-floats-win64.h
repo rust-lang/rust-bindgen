@@ -1,4 +1,4 @@
-// bindgen-flags: --no-convert-floats -- --target=x86_64-unknown-linux-gnu
+// bindgen-flags: -- --target=x86_64-pc-windows-msvc
 
 struct foo {
   float bar, baz;
