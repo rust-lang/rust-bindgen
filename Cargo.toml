@@ -54,3 +54,4 @@ release = false
 [profile.dist]
 inherits = "release"
 lto = "thin"
+
