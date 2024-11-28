@@ -737,7 +737,7 @@ impl CodeGenerator for Var {
                     {
                         result.push(quote! {
                             #(#attrs)*
-                            #[allow(unsafe_code)]
+                            #[allow(unsafe_code, clippy::manual_c_str_literals)]
                             pub const #canonical_ident: &#cstr_ty = unsafe {
                                 #cstr_ty::from_bytes_with_nul_unchecked(#bytes)
                             };
