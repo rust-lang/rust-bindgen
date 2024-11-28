@@ -717,26 +717,38 @@ impl CodeGenerator for Var {
                     let len = proc_macro2::Literal::usize_unsuffixed(
                         cstr_bytes.len(),
                     );
+                    let cstr =
+                        if options.generate_cstr && rust_features.const_cstr {
+                            CStr::from_bytes_with_nul(&cstr_bytes).ok()
+                        } else {
+                            None
+                        };
 
-                    // TODO: Here we ignore the type we just made up, probably
-                    // we should refactor how the variable type and ty ID work.
-                    let array_ty = quote! { [u8; #len] };
-                    let cstr_ty = quote! { ::#prefix::ffi::CStr };
-
-                    let bytes = proc_macro2::Literal::byte_string(&cstr_bytes);
-
-                    if options.generate_cstr &&
-                        rust_features.const_cstr &&
-                        CStr::from_bytes_with_nul(&cstr_bytes).is_ok()
-                    {
-                        result.push(quote! {
-                            #(#attrs)*
-                            #[allow(unsafe_code)]
-                            pub const #canonical_ident: &#cstr_ty = unsafe {
-                                #cstr_ty::from_bytes_with_nul_unchecked(#bytes)
-                            };
-                        });
+                    if let Some(cstr) = cstr {
+                        let cstr_ty = quote! { ::#prefix::ffi::CStr };
+                        if rust_features.literal_cstr {
+                            let cstr = proc_macro2::Literal::c_string(&cstr);
+                            result.push(quote! {
+                                #(#attrs)*
+                                pub const #canonical_ident: &#cstr_ty = #cstr;
+                            });
+                        } else {
+                            let bytes =
+                                proc_macro2::Literal::byte_string(&cstr_bytes);
+                            result.push(quote! {
+                                #(#attrs)*
+                                #[allow(unsafe_code)]
+                                pub const #canonical_ident: &#cstr_ty = unsafe {
+                                    #cstr_ty::from_bytes_with_nul_unchecked(#bytes)
+                                };
+                            });
+                        }
                     } else {
+                        // TODO: Here we ignore the type we just made up, probably
+                        // we should refactor how the variable type and ty ID work.
+                        let array_ty = quote! { [u8; #len] };
+                        let bytes =
+                            proc_macro2::Literal::byte_string(&cstr_bytes);
                         let lifetime =
                             if true { None } else { Some(quote! { 'static }) }
                                 .into_iter();
