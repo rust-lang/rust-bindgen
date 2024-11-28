@@ -120,10 +120,6 @@ macro_rules! define_rust_targets {
             }
         }
 
-        #[cfg(feature = "__cli")]
-        /// Strings of allowed `RustTarget` values
-        pub(crate) const RUST_TARGET_STRINGS: &[&str] = &[$(concat!("1.", stringify!($minor)),)*];
-
         #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
         pub(crate) struct RustFeatures {
             $($(pub(crate) $feature: bool,)*)*

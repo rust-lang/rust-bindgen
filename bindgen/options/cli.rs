@@ -3,7 +3,7 @@ use crate::{
     callbacks::{
         AttributeInfo, DeriveInfo, ItemInfo, ParseCallbacks, TypeKind,
     },
-    features::RUST_TARGET_STRINGS,
+    features::EARLIEST_STABLE_RUST,
     regex_set::RegexSet,
     Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
     FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
@@ -21,8 +21,7 @@ use std::{fs::File, process::exit};
 
 fn rust_target_help() -> String {
     format!(
-        "Version of the Rust compiler to target. Valid options are: {:?}. Defaults to {}.",
-        RUST_TARGET_STRINGS,
+        "Version of the Rust compiler to target. Any Rust version after {EARLIEST_STABLE_RUST} is supported. Defaults to {}.",
         RustTarget::default()
     )
 }
