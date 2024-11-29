@@ -79,12 +79,92 @@ impl fmt::Display for InvalidRustTarget {
     }
 }
 
+/// This macro defines the Rust editions supported by bindgen.
+macro_rules! define_rust_editions {
+    ($($variant:ident($value:literal) => $minor:literal,)*) => {
+        #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+        pub enum RustEdition {
+            $(
+                #[doc = concat!("The ", stringify!($value), " edition of Rust.")]
+                $variant,
+            )*
+        }
+
+        impl FromStr for RustEdition {
+            type Err = InvalidRustEdition;
+
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                match s {
+                    $(stringify!($value) => Ok(Self::$variant),)*
+                    _ => Err(InvalidRustEdition(s.to_owned())),
+                }
+            }
+        }
+
+        impl fmt::Display for RustEdition {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                match self {
+                    $(Self::$variant => stringify!($value).fmt(f),)*
+                }
+            }
+        }
+
+        impl RustEdition {
+            pub(crate) const ALL: [Self; [$($value,)*].len()] = [$(Self::$variant,)*];
+
+            pub(crate) fn is_available(self, target: RustTarget) -> bool {
+                let Some(minor) = target.minor() else {
+                    return true;
+                };
+
+                match self {
+                    $(Self::$variant => $minor <= minor,)*
+                }
+            }
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct InvalidRustEdition(String);
+
+impl fmt::Display for InvalidRustEdition {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "\"{}\" is not a valid Rust edition", self.0)
+    }
+}
+
+impl std::error::Error for InvalidRustEdition {}
+
+define_rust_editions! {
+    Edition2018(2018) => 31,
+    Edition2021(2021) => 56,
+}
+
+impl RustTarget {
+    /// Returns the latest edition supported by this target.
+    pub(crate) fn latest_edition(self) -> RustEdition {
+        RustEdition::ALL
+            .iter()
+            .rev()
+            .find(|edition| edition.is_available(self))
+            .copied()
+            .expect("bindgen should always support at least one edition")
+    }
+}
+
+impl Default for RustEdition {
+    fn default() -> Self {
+        RustTarget::default().latest_edition()
+    }
+}
+
 /// This macro defines the [`RustTarget`] and [`RustFeatures`] types.
 macro_rules! define_rust_targets {
     (
-        Nightly => {$($nightly_feature:ident $(: #$issue:literal)?),* $(,)?} $(,)?
+        Nightly => {$($nightly_feature:ident $(($nightly_edition:literal))* $(: #$issue:literal)?),* $(,)?} $(,)?
         $(
-            $variant:ident($minor:literal) => {$($feature:ident $(: #$pull:literal)?),* $(,)?},
+            $variant:ident($minor:literal) => {$($feature:ident $(($edition:literal))* $(: #$pull:literal)?),* $(,)?},
         )*
         $(,)?
     ) => {
@@ -128,23 +208,35 @@ macro_rules! define_rust_targets {
             $(pub(crate) $nightly_feature: bool,)*
         }
 
-        impl From<RustTarget> for RustFeatures {
-            fn from(target: RustTarget) -> Self {
-                if target == RustTarget::Nightly {
-                    return Self {
-                        $($($feature: true,)*)*
-                        $($nightly_feature: true,)*
-                    };
-                }
-
+        impl RustFeatures {
+            /// Compute the features that must be enabled in a specific Rust target with a specific edition.
+            pub(crate) fn new(target: RustTarget, edition: RustEdition) -> Self {
                 let mut features = Self {
                     $($($feature: false,)*)*
                     $($nightly_feature: false,)*
                 };
 
-                $(if target.is_compatible(&RustTarget::$variant) {
-                    $(features.$feature = true;)*
-                })*
+                if target.is_compatible(&RustTarget::nightly()) {
+                    $(
+                        let editions: &[RustEdition] = &[$(stringify!($nightly_edition).parse::<RustEdition>().ok().expect("invalid edition"),)*];
+
+                        if editions.is_empty() || editions.contains(&edition) {
+                            features.$nightly_feature = true;
+                        }
+                    )*
+                }
+
+                $(
+                    if target.is_compatible(&RustTarget::$variant) {
+                        $(
+                            let editions: &[RustEdition] = &[$(stringify!($edition).parse::<RustEdition>().ok().expect("invalid edition"),)*];
+
+                            if editions.is_empty() || editions.contains(&edition) {
+                                features.$feature = true;
+                            }
+                        )*
+                    }
+                )*
 
                 features
             }
@@ -163,7 +255,7 @@ define_rust_targets! {
     },
     Stable_1_77(77) => {
         offset_of: #106655,
-        literal_cstr: #117472,
+        literal_cstr(2021): #117472,
     },
     Stable_1_73(73) => { thiscall_abi: #42202 },
     Stable_1_71(71) => { c_unwind_abi: #106075 },
@@ -296,9 +388,17 @@ impl FromStr for RustTarget {
     }
 }
 
+impl RustFeatures {
+    /// Compute the features that must be enabled in a specific Rust target with the latest edition
+    /// available in that target.
+    pub(crate) fn new_with_latest_edition(target: RustTarget) -> Self {
+        Self::new(target, target.latest_edition())
+    }
+}
+
 impl Default for RustFeatures {
     fn default() -> Self {
-        RustTarget::default().into()
+        Self::new_with_latest_edition(RustTarget::default())
     }
 }
 
@@ -308,24 +408,39 @@ mod test {
 
     #[test]
     fn target_features() {
-        let features = RustFeatures::from(RustTarget::Stable_1_71);
+        let features =
+            RustFeatures::new_with_latest_edition(RustTarget::Stable_1_71);
         assert!(
             features.c_unwind_abi &&
                 features.abi_efiapi &&
                 !features.thiscall_abi
         );
-        let f_nightly = RustFeatures::from(RustTarget::Nightly);
+
+        let features = RustFeatures::new(
+            RustTarget::Stable_1_77,
+            RustEdition::Edition2018,
+        );
+        assert!(!features.literal_cstr);
+
+        let features =
+            RustFeatures::new_with_latest_edition(RustTarget::Stable_1_77);
+        assert!(features.literal_cstr);
+
+        let f_nightly =
+            RustFeatures::new_with_latest_edition(RustTarget::Nightly);
         assert!(
-            f_nightly.maybe_uninit &&
-                f_nightly.thiscall_abi &&
-                f_nightly.vectorcall_abi
+            f_nightly.vectorcall_abi &&
+                f_nightly.ptr_metadata &&
+                f_nightly.layout_for_ptr
         );
     }
 
     fn test_target(input: &str, expected: RustTarget) {
         // Two targets are equivalent if they enable the same set of features
-        let expected = RustFeatures::from(expected);
-        let found = RustFeatures::from(input.parse::<RustTarget>().unwrap());
+        let expected = RustFeatures::new_with_latest_edition(expected);
+        let found = RustFeatures::new_with_latest_edition(
+            input.parse::<RustTarget>().unwrap(),
+        );
         assert_eq!(
             expected,
             found,

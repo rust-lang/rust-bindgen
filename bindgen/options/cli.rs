@@ -3,7 +3,7 @@ use crate::{
     callbacks::{
         AttributeInfo, DeriveInfo, ItemInfo, ParseCallbacks, TypeKind,
     },
-    features::EARLIEST_STABLE_RUST,
+    features::{RustEdition, EARLIEST_STABLE_RUST},
     regex_set::RegexSet,
     Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
     FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
@@ -24,6 +24,10 @@ fn rust_target_help() -> String {
         "Version of the Rust compiler to target. Any Rust version after {EARLIEST_STABLE_RUST} is supported. Defaults to {}.",
         RustTarget::default()
     )
+}
+
+fn rust_edition_help() -> String {
+    format!("Rust edition to target. Defaults to the latest edition supported by the chosen Rust target. Possible values: ({}). ", RustEdition::ALL.map(|e| e.to_string()).join("|"))
 }
 
 fn parse_codegen_config(
@@ -334,6 +338,8 @@ struct BindgenCommand {
     module_raw_line: Vec<String>,
     #[arg(long, help = rust_target_help())]
     rust_target: Option<RustTarget>,
+    #[arg(long, value_name = "EDITION", help = rust_edition_help())]
+    rust_edition: Option<RustEdition>,
     /// Use types from Rust core instead of std.
     #[arg(long)]
     use_core: bool,
@@ -588,6 +594,7 @@ where
         raw_line,
         module_raw_line,
         rust_target,
+        rust_edition,
         use_core,
         conservative_inline_namespaces,
         allowlist_function,
@@ -821,6 +828,7 @@ where
             },
             header,
             rust_target,
+            rust_edition,
             default_enum_style,
             bitfield_enum,
             newtype_enum,

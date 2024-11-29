@@ -57,7 +57,7 @@ pub use ir::function::Abi;
 pub use options::cli::builder_from_flags;
 
 use codegen::CodegenError;
-use features::RustFeatures;
+use features::{RustEdition, RustFeatures};
 use ir::comment;
 use ir::context::{BindgenContext, ItemId};
 use ir::item::Item;
@@ -316,6 +316,22 @@ fn get_extra_clang_args(
 impl Builder {
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate(mut self) -> Result<Bindings, BindgenError> {
+        // Keep rust_features synced with rust_target
+        self.options.rust_features = match self.options.rust_edition {
+            Some(edition) => {
+                if !edition.is_available(self.options.rust_target) {
+                    return Err(BindgenError::UnsupportedEdition(
+                        edition,
+                        self.options.rust_target,
+                    ));
+                }
+                RustFeatures::new(self.options.rust_target, edition)
+            }
+            None => {
+                RustFeatures::new_with_latest_edition(self.options.rust_target)
+            }
+        };
+
         // Add any extra arguments from the environment to the clang command line.
         self.options.clang_args.extend(
             get_extra_clang_args(&self.options.parse_callbacks)
@@ -530,9 +546,6 @@ impl BindgenOptions {
     /// Update rust target version
     pub fn set_rust_target(&mut self, rust_target: RustTarget) {
         self.rust_target = rust_target;
-
-        // Keep rust_features synced with rust_target
-        self.rust_features = rust_target.into();
     }
 
     /// Get features supported by target Rust version
@@ -612,6 +625,8 @@ pub enum BindgenError {
     ClangDiagnostic(String),
     /// Code generation reported an error.
     Codegen(CodegenError),
+    /// The passed edition is not available on that Rust target.
+    UnsupportedEdition(RustEdition, RustTarget),
 }
 
 impl std::fmt::Display for BindgenError {
@@ -631,6 +646,9 @@ impl std::fmt::Display for BindgenError {
             }
             BindgenError::Codegen(err) => {
                 write!(f, "codegen error: {err}")
+            }
+            BindgenError::UnsupportedEdition(edition, target) => {
+                write!(f, "edition {edition} is not available on Rust {target}")
             }
         }
     }
