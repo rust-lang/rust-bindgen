@@ -1,4 +1,5 @@
 [workspace]
+resolver = "2"
 members = [
     "bindgen",
     "bindgen-cli",
@@ -7,7 +8,6 @@ members = [
     "bindgen-tests/tests/quickchecking",
     "bindgen-tests/tests/expectations",
 ]
-
 default-members = [
     "bindgen",
     "bindgen-cli",
@@ -54,4 +54,3 @@ release = false
 [profile.dist]
 inherits = "release"
 lto = "thin"
-

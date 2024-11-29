@@ -74,7 +74,6 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::rc::Rc;
 use std::str::FromStr;
-use std::sync::{Arc, OnceLock};
 
 // Some convenient typedefs for a fast hash map and hash set.
 type HashMap<K, V> = rustc_hash::FxHashMap<K, V>;
@@ -576,6 +575,8 @@ impl BindgenOptions {
 
 #[cfg(feature = "runtime")]
 fn ensure_libclang_is_loaded() {
+    use std::sync::{Arc, OnceLock};
+
     if clang_sys::is_loaded() {
         return;
     }
