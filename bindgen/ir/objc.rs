@@ -262,10 +262,7 @@ impl ObjCMethod {
                     // unless it is `crate`, `self`, `super` or `Self`, so we try to add the `_`
                     // suffix to it and parse it.
                     if ["crate", "self", "super", "Self"].contains(&name) {
-                        Some(Ident::new(
-                            &format!("{}_", name),
-                            Span::call_site(),
-                        ))
+                        Some(Ident::new(&format!("{name}_"), Span::call_site()))
                     } else {
                         Some(Ident::new(name, Span::call_site()))
                     }
@@ -278,11 +275,11 @@ impl ObjCMethod {
                     Some(
                         syn::parse_str::<Ident>(name)
                             .or_else(|err| {
-                                syn::parse_str::<Ident>(&format!("r#{}", name))
+                                syn::parse_str::<Ident>(&format!("r#{name}"))
                                     .map_err(|_| err)
                             })
                             .or_else(|err| {
-                                syn::parse_str::<Ident>(&format!("{}_", name))
+                                syn::parse_str::<Ident>(&format!("{name}_"))
                                     .map_err(|_| err)
                             })
                             .expect("Invalid identifier"),
@@ -302,9 +299,7 @@ impl ObjCMethod {
         // Check right amount of arguments
         assert!(
             args.len() == split_name.len() - 1,
-            "Incorrect method name or arguments for objc method, {:?} vs {:?}",
-            args,
-            split_name
+            "Incorrect method name or arguments for objc method, {args:?} vs {split_name:?}"
         );
 
         // Get arguments without type signatures to pass to `msg_send!`

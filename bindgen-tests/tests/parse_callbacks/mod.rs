@@ -66,7 +66,7 @@ impl ParseCallbacks for EnumVariantRename {
         original_variant_name: &str,
         _variant_value: EnumVariantValue,
     ) -> Option<String> {
-        Some(format!("RENAMED_{}", original_variant_name))
+        Some(format!("RENAMED_{original_variant_name}"))
     }
 }
 
@@ -172,7 +172,7 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
                     ),
                 })
             } else {
-                panic!("Couldn't find name ParseCallbacks: {}", cb)
+                panic!("Couldn't find name ParseCallbacks: {cb}")
             }
         }
     }

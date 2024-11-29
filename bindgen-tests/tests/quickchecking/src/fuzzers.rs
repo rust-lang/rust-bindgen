@@ -201,11 +201,11 @@ impl Arbitrary for DeclarationC {
 impl fmt::Display for DeclarationC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
-            DeclarationC::FunctionPtrDecl(ref d) => write!(f, "{}", d),
-            DeclarationC::StructDecl(ref d) => write!(f, "{}", d),
-            DeclarationC::UnionDecl(ref d) => write!(f, "{}", d),
-            DeclarationC::VariableDecl(ref d) => write!(f, "{}", d),
-            DeclarationC::FunctionDecl(ref d) => write!(f, "{}", d),
+            DeclarationC::FunctionPtrDecl(ref d) => write!(f, "{d}"),
+            DeclarationC::StructDecl(ref d) => write!(f, "{d}"),
+            DeclarationC::UnionDecl(ref d) => write!(f, "{d}"),
+            DeclarationC::VariableDecl(ref d) => write!(f, "{d}"),
+            DeclarationC::FunctionDecl(ref d) => write!(f, "{d}"),
         }
     }
 }
@@ -225,9 +225,9 @@ impl fmt::Display for DeclarationListC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut display = String::new();
         for decl in &self.decls {
-            display += &format!("{}", decl);
+            display += &format!("{decl}");
         }
-        write!(f, "{}", display)
+        write!(f, "{display}")
     }
 }
 
@@ -347,7 +347,7 @@ impl fmt::Display for ArrayDimensionC {
 /// identifiers unique.
 impl MakeUnique for BasicTypeDeclarationC {
     fn make_unique(&mut self, stamp: usize) {
-        self.ident_id += &format!("_{}", stamp);
+        self.ident_id += &format!("_{stamp}");
     }
 }
 
@@ -384,7 +384,7 @@ impl fmt::Display for BasicTypeDeclarationC {
 /// identifiers unique.
 impl MakeUnique for StructDeclarationC {
     fn make_unique(&mut self, stamp: usize) {
-        self.ident_id += &format!("_{}", stamp);
+        self.ident_id += &format!("_{stamp}");
     }
 }
 
@@ -432,7 +432,7 @@ impl fmt::Display for StructDeclarationC {
 /// identifiers unique.
 impl MakeUnique for UnionDeclarationC {
     fn make_unique(&mut self, stamp: usize) {
-        self.ident_id += &format!("_{}", stamp);
+        self.ident_id += &format!("_{stamp}");
     }
 }
 
@@ -480,7 +480,7 @@ impl fmt::Display for UnionDeclarationC {
 /// FunctionPointerDeclarationC identifiers unique.
 impl MakeUnique for FunctionPointerDeclarationC {
     fn make_unique(&mut self, stamp: usize) {
-        self.ident_id += &format!("_{}", stamp);
+        self.ident_id += &format!("_{stamp}");
     }
 }
 
@@ -517,7 +517,7 @@ impl fmt::Display for FunctionPointerDeclarationC {
 /// identifiers unique.
 impl MakeUnique for FunctionPrototypeC {
     fn make_unique(&mut self, stamp: usize) {
-        self.ident_id += &format!("_{}", stamp);
+        self.ident_id += &format!("_{stamp}");
     }
 }
 
@@ -589,11 +589,11 @@ impl fmt::Display for ParameterListC {
         let mut display = String::new();
         for (i, p) in self.params.iter().enumerate() {
             match i {
-                0 => display += &format!("{}", p),
-                _ => display += &format!(",{}", p),
+                0 => display += &format!("{p}"),
+                _ => display += &format!(",{p}"),
             }
         }
-        write!(f, "{}", display)
+        write!(f, "{display}")
     }
 }
 
@@ -614,9 +614,9 @@ impl fmt::Display for HeaderC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut display = String::new();
         for decl in &self.def.decls {
-            display += &format!("{}", decl);
+            display += &format!("{decl}");
         }
-        write!(f, "{}", display)
+        write!(f, "{display}")
     }
 }
 
@@ -624,7 +624,7 @@ impl fmt::Display for HeaderC {
 /// generated C code rather than the data structures that contain it.
 impl fmt::Debug for HeaderC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
+        write!(f, "{self}")
     }
 }
 

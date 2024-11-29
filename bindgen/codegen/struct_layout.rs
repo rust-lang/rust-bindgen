@@ -407,7 +407,7 @@ impl<'a> StructLayoutTracker<'a> {
         self.padding_count += 1;
 
         let padding_field_name = Ident::new(
-            &format!("__bindgen_padding_{}", padding_count),
+            &format!("__bindgen_padding_{padding_count}"),
             Span::call_site(),
         );
 

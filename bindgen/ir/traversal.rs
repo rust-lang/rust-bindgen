@@ -287,8 +287,7 @@ impl<'ctx> TraversalStorage<'ctx> for Paths<'ctx> {
             }
             path.reverse();
             panic!(
-                "Found reference to dangling id = {:?}\nvia path = {:?}",
-                item, path
+                "Found reference to dangling id = {item:?}\nvia path = {path:?}"
             );
         }
 

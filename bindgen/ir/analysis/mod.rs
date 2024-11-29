@@ -370,7 +370,7 @@ mod tests {
     fn monotone() {
         let g = Graph::make_test_graph();
         let reachable = analyze::<ReachableFrom>(&g);
-        println!("reachable = {:#?}", reachable);
+        println!("reachable = {reachable:#?}");
 
         fn nodes<A>(nodes: A) -> HashSet<Node>
         where
@@ -388,7 +388,7 @@ mod tests {
         expected.insert(Node(6), nodes([8]));
         expected.insert(Node(7), nodes([3, 4, 5, 6, 7, 8]));
         expected.insert(Node(8), nodes([]));
-        println!("expected = {:#?}", expected);
+        println!("expected = {expected:#?}");
 
         assert_eq!(reachable, expected);
     }

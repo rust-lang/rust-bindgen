@@ -158,11 +158,7 @@ impl DotAttributes for Function {
         if let Some(ref mangled) = self.mangled_name {
             let mangled: String =
                 mangled.chars().flat_map(|c| c.escape_default()).collect();
-            writeln!(
-                out,
-                "<tr><td>mangled name</td><td>{}</td></tr>",
-                mangled
-            )?;
+            writeln!(out, "<tr><td>mangled name</td><td>{mangled}</td></tr>")?;
         }
 
         Ok(())
@@ -209,7 +205,7 @@ impl FromStr for Abi {
             "win64" => Ok(Self::Win64),
             "C-unwind" => Ok(Self::CUnwind),
             "system" => Ok(Self::System),
-            _ => Err(format!("Invalid or unknown ABI {:?}", s)),
+            _ => Err(format!("Invalid or unknown ABI {s:?}")),
         }
     }
 }
@@ -261,8 +257,7 @@ impl quote::ToTokens for ClangAbi {
         match *self {
             Self::Known(abi) => abi.to_tokens(tokens),
             Self::Unknown(cc) => panic!(
-                "Cannot turn unknown calling convention to tokens: {:?}",
-                cc
+                "Cannot turn unknown calling convention to tokens: {cc:?}"
             ),
         }
     }

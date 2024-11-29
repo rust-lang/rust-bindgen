@@ -94,7 +94,7 @@ impl RegexSet {
         record_matches: bool,
         _name: Option<&'static str>,
     ) {
-        let items = self.items.iter().map(|item| format!("^({})$", item));
+        let items = self.items.iter().map(|item| format!("^({item})$"));
         self.record_matches = record_matches;
         self.set = match RxSet::new(items) {
             Ok(x) => Some(x),
@@ -189,7 +189,7 @@ fn invalid_regex_warning(
     }
 
     diagnostic.add_annotation(
-        format!("This regular expression was passed via `{}`.", name),
+        format!("This regular expression was passed via `{name}`."),
         Level::Note,
     );
 

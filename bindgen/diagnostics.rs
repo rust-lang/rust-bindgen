@@ -93,10 +93,10 @@ impl<'a> Diagnostic<'a> {
             let hide_warning = "\r        \r";
             let string = dl.to_string();
             for line in string.lines() {
-                println!("cargo:warning={}{}", hide_warning, line);
+                println!("cargo:warning={hide_warning}{line}");
             }
         } else {
-            eprintln!("{}\n", dl);
+            eprintln!("{dl}\n");
         }
     }
 }
@@ -126,8 +126,7 @@ impl<'a> Slice<'a> {
         line: usize,
         col: usize,
     ) -> &mut Self {
-        write!(name, ":{}:{}", line, col)
-            .expect("Writing to a string cannot fail");
+        write!(name, ":{line}:{col}").expect("Writing to a string cannot fail");
         self.filename = Some(name);
         self.line = Some(line);
         self

@@ -191,7 +191,7 @@ impl FromStr for Formatter {
             "rustfmt" => Ok(Self::Rustfmt),
             #[cfg(feature = "prettyplease")]
             "prettyplease" => Ok(Self::Prettyplease),
-            _ => Err(format!("`{}` is not a valid formatter", s)),
+            _ => Err(format!("`{s}` is not a valid formatter")),
         }
     }
 }
@@ -627,10 +627,10 @@ impl std::fmt::Display for BindgenError {
                 write!(f, "header '{}' does not exist.", h.display())
             }
             BindgenError::ClangDiagnostic(message) => {
-                write!(f, "clang diagnosed error: {}", message)
+                write!(f, "clang diagnosed error: {message}")
             }
             BindgenError::Codegen(err) => {
-                write!(f, "codegen error: {}", err)
+                write!(f, "codegen error: {err}")
             }
         }
     }
@@ -748,7 +748,7 @@ impl Bindings {
         if !explicit_target && !is_host_build {
             options.clang_args.insert(
                 0,
-                format!("--target={}", effective_target).into_boxed_str(),
+                format!("--target={effective_target}").into_boxed_str(),
             );
         };
 
@@ -872,9 +872,7 @@ impl Bindings {
             debug_assert_eq!(
                 context.target_pointer_size(),
                 std::mem::size_of::<*mut ()>(),
-                "{:?} {:?}",
-                effective_target,
-                HOST_TARGET
+                "{effective_target:?} {HOST_TARGET:?}"
             );
         }
 
@@ -928,8 +926,7 @@ impl Bindings {
             }
             Err(err) => {
                 eprintln!(
-                    "Failed to run rustfmt: {} (non-fatal, continuing)",
-                    err
+                    "Failed to run rustfmt: {err} (non-fatal, continuing)"
                 );
                 writer.write_all(self.module.to_string().as_bytes())?;
             }
@@ -1097,7 +1094,7 @@ fn parse(context: &mut BindgenContext) -> Result<(), BindgenError> {
             error.push_str(&msg);
             error.push('\n');
         } else {
-            eprintln!("clang diag: {}", msg);
+            eprintln!("clang diag: {msg}");
         }
     }
 
@@ -1183,7 +1180,7 @@ fn get_target_dependent_env_var(
     var: &str,
 ) -> Option<String> {
     if let Ok(target) = env_var(parse_callbacks, "TARGET") {
-        if let Ok(v) = env_var(parse_callbacks, format!("{}_{}", var, target)) {
+        if let Ok(v) = env_var(parse_callbacks, format!("{var}_{target}")) {
             return Some(v);
         }
         if let Ok(v) = env_var(
@@ -1250,16 +1247,16 @@ impl Default for CargoCallbacks {
 impl callbacks::ParseCallbacks for CargoCallbacks {
     fn header_file(&self, filename: &str) {
         if self.rerun_on_header_files {
-            println!("cargo:rerun-if-changed={}", filename);
+            println!("cargo:rerun-if-changed={filename}");
         }
     }
 
     fn include_file(&self, filename: &str) {
-        println!("cargo:rerun-if-changed={}", filename);
+        println!("cargo:rerun-if-changed={filename}");
     }
 
     fn read_env_var(&self, key: &str) {
-        println!("cargo:rerun-if-env-changed={}", key);
+        println!("cargo:rerun-if-env-changed={key}");
     }
 }
 
@@ -1303,7 +1300,7 @@ fn commandline_flag_unit_test_function() {
     .iter()
     .map(|&x| x.into())
     .collect::<Vec<String>>();
-    println!("{:?}", command_line_flags);
+    println!("{command_line_flags:?}");
 
     assert!(test_cases.iter().all(|x| command_line_flags.contains(x)));
 }

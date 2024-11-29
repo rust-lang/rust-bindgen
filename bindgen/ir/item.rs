@@ -727,7 +727,7 @@ impl Item {
         to.push_str(&self.canonical_name(ctx));
         if let ItemKind::Type(ref ty) = *self.kind() {
             if let TypeKind::TemplateInstantiation(ref inst) = *ty.kind() {
-                to.push_str(&format!("_open{}_", level));
+                to.push_str(&format!("_open{level}_"));
                 for arg in inst.template_arguments() {
                     arg.into_resolver()
                         .through_type_refs()
@@ -735,7 +735,7 @@ impl Item {
                         .push_disambiguated_name(ctx, to, level + 1);
                     to.push('_');
                 }
-                to.push_str(&format!("close{}", level));
+                to.push_str(&format!("close{level}"));
             }
         }
     }
@@ -801,7 +801,7 @@ impl Item {
 
                 if let Some(idx) = self.overload_index(ctx) {
                     if idx > 0 {
-                        write!(&mut name, "{}", idx).unwrap();
+                        write!(&mut name, "{idx}").unwrap();
                     }
                 }
 

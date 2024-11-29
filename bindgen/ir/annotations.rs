@@ -28,7 +28,7 @@ impl FromStr for FieldVisibilityKind {
             "private" => Ok(Self::Private),
             "crate" => Ok(Self::PublicCrate),
             "public" => Ok(Self::Public),
-            _ => Err(format!("Invalid visibility kind: `{}`", s)),
+            _ => Err(format!("Invalid visibility kind: `{s}`")),
         }
     }
 }

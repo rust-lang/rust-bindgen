@@ -33,7 +33,7 @@ fn bitfield_unit_get_bit() {
     }
 
     println!();
-    println!("bits = {:?}", bits);
+    println!("bits = {bits:?}");
     assert_eq!(
         bits,
         &[

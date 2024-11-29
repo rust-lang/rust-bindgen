@@ -1294,8 +1294,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                     })
                             })
                     },
-                    "{:?} should be in some ancestor module's children set",
-                    id
+                    "{id:?} should be in some ancestor module's children set"
                 );
             }
         }
@@ -1515,7 +1514,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let item_id = item_id.into();
         match self.resolve_item_fallible(item_id) {
             Some(item) => item,
-            None => panic!("Not an item: {:?}", item_id),
+            None => panic!("Not an item: {item_id:?}"),
         }
     }
 
@@ -2035,8 +2034,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     CXType_LongDouble => FloatKind::LongDouble,
                     CXType_Float128 => FloatKind::Float128,
                     _ => panic!(
-                        "Non floating-type complex? {:?}, {:?}",
-                        ty, float_type,
+                        "Non floating-type complex? {ty:?}, {float_type:?}",
                     ),
                 };
                 TypeKind::Complex(float_kind)
@@ -3147,11 +3145,11 @@ fn unused_regex_diagnostic(item: &str, name: &str, _ctx: &BindgenContext) {
 
         Diagnostic::default()
             .with_title(
-                format!("Unused regular expression: `{}`.", item),
+                format!("Unused regular expression: `{item}`."),
                 Level::Warning,
             )
             .add_annotation(
-                format!("This regular expression was passed to `{}`.", name),
+                format!("This regular expression was passed to `{name}`."),
                 Level::Note,
             )
             .display();

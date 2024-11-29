@@ -334,8 +334,7 @@ mod test {
     fn test_invalid_target(input: &str) {
         assert!(
             input.parse::<RustTarget>().is_err(),
-            "{} should be an invalid target",
-            input
+            "{input} should be an invalid target"
         );
     }
 

@@ -782,7 +782,7 @@ impl CompFields {
                     getter
                 };
                 let setter = {
-                    let setter = format!("set_{}", bitfield_name);
+                    let setter = format!("set_{bitfield_name}");
                     let mut setter = ctx.rust_mangle(&setter).to_string();
                     if has_method(methods, ctx, &setter) {
                         setter.push_str("_bindgen_bitfield");
@@ -1466,7 +1466,7 @@ impl CompInfo {
 
                     let field_name = match ci.base_members.len() {
                         0 => "_base".into(),
-                        n => format!("_base_{}", n),
+                        n => format!("_base_{n}"),
                     };
                     let type_id =
                         Item::from_ty_or_ref(cur.cur_type(), cur, None, ctx);

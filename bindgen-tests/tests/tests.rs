@@ -40,9 +40,9 @@ fn error_diff_mismatch(
     filename: &Path,
 ) -> Result<(), Error> {
     println!("diff expected generated");
-    println!("--- expected: {:?}", filename);
+    println!("--- expected: {filename:?}");
     if let Some(header) = header {
-        println!("+++ generated from: {:?}", header);
+        println!("+++ generated from: {header:?}");
     }
 
     show_diff(expected, actual);
@@ -153,9 +153,9 @@ fn compare_generated_header(
                     } else if maj >= 9 {
                         "9".to_owned()
                     } else {
-                        format!("{}.{}", maj, min)
+                        format!("{maj}.{min}")
                     };
-                    expectation.push(format!("libclang-{}", version_str));
+                    expectation.push(format!("libclang-{version_str}"));
                 }
             }
         }
@@ -194,7 +194,7 @@ fn compare_generated_header(
         Ok(bindings) => format_code(bindings.to_string()).map_err(|err| {
             Error::new(
                 ErrorKind::Other,
-                format!("Cannot parse the generated bindings: {}", err),
+                format!("Cannot parse the generated bindings: {err}"),
             )
         })?,
         Err(_) => "/* error generating bindings */\n".into(),
@@ -219,7 +219,7 @@ fn compare_generated_header(
         if let Err(e) =
             compare_generated_header(header, roundtrip_builder, false)
         {
-            return Err(Error::new(ErrorKind::Other, format!("Checking CLI flags roundtrip errored! You probably need to fix Builder::command_line_flags. {}", e)));
+            return Err(Error::new(ErrorKind::Other, format!("Checking CLI flags roundtrip errored! You probably need to fix Builder::command_line_flags. {e}")));
         }
     }
 
@@ -703,7 +703,7 @@ fn build_flags_output_helper(builder: &bindgen::Builder) {
         .map(|x| format!("{}", shlex::try_quote(x).unwrap()))
         .collect();
     let flags_str = flags_quoted.join(" ");
-    println!("{}", flags_str);
+    println!("{flags_str}");
 
     let (builder, _output, _verbose) =
         builder_from_flags(command_line_flags.into_iter()).unwrap();
