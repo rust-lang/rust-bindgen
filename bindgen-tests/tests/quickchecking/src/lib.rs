@@ -6,13 +6,10 @@
 //! use quickcheck::{Arbitrary, Gen};
 //! use quickchecking::fuzzers;
 //!
-//! fn main() {
-//!     let generate_range: usize = 10; // Determines things like the length of
-//!                                     // arbitrary vectors generated.
-//!     let header = fuzzers::HeaderC::arbitrary(
-//!        &mut Gen::new(generate_range));
-//!     println!("{}", header);
-//! }
+//! let generate_range: usize = 10; // Determines things like the length of
+//!                                 // arbitrary vectors generated.
+//! let header = fuzzers::HeaderC::arbitrary(&mut Gen::new(generate_range));
+//! println!("{}", header);
 //! ```
 #![deny(missing_docs)]
 

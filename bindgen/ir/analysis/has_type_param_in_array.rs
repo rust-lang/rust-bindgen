@@ -39,7 +39,7 @@ pub(crate) struct HasTypeParameterInArray<'ctx> {
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx> HasTypeParameterInArray<'ctx> {
+impl HasTypeParameterInArray<'_> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // These are the only edges that can affect whether a type has type parameter

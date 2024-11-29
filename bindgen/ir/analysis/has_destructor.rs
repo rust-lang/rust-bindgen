@@ -39,7 +39,7 @@ pub(crate) struct HasDestructorAnalysis<'ctx> {
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx> HasDestructorAnalysis<'ctx> {
+impl HasDestructorAnalysis<'_> {
     fn consider_edge(kind: EdgeKind) -> bool {
         // These are the only edges that can affect whether a type has a
         // destructor or not.

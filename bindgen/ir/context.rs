@@ -501,7 +501,7 @@ struct AllowlistedItemsTraversal<'ctx> {
     traversal: ItemTraversal<'ctx, ItemSet, Vec<ItemId>>,
 }
 
-impl<'ctx> Iterator for AllowlistedItemsTraversal<'ctx> {
+impl Iterator for AllowlistedItemsTraversal<'_> {
     type Item = ItemId;
 
     fn next(&mut self) -> Option<ItemId> {

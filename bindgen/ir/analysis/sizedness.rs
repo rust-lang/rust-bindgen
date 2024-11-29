@@ -105,7 +105,7 @@ pub(crate) struct SizednessAnalysis<'ctx> {
     sized: HashMap<TypeId, SizednessResult>,
 }
 
-impl<'ctx> SizednessAnalysis<'ctx> {
+impl SizednessAnalysis<'_> {
     fn consider_edge(kind: EdgeKind) -> bool {
         // These are the only edges that can affect whether a type is
         // zero-sized or not.

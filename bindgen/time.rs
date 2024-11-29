@@ -45,7 +45,7 @@ impl<'a> Timer<'a> {
     }
 }
 
-impl<'a> Drop for Timer<'a> {
+impl Drop for Timer<'_> {
     fn drop(&mut self) {
         self.print_elapsed();
     }

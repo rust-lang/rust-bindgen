@@ -104,7 +104,7 @@ fn consider_edge_default(kind: EdgeKind) -> bool {
     }
 }
 
-impl<'ctx> CannotDerive<'ctx> {
+impl CannotDerive<'_> {
     fn insert<Id: Into<ItemId>>(
         &mut self,
         id: Id,
@@ -217,9 +217,7 @@ impl<'ctx> CannotDerive<'ctx> {
             TypeKind::Reference(..) |
             TypeKind::ObjCInterface(..) |
             TypeKind::ObjCId |
-            TypeKind::ObjCSel => {
-                return self.derive_trait.can_derive_simple(ty.kind());
-            }
+            TypeKind::ObjCSel => self.derive_trait.can_derive_simple(ty.kind()),
             TypeKind::Pointer(inner) => {
                 let inner_type =
                     self.ctx.resolve_type(inner).canonical_type(self.ctx);

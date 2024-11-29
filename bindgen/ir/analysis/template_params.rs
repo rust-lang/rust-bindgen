@@ -161,7 +161,7 @@ pub(crate) struct UsedTemplateParameters<'ctx> {
     allowlisted_items: HashSet<ItemId>,
 }
 
-impl<'ctx> UsedTemplateParameters<'ctx> {
+impl UsedTemplateParameters<'_> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // For each of these kinds of edges, if the referent uses a template
