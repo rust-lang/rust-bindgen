@@ -4,7 +4,7 @@ description = "A package to test various bindgen features"
 version = "0.1.0"
 authors = ["Emilio Cobos Álvarez <emilio@crisal.io>"]
 publish = false
-edition = "2018"
+edition = "2021"
 build = "build.rs"
 
 [build-dependencies]

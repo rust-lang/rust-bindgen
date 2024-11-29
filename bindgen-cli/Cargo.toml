@@ -12,7 +12,7 @@ repository = "https://github.com/rust-lang/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
 homepage = "https://rust-lang.github.io/rust-bindgen/"
 version = "0.70.1"
-edition = "2018"
+edition = "2021"
 rust-version = "1.70.0"
 
 [[bin]]

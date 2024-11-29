@@ -7,7 +7,7 @@ authors = [
   "Emilio Cobos Álvarez <emilio@crisal.io>",
   "The Servo project developers",
 ]
-edition = "2018"
+edition = "2021"
 publish = false
 
 [dependencies]
