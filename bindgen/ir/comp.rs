@@ -1753,7 +1753,7 @@ impl CompInfo {
             return (false, false);
         }
 
-        if layout.map_or(false, |l| l.size == 0) {
+        if layout.is_some_and(|l| l.size == 0) {
             return (false, false);
         }
 

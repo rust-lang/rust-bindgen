@@ -788,7 +788,7 @@ impl Cursor {
                 let found_attr = &mut found_attrs[idx];
                 if !*found_attr {
                     // `attr.name` and` attr.token_kind` are checked against unexposed attributes only.
-                    if attr.kind.map_or(false, |k| k == kind) ||
+                    if attr.kind == Some(kind) ||
                         (kind == CXCursor_UnexposedAttr &&
                             cur.tokens().iter().any(|t| {
                                 t.kind == attr.token_kind &&
@@ -1522,7 +1522,7 @@ impl Type {
         // Yep, the spelling of this containing type-parameter is extremely
         // nasty... But can happen in <type_traits>. Unfortunately I couldn't
         // reduce it enough :(
-        self.template_args().map_or(false, |args| args.len() > 0) &&
+        self.template_args().is_some_and(|args| args.len() > 0) &&
             !matches!(
                 self.declaration().kind(),
                 CXCursor_ClassTemplatePartialSpecialization |

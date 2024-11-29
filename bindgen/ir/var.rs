@@ -311,7 +311,7 @@ impl ClangSubItemParser for Var {
                     ([CXType_ConstantArray, CXType_IncompleteArray]
                         .contains(&ty.kind()) &&
                         ty.elem_type()
-                            .map_or(false, |element| element.is_const()));
+                            .is_some_and(|element| element.is_const()));
 
                 let ty = match Item::from_ty(&ty, cursor, None, ctx) {
                     Ok(ty) => ty,
@@ -335,8 +335,8 @@ impl ClangSubItemParser for Var {
                     .safe_resolve_type(ty)
                     .and_then(|t| t.safe_canonical_type(ctx));
 
-                let is_integer = canonical_ty.map_or(false, |t| t.is_integer());
-                let is_float = canonical_ty.map_or(false, |t| t.is_float());
+                let is_integer = canonical_ty.is_some_and(|t| t.is_integer());
+                let is_float = canonical_ty.is_some_and(|t| t.is_float());
 
                 // TODO: We could handle `char` more gracefully.
                 // TODO: Strings, though the lookup is a bit more hard (we need

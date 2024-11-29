@@ -117,7 +117,7 @@ impl Opaque {
     pub(crate) fn array_size_within_derive_limit(&self) -> CanDerive {
         if self
             .array_size()
-            .map_or(false, |size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
+            .is_some_and(|size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
         {
             CanDerive::Yes
         } else {

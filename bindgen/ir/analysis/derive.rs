@@ -673,7 +673,7 @@ impl<'ctx> MonotoneFramework for CannotDerive<'ctx> {
                     let is_reached_limit =
                         |l: Layout| l.align > RUST_DERIVE_IN_ARRAY_LIMIT;
                     if !self.derive_trait.can_derive_large_array(self.ctx) &&
-                        ty.layout(self.ctx).map_or(false, is_reached_limit)
+                        ty.layout(self.ctx).is_some_and(is_reached_limit)
                     {
                         // We have to be conservative: the struct *could* have enough
                         // padding that we emit an array that is longer than

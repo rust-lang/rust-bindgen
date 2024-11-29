@@ -749,9 +749,7 @@ impl ClangSubItemParser for Function {
         };
 
         if cursor.is_inlined_function() ||
-            cursor
-                .definition()
-                .map_or(false, |x| x.is_inlined_function())
+            cursor.definition().is_some_and(|x| x.is_inlined_function())
         {
             if !context.options().generate_inline_functions &&
                 !context.options().wrap_static_fns

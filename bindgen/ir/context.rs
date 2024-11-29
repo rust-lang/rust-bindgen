@@ -1148,7 +1148,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     .chain(Some(immut_self.root_module.into()))
                     .find(|id| {
                         let item = immut_self.resolve_item(*id);
-                        item.as_module().map_or(false, |m| {
+                        item.as_module().is_some_and(|m| {
                             m.children().contains(&replacement_id.into())
                         })
                     })
@@ -1289,9 +1289,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                 );
                                 self.resolve_item(ancestor)
                                     .as_module()
-                                    .map_or(false, |m| {
-                                        m.children().contains(&id)
-                                    })
+                                    .is_some_and(|m| m.children().contains(&id))
                             })
                     },
                     "{:?} should be in some ancestor module's children set",
@@ -1424,8 +1422,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.used_template_parameters
             .as_ref()
             .expect("should have found template parameter usage if we're in codegen")
-            .get(&item)
-            .map_or(false, |items_used_params| items_used_params.contains(&template_param))
+            .get(&item).is_some_and(|items_used_params| items_used_params.contains(&template_param))
     }
 
     /// Return `true` if `item` uses any unbound, generic template parameters,
@@ -1444,7 +1441,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 "should have template parameter usage info in codegen phase",
             )
             .get(&item)
-            .map_or(false, |used| !used.is_empty())
+            .is_some_and(|used| !used.is_empty())
     }
 
     // This deserves a comment. Builtin types don't get a valid declaration, so

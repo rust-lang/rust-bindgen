@@ -58,7 +58,7 @@ fn preprocess_multi_line(comment: &str) -> String {
         .collect();
 
     // Remove the trailing line corresponding to the `*/`.
-    if lines.last().map_or(false, |l| l.trim().is_empty()) {
+    if lines.last().is_some_and(|l| l.trim().is_empty()) {
         lines.pop();
     }
 

@@ -1217,8 +1217,7 @@ impl Type {
 
         let is_const = ty.is_const() ||
             (ty.kind() == CXType_ConstantArray &&
-                ty.elem_type()
-                    .map_or(false, |element| element.is_const()));
+                ty.elem_type().is_some_and(|element| element.is_const()));
 
         let ty = Type::new(name, layout, kind, is_const);
         // TODO: maybe declaration.canonical()?
@@ -1233,10 +1232,7 @@ impl Trace for Type {
     where
         T: Tracer,
     {
-        if self
-            .name()
-            .map_or(false, |name| context.is_stdint_type(name))
-        {
+        if self.name().is_some_and(|name| context.is_stdint_type(name)) {
             // These types are special-cased in codegen and don't need to be traversed.
             return;
         }

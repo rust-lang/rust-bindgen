@@ -1147,7 +1147,7 @@ pub fn clang_version() -> ClangVersion {
     let raw_v: String = clang::extract_clang_version();
     let split_v: Option<Vec<&str>> = raw_v
         .split_whitespace()
-        .find(|t| t.chars().next().map_or(false, |v| v.is_ascii_digit()))
+        .find(|t| t.chars().next().is_some_and(|v| v.is_ascii_digit()))
         .map(|v| v.split('.').collect());
     if let Some(v) = split_v {
         if v.len() >= 2 {
