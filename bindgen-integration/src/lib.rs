@@ -259,7 +259,7 @@ fn test_matching_with_rename() {
 
 #[test]
 fn test_macro_customintkind_path() {
-    let v: &std::any::Any = &bindings::TESTMACRO_CUSTOMINTKIND_PATH;
+    let v: &dyn std::any::Any = &bindings::TESTMACRO_CUSTOMINTKIND_PATH;
     assert!(v.is::<MacroInteger>())
 }
 
