@@ -7,7 +7,7 @@ use crate::{
     regex_set::RegexSet,
     Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
     FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
-    RustTarget,
+    RustEdition, RustTarget,
 };
 use clap::{
     error::{Error, ErrorKind},
@@ -18,6 +18,13 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use std::{fs::File, process::exit};
+
+fn rust_edition_help() -> String {
+    format!(
+        "Version of the Rust language edition. Defaults to {}.",
+        RustEdition::default()
+    )
+}
 
 fn rust_target_help() -> String {
     format!(
@@ -332,6 +339,8 @@ struct BindgenCommand {
     /// Add a RAW_LINE of Rust code to a given module with name MODULE_NAME.
     #[arg(long, number_of_values = 2, value_names = ["MODULE_NAME", "RAW_LINE"])]
     module_raw_line: Vec<String>,
+    #[arg(long, help = rust_edition_help())]
+    rust_edition: Option<RustEdition>,
     #[arg(long, help = rust_target_help())]
     rust_target: Option<RustTarget>,
     /// Use types from Rust core instead of std.
@@ -587,6 +596,7 @@ where
         output,
         raw_line,
         module_raw_line,
+        rust_edition,
         rust_target,
         use_core,
         conservative_inline_namespaces,
@@ -820,6 +830,7 @@ where
                 exit(0)
             },
             header,
+            rust_edition,
             rust_target,
             default_enum_style,
             bitfield_enum,

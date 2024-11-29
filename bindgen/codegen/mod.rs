@@ -60,6 +60,7 @@ use quote::{ToTokens, TokenStreamExt};
 use crate::{Entry, HashMap, HashSet};
 use std::borrow::Cow;
 use std::cell::Cell;
+use std::cmp::PartialOrd;
 use std::collections::VecDeque;
 use std::ffi::CStr;
 use std::fmt::{self, Write};
@@ -726,7 +727,9 @@ impl CodeGenerator for Var {
 
                     if let Some(cstr) = cstr {
                         let cstr_ty = quote! { ::#prefix::ffi::CStr };
-                        if rust_features.literal_cstr {
+                        if rust_features.literal_cstr &&
+                            options.rust_edition >= RustEdition::Rust2021
+                        {
                             let cstr = proc_macro2::Literal::c_string(&cstr);
                             result.push(quote! {
                                 #(#attrs)*
@@ -3907,6 +3910,53 @@ impl std::str::FromStr for MacroTypeVariation {
                 concat!(
                     "Got an invalid MacroTypeVariation. Accepted values ",
                     "are 'signed' and 'unsigned'"
+                ),
+            )),
+        }
+    }
+}
+
+/// Enum for the edition of Rust language to use.
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Debug, Default)]
+pub enum RustEdition {
+    /// Rust 2015 language edition
+    Rust2015,
+    /// Rust 2018 language edition
+    #[default]
+    Rust2018,
+    /// Rust 2021 language edition
+    Rust2021,
+    /// Rust 2024 language edition
+    Rust2024,
+}
+
+impl fmt::Display for RustEdition {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            RustEdition::Rust2015 => "2015",
+            RustEdition::Rust2018 => "2018",
+            RustEdition::Rust2021 => "2021",
+            RustEdition::Rust2024 => "2024",
+        };
+        s.fmt(f)
+    }
+}
+
+impl FromStr for RustEdition {
+    type Err = std::io::Error;
+
+    /// Create a `RustEdition` from a string.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "2015" => Ok(RustEdition::Rust2015),
+            "2018" => Ok(RustEdition::Rust2018),
+            "2021" => Ok(RustEdition::Rust2021),
+            "2024" => Ok(RustEdition::Rust2024),
+            _ => Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                concat!(
+                    "Got an invalid language edition. Accepted values ",
+                    "are '2015', '2018', '2021', and '2024'"
                 ),
             )),
         }

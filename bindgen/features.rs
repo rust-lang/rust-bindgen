@@ -161,7 +161,7 @@ define_rust_targets! {
     },
     Stable_1_77(77) => {
         offset_of: #106655,
-        literal_cstr: #117472,
+        literal_cstr: #117472,  // Edition 2021+ only
     },
     Stable_1_73(73) => { thiscall_abi: #42202 },
     Stable_1_71(71) => { c_unwind_abi: #106075 },

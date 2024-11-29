@@ -64,6 +64,7 @@ use ir::item::Item;
 use options::BindgenOptions;
 use parse::ParseError;
 
+use crate::codegen::RustEdition;
 use std::borrow::Cow;
 use std::collections::hash_map::Entry;
 use std::env;
@@ -526,6 +527,11 @@ impl BindgenOptions {
         for regex_set in self.abi_overrides.values_mut().chain(regex_sets) {
             regex_set.build(record_matches);
         }
+    }
+
+    /// Update rust edition version
+    pub fn set_rust_edition(&mut self, rust_edition: RustEdition) {
+        self.rust_edition = rust_edition;
     }
 
     /// Update rust target version

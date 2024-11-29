@@ -10,6 +10,7 @@ pub(crate) mod cli;
 use crate::callbacks::ParseCallbacks;
 use crate::codegen::{
     AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle,
+    RustEdition,
 };
 use crate::deps::DepfileSpec;
 use crate::features::{RustFeatures, RustTarget};
@@ -1592,6 +1593,23 @@ options! {
             }
         },
         as_args: |value, args| (!value).as_args(args, "--no-prepend-enum-name"),
+    },
+    /// Version of the Rust compiler to target.
+    rust_edition: RustEdition {
+        default: RustEdition::default(),
+        methods: {
+            /// Specify the Rust edition version.
+            ///
+            /// The default edition is 2018.
+            pub fn rust_edition(mut self, rust_edition: RustEdition) -> Self {
+                self.options.set_rust_edition(rust_edition);
+                self
+            }
+        },
+        as_args: |rust_edition, args| {
+            args.push("--rust-edition".to_owned());
+            args.push(rust_edition.to_string());
+        },
     },
     /// Version of the Rust compiler to target.
     rust_target: RustTarget {
