@@ -127,7 +127,7 @@ impl<'a> ItemAncestorsIter<'a> {
     }
 }
 
-impl<'a> Iterator for ItemAncestorsIter<'a> {
+impl Iterator for ItemAncestorsIter<'_> {
     type Item = ItemId;
 
     fn next(&mut self) -> Option<Self::Item> {

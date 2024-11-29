@@ -198,7 +198,7 @@ impl<'a> CSerialize<'a> for Function {
     }
 }
 
-impl<'a> CSerialize<'a> for TypeId {
+impl CSerialize<'_> for TypeId {
     type Extra = ();
 
     fn serialize<W: Write>(

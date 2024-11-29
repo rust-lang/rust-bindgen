@@ -1016,7 +1016,7 @@ impl<'a> RawTokens<'a> {
     }
 }
 
-impl<'a> Drop for RawTokens<'a> {
+impl Drop for RawTokens<'_> {
     fn drop(&mut self) {
         if !self.tokens.is_null() {
             unsafe {
@@ -1090,7 +1090,7 @@ pub(crate) struct ClangTokenIterator<'a> {
     raw: slice::Iter<'a, CXToken>,
 }
 
-impl<'a> Iterator for ClangTokenIterator<'a> {
+impl Iterator for ClangTokenIterator<'_> {
     type Item = ClangToken;
 
     fn next(&mut self) -> Option<Self::Item> {

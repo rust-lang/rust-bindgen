@@ -72,7 +72,7 @@ pub(crate) struct HasVtableAnalysis<'ctx> {
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx> HasVtableAnalysis<'ctx> {
+impl HasVtableAnalysis<'_> {
     fn consider_edge(kind: EdgeKind) -> bool {
         // These are the only edges that can affect whether a type has a
         // vtable or not.

@@ -372,7 +372,7 @@ impl<'a> CodegenResult<'a> {
     }
 }
 
-impl<'a> ops::Deref for CodegenResult<'a> {
+impl ops::Deref for CodegenResult<'_> {
     type Target = Vec<proc_macro2::TokenStream>;
 
     fn deref(&self) -> &Self::Target {
@@ -380,7 +380,7 @@ impl<'a> ops::Deref for CodegenResult<'a> {
     }
 }
 
-impl<'a> ops::DerefMut for CodegenResult<'a> {
+impl ops::DerefMut for CodegenResult<'_> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.items
     }
@@ -727,7 +727,7 @@ impl CodeGenerator for Var {
                     if let Some(cstr) = cstr {
                         let cstr_ty = quote! { ::#prefix::ffi::CStr };
                         if rust_features.literal_cstr {
-                            let cstr = proc_macro2::Literal::c_string(&cstr);
+                            let cstr = proc_macro2::Literal::c_string(cstr);
                             result.push(quote! {
                                 #(#attrs)*
                                 pub const #canonical_ident: &#cstr_ty = #cstr;
@@ -1165,7 +1165,7 @@ impl<'a> Vtable<'a> {
     }
 }
 
-impl<'a> CodeGenerator for Vtable<'a> {
+impl CodeGenerator for Vtable<'_> {
     type Extra = Item;
     type Return = ();
 
@@ -1243,13 +1243,13 @@ impl<'a> CodeGenerator for Vtable<'a> {
     }
 }
 
-impl<'a> ItemCanonicalName for Vtable<'a> {
+impl ItemCanonicalName for Vtable<'_> {
     fn canonical_name(&self, ctx: &BindgenContext) -> String {
         format!("{}__bindgen_vtable", self.item_id.canonical_name(ctx))
     }
 }
 
-impl<'a> TryToRustTy for Vtable<'a> {
+impl TryToRustTy for Vtable<'_> {
     type Extra = ();
 
     fn try_to_rust_ty(
@@ -1375,7 +1375,7 @@ trait FieldCodegen<'a> {
         M: Extend<proc_macro2::TokenStream>;
 }
 
-impl<'a> FieldCodegen<'a> for Field {
+impl FieldCodegen<'_> for Field {
     type Extra = ();
 
     fn codegen<F, M>(
@@ -1453,7 +1453,7 @@ fn wrap_union_field_if_needed(
     }
 }
 
-impl<'a> FieldCodegen<'a> for FieldData {
+impl FieldCodegen<'_> for FieldData {
     type Extra = ();
 
     fn codegen<F, M>(
@@ -1713,7 +1713,7 @@ fn compute_visibility(
         })
 }
 
-impl<'a> FieldCodegen<'a> for BitfieldUnit {
+impl FieldCodegen<'_> for BitfieldUnit {
     type Extra = ();
 
     fn codegen<F, M>(

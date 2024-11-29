@@ -39,7 +39,7 @@ pub(crate) struct HasFloat<'ctx> {
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx> HasFloat<'ctx> {
+impl HasFloat<'_> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             EdgeKind::BaseMember |

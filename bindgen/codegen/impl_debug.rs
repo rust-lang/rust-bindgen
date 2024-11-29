@@ -64,7 +64,7 @@ pub(crate) trait ImplDebug<'a> {
     ) -> Option<(String, Vec<proc_macro2::TokenStream>)>;
 }
 
-impl<'a> ImplDebug<'a> for FieldData {
+impl ImplDebug<'_> for FieldData {
     type Extra = ();
 
     fn impl_debug(
@@ -80,7 +80,7 @@ impl<'a> ImplDebug<'a> for FieldData {
     }
 }
 
-impl<'a> ImplDebug<'a> for BitfieldUnit {
+impl ImplDebug<'_> for BitfieldUnit {
     type Extra = ();
 
     fn impl_debug(
