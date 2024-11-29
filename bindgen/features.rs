@@ -139,6 +139,7 @@ impl std::error::Error for InvalidRustEdition {}
 define_rust_editions! {
     Edition2018(2018) => 31,
     Edition2021(2021) => 56,
+    Edition2024(2024) => 85,
 }
 
 impl RustTarget {
@@ -162,9 +163,9 @@ impl Default for RustEdition {
 /// This macro defines the [`RustTarget`] and [`RustFeatures`] types.
 macro_rules! define_rust_targets {
     (
-        Nightly => {$($nightly_feature:ident $(($nightly_edition:literal))* $(: #$issue:literal)?),* $(,)?} $(,)?
+        Nightly => {$($nightly_feature:ident $(($nightly_edition:literal))|* $(: #$issue:literal)?),* $(,)?} $(,)?
         $(
-            $variant:ident($minor:literal) => {$($feature:ident $(($edition:literal))* $(: #$pull:literal)?),* $(,)?},
+            $variant:ident($minor:literal) => {$($feature:ident $(($edition:literal))|* $(: #$pull:literal)?),* $(,)?},
         )*
         $(,)?
     ) => {
@@ -255,7 +256,7 @@ define_rust_targets! {
     },
     Stable_1_77(77) => {
         offset_of: #106655,
-        literal_cstr(2021): #117472,
+        literal_cstr(2021)|(2024): #117472,
     },
     Stable_1_73(73) => { thiscall_abi: #42202 },
     Stable_1_71(71) => { c_unwind_abi: #106075 },
@@ -405,6 +406,26 @@ impl Default for RustFeatures {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn release_versions_for_editions() {
+        assert_eq!(
+            "1.33".parse::<RustTarget>().unwrap().latest_edition(),
+            RustEdition::Edition2018
+        );
+        assert_eq!(
+            "1.56".parse::<RustTarget>().unwrap().latest_edition(),
+            RustEdition::Edition2021
+        );
+        assert_eq!(
+            "1.85".parse::<RustTarget>().unwrap().latest_edition(),
+            RustEdition::Edition2024
+        );
+        assert_eq!(
+            "nightly".parse::<RustTarget>().unwrap().latest_edition(),
+            RustEdition::Edition2024
+        );
+    }
 
     #[test]
     fn target_features() {
