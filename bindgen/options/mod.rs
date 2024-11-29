@@ -12,7 +12,7 @@ use crate::codegen::{
     AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle,
 };
 use crate::deps::DepfileSpec;
-use crate::features::{RustFeatures, RustTarget};
+use crate::features::{RustEdition, RustFeatures, RustTarget};
 use crate::regex_set::RegexSet;
 use crate::Abi;
 use crate::Builder;
@@ -1609,9 +1609,26 @@ options! {
             args.push(rust_target.to_string());
         },
     },
+    /// The Rust edition to use for code generation.
+    rust_edition: Option<RustEdition> {
+        methods: {
+            /// Specify the Rust target edition.
+            ///
+            /// The default edition is the latest edition supported by the chosen Rust target.
+            pub fn rust_edition(mut self, rust_edition: RustEdition) -> Self {
+                self.options.rust_edition = Some(rust_edition);
+                self
+            }
+        }
+        as_args: |edition, args| {
+            if let Some(edition) =  edition {
+                args.push("--rust-edition".to_owned());
+                args.push(edition.to_string());
+            }
+        },
+    },
     /// Features to be enabled. They are derived from `rust_target`.
     rust_features: RustFeatures {
-        default: RustTarget::default().into(),
         methods: {},
         // This field cannot be set from the CLI,
         as_args: ignore,
