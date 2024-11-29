@@ -82,7 +82,7 @@ impl fmt::Display for CodegenError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Serialize { msg, loc } => {
-                write!(f, "serialization error at {}: {}", loc, msg)
+                write!(f, "serialization error at {loc}: {msg}")
             }
             Self::Io(err) => err.fmt(f),
         }
@@ -869,7 +869,7 @@ impl CodeGenerator for Type {
                     {
                         utils::fnsig_block(ctx, fnsig)
                     } else {
-                        panic!("invalid block typedef: {:?}", inner_item)
+                        panic!("invalid block typedef: {inner_item:?}")
                     }
                 };
 
@@ -1569,9 +1569,9 @@ impl FieldCodegen<'_> for FieldData {
             return;
         }
 
-        let getter_name = ctx.rust_ident_raw(format!("get_{}", field_name));
+        let getter_name = ctx.rust_ident_raw(format!("get_{field_name}"));
         let mutable_getter_name =
-            ctx.rust_ident_raw(format!("get_{}_mut", field_name));
+            ctx.rust_ident_raw(format!("get_{field_name}_mut"));
 
         methods.extend(Some(match accessor_kind {
             FieldAccessorKind::None => unreachable!(),
@@ -2149,7 +2149,7 @@ impl CodeGenerator for CompInfo {
             generic_param_names.push(ident.clone());
 
             let prefix = ctx.trait_prefix();
-            let field_name = ctx.rust_ident(format!("_phantom_{}", idx));
+            let field_name = ctx.rust_ident(format!("_phantom_{idx}"));
             fields.push(quote! {
                 pub #field_name : ::#prefix::marker::PhantomData<
                     ::#prefix::cell::UnsafeCell<#ident>
@@ -2403,7 +2403,7 @@ impl CodeGenerator for CompInfo {
             let packed_repr = if n == 1 {
                 "packed".to_string()
             } else {
-                format!("packed({})", n)
+                format!("packed({n})")
             };
             attributes.push(attributes::repr_list(&["C", &packed_repr]));
         } else {
@@ -3011,7 +3011,7 @@ impl Method {
             let mut new_name;
 
             while {
-                new_name = format!("{}{}", name, count);
+                new_name = format!("{name}{count}");
                 method_names.contains(&new_name)
             } {
                 count += 1;
@@ -3024,7 +3024,7 @@ impl Method {
 
         let mut function_name = function_item.canonical_name(ctx);
         if times_seen > 0 {
-            write!(&mut function_name, "{}", times_seen).unwrap();
+            write!(&mut function_name, "{times_seen}").unwrap();
         }
         let function_name = ctx.rust_ident(function_name);
         let mut args = utils::fnsig_arguments(ctx, signature);
@@ -3387,7 +3387,7 @@ impl<'a> EnumBuilder<'a> {
                 } else {
                     let ident = ctx.rust_ident(match mangling_prefix {
                         Some(prefix) => {
-                            Cow::Owned(format!("{}_{}", prefix, variant_name))
+                            Cow::Owned(format!("{prefix}_{variant_name}"))
                         }
                         None => variant_name,
                     });
@@ -3403,7 +3403,7 @@ impl<'a> EnumBuilder<'a> {
             EnumBuilder::Consts { .. } => {
                 let constant_name = match mangling_prefix {
                     Some(prefix) => {
-                        Cow::Owned(format!("{}_{}", prefix, variant_name))
+                        Cow::Owned(format!("{prefix}_{variant_name}"))
                     }
                     None => variant_name,
                 };
@@ -3711,12 +3711,12 @@ impl CodeGenerator for Enum {
         ) {
             let constant_name = if enum_.name().is_some() {
                 if ctx.options().prepend_enum_name {
-                    format!("{}_{}", enum_canonical_name, variant_name)
+                    format!("{enum_canonical_name}_{variant_name}")
                 } else {
-                    format!("{}", variant_name)
+                    format!("{variant_name}")
                 }
             } else {
-                format!("{}", variant_name)
+                format!("{variant_name}")
             };
             let constant_name = ctx.rust_ident(constant_name);
 
@@ -3776,18 +3776,16 @@ impl CodeGenerator for Enum {
                 Entry::Occupied(ref entry) => {
                     if variation.is_rust() {
                         let variant_name = ctx.rust_mangle(variant.name());
-                        let mangled_name =
-                            if is_toplevel || enum_ty.name().is_some() {
-                                variant_name
-                            } else {
-                                let parent_name =
-                                    parent_canonical_name.as_ref().unwrap();
+                        let mangled_name = if is_toplevel ||
+                            enum_ty.name().is_some()
+                        {
+                            variant_name
+                        } else {
+                            let parent_name =
+                                parent_canonical_name.as_ref().unwrap();
 
-                                Cow::Owned(format!(
-                                    "{}_{}",
-                                    parent_name, variant_name
-                                ))
-                            };
+                            Cow::Owned(format!("{parent_name}_{variant_name}"))
+                        };
 
                         let existing_variant_name = entry.get();
                         // Use associated constants for named enums.
@@ -3848,7 +3846,7 @@ impl CodeGenerator for Enum {
                                 parent_canonical_name.as_ref().unwrap();
 
                             Ident::new(
-                                &format!("{}_{}", parent_name, variant_name),
+                                &format!("{parent_name}_{variant_name}"),
                                 Span::call_site(),
                             )
                         };
@@ -4498,7 +4496,7 @@ impl CodeGenerator for Function {
         let signature = signature_item.kind().expect_type().canonical_type(ctx);
         let signature = match *signature.kind() {
             TypeKind::Function(ref sig) => sig,
-            _ => panic!("Signature kind is not a Function: {:?}", signature),
+            _ => panic!("Signature kind is not a Function: {signature:?}"),
         };
 
         if is_internal {
@@ -4590,8 +4588,7 @@ impl CodeGenerator for Function {
             }
             Ok(ClangAbi::Unknown(unknown_abi)) => {
                 panic!(
-                    "Invalid or unknown abi {:?} for function {:?} ({:?})",
-                    unknown_abi, canonical_name, self
+                    "Invalid or unknown abi {unknown_abi:?} for function {canonical_name:?} ({self:?})"
                 );
             }
             Ok(abi) => abi,
@@ -4601,7 +4598,7 @@ impl CodeGenerator for Function {
         // suffix.
         let times_seen = result.overload_number(&canonical_name);
         if times_seen > 0 {
-            write!(&mut canonical_name, "{}", times_seen).unwrap();
+            write!(&mut canonical_name, "{times_seen}").unwrap();
         }
 
         let mut has_link_name_attr = false;
@@ -4787,7 +4784,7 @@ fn variadic_fn_diagnostic(
 
         let mut diag = Diagnostic::default();
 
-        diag.with_title(format!("Cannot generate wrapper for the static function `{}`.", fn_name), Level::Warning)
+        diag.with_title(format!("Cannot generate wrapper for the static function `{fn_name}`."), Level::Warning)
             .add_annotation("The `--wrap-static-fns` feature does not support variadic functions.", Level::Note)
             .add_annotation("No code will be generated for this function.", Level::Note);
 
@@ -5031,8 +5028,7 @@ impl CodeGenerator for ObjCInterface {
                     result.push(from_block);
 
                     let error_msg = format!(
-                        "This {} cannot be downcasted to {}",
-                        parent_struct_name, child_struct_name
+                        "This {parent_struct_name} cannot be downcasted to {child_struct_name}"
                     );
                     let try_into_block = quote! {
                         impl std::convert::TryFrom<#parent_struct> for #class_name {
@@ -5091,7 +5087,7 @@ pub(crate) fn codegen(
             let codegen_items = context.codegen_items();
             for (id, item) in context.items() {
                 if codegen_items.contains(&id) {
-                    println!("ir: {:?} = {:#?}", id, item);
+                    println!("ir: {id:?} = {item:#?}");
                 }
             }
         }
@@ -5190,7 +5186,7 @@ pub(crate) mod utils {
 
         if !context.options().input_headers.is_empty() {
             for header in &context.options().input_headers {
-                writeln!(code, "#include \"{}\"", header)?;
+                writeln!(code, "#include \"{header}\"")?;
             }
 
             writeln!(code)?;
@@ -5198,7 +5194,7 @@ pub(crate) mod utils {
 
         if !context.options().input_header_contents.is_empty() {
             for (name, contents) in &context.options().input_header_contents {
-                writeln!(code, "// {}\n{}", name, contents)?;
+                writeln!(code, "// {name}\n{contents}")?;
             }
 
             writeln!(code)?;
@@ -5708,7 +5704,7 @@ pub(crate) mod utils {
                     Some(ref name) => ctx.rust_mangle(name).into_owned(),
                     None => {
                         unnamed_arguments += 1;
-                        format!("arg{}", unnamed_arguments)
+                        format!("arg{unnamed_arguments}")
                     }
                 };
 
@@ -5752,7 +5748,7 @@ pub(crate) mod utils {
                     Some(ref name) => ctx.rust_mangle(name).into_owned(),
                     None => {
                         unnamed_arguments += 1;
-                        format!("arg{}", unnamed_arguments)
+                        format!("arg{unnamed_arguments}")
                     }
                 };
 

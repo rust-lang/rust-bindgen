@@ -37,7 +37,7 @@ pub fn main() {
                 if verbose {
                     print_verbose_err()
                 }
-                eprintln!("{}", info);
+                eprintln!("{info}");
             }));
 
             let bindings =
@@ -48,7 +48,7 @@ pub fn main() {
             bindings.write(output).expect("Unable to write output");
         }
         Err(error) => {
-            eprintln!("{}", error);
+            eprintln!("{error}");
             std::process::exit(1);
         }
     };

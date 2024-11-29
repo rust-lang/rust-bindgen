@@ -1636,7 +1636,7 @@ impl fmt::Display for SourceLocation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let (file, line, col, _) = self.location();
         if let Some(name) = file.name() {
-            write!(f, "{}:{}:{}", name, line, col)
+            write!(f, "{name}:{line}:{col}")
         } else {
             "builtin definitions".fmt(f)
         }
@@ -1645,7 +1645,7 @@ impl fmt::Display for SourceLocation {
 
 impl fmt::Debug for SourceLocation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self)
+        write!(f, "{self}")
     }
 }
 
@@ -2126,15 +2126,15 @@ pub(crate) fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
             );
         }
         if let Some(usr) = c.usr() {
-            print_indent(depth, format!(" {}usr = \"{}\"", prefix, usr));
+            print_indent(depth, format!(" {prefix}usr = \"{usr}\""));
         }
         if let Ok(num) = c.num_args() {
-            print_indent(depth, format!(" {}number-of-args = {}", prefix, num));
+            print_indent(depth, format!(" {prefix}number-of-args = {num}"));
         }
         if let Some(num) = c.num_template_args() {
             print_indent(
                 depth,
-                format!(" {}number-of-template-args = {}", prefix, num),
+                format!(" {prefix}number-of-template-args = {num}"),
             );
         }
 
@@ -2143,7 +2143,7 @@ pub(crate) fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                 Some(w) => w.to_string(),
                 None => "<unevaluable>".to_string(),
             };
-            print_indent(depth, format!(" {}bit-width = {}", prefix, width));
+            print_indent(depth, format!(" {prefix}bit-width = {width}"));
         }
 
         if let Some(ty) = c.enum_type() {
@@ -2153,7 +2153,7 @@ pub(crate) fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
             );
         }
         if let Some(val) = c.enum_val_signed() {
-            print_indent(depth, format!(" {}enum-val = {}", prefix, val));
+            print_indent(depth, format!(" {prefix}enum-val = {val}"));
         }
         if let Some(ty) = c.typedef_type() {
             print_indent(
@@ -2231,16 +2231,12 @@ pub(crate) fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
             print_indent(
                 depth,
                 format!(
-                    " {}number-of-template-args = {}",
-                    prefix, num_template_args
+                    " {prefix}number-of-template-args = {num_template_args}"
                 ),
             );
         }
         if let Some(num) = ty.num_elements() {
-            print_indent(
-                depth,
-                format!(" {}number-of-elements = {}", prefix, num),
-            );
+            print_indent(depth, format!(" {prefix}number-of-elements = {num}"));
         }
         print_indent(
             depth,

@@ -113,11 +113,7 @@ impl DotAttributes for Var {
         }
 
         if let Some(ref mangled) = self.mangled_name {
-            writeln!(
-                out,
-                "<tr><td>mangled name</td><td>{}</td></tr>",
-                mangled
-            )?;
+            writeln!(out, "<tr><td>mangled name</td><td>{mangled}</td></tr>")?;
         }
 
         Ok(())
@@ -320,8 +316,7 @@ impl ClangSubItemParser for Var {
                             matches!(ty.kind(), CXType_Auto | CXType_Unexposed),
                             "Couldn't resolve constant type, and it \
                              wasn't an nondeductible auto type or unexposed \
-                             type: {:?}",
-                            ty
+                             type: {ty:?}"
                         );
                         return Err(e);
                     }

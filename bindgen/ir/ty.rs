@@ -261,7 +261,7 @@ impl Type {
             TypeKind::Pointer(inner) => Some((inner, Cow::Borrowed("ptr"))),
             TypeKind::Reference(inner) => Some((inner, Cow::Borrowed("ref"))),
             TypeKind::Array(inner, length) => {
-                Some((inner, format!("array{}", length).into()))
+                Some((inner, format!("array{length}").into()))
             }
             _ => None,
         };
@@ -269,7 +269,7 @@ impl Type {
             ctx.resolve_item(inner)
                 .expect_type()
                 .sanitized_name(ctx)
-                .map(|name| format!("{}_{}", prefix, name).into())
+                .map(|name| format!("{prefix}_{name}").into())
         } else {
             self.name().map(Self::sanitize_name)
         }

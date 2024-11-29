@@ -2013,7 +2013,7 @@ options! {
             for (abi, set) in overrides {
                 for item in set.get_items() {
                     args.push("--override-abi".to_owned());
-                    args.push(format!("{}={}", item, abi));
+                    args.push(format!("{item}={abi}"));
                 }
             }
         },

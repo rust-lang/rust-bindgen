@@ -81,7 +81,7 @@ fn bindgen_prop(header: fuzzers::HeaderC) -> TestResult {
     match run_predicate_script(header) {
         Ok(o) => TestResult::from_bool(o.status.success()),
         Err(e) => {
-            println!("{:?}", e);
+            println!("{e:?}");
             TestResult::from_bool(false)
         }
     }

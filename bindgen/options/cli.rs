@@ -41,7 +41,7 @@ fn parse_codegen_config(
             otherwise => {
                 return Err(Error::raw(
                     ErrorKind::InvalidValue,
-                    format!("Unknown codegen item kind: {}", otherwise),
+                    format!("Unknown codegen item kind: {otherwise}"),
                 ));
             }
         }
@@ -688,7 +688,7 @@ where
             for item in self.regex_set.get_items() {
                 args.extend_from_slice(&[
                     flag.to_owned(),
-                    format!("{}={}", item, derives),
+                    format!("{item}={derives}"),
                 ]);
             }
 
@@ -728,7 +728,7 @@ where
             for item in self.regex_set.get_items() {
                 args.extend_from_slice(&[
                     flag.to_owned(),
-                    format!("{}={}", item, attributes),
+                    format!("{item}={attributes}"),
                 ]);
             }
 

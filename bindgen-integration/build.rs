@@ -98,7 +98,7 @@ impl ParseCallbacks for MacroCallback {
             _ => {
                 // The system might provide lots of functional macros.
                 // Ensure we did not miss handling one that we meant to handle.
-                assert!(!name.starts_with("TESTMACRO_"), "name = {}", name);
+                assert!(!name.starts_with("TESTMACRO_"), "name = {name}");
             }
         }
     }
@@ -258,7 +258,7 @@ fn setup_wrap_static_fns_test() {
         .expect("Unable to generate bindings");
 
     println!("cargo:rustc-link-lib=static=wrap_static_fns"); // tell cargo to link libextern
-    println!("bindings generated: {}", bindings);
+    println!("bindings generated: {bindings}");
 
     let obj_path = out_path.join("wrap_static_fns.o");
     let lib_path = out_path.join("libwrap_static_fns.a");

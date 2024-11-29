@@ -45,7 +45,7 @@ impl<'a> CSerialize<'a> for Item {
                 func.serialize(ctx, (self, extra), stack, writer)
             }
             kind => Err(CodegenError::Serialize {
-                msg: format!("Cannot serialize item kind {:?}", kind),
+                msg: format!("Cannot serialize item kind {kind:?}"),
                 loc: get_loc(self),
             }),
         }
@@ -102,7 +102,7 @@ impl<'a> CSerialize<'a> for Function {
                     } else {
                         Some((
                             opt_name.unwrap_or_else(|| {
-                                let name = format!("arg_{}", count);
+                                let name = format!("arg_{count}");
                                 count += 1;
                                 name
                             }),
@@ -131,15 +131,15 @@ impl<'a> CSerialize<'a> for Function {
         const INDENT: &str = "    ";
 
         // Write `wrap_name(args`.
-        write!(writer, " {}(", wrap_name)?;
+        write!(writer, " {wrap_name}(")?;
         serialize_args(&args, ctx, writer)?;
 
         if wrap_as_variadic.is_none() {
             // Write `) { name(` if the function returns void and `) { return name(` if it does not.
             if ret_ty.is_void() {
-                write!(writer, ") {{ {}(", name)?;
+                write!(writer, ") {{ {name}(")?;
             } else {
-                write!(writer, ") {{ return {}(", name)?;
+                write!(writer, ") {{ return {name}(")?;
             }
         } else {
             // Write `, ...) {`
@@ -165,7 +165,7 @@ impl<'a> CSerialize<'a> for Function {
             if !ret_ty.is_void() {
                 write!(writer, "ret = ")?;
             }
-            write!(writer, "{}(", name)?;
+            write!(writer, "{name}(")?;
         }
 
         // Get the arguments names and insert at the right place if necessary `ap`
@@ -179,7 +179,7 @@ impl<'a> CSerialize<'a> for Function {
 
         // Write `arg_names);`.
         serialize_sep(", ", args.iter(), ctx, writer, |name, _, buf| {
-            write!(buf, "{}", name).map_err(From::from)
+            write!(buf, "{name}").map_err(From::from)
         })?;
         #[rustfmt::skip]
         write!(writer, ");{}", if wrap_as_variadic.is_none() { " " } else { "\n" })?;
@@ -257,8 +257,7 @@ impl<'a> CSerialize<'a> for Type {
                     int_kind => {
                         return Err(CodegenError::Serialize {
                             msg: format!(
-                                "Cannot serialize integer kind {:?}",
-                                int_kind
+                                "Cannot serialize integer kind {int_kind:?}"
                             ),
                             loc: get_loc(item),
                         })
@@ -294,9 +293,9 @@ impl<'a> CSerialize<'a> for Type {
             TypeKind::Alias(type_id) => {
                 if let Some(name) = self.name() {
                     if self.is_const() {
-                        write!(writer, "const {}", name)?;
+                        write!(writer, "const {name}")?;
                     } else {
-                        write!(writer, "{}", name)?;
+                        write!(writer, "{name}")?;
                     }
                 } else {
                     type_id.serialize(ctx, (), stack, writer)?;
@@ -304,7 +303,7 @@ impl<'a> CSerialize<'a> for Type {
             }
             TypeKind::Array(type_id, length) => {
                 type_id.serialize(ctx, (), stack, writer)?;
-                write!(writer, " [{}]", length)?
+                write!(writer, " [{length}]")?
             }
             TypeKind::Function(signature) => {
                 if self.is_const() {
@@ -320,7 +319,7 @@ impl<'a> CSerialize<'a> for Type {
 
                 write!(writer, " (")?;
                 while let Some(item) = stack.pop() {
-                    write!(writer, "{}", item)?;
+                    write!(writer, "{item}")?;
                 }
                 write!(writer, ")")?;
 
@@ -367,8 +366,8 @@ impl<'a> CSerialize<'a> for Type {
                 let name = item.canonical_name(ctx);
 
                 match comp_info.kind() {
-                    CompKind::Struct => write!(writer, "struct {}", name)?,
-                    CompKind::Union => write!(writer, "union {}", name)?,
+                    CompKind::Struct => write!(writer, "struct {name}")?,
+                    CompKind::Union => write!(writer, "union {name}")?,
                 };
             }
             TypeKind::Enum(_enum_ty) => {
@@ -377,11 +376,11 @@ impl<'a> CSerialize<'a> for Type {
                 }
 
                 let name = item.canonical_name(ctx);
-                write!(writer, "enum {}", name)?;
+                write!(writer, "enum {name}")?;
             }
             ty => {
                 return Err(CodegenError::Serialize {
-                    msg: format!("Cannot serialize type kind {:?}", ty),
+                    msg: format!("Cannot serialize type kind {ty:?}"),
                     loc: get_loc(item),
                 })
             }
@@ -390,7 +389,7 @@ impl<'a> CSerialize<'a> for Type {
         if !stack.is_empty() {
             write!(writer, " ")?;
             while let Some(item) = stack.pop() {
-                write!(writer, "{}", item)?;
+                write!(writer, "{item}")?;
             }
         }
 

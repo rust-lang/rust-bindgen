@@ -36,12 +36,11 @@ impl fmt::Display for Error {
             Error::UnsupportedAbi(abi) => {
                  write!(
                     f,
-                    "{} ABI is not supported by the configured Rust target.",
-                    abi
+                    "{abi} ABI is not supported by the configured Rust target."
                 )
             }
             Error::InvalidPointerSize { ty_name, ty_size, ptr_size } => {
-                write!(f, "The {} pointer type has size {} but the current target's pointer size is {}.", ty_name, ty_size, ptr_size)
+                write!(f, "The {ty_name} pointer type has size {ty_size} but the current target's pointer size is {ptr_size}.")
             }
         }
     }

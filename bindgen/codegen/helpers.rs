@@ -68,7 +68,7 @@ pub(crate) mod attributes {
         let name: Cow<'_, str> = if MANGLE {
             name.into()
         } else {
-            format!("\u{1}{}", name).into()
+            format!("\u{1}{name}").into()
         };
 
         quote! {
@@ -375,7 +375,7 @@ pub(crate) mod ast_ty {
                 None => {
                     unnamed_arguments += 1;
                     let name =
-                        ctx.rust_ident(format!("arg{}", unnamed_arguments));
+                        ctx.rust_ident(format!("arg{unnamed_arguments}"));
                     quote! { #name }
                 }
             })

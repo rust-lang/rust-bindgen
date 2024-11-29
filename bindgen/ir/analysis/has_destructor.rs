@@ -58,9 +58,8 @@ impl HasDestructorAnalysis<'_> {
         let was_not_already_in_set = self.have_destructor.insert(id);
         assert!(
             was_not_already_in_set,
-            "We shouldn't try and insert {:?} twice because if it was \
-             already in the set, `constrain` should have exited early.",
-            id
+            "We shouldn't try and insert {id:?} twice because if it was \
+             already in the set, `constrain` should have exited early."
         );
         ConstrainResult::Changed
     }
