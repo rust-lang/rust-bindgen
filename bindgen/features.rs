@@ -38,8 +38,10 @@ impl RustTarget {
                 // fixes.
                 minor >= other_minor
             }
-            (_, Version::Nightly) => false,
+            // Nightly is compatible with everything
             (Version::Nightly, _) => true,
+            // No stable release is compatible with nightly
+            (Version::Stable { .. }, Version::Nightly) => false,
         }
     }
 }
