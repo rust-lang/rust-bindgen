@@ -19,13 +19,6 @@ use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use std::{fs::File, process::exit};
 
-fn rust_edition_help() -> String {
-    format!(
-        "Version of the Rust language edition. Defaults to {}.",
-        RustEdition::default()
-    )
-}
-
 fn rust_target_help() -> String {
     format!(
         "Version of the Rust compiler to target. Any Rust version after {EARLIEST_STABLE_RUST} is supported. Defaults to {}.",
@@ -339,7 +332,8 @@ struct BindgenCommand {
     /// Add a RAW_LINE of Rust code to a given module with name MODULE_NAME.
     #[arg(long, number_of_values = 2, value_names = ["MODULE_NAME", "RAW_LINE"])]
     module_raw_line: Vec<String>,
-    #[arg(long, help = rust_edition_help())]
+    /// Version of the Rust language edition. Defaults to 2018 if used from CLI, unless target version does not support it. Defaults to current crate's edition if used from API.
+    #[arg(long)]
     rust_edition: Option<RustEdition>,
     #[arg(long, help = rust_target_help())]
     rust_target: Option<RustTarget>,

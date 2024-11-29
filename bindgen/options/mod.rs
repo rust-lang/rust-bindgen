@@ -1595,8 +1595,7 @@ options! {
         as_args: |value, args| (!value).as_args(args, "--no-prepend-enum-name"),
     },
     /// Version of the Rust compiler to target.
-    rust_edition: RustEdition {
-        default: RustEdition::default(),
+    rust_edition: Option<RustEdition> {
         methods: {
             /// Specify the Rust edition version.
             ///
@@ -1607,8 +1606,10 @@ options! {
             }
         },
         as_args: |rust_edition, args| {
-            args.push("--rust-edition".to_owned());
-            args.push(rust_edition.to_string());
+            if let Some(rust_edition) = rust_edition {
+                args.push("--rust-edition".to_owned());
+                args.push(rust_edition.to_string());
+            }
         },
     },
     /// Version of the Rust compiler to target.
@@ -2166,5 +2167,19 @@ options! {
             }
         },
         as_args: "--clang-macro-fallback-build-dir",
+    }
+}
+
+impl BindgenOptions {
+    /// Get default Rust edition, unless it is set by the user
+    pub fn get_rust_edition(&self) -> RustEdition {
+        self.rust_edition.unwrap_or_else(|| {
+            if !self.rust_features.edition_2021 {
+                RustEdition::Rust2018
+            } else {
+                // For now, we default to 2018, but this might need to be rethought
+                RustEdition::Rust2018
+            }
+        })
     }
 }

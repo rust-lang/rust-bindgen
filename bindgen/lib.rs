@@ -531,7 +531,7 @@ impl BindgenOptions {
 
     /// Update rust edition version
     pub fn set_rust_edition(&mut self, rust_edition: RustEdition) {
-        self.rust_edition = rust_edition;
+        self.rust_edition = Some(rust_edition);
     }
 
     /// Update rust target version

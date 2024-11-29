@@ -167,6 +167,7 @@ define_rust_targets! {
     Stable_1_71(71) => { c_unwind_abi: #106075 },
     Stable_1_68(68) => { abi_efiapi: #105795 },
     Stable_1_64(64) => { core_ffi_c: #94503 },
+    Stable_1_56(56) => { edition_2021: #88100 },
     Stable_1_51(51) => { raw_ref_macros: #80886 },
     Stable_1_59(59) => { const_cstr: #54745 },
     Stable_1_47(47) => { larger_arrays: #74060 },
@@ -174,6 +175,7 @@ define_rust_targets! {
     Stable_1_40(40) => { non_exhaustive: #44109 },
     Stable_1_36(36) => { maybe_uninit: #60445 },
     Stable_1_33(33) => { repr_packed_n: #57049 },
+    // Stable_1_31(31) => { edition_2018: #54057 },
 }
 
 /// Latest stable release of Rust that is supported by bindgen

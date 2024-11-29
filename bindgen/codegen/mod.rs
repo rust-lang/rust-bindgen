@@ -728,7 +728,8 @@ impl CodeGenerator for Var {
                     if let Some(cstr) = cstr {
                         let cstr_ty = quote! { ::#prefix::ffi::CStr };
                         if rust_features.literal_cstr &&
-                            options.rust_edition >= RustEdition::Rust2021
+                            options.get_rust_edition() >=
+                                RustEdition::Rust2021
                         {
                             let cstr = proc_macro2::Literal::c_string(&cstr);
                             result.push(quote! {
@@ -3917,12 +3918,11 @@ impl std::str::FromStr for MacroTypeVariation {
 }
 
 /// Enum for the edition of Rust language to use.
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Debug, Default)]
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Debug)]
 pub enum RustEdition {
     /// Rust 2015 language edition
     Rust2015,
     /// Rust 2018 language edition
-    #[default]
     Rust2018,
     /// Rust 2021 language edition
     Rust2021,
