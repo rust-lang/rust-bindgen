@@ -213,7 +213,7 @@ impl Annotations {
             comment
                 .get_tag_attrs()
                 .next()
-                .map_or(false, |attr| attr.name == "rustbindgen")
+                .is_some_and(|attr| attr.name == "rustbindgen")
         {
             *matched = true;
             for attr in comment.get_tag_attrs() {

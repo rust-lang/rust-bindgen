@@ -492,7 +492,7 @@ impl Item {
 
         self.ancestors(ctx)
             .filter(|id| {
-                ctx.resolve_item(*id).as_module().map_or(false, |module| {
+                ctx.resolve_item(*id).as_module().is_some_and(|module| {
                     !module.is_inline() ||
                         ctx.options().conservative_inline_namespaces
                 })
@@ -1058,7 +1058,7 @@ impl Item {
             .map(|id| ctx.resolve_item(id))
             .filter(|item| {
                 item.id() == target.id() ||
-                    item.as_module().map_or(false, |module| {
+                    item.as_module().is_some_and(|module| {
                         !module.is_inline() ||
                             ctx.options().conservative_inline_namespaces
                     })
@@ -1122,7 +1122,7 @@ impl IsOpaque for Item {
             "You're not supposed to call this yet"
         );
         self.annotations.opaque() ||
-            self.as_type().map_or(false, |ty| ty.is_opaque(ctx, self)) ||
+            self.as_type().is_some_and(|ty| ty.is_opaque(ctx, self)) ||
             ctx.opaque_by_name(self.path_for_allowlisting(ctx))
     }
 }
@@ -1133,14 +1133,14 @@ where
 {
     fn has_vtable(&self, ctx: &BindgenContext) -> bool {
         let id: ItemId = (*self).into();
-        id.as_type_id(ctx).map_or(false, |id| {
+        id.as_type_id(ctx).is_some_and(|id| {
             !matches!(ctx.lookup_has_vtable(id), HasVtableResult::No)
         })
     }
 
     fn has_vtable_ptr(&self, ctx: &BindgenContext) -> bool {
         let id: ItemId = (*self).into();
-        id.as_type_id(ctx).map_or(false, |id| {
+        id.as_type_id(ctx).is_some_and(|id| {
             matches!(ctx.lookup_has_vtable(id), HasVtableResult::SelfHasVtable)
         })
     }
