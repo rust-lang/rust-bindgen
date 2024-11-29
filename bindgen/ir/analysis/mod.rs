@@ -306,7 +306,7 @@ mod tests {
         type Extra = &'a Graph;
         type Output = HashMap<Node, HashSet<Node>>;
 
-        fn new(graph: &'a Graph) -> ReachableFrom {
+        fn new(graph: &'a Graph) -> Self {
             let reversed = graph.reverse();
             ReachableFrom {
                 reachable: Default::default(),
