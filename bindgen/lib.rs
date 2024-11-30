@@ -50,14 +50,14 @@ mod regex_set;
 pub use codegen::{
     AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle,
 };
-pub use features::{RustTarget, LATEST_STABLE_RUST};
+pub use features::{RustEdition, RustTarget, LATEST_STABLE_RUST};
 pub use ir::annotations::FieldVisibilityKind;
 pub use ir::function::Abi;
 #[cfg(feature = "__cli")]
 pub use options::cli::builder_from_flags;
 
 use codegen::CodegenError;
-use features::{RustEdition, RustFeatures};
+use features::RustFeatures;
 use ir::comment;
 use ir::context::{BindgenContext, ItemId};
 use ir::item::Item;

@@ -83,6 +83,7 @@ impl fmt::Display for InvalidRustTarget {
 macro_rules! define_rust_editions {
     ($($variant:ident($value:literal) => $minor:literal,)*) => {
         #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+        #[doc = "Represents Rust Edition for the generated bindings"]
         pub enum RustEdition {
             $(
                 #[doc = concat!("The ", stringify!($value), " edition of Rust.")]
