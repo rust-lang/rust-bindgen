@@ -234,7 +234,7 @@ impl CannotDerive<'_> {
             // Complex cases need more information
             TypeKind::Array(t, len) => {
                 let inner_type =
-                    self.can_derive.get(&t.into()).cloned().unwrap_or_default();
+                    self.can_derive.get(&t.into()).copied().unwrap_or_default();
                 if inner_type != CanDerive::Yes {
                     trace!(
                         "    arrays of T for which we cannot derive {} \
@@ -273,7 +273,7 @@ impl CannotDerive<'_> {
             }
             TypeKind::Vector(t, len) => {
                 let inner_type =
-                    self.can_derive.get(&t.into()).cloned().unwrap_or_default();
+                    self.can_derive.get(&t.into()).copied().unwrap_or_default();
                 if inner_type != CanDerive::Yes {
                     trace!(
                         "    vectors of T for which we cannot derive {} \
@@ -428,7 +428,7 @@ impl CannotDerive<'_> {
 
                 let can_derive = self.can_derive
                     .get(&sub_id)
-                    .cloned()
+                    .copied()
                     .unwrap_or_default();
 
                 match can_derive {
@@ -642,7 +642,7 @@ impl<'ctx> MonotoneFramework for CannotDerive<'ctx> {
         self.ctx
             .allowlisted_items()
             .iter()
-            .cloned()
+            .copied()
             .flat_map(|i| {
                 let mut reachable = vec![i];
                 i.trace(
@@ -660,7 +660,7 @@ impl<'ctx> MonotoneFramework for CannotDerive<'ctx> {
     fn constrain(&mut self, id: ItemId) -> ConstrainResult {
         trace!("constrain: {:?}", id);
 
-        if let Some(CanDerive::No) = self.can_derive.get(&id).cloned() {
+        if let Some(CanDerive::No) = self.can_derive.get(&id) {
             trace!("    already know it cannot derive {}", self.derive_trait);
             return ConstrainResult::Same;
         }

@@ -259,7 +259,6 @@ impl UsedTemplateParameters<'_> {
                          a's used template param set should be `Some`",
                     )
                     .iter()
-                    .cloned()
             });
 
         used_by_this_id.extend(args);
@@ -322,8 +321,7 @@ impl UsedTemplateParameters<'_> {
                          arg's used template param set should be \
                          `Some`",
                     )
-                    .iter()
-                    .cloned();
+                    .iter();
                 used_by_this_id.extend(used_by_arg);
             }
         }
@@ -355,8 +353,7 @@ impl UsedTemplateParameters<'_> {
                          sub_id's used template param set should be \
                          `Some`",
                     )
-                    .iter()
-                    .cloned();
+                    .iter();
 
                 trace!(
                     "      union with {:?}'s usage: {:?}",
@@ -380,11 +377,11 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
         let mut used = HashMap::default();
         let mut dependencies = HashMap::default();
         let allowlisted_items: HashSet<_> =
-            ctx.allowlisted_items().iter().cloned().collect();
+            ctx.allowlisted_items().iter().copied().collect();
 
         let allowlisted_and_blocklisted_items: ItemSet = allowlisted_items
             .iter()
-            .cloned()
+            .copied()
             .flat_map(|i| {
                 let mut reachable = vec![i];
                 i.trace(
@@ -498,7 +495,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
         self.ctx
             .allowlisted_items()
             .iter()
-            .cloned()
+            .copied()
             .flat_map(|i| {
                 let mut reachable = vec![i];
                 i.trace(

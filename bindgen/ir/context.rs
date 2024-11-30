@@ -864,7 +864,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             definition.kind(),
             clang_sys::CXCursor_TemplateTypeParameter
         );
-        self.type_params.get(definition).cloned()
+        self.type_params.get(definition).copied()
     }
 
     // TODO: Move all this syntax crap to other part of the code.
@@ -1317,7 +1317,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             .as_ref()
             .unwrap()
             .get(&id)
-            .cloned()
+            .copied()
             .unwrap_or(SizednessResult::ZeroSized)
     }
 
@@ -1341,7 +1341,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             .as_ref()
             .unwrap()
             .get(&id.into())
-            .cloned()
+            .copied()
             .unwrap_or(HasVtableResult::No)
     }
 
@@ -1541,7 +1541,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         &self,
         definition: clang::Cursor,
     ) -> Option<ItemId> {
-        self.semantic_parents.get(&definition).cloned()
+        self.semantic_parents.get(&definition).copied()
     }
 
     /// Given a cursor pointing to the location of a template instantiation,
@@ -1589,7 +1589,6 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                         self.currently_parsed_types()
                             .iter()
                             .find(|partial_ty| *partial_ty.decl() == referenced)
-                            .cloned()
                     })
                     .and_then(|template_decl| {
                         let num_template_params =
@@ -1861,7 +1860,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     .usr()
                     .and_then(|usr| self.types.get(&TypeKey::Usr(usr)))
             })
-            .cloned()
+            .copied()
     }
 
     /// Looks up for an already resolved type, either because it's builtin, or
@@ -2865,7 +2864,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             .as_ref()
             .unwrap()
             .get(&id)
-            .cloned()
+            .copied()
             .unwrap_or(CanDerive::Yes)
     }
 

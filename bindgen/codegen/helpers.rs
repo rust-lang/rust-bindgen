@@ -19,7 +19,6 @@ pub(crate) mod attributes {
     pub(crate) fn repr_list(which_ones: &[&str]) -> TokenStream {
         let which_ones = which_ones
             .iter()
-            .cloned()
             .map(|one| TokenStream::from_str(one).expect("repr to be valid"));
         quote! {
             #[repr( #( #which_ones ),* )]
@@ -29,7 +28,6 @@ pub(crate) mod attributes {
     pub(crate) fn derives(which_ones: &[&str]) -> TokenStream {
         let which_ones = which_ones
             .iter()
-            .cloned()
             .map(|one| TokenStream::from_str(one).expect("derive to be valid"));
         quote! {
             #[derive( #( #which_ones ),* )]

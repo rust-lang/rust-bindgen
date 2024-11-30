@@ -99,7 +99,7 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
     }
 
     fn initial_worklist(&self) -> Vec<ItemId> {
-        self.ctx.allowlisted_items().iter().cloned().collect()
+        self.ctx.allowlisted_items().iter().copied().collect()
     }
 
     fn constrain(&mut self, id: ItemId) -> ConstrainResult {
