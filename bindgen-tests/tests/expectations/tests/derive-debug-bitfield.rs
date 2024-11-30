@@ -122,12 +122,18 @@ impl ::std::fmt::Debug for C {
             "C {{ a : {:?}, b : {:?}, large_array: [{}] }}",
             self.a(),
             self.b(),
-            self
-                .large_array
-                .iter()
-                .enumerate()
-                .map(|(i, v)| format!("{}{:?}", if i > 0 { ", " } else { "" }, v))
-                .collect::<String>(),
+            {
+                use std::fmt::Write as _;
+                let mut output = String::new();
+                let mut iter = self.large_array.iter();
+                if let Some(value) = iter.next() {
+                    let _ = write!(output, "{value:?}");
+                    for value in iter {
+                        let _ = write!(output, ", {value:?}");
+                    }
+                }
+                output
+            },
         )
     }
 }

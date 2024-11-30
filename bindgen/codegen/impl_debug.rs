@@ -191,13 +191,18 @@ impl<'a> ImplDebug<'a> for Item {
                     // Let's implement our own print function
                     Some((
                         format!("{name}: [{{}}]"),
-                        vec![quote! {
-                            self.#name_ident
-                                .iter()
-                                .enumerate()
-                                .map(|(i, v)| format!("{}{:?}", if i > 0 { ", " } else { "" }, v))
-                                .collect::<String>()
-                        }],
+                        vec![quote! {{
+                            use std::fmt::Write as _;
+                            let mut output = String::new();
+                            let mut iter = self.#name_ident.iter();
+                            if let Some(value) = iter.next() {
+                                let _ = write!(output, "{value:?}");
+                                for value in iter {
+                                    let _ = write!(output, ", {value:?}");
+                                }
+                            }
+                            output
+                        }}],
                     ))
                 }
             }

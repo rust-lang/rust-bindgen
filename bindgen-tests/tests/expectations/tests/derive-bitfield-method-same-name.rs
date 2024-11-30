@@ -136,12 +136,18 @@ impl ::std::fmt::Debug for Foo {
         write!(
             f,
             "Foo {{ large: [{}], type_ : {:?},  }}",
-            self
-                .large
-                .iter()
-                .enumerate()
-                .map(|(i, v)| format!("{}{:?}", if i > 0 { ", " } else { "" }, v))
-                .collect::<String>(),
+            {
+                use std::fmt::Write as _;
+                let mut output = String::new();
+                let mut iter = self.large.iter();
+                if let Some(value) = iter.next() {
+                    let _ = write!(output, "{value:?}");
+                    for value in iter {
+                        let _ = write!(output, ", {value:?}");
+                    }
+                }
+                output
+            },
             self.type__bindgen_bitfield(),
         )
     }
