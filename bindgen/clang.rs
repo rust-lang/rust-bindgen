@@ -1144,7 +1144,7 @@ impl Eq for Cursor {}
 
 impl Hash for Cursor {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        unsafe { clang_hashCursor(self.x) }.hash(state)
+        unsafe { clang_hashCursor(self.x) }.hash(state);
     }
 }
 

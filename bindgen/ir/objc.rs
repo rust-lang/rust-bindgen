@@ -308,7 +308,7 @@ impl ObjCMethod {
             let arg = arg.to_string();
             let name_and_sig: Vec<&str> = arg.split(' ').collect();
             let name = name_and_sig[0];
-            args_without_types.push(Ident::new(name, Span::call_site()))
+            args_without_types.push(Ident::new(name, Span::call_site()));
         }
 
         let args = split_name.into_iter().zip(args_without_types).map(

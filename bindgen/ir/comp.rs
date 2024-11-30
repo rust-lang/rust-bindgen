@@ -1699,7 +1699,7 @@ impl CompInfo {
         layout: Option<&Layout>,
     ) {
         let packed = self.is_packed(ctx, layout);
-        self.fields.compute_bitfield_units(ctx, packed)
+        self.fields.compute_bitfield_units(ctx, packed);
     }
 
     /// Assign for each anonymous field a generated name.

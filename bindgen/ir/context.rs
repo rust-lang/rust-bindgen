@@ -2262,7 +2262,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let mut module_name = None;
         let spelling = cursor.spelling();
         if !spelling.is_empty() {
-            module_name = Some(spelling)
+            module_name = Some(spelling);
         }
 
         let mut kind = ModuleKind::Normal;
@@ -2647,7 +2647,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Call if a bindgen complex is generated
     pub(crate) fn generated_bindgen_complex(&self) {
-        self.generated_bindgen_complex.set(true)
+        self.generated_bindgen_complex.set(true);
     }
 
     /// Whether we need to generate the bindgen complex type
@@ -2657,7 +2657,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Call if a bindgen float16 is generated
     pub(crate) fn generated_bindgen_float16(&self) {
-        self.generated_bindgen_float16.set(true)
+        self.generated_bindgen_float16.set(true);
     }
 
     /// Whether we need to generate the bindgen float16 type

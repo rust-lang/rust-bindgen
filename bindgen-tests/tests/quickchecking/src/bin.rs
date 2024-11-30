@@ -105,5 +105,5 @@ fn main() {
     let generate_range = *matches.get_one::<usize>("range").unwrap();
     let tests = *matches.get_one::<u64>("count").unwrap();
 
-    quickchecking::test_bindgen(generate_range, tests, output_path)
+    quickchecking::test_bindgen(generate_range, tests, output_path);
 }

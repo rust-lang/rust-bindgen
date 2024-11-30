@@ -852,7 +852,7 @@ impl CodeGenerator for Type {
                 // it to BindgenContext::compute_allowlisted_and_codegen_items.
             }
             TypeKind::TemplateInstantiation(ref inst) => {
-                inst.codegen(ctx, result, item)
+                inst.codegen(ctx, result, item);
             }
             TypeKind::BlockPointer(inner) => {
                 if !ctx.options().generate_block {
@@ -1143,7 +1143,7 @@ impl CodeGenerator for Type {
                 result.saw_objc();
             }
             TypeKind::ObjCInterface(ref interface) => {
-                interface.codegen(ctx, result, item)
+                interface.codegen(ctx, result, item);
             }
             ref u @ TypeKind::UnresolvedTypeRef(..) => {
                 unreachable!("Should have been resolved after parsing {:?}!", u)
@@ -1230,7 +1230,7 @@ impl CodeGenerator for Vtable<'_> {
                 pub struct #name {
                     #( #methods ),*
                 }
-            })
+            });
         } else {
             // For the cases we don't support, simply generate an empty struct.
             let void = helpers::ast_ty::c_void(ctx);
@@ -2323,7 +2323,7 @@ impl CodeGenerator for CompInfo {
                 let ty = helpers::blob(layout);
                 fields.push(quote! {
                     pub bindgen_union_field: #ty ,
-                })
+                });
             }
         }
 
@@ -2472,7 +2472,7 @@ impl CodeGenerator for CompInfo {
         derives.extend(custom_derives.iter().map(|s| s.as_str()));
 
         if !derives.is_empty() {
-            attributes.push(attributes::derives(&derives))
+            attributes.push(attributes::derives(&derives));
         }
 
         attributes.extend(
@@ -3099,7 +3099,7 @@ impl Method {
                 quote! {
                     __bindgen_tmp
                 }
-            })
+            });
         }
 
         let block = ctx.wrap_unsafe_ops(quote! ( #( #stmts );*));
@@ -4764,7 +4764,7 @@ fn unsupported_abi_diagnostic(
             }
         }
 
-        diag.display()
+        diag.display();
     }
 }
 
@@ -4802,7 +4802,7 @@ fn variadic_fn_diagnostic(
             }
         }
 
-        diag.display()
+        diag.display();
     }
 }
 
@@ -5234,10 +5234,10 @@ pub(crate) mod utils {
                     }
                     match ty.kind() {
                         TypeKind::Alias(type_id_alias) => {
-                            type_id = *type_id_alias
+                            type_id = *type_id_alias;
                         }
                         TypeKind::ResolvedTypeRef(type_id_typedef) => {
-                            type_id = *type_id_typedef
+                            type_id = *type_id_typedef;
                         }
                         _ => break,
                     }
@@ -5718,7 +5718,7 @@ pub(crate) mod utils {
             .collect::<Vec<_>>();
 
         if is_variadic {
-            args.push(quote! { ... })
+            args.push(quote! { ... });
         }
 
         args

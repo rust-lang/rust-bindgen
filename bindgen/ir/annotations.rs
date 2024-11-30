@@ -227,7 +227,7 @@ impl Annotations {
                     "replaces" => {
                         self.use_instead_of = Some(
                             attr.value.split("::").map(Into::into).collect(),
-                        )
+                        );
                     }
                     "derive" => self.derives.push(attr.value),
                     "attribute" => self.attributes.push(attr.value),
@@ -239,7 +239,7 @@ impl Annotations {
                         };
                     }
                     "accessor" => {
-                        self.accessor_kind = Some(parse_accessor(&attr.value))
+                        self.accessor_kind = Some(parse_accessor(&attr.value));
                     }
                     "constant" => self.constify_enum_variant = true,
                     _ => {}

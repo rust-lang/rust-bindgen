@@ -344,7 +344,7 @@ where
     F: FnMut(ItemId, EdgeKind),
 {
     fn visit_kind(&mut self, item: ItemId, kind: EdgeKind) {
-        (*self)(item, kind)
+        (*self)(item, kind);
     }
 }
 
@@ -437,7 +437,7 @@ where
         let is_newly_discovered =
             self.seen.add(self.currently_traversing, item);
         if is_newly_discovered {
-            self.queue.push(item)
+            self.queue.push(item);
         }
     }
 }

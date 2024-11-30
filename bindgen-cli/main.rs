@@ -35,7 +35,7 @@ pub fn main() {
 
             std::panic::set_hook(Box::new(move |info| {
                 if verbose {
-                    print_verbose_err()
+                    print_verbose_err();
                 }
                 eprintln!("{info}");
             }));

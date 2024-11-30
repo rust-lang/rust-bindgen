@@ -125,6 +125,6 @@ impl ops::BitOr for CanDerive {
 
 impl ops::BitOrAssign for CanDerive {
     fn bitor_assign(&mut self, rhs: Self) {
-        *self = self.join(rhs)
+        *self = self.join(rhs);
     }
 }
