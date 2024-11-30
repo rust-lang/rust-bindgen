@@ -8,12 +8,11 @@ publish = false
 bindgen = { path = "../bindgen", features = ["__cli", "experimental"] }
 owo-colors = "3.5.0"
 prettyplease = { version = "0.2.7", features = ["verbatim"] }
-similar = { version = "2.2.1", features = ["inline"] }
-tempfile = "3"
-
 proc-macro2.workspace = true
 shlex.workspace = true
+similar = { version = "2.2.1", features = ["inline"] }
 syn.workspace = true
+tempfile = "3"
 
 [features]
 logging = ["bindgen/logging"]
