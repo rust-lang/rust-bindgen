@@ -503,7 +503,7 @@ impl Item {
             // TODO(emilio, #453): Figure out what to do when this happens
             // legitimately, we could track the opaque stuff and disable the
             // assertion there I guess.
-            warn!("Found non-allowlisted item in code generation: {:?}", self);
+            warn!("Found non-allowlisted item in code generation: {self:?}");
         }
 
         result.set_seen(self.id());
@@ -521,7 +521,7 @@ impl CodeGenerator for Item {
         result: &mut CodegenResult<'_>,
         _extra: &(),
     ) {
-        debug!("<Item as CodeGenerator>::codegen: self = {:?}", self);
+        debug!("<Item as CodeGenerator>::codegen: self = {self:?}");
         if !self.process_before_codegen(ctx, result) {
             return;
         }
@@ -553,7 +553,7 @@ impl CodeGenerator for Module {
         result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
-        debug!("<Module as CodeGenerator>::codegen: item = {:?}", item);
+        debug!("<Module as CodeGenerator>::codegen: item = {item:?}");
 
         let codegen_self = |result: &mut CodegenResult,
                             found_any: &mut bool| {
@@ -652,7 +652,7 @@ impl CodeGenerator for Var {
         item: &Item,
     ) {
         use crate::ir::var::VarType;
-        debug!("<Var as CodeGenerator>::codegen: item = {:?}", item);
+        debug!("<Var as CodeGenerator>::codegen: item = {item:?}");
         debug_assert!(item.is_enabled_for_codegen(ctx));
 
         let canonical_name = item.canonical_name(ctx);
@@ -829,7 +829,7 @@ impl CodeGenerator for Type {
         result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
-        debug!("<Type as CodeGenerator>::codegen: item = {:?}", item);
+        debug!("<Type as CodeGenerator>::codegen: item = {item:?}");
         debug_assert!(item.is_enabled_for_codegen(ctx));
 
         match *self.kind() {
@@ -927,16 +927,14 @@ impl CodeGenerator for Type {
                         assert_eq!(
                             layout.size,
                             ctx.target_pointer_size(),
-                            "Target platform requires `--no-size_t-is-usize`. The size of `{}` ({}) does not match the target pointer size ({})",
-                            spelling,
+                            "Target platform requires `--no-size_t-is-usize`. The size of `{spelling}` ({}) does not match the target pointer size ({})",
                             layout.size,
                             ctx.target_pointer_size(),
                             );
                         assert_eq!(
                             layout.align,
                             ctx.target_pointer_size(),
-                            "Target platform requires `--no-size_t-is-usize`. The alignment of `{}` ({}) does not match the target pointer size ({})",
-                            spelling,
+                            "Target platform requires `--no-size_t-is-usize`. The alignment of `{spelling}` ({}) does not match the target pointer size ({})",
                             layout.align,
                             ctx.target_pointer_size(),
                         );
@@ -1146,7 +1144,7 @@ impl CodeGenerator for Type {
                 interface.codegen(ctx, result, item)
             }
             ref u @ TypeKind::UnresolvedTypeRef(..) => {
-                unreachable!("Should have been resolved after parsing {:?}!", u)
+                unreachable!("Should have been resolved after parsing {u:?}!")
             }
         }
     }
@@ -2097,7 +2095,7 @@ impl CodeGenerator for CompInfo {
         result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
-        debug!("<CompInfo as CodeGenerator>::codegen: item = {:?}", item);
+        debug!("<CompInfo as CodeGenerator>::codegen: item = {item:?}");
         debug_assert!(item.is_enabled_for_codegen(ctx));
 
         // Don't output classes with template parameters that aren't types, and
@@ -2531,10 +2529,7 @@ impl CodeGenerator for CompInfo {
         // affect layout, so we're bad and pray to the gods for avoid sending
         // all the tests to shit when parsing things like max_align_t.
         if self.found_unknown_attr() {
-            warn!(
-                "Type {} has an unknown attribute that may affect layout",
-                canonical_ident
-            );
+            warn!("Type {canonical_ident} has an unknown attribute that may affect layout");
         }
 
         if all_template_params.is_empty() {
@@ -3544,7 +3539,7 @@ impl CodeGenerator for Enum {
         result: &mut CodegenResult<'_>,
         item: &Item,
     ) {
-        debug!("<Enum as CodeGenerator>::codegen: item = {:?}", item);
+        debug!("<Enum as CodeGenerator>::codegen: item = {item:?}");
         debug_assert!(item.is_enabled_for_codegen(ctx));
 
         let name = item.canonical_name(ctx);
@@ -3600,8 +3595,7 @@ impl CodeGenerator for Enum {
                     (false, 8) => IntKind::U64,
                     _ => {
                         warn!(
-                            "invalid enum decl: signed: {}, size: {}",
-                            signed, size
+                            "invalid enum decl: signed: {signed}, size: {size}"
                         );
                         IntKind::I32
                     }
@@ -4355,7 +4349,7 @@ impl TryToRustTy for Type {
                 Ok(syn::parse_quote! { #name })
             }
             ref u @ TypeKind::UnresolvedTypeRef(..) => {
-                unreachable!("Should have been resolved after parsing {:?}!", u)
+                unreachable!("Should have been resolved after parsing {u:?}!")
             }
         }
     }
@@ -4487,7 +4481,7 @@ impl CodeGenerator for Function {
         result: &mut CodegenResult<'_>,
         item: &Item,
     ) -> Self::Return {
-        debug!("<Function as CodeGenerator>::codegen: item = {:?}", item);
+        debug!("<Function as CodeGenerator>::codegen: item = {item:?}");
         debug_assert!(item.is_enabled_for_codegen(ctx));
 
         let is_internal = matches!(self.linkage(), Linkage::Internal);
@@ -4718,10 +4712,8 @@ fn unsupported_abi_diagnostic(
     error: &error::Error,
 ) {
     warn!(
-        "Skipping {}function `{}` because the {}",
+        "Skipping {}function `{fn_name}` because the {error}",
         if variadic { "variadic " } else { "" },
-        fn_name,
-        error
     );
 
     #[cfg(feature = "experimental")]
@@ -4731,10 +4723,8 @@ fn unsupported_abi_diagnostic(
         let mut diag = Diagnostic::default();
         diag.with_title(
             format!(
-                "Skipping {}function `{}` because the {}",
+                "Skipping {}function `{fn_name}` because the {error}",
                 if variadic { "variadic " } else { "" },
-                fn_name,
-                error
             ),
             Level::Warning,
         )
@@ -4774,8 +4764,7 @@ fn variadic_fn_diagnostic(
     _ctx: &BindgenContext,
 ) {
     warn!(
-        "Cannot generate wrapper for the static variadic function `{}`.",
-        fn_name,
+        "Cannot generate wrapper for the static variadic function `{fn_name}`."
     );
 
     #[cfg(feature = "experimental")]
@@ -4817,7 +4806,7 @@ fn objc_method_codegen(
     // This would ideally resolve the method into an Item, and use
     // Item::process_before_codegen; however, ObjC methods are not currently
     // made into function items.
-    let name = format!("{}::{}{}", rust_class_name, prefix, method.rust_name());
+    let name = format!("{rust_class_name}::{prefix}{}", method.rust_name());
     if ctx.options().blocklisted_items.matches(name) {
         return;
     }
@@ -4854,8 +4843,7 @@ fn objc_method_codegen(
         ctx.wrap_unsafe_ops(body)
     };
 
-    let method_name =
-        ctx.rust_ident(format!("{}{}", prefix, method.rust_name()));
+    let method_name = ctx.rust_ident(format!("{prefix}{}", method.rust_name()));
 
     methods.push(quote! {
         unsafe fn #method_name #sig where <Self as std::ops::Deref>::Target: objc::Message + Sized {
@@ -5095,10 +5083,9 @@ pub(crate) fn codegen(
         if let Some(path) = context.options().emit_ir_graphviz.as_ref() {
             match dot::write_dot_file(context, path) {
                 Ok(()) => info!(
-                    "Your dot file was generated successfully into: {}",
-                    path
+                    "Your dot file was generated successfully into: {path}"
                 ),
-                Err(e) => warn!("{}", e),
+                Err(e) => warn!("{e}"),
             }
         }
 
@@ -5108,7 +5095,7 @@ pub(crate) fn codegen(
                     "Your depfile was generated successfully into: {}",
                     spec.depfile_path.display()
                 ),
-                Err(e) => warn!("{}", e),
+                Err(e) => warn!("{e}"),
             }
         }
 

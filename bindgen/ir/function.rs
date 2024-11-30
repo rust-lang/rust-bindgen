@@ -418,7 +418,7 @@ impl FunctionSig {
         ctx: &mut BindgenContext,
     ) -> Result<Self, ParseError> {
         use clang_sys::*;
-        debug!("FunctionSig::from_ty {:?} {:?}", ty, cursor);
+        debug!("FunctionSig::from_ty {ty:?} {cursor:?}");
 
         // Skip function templates
         let kind = cursor.kind();
@@ -596,7 +596,7 @@ impl FunctionSig {
         let abi = get_abi(call_conv);
 
         if abi.is_unknown() {
-            warn!("Unknown calling convention: {:?}", call_conv);
+            warn!("Unknown calling convention: {call_conv:?}");
         }
 
         Ok(Self {
@@ -726,7 +726,7 @@ impl ClangSubItemParser for Function {
             Some(k) => k,
         };
 
-        debug!("Function::parse({:?}, {:?})", cursor, cursor.cur_type());
+        debug!("Function::parse({cursor:?}, {:?})", cursor.cur_type());
         let visibility = cursor.visibility();
         if visibility != CXVisibility_Default {
             return Err(ParseError::Continue);

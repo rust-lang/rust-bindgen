@@ -63,7 +63,7 @@ impl HasFloat<'_> {
 
     fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
         let id = id.into();
-        trace!("inserting {:?} into the has_float set", id);
+        trace!("inserting {id:?} into the has_float set");
 
         let was_not_already_in_set = self.has_float.insert(id);
         assert!(
@@ -97,7 +97,7 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
     }
 
     fn constrain(&mut self, id: ItemId) -> ConstrainResult {
-        trace!("constrain: {:?}", id);
+        trace!("constrain: {id:?}");
 
         if self.has_float.contains(&id) {
             trace!("    already know it do not have float");
@@ -209,7 +209,7 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
                 if args_have {
                     trace!(
                         "    template args have float, so \
-                         insantiation also has float"
+                         instantiation also has float"
                     );
                     return self.insert(id);
                 }
@@ -220,7 +220,7 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
                 if def_has {
                     trace!(
                         "    template definition has float, so \
-                         insantiation also has"
+                         instantiation also has"
                     );
                     return self.insert(id);
                 }
@@ -237,7 +237,7 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
     {
         if let Some(edges) = self.dependencies.get(&id) {
             for item in edges {
-                trace!("enqueue {:?} into worklist", item);
+                trace!("enqueue {item:?} into worklist");
                 f(*item);
             }
         }

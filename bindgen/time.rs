@@ -39,7 +39,7 @@ impl<'a> Timer<'a> {
                 (elapsed.subsec_nanos() as f64) / 1e6;
             let stderr = io::stderr();
             // Arbitrary output format, subject to change.
-            writeln!(stderr.lock(), "  time: {:>9.3} ms.\t{}", time, self.name)
+            writeln!(stderr.lock(), "  time: {time:>9.3} ms.\t{}", self.name)
                 .expect("timer write should not fail");
         }
     }

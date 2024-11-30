@@ -127,7 +127,7 @@ impl SizednessAnalysis<'_> {
         id: TypeId,
         result: SizednessResult,
     ) -> ConstrainResult {
-        trace!("inserting {:?} for {:?}", result, id);
+        trace!("inserting {result:?} for {id:?}");
 
         if let SizednessResult::ZeroSized = result {
             return ConstrainResult::Same;
@@ -197,7 +197,7 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
     }
 
     fn constrain(&mut self, id: TypeId) -> ConstrainResult {
-        trace!("constrain {:?}", id);
+        trace!("constrain {id:?}");
 
         if let Some(SizednessResult::NonZeroSized) =
             self.sized.get(&id).cloned()
@@ -322,7 +322,7 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
     {
         if let Some(edges) = self.dependencies.get(&id) {
             for ty in edges {
-                trace!("enqueue {:?} into worklist", ty);
+                trace!("enqueue {ty:?} into worklist");
                 f(*ty);
             }
         }

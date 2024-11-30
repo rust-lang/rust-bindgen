@@ -65,10 +65,7 @@ impl HasTypeParameterInArray<'_> {
 
     fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
         let id = id.into();
-        trace!(
-            "inserting {:?} into the has_type_parameter_in_array set",
-            id
-        );
+        trace!("inserting {id:?} into the has_type_parameter_in_array set");
 
         let was_not_already_in_set =
             self.has_type_parameter_in_array.insert(id);
@@ -103,7 +100,7 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
     }
 
     fn constrain(&mut self, id: ItemId) -> ConstrainResult {
-        trace!("constrain: {:?}", id);
+        trace!("constrain: {id:?}");
 
         if self.has_type_parameter_in_array.contains(&id) {
             trace!("    already know it do not have array");
@@ -209,7 +206,7 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
                 if args_have {
                     trace!(
                         "    template args have array, so \
-                         insantiation also has array"
+                         instantiation also has array"
                     );
                     return self.insert(id);
                 }
@@ -220,7 +217,7 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
                 if def_has {
                     trace!(
                         "    template definition has array, so \
-                         insantiation also has"
+                         instantiation also has"
                     );
                     return self.insert(id);
                 }
@@ -237,7 +234,7 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
     {
         if let Some(edges) = self.dependencies.get(&id) {
             for item in edges {
-                trace!("enqueue {:?} into worklist", item);
+                trace!("enqueue {item:?} into worklist");
                 f(*item);
             }
         }

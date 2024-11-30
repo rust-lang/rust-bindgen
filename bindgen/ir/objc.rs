@@ -87,7 +87,7 @@ impl ObjCInterface {
     /// and protocols are like PNSObject
     pub(crate) fn rust_name(&self) -> String {
         if let Some(ref cat) = self.category {
-            format!("{}_{}", self.name(), cat)
+            format!("{}_{cat}", self.name())
         } else if self.is_protocol {
             format!("P{}", self.name())
         } else {
@@ -147,8 +147,8 @@ impl ObjCInterface {
                     let needle = format!("P{}", c.spelling());
                     let items_map = ctx.items();
                     debug!(
-                        "Interface {} conforms to {}, find the item",
-                        interface.name, needle
+                        "Interface {} conforms to {needle}, find the item",
+                        interface.name,
                     );
 
                     for (id, item) in items_map {
@@ -163,10 +163,7 @@ impl ObjCInterface {
                                         ty.name()
                                     );
                                     if Some(needle.as_ref()) == ty.name() {
-                                        debug!(
-                                            "Found conforming protocol {:?}",
-                                            item
-                                        );
+                                        debug!("Found conforming protocol {item:?}");
                                         interface.conforms_to.push(id);
                                         break;
                                     }

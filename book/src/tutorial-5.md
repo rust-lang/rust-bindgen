@@ -40,7 +40,7 @@ mod tests {
                 r if r == (BZ_PARAM_ERROR as _) => panic!("BZ_PARAM_ERROR"),
                 r if r == (BZ_MEM_ERROR as _) => panic!("BZ_MEM_ERROR"),
                 r if r == (BZ_OK as _) => {},
-                r => panic!("Unknown return value = {}", r),
+                r => panic!("Unknown return value = {r}"),
             }
 
             // Compress `input` into `compressed_output`.
@@ -55,7 +55,7 @@ mod tests {
                 r if r == (BZ_FINISH_OK as _) => panic!("BZ_FINISH_OK"),
                 r if r == (BZ_SEQUENCE_ERROR as _) => panic!("BZ_SEQUENCE_ERROR"),
                 r if r == (BZ_STREAM_END as _) => {},
-                r => panic!("Unknown return value = {}", r),
+                r => panic!("Unknown return value = {r}"),
             }
 
             // Finish the compression stream.
@@ -63,7 +63,7 @@ mod tests {
             match result {
                 r if r == (BZ_PARAM_ERROR as _) => panic!("BZ_PARAM_ERROR"),
                 r if r == (BZ_OK as _) => {},
-                r => panic!("Unknown return value = {}", r),
+                r => panic!("Unknown return value = {r}"),
             }
 
             // Construct a decompression stream.
@@ -76,7 +76,7 @@ mod tests {
                 r if r == (BZ_PARAM_ERROR as _) => panic!("BZ_PARAM_ERROR"),
                 r if r == (BZ_MEM_ERROR as _) => panic!("BZ_MEM_ERROR"),
                 r if r == (BZ_OK as _) => {},
-                r => panic!("Unknown return value = {}", r),
+                r => panic!("Unknown return value = {r}"),
             }
 
             // Decompress `compressed_output` into `decompressed_output`.
@@ -92,7 +92,7 @@ mod tests {
                 r if r == (BZ_MEM_ERROR as _) => panic!("BZ_MEM_ERROR"),
                 r if r == (BZ_OK as _) => panic!("BZ_OK"),
                 r if r == (BZ_STREAM_END as _) => {},
-                r => panic!("Unknown return value = {}", r),
+                r => panic!("Unknown return value = {r}"),
             }
 
             // Close the decompression stream.
@@ -100,7 +100,7 @@ mod tests {
             match result {
                 r if r == (BZ_PARAM_ERROR as _) => panic!("BZ_PARAM_ERROR"),
                 r if r == (BZ_OK as _) => {},
-                r => panic!("Unknown return value = {}", r),
+                r => panic!("Unknown return value = {r}"),
             }
 
             assert_eq!(input, &decompressed_output[..]);

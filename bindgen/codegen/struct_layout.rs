@@ -148,7 +148,7 @@ impl<'a> StructLayoutTracker<'a> {
     }
 
     pub(crate) fn saw_bitfield_unit(&mut self, layout: Layout) {
-        debug!("saw bitfield unit for {}: {:?}", self.name, layout);
+        debug!("saw bitfield unit for {}: {layout:?}", self.name);
 
         self.align_to_latest_field(layout);
 
@@ -248,12 +248,9 @@ impl<'a> StructLayoutTracker<'a> {
             );
 
             debug!(
-                "align field {} to {}/{} with {} padding bytes {:?}",
-                field_name,
+                "align field {field_name} to {}/{} with {padding_bytes} padding bytes {field_layout:?}",
                 self.latest_offset,
                 field_offset.unwrap_or(0) / 8,
-                padding_bytes,
-                field_layout
             );
 
             let padding_align = if force_padding {
@@ -276,8 +273,7 @@ impl<'a> StructLayoutTracker<'a> {
         self.last_field_was_bitfield = false;
 
         debug!(
-            "Offset: {}: {} -> {}",
-            field_name,
+            "Offset: {field_name}: {} -> {}",
             self.latest_offset - field_layout.size,
             self.latest_offset
         );
@@ -312,8 +308,7 @@ impl<'a> StructLayoutTracker<'a> {
         }
 
         trace!(
-            "need a tail padding field for {}: offset {} -> size {}",
-            comp_name,
+            "need a tail padding field for {comp_name}: offset {} -> size {}",
             self.latest_offset,
             comp_layout.size
         );
@@ -325,10 +320,7 @@ impl<'a> StructLayoutTracker<'a> {
         &mut self,
         layout: Layout,
     ) -> Option<proc_macro2::TokenStream> {
-        debug!(
-            "pad_struct:\n\tself = {:#?}\n\tlayout = {:#?}",
-            self, layout
-        );
+        debug!("pad_struct:\n\tself = {self:#?}\n\tlayout = {layout:#?}");
 
         if layout.size < self.latest_offset {
             warn!(
@@ -368,7 +360,7 @@ impl<'a> StructLayoutTracker<'a> {
                 Layout::new(padding_bytes, layout.align)
             };
 
-            debug!("pad bytes to struct {}, {:?}", self.name, layout);
+            debug!("pad bytes to struct {}, {layout:?}", self.name);
 
             Some(self.padding_field(layout))
         } else {
@@ -437,8 +429,8 @@ impl<'a> StructLayoutTracker<'a> {
         // If it was, we may or may not need to align, depending on what the
         // current field alignment and the bitfield size and alignment are.
         debug!(
-            "align_to_bitfield? {}: {:?} {:?}",
-            self.last_field_was_bitfield, layout, new_field_layout
+            "align_to_bitfield? {}: {layout:?} {new_field_layout:?}",
+            self.last_field_was_bitfield,
         );
 
         // Avoid divide-by-zero errors if align is 0.

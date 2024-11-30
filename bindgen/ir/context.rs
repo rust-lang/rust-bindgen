@@ -698,10 +698,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         declaration: Option<Cursor>,
         location: Option<Cursor>,
     ) {
-        debug!(
-            "BindgenContext::add_item({:?}, declaration: {:?}, loc: {:?}",
-            item, declaration, location
-        );
+        debug!("BindgenContext::add_item({item:?}, declaration: {declaration:?}, loc: {location:?}");
         debug_assert!(
             declaration.is_some() ||
                 !item.kind().is_type() ||
@@ -753,8 +750,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 // Fortunately, we don't care about those types being
                 // duplicated, so we can just ignore them.
                 debug!(
-                    "Invalid declaration {:?} found for type {:?}",
-                    declaration,
+                    "Invalid declaration {declaration:?} found for type {:?}",
                     self.resolve_item_fallible(id)
                         .unwrap()
                         .kind()
@@ -768,10 +764,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             } else if let Some(usr) = declaration.usr() {
                 TypeKey::Usr(usr)
             } else {
-                warn!(
-                    "Valid declaration with no USR: {:?}, {:?}",
-                    declaration, location
-                );
+                warn!("Valid declaration with no USR: {declaration:?}, {location:?}");
                 TypeKey::Declaration(declaration)
             };
 
@@ -822,10 +815,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         item: Item,
         definition: clang::Cursor,
     ) {
-        debug!(
-            "BindgenContext::add_type_param: item = {:?}; definition = {:?}",
-            item, definition
-        );
+        debug!("BindgenContext::add_type_param: item = {item:?}; definition = {definition:?}");
 
         assert!(
             item.expect_type().is_type_param(),
@@ -1111,7 +1101,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         }
 
         for (id, replacement_id) in replacements {
-            debug!("Replacing {:?} with {:?}", id, replacement_id);
+            debug!("Replacing {id:?} with {replacement_id:?}");
             let new_parent = {
                 let item_id: ItemId = id.into();
                 let item = self.items[item_id.0].as_mut().unwrap();
@@ -1283,10 +1273,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                         id.ancestors(self)
                             .chain(Some(self.root_module.into()))
                             .any(|ancestor| {
-                                debug!(
-                                    "Checking if {:?} is a child of {:?}",
-                                    id, ancestor
-                                );
+                                debug!("Checking if {id:?} is a child of {ancestor:?}");
                                 self.resolve_item(ancestor)
                                     .as_module()
                                     .is_some_and(|m| m.children().contains(&id))
@@ -1452,7 +1439,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     // If at some point we care about the memory here, probably a map TypeKind
     // -> builtin type ItemId would be the best to improve that.
     fn add_builtin_item(&mut self, item: Item) {
-        debug!("add_builtin_item: item = {:?}", item);
+        debug!("add_builtin_item: item = {item:?}");
         debug_assert!(item.kind().is_type());
         self.add_item_to_module(&item);
         let id = item.id();
@@ -1789,8 +1776,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 }
                 _ => {
                     warn!(
-                        "Found template arg cursor we can't handle: {:?}",
-                        child
+                        "Found template arg cursor we can't handle: {child:?}"
                     );
                     found_const_arg = true;
                 }
@@ -1841,7 +1827,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         );
 
         // Bypass all the validations in add_item explicitly.
-        debug!("instantiate_template: inserting item: {:?}", item);
+        debug!("instantiate_template: inserting item: {item:?}");
         self.add_item_to_module(&item);
         debug_assert_eq!(with_id, item.id());
         self.items[with_id.0] = Some(item);
@@ -1874,16 +1860,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         location: Option<clang::Cursor>,
     ) -> Option<TypeId> {
         use clang_sys::{CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
-        debug!(
-            "builtin_or_resolved_ty: {:?}, {:?}, {:?}, {:?}",
-            ty, location, with_id, parent_id
-        );
+        debug!("builtin_or_resolved_ty: {ty:?}, {location:?}, {with_id:?}, {parent_id:?}");
 
         if let Some(decl) = ty.canonical_declaration(location.as_ref()) {
             if let Some(id) = self.get_resolved_type(&decl) {
                 debug!(
-                    "Already resolved ty {:?}, {:?}, {:?} {:?}",
-                    id, decl, ty, location
+                    "Already resolved ty {id:?}, {decl:?}, {ty:?} {location:?}"
                 );
                 // If the declaration already exists, then either:
                 //
@@ -2204,19 +2186,14 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     pub(crate) fn replace(&mut self, name: &[String], potential_ty: ItemId) {
         match self.replacements.entry(name.into()) {
             Entry::Vacant(entry) => {
-                debug!(
-                    "Defining replacement for {:?} as {:?}",
-                    name, potential_ty
-                );
+                debug!("Defining replacement for {name:?} as {potential_ty:?}");
                 entry.insert(potential_ty);
             }
             Entry::Occupied(occupied) => {
                 warn!(
-                    "Replacement for {:?} already defined as {:?}; \
-                     ignoring duplicate replacement definition as {:?}",
-                    name,
+                    "Replacement for {name:?} already defined as {:?}; \
+                     ignoring duplicate replacement definition as {potential_ty:?}",
                     occupied.get(),
-                    potential_ty
                 );
             }
         }
@@ -2313,10 +2290,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                         //
                         // See also https://github.com/rust-lang/rust-bindgen/issues/1676.
                         warn!(
-                            "Ignored unknown namespace prefix '{}' at {:?} in {:?}",
+                            "Ignored unknown namespace prefix '{}' at {token:?} in {cursor:?}",
                             String::from_utf8_lossy(name),
-                            token,
-                            cursor
                         );
                     }
                 }
@@ -2496,7 +2471,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     }
 
                     let name = item.path_for_allowlisting(self)[1..].join("::");
-                    debug!("allowlisted_items: testing {:?}", name);
+                    debug!("allowlisted_items: testing {name:?}");
 
                     if self.options().allowlisted_items.matches(&name) {
                         return true;
@@ -3134,7 +3109,7 @@ impl TemplateParameters for PartialType {
 }
 
 fn unused_regex_diagnostic(item: &str, name: &str, _ctx: &BindgenContext) {
-    warn!("unused option: {} {}", name, item);
+    warn!("unused option: {name} {item}");
 
     #[cfg(feature = "experimental")]
     if _ctx.options().emit_diagnostics {

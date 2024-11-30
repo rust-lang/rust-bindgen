@@ -47,8 +47,7 @@ fn main() {
 
     assert!(
         output.status.success(),
-        "Unsuccessful status code when running `rustup`: {:?}",
-        output
+        "Unsuccessful status code when running `rustup`: {output:?}",
     );
 
     let rustfmt_path =

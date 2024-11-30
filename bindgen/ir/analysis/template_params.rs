@@ -291,10 +291,8 @@ impl UsedTemplateParameters<'_> {
 
         for (arg, param) in args.iter().zip(params.iter()) {
             trace!(
-                "      instantiation's argument {:?} is used if definition's \
-                 parameter {:?} is used",
-                arg,
-                param
+                "      instantiation's argument {arg:?} is used if definition's \
+                 parameter {param:?} is used",
             );
 
             if used_by_def.contains(&param.into()) {
@@ -359,8 +357,7 @@ impl UsedTemplateParameters<'_> {
                     .cloned();
 
                 trace!(
-                    "      union with {:?}'s usage: {:?}",
-                    sub_id,
+                    "      union with {sub_id:?}'s usage: {:?}",
                     used_by_sub_id.clone().collect::<Vec<_>>()
                 );
 
@@ -524,8 +521,8 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
         // an analog to slice::split_at_mut.
         let mut used_by_this_id = self.take_this_id_usage_set(id);
 
-        trace!("constrain {:?}", id);
-        trace!("  initially, used set is {:?}", used_by_this_id);
+        trace!("constrain {id:?}");
+        trace!("  initially, used set is {used_by_this_id:?}");
 
         let original_len = used_by_this_id.len();
 
@@ -562,7 +559,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             _ => self.constrain_join(&mut used_by_this_id, item),
         }
 
-        trace!("  finally, used set is {:?}", used_by_this_id);
+        trace!("  finally, used set is {used_by_this_id:?}");
 
         let new_len = used_by_this_id.len();
         assert!(
@@ -589,7 +586,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
     {
         if let Some(edges) = self.dependencies.get(&item) {
             for item in edges {
-                trace!("enqueue {:?} into worklist", item);
+                trace!("enqueue {item:?} into worklist");
                 f(*item);
             }
         }

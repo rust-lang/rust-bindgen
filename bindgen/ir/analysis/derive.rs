@@ -112,10 +112,8 @@ impl CannotDerive<'_> {
     ) -> ConstrainResult {
         let id = id.into();
         trace!(
-            "inserting {:?} can_derive<{}>={:?}",
-            id,
+            "inserting {id:?} can_derive<{}>={can_derive:?}",
             self.derive_trait,
-            can_derive
         );
 
         if let CanDerive::Yes = can_derive {
@@ -168,7 +166,7 @@ impl CannotDerive<'_> {
             return CanDerive::No;
         }
 
-        trace!("ty: {:?}", ty);
+        trace!("ty: {ty:?}");
         if item.is_opaque(self.ctx, &()) {
             if !self.derive_trait.can_derive_union() &&
                 ty.is_union() &&
@@ -432,9 +430,9 @@ impl CannotDerive<'_> {
                     .unwrap_or_default();
 
                 match can_derive {
-                    CanDerive::Yes => trace!("    member {:?} can derive {}", sub_id, self.derive_trait),
-                    CanDerive::Manually => trace!("    member {:?} cannot derive {}, but it may be implemented", sub_id, self.derive_trait),
-                    CanDerive::No => trace!("    member {:?} cannot derive {}", sub_id, self.derive_trait),
+                    CanDerive::Yes => trace!("    member {sub_id:?} can derive {}", self.derive_trait),
+                    CanDerive::Manually => trace!("    member {sub_id:?} cannot derive {}, but it may be implemented", self.derive_trait),
+                    CanDerive::No => trace!("    member {sub_id:?} cannot derive {}", self.derive_trait),
                 }
 
                 *candidate.get_or_insert(CanDerive::Yes) |= can_derive;
@@ -527,15 +525,15 @@ impl DeriveTrait {
     fn can_derive_fnptr(&self, f: &FunctionSig) -> CanDerive {
         match (self, f.function_pointers_can_derive()) {
             (DeriveTrait::Copy, _) | (DeriveTrait::Default, _) | (_, true) => {
-                trace!("    function pointer can derive {}", self);
+                trace!("    function pointer can derive {self}");
                 CanDerive::Yes
             }
             (DeriveTrait::Debug, false) => {
-                trace!("    function pointer cannot derive {}, but it may be implemented", self);
+                trace!("    function pointer cannot derive {self}, but it may be implemented");
                 CanDerive::Manually
             }
             (_, false) => {
-                trace!("    function pointer cannot derive {}", self);
+                trace!("    function pointer cannot derive {self}");
                 CanDerive::No
             }
         }
@@ -551,7 +549,7 @@ impl DeriveTrait {
                 CanDerive::No
             }
             _ => {
-                trace!("    vector can derive {}", self);
+                trace!("    vector can derive {self}");
                 CanDerive::Yes
             }
         }
@@ -564,7 +562,7 @@ impl DeriveTrait {
                 CanDerive::No
             }
             _ => {
-                trace!("    pointer can derive {}", self);
+                trace!("    pointer can derive {self}");
                 CanDerive::Yes
             }
         }
@@ -597,7 +595,7 @@ impl DeriveTrait {
             }
             // === others ===
             _ => {
-                trace!("    simple type that can always derive {}", self);
+                trace!("    simple type that can always derive {self}");
                 CanDerive::Yes
             }
         }
@@ -658,7 +656,7 @@ impl<'ctx> MonotoneFramework for CannotDerive<'ctx> {
     }
 
     fn constrain(&mut self, id: ItemId) -> ConstrainResult {
-        trace!("constrain: {:?}", id);
+        trace!("constrain: {id:?}");
 
         if let Some(CanDerive::No) = self.can_derive.get(&id).cloned() {
             trace!("    already know it cannot derive {}", self.derive_trait);
@@ -697,7 +695,7 @@ impl<'ctx> MonotoneFramework for CannotDerive<'ctx> {
     {
         if let Some(edges) = self.dependencies.get(&id) {
             for item in edges {
-                trace!("enqueue {:?} into worklist", item);
+                trace!("enqueue {item:?} into worklist");
                 f(*item);
             }
         }

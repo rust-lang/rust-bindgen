@@ -52,10 +52,9 @@ where
 
                 match writeln!(
                     &mut dot_file,
-                    "{} -> {} [label={:?}, color={}];",
+                    "{} -> {} [label={edge_kind:?}, color={}];",
                     id.as_usize(),
                     sub_id.as_usize(),
-                    edge_kind,
                     if is_allowlisted { "black" } else { "gray" }
                 ) {
                     Ok(_) => {}

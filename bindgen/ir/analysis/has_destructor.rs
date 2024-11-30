@@ -161,7 +161,7 @@ impl<'ctx> MonotoneFramework for HasDestructorAnalysis<'ctx> {
     {
         if let Some(edges) = self.dependencies.get(&id) {
             for item in edges {
-                trace!("enqueue {:?} into worklist", item);
+                trace!("enqueue {item:?} into worklist");
                 f(*item);
             }
         }

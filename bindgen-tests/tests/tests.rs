@@ -359,7 +359,7 @@ macro_rules! test_header {
             });
 
             if let Err(err) = result {
-                panic!("{}", err);
+                panic!("{err}");
             }
         }
     };

@@ -355,7 +355,7 @@ pub(crate) mod ast_ty {
             return Ok(tokens);
         }
 
-        warn!("Unknown non-finite float number: {:?}", f);
+        warn!("Unknown non-finite float number: {f:?}");
         Err(())
     }
 

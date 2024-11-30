@@ -685,7 +685,7 @@ impl Type {
                 Some(location),
             );
             if let Some(ty) = already_resolved {
-                debug!("{:?} already resolved: {:?}", ty, location);
+                debug!("{ty:?} already resolved: {location:?}");
                 return Ok(ParseResult::AlreadyResolved(ty.into()));
             }
         }
@@ -700,8 +700,7 @@ impl Type {
         };
 
         debug!(
-            "from_clang_ty: {:?}, ty: {:?}, loc: {:?}",
-            potential_id, ty, location
+            "from_clang_ty: {potential_id:?}, ty: {ty:?}, loc: {location:?}"
         );
         debug!("currently_parsed_types: {:?}", ctx.currently_parsed_types());
 
@@ -776,7 +775,7 @@ impl Type {
                                     // etc.
                                     !canonical_ty.spelling().contains("type-parameter") =>
                 {
-                    debug!("Looking for canonical type: {:?}", canonical_ty);
+                    debug!("Looking for canonical type: {canonical_ty:?}");
                     return Self::from_clang_ty(
                         potential_id,
                         &canonical_ty,
@@ -797,10 +796,7 @@ impl Type {
                     // Same here, with template specialisations we can safely
                     // assume this is a Comp(..)
                     } else if ty.is_fully_instantiated_template() {
-                        debug!(
-                            "Template specialization: {:?}, {:?} {:?}",
-                            ty, location, canonical_ty
-                        );
+                        debug!("Template specialization: {ty:?}, {location:?} {canonical_ty:?}");
                         let complex = CompInfo::from_ty(
                             potential_id,
                             ty,
@@ -948,13 +944,7 @@ impl Type {
                                 let referenced = location.referenced().unwrap();
                                 let referenced_ty = referenced.cur_type();
 
-                                debug!(
-                                    "TemplateRef: location = {:?}; referenced = \
-                                        {:?}; referenced_ty = {:?}",
-                                    location,
-                                    referenced,
-                                    referenced_ty
-                                );
+                                debug!("TemplateRef: location = {location:?}; referenced = {referenced:?}; referenced_ty = {referenced_ty:?}");
 
                                 return Self::from_clang_ty(
                                     potential_id,
@@ -969,11 +959,7 @@ impl Type {
                                 let referenced_ty = referenced.cur_type();
                                 let declaration = referenced_ty.declaration();
 
-                                debug!(
-                                    "TypeRef: location = {:?}; referenced = \
-                                     {:?}; referenced_ty = {:?}",
-                                    location, referenced, referenced_ty
-                                );
+                                debug!("TypeRef: location = {location:?}; referenced = {referenced:?}; referenced_ty = {referenced_ty:?}");
 
                                 let id = Item::from_ty_or_ref_with_id(
                                     potential_id,
@@ -991,16 +977,11 @@ impl Type {
                             }
                             _ => {
                                 if ty.kind() == CXType_Unexposed {
-                                    warn!(
-                                        "Unexposed type {:?}, recursing inside, \
-                                          loc: {:?}",
-                                        ty,
-                                        location
-                                    );
+                                    warn!("Unexposed type {ty:?}, recursing inside, loc: {location:?}");
                                     return Err(ParseError::Recurse);
                                 }
 
-                                warn!("invalid type {:?}", ty);
+                                warn!("invalid type {ty:?}");
                                 return Err(ParseError::Continue);
                             }
                         }
@@ -1008,7 +989,7 @@ impl Type {
                 }
                 CXType_Auto => {
                     if canonical_ty == *ty {
-                        debug!("Couldn't find deduced type: {:?}", ty);
+                        debug!("Couldn't find deduced type: {ty:?}");
                         return Err(ParseError::Continue);
                     }
 
@@ -1203,10 +1184,8 @@ impl Type {
                 }
                 _ => {
                     warn!(
-                        "unsupported type: kind = {:?}; ty = {:?}; at {:?}",
+                        "unsupported type: kind = {:?}; ty = {ty:?}; at {location:?}",
                         ty.kind(),
-                        ty,
-                        location
                     );
                     return Err(ParseError::Continue);
                 }
