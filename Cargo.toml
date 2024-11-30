@@ -16,9 +16,9 @@ default-members = [
 
 # Dependencies shared between crates
 [workspace.dependencies]
-shlex = "1"
-syn = "2.0" 
 proc-macro2 = { version = "1", default-features = false }
+shlex = "1"
+syn = "2.0"
 
 # Config for 'cargo dist'
 [workspace.metadata.dist]
