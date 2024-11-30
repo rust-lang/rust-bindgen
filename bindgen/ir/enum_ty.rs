@@ -59,7 +59,7 @@ impl Enum {
         ctx: &mut BindgenContext,
     ) -> Result<Self, ParseError> {
         use clang_sys::*;
-        debug!("Enum::from_ty {:?}", ty);
+        debug!("Enum::from_ty {ty:?}");
 
         if ty.kind() != CXType_Enum {
             return Err(ParseError::Continue);

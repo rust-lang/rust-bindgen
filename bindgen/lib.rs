@@ -810,8 +810,7 @@ impl Bindings {
             };
 
             debug!(
-                "Trying to find clang with flags: {:?}",
-                clang_args_for_clang_sys
+                "Trying to find clang with flags: {clang_args_for_clang_sys:?}"
             );
 
             let clang = match clang_sys::support::Clang::find(
@@ -822,7 +821,7 @@ impl Bindings {
                 Some(clang) => clang,
             };
 
-            debug!("Found clang: {:?}", clang);
+            debug!("Found clang: {clang:?}");
 
             // Whether we are working with C or C++ inputs.
             let is_cpp = args_are_cpp(&options.clang_args) ||
@@ -881,7 +880,7 @@ impl Bindings {
             options.clang_args.push(f.name.to_str().unwrap().into())
         }
 
-        debug!("Fixed-up options: {:?}", options);
+        debug!("Fixed-up options: {options:?}");
 
         let time_phases = options.time_phases;
         let mut context = BindgenContext::new(options, &input_unsaved_files);
@@ -1045,7 +1044,7 @@ impl Bindings {
 }
 
 fn rustfmt_non_fatal_error_diagnostic(msg: &str, _options: &BindgenOptions) {
-    warn!("{}", msg);
+    warn!("{msg}");
 
     #[cfg(feature = "experimental")]
     if _options.emit_diagnostics {
@@ -1203,7 +1202,7 @@ fn get_target_dependent_env_var(
         }
         if let Ok(v) = env_var(
             parse_callbacks,
-            format!("{}_{}", var, target.replace('-', "_")),
+            format!("{var}_{}", target.replace('-', "_")),
         ) {
             return Some(v);
         }

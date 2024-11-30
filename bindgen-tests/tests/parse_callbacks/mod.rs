@@ -52,7 +52,7 @@ impl ParseCallbacks for PrefixLinkNameParseCallback {
     ) -> Option<String> {
         self.prefix
             .as_deref()
-            .map(|prefix| format!("{}{}", prefix, item_info.name))
+            .map(|prefix| format!("{prefix}{}", item_info.name))
     }
 }
 

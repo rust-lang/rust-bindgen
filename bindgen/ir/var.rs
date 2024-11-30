@@ -399,7 +399,7 @@ fn parse_macro_clang_fallback(
     }
 
     let ftu = ctx.try_ensure_fallback_translation_unit()?;
-    let contents = format!("int main() {{ {}; }}", cursor.spelling(),);
+    let contents = format!("int main() {{ {}; }}", cursor.spelling());
     ftu.reparse(&contents).ok()?;
     // Children of root node of AST
     let root_children = ftu.translation_unit().cursor().collect_children();
@@ -480,7 +480,7 @@ fn duplicated_macro_diagnostic(
     _location: crate::clang::SourceLocation,
     _ctx: &BindgenContext,
 ) {
-    warn!("Duplicated macro definition: {}", macro_name);
+    warn!("Duplicated macro definition: {macro_name}");
 
     #[cfg(feature = "experimental")]
     // FIXME (pvdrz & amanjeev): This diagnostic message shows way too often to be actually

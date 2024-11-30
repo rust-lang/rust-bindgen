@@ -2,6 +2,7 @@ use crate::ir::comp::{BitfieldUnit, CompKind, Field, FieldData, FieldMethods};
 use crate::ir::context::BindgenContext;
 use crate::ir::item::{HasTypeParamInArray, IsOpaque, Item, ItemCanonicalName};
 use crate::ir::ty::{TypeKind, RUST_DERIVE_IN_ARRAY_LIMIT};
+use std::fmt::Write as _;
 
 pub(crate) fn gen_debug_impl(
     ctx: &BindgenContext,
@@ -96,7 +97,7 @@ impl ImplDebug<'_> for BitfieldUnit {
             }
 
             if let Some(bitfield_name) = bitfield.name() {
-                format_string.push_str(&format!("{bitfield_name} : {{:?}}"));
+                let _ = write!(format_string, "{bitfield_name} : {{:?}}");
                 let getter_name = bitfield.getter_name();
                 let name_ident = ctx.rust_ident_raw(getter_name);
                 tokens.push(quote! {

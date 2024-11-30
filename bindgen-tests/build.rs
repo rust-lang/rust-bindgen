@@ -35,8 +35,7 @@ pub fn main() {
                     .to_lowercase();
                 writeln!(
                     dst,
-                    "test_header!(header_{}, {:?});",
-                    func,
+                    "test_header!(header_{func}, {:?});",
                     entry.path(),
                 )
                 .unwrap();

@@ -114,7 +114,7 @@ impl<'a> CSerialize<'a> for Function {
         };
 
         // The name used for the wrapper self.
-        let wrap_name = format!("{}{}", name, ctx.wrap_static_fns_suffix());
+        let wrap_name = format!("{name}{}", ctx.wrap_static_fns_suffix());
 
         // The function's return type
         let (ret_item, ret_ty) = {

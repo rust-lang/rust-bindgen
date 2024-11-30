@@ -1420,11 +1420,7 @@ impl Item {
             CXCursor_UsingDirective |
             CXCursor_StaticAssert |
             CXCursor_FunctionTemplate => {
-                debug!(
-                    "Unhandled cursor kind {:?}: {:?}",
-                    cursor.kind(),
-                    cursor
-                );
+                debug!("Unhandled cursor kind {:?}: {cursor:?}", cursor.kind(),);
                 Err(ParseError::Continue)
             }
 
@@ -1432,7 +1428,7 @@ impl Item {
                 let file = cursor.get_included_file_name();
                 match file {
                     None => {
-                        warn!("Inclusion of a nameless file in {:?}", cursor);
+                        warn!("Inclusion of a nameless file in {cursor:?}");
                     }
                     Some(included_file) => {
                         for cb in &ctx.options().parse_callbacks {
@@ -1450,9 +1446,8 @@ impl Item {
                 let spelling = cursor.spelling();
                 if !spelling.starts_with("operator") {
                     warn!(
-                        "Unhandled cursor kind {:?}: {:?}",
+                        "Unhandled cursor kind {:?}: {cursor:?}",
                         cursor.kind(),
-                        cursor
                     );
                 }
                 Err(ParseError::Continue)
@@ -1489,10 +1484,7 @@ impl Item {
         parent_id: Option<ItemId>,
         ctx: &mut BindgenContext,
     ) -> TypeId {
-        debug!(
-            "from_ty_or_ref_with_id: {:?} {:?}, {:?}, {:?}",
-            potential_id, ty, location, parent_id
-        );
+        debug!("from_ty_or_ref_with_id: {potential_id:?} {ty:?}, {location:?}, {parent_id:?}");
 
         if ctx.collected_typerefs() {
             debug!("refs already collected, resolving directly");
@@ -1512,11 +1504,11 @@ impl Item {
             &ty,
             Some(location),
         ) {
-            debug!("{:?} already resolved: {:?}", ty, location);
+            debug!("{ty:?} already resolved: {location:?}");
             return ty;
         }
 
-        debug!("New unresolved type reference: {:?}, {:?}", ty, location);
+        debug!("New unresolved type reference: {ty:?}, {location:?}");
 
         let is_const = ty.is_const();
         let kind = TypeKind::UnresolvedTypeRef(ty, location, parent_id);
@@ -1566,10 +1558,9 @@ impl Item {
         use clang_sys::*;
 
         debug!(
-            "Item::from_ty_with_id: {:?}\n\
-             \tty = {:?},\n\
-             \tlocation = {:?}",
-            id, ty, location
+            "Item::from_ty_with_id: {id:?}\n\
+             \tty = {ty:?},\n\
+             \tlocation = {location:?}",
         );
 
         if ty.kind() == clang_sys::CXType_Unexposed ||
@@ -1593,7 +1584,7 @@ impl Item {
         // ignore function bodies. See issue #2036.)
         if let Some(ref parent) = ty.declaration().fallible_semantic_parent() {
             if FunctionKind::from_cursor(parent).is_some() {
-                debug!("Skipping type declared inside function: {:?}", ty);
+                debug!("Skipping type declared inside function: {ty:?}");
                 return Ok(Item::new_opaque_type(id, ty, ctx));
             }
         }
@@ -1640,7 +1631,7 @@ impl Item {
                 .iter()
                 .find(|ty| *ty.decl() == declaration_to_look_for)
             {
-                debug!("Avoiding recursion parsing type: {:?}", ty);
+                debug!("Avoiding recursion parsing type: {ty:?}");
                 // Unchecked because we haven't finished this type yet.
                 return Ok(partial.id().as_type_id_unchecked());
             }

@@ -803,9 +803,8 @@ impl CompFields {
 
                     anon_field_counter += 1;
                     *name = Some(format!(
-                        "{}{}",
+                        "{}{anon_field_counter}",
                         ctx.options().anon_fields_prefix,
-                        anon_field_counter
                     ));
                 }
                 Field::Bitfields(ref mut bu) => {
@@ -1278,7 +1277,7 @@ impl CompInfo {
 
         let kind = kind?;
 
-        debug!("CompInfo::from_ty({:?}, {:?})", kind, cursor);
+        debug!("CompInfo::from_ty({kind:?}, {cursor:?})");
 
         let mut ci = CompInfo::new(kind);
         ci.is_forward_declaration =
@@ -1614,7 +1613,7 @@ impl CompInfo {
                 _ => CompKind::Struct,
             },
             _ => {
-                warn!("Unknown kind for comp type: {:?}", cursor);
+                warn!("Unknown kind for comp type: {cursor:?}");
                 return Err(ParseError::Continue);
             }
         })

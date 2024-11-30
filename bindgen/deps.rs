@@ -18,7 +18,7 @@ impl DepfileSpec {
 
         let mut buf = format!("{}:", escape(&self.output_module));
         for file in deps {
-            buf = format!("{} {}", buf, escape(file));
+            buf = format!("{buf} {}", escape(file));
         }
         buf
     }

@@ -88,8 +88,8 @@ macro_rules! bitfield_unit_get {
                 let actual = unit.get($start, $len);
 
                 println!();
-                println!("expected = {:064b}", expected);
-                println!("actual   = {:064b}", actual);
+                println!("expected = {expected:064b}");
+                println!("actual   = {actual:064b}");
 
                 assert_eq!(expected, actual);
             })*
@@ -191,7 +191,7 @@ macro_rules! bitfield_unit_set {
                 println!();
                 println!("set({}, {}, {:032b}", $start, $len, $val);
                 println!("expected = {:064b}", $expected);
-                println!("actual   = {:064b}", actual);
+                println!("actual   = {actual:064b}");
 
                 assert_eq!($expected, actual);
             )*

@@ -99,7 +99,7 @@ impl RegexSet {
         self.set = match RxSet::new(items) {
             Ok(x) => Some(x),
             Err(e) => {
-                warn!("Invalid regex in {:?}: {:?}", self.items, e);
+                warn!("Invalid regex in {:?}: {e:?}", self.items);
                 #[cfg(feature = "experimental")]
                 if let Some(name) = _name {
                     invalid_regex_warning(self, e, name);

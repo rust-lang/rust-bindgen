@@ -1066,7 +1066,7 @@ impl ClangToken {
             // expressions, so we strip them down here.
             CXToken_Comment => return None,
             _ => {
-                warn!("Found unexpected token kind: {:?}", self);
+                warn!("Found unexpected token kind: {self:?}");
                 return None;
             }
         };
@@ -2090,26 +2090,25 @@ pub(crate) fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
         let prefix = prefix.as_ref();
         print_indent(
             depth,
-            format!(" {}kind = {}", prefix, kind_to_str(c.kind())),
+            format!(" {prefix}kind = {}", kind_to_str(c.kind())),
         );
         print_indent(
             depth,
-            format!(" {}spelling = \"{}\"", prefix, c.spelling()),
+            format!(" {prefix}spelling = \"{}\"", c.spelling()),
         );
-        print_indent(depth, format!(" {}location = {}", prefix, c.location()));
+        print_indent(depth, format!(" {prefix}location = {}", c.location()));
         print_indent(
             depth,
-            format!(" {}is-definition? {}", prefix, c.is_definition()),
+            format!(" {prefix}is-definition? {}", c.is_definition()),
         );
         print_indent(
             depth,
-            format!(" {}is-declaration? {}", prefix, c.is_declaration()),
+            format!(" {prefix}is-declaration? {}", c.is_declaration()),
         );
         print_indent(
             depth,
             format!(
-                " {}is-inlined-function? {}",
-                prefix,
+                " {prefix}is-inlined-function? {}",
                 c.is_inlined_function()
             ),
         );
@@ -2118,11 +2117,7 @@ pub(crate) fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
         if templ_kind != CXCursor_NoDeclFound {
             print_indent(
                 depth,
-                format!(
-                    " {}template-kind = {}",
-                    prefix,
-                    kind_to_str(templ_kind)
-                ),
+                format!(" {prefix}template-kind = {}", kind_to_str(templ_kind)),
             );
         }
         if let Some(usr) = c.usr() {
@@ -2149,7 +2144,7 @@ pub(crate) fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
         if let Some(ty) = c.enum_type() {
             print_indent(
                 depth,
-                format!(" {}enum-type = {}", prefix, type_to_str(ty.kind())),
+                format!(" {prefix}enum-type = {}", type_to_str(ty.kind())),
             );
         }
         if let Some(val) = c.enum_val_signed() {
@@ -2158,13 +2153,13 @@ pub(crate) fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
         if let Some(ty) = c.typedef_type() {
             print_indent(
                 depth,
-                format!(" {}typedef-type = {}", prefix, type_to_str(ty.kind())),
+                format!(" {prefix}typedef-type = {}", type_to_str(ty.kind())),
             );
         }
         if let Some(ty) = c.ret_type() {
             print_indent(
                 depth,
-                format!(" {}ret-type = {}", prefix, type_to_str(ty.kind())),
+                format!(" {prefix}ret-type = {}", type_to_str(ty.kind())),
             );
         }
 
@@ -2214,16 +2209,16 @@ pub(crate) fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
         let prefix = prefix.as_ref();
 
         let kind = ty.kind();
-        print_indent(depth, format!(" {}kind = {}", prefix, type_to_str(kind)));
+        print_indent(depth, format!(" {prefix}kind = {}", type_to_str(kind)));
         if kind == CXType_Invalid {
             return;
         }
 
-        print_indent(depth, format!(" {}cconv = {}", prefix, ty.call_conv()));
+        print_indent(depth, format!(" {prefix}cconv = {}", ty.call_conv()));
 
         print_indent(
             depth,
-            format!(" {}spelling = \"{}\"", prefix, ty.spelling()),
+            format!(" {prefix}spelling = \"{}\"", ty.spelling()),
         );
         let num_template_args =
             unsafe { clang_Type_getNumTemplateArguments(ty.x) };
@@ -2240,7 +2235,7 @@ pub(crate) fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
         }
         print_indent(
             depth,
-            format!(" {}is-variadic? {}", prefix, ty.is_variadic()),
+            format!(" {prefix}is-variadic? {}", ty.is_variadic()),
         );
 
         let canonical = ty.canonical_type();
