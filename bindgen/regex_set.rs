@@ -56,7 +56,7 @@ impl RegexSet {
     #[inline]
     #[allow(unused)]
     pub(crate) fn build(&mut self, record_matches: bool) {
-        self.build_inner(record_matches, None)
+        self.build_inner(record_matches, None);
     }
 
     #[cfg(all(feature = "__cli", feature = "experimental"))]
@@ -71,7 +71,7 @@ impl RegexSet {
         record_matches: bool,
         name: Option<&'static str>,
     ) {
-        self.build_inner(record_matches, name)
+        self.build_inner(record_matches, name);
     }
 
     #[cfg(all(not(feature = "__cli"), feature = "experimental"))]
@@ -86,7 +86,7 @@ impl RegexSet {
         record_matches: bool,
         name: Option<&'static str>,
     ) {
-        self.build_inner(record_matches, name)
+        self.build_inner(record_matches, name);
     }
 
     fn build_inner(

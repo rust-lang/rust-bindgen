@@ -877,7 +877,7 @@ impl Bindings {
             if idx != 0 || !options.input_headers.is_empty() {
                 options.clang_args.push("-include".into());
             }
-            options.clang_args.push(f.name.to_str().unwrap().into())
+            options.clang_args.push(f.name.to_str().unwrap().into());
         }
 
         debug!("Fixed-up options: {options:?}");
@@ -1134,7 +1134,7 @@ fn parse(context: &mut BindgenContext) -> Result<(), BindgenError> {
 
     let root = context.root_module();
     context.with_module(root, |ctx| {
-        cursor.visit_sorted(ctx, |ctx, child| parse_one(ctx, child, None))
+        cursor.visit_sorted(ctx, |ctx, child| parse_one(ctx, child, None));
     });
 
     assert!(

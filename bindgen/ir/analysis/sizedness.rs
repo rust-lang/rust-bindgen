@@ -80,7 +80,7 @@ impl ops::BitOr for SizednessResult {
 
 impl ops::BitOrAssign for SizednessResult {
     fn bitor_assign(&mut self, rhs: SizednessResult) {
-        *self = self.join(rhs)
+        *self = self.join(rhs);
     }
 }
 

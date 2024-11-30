@@ -4,7 +4,7 @@ use syn::{
 };
 
 pub(super) fn merge_extern_blocks(file: &mut File) {
-    Visitor.visit_file_mut(file)
+    Visitor.visit_file_mut(file);
 }
 
 struct Visitor;
@@ -12,14 +12,14 @@ struct Visitor;
 impl VisitMut for Visitor {
     fn visit_file_mut(&mut self, file: &mut File) {
         visit_items(&mut file.items);
-        visit_file_mut(self, file)
+        visit_file_mut(self, file);
     }
 
     fn visit_item_mod_mut(&mut self, item_mod: &mut ItemMod) {
         if let Some((_, ref mut items)) = item_mod.content {
             visit_items(items);
         }
-        visit_item_mod_mut(self, item_mod)
+        visit_item_mod_mut(self, item_mod);
     }
 }
 

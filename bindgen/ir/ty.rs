@@ -471,7 +471,7 @@ impl TypeKind {
 #[test]
 fn is_invalid_type_param_valid() {
     let ty = Type::new(Some("foo".into()), None, TypeKind::TypeParam, false);
-    assert!(!ty.is_invalid_type_param())
+    assert!(!ty.is_invalid_type_param());
 }
 
 #[test]
@@ -482,38 +482,38 @@ fn is_invalid_type_param_valid_underscore_and_numbers() {
         TypeKind::TypeParam,
         false,
     );
-    assert!(!ty.is_invalid_type_param())
+    assert!(!ty.is_invalid_type_param());
 }
 
 #[test]
 fn is_invalid_type_param_valid_unnamed_kind() {
     let ty = Type::new(Some("foo".into()), None, TypeKind::Void, false);
-    assert!(!ty.is_invalid_type_param())
+    assert!(!ty.is_invalid_type_param());
 }
 
 #[test]
 fn is_invalid_type_param_invalid_start() {
     let ty = Type::new(Some("1foo".into()), None, TypeKind::TypeParam, false);
-    assert!(ty.is_invalid_type_param())
+    assert!(ty.is_invalid_type_param());
 }
 
 #[test]
 fn is_invalid_type_param_invalid_remaining() {
     let ty = Type::new(Some("foo-".into()), None, TypeKind::TypeParam, false);
-    assert!(ty.is_invalid_type_param())
+    assert!(ty.is_invalid_type_param());
 }
 
 #[test]
 #[should_panic]
 fn is_invalid_type_param_unnamed() {
     let ty = Type::new(None, None, TypeKind::TypeParam, false);
-    assert!(ty.is_invalid_type_param())
+    assert!(ty.is_invalid_type_param());
 }
 
 #[test]
 fn is_invalid_type_param_empty_name() {
     let ty = Type::new(Some("".into()), None, TypeKind::TypeParam, false);
-    assert!(ty.is_invalid_type_param())
+    assert!(ty.is_invalid_type_param());
 }
 
 impl TemplateParameters for Type {
@@ -710,7 +710,7 @@ impl Type {
         let mut ty_kind = ty.kind();
         match location.kind() {
             CXCursor_ObjCProtocolDecl | CXCursor_ObjCCategoryDecl => {
-                ty_kind = CXType_ObjCInterface
+                ty_kind = CXType_ObjCInterface;
             }
             _ => {}
         }

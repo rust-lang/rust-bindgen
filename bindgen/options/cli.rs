@@ -1069,7 +1069,7 @@ impl CliArg for bool {
         f: impl Fn(Builder, Self::Value) -> Builder,
     ) -> Builder {
         if self {
-            builder = f(builder, self)
+            builder = f(builder, self);
         }
 
         builder

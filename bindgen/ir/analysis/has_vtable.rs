@@ -40,7 +40,7 @@ impl ops::BitOr for HasVtableResult {
 
 impl ops::BitOrAssign for HasVtableResult {
     fn bitor_assign(&mut self, rhs: HasVtableResult) {
-        *self = self.join(rhs)
+        *self = self.join(rhs);
     }
 }
 

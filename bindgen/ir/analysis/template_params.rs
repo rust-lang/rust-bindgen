@@ -474,7 +474,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
                         extra_assert!(dependencies.contains_key(&sub_item));
                     },
                     &(),
-                )
+                );
             }
         }
 

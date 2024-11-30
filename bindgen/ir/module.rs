@@ -84,8 +84,8 @@ impl ClangSubItemParser for Module {
                 let module_id = ctx.module(cursor);
                 ctx.with_module(module_id, |ctx| {
                     cursor.visit_sorted(ctx, |ctx, child| {
-                        parse_one(ctx, child, Some(module_id.into()))
-                    })
+                        parse_one(ctx, child, Some(module_id.into()));
+                    });
                 });
 
                 Ok(ParseResult::AlreadyResolved(module_id.into()))

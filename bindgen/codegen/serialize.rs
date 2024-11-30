@@ -228,13 +228,13 @@ impl<'a> CSerialize<'a> for Type {
                 if self.is_const() {
                     write!(writer, "const ")?;
                 }
-                write!(writer, "void")?
+                write!(writer, "void")?;
             }
             TypeKind::NullPtr => {
                 if self.is_const() {
                     write!(writer, "const ")?;
                 }
-                write!(writer, "nullptr_t")?
+                write!(writer, "nullptr_t")?;
             }
             TypeKind::Int(int_kind) => {
                 if self.is_const() {
@@ -285,7 +285,7 @@ impl<'a> CSerialize<'a> for Type {
                     FloatKind::Float => write!(writer, "float complex")?,
                     FloatKind::Double => write!(writer, "double complex")?,
                     FloatKind::LongDouble => {
-                        write!(writer, "long double complex")?
+                        write!(writer, "long double complex")?;
                     }
                     FloatKind::Float128 => write!(writer, "__complex128")?,
                 }
@@ -303,7 +303,7 @@ impl<'a> CSerialize<'a> for Type {
             }
             TypeKind::Array(type_id, length) => {
                 type_id.serialize(ctx, (), stack, writer)?;
-                write!(writer, " [{length}]")?
+                write!(writer, " [{length}]")?;
             }
             TypeKind::Function(signature) => {
                 if self.is_const() {
@@ -341,14 +341,14 @@ impl<'a> CSerialize<'a> for Type {
                             type_id.serialize(ctx, (), &mut stack, buf)
                         },
                     )?;
-                    write!(writer, ")")?
+                    write!(writer, ")")?;
                 }
             }
             TypeKind::ResolvedTypeRef(type_id) => {
                 if self.is_const() {
                     write!(writer, "const ")?;
                 }
-                type_id.serialize(ctx, (), stack, writer)?
+                type_id.serialize(ctx, (), stack, writer)?;
             }
             TypeKind::Pointer(type_id) => {
                 if self.is_const() {
@@ -356,7 +356,7 @@ impl<'a> CSerialize<'a> for Type {
                 } else {
                     stack.push("*".to_owned());
                 }
-                type_id.serialize(ctx, (), stack, writer)?
+                type_id.serialize(ctx, (), stack, writer)?;
             }
             TypeKind::Comp(comp_info) => {
                 if self.is_const() {
