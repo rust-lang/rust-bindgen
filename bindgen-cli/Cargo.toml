@@ -1,6 +1,6 @@
 [package]
 authors = [
-  "The rust-bindgen project contributors",
+    "The rust-bindgen project contributors",
 ]
 description = "Automatically generates Rust FFI bindings to C and C++ libraries."
 keywords = ["bindings", "ffi", "code-generation"]
@@ -12,17 +12,17 @@ repository = "https://github.com/rust-lang/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
 homepage = "https://rust-lang.github.io/rust-bindgen/"
 version = "0.70.1"
-edition = "2021"
-rust-version = "1.70.0"
+rust-version.workspace = true
+edition.workspace = true
 
 [[bin]]
 path = "main.rs"
 name = "bindgen"
 
 [dependencies]
-bindgen = { path = "../bindgen", version = "=0.70.1",  default-features = false, features = ["__cli", "experimental", "prettyplease"] }
-env_logger = { version = "0.10.0", optional = true }
-log = { version = "0.4", optional = true }
+bindgen = { workspace = true, features = ["__cli", "experimental", "prettyplease"] }
+env_logger = { workspace = true, optional = true }
+log = { workspace = true, optional = true }
 proc-macro2.workspace = true
 shlex.workspace = true
 

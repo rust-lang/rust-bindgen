@@ -7,13 +7,14 @@ authors = [
   "Emilio Cobos Álvarez <emilio@crisal.io>",
   "The Servo project developers",
 ]
-edition = "2021"
 publish = false
+rust-version.workspace = true
+edition.workspace = true
 
 [dependencies]
-block = "0.1"
-libloading = "0.7"
-objc = "0.2"
+block.workspace = true
+libloading.workspace = true
+objc.workspace = true
 
 [lints.rust]
 ### FIXME: these might need to be fixed,
