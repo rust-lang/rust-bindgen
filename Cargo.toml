@@ -15,7 +15,7 @@ default-members = [
 ]
 
 [workspace.package]
-# If you change this, also update README.md and msrv in .github/workflows/bindgen.yml
+# If you change this, also update README.md
 rust-version = "1.70.0"
 edition = "2021"
 

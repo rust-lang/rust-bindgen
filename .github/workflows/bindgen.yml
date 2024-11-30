@@ -37,25 +37,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Read crate metadata
+        id: metadata
+        run: echo "rust-version=$(sed -ne 's/rust-version *= *\"\(.*\)\"/\1/p' Cargo.toml)" >> $GITHUB_OUTPUT
+
       - name: Install msrv for lib
         uses: dtolnay/rust-toolchain@master
         with:
-          # MSRV below is documented in Cargo.toml and README.md, please update those if you
-          # change this.
-          toolchain: 1.70.0
+          toolchain: ${{ steps.metadata.outputs.rust-version }}
 
       - name: Test lib with msrv
-        run: cargo +1.70.0 test --package bindgen
+        run: cargo +${{ steps.metadata.outputs.rust-version }} test --package bindgen
 
       - name: Install msrv for cli
         uses: dtolnay/rust-toolchain@master
         with:
-          # MSRV below is documented in Cargo.toml and README.md, please update those if you
-          # change this.
-          toolchain: 1.70.0
+          toolchain: ${{ steps.metadata.outputs.rust-version }}
 
       - name: Test cli with msrv
-        run: cargo +1.70.0 build --package bindgen-cli
+        run: cargo +${{ steps.metadata.outputs.rust-version }} build --package bindgen-cli
 
   minimal:
     runs-on: ubuntu-latest
