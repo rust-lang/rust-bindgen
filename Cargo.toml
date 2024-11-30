@@ -14,11 +14,38 @@ default-members = [
     "bindgen-tests",
 ]
 
-# Dependencies shared between crates
+[workspace.package]
+# If you change this, also update README.md and msrv in .github/workflows/bindgen.yml
+rust-version = "1.70.0"
+edition = "2021"
+
+# All dependency version management is centralized here
 [workspace.dependencies]
-proc-macro2 = { version = "1", default-features = false }
+annotate-snippets = "0.11.4"
+bindgen = { path = "./bindgen", default-features = false }
+bitflags = "2.2.1"
+block = "0.1"
+cc = "1.0"
+cexpr = "0.6"
+clang-sys = "1"
+clap = "4"
+clap_complete = "4"
+env_logger = "0.10.0"
+itertools = { version = ">=0.10,<0.14", default-features = false }
+libloading = "0.7"
+log = "0.4"
+objc = "0.2"
+owo-colors = "3.5.0"
+prettyplease = "0.2.7"
+proc-macro2 = "1"
+quickcheck = "1.0"
+quote = { version = "1", default-features = false }
+regex = { version = "1.5.3", default-features = false }
+rustc-hash = "1.0.1"
 shlex = "1"
+similar = "2.2.1"
 syn = "2.0"
+tempfile = "3"
 
 # Config for 'cargo dist'
 [workspace.metadata.dist]

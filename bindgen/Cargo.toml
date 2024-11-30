@@ -1,9 +1,9 @@
 [package]
 authors = [
-  "Jyun-Yan You <jyyou.tw@gmail.com>",
-  "Emilio Cobos Álvarez <emilio@crisal.io>",
-  "Nick Fitzgerald <fitzgen@gmail.com>",
-  "The Servo project developers",
+    "Jyun-Yan You <jyyou.tw@gmail.com>",
+    "Emilio Cobos Álvarez <emilio@crisal.io>",
+    "Nick Fitzgerald <fitzgen@gmail.com>",
+    "The Servo project developers",
 ]
 description = "Automatically generates Rust FFI bindings to C and C++ libraries."
 keywords = ["bindings", "ffi", "code-generation"]
@@ -15,29 +15,28 @@ repository = "https://github.com/rust-lang/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
 homepage = "https://rust-lang.github.io/rust-bindgen/"
 version = "0.70.1"
-edition = "2021"
 build = "build.rs"
-# If you change this, also update README.md and msrv in .github/workflows/bindgen.yml
-rust-version = "1.70.0"
+rust-version.workspace = true
+edition.workspace = true
 
 [lib]
 name = "bindgen"
 path = "lib.rs"
 
 [dependencies]
-annotate-snippets = { version = "0.11.4", optional = true }
-bitflags = "2.2.1"
-cexpr = "0.6"
-clang-sys = { version = "1", features = ["clang_11_0"] }
-clap = { version = "4", features = ["derive"], optional = true }
-clap_complete = { version = "4", optional = true}
-itertools = { version = ">=0.10,<0.14", default-features = false }
-log = { version = "0.4", optional = true }
-prettyplease = { version = "0.2.7", optional = true, features = ["verbatim"] }
+annotate-snippets = { workspace = true, optional = true }
+bitflags.workspace = true
+cexpr.workspace = true
+clang-sys = { workspace = true, features = ["clang_11_0"] }
+clap = { workspace = true, features = ["derive"], optional = true }
+clap_complete = { workspace = true, optional = true }
+itertools = { workspace = true }
+log = { workspace = true, optional = true }
+prettyplease = { workspace = true, optional = true, features = ["verbatim"] }
 proc-macro2.workspace = true
-quote = { version = "1", default-features = false }
-regex = { version = "1.5.3", default-features = false, features = ["std", "unicode-perl"] }
-rustc-hash = "1.0.1"
+quote.workspace = true
+regex = { workspace = true, features = ["std", "unicode-perl"] }
+rustc-hash.workspace = true
 shlex.workspace = true
 syn = { workspace = true, features = ["full", "extra-traits", "visit-mut"] }
 

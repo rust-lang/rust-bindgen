@@ -4,12 +4,13 @@ description = "A package to test various bindgen features"
 version = "0.1.0"
 authors = ["Emilio Cobos Álvarez <emilio@crisal.io>"]
 publish = false
-edition = "2021"
 build = "build.rs"
+rust-version.workspace = true
+edition.workspace = true
 
 [build-dependencies]
-bindgen = { path = "../bindgen", features = ["experimental"] }
-cc = "1.0"
+bindgen = { workspace = true, default-features = true, features = ["experimental"] }
+cc.workspace = true
 
 [features]
 static = ["bindgen/static"]
