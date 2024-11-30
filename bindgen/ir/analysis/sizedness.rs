@@ -150,9 +150,9 @@ impl SizednessAnalysis<'_> {
     }
 
     fn forward(&mut self, from: TypeId, to: TypeId) -> ConstrainResult {
-        match self.sized.get(&from).cloned() {
+        match self.sized.get(&from) {
             None => ConstrainResult::Same,
-            Some(r) => self.insert(to, r),
+            Some(r) => self.insert(to, *r),
         }
     }
 }
@@ -191,7 +191,6 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
         self.ctx
             .allowlisted_items()
             .iter()
-            .cloned()
             .filter_map(|id| id.as_type_id(self.ctx))
             .collect()
     }
@@ -199,9 +198,7 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
     fn constrain(&mut self, id: TypeId) -> ConstrainResult {
         trace!("constrain {:?}", id);
 
-        if let Some(SizednessResult::NonZeroSized) =
-            self.sized.get(&id).cloned()
-        {
+        if let Some(SizednessResult::NonZeroSized) = self.sized.get(&id) {
             trace!("    already know it is not zero-sized");
             return ConstrainResult::Same;
         }

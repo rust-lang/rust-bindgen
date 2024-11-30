@@ -316,7 +316,7 @@ mod tests {
         }
 
         fn initial_worklist(&self) -> Vec<Node> {
-            self.graph.0.keys().cloned().collect()
+            self.graph.0.keys().copied().collect()
         }
 
         fn constrain(&mut self, node: Node) -> ConstrainResult {
@@ -376,7 +376,7 @@ mod tests {
         where
             A: AsRef<[usize]>,
         {
-            nodes.as_ref().iter().cloned().map(Node).collect()
+            nodes.as_ref().iter().copied().map(Node).collect()
         }
 
         let mut expected = HashMap::default();
