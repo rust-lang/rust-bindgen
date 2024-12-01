@@ -1123,10 +1123,10 @@ fn parse(context: &mut BindgenContext) -> Result<(), BindgenError> {
 
     if context.options().emit_ast {
         fn dump_if_not_builtin(cur: &clang::Cursor) -> CXChildVisitResult {
-            if !cur.is_builtin() {
-                clang::ast_dump(cur, 0)
-            } else {
+            if cur.is_builtin() {
                 CXChildVisit_Continue
+            } else {
+                clang::ast_dump(cur, 0)
             }
         }
         cursor.visit(|cur| dump_if_not_builtin(&cur));

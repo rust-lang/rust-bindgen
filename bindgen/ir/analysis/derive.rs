@@ -722,6 +722,6 @@ pub(crate) fn as_cannot_derive_set(
 ) -> HashSet<ItemId> {
     can_derive
         .into_iter()
-        .filter_map(|(k, v)| if v != CanDerive::Yes { Some(k) } else { None })
+        .filter_map(|(k, v)| if v == CanDerive::Yes { None } else { Some(k) })
         .collect()
 }

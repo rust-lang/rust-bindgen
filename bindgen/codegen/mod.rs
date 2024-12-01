@@ -2777,13 +2777,13 @@ impl CodeGenerator for CompInfo {
                 item,
                 &ty_for_impl,
             ) {
-                let partialeq_bounds = if !generic_param_names.is_empty() {
+                let partialeq_bounds = if generic_param_names.is_empty() {
+                    quote! {}
+                } else {
                     let bounds = generic_param_names.iter().map(|t| {
                         quote! { #t: PartialEq }
                     });
                     quote! { where #( #bounds ),* }
-                } else {
-                    quote! {}
                 };
 
                 let prefix = ctx.trait_prefix();
@@ -3444,10 +3444,10 @@ impl<'a> EnumBuilder<'a> {
                 emitted_any_variants,
                 ..
             } => {
-                let variants = if !emitted_any_variants {
-                    quote!(__bindgen_cannot_repr_c_on_empty_enum = 0)
-                } else {
+                let variants = if emitted_any_variants {
                     tokens
+                } else {
+                    quote!(__bindgen_cannot_repr_c_on_empty_enum = 0)
                 };
 
                 quote! {

@@ -216,10 +216,10 @@ impl Cursor {
             })
             .or_else(|| {
                 let canonical = self.canonical();
-                if canonical != *self {
-                    canonical.num_template_args()
-                } else {
+                if canonical == *self {
                     None
+                } else {
+                    canonical.num_template_args()
                 }
             })
     }
@@ -1447,10 +1447,10 @@ impl Type {
     /// elements.
     pub(crate) fn num_elements(&self) -> Option<usize> {
         let num_elements_returned = unsafe { clang_getNumElements(self.x) };
-        if num_elements_returned != -1 {
-            Some(num_elements_returned as usize)
-        } else {
+        if num_elements_returned == -1 {
             None
+        } else {
+            Some(num_elements_returned as usize)
         }
     }
 

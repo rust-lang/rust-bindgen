@@ -570,10 +570,10 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
         self.used.insert(id, Some(used_by_this_id));
         extra_assert!(self.used.values().all(|v| v.is_some()));
 
-        if new_len != original_len {
-            ConstrainResult::Changed
-        } else {
+        if new_len == original_len {
             ConstrainResult::Same
+        } else {
+            ConstrainResult::Changed
         }
     }
 
