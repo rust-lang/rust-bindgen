@@ -115,9 +115,8 @@ impl RegexSet {
         S: AsRef<str>,
     {
         let s = string.as_ref();
-        let set = match self.set {
-            Some(ref set) => set,
-            None => return false,
+        let Some(ref set) = self.set else {
+            return false;
         };
 
         if !self.record_matches {

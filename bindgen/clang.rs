@@ -1882,9 +1882,7 @@ impl TranslationUnit {
 
     /// Save a translation unit to the given file.
     pub(crate) fn save(&mut self, file: &str) -> Result<(), CXSaveError> {
-        let file = if let Ok(cstring) = CString::new(file) {
-            cstring
-        } else {
+        let Ok(file) = CString::new(file) else {
             return Err(CXSaveError_Unknown);
         };
         let ret = unsafe {

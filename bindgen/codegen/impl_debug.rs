@@ -126,12 +126,7 @@ impl<'a> ImplDebug<'a> for Item {
             return None;
         }
 
-        let ty = match self.as_type() {
-            Some(ty) => ty,
-            None => {
-                return None;
-            }
-        };
+        let ty = self.as_type()?;
 
         fn debug_print(
             name: &str,

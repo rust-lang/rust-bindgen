@@ -860,20 +860,16 @@ impl Type {
                                     Some(location),
                                     ctx,
                                 );
-                                match complex {
-                                    Ok(complex) => TypeKind::Comp(complex),
-                                    Err(_) => {
-                                        warn!(
-                                            "Could not create complex type \
-                                             from class template or base \
-                                             specifier, using opaque blob"
-                                        );
-                                        let opaque =
-                                            Opaque::from_clang_ty(ty, ctx);
-                                        return Ok(ParseResult::New(
-                                            opaque, None,
-                                        ));
-                                    }
+                                if let Ok(complex) = complex {
+                                    TypeKind::Comp(complex)
+                                } else {
+                                    warn!(
+                                        "Could not create complex type \
+                                         from class template or base \
+                                         specifier, using opaque blob"
+                                    );
+                                    let opaque = Opaque::from_clang_ty(ty, ctx);
+                                    return Ok(ParseResult::New(opaque, None));
                                 }
                             }
                             CXCursor_TypeAliasTemplateDecl => {
@@ -921,16 +917,13 @@ impl Type {
                                     CXChildVisit_Continue
                                 });
 
-                                let inner_type = match inner {
-                                    Ok(inner) => inner,
-                                    Err(..) => {
-                                        warn!(
-                                            "Failed to parse template alias \
+                                let Ok(inner_type) = inner else {
+                                    warn!(
+                                        "Failed to parse template alias \
                                              {:?}",
-                                            location
-                                        );
-                                        return Err(ParseError::Continue);
-                                    }
+                                        location
+                                    );
+                                    return Err(ParseError::Continue);
                                 };
 
                                 TypeKind::TemplateAlias(inner_type, args)

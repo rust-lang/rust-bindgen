@@ -1198,10 +1198,7 @@ impl CodeGenerator for Vtable<'_> {
                     let function_item = ctx.resolve_item(m.signature());
                     let function = function_item.expect_function();
                     let signature_item = ctx.resolve_item(function.signature());
-                    let signature = match signature_item.expect_type().kind() {
-                        TypeKind::Function(ref sig) => sig,
-                        _ => panic!("Function signature type mismatch"),
-                    };
+                    let TypeKind::Function(ref signature) = signature_item.expect_type().kind() else { panic!("Function signature type mismatch") };
 
                     // FIXME: Is there a canonical name without the class prepended?
                     let function_name = function_item.canonical_name(ctx);
@@ -1943,16 +1940,14 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         let bitfield_ty_layout = bitfield_ty
             .layout(ctx)
             .expect("Bitfield without layout? Gah!");
-        let bitfield_int_ty = match helpers::integer_type(bitfield_ty_layout) {
-            Some(int_ty) => {
+        let bitfield_int_ty =
+            if let Some(int_ty) = helpers::integer_type(bitfield_ty_layout) {
                 *bitfield_representable_as_int = true;
                 int_ty
-            }
-            None => {
+            } else {
                 *bitfield_representable_as_int = false;
                 return;
-            }
-        };
+            };
 
         let bitfield_ty =
             bitfield_ty.to_rust_ty_or_opaque(ctx, bitfield_ty_item);
@@ -2974,10 +2969,7 @@ impl Method {
         }
         let function = function_item.expect_function();
         let times_seen = function.codegen(ctx, result, function_item);
-        let times_seen = match times_seen {
-            Some(seen) => seen,
-            None => return,
-        };
+        let Some(times_seen) = times_seen else { return };
         let signature_item = ctx.resolve_item(function.signature());
         let mut name = match self.kind() {
             MethodKind::Constructor => "new".into(),
@@ -2985,9 +2977,10 @@ impl Method {
             _ => function.name().to_owned(),
         };
 
-        let signature = match *signature_item.expect_type().kind() {
-            TypeKind::Function(ref sig) => sig,
-            _ => panic!("How in the world?"),
+        let TypeKind::Function(ref signature) =
+            *signature_item.expect_type().kind()
+        else {
+            panic!("How in the world?")
         };
 
         let supported_abi = signature.abi(ctx, Some(&*name)).is_ok();
@@ -3564,18 +3557,17 @@ impl CodeGenerator for Enum {
                 // * the representation couldn't be determined from the C source
                 // * it was explicitly requested as a bindgen option
 
-                let kind = match repr {
-                    Some(repr) => match *repr.canonical_type(ctx).kind() {
+                let kind = if let Some(repr) = repr {
+                    match *repr.canonical_type(ctx).kind() {
                         TypeKind::Int(int_kind) => int_kind,
                         _ => panic!("Unexpected type as enum repr"),
-                    },
-                    None => {
-                        warn!(
-                            "Guessing type of enum! Forward declarations of enums \
-                             shouldn't be legal!"
-                        );
-                        IntKind::Int
                     }
+                } else {
+                    warn!(
+                        "Guessing type of enum! Forward declarations of enums \
+                         shouldn't be legal!"
+                    );
+                    IntKind::Int
                 };
 
                 let signed = kind.is_signed();
@@ -4488,9 +4480,8 @@ impl CodeGenerator for Function {
 
         let signature_item = ctx.resolve_item(self.signature());
         let signature = signature_item.kind().expect_type().canonical_type(ctx);
-        let signature = match *signature.kind() {
-            TypeKind::Function(ref sig) => sig,
-            _ => panic!("Signature kind is not a Function: {signature:?}"),
+        let TypeKind::Function(ref signature) = *signature.kind() else {
+            panic!("Signature kind is not a Function: {signature:?}")
         };
 
         if is_internal {
@@ -4966,9 +4957,8 @@ impl CodeGenerator for ObjCInterface {
                     .expect_type()
                     .kind();
 
-                let parent = match parent {
-                    TypeKind::ObjCInterface(ref parent) => parent,
-                    _ => break,
+                let TypeKind::ObjCInterface(parent) = parent else {
+                    break;
                 };
                 parent_class = parent.parent_class;
 
@@ -5683,12 +5673,11 @@ pub(crate) mod utils {
             .map(|(name, ty)| {
                 let arg_ty = fnsig_argument_type(ctx, ty);
 
-                let arg_name = match *name {
-                    Some(ref name) => ctx.rust_mangle(name).into_owned(),
-                    None => {
-                        unnamed_arguments += 1;
-                        format!("arg{unnamed_arguments}")
-                    }
+                let arg_name = if let Some(ref name) = *name {
+                    ctx.rust_mangle(name).into_owned()
+                } else {
+                    unnamed_arguments += 1;
+                    format!("arg{unnamed_arguments}")
                 };
 
                 assert!(!arg_name.is_empty());
@@ -5727,12 +5716,11 @@ pub(crate) mod utils {
             .argument_types()
             .iter()
             .map(|&(ref name, _ty)| {
-                let arg_name = match *name {
-                    Some(ref name) => ctx.rust_mangle(name).into_owned(),
-                    None => {
-                        unnamed_arguments += 1;
-                        format!("arg{unnamed_arguments}")
-                    }
+                let arg_name = if let Some(ref name) = *name {
+                    ctx.rust_mangle(name).into_owned()
+                } else {
+                    unnamed_arguments += 1;
+                    format!("arg{unnamed_arguments}")
                 };
 
                 assert!(!arg_name.is_empty());

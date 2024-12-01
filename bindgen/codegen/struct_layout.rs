@@ -421,9 +421,8 @@ impl<'a> StructLayoutTracker<'a> {
             return false;
         }
 
-        let layout = match self.latest_field_layout {
-            Some(l) => l,
-            None => return false,
+        let Some(layout) = self.latest_field_layout else {
+            return false;
         };
 
         // If it was, we may or may not need to align, depending on what the

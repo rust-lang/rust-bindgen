@@ -84,13 +84,10 @@ pub(crate) fn blob(layout: Layout) -> syn::Type {
     // some things that legitimately are more than 8-byte aligned.
     //
     // Eventually we should be able to `unwrap` here, but...
-    let ty = match opaque.known_rust_type_for_array() {
-        Some(ty) => ty,
-        None => {
-            warn!("Found unknown alignment on code generation!");
-            syn::parse_quote! { u8 }
-        }
-    };
+    let ty = opaque.known_rust_type_for_array().unwrap_or_else(|| {
+        warn!("Found unknown alignment on code generation!");
+        syn::parse_quote! { u8 }
+    });
 
     let data_len = opaque.array_size().unwrap_or(layout.size);
 
@@ -245,24 +242,21 @@ pub(crate) mod ast_ty {
             (FloatKind::Float, false) => raw_type(ctx, "c_float"),
             (FloatKind::Double, false) => raw_type(ctx, "c_double"),
             (FloatKind::LongDouble, _) => {
-                match layout {
-                    Some(layout) => {
-                        match layout.size {
-                            4 => syn::parse_quote! { f32 },
-                            8 => syn::parse_quote! { f64 },
-                            // TODO(emilio): If rust ever gains f128 we should
-                            // use it here and below.
-                            _ => super::integer_type(layout)
-                                .unwrap_or(syn::parse_quote! { f64 }),
-                        }
+                if let Some(layout) = layout {
+                    match layout.size {
+                        4 => syn::parse_quote! { f32 },
+                        8 => syn::parse_quote! { f64 },
+                        // TODO(emilio): If rust ever gains f128 we should
+                        // use it here and below.
+                        _ => super::integer_type(layout)
+                            .unwrap_or(syn::parse_quote! { f64 }),
                     }
-                    None => {
-                        debug_assert!(
-                            false,
-                            "How didn't we know the layout for a primitive type?"
-                        );
-                        syn::parse_quote! { f64 }
-                    }
+                } else {
+                    debug_assert!(
+                        false,
+                        "How didn't we know the layout for a primitive type?"
+                    );
+                    syn::parse_quote! { f64 }
                 }
             }
             (FloatKind::Float128, _) => {
@@ -365,17 +359,14 @@ pub(crate) mod ast_ty {
         signature
             .argument_types()
             .iter()
-            .map(|&(ref name, _ty)| match *name {
-                Some(ref name) => {
-                    let name = ctx.rust_ident(name);
-                    quote! { #name }
-                }
-                None => {
+            .map(|&(ref name, _ty)| {
+                let name = if let Some(ref name) = *name {
+                    ctx.rust_ident(name)
+                } else {
                     unnamed_arguments += 1;
-                    let name =
-                        ctx.rust_ident(format!("arg{unnamed_arguments}"));
-                    quote! { #name }
-                }
+                    ctx.rust_ident(format!("arg{unnamed_arguments}"))
+                };
+                quote! { #name }
             })
             .collect()
     }
