@@ -70,6 +70,7 @@ use std::env;
 use std::ffi::OsStr;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
+use std::mem::size_of;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::rc::Rc;
@@ -888,7 +889,7 @@ impl Bindings {
         if is_host_build {
             debug_assert_eq!(
                 context.target_pointer_size(),
-                std::mem::size_of::<*mut ()>(),
+                size_of::<*mut ()>(),
                 "{effective_target:?} {HOST_TARGET:?}"
             );
         }
@@ -1184,11 +1185,11 @@ pub fn clang_version() -> ClangVersion {
 fn env_var<K: AsRef<str> + AsRef<OsStr>>(
     parse_callbacks: &[Rc<dyn callbacks::ParseCallbacks>],
     key: K,
-) -> Result<String, std::env::VarError> {
+) -> Result<String, env::VarError> {
     for callback in parse_callbacks {
         callback.read_env_var(key.as_ref());
     }
-    std::env::var(key)
+    env::var(key)
 }
 
 /// Looks for the env var `var_${TARGET}`, and falls back to just `var` when it is not found.
@@ -1281,7 +1282,7 @@ impl callbacks::ParseCallbacks for CargoCallbacks {
 #[test]
 fn commandline_flag_unit_test_function() {
     //Test 1
-    let bindings = crate::builder();
+    let bindings = builder();
     let command_line_flags = bindings.command_line_flags();
 
     let test_cases = [
@@ -1297,7 +1298,7 @@ fn commandline_flag_unit_test_function() {
     assert!(test_cases.iter().all(|x| command_line_flags.contains(x)));
 
     //Test 2
-    let bindings = crate::builder()
+    let bindings = builder()
         .header("input_header")
         .allowlist_type("Distinct_Type")
         .allowlist_function("safe_function");

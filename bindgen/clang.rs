@@ -961,13 +961,11 @@ impl Cursor {
     ///
     /// Returns None if the cursor does not include a file, otherwise the file's full name
     pub(crate) fn get_included_file_name(&self) -> Option<String> {
-        let file = unsafe { clang_sys::clang_getIncludedFile(self.x) };
+        let file = unsafe { clang_getIncludedFile(self.x) };
         if file.is_null() {
             None
         } else {
-            Some(unsafe {
-                cxstring_into_string(clang_sys::clang_getFileName(file))
-            })
+            Some(unsafe { cxstring_into_string(clang_getFileName(file)) })
         }
     }
 

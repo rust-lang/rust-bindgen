@@ -183,7 +183,7 @@ fn setup_macro_test() {
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     let out_rust_file = out_path.join("test.rs");
     let out_rust_file_relative = out_rust_file
-        .strip_prefix(std::env::current_dir().unwrap().parent().unwrap())
+        .strip_prefix(env::current_dir().unwrap().parent().unwrap())
         .unwrap();
     let out_dep_file = out_path.join("test.d");
 

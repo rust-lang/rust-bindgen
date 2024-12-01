@@ -14,7 +14,7 @@ pub(crate) struct DynamicItems {
     ///    ...
     /// }
     /// ```
-    struct_members: Vec<proc_macro2::TokenStream>,
+    struct_members: Vec<TokenStream>,
 
     /// Tracks the tokens that will appear inside the library struct's implementation, e.g.:
     ///
@@ -26,7 +26,7 @@ pub(crate) struct DynamicItems {
     ///     }
     /// }
     /// ```
-    struct_implementation: Vec<proc_macro2::TokenStream>,
+    struct_implementation: Vec<TokenStream>,
 
     /// Tracks the initialization of the fields inside the `::new` constructor of the library
     /// struct, e.g.:
@@ -45,7 +45,7 @@ pub(crate) struct DynamicItems {
     ///     ...
     /// }
     /// ```
-    constructor_inits: Vec<proc_macro2::TokenStream>,
+    constructor_inits: Vec<TokenStream>,
 
     /// Tracks the information that is passed to the library struct at the end of the `::new`
     /// constructor, e.g.:
@@ -65,7 +65,7 @@ pub(crate) struct DynamicItems {
     ///     }
     /// }
     /// ```
-    init_fields: Vec<proc_macro2::TokenStream>,
+    init_fields: Vec<TokenStream>,
 }
 
 impl DynamicItems {
@@ -77,7 +77,7 @@ impl DynamicItems {
         &self,
         lib_ident: Ident,
         ctx: &BindgenContext,
-    ) -> proc_macro2::TokenStream {
+    ) -> TokenStream {
         let struct_members = &self.struct_members;
         let constructor_inits = &self.constructor_inits;
         let init_fields = &self.init_fields;
@@ -134,11 +134,11 @@ impl DynamicItems {
         abi: ClangAbi,
         is_variadic: bool,
         is_required: bool,
-        args: Vec<proc_macro2::TokenStream>,
-        args_identifiers: Vec<proc_macro2::TokenStream>,
-        ret: proc_macro2::TokenStream,
-        ret_ty: proc_macro2::TokenStream,
-        attributes: Vec<proc_macro2::TokenStream>,
+        args: Vec<TokenStream>,
+        args_identifiers: Vec<TokenStream>,
+        ret: TokenStream,
+        ret_ty: TokenStream,
+        attributes: Vec<TokenStream>,
         ctx: &BindgenContext,
     ) {
         if !is_variadic {

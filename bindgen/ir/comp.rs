@@ -1473,8 +1473,7 @@ impl CompInfo {
                         ty: type_id,
                         kind,
                         field_name,
-                        is_pub: cur.access_specifier() ==
-                            clang_sys::CX_CXXPublic,
+                        is_pub: cur.access_specifier() == CX_CXXPublic,
                     });
                 }
                 CXCursor_Constructor | CXCursor_Destructor |

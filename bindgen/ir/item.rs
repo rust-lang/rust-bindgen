@@ -1563,8 +1563,8 @@ impl Item {
              \tlocation = {location:?}",
         );
 
-        if ty.kind() == clang_sys::CXType_Unexposed ||
-            location.cur_type().kind() == clang_sys::CXType_Unexposed
+        if ty.kind() == CXType_Unexposed ||
+            location.cur_type().kind() == CXType_Unexposed
         {
             if ty.is_associated_type() ||
                 location.cur_type().is_associated_type()

@@ -371,7 +371,7 @@ include!(concat!(env!("OUT_DIR"), "/tests.rs"));
 #[test]
 #[cfg_attr(target_os = "windows", ignore)]
 fn test_clang_env_args() {
-    std::env::set_var(
+    env::set_var(
         "BINDGEN_EXTRA_CLANG_ARGS",
         "-D_ENV_ONE=1 -D_ENV_TWO=\"2 -DNOT_THREE=1\"",
     );
@@ -653,8 +653,8 @@ fn emit_depfile() {
         builder.into_builder(check_roundtrip).unwrap();
     let _bindings = builder.generate().unwrap();
 
-    let observed = std::fs::read_to_string(observed_depfile).unwrap();
-    let expected = std::fs::read_to_string(expected_depfile).unwrap();
+    let observed = fs::read_to_string(observed_depfile).unwrap();
+    let expected = fs::read_to_string(expected_depfile).unwrap();
     assert_eq!(observed.trim(), expected.trim());
 }
 
@@ -694,7 +694,7 @@ fn dump_preprocessed_input() {
     );
 }
 
-fn build_flags_output_helper(builder: &bindgen::Builder) {
+fn build_flags_output_helper(builder: &Builder) {
     let mut command_line_flags = builder.command_line_flags();
     command_line_flags.insert(0, "bindgen".to_string());
 
@@ -712,7 +712,7 @@ fn build_flags_output_helper(builder: &bindgen::Builder) {
 
 #[test]
 fn commandline_multiple_headers() {
-    let bindings = bindgen::Builder::default()
+    let bindings = Builder::default()
         .header("tests/headers/char.h")
         .header("tests/headers/func_ptr.h")
         .header("tests/headers/16-byte-alignment.h");
