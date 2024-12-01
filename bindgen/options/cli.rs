@@ -703,7 +703,7 @@ where
         }
 
         fn add_derives(&self, info: &DeriveInfo<'_>) -> Vec<String> {
-            if self.kind.map(|kind| kind == info.kind).unwrap_or(true) &&
+            if self.kind.map_or(true, |kind| kind == info.kind) &&
                 self.regex_set.matches(info.name)
             {
                 return self.derives.clone();
@@ -743,7 +743,7 @@ where
         }
 
         fn add_attributes(&self, info: &AttributeInfo<'_>) -> Vec<String> {
-            if self.kind.map(|kind| kind == info.kind).unwrap_or(true) &&
+            if self.kind.map_or(true, |kind| kind == info.kind) &&
                 self.regex_set.matches(info.name)
             {
                 return self.attributes.clone();

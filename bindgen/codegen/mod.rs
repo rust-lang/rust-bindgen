@@ -5145,14 +5145,10 @@ pub(crate) mod utils {
             return Ok(());
         }
 
-        let path = context
-            .options()
-            .wrap_static_fns_path
-            .as_ref()
-            .map(PathBuf::from)
-            .unwrap_or_else(|| {
-                std::env::temp_dir().join("bindgen").join("extern")
-            });
+        let path = context.options().wrap_static_fns_path.as_ref().map_or_else(
+            || std::env::temp_dir().join("bindgen").join("extern"),
+            PathBuf::from,
+        );
 
         let dir = path.parent().unwrap();
 

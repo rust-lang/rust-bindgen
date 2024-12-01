@@ -14,8 +14,7 @@ use super::{CodegenError, WrapAsVariadic};
 
 fn get_loc(item: &Item) -> String {
     item.location()
-        .map(|x| x.to_string())
-        .unwrap_or_else(|| "unknown".to_owned())
+        .map_or_else(|| "unknown".to_owned(), |x| x.to_string())
 }
 
 pub(super) trait CSerialize<'a> {

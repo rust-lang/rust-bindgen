@@ -1112,10 +1112,8 @@ impl Iterator for ClangTokenIterator<'_> {
 /// (including '_') and does not start with a digit.
 pub(crate) fn is_valid_identifier(name: &str) -> bool {
     let mut chars = name.chars();
-    let first_valid = chars
-        .next()
-        .map(|c| c.is_alphabetic() || c == '_')
-        .unwrap_or(false);
+    let first_valid =
+        chars.next().is_some_and(|c| c.is_alphabetic() || c == '_');
 
     first_valid && chars.all(|c| c.is_alphanumeric() || c == '_')
 }
