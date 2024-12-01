@@ -1,23 +1,23 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #![cfg(target_os = "macos")]
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z8atexit_bU13block_pointerFvvE"]
     pub fn atexit_b(arg1: *mut ::std::os::raw::c_void);
 }
 pub type dispatch_data_t = *mut ::std::os::raw::c_void;
 pub type dispatch_data_applier_t = *mut ::std::os::raw::c_void;
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z19dispatch_data_applyPvU13block_pointerFbS_yPKvyE"]
     pub fn dispatch_data_apply(
         data: dispatch_data_t,
         applier: dispatch_data_applier_t,
     ) -> bool;
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z3fooU13block_pointerFvyE"]
     pub fn foo(arg1: *mut ::std::os::raw::c_void) -> bool;
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z7foo_ptrPU13block_pointerFvyE"]
     pub fn foo_ptr(arg1: *mut *mut ::std::os::raw::c_void) -> bool;
 }

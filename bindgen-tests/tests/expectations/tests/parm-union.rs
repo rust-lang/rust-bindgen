@@ -9,7 +9,7 @@ const _: () = {
     ["Size of Struct"][::std::mem::size_of::<Struct>() - 1usize];
     ["Alignment of Struct"][::std::mem::align_of::<Struct>() - 1usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN6Struct8FunctionER5Union"]
     pub fn Struct_Function(this: *mut Struct, arg1: *mut Union);
 }

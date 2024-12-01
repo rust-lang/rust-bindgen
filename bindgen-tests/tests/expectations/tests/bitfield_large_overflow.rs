@@ -10,6 +10,6 @@ const _: () = {
     ["Size of _bindgen_ty_1"][::std::mem::size_of::<_bindgen_ty_1>() - 80usize];
     ["Alignment of _bindgen_ty_1"][::std::mem::align_of::<_bindgen_ty_1>() - 8usize];
 };
-extern "C" {
+unsafe extern "C" {
     pub static mut a: _bindgen_ty_1;
 }

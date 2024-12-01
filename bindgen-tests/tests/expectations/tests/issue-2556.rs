@@ -23,7 +23,7 @@ pub mod root {
     pub mod foo {
         #[allow(unused_imports)]
         use self::super::super::root;
-        extern "C" {
+        unsafe extern "C" {
             #[link_name = "\u{1}_ZN3fooL22kFallbackIntrinsicSizeE"]
             pub static kFallbackIntrinsicSize: root::nsSize;
         }

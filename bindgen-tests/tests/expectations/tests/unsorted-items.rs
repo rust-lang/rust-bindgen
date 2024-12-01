@@ -1,9 +1,9 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-extern "C" {
+unsafe extern "C" {
     pub fn foo() -> ::std::os::raw::c_int;
 }
 pub type number = ::std::os::raw::c_int;
-extern "C" {
+unsafe extern "C" {
     pub fn bar(x: number) -> ::std::os::raw::c_int;
 }
 #[repr(C)]
@@ -32,7 +32,7 @@ const _: () = {
     ["Offset of field: Angle::a"][::std::mem::offset_of!(Angle, a) - 0usize];
     ["Offset of field: Angle::b"][::std::mem::offset_of!(Angle, b) - 4usize];
 };
-extern "C" {
+unsafe extern "C" {
     pub fn baz(point: Point) -> ::std::os::raw::c_int;
 }
 pub const NUMBER: number = 42;

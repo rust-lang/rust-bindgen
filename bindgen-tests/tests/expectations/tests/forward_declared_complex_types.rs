@@ -34,7 +34,7 @@ impl Default for Bar {
         }
     }
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z10baz_structP3Foo"]
     pub fn baz_struct(f: *mut Foo);
 }
@@ -43,7 +43,7 @@ extern "C" {
 pub struct Union {
     _unused: [u8; 0],
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z9baz_unionP5Union"]
     pub fn baz_union(u: *mut Union);
 }
@@ -52,7 +52,7 @@ extern "C" {
 pub struct Quux {
     _unused: [u8; 0],
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z9baz_classP4Quux"]
     pub fn baz_class(q: *mut Quux);
 }

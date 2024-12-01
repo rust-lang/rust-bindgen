@@ -10,7 +10,7 @@ const _: () = {
     ["Alignment of A"][::std::mem::align_of::<A>() - 4usize];
     ["Offset of field: A::a"][::std::mem::offset_of!(A, a) - 0usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN1A4makeEv"]
     pub fn make() -> A;
 }
@@ -31,7 +31,7 @@ const _: () = {
     ["Alignment of B"][::std::mem::align_of::<B>() - 4usize];
     ["Offset of field: B::b"][::std::mem::offset_of!(B, b) - 0usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN1B4makeEv"]
     pub fn make1() -> B;
 }

@@ -55,33 +55,33 @@ pub type cat_ptr = *mut cat;
 pub const mad_scientist: mad = 0;
 pub type mad = ::std::os::raw::c_uint;
 pub type mad_ptr = *mut mad;
-extern "C" {
+unsafe extern "C" {
     pub fn takes_foo_ptr(arg1: foo_ptr);
 }
-extern "C" {
+unsafe extern "C" {
     pub fn takes_foo_struct(arg1: foo);
 }
-extern "C" {
+unsafe extern "C" {
     pub fn takes_bar_ptr(arg1: bar_ptr);
 }
-extern "C" {
+unsafe extern "C" {
     pub fn takes_bar_struct(arg1: bar);
 }
-extern "C" {
+unsafe extern "C" {
     pub fn takes_baz_ptr(arg1: baz_ptr);
 }
-extern "C" {
+unsafe extern "C" {
     pub fn takes_baz_struct(arg1: baz);
 }
-extern "C" {
+unsafe extern "C" {
     pub fn takes_cat_ptr(arg1: cat_ptr);
 }
-extern "C" {
+unsafe extern "C" {
     pub fn takes_cat_union(arg1: cat);
 }
-extern "C" {
+unsafe extern "C" {
     pub fn takes_mad_ptr(arg1: mad_ptr);
 }
-extern "C" {
+unsafe extern "C" {
     pub fn takes_mad_enum(arg1: mad);
 }

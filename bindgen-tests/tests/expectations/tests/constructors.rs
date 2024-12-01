@@ -9,14 +9,14 @@ const _: () = {
     ["Size of TestOverload"][::std::mem::size_of::<TestOverload>() - 1usize];
     ["Alignment of TestOverload"][::std::mem::align_of::<TestOverload>() - 1usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN12TestOverloadC1Ei"]
     pub fn TestOverload_TestOverload(
         this: *mut TestOverload,
         arg1: ::std::os::raw::c_int,
     );
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN12TestOverloadC1Ed"]
     pub fn TestOverload_TestOverload1(this: *mut TestOverload, arg1: f64);
 }
@@ -46,7 +46,7 @@ const _: () = {
         "Alignment of TestPublicNoArgs",
     ][::std::mem::align_of::<TestPublicNoArgs>() - 1usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN16TestPublicNoArgsC1Ev"]
     pub fn TestPublicNoArgs_TestPublicNoArgs(this: *mut TestPublicNoArgs);
 }

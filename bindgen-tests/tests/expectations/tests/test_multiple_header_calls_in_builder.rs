@@ -1,4 +1,4 @@
-extern "C" {
+unsafe extern "C" {
     pub static mut foo: ::std::option::Option<
         unsafe extern "C" fn(
             x: ::std::os::raw::c_int,

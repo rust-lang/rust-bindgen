@@ -11,7 +11,7 @@ pub mod root {
         pub type AB = ::std::os::raw::c_int;
     }
     pub use self::super::root::ns::AB as AB;
-    extern "C" {
+    unsafe extern "C" {
         #[link_name = "\u{1}_ZL2kA"]
         pub static kA: root::AB;
     }

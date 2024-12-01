@@ -5,12 +5,12 @@ pub struct __BindgenComplex<T> {
     pub re: T,
     pub im: T,
 }
-extern "C" {
+unsafe extern "C" {
     pub static mut globalValueFloat: __BindgenComplex<f32>;
 }
-extern "C" {
+unsafe extern "C" {
     pub static mut globalValueDouble: __BindgenComplex<f64>;
 }
-extern "C" {
+unsafe extern "C" {
     pub static mut globalValueLongDouble: __BindgenComplex<f64>;
 }

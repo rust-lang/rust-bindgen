@@ -3,12 +3,12 @@
 use objc::{self, msg_send, sel, sel_impl, class};
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
-extern "C" {
+unsafe extern "C" {
     pub static mut object: id;
 }
-extern "C" {
+unsafe extern "C" {
     pub static mut selector: objc::runtime::Sel;
 }
-extern "C" {
+unsafe extern "C" {
     pub fn f(object: id, selector: objc::runtime::Sel);
 }

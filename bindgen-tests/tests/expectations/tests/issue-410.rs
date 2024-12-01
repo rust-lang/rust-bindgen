@@ -16,7 +16,7 @@ pub mod root {
             ["Size of Value"][::std::mem::size_of::<Value>() - 1usize];
             ["Alignment of Value"][::std::mem::align_of::<Value>() - 1usize];
         };
-        extern "C" {
+        unsafe extern "C" {
             #[link_name = "\u{1}_ZN2JS5Value1aE10JSWhyMagic"]
             pub fn Value_a(this: *mut root::JS::Value, arg1: root::JSWhyMagic);
         }

@@ -3,7 +3,7 @@
 use objc::{self, msg_send, sel, sel_impl, class};
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
-extern "C" {
+unsafe extern "C" {
     pub static mut fooVar: Foo;
 }
 #[repr(transparent)]

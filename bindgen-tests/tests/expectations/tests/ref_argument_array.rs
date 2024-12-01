@@ -26,7 +26,7 @@ impl Default for nsID {
         }
     }
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN4nsID16ToProvidedStringERA10_c"]
     pub fn nsID_ToProvidedString(
         this: *mut ::std::os::raw::c_void,

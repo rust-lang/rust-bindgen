@@ -9,11 +9,11 @@ const _: () = {
     ["Size of A"][::std::mem::size_of::<A>() - 1usize];
     ["Alignment of A"][::std::mem::align_of::<A>() - 1usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN1A17inline_definitionEv"]
     pub fn A_inline_definition(this: *mut A);
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN1A22out_of_line_definitionEv"]
     pub fn A_out_of_line_definition(this: *mut A);
 }
@@ -47,7 +47,7 @@ const _: () = {
     ["Size of C"][::std::mem::size_of::<C>() - 1usize];
     ["Alignment of C"][::std::mem::align_of::<C>() - 1usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN1CC1ERS_"]
     pub fn C_C(this: *mut C, arg1: *mut C);
 }

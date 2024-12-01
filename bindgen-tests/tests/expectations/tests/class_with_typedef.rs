@@ -21,19 +21,19 @@ const _: () = {
     ["Offset of field: C::d"][::std::mem::offset_of!(C, d) - 56usize];
     ["Offset of field: C::other_ptr"][::std::mem::offset_of!(C, other_ptr) - 64usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN1C6methodEi"]
     pub fn C_method(this: *mut C, c: C_MyInt);
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN1C9methodRefERi"]
     pub fn C_methodRef(this: *mut C, c: *mut C_MyInt);
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN1C16complexMethodRefERPKc"]
     pub fn C_complexMethodRef(this: *mut C, c: *mut C_Lookup);
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN1C13anotherMethodEi"]
     pub fn C_anotherMethod(this: *mut C, c: AnotherInt);
 }

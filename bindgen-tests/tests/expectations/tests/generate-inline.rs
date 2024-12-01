@@ -9,7 +9,7 @@ const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 1usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 1usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3Foo3barEv"]
     pub fn Foo_bar() -> ::std::os::raw::c_int;
 }
@@ -19,7 +19,7 @@ impl Foo {
         Foo_bar()
     }
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z3foov"]
     pub fn foo() -> ::std::os::raw::c_int;
 }

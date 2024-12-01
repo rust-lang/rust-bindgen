@@ -31,7 +31,7 @@ impl<T> Default for B<T> {
         }
     }
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z3bar3FooIiiE"]
     pub fn bar(foo: Foo<::std::os::raw::c_int>);
 }

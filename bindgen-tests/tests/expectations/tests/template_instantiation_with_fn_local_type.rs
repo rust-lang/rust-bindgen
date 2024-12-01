@@ -4,7 +4,7 @@
 pub struct Foo {
     pub _address: u8,
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z1fv"]
     pub fn f();
 }

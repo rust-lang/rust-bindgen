@@ -3,6 +3,6 @@
 pub struct nsTArray {
     pub hdr: *const (),
 }
-extern "C" {
+unsafe extern "C" {
     pub fn func() -> *mut nsTArray;
 }

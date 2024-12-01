@@ -25,6 +25,6 @@ const _: () = {
         "Offset of field: JNINativeInterface_::__hack",
     ][::std::mem::offset_of!(JNINativeInterface_, __hack) - 8usize];
 };
-extern "stdcall" {
+unsafe extern "stdcall" {
     pub fn bar();
 }

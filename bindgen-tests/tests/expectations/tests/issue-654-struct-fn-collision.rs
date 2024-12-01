@@ -4,6 +4,6 @@
 pub struct foo {
     _unused: [u8; 0],
 }
-extern "C" {
+unsafe extern "C" {
     pub fn foo() -> ::std::os::raw::c_int;
 }

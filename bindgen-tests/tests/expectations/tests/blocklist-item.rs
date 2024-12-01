@@ -10,7 +10,7 @@ pub mod root {
     pub mod bar {
         #[allow(unused_imports)]
         use self::super::super::root;
-        extern "C" {
+        unsafe extern "C" {
             #[link_name = "\u{1}_ZN3bar18NamespacedFunctionEv"]
             pub fn NamespacedFunction();
         }

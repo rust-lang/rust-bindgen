@@ -30,7 +30,7 @@ pub const MIN_U32_Minus1: i8 = -1;
 pub const MIN_I32_Minus1: i64 = -2147483649;
 pub const LONG12: u64 = 123456789012;
 pub const LONG_12: i64 = -123456789012;
-extern "C" {
+unsafe extern "C" {
     pub fn foo(
         arg1: ::std::os::raw::c_int,
         arg2: ::std::os::raw::c_int,
@@ -40,7 +40,7 @@ extern "C" {
         arg6: ::std::os::raw::c_schar,
     ) -> ::std::os::raw::c_int;
 }
-extern "C" {
+unsafe extern "C" {
     pub fn bar(
         arg1: ::std::os::raw::c_long,
         arg2: ::std::os::raw::c_longlong,

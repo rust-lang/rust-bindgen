@@ -4,11 +4,11 @@
 pub struct Foo {
     pub bar: ::std::os::raw::c_int,
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3Foo3BOOE"]
     pub static mut Foo_BOO: ::std::os::raw::c_int;
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3Foo8whateverE"]
     pub static mut Foo_whatever: Foo;
 }

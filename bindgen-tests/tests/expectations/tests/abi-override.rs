@@ -1,14 +1,14 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-extern "fastcall" {
+unsafe extern "fastcall" {
     pub fn foo();
 }
-extern "stdcall" {
+unsafe extern "stdcall" {
     pub fn bar();
 }
-extern "C" {
+unsafe extern "C" {
     pub fn baz();
 }
-extern "system" {
+unsafe extern "system" {
     pub fn qux();
 }
 pub type boo = ::std::option::Option<unsafe extern "efiapi" fn()>;

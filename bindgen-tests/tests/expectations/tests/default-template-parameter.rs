@@ -25,7 +25,7 @@ const _: () = {
         "Align of template specialization: Foo_open0_bool__int_close0",
     ][::std::mem::align_of::<Foo<bool, ::std::os::raw::c_int>>() - 4usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZL3bar"]
     pub static mut bar: Foo<bool, ::std::os::raw::c_int>;
 }

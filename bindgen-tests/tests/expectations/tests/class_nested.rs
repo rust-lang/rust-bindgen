@@ -47,7 +47,7 @@ const _: () = {
     ["Alignment of A_C"][::std::mem::align_of::<A_C>() - 4usize];
     ["Offset of field: A_C::baz"][::std::mem::offset_of!(A_C, baz) - 0usize];
 };
-extern "C" {
+unsafe extern "C" {
     pub static mut var: A_B;
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
@@ -59,7 +59,7 @@ const _: () = {
         "Align of template specialization: A_D_open0_int_close0",
     ][::std::mem::align_of::<A_D<::std::os::raw::c_int>>() - 4usize];
 };
-extern "C" {
+unsafe extern "C" {
     pub static mut baz: A_D<::std::os::raw::c_int>;
 }
 #[repr(C)]

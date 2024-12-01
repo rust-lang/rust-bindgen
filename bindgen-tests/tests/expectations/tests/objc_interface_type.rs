@@ -40,9 +40,9 @@ impl Default for FooStruct {
         }
     }
 }
-extern "C" {
+unsafe extern "C" {
     pub fn fooFunc(foo: Foo);
 }
-extern "C" {
+unsafe extern "C" {
     pub static mut kFoo: Foo;
 }

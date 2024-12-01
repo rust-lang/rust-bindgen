@@ -10,7 +10,7 @@ impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<T, N> {
     }
 }
 pub type va_list = __BindgenOpaqueArray<u64, 4usize>;
-extern "C" {
+unsafe extern "C" {
     pub fn vprintf(
         format: *const ::std::os::raw::c_char,
         vlist: __BindgenOpaqueArray<u64, 4usize>,
