@@ -19,9 +19,8 @@ pub(crate) struct Layout {
 
 #[test]
 fn test_layout_for_size() {
-    use std::mem;
-
-    let ptr_size = mem::size_of::<*mut ()>();
+    use std::mem::size_of;
+    let ptr_size = size_of::<*mut ()>();
     assert_eq!(
         Layout::for_size_internal(ptr_size, ptr_size),
         Layout::new(ptr_size, ptr_size)

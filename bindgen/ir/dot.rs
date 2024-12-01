@@ -17,7 +17,7 @@ pub(crate) trait DotAttributes {
         out: &mut W,
     ) -> io::Result<()>
     where
-        W: io::Write;
+        W: Write;
 }
 
 /// Write a graphviz dot file containing our IR.

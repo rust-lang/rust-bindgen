@@ -319,7 +319,7 @@ pub(crate) struct BindgenContext {
 
     /// Maps from a cursor to the item ID of the named template type parameter
     /// for that cursor.
-    type_params: HashMap<clang::Cursor, TypeId>,
+    type_params: HashMap<Cursor, TypeId>,
 
     /// A cursor to module map. Similar reason than above.
     modules: HashMap<Cursor, ModuleId>,
@@ -336,7 +336,7 @@ pub(crate) struct BindgenContext {
     /// This is used to handle the cases where the semantic and the lexical
     /// parents of the cursor differ, like when a nested class is defined
     /// outside of the parent class.
-    semantic_parents: HashMap<clang::Cursor, ItemId>,
+    semantic_parents: HashMap<Cursor, ItemId>,
 
     /// A stack with the current type declarations and types we're parsing. This
     /// is needed to avoid infinite recursion when parsing a type like:
@@ -810,11 +810,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Add a new named template type parameter to this context's item set.
-    pub(crate) fn add_type_param(
-        &mut self,
-        item: Item,
-        definition: clang::Cursor,
-    ) {
+    pub(crate) fn add_type_param(&mut self, item: Item, definition: Cursor) {
         debug!("BindgenContext::add_type_param: item = {item:?}; definition = {definition:?}");
 
         assert!(
@@ -846,10 +842,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Get the named type defined at the given cursor location, if we've
     /// already added one.
-    pub(crate) fn get_type_param(
-        &self,
-        definition: &clang::Cursor,
-    ) -> Option<TypeId> {
+    pub(crate) fn get_type_param(&self, definition: &Cursor) -> Option<TypeId> {
         assert_eq!(
             definition.kind(),
             clang_sys::CXCursor_TemplateTypeParameter
@@ -923,7 +916,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Gather all the unresolved type references.
     fn collect_typerefs(
         &mut self,
-    ) -> Vec<(ItemId, clang::Type, clang::Cursor, Option<ItemId>)> {
+    ) -> Vec<(ItemId, clang::Type, Cursor, Option<ItemId>)> {
         debug_assert!(!self.collected_typerefs);
         self.collected_typerefs = true;
         let mut typerefs = vec![];
@@ -1517,7 +1510,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// not sure it's worth it.
     pub(crate) fn add_semantic_parent(
         &mut self,
-        definition: clang::Cursor,
+        definition: Cursor,
         parent_id: ItemId,
     ) {
         self.semantic_parents.insert(definition, parent_id);
@@ -1526,7 +1519,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Returns a known semantic parent for a given definition.
     pub(crate) fn known_semantic_parent(
         &self,
-        definition: clang::Cursor,
+        definition: Cursor,
     ) -> Option<ItemId> {
         self.semantic_parents.get(&definition).copied()
     }
@@ -1631,7 +1624,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         with_id: ItemId,
         template: TypeId,
         ty: &clang::Type,
-        location: clang::Cursor,
+        location: Cursor,
     ) -> Option<TypeId> {
         let num_expected_args =
             self.resolve_type(template).num_self_template_params(self);
@@ -1856,7 +1849,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         with_id: ItemId,
         parent_id: Option<ItemId>,
         ty: &clang::Type,
-        location: Option<clang::Cursor>,
+        location: Option<Cursor>,
     ) -> Option<TypeId> {
         use clang_sys::{CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
         debug!("builtin_or_resolved_ty: {ty:?}, {location:?}, {with_id:?}, {parent_id:?}");
@@ -2227,7 +2220,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// namespace.
     fn tokenize_namespace(
         &self,
-        cursor: &clang::Cursor,
+        cursor: &Cursor,
     ) -> (Option<String>, ModuleKind) {
         assert_eq!(
             cursor.kind(),
@@ -2306,7 +2299,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Given a CXCursor_Namespace cursor, return the item ID of the
     /// corresponding module, or create one on the fly.
-    pub(crate) fn module(&mut self, cursor: clang::Cursor) -> ModuleId {
+    pub(crate) fn module(&mut self, cursor: Cursor) -> ModuleId {
         use clang_sys::*;
         assert_eq!(cursor.kind(), CXCursor_Namespace, "Be a nice person");
         let cursor = cursor.canonical();

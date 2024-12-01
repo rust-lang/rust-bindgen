@@ -3180,7 +3180,7 @@ impl fmt::Display for EnumVariation {
     }
 }
 
-impl std::str::FromStr for EnumVariation {
+impl FromStr for EnumVariation {
     type Err = std::io::Error;
 
     /// Create a `EnumVariation` from a string.
@@ -3886,7 +3886,7 @@ impl fmt::Display for MacroTypeVariation {
     }
 }
 
-impl std::str::FromStr for MacroTypeVariation {
+impl FromStr for MacroTypeVariation {
     type Err = std::io::Error;
 
     /// Create a `MacroTypeVariation` from a string.
@@ -3929,7 +3929,7 @@ impl fmt::Display for AliasVariation {
     }
 }
 
-impl std::str::FromStr for AliasVariation {
+impl FromStr for AliasVariation {
     type Err = std::io::Error;
 
     /// Create an `AliasVariation` from a string.
@@ -3978,7 +3978,7 @@ impl Default for NonCopyUnionStyle {
     }
 }
 
-impl std::str::FromStr for NonCopyUnionStyle {
+impl FromStr for NonCopyUnionStyle {
     type Err = std::io::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -4096,7 +4096,7 @@ where
             if let Ok(layout) = self.try_get_layout(ctx, extra) {
                 Ok(helpers::blob(layout))
             } else {
-                Err(error::Error::NoLayoutForOpaqueBlob)
+                Err(Error::NoLayoutForOpaqueBlob)
             }
         })
     }
@@ -4207,7 +4207,7 @@ impl TryToOpaque for Type {
         ctx: &BindgenContext,
         _: &Item,
     ) -> error::Result<Layout> {
-        self.layout(ctx).ok_or(error::Error::NoLayoutForOpaqueBlob)
+        self.layout(ctx).ok_or(Error::NoLayoutForOpaqueBlob)
     }
 }
 
@@ -4365,7 +4365,7 @@ impl TryToOpaque for TemplateInstantiation {
     ) -> error::Result<Layout> {
         item.expect_type()
             .layout(ctx)
-            .ok_or(error::Error::NoLayoutForOpaqueBlob)
+            .ok_or(Error::NoLayoutForOpaqueBlob)
     }
 }
 
@@ -4378,7 +4378,7 @@ impl TryToRustTy for TemplateInstantiation {
         item: &Item,
     ) -> error::Result<syn::Type> {
         if self.is_opaque(ctx, item) {
-            return Err(error::Error::InstantiationOfOpaqueType);
+            return Err(Error::InstantiationOfOpaqueType);
         }
 
         let def = self
@@ -4400,7 +4400,7 @@ impl TryToRustTy for TemplateInstantiation {
             // template specialization, and we've hit an instantiation of
             // that partial specialization.
             extra_assert!(def.is_opaque(ctx, &()));
-            return Err(error::Error::InstantiationOfOpaqueType);
+            return Err(Error::InstantiationOfOpaqueType);
         }
 
         // TODO: If the definition type is a template class/struct
@@ -4452,7 +4452,7 @@ impl TryToRustTy for FunctionSig {
                 syn::parse_quote! { unsafe extern #abi fn ( #( #arguments ),* ) #ret },
             ),
             Err(err) => {
-                if matches!(err, error::Error::UnsupportedAbi(_)) {
+                if matches!(err, Error::UnsupportedAbi(_)) {
                     unsupported_abi_diagnostic(
                         self.name(),
                         self.is_variadic(),
@@ -4568,7 +4568,7 @@ impl CodeGenerator for Function {
 
         let abi = match signature.abi(ctx, Some(name)) {
             Err(err) => {
-                if matches!(err, error::Error::UnsupportedAbi(_)) {
+                if matches!(err, Error::UnsupportedAbi(_)) {
                     unsupported_abi_diagnostic(
                         name,
                         signature.is_variadic(),
@@ -4709,7 +4709,7 @@ fn unsupported_abi_diagnostic(
     variadic: bool,
     location: Option<&crate::clang::SourceLocation>,
     ctx: &BindgenContext,
-    error: &error::Error,
+    error: &Error,
 ) {
     warn!(
         "Skipping {}function `{fn_name}` because the {error}",
@@ -5676,7 +5676,7 @@ pub(crate) mod utils {
 
     pub(crate) fn fnsig_arguments_iter<
         'a,
-        I: Iterator<Item = &'a (Option<String>, crate::ir::context::TypeId)>,
+        I: Iterator<Item = &'a (Option<String>, TypeId)>,
     >(
         ctx: &BindgenContext,
         args_iter: I,

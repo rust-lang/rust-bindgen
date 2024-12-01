@@ -1,3 +1,5 @@
+#![allow(unused_qualifications)] // Clap somehow generates a lot of these
+
 use crate::{
     builder,
     callbacks::{
@@ -810,7 +812,7 @@ where
                     shell,
                     &mut BindgenCommand::command(),
                     "bindgen",
-                    &mut std::io::stdout(),
+                    &mut io::stdout(),
                 );
 
                 exit(0)

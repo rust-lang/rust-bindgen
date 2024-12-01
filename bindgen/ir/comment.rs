@@ -13,7 +13,7 @@ enum Kind {
 
 /// Preprocesses a C/C++ comment so that it is a valid Rust comment.
 pub(crate) fn preprocess(comment: &str) -> String {
-    match self::kind(comment) {
+    match kind(comment) {
         Some(Kind::SingleLines) => preprocess_single_lines(comment),
         Some(Kind::MultiLine) => preprocess_multi_line(comment),
         None => comment.to_owned(),

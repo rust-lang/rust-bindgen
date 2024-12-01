@@ -477,7 +477,7 @@ fn get_integer_literal_from_cursor(cursor: &clang::Cursor) -> Option<i64> {
 
 fn duplicated_macro_diagnostic(
     macro_name: &str,
-    _location: crate::clang::SourceLocation,
+    _location: clang::SourceLocation,
     _ctx: &BindgenContext,
 ) {
     warn!("Duplicated macro definition: {macro_name}");

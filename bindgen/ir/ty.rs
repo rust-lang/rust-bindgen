@@ -637,12 +637,7 @@ pub(crate) enum TypeKind {
     /// already known types, and are converted to ResolvedTypeRef.
     ///
     /// see tests/headers/typeref.hpp to see somewhere where this is a problem.
-    UnresolvedTypeRef(
-        clang::Type,
-        clang::Cursor,
-        /* parent_id */
-        Option<ItemId>,
-    ),
+    UnresolvedTypeRef(clang::Type, Cursor, /* parent_id */ Option<ItemId>),
 
     /// An indirection to another type.
     ///
