@@ -255,6 +255,9 @@ define_rust_targets! {
         ptr_metadata: #81513,
         layout_for_ptr: #69835,
     },
+    Stable_1_82(82) => {
+        unsafe_extern_blocks: #127921,
+    },
     Stable_1_77(77) => {
         offset_of: #106655,
         literal_cstr(2021)|(2024): #117472,

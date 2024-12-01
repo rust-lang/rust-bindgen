@@ -800,8 +800,14 @@ impl CodeGenerator for Var {
                 quote! { mut }
             };
 
+            let safety = ctx
+                .options()
+                .rust_features
+                .unsafe_extern_blocks
+                .then(|| quote!(unsafe));
+
             let tokens = quote!(
-                extern "C" {
+                #safety extern "C" {
                     #(#attrs)*
                     pub static #maybe_mut #canonical_ident: #ty;
                 }
@@ -4704,9 +4710,16 @@ impl CodeGenerator for Function {
         let ret = utils::fnsig_return_ty(ctx, signature);
 
         let ident = ctx.rust_ident(ident);
+
+        let safety = ctx
+            .options()
+            .rust_features
+            .unsafe_extern_blocks
+            .then(|| quote!(unsafe));
+
         let tokens = quote! {
             #wasm_link_attribute
-            extern #abi {
+            #safety extern #abi {
                 #(#attributes)*
                 pub fn #ident ( #( #args ),* ) #ret;
             }
