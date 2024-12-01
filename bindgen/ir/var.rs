@@ -125,23 +125,24 @@ fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
         ctx.options().default_macro_constant_type ==
             MacroTypeVariation::Signed
     {
-        if value < i32::MIN as i64 || value > i32::MAX as i64 {
+        if value < i64::from(i32::MIN) || value > i64::from(i32::MAX) {
             IntKind::I64
         } else if !ctx.options().fit_macro_constants ||
-            value < i16::MIN as i64 ||
-            value > i16::MAX as i64
+            value < i64::from(i16::MIN) ||
+            value > i64::from(i16::MAX)
         {
             IntKind::I32
-        } else if value < i8::MIN as i64 || value > i8::MAX as i64 {
+        } else if value < i64::from(i8::MIN) || value > i64::from(i8::MAX) {
             IntKind::I16
         } else {
             IntKind::I8
         }
-    } else if value > u32::MAX as i64 {
+    } else if value > i64::from(u32::MAX) {
         IntKind::U64
-    } else if !ctx.options().fit_macro_constants || value > u16::MAX as i64 {
+    } else if !ctx.options().fit_macro_constants || value > i64::from(u16::MAX)
+    {
         IntKind::U32
-    } else if value > u8::MAX as i64 {
+    } else if value > i64::from(u8::MAX) {
         IntKind::U16
     } else {
         IntKind::U8
@@ -235,7 +236,7 @@ impl ClangSubItemParser for Var {
                                 c as u8
                             }
                             CChar::Raw(c) => {
-                                assert!(c <= u8::MAX as u64);
+                                assert!(c <= u64::from(u8::MAX));
                                 c as u8
                             }
                         };

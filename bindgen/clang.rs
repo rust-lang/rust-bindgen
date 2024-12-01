@@ -1793,7 +1793,7 @@ impl Index {
     pub(crate) fn new(pch: bool, diag: bool) -> Index {
         unsafe {
             Index {
-                x: clang_createIndex(pch as c_int, diag as c_int),
+                x: clang_createIndex(c_int::from(pch), c_int::from(diag)),
             }
         }
     }
