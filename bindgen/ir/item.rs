@@ -786,16 +786,14 @@ impl Item {
 
         match *self.kind() {
             ItemKind::Var(ref var) => var.name().to_owned(),
-            ItemKind::Module(ref module) => {
-                module.name().map(ToOwned::to_owned).unwrap_or_else(|| {
-                    format!("_bindgen_mod_{}", self.exposed_id(ctx))
-                })
-            }
-            ItemKind::Type(ref ty) => {
-                ty.sanitized_name(ctx).map(Into::into).unwrap_or_else(|| {
-                    format!("_bindgen_ty_{}", self.exposed_id(ctx))
-                })
-            }
+            ItemKind::Module(ref module) => module.name().map_or_else(
+                || format!("_bindgen_mod_{}", self.exposed_id(ctx)),
+                ToOwned::to_owned,
+            ),
+            ItemKind::Type(ref ty) => ty.sanitized_name(ctx).map_or_else(
+                || format!("_bindgen_ty_{}", self.exposed_id(ctx)),
+                Into::into,
+            ),
             ItemKind::Function(ref fun) => {
                 let mut name = fun.name().to_owned();
 
@@ -1702,8 +1700,7 @@ impl Item {
                         ty.spelling()
                     );
                     Item::type_param(Some(id), location, ctx)
-                        .map(Ok)
-                        .unwrap_or(Err(ParseError::Recurse))
+                        .ok_or(ParseError::Recurse)
                 } else {
                     result
                 }
