@@ -1,3 +1,5 @@
+lints.workspace = true
+
 [package]
 authors = [
     "Jyun-Yan You <jyyou.tw@gmail.com>",

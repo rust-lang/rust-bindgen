@@ -1,3 +1,5 @@
+lints.workspace = true
+
 [package]
 authors = [
     "The rust-bindgen project contributors",

@@ -1,3 +1,5 @@
+lints.workspace = true
+
 [package]
 name = "bindgen-tests"
 version = "0.1.0"
