@@ -434,7 +434,7 @@ mod tests {
                 r if r == (BZ_PARAM_ERROR as _) =&gt; panic!(&quot;BZ_PARAM_ERROR&quot;),
                 r if r == (BZ_MEM_ERROR as _) =&gt; panic!(&quot;BZ_MEM_ERROR&quot;),
                 r if r == (BZ_OK as _) =&gt; {},
-                r =&gt; panic!(&quot;Unknown return value = {}&quot;, r),
+                r =&gt; panic!(&quot;Unknown return value = {r}&quot;),
             }
 
             // Compress `input` into `compressed_output`.
@@ -449,7 +449,7 @@ mod tests {
                 r if r == (BZ_FINISH_OK as _) =&gt; panic!(&quot;BZ_FINISH_OK&quot;),
                 r if r == (BZ_SEQUENCE_ERROR as _) =&gt; panic!(&quot;BZ_SEQUENCE_ERROR&quot;),
                 r if r == (BZ_STREAM_END as _) =&gt; {},
-                r =&gt; panic!(&quot;Unknown return value = {}&quot;, r),
+                r =&gt; panic!(&quot;Unknown return value = {r}&quot;),
             }
 
             // Finish the compression stream.
@@ -457,7 +457,7 @@ mod tests {
             match result {
                 r if r == (BZ_PARAM_ERROR as _) =&gt; panic!(&quot;BZ_PARAM_ERROR&quot;),
                 r if r == (BZ_OK as _) =&gt; {},
-                r =&gt; panic!(&quot;Unknown return value = {}&quot;, r),
+                r =&gt; panic!(&quot;Unknown return value = {r}&quot;),
             }
 
             // Construct a decompression stream.
@@ -470,7 +470,7 @@ mod tests {
                 r if r == (BZ_PARAM_ERROR as _) =&gt; panic!(&quot;BZ_PARAM_ERROR&quot;),
                 r if r == (BZ_MEM_ERROR as _) =&gt; panic!(&quot;BZ_MEM_ERROR&quot;),
                 r if r == (BZ_OK as _) =&gt; {},
-                r =&gt; panic!(&quot;Unknown return value = {}&quot;, r),
+                r =&gt; panic!(&quot;Unknown return value = {r}&quot;),
             }
 
             // Decompress `compressed_output` into `decompressed_output`.
@@ -486,7 +486,7 @@ mod tests {
                 r if r == (BZ_MEM_ERROR as _) =&gt; panic!(&quot;BZ_MEM_ERROR&quot;),
                 r if r == (BZ_OK as _) =&gt; panic!(&quot;BZ_OK&quot;),
                 r if r == (BZ_STREAM_END as _) =&gt; {},
-                r =&gt; panic!(&quot;Unknown return value = {}&quot;, r),
+                r =&gt; panic!(&quot;Unknown return value = {r}&quot;),
             }
 
             // Close the decompression stream.
@@ -494,7 +494,7 @@ mod tests {
             match result {
                 r if r == (BZ_PARAM_ERROR as _) =&gt; panic!(&quot;BZ_PARAM_ERROR&quot;),
                 r if r == (BZ_OK as _) =&gt; {},
-                r =&gt; panic!(&quot;Unknown return value = {}&quot;, r),
+                r =&gt; panic!(&quot;Unknown return value = {r}&quot;),
             }
 
             assert_eq!(input, &amp;decompressed_output[..]);
@@ -1015,8 +1015,7 @@ fn main() {
 
     assert!(
         output.status.success(),
-        &quot;Unsuccessful status code when running `rustup`: {:?}&quot;,
-        output
+        &quot;Unsuccessful status code when running `rustup`: {output:?}&quot;,
     );
 
     let rustfmt_path =
