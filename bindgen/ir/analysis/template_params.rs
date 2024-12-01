@@ -464,7 +464,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             // (This is so that every item we call `constrain` on is guaranteed
             // to have a set of template parameters, and we can allow
             // blocklisted templates to use all of their parameters).
-            for item in allowlisted_items.iter() {
+            for item in &allowlisted_items {
                 extra_assert!(used.contains_key(item));
                 extra_assert!(dependencies.contains_key(item));
                 item.trace(

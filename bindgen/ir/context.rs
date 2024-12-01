@@ -2062,7 +2062,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             let mut header_names_to_compile = Vec::new();
             let mut header_paths = Vec::new();
             let mut header_contents = String::new();
-            for input_header in self.options.input_headers.iter() {
+            for input_header in &self.options.input_headers {
                 let path = Path::new(input_header.as_ref());
                 if let Some(header_path) = path.parent() {
                     if header_path == Path::new("") {

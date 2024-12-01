@@ -1143,7 +1143,7 @@ options! {
         },
         as_args: |module_lines, args| {
             for (module, lines) in module_lines {
-                for line in lines.iter() {
+                for line in lines {
                     args.push("--module-raw-line".to_owned());
                     args.push(module.clone().into());
                     args.push(line.clone().into());

@@ -928,7 +928,7 @@ impl Bindings {
             )?;
         }
 
-        for line in self.options.raw_lines.iter() {
+        for line in &self.options.raw_lines {
             writer.write_all(line.as_bytes())?;
             writer.write_all(NL.as_bytes())?;
         }
@@ -1103,7 +1103,7 @@ fn parse(context: &mut BindgenContext) -> Result<(), BindgenError> {
     use clang_sys::*;
 
     let mut error = None;
-    for d in context.translation_unit().diags().iter() {
+    for d in &context.translation_unit().diags() {
         let msg = d.format();
         let is_err = d.severity() >= CXDiagnostic_Error;
         if is_err {

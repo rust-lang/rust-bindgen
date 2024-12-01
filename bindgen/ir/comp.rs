@@ -1162,14 +1162,14 @@ impl CompInfo {
         match self.fields {
             CompFields::Error => {}
             CompFields::After { ref fields, .. } => {
-                for field in fields.iter() {
+                for field in fields {
                     if let Some(layout) = field.layout(ctx) {
                         callback(layout);
                     }
                 }
             }
             CompFields::Before(ref raw_fields) => {
-                for field in raw_fields.iter() {
+                for field in raw_fields {
                     let field_ty = ctx.resolve_type(field.0.ty);
                     if let Some(layout) = field_ty.layout(ctx) {
                         callback(layout);
@@ -1673,7 +1673,7 @@ impl CompInfo {
     pub(crate) fn already_packed(&self, ctx: &BindgenContext) -> Option<bool> {
         let mut total_size: usize = 0;
 
-        for field in self.fields().iter() {
+        for field in self.fields() {
             let layout = field.layout(ctx)?;
 
             if layout.align != 0 && total_size % layout.align != 0 {
