@@ -128,7 +128,7 @@ impl RegexSet {
         if !matches.matched_any() {
             return false;
         }
-        for i in matches.iter() {
+        for i in &matches {
             self.matched[i].set(true);
         }
 

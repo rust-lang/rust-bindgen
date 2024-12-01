@@ -301,7 +301,7 @@ impl ObjCMethod {
 
         // Get arguments without type signatures to pass to `msg_send!`
         let mut args_without_types = vec![];
-        for arg in args.iter() {
+        for arg in args {
             let arg = arg.to_string();
             let name_and_sig: Vec<&str> = arg.split(' ').collect();
             let name = name_and_sig[0];

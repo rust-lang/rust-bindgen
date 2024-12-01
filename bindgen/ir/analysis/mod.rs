@@ -280,9 +280,9 @@ mod tests {
 
         fn reverse(&self) -> Graph {
             let mut reversed = Graph::default();
-            for (node, edges) in self.0.iter() {
+            for (node, edges) in &self.0 {
                 reversed.0.entry(*node).or_insert_with(Vec::new);
-                for referent in edges.iter() {
+                for referent in edges {
                     reversed
                         .0
                         .entry(*referent)
@@ -331,7 +331,7 @@ mod tests {
 
             let original_size = self.reachable.entry(node).or_default().len();
 
-            for sub_node in self.graph.0[&node].iter() {
+            for sub_node in &self.graph.0[&node] {
                 self.reachable.get_mut(&node).unwrap().insert(*sub_node);
 
                 let sub_reachable =
@@ -354,7 +354,7 @@ mod tests {
         where
             F: FnMut(Node),
         {
-            for dep in self.reversed.0[&node].iter() {
+            for dep in &self.reversed.0[&node] {
                 f(*dep);
             }
         }

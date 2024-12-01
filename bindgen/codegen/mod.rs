@@ -3653,7 +3653,7 @@ impl CodeGenerator for Enum {
                     DerivableTraits::EQ,
             );
             let mut derives: Vec<_> = derives.into();
-            for derive in item.annotations().derives().iter() {
+            for derive in item.annotations().derives() {
                 if !derives.contains(&derive.as_str()) {
                     derives.push(derive);
                 }
@@ -4944,7 +4944,7 @@ impl CodeGenerator for ObjCInterface {
             };
             result.push(struct_block);
             let mut protocol_set: HashSet<ItemId> = Default::default();
-            for protocol_id in self.conforms_to.iter() {
+            for protocol_id in &self.conforms_to {
                 protocol_set.insert(*protocol_id);
                 let protocol_name = ctx.rust_ident(
                     ctx.resolve_type(protocol_id.expect_type_id(ctx))
@@ -4989,7 +4989,7 @@ impl CodeGenerator for ObjCInterface {
                     }
                 };
                 result.push(impl_trait);
-                for protocol_id in parent.conforms_to.iter() {
+                for protocol_id in &parent.conforms_to {
                     if protocol_set.insert(*protocol_id) {
                         let protocol_name = ctx.rust_ident(
                             ctx.resolve_type(protocol_id.expect_type_id(ctx))
