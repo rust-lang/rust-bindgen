@@ -232,10 +232,10 @@ impl Annotations {
                     "derive" => self.derives.push(attr.value),
                     "attribute" => self.attributes.push(attr.value),
                     "private" => {
-                        self.visibility_kind = if attr.value != "false" {
-                            Some(FieldVisibilityKind::Private)
-                        } else {
+                        self.visibility_kind = if attr.value == "false" {
                             Some(FieldVisibilityKind::Public)
+                        } else {
+                            Some(FieldVisibilityKind::Private)
                         };
                     }
                     "accessor" => {

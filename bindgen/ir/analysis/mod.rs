@@ -343,10 +343,10 @@ mod tests {
             }
 
             let new_size = self.reachable[&node].len();
-            if original_size != new_size {
-                ConstrainResult::Changed
-            } else {
+            if original_size == new_size {
                 ConstrainResult::Same
+            } else {
+                ConstrainResult::Changed
             }
         }
 
