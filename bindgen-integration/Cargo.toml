@@ -1,3 +1,5 @@
+lints.workspace = true
+
 [package]
 name = "bindgen-integration"
 description = "A package to test various bindgen features"
