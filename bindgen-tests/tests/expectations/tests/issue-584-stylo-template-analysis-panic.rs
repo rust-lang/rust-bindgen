@@ -67,7 +67,7 @@ impl Default for b {
         }
     }
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z25Servo_Element_GetSnapshotv"]
     pub fn Servo_Element_GetSnapshot() -> A;
 }

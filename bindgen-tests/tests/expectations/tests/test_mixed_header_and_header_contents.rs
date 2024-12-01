@@ -1,4 +1,4 @@
-extern "C" {
+unsafe extern "C" {
     pub static mut foo: ::std::option::Option<
         unsafe extern "C" fn(
             x: ::std::os::raw::c_int,
@@ -6,10 +6,10 @@ extern "C" {
         ) -> ::std::os::raw::c_int,
     >;
 }
-extern "C" {
+unsafe extern "C" {
     pub fn bar(a: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
 }
-extern "C" {
+unsafe extern "C" {
     pub fn bar2(b: *const ::std::os::raw::c_char) -> f32;
 }
 pub type Char = ::std::os::raw::c_char;

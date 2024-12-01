@@ -10,15 +10,15 @@ const _: () = {
     ["Alignment of A"][::std::mem::align_of::<A>() - 4usize];
     ["Offset of field: A::_x"][::std::mem::offset_of!(A, _x) - 0usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN1A13some_functionEv"]
     pub fn A_some_function(this: *mut A);
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN1A19some_other_functionEv"]
     pub fn A_some_other_function(this: *mut A);
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN1AC1Ei"]
     pub fn A_A(this: *mut A, x: ::std::os::raw::c_int);
 }

@@ -13,7 +13,7 @@ const _: () = {
 pub type __m128 = [f32; 4usize];
 pub type __m128d = [f64; 2usize];
 pub type __m128i = [::std::os::raw::c_longlong; 2usize];
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z3fooDv2_xDv2_d"]
     pub fn foo(arg1: __m128i, arg2: __m128d) -> __m128;
 }

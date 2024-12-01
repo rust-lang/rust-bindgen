@@ -2,7 +2,7 @@
 #[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
 #[repr(transparent)]
 pub struct __BindgenFloat16(pub u16);
-extern "C" {
+unsafe extern "C" {
     pub static mut global: __BindgenFloat16;
 }
 #[repr(C)]

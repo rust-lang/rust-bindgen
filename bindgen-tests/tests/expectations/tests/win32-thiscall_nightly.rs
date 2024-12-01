@@ -11,11 +11,11 @@ const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 1usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 1usize];
 };
-extern "thiscall" {
+unsafe extern "thiscall" {
     #[link_name = "\u{1}?test@Foo@@QAEXXZ"]
     pub fn Foo_test(this: *mut Foo);
 }
-extern "thiscall" {
+unsafe extern "thiscall" {
     #[link_name = "\u{1}?test2@Foo@@QAEHH@Z"]
     pub fn Foo_test2(
         this: *mut Foo,

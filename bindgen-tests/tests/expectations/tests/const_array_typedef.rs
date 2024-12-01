@@ -11,18 +11,18 @@ const _: () = {
     ["Offset of field: strct::field"][::std::mem::offset_of!(strct, field) - 0usize];
 };
 pub type typ = [strct; 1usize];
-extern "C" {
+unsafe extern "C" {
     pub static mut w: typ;
 }
-extern "C" {
+unsafe extern "C" {
     pub static mut x: *mut strct;
 }
-extern "C" {
+unsafe extern "C" {
     pub static y: typ;
 }
-extern "C" {
+unsafe extern "C" {
     pub static mut z: *const strct;
 }
-extern "C" {
+unsafe extern "C" {
     pub fn function(a: *const strct, b: *const strct);
 }

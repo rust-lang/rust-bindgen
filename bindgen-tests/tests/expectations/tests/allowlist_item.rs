@@ -11,6 +11,6 @@ const _: () = {
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 4usize];
     ["Offset of field: Foo::field"][::std::mem::offset_of!(Foo, field) - 0usize];
 };
-extern "C" {
+unsafe extern "C" {
     pub fn FooNew(value: ::std::os::raw::c_int) -> Foo;
 }

@@ -391,10 +391,10 @@ fn test_clang_env_args() {
     let actual = format_code(actual).unwrap();
 
     let expected = format_code(
-        "extern \"C\" {
+        "unsafe extern \"C\" {
     pub static x: [::std::os::raw::c_int; 1usize];
 }
-extern \"C\" {
+unsafe extern \"C\" {
     pub static y: [::std::os::raw::c_int; 1usize];
 }
 ",
@@ -417,7 +417,7 @@ fn test_header_contents() {
     let actual = format_code(actual).unwrap();
 
     let expected = format_code(
-        "extern \"C\" {
+        "unsafe extern \"C\" {
     pub fn foo(a: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
 }
 ",
@@ -513,10 +513,10 @@ fn test_multiple_header_contents() {
     let actual = format_code(actual).unwrap();
 
     let expected = format_code(
-        "extern \"C\" {
+        "unsafe extern \"C\" {
     pub fn foo2(b: *const ::std::os::raw::c_char) -> f32;
 }
-extern \"C\" {
+unsafe extern \"C\" {
     pub fn foo(a: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
 }
 ",

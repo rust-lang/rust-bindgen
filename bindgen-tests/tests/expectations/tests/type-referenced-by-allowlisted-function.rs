@@ -12,6 +12,6 @@ const _: () = {
         "Offset of field: dl_phdr_info::x",
     ][::std::mem::offset_of!(dl_phdr_info, x) - 0usize];
 };
-extern "C" {
+unsafe extern "C" {
     pub fn dl_iterate_phdr(arg1: *mut dl_phdr_info) -> ::std::os::raw::c_int;
 }

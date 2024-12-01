@@ -11,7 +11,7 @@ pub mod root {
         pub struct Type {
             pub _address: u8,
         }
-        extern "C" {
+        unsafe extern "C" {
             #[link_name = "\u{1}_ZN6Halide4Type1bE"]
             pub static mut Type_b: root::a;
         }

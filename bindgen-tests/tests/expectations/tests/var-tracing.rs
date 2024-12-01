@@ -10,7 +10,7 @@ const _: () = {
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 4usize];
     ["Offset of field: Bar::m_baz"][::std::mem::offset_of!(Bar, m_baz) - 0usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3BarC1Ei"]
     pub fn Bar_Bar(this: *mut Bar, baz: ::std::os::raw::c_int);
 }
@@ -27,7 +27,7 @@ impl Bar {
 pub struct Baz {
     pub _address: u8,
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3Baz3FOOE"]
     pub static Baz_FOO: [Bar; 0usize];
 }

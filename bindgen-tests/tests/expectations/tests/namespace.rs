@@ -3,7 +3,7 @@
 pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
-    extern "C" {
+    unsafe extern "C" {
         #[link_name = "\u{1}_Z9top_levelv"]
         pub fn top_level();
     }
@@ -12,7 +12,7 @@ pub mod root {
         use self::super::super::root;
         pub type whatever_other_thing_t = whatever_int_t;
         pub type whatever_int_t = ::std::os::raw::c_int;
-        extern "C" {
+        unsafe extern "C" {
             #[link_name = "\u{1}_ZN8whatever11in_whateverEv"]
             pub fn in_whatever();
         }
@@ -69,15 +69,15 @@ pub mod root {
                 }
             }
         }
-        extern "C" {
+        unsafe extern "C" {
             #[link_name = "\u{1}_ZN1w3hehEv"]
             pub fn heh() -> root::w::whatever_int_t;
         }
-        extern "C" {
+        unsafe extern "C" {
             #[link_name = "\u{1}_ZN1w3fooEv"]
             pub fn foo() -> root::C<::std::os::raw::c_int>;
         }
-        extern "C" {
+        unsafe extern "C" {
             #[link_name = "\u{1}_ZN1w4barrEv"]
             pub fn barr() -> root::C<f32>;
         }
@@ -85,7 +85,7 @@ pub mod root {
     pub mod foobar {
         #[allow(unused_imports)]
         use self::super::super::root;
-        extern "C" {
+        unsafe extern "C" {
             #[link_name = "\u{1}_ZN6foobar3fooEv"]
             pub fn foo();
         }
@@ -93,7 +93,7 @@ pub mod root {
     pub mod faraway {
         #[allow(unused_imports)]
         use self::super::super::root;
-        extern "C" {
+        unsafe extern "C" {
             #[link_name = "\u{1}_ZN7faraway3barEv"]
             pub fn bar();
         }

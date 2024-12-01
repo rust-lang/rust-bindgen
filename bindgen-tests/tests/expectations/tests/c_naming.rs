@@ -36,12 +36,12 @@ impl Default for union_b {
 pub type b = union_b;
 pub const enum_c_A: enum_c = 0;
 pub type enum_c = ::std::os::raw::c_uint;
-extern "C" {
+unsafe extern "C" {
     pub fn takes_a(arg: a);
 }
-extern "C" {
+unsafe extern "C" {
     pub fn takes_b(arg: b);
 }
-extern "C" {
+unsafe extern "C" {
     pub fn takes_c(arg: enum_c);
 }

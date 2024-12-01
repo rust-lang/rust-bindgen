@@ -152,15 +152,15 @@ const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 1usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 1usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3Foo4typeEv"]
     pub fn Foo_type(this: *mut Foo) -> ::std::os::raw::c_char;
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3Foo9set_type_Ec"]
     pub fn Foo_set_type_(this: *mut Foo, c: ::std::os::raw::c_char);
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3Foo8set_typeEc"]
     pub fn Foo_set_type(this: *mut Foo, c: ::std::os::raw::c_char);
 }

@@ -20,7 +20,7 @@ impl<T> Default for Foo_InnerType<T> {
     }
 }
 pub type Bar = InnerType;
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z4funcv"]
     pub fn func() -> Bar;
 }

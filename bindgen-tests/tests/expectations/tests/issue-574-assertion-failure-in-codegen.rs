@@ -17,7 +17,7 @@ const _: () = {
         "Offset of field: _bindgen_ty_1::ar",
     ][::std::mem::offset_of!(_bindgen_ty_1, ar) - 0usize];
 };
-extern "C" {
+unsafe extern "C" {
     pub static mut AutoIdVector: _bindgen_ty_1;
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]

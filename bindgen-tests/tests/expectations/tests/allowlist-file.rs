@@ -1,10 +1,10 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub const SOME_DEFUN: u32 = 123;
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z12SomeFunctionv"]
     pub fn SomeFunction();
 }
-extern "C" {
+unsafe extern "C" {
     pub static mut someVar: ::std::os::raw::c_int;
 }
 #[repr(C)]
@@ -17,7 +17,7 @@ const _: () = {
     ["Size of someClass"][::std::mem::size_of::<someClass>() - 1usize];
     ["Alignment of someClass"][::std::mem::align_of::<someClass>() - 1usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN9someClass16somePublicMethodEi"]
     pub fn someClass_somePublicMethod(this: *mut someClass, foo: ::std::os::raw::c_int);
 }
@@ -27,10 +27,10 @@ impl someClass {
         someClass_somePublicMethod(self, foo)
     }
 }
-extern "C" {
+unsafe extern "C" {
     pub fn ExternFunction();
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3foo18NamespacedFunctionEv"]
     pub fn foo_NamespacedFunction();
 }

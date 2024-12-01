@@ -51,7 +51,7 @@ impl Default for _bindgen_ty_1 {
         }
     }
 }
-extern "C" {
+unsafe extern "C" {
     pub static mut bazz: _bindgen_ty_1;
 }
 pub type fooFunction = ::core::option::Option<

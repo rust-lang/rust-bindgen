@@ -9,7 +9,7 @@ const _: () = {
     ["Size of Foo"][::std::mem::size_of::<Foo>() - 1usize];
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 1usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3FooC1Ei"]
     pub fn Foo_Foo(this: *mut Foo, a: ::std::os::raw::c_int);
 }

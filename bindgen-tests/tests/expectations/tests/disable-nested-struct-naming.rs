@@ -117,6 +117,6 @@ const _: () = {
         "Offset of field: _bindgen_ty_1::anon2",
     ][::std::mem::offset_of!(_bindgen_ty_1, anon2) - 0usize];
 };
-extern "C" {
+unsafe extern "C" {
     pub static mut anon1: _bindgen_ty_1;
 }

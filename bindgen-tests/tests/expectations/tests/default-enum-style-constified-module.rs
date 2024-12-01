@@ -5,6 +5,6 @@ pub mod Foo {
     pub const baz: Type = 1;
     pub const blap: Type = 2;
 }
-extern "C" {
+unsafe extern "C" {
     pub fn func(x: Foo::Type);
 }

@@ -10,7 +10,7 @@ const _: () = {
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 4usize];
     ["Offset of field: Foo::bar"][::std::mem::offset_of!(Foo, bar) - 0usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3FooD1Ev"]
     pub fn Foo_Foo_destructor(this: *mut Foo);
 }

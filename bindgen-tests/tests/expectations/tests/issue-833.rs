@@ -3,6 +3,6 @@
 pub struct nsTArray<T> {
     pub hdr: *const T,
 }
-extern "C" {
+unsafe extern "C" {
     pub fn func() -> *mut nsTArray<::std::os::raw::c_int>;
 }

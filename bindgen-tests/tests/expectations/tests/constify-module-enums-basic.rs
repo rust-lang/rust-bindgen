@@ -29,14 +29,14 @@ impl Default for bar {
         }
     }
 }
-extern "C" {
+unsafe extern "C" {
     pub fn func1(
         arg1: foo::Type,
         arg2: *mut foo::Type,
         arg3: *mut *mut foo::Type,
     ) -> *mut foo::Type;
 }
-extern "C" {
+unsafe extern "C" {
     pub fn func2(
         arg1: foo_alias1,
         arg2: *mut foo_alias1,

@@ -60,30 +60,30 @@ pub mod root {
         pub const NUMBER: root::ns::number = 42;
         #[allow(unused_imports)]
         use self::super::super::root;
-        extern "C" {
+        unsafe extern "C" {
             #[link_name = "\u{1}_ZN2ns3fooEv"]
             pub fn foo() -> ::std::os::raw::c_int;
         }
-        extern "C" {
+        unsafe extern "C" {
             #[link_name = "\u{1}_ZN2ns3barEi"]
             pub fn bar(x: root::ns::number) -> ::std::os::raw::c_int;
         }
-        extern "C" {
+        unsafe extern "C" {
             #[link_name = "\u{1}_ZN2ns3bazENS_5PointE"]
             pub fn baz(point: root::ns::Point) -> ::std::os::raw::c_int;
         }
     }
     #[allow(unused_imports)]
     use self::super::root;
-    extern "C" {
+    unsafe extern "C" {
         #[link_name = "\u{1}_Z3foov"]
         pub fn foo() -> ::std::os::raw::c_int;
     }
-    extern "C" {
+    unsafe extern "C" {
         #[link_name = "\u{1}_Z3bari"]
         pub fn bar(x: root::number) -> ::std::os::raw::c_int;
     }
-    extern "C" {
+    unsafe extern "C" {
         #[link_name = "\u{1}_Z3baz5Point"]
         pub fn baz(point: root::Point) -> ::std::os::raw::c_int;
     }

@@ -14,7 +14,7 @@ const _: () = {
     ["Size of Bar"][::std::mem::size_of::<Bar>() - 1usize];
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 1usize];
 };
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3BarC1Ev"]
     pub fn Bar_Bar(this: *mut Bar);
 }

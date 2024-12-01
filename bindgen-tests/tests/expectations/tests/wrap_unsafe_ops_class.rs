@@ -166,26 +166,26 @@ impl Default for WithUnion {
 pub struct RealAbstractionWithTonsOfMethods {
     pub _address: u8,
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZNK32RealAbstractionWithTonsOfMethods3barEv"]
     pub fn RealAbstractionWithTonsOfMethods_bar(
         this: *const RealAbstractionWithTonsOfMethods,
     );
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN32RealAbstractionWithTonsOfMethods3barEv"]
     pub fn RealAbstractionWithTonsOfMethods_bar1(
         this: *mut RealAbstractionWithTonsOfMethods,
     );
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN32RealAbstractionWithTonsOfMethods3barEi"]
     pub fn RealAbstractionWithTonsOfMethods_bar2(
         this: *mut RealAbstractionWithTonsOfMethods,
         foo: ::std::os::raw::c_int,
     );
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN32RealAbstractionWithTonsOfMethods3staEv"]
     pub fn RealAbstractionWithTonsOfMethods_sta();
 }

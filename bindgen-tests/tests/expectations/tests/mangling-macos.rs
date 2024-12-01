@@ -1,5 +1,5 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-extern "C" {
+unsafe extern "C" {
     pub fn foo();
 }
 #[repr(C)]
@@ -7,7 +7,7 @@ extern "C" {
 pub struct Foo {
     pub _address: u8,
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}__ZN3Foo4sBarE"]
     pub static mut Foo_sBar: bool;
 }

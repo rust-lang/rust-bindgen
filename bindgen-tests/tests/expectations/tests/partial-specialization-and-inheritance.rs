@@ -24,7 +24,7 @@ pub struct Derived {
 pub struct Usage {
     pub _address: u8,
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN5Usage13static_memberE"]
     pub static mut Usage_static_member: __BindgenOpaqueArray<u32, 2usize>;
 }
