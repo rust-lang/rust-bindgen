@@ -108,12 +108,9 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
         }
 
         let item = self.ctx.resolve_item(id);
-        let ty = match item.as_type() {
-            Some(ty) => ty,
-            None => {
-                trace!("    not a type; ignoring");
-                return ConstrainResult::Same;
-            }
+        let Some(ty) = item.as_type() else {
+            trace!("    not a type; ignoring");
+            return ConstrainResult::Same;
         };
 
         match *ty.kind() {
@@ -142,17 +139,14 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
             TypeKind::Array(t, _) => {
                 let inner_ty =
                     self.ctx.resolve_type(t).canonical_type(self.ctx);
-                match *inner_ty.kind() {
-                    TypeKind::TypeParam => {
-                        trace!("    Array with Named type has type parameter");
-                        self.insert(id)
-                    }
-                    _ => {
-                        trace!(
-                            "    Array without Named type does have type parameter"
-                        );
-                        ConstrainResult::Same
-                    }
+                if let TypeKind::TypeParam = *inner_ty.kind() {
+                    trace!("    Array with Named type has type parameter");
+                    self.insert(id)
+                } else {
+                    trace!(
+                        "    Array without Named type does have type parameter"
+                    );
+                    ConstrainResult::Same
                 }
             }
 

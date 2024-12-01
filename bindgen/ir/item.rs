@@ -582,9 +582,8 @@ impl Item {
 
         let mut parent = self.parent_id;
         loop {
-            let parent_item = match ctx.resolve_item_fallible(parent) {
-                Some(item) => item,
-                None => return false,
+            let Some(parent_item) = ctx.resolve_item_fallible(parent) else {
+                return false;
             };
 
             if parent_item.id() == ctx.root_module() {
@@ -978,9 +977,8 @@ impl Item {
         // Do not jump through aliases, except for aliases that point to a type
         // with the same name, since we dont generate coe for them.
         let item = self.id.into_resolver().through_type_refs().resolve(ctx);
-        let type_ = match *item.kind() {
-            ItemKind::Type(ref type_) => type_,
-            _ => return false,
+        let ItemKind::Type(ref type_) = *item.kind() else {
+            return false;
         };
 
         match *type_.kind() {
@@ -1077,9 +1075,8 @@ impl Item {
 
     /// Returns a prefix for the canonical name when C naming is enabled.
     fn c_naming_prefix(&self) -> Option<&str> {
-        let ty = match self.kind {
-            ItemKind::Type(ref ty) => ty,
-            _ => return None,
+        let ItemKind::Type(ref ty) = self.kind else {
+            return None;
         };
 
         Some(match ty.kind() {

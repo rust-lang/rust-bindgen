@@ -540,31 +540,25 @@ impl DeriveTrait {
     }
 
     fn can_derive_vector(&self) -> CanDerive {
-        match self {
-            DeriveTrait::PartialEqOrPartialOrd => {
-                // FIXME: vectors always can derive PartialEq, but they should
-                // not derive PartialOrd:
-                // https://github.com/rust-lang-nursery/packed_simd/issues/48
-                trace!("    vectors cannot derive PartialOrd");
-                CanDerive::No
-            }
-            _ => {
-                trace!("    vector can derive {self}");
-                CanDerive::Yes
-            }
+        if *self == DeriveTrait::PartialEqOrPartialOrd {
+            // FIXME: vectors always can derive PartialEq, but they should
+            // not derive PartialOrd:
+            // https://github.com/rust-lang-nursery/packed_simd/issues/48
+            trace!("    vectors cannot derive PartialOrd");
+            CanDerive::No
+        } else {
+            trace!("    vector can derive {self}");
+            CanDerive::Yes
         }
     }
 
     fn can_derive_pointer(&self) -> CanDerive {
-        match self {
-            DeriveTrait::Default => {
-                trace!("    pointer cannot derive Default");
-                CanDerive::No
-            }
-            _ => {
-                trace!("    pointer can derive {self}");
-                CanDerive::Yes
-            }
+        if *self == DeriveTrait::Default {
+            trace!("    pointer cannot derive Default");
+            CanDerive::No
+        } else {
+            trace!("    pointer can derive {self}");
+            CanDerive::Yes
         }
     }
 

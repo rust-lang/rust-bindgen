@@ -12,10 +12,9 @@ pub fn main() {
     let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
     let headers_dir = manifest_dir.join("tests").join("headers");
 
-    let headers = match fs::read_dir(headers_dir) {
-        Ok(dir) => dir,
+    let Ok(headers) = fs::read_dir(headers_dir) else {
         // We may not have headers directory after packaging.
-        Err(..) => return,
+        return;
     };
 
     let entries =

@@ -368,22 +368,21 @@ impl FromStr for RustTarget {
             ));
         }
 
-        let (minor, patch) = match tail.split_once('.') {
-            Some((minor_str, patch_str)) => {
-                let Ok(minor) = minor_str.parse::<u64>() else {
-                    return Err(invalid_input(input, "the minor version number must be an unsigned 64-bit integer"));
-                };
-                let Ok(patch) = patch_str.parse::<u64>() else {
-                    return Err(invalid_input(input, "the patch version number must be an unsigned 64-bit integer"));
-                };
-                (minor, patch)
-            }
-            None => {
-                let Ok(minor) = tail.parse::<u64>() else {
-                    return Err(invalid_input(input, "the minor version number must be an unsigned 64-bit integer"));
-                };
-                (minor, 0)
-            }
+        let (minor, patch) = if let Some((minor_str, patch_str)) =
+            tail.split_once('.')
+        {
+            let Ok(minor) = minor_str.parse::<u64>() else {
+                return Err(invalid_input(input, "the minor version number must be an unsigned 64-bit integer"));
+            };
+            let Ok(patch) = patch_str.parse::<u64>() else {
+                return Err(invalid_input(input, "the patch version number must be an unsigned 64-bit integer"));
+            };
+            (minor, patch)
+        } else {
+            let Ok(minor) = tail.parse::<u64>() else {
+                return Err(invalid_input(input, "the minor version number must be an unsigned 64-bit integer"));
+            };
+            (minor, 0)
         };
 
         Self::stable(minor, patch).map_err(|err| invalid_input(input, err))

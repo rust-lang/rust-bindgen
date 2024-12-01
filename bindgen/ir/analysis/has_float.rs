@@ -105,12 +105,9 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
         }
 
         let item = self.ctx.resolve_item(id);
-        let ty = match item.as_type() {
-            Some(ty) => ty,
-            None => {
-                trace!("    not a type; ignoring");
-                return ConstrainResult::Same;
-            }
+        let Some(ty) = item.as_type() else {
+            trace!("    not a type; ignoring");
+            return ConstrainResult::Same;
         };
 
         match *ty.kind() {

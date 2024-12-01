@@ -72,9 +72,10 @@ impl<'a> CSerialize<'a> for Function {
             });
         }
 
-        let signature = match ctx.resolve_type(self.signature()).kind() {
-            TypeKind::Function(signature) => signature,
-            _ => unreachable!(),
+        let TypeKind::Function(signature) =
+            ctx.resolve_type(self.signature()).kind()
+        else {
+            unreachable!()
         };
 
         assert!(!signature.is_variadic());

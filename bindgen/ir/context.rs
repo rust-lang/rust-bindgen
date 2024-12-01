@@ -930,10 +930,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         for (id, item) in self.items() {
             let kind = item.kind();
-            let ty = match kind.as_type() {
-                Some(ty) => ty,
-                None => continue,
-            };
+            let Some(ty) = kind.as_type() else { continue };
 
             if let TypeKind::UnresolvedTypeRef(ref ty, loc, parent_id) =
                 *ty.kind()
@@ -1070,9 +1067,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
             // Calls to `canonical_name` are expensive, so eagerly filter out
             // items that cannot be replaced.
-            let ty = match item.kind().as_type() {
-                Some(ty) => ty,
-                None => continue,
+            let Some(ty) = item.kind().as_type() else {
+                continue;
             };
 
             match *ty.kind() {
@@ -2524,9 +2520,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                 return false;
                             }
 
-                            let enum_ = match *ty.kind() {
-                                TypeKind::Enum(ref e) => e,
-                                _ => return false,
+                            let TypeKind::Enum(ref enum_) = *ty.kind() else {
+                                return false;
                             };
 
                             if ty.name().is_some() {

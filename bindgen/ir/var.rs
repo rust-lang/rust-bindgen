@@ -198,9 +198,8 @@ impl ClangSubItemParser for Var {
 
                 let value = parse_macro(ctx, &cursor);
 
-                let (id, value) = match value {
-                    Some(v) => v,
-                    None => return Err(ParseError::Continue),
+                let Some((id, value)) = value else {
+                    return Err(ParseError::Continue);
                 };
 
                 assert!(!id.is_empty(), "Empty macro name?");
@@ -338,9 +337,9 @@ impl ClangSubItemParser for Var {
                 // to look at the canonical type of the pointee too, and check
                 // is char, u8, or i8 I guess).
                 let value = if is_integer {
-                    let kind = match *canonical_ty.unwrap().kind() {
-                        TypeKind::Int(kind) => kind,
-                        _ => unreachable!(),
+                    let TypeKind::Int(kind) = *canonical_ty.unwrap().kind()
+                    else {
+                        unreachable!()
                     };
 
                     let mut val = cursor.evaluate().and_then(|v| v.as_int());

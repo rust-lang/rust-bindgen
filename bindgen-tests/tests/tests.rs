@@ -55,9 +55,10 @@ fn error_diff_mismatch(
 
     if let Some(var) = env::var_os("BINDGEN_TESTS_DIFFTOOL") {
         //usecase: var = "meld" -> You can hand check differences
-        let name = match filename.components().last() {
-            Some(std::path::Component::Normal(name)) => name,
-            _ => panic!("Why is the header variable so weird?"),
+        let Some(std::path::Component::Normal(name)) =
+            filename.components().last()
+        else {
+            panic!("Why is the header variable so weird?")
         };
         let actual_result_path =
             PathBuf::from(env::var("OUT_DIR").unwrap()).join(name);
@@ -581,29 +582,28 @@ fn test_macro_fallback_non_system_dir() {
 
     let actual = format_code(actual).unwrap();
 
-    let (expected_filename, expected) = match clang_version().parsed {
-        Some((9, _)) => {
-            let expected_filename = concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/tests/expectations/tests/libclang-9/macro_fallback_non_system_dir.rs",
-            );
-            let expected = include_str!(concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/tests/expectations/tests/libclang-9/macro_fallback_non_system_dir.rs",
-            ));
-            (expected_filename, expected)
-        }
-        _ => {
-            let expected_filename = concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/tests/expectations/tests/test_macro_fallback_non_system_dir.rs",
-            );
-            let expected = include_str!(concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/tests/expectations/tests/test_macro_fallback_non_system_dir.rs",
-            ));
-            (expected_filename, expected)
-        }
+    let (expected_filename, expected) = if let Some((9, _)) =
+        clang_version().parsed
+    {
+        let expected_filename = concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/expectations/tests/libclang-9/macro_fallback_non_system_dir.rs",
+        );
+        let expected = include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/expectations/tests/libclang-9/macro_fallback_non_system_dir.rs",
+        ));
+        (expected_filename, expected)
+    } else {
+        let expected_filename = concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/expectations/tests/test_macro_fallback_non_system_dir.rs",
+        );
+        let expected = include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/expectations/tests/test_macro_fallback_non_system_dir.rs",
+        ));
+        (expected_filename, expected)
     };
     let expected = format_code(expected).unwrap();
     if expected != actual {
