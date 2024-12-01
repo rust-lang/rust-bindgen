@@ -36,7 +36,7 @@ impl<'a> Timer<'a> {
         if self.output {
             let elapsed = self.elapsed();
             let time = (elapsed.as_secs() as f64) * 1e3 +
-                (elapsed.subsec_nanos() as f64) / 1e6;
+                f64::from(elapsed.subsec_nanos()) / 1e6;
             let stderr = io::stderr();
             // Arbitrary output format, subject to change.
             writeln!(stderr.lock(), "  time: {time:>9.3} ms.\t{}", self.name)

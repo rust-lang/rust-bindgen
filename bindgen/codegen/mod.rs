@@ -3329,7 +3329,7 @@ impl<'a> EnumBuilder<'a> {
         let is_rust_enum = self.is_rust_enum();
         let expr = match variant.val() {
             EnumVariantValue::Boolean(v) if is_rust_enum => {
-                helpers::ast_ty::uint_expr(v as u64)
+                helpers::ast_ty::uint_expr(u64::from(v))
             }
             EnumVariantValue::Boolean(v) => quote!(#v),
             EnumVariantValue::Signed(v) => helpers::ast_ty::int_expr(v),
