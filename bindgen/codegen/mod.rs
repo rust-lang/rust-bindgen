@@ -1118,6 +1118,9 @@ impl CodeGenerator for Type {
                                 cb.field_visibility(FieldInfo {
                                     type_name: &item.canonical_name(ctx),
                                     field_name: "0",
+                                    field_type_name: inner_item
+                                        .expect_type()
+                                        .name(),
                                 })
                             })
                             .unwrap_or(ctx.options().default_visibility);
