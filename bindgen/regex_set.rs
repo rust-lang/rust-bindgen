@@ -49,7 +49,7 @@ impl RegexSet {
         })
     }
 
-    /// Construct a RegexSet from the set of entries we've accumulated.
+    /// Construct a `RegexSet` from the set of entries we've accumulated.
     ///
     /// Must be called before calling `matches()`, or it will always return
     /// false.
@@ -60,7 +60,7 @@ impl RegexSet {
     }
 
     #[cfg(all(feature = "__cli", feature = "experimental"))]
-    /// Construct a RegexSet from the set of entries we've accumulated and emit diagnostics if the
+    /// Construct a `RegexSet` from the set of entries we've accumulated and emit diagnostics if the
     /// name of the regex set is passed to it.
     ///
     /// Must be called before calling `matches()`, or it will always return

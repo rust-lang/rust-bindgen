@@ -235,7 +235,7 @@ pub(crate) fn codegen_edges(ctx: &BindgenContext, edge: Edge) -> bool {
 /// outgoing edges might not have been fully traversed yet) in an active
 /// traversal.
 pub(crate) trait TraversalStorage<'ctx> {
-    /// Construct a new instance of this TraversalStorage, for a new traversal.
+    /// Construct a new instance of this `TraversalStorage`, for a new traversal.
     fn new(ctx: &'ctx BindgenContext) -> Self;
 
     /// Add the given item to the storage. If the item has never been seen

@@ -1017,6 +1017,7 @@ pub(crate) struct CompInfo {
 
     /// The inner types that were declared inside this class, in something like:
     ///
+    /// ```c++
     /// class Foo {
     ///     typedef int FooTy;
     ///     struct Bar {
@@ -1025,6 +1026,7 @@ pub(crate) struct CompInfo {
     /// }
     ///
     /// static Foo::Bar const = {3};
+    /// ```
     inner_types: Vec<TypeId>,
 
     /// Set of static constants declared inside this class.
@@ -1043,7 +1045,7 @@ pub(crate) struct CompInfo {
     has_nonempty_base: bool,
 
     /// If this type has a template parameter which is not a type (e.g.: a
-    /// size_t)
+    /// `size_t`)
     has_non_type_template_params: bool,
 
     /// Whether this type has a bit field member whose width couldn't be
@@ -1056,7 +1058,7 @@ pub(crate) struct CompInfo {
 
     /// Used to know if we've found an opaque attribute that could cause us to
     /// generate a type with invalid layout. This is explicitly used to avoid us
-    /// generating bad alignments when parsing types like max_align_t.
+    /// generating bad alignments when parsing types like `max_align_t`.
     ///
     /// It's not clear what the behavior should be here, if generating the item
     /// and pray, or behave as an opaque type.
@@ -1098,7 +1100,7 @@ impl CompInfo {
     ///
     /// If we're a union without known layout, we try to compute it from our
     /// members. This is not ideal, but clang fails to report the size for these
-    /// kind of unions, see test/headers/template_union.hpp
+    /// kind of unions, see `test/headers/template_union.hpp`
     pub(crate) fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
         // We can't do better than clang here, sorry.
         if self.kind == CompKind::Struct {
@@ -1213,7 +1215,7 @@ impl CompInfo {
     }
 
     /// Do we see a virtual function during parsing?
-    /// Get the has_own_virtual_method boolean.
+    /// Get the `has_own_virtual_method` boolean.
     pub(crate) fn has_own_virtual_method(&self) -> bool {
         self.has_own_virtual_method
     }
@@ -1708,12 +1710,12 @@ impl CompInfo {
     /// Returns whether the current union can be represented as a Rust `union`
     ///
     /// Requirements:
-    ///     1. Current RustTarget allows for `untagged_union`
-    ///     2. Each field can derive `Copy` or we use ManuallyDrop.
+    ///     1. Current `RustTarget` allows for `untagged_union`
+    ///     2. Each field can derive `Copy` or we use `ManuallyDrop`.
     ///     3. It's not zero-sized.
     ///
     /// Second boolean returns whether all fields can be copied (and thus
-    /// ManuallyDrop is not needed).
+    /// `ManuallyDrop` is not needed).
     pub(crate) fn is_rust_union(
         &self,
         ctx: &BindgenContext,

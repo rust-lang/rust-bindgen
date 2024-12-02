@@ -223,7 +223,7 @@ impl<'ctx> From<HasVtableAnalysis<'ctx>> for HashMap<ItemId, HasVtableResult> {
 /// vtable during codegen.
 ///
 /// This is not for _computing_ whether the thing has a vtable, it is for
-/// looking up the results of the HasVtableAnalysis's computations for a
+/// looking up the results of the `HasVtableAnalysis`'s computations for a
 /// specific thing.
 pub(crate) trait HasVtable {
     /// Return `true` if this thing has vtable, `false` otherwise.

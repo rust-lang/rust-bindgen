@@ -169,7 +169,7 @@ pub trait ParseCallbacks: fmt::Debug {
     // TODO add callback for ResolvedTypeRef
 }
 
-/// An identifier for a discovered item. Used to identify an aliased type (see [DiscoveredItem::Alias])
+/// An identifier for a discovered item. Used to identify an aliased type (see [`DiscoveredItem::Alias`])
 #[derive(Ord, PartialOrd, PartialEq, Eq, Hash, Debug, Clone, Copy)]
 pub struct DiscoveredItemId(usize);
 
@@ -180,7 +180,7 @@ impl DiscoveredItemId {
     }
 }
 
-/// Struct passed to [ParseCallbacks::new_item_found] containing information about discovered
+/// Struct passed to [`ParseCallbacks::new_item_found`] containing information about discovered
 /// items (struct, union, and alias)
 #[derive(Debug, Hash, Clone, Ord, PartialOrd, Eq, PartialEq)]
 pub enum DiscoveredItem {
@@ -262,7 +262,7 @@ pub struct ItemInfo<'a> {
     pub kind: ItemKind,
 }
 
-/// An enum indicating the kind of item for an ItemInfo.
+/// An enum indicating the kind of item for an `ItemInfo`.
 #[non_exhaustive]
 pub enum ItemKind {
     /// A Function

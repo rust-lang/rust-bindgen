@@ -3161,7 +3161,7 @@ impl Method {
 pub enum EnumVariation {
     /// The code for this enum will use a Rust enum. Note that creating this in unsafe code
     /// (including FFI) with an invalid value will invoke undefined behaviour, whether or not
-    /// its marked as non_exhaustive.
+    /// its marked as `#[non_exhaustive]`.
     Rust {
         /// Indicates whether the generated struct should be `#[non_exhaustive]`
         non_exhaustive: bool,
@@ -3953,7 +3953,7 @@ pub enum AliasVariation {
     TypeAlias,
     /// Create a new type by wrapping the old type in a struct and using #[repr(transparent)]
     NewType,
-    /// Same as NewStruct but also impl Deref to be able to use the methods of the wrapped type
+    /// Same as `NewType` but also impl Deref to be able to use the methods of the wrapped type
     NewTypeDeref,
 }
 
@@ -4156,7 +4156,7 @@ where
 /// implementations that need to convert another thing into a Rust type or
 /// opaque blob in a nested manner should also use fallible trait methods and
 /// propagate failure up the stack. Only infallible functions and methods like
-/// CodeGenerator implementations should use the infallible
+/// `CodeGenerator` implementations should use the infallible
 /// `ToRustTyOrOpaque`. The further out we push error recovery, the more likely
 /// we are to get a usable `Layout` even if we can't generate an equivalent Rust
 /// type for a C++ construct.

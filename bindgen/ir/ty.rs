@@ -275,7 +275,7 @@ impl Type {
         }
     }
 
-    /// See safe_canonical_type.
+    /// See [`Self::safe_canonical_type`].
     pub(crate) fn canonical_type<'tr>(
         &'tr self,
         ctx: &'tr BindgenContext,
@@ -623,7 +623,7 @@ pub(crate) enum TypeKind {
     /// A pointer to an Apple block.
     BlockPointer(TypeId),
 
-    /// A reference to a type, as in: int& foo().
+    /// A reference to a type, as in: int& `foo()`.
     Reference(TypeId),
 
     /// An instantiation of an abstract template definition with a set of
@@ -634,7 +634,7 @@ pub(crate) enum TypeKind {
     /// itself, and postpones its resolution.
     ///
     /// These are gone in a phase after parsing where these are mapped to
-    /// already known types, and are converted to ResolvedTypeRef.
+    /// already known types, and are converted to `ResolvedTypeRef`.
     ///
     /// see tests/headers/typeref.hpp to see somewhere where this is a problem.
     UnresolvedTypeRef(clang::Type, Cursor, /* parent_id */ Option<ItemId>),

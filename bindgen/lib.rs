@@ -1212,7 +1212,7 @@ fn get_target_dependent_env_var(
     env_var(parse_callbacks, var).ok()
 }
 
-/// A ParseCallbacks implementation that will act on file includes by echoing a rerun-if-changed
+/// A `ParseCallbacks` implementation that will act on file includes by echoing a rerun-if-changed
 /// line and on env variable usage by echoing a rerun-if-env-changed line
 ///
 /// When running inside a `build.rs` script, this can be used to make cargo invalidate the
@@ -1278,7 +1278,7 @@ impl callbacks::ParseCallbacks for CargoCallbacks {
     }
 }
 
-/// Test command_line_flag function.
+/// Test `command_line_flag` function.
 #[test]
 fn commandline_flag_unit_test_function() {
     //Test 1
