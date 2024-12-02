@@ -187,17 +187,23 @@ fn compare_generated_header(
             looked_at,
         ),
     };
-
+    let do_formatting = builder.do_formatting;
     let (builder, roundtrip_builder) = builder.into_builder(check_roundtrip)?;
 
     // We skip the generate() error here so we get a full diff below
     let actual = match builder.generate() {
-        Ok(bindings) => format_code(bindings.to_string()).map_err(|err| {
-            Error::new(
-                ErrorKind::Other,
-                format!("Cannot parse the generated bindings: {err}"),
-            )
-        })?,
+        Ok(bindings) => {
+            if do_formatting {
+                format_code(bindings.to_string()).map_err(|err| {
+                    Error::new(
+                        ErrorKind::Other,
+                        format!("Cannot parse the generated bindings: {err}"),
+                    )
+                })?
+            } else {
+                bindings.to_string()
+            }
+        }
         Err(_) => "/* error generating bindings */\n".into(),
     };
 
@@ -237,6 +243,7 @@ fn builder() -> Builder {
 struct BuilderState {
     builder: Builder,
     parse_callbacks: Option<String>,
+    do_formatting: bool,
 }
 
 impl BuilderState {
@@ -255,6 +262,7 @@ impl BuilderState {
             Some(BuilderState {
                 builder,
                 parse_callbacks: self.parse_callbacks,
+                do_formatting: self.do_formatting,
             })
         } else {
             None
@@ -273,6 +281,7 @@ fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
     // Scoop up bindgen-flags from test header
     let mut flags = Vec::with_capacity(2);
     let mut parse_callbacks = None;
+    let mut do_formatting = true;
 
     for line in reader.lines() {
         let line = line?;
@@ -298,6 +307,8 @@ fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
             let parse_cb =
                 line.split("bindgen-parse-callbacks: ").last().unwrap();
             parse_callbacks = Some(parse_cb.to_owned());
+        } else if line.contains("bindgen-skip-formatting") {
+            do_formatting = false;
         }
     }
 
@@ -345,6 +356,7 @@ fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
     Ok(BuilderState {
         builder,
         parse_callbacks,
+        do_formatting,
     })
 }
 
