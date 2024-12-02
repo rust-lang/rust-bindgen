@@ -310,7 +310,7 @@ enum TypeKey {
 /// A context used during parsing and generation of structs.
 #[derive(Debug)]
 pub(crate) struct BindgenContext {
-    /// The map of all the items parsed so far, keyed off ItemId.
+    /// The map of all the items parsed so far, keyed off `ItemId`.
     items: Vec<Option<Item>>,
 
     /// Clang USR to type map. This is needed to be able to associate types with
@@ -330,7 +330,7 @@ pub(crate) struct BindgenContext {
     /// Current module being traversed.
     current_module: ModuleId,
 
-    /// A HashMap keyed on a type definition, and whose value is the parent ID
+    /// A `HashMap` keyed on a type definition, and whose value is the parent ID
     /// of the declaration.
     ///
     /// This is used to handle the cases where the semantic and the lexical
@@ -346,7 +346,7 @@ pub(crate) struct BindgenContext {
     /// This means effectively, that a type has a potential ID before knowing if
     /// it's a correct type. But that's not important in practice.
     ///
-    /// We could also use the `types` HashMap, but my intention with it is that
+    /// We could also use the `types` `HashMap`, but my intention with it is that
     /// only valid types and declarations end up there, and this could
     /// potentially break that assumption.
     currently_parsed_types: Vec<PartialType>,
@@ -355,7 +355,7 @@ pub(crate) struct BindgenContext {
     /// hard errors while parsing duplicated macros, as well to allow macro
     /// expression parsing.
     ///
-    /// This needs to be an std::HashMap because the cexpr API requires it.
+    /// This needs to be an `std::HashMap` because the `cexpr` API requires it.
     parsed_macros: StdHashMap<Vec<u8>, cexpr::expr::EvalResult>,
 
     /// A map with all include locations.
@@ -623,7 +623,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.target_info.triple.starts_with("wasm32-")
     }
 
-    /// Creates a timer for the current bindgen phase. If time_phases is `true`,
+    /// Creates a timer for the current bindgen phase. If `time_phases` is `true`,
     /// the timer will print to stderr when it is dropped, otherwise it will do
     /// nothing.
     pub(crate) fn timer<'a>(&self, name: &'a str) -> Timer<'a> {
@@ -1219,7 +1219,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// When the `__testing_only_extra_assertions` feature is enabled, this
     /// function walks the IR graph and asserts that we do not have any edges
-    /// referencing an ItemId for which we do not have an associated IR item.
+    /// referencing an `ItemId` for which we do not have an associated IR item.
     fn assert_no_dangling_references(&self) {
         if cfg!(feature = "__testing_only_extra_assertions") {
             for _ in self.assert_no_dangling_item_traversal() {
@@ -1506,7 +1506,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// correct type definition afterwards.
     ///
     /// TODO(emilio): We could consider doing this only when
-    /// declaration.lexical_parent() != definition.lexical_parent(), but it's
+    /// `declaration.lexical_parent() != definition.lexical_parent()`, but it's
     /// not sure it's worth it.
     pub(crate) fn add_semantic_parent(
         &mut self,
@@ -1593,7 +1593,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// function template declarations(!?!??!).
     ///
     /// The only way to do this is manually inspecting the AST and looking for
-    /// TypeRefs and TemplateRefs inside. This, unfortunately, doesn't work for
+    /// `TypeRefs` and `TemplateRefs` inside. This, unfortunately, doesn't work for
     /// more complex cases, see the comment on the assertion below.
     ///
     /// To add insult to injury, the AST itself has structure that doesn't make
@@ -2297,7 +2297,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         (module_name, kind)
     }
 
-    /// Given a CXCursor_Namespace cursor, return the item ID of the
+    /// Given a `CXCursor_Namespace` cursor, return the item ID of the
     /// corresponding module, or create one on the fly.
     pub(crate) fn module(&mut self, cursor: Cursor) -> ModuleId {
         use clang_sys::*;
@@ -2806,7 +2806,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         !self.cannot_derive_hash.as_ref().unwrap().contains(&id)
     }
 
-    /// Compute whether we can derive PartialOrd, PartialEq or Eq.
+    /// Compute whether we can derive `PartialOrd`, `PartialEq` or `Eq`.
     fn compute_cannot_derive_partialord_partialeq_or_eq(&mut self) {
         let _t = self.timer("compute_cannot_derive_partialord_partialeq_or_eq");
         assert!(self.cannot_derive_partialeq_or_partialord.is_none());

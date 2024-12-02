@@ -878,7 +878,7 @@ impl Cursor {
 
     /// Is the cursor's referent publicly accessible in C++?
     ///
-    /// Returns true if self.access_specifier() is `CX_CXXPublic` or
+    /// Returns true if `self.access_specifier()` is `CX_CXXPublic` or
     /// `CX_CXXInvalidAccessSpecifier`.
     pub(crate) fn public_accessible(&self) -> bool {
         let access = self.access_specifier();
@@ -957,7 +957,7 @@ impl Cursor {
             .collect()
     }
 
-    /// Obtain the real path name of a cursor of InclusionDirective kind.
+    /// Obtain the real path name of a cursor of `InclusionDirective` kind.
     ///
     /// Returns None if the cursor does not include a file, otherwise the file's full name
     pub(crate) fn get_included_file_name(&self) -> Option<String> {
@@ -1051,7 +1051,7 @@ impl ClangToken {
         c_str.to_bytes()
     }
 
-    /// Converts a ClangToken to a `cexpr` token if possible.
+    /// Converts a `ClangToken` to a `cexpr` token if possible.
     pub(crate) fn as_cexpr_token(&self) -> Option<cexpr::token::Token> {
         use cexpr::token;
 

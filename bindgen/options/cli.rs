@@ -143,6 +143,7 @@ fn parse_custom_attribute(
     override_usage = "bindgen <FLAGS> <OPTIONS> <HEADER> -- <CLANG_ARGS>...",
     trailing_var_arg = true
 )]
+#[allow(clippy::doc_markdown)]
 struct BindgenCommand {
     /// C or C++ header file.
     header: String,

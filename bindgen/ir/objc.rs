@@ -17,20 +17,20 @@ use clang_sys::CXCursor_ObjCSuperClassRef;
 use clang_sys::CXCursor_TemplateTypeParameter;
 use proc_macro2::{Ident, Span, TokenStream};
 
-/// Objective C interface as used in TypeKind
+/// Objective-C interface as used in `TypeKind`
 ///
-/// Also protocols and categories are parsed as this type
+/// Also, protocols and categories are parsed as this type
 #[derive(Debug)]
 pub(crate) struct ObjCInterface {
     /// The name
-    /// like, NSObject
+    /// like, `NSObject`
     name: String,
 
     category: Option<String>,
 
     is_protocol: bool,
 
-    /// The list of template names almost always, ObjectType or KeyType
+    /// The list of template names almost always, `ObjectType` or `KeyType`
     pub(crate) template_names: Vec<String>,
 
     /// The list of protocols that this interface conforms to.
@@ -53,7 +53,7 @@ pub(crate) struct ObjCMethod {
     name: String,
 
     /// Method name as converted to rust
-    /// like, dataWithBytes_length_
+    /// like, `dataWithBytes_length`_
     rust_name: String,
 
     signature: FunctionSig,
@@ -77,14 +77,14 @@ impl ObjCInterface {
     }
 
     /// The name
-    /// like, NSObject
+    /// like, `NSObject`
     pub(crate) fn name(&self) -> &str {
         self.name.as_ref()
     }
 
     /// Formats the name for rust
-    /// Can be like NSObject, but with categories might be like NSObject_NSCoderMethods
-    /// and protocols are like PNSObject
+    /// Can be like `NSObject`, but with categories might be like `NSObject_NSCoderMethods`
+    /// and protocols are like `PNSObject`
     pub(crate) fn rust_name(&self) -> String {
         if let Some(ref cat) = self.category {
             format!("{}_{cat}", self.name())
@@ -227,12 +227,12 @@ impl ObjCMethod {
     }
 
     /// Method name as converted to rust
-    /// like, dataWithBytes_length_
+    /// like, `dataWithBytes_length`_
     pub(crate) fn rust_name(&self) -> &str {
         self.rust_name.as_ref()
     }
 
-    /// Returns the methods signature as FunctionSig
+    /// Returns the methods signature as `FunctionSig`
     pub(crate) fn signature(&self) -> &FunctionSig {
         &self.signature
     }

@@ -414,7 +414,7 @@ impl<'a> StructLayoutTracker<'a> {
 
     /// Returns whether the new field is known to merge with a bitfield.
     ///
-    /// This is just to avoid doing the same check also in pad_field.
+    /// This is just to avoid doing the same check also in `pad_field`.
     fn align_to_latest_field(&mut self, new_field_layout: Layout) -> bool {
         if self.is_packed {
             // Skip to align fields when packed.

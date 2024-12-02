@@ -82,7 +82,7 @@ pub(crate) struct Function {
     /// The mangled name, that is, the symbol.
     mangled_name: Option<String>,
 
-    /// The link name. If specified, overwrite mangled_name.
+    /// The link name. If specified, overwrite `mangled_name`.
     link_name: Option<String>,
 
     /// The ID pointing to the current function signature.

@@ -1,7 +1,7 @@
 use quickcheck::{Arbitrary, Gen};
 use std::fmt;
 
-/// BaseTypeC is used in generation of C headers to represent the C language's
+/// `BaseTypeC` is used in generation of C headers to represent the C language's
 /// primitive types as well as `void*`.
 #[derive(Debug, Clone)]
 pub struct BaseTypeC {
@@ -9,7 +9,7 @@ pub struct BaseTypeC {
     pub def: String,
 }
 
-/// TypeQualifierC is used in generation of C headers to represent qualifiers
+/// `TypeQualifierC` is used in generation of C headers to represent qualifiers
 /// such as `const`.
 #[derive(Debug, Clone)]
 pub struct TypeQualifierC {
@@ -17,7 +17,7 @@ pub struct TypeQualifierC {
     pub def: String,
 }
 
-/// PointerLevelC is used in generation of C headers to represent number of
+/// `PointerLevelC` is used in generation of C headers to represent number of
 /// `*` for pointer types.
 #[derive(Debug, Clone)]
 pub struct PointerLevelC {
@@ -25,7 +25,7 @@ pub struct PointerLevelC {
     pub def: String,
 }
 
-/// ArrayDimensionC is used in generation of C headers to represent number of
+/// `ArrayDimensionC` is used in generation of C headers to represent number of
 /// `[]` used to define array types.
 #[derive(Debug, Clone)]
 pub struct ArrayDimensionC {
@@ -33,7 +33,7 @@ pub struct ArrayDimensionC {
     pub def: String,
 }
 
-/// BasicTypeDeclarationC is used in generation of C headers to represent
+/// `BasicTypeDeclarationC` is used in generation of C headers to represent
 /// declarations outside of function pointers that take the form
 /// `BaseTypeC` + `TypeQualifierC` + `PointerLevelC` + `ident_id`.
 #[derive(Debug, Clone)]
@@ -46,11 +46,11 @@ pub struct BasicTypeDeclarationC {
     pub pointer_level: PointerLevelC,
     /// The declaration's array dimension, i.e. [][][].
     pub array_dimension: ArrayDimensionC,
-    /// The declaration's identifier, i.e. ident_N.
+    /// The declaration's identifier, i.e. `ident_N`.
     pub ident_id: String,
 }
 
-/// StructDeclarationC is used in generation of C headers to represent the
+/// `StructDeclarationC` is used in generation of C headers to represent the
 /// definition of a struct type.
 #[derive(Debug, Clone)]
 pub struct StructDeclarationC {
@@ -58,11 +58,11 @@ pub struct StructDeclarationC {
     pub fields: DeclarationListC,
     /// The declaration's array dimension, i.e. [][][].
     pub array_dimension: ArrayDimensionC,
-    /// The declaration's identifier, i.e. struct_N.
+    /// The declaration's identifier, i.e. `struct_N`.
     pub ident_id: String,
 }
 
-/// UnionDeclarationC is used in generation of C headers to represent the
+/// `UnionDeclarationC` is used in generation of C headers to represent the
 /// definition of a union type.
 #[derive(Debug, Clone)]
 pub struct UnionDeclarationC {
@@ -70,11 +70,11 @@ pub struct UnionDeclarationC {
     pub fields: DeclarationListC,
     /// The declaration's array dimension, i.e. [][][].
     pub array_dimension: ArrayDimensionC,
-    /// The declaration's identifier, i.e. union_N.
+    /// The declaration's identifier, i.e. `union_N`.
     pub ident_id: String,
 }
 
-/// FunctionPointerDeclarationC is used in generation of C headers to represent
+/// `FunctionPointerDeclarationC` is used in generation of C headers to represent
 /// the definition of a function pointer type.
 #[derive(Debug, Clone)]
 pub struct FunctionPointerDeclarationC {
@@ -86,11 +86,11 @@ pub struct FunctionPointerDeclarationC {
     pub pointer_level: PointerLevelC,
     /// The function's parameters.
     pub params: ParameterListC,
-    /// The declaration's identifier, i.e. func_ptr_N.
+    /// The declaration's identifier, i.e. `func_ptr_N`.
     pub ident_id: String,
 }
 
-/// FunctionPrototypeC is used in generation of C headers to represent the
+/// `FunctionPrototypeC` is used in generation of C headers to represent the
 /// definition of a function prototype.
 #[derive(Debug, Clone)]
 pub struct FunctionPrototypeC {
@@ -106,7 +106,7 @@ pub struct FunctionPrototypeC {
     pub ident_id: String,
 }
 
-/// ParameterC is used in generation of C headers to represent the
+/// `ParameterC` is used in generation of C headers to represent the
 /// definition function parameters.
 #[derive(Debug, Clone)]
 pub struct ParameterC {
@@ -118,7 +118,7 @@ pub struct ParameterC {
     pub pointer_level: PointerLevelC,
 }
 
-/// ParameterListC is used in generation of C headers to represent a list of
+/// `ParameterListC` is used in generation of C headers to represent a list of
 /// definitions of function parameters.
 #[derive(Debug, Clone)]
 pub struct ParameterListC {
@@ -126,7 +126,7 @@ pub struct ParameterListC {
     pub params: Vec<ParameterC>,
 }
 
-/// DeclarationC is used in generation of C headers to represent all supported
+/// `DeclarationC` is used in generation of C headers to represent all supported
 /// C type declarations allowed in the generated header.
 #[derive(Debug, Clone)]
 pub enum DeclarationC {
@@ -142,7 +142,7 @@ pub enum DeclarationC {
     VariableDecl(BasicTypeDeclarationC),
 }
 
-/// DeclarationListC is used in generation of C headers to represent a list of
+/// `DeclarationListC` is used in generation of C headers to represent a list of
 /// declarations.
 #[derive(Debug, Clone)]
 pub struct DeclarationListC {
@@ -150,7 +150,7 @@ pub struct DeclarationListC {
     pub decls: Vec<DeclarationC>,
 }
 
-/// HeaderC is used in generation of C headers to represent a collection of
+/// `HeaderC` is used in generation of C headers to represent a collection of
 /// declarations.
 #[derive(Clone)]
 pub struct HeaderC {
@@ -158,13 +158,13 @@ pub struct HeaderC {
     pub def: DeclarationListC,
 }
 
-/// MakeUnique is used in generation of C headers to make declaration
+/// `MakeUnique` is used in generation of C headers to make declaration
 /// identifiers unique by incorporating the `stamp` parameter into it's name.
 trait MakeUnique {
     fn make_unique(&mut self, stamp: usize);
 }
 
-/// MakeUnique is used in generation of C headers to make DeclarationC
+/// `MakeUnique` is used in generation of C headers to make `DeclarationC`
 /// identifiers unique.
 impl MakeUnique for DeclarationC {
     fn make_unique(&mut self, stamp: usize) {
@@ -178,7 +178,7 @@ impl MakeUnique for DeclarationC {
     }
 }
 
-/// A qucickcheck trait for describing how DeclarationC types can be
+/// A qucickcheck trait for describing how `DeclarationC` types can be
 /// randomly generated and shrunk.
 impl Arbitrary for DeclarationC {
     fn arbitrary(g: &mut Gen) -> DeclarationC {
@@ -197,7 +197,7 @@ impl Arbitrary for DeclarationC {
     }
 }
 
-/// Enables to string and format for DeclarationC types.
+/// Enables to string and format for `DeclarationC` types.
 impl fmt::Display for DeclarationC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
@@ -210,7 +210,7 @@ impl fmt::Display for DeclarationC {
     }
 }
 
-/// A qucickcheck trait for describing how DeclarationListC types can be
+/// A qucickcheck trait for describing how `DeclarationListC` types can be
 /// randomly generated and shrunk.
 impl Arbitrary for DeclarationListC {
     fn arbitrary(g: &mut Gen) -> DeclarationListC {
@@ -220,7 +220,7 @@ impl Arbitrary for DeclarationListC {
     }
 }
 
-/// Enables to string and format for DeclarationListC types.
+/// Enables to string and format for `DeclarationListC` types.
 impl fmt::Display for DeclarationListC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut display = String::new();
@@ -231,7 +231,7 @@ impl fmt::Display for DeclarationListC {
     }
 }
 
-/// A quickcheck trait for describing how BaseTypeC types can be
+/// A quickcheck trait for describing how `BaseTypeC` types can be
 /// randomly generated and shrunk.
 impl Arbitrary for BaseTypeC {
     fn arbitrary(g: &mut Gen) -> BaseTypeC {
@@ -275,14 +275,14 @@ impl Arbitrary for BaseTypeC {
     }
 }
 
-/// Enables to string and format for BaseTypeC types,
+/// Enables to string and format for `BaseTypeC` types,
 impl fmt::Display for BaseTypeC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.def)
     }
 }
 
-/// A qucickcheck trait for describing how TypeQualifierC types can be
+/// A qucickcheck trait for describing how `TypeQualifierC` types can be
 /// randomly generated and shrunk.
 impl Arbitrary for TypeQualifierC {
     fn arbitrary(g: &mut Gen) -> TypeQualifierC {
@@ -293,14 +293,14 @@ impl Arbitrary for TypeQualifierC {
     }
 }
 
-/// Enables to string and format for TypeQualifierC types.
+/// Enables to string and format for `TypeQualifierC` types.
 impl fmt::Display for TypeQualifierC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.def)
     }
 }
 
-/// A qucickcheck trait for describing how PointerLevelC types can be
+/// A qucickcheck trait for describing how `PointerLevelC` types can be
 /// randomly generated and shrunk.
 impl Arbitrary for PointerLevelC {
     fn arbitrary(g: &mut Gen) -> PointerLevelC {
@@ -311,14 +311,14 @@ impl Arbitrary for PointerLevelC {
     }
 }
 
-/// Enables to string and format for PointerLevelC types.
+/// Enables to string and format for `PointerLevelC` types.
 impl fmt::Display for PointerLevelC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.def)
     }
 }
 
-/// A qucickcheck trait for describing how ArrayDimensionC types can be
+/// A qucickcheck trait for describing how `ArrayDimensionC` types can be
 /// randomly generated and shrunk.
 impl Arbitrary for ArrayDimensionC {
     fn arbitrary(g: &mut Gen) -> ArrayDimensionC {
@@ -336,14 +336,14 @@ impl Arbitrary for ArrayDimensionC {
     }
 }
 
-/// Enables to string and format for ArrayDimensionC types.
+/// Enables to string and format for `ArrayDimensionC` types.
 impl fmt::Display for ArrayDimensionC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.def)
     }
 }
 
-/// MakeUnique is used in generation of C headers to make BasicTypeDeclarationC
+/// `MakeUnique` is used in generation of C headers to make `BasicTypeDeclarationC`
 /// identifiers unique.
 impl MakeUnique for BasicTypeDeclarationC {
     fn make_unique(&mut self, stamp: usize) {
@@ -351,7 +351,7 @@ impl MakeUnique for BasicTypeDeclarationC {
     }
 }
 
-/// A qucickcheck trait for describing how BasicTypeDeclarationC types can be
+/// A qucickcheck trait for describing how `BasicTypeDeclarationC` types can be
 /// randomly generated and shrunk.
 impl Arbitrary for BasicTypeDeclarationC {
     fn arbitrary(g: &mut Gen) -> BasicTypeDeclarationC {
@@ -365,7 +365,7 @@ impl Arbitrary for BasicTypeDeclarationC {
     }
 }
 
-/// Enables to string and format for BasicTypeDeclarationC types.
+/// Enables to string and format for `BasicTypeDeclarationC` types.
 impl fmt::Display for BasicTypeDeclarationC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
@@ -380,7 +380,7 @@ impl fmt::Display for BasicTypeDeclarationC {
     }
 }
 
-/// MakeUnique is used in generation of C headers to make StructDeclarationC
+/// `MakeUnique` is used in generation of C headers to make `StructDeclarationC`
 /// identifiers unique.
 impl MakeUnique for StructDeclarationC {
     fn make_unique(&mut self, stamp: usize) {
@@ -388,7 +388,7 @@ impl MakeUnique for StructDeclarationC {
     }
 }
 
-/// A qucickcheck trait for describing how StructDeclarationC types can be
+/// A qucickcheck trait for describing how `StructDeclarationC` types can be
 /// randomly generated and shrunk.
 impl Arbitrary for StructDeclarationC {
     fn arbitrary(g: &mut Gen) -> StructDeclarationC {
@@ -417,7 +417,7 @@ impl Arbitrary for StructDeclarationC {
     }
 }
 
-/// Enables to string and format for StructDeclarationC types.
+/// Enables to string and format for `StructDeclarationC` types.
 impl fmt::Display for StructDeclarationC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
@@ -428,7 +428,7 @@ impl fmt::Display for StructDeclarationC {
     }
 }
 
-/// MakeUnique is used in generation of C headers to make UnionDeclarationC
+/// `MakeUnique` is used in generation of C headers to make `UnionDeclarationC`
 /// identifiers unique.
 impl MakeUnique for UnionDeclarationC {
     fn make_unique(&mut self, stamp: usize) {
@@ -436,7 +436,7 @@ impl MakeUnique for UnionDeclarationC {
     }
 }
 
-/// A qucickcheck trait for describing how UnionDeclarationC types can be
+/// A qucickcheck trait for describing how `UnionDeclarationC` types can be
 /// randomly generated and shrunk.
 impl Arbitrary for UnionDeclarationC {
     fn arbitrary(g: &mut Gen) -> UnionDeclarationC {
@@ -465,7 +465,7 @@ impl Arbitrary for UnionDeclarationC {
     }
 }
 
-/// Enables to string and format for UnionDeclarationC types.
+/// Enables to string and format for `UnionDeclarationC` types.
 impl fmt::Display for UnionDeclarationC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
@@ -476,15 +476,15 @@ impl fmt::Display for UnionDeclarationC {
     }
 }
 
-/// MakeUnique is used in generation of C headers to make
-/// FunctionPointerDeclarationC identifiers unique.
+/// `MakeUnique` is used in generation of C headers to make
+/// `FunctionPointerDeclarationC` identifiers unique.
 impl MakeUnique for FunctionPointerDeclarationC {
     fn make_unique(&mut self, stamp: usize) {
         self.ident_id += &format!("_{stamp}");
     }
 }
 
-/// A qucickcheck trait for describing how FunctionPointerDeclarationC types can
+/// A qucickcheck trait for describing how `FunctionPointerDeclarationC` types can
 /// be randomly generated and shrunk.
 impl Arbitrary for FunctionPointerDeclarationC {
     fn arbitrary(g: &mut Gen) -> FunctionPointerDeclarationC {
@@ -498,7 +498,7 @@ impl Arbitrary for FunctionPointerDeclarationC {
     }
 }
 
-/// Enables to string and format for FunctionPointerDeclarationC types.
+/// Enables to string and format for `FunctionPointerDeclarationC` types.
 impl fmt::Display for FunctionPointerDeclarationC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
@@ -513,7 +513,7 @@ impl fmt::Display for FunctionPointerDeclarationC {
     }
 }
 
-/// MakeUnique is used in generation of C headers to make FunctionPrototypeC
+/// `MakeUnique` is used in generation of C headers to make `FunctionPrototypeC`
 /// identifiers unique.
 impl MakeUnique for FunctionPrototypeC {
     fn make_unique(&mut self, stamp: usize) {
@@ -521,7 +521,7 @@ impl MakeUnique for FunctionPrototypeC {
     }
 }
 
-/// A qucickcheck trait for describing how FunctionPrototypeC types can be
+/// A qucickcheck trait for describing how `FunctionPrototypeC` types can be
 /// randomly generated and shrunk.
 impl Arbitrary for FunctionPrototypeC {
     fn arbitrary(g: &mut Gen) -> FunctionPrototypeC {
@@ -535,7 +535,7 @@ impl Arbitrary for FunctionPrototypeC {
     }
 }
 
-/// Enables to string and format for FunctionPrototypeC types.
+/// Enables to string and format for `FunctionPrototypeC` types.
 impl fmt::Display for FunctionPrototypeC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
@@ -550,7 +550,7 @@ impl fmt::Display for FunctionPrototypeC {
     }
 }
 
-/// A qucickcheck trait for describing how ParameterC types can be
+/// A qucickcheck trait for describing how `ParameterC` types can be
 /// randomly generated and shrunk.
 impl Arbitrary for ParameterC {
     fn arbitrary(g: &mut Gen) -> ParameterC {
@@ -562,7 +562,7 @@ impl Arbitrary for ParameterC {
     }
 }
 
-/// Enables to string and format for ParameterC types.
+/// Enables to string and format for `ParameterC` types.
 impl fmt::Display for ParameterC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
@@ -573,7 +573,7 @@ impl fmt::Display for ParameterC {
     }
 }
 
-/// A qucickcheck trait for describing how ParameterListC types can be
+/// A qucickcheck trait for describing how `ParameterListC` types can be
 /// randomly generated and shrunk.
 impl Arbitrary for ParameterListC {
     fn arbitrary(g: &mut Gen) -> ParameterListC {
@@ -583,7 +583,7 @@ impl Arbitrary for ParameterListC {
     }
 }
 
-/// Enables to string and format for ParameterListC types.
+/// Enables to string and format for `ParameterListC` types.
 impl fmt::Display for ParameterListC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut display = String::new();
@@ -597,7 +597,7 @@ impl fmt::Display for ParameterListC {
     }
 }
 
-/// A qucickcheck trait for describing how HeaderC types can be
+/// A qucickcheck trait for describing how `HeaderC` types can be
 /// randomly generated and shrunk.
 impl Arbitrary for HeaderC {
     fn arbitrary(g: &mut Gen) -> HeaderC {
@@ -609,7 +609,7 @@ impl Arbitrary for HeaderC {
     }
 }
 
-/// Enables to string and format for HeaderC types.
+/// Enables to string and format for `HeaderC` types.
 impl fmt::Display for HeaderC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut display = String::new();

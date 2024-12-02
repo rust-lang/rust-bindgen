@@ -149,8 +149,8 @@ fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
     }
 }
 
-/// Parses tokens from a CXCursor_MacroDefinition pointing into a function-like
-/// macro, and calls the func_macro callback.
+/// Parses tokens from a `CXCursor_MacroDefinition` pointing into a function-like
+/// macro, and calls the `func_macro` callback.
 fn handle_function_macro(
     cursor: &clang::Cursor,
     callbacks: &dyn crate::callbacks::ParseCallbacks,

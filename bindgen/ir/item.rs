@@ -44,7 +44,7 @@ pub(crate) trait ItemCanonicalName {
 
 /// The same, but specifies the path that needs to be followed to reach an item.
 ///
-/// To contrast with canonical_name, here's an example:
+/// To contrast with `canonical_name`, here's an example:
 ///
 /// ```c++
 /// namespace foo {
@@ -375,7 +375,7 @@ pub(crate) struct Item {
     /// The item's local ID, unique only amongst its siblings. Only used for
     /// anonymous items.
     ///
-    /// Lazily initialized in local_id().
+    /// Lazily initialized in `local_id()`.
     ///
     /// Note that only structs, unions, and enums get a local type ID. In any
     /// case this is an implementation detail.
@@ -668,7 +668,7 @@ impl Item {
             }
     }
 
-    /// Take out item NameOptions
+    /// Take out item `NameOptions`
     pub(crate) fn name<'a>(
         &'a self,
         ctx: &'a BindgenContext,
@@ -716,7 +716,7 @@ impl Item {
         s
     }
 
-    /// Helper function for full_disambiguated_name
+    /// Helper function for `full_disambiguated_name`
     fn push_disambiguated_name(
         &self,
         ctx: &BindgenContext,

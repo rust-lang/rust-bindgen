@@ -76,7 +76,7 @@ pub(crate) mod attributes {
 }
 
 /// The `ffi_safe` argument should be true if this is a type that the user might
-/// reasonably use, e.g. not struct padding, where the __BindgenOpaqueArray is
+/// reasonably use, e.g. not struct padding, where the `__BindgenOpaqueArray` is
 /// just noise.
 /// TODO: Should this be `MaybeUninit`, since padding bytes are effectively
 /// uninitialized?
