@@ -102,7 +102,11 @@ pub(crate) fn blob(
         ty
     } else if ffi_safe && ctx.options().rust_features().min_const_generics {
         ctx.generated_opaque_array();
-        syn::parse_quote! { __BindgenOpaqueArray<#ty, #data_len> }
+        if ctx.options().enable_cxx_namespaces {
+            syn::parse_quote! { root::__BindgenOpaqueArray<#ty, #data_len> }
+        } else {
+            syn::parse_quote! { __BindgenOpaqueArray<#ty, #data_len> }
+        }
     } else {
         // This is not FFI safe as an argument; the struct above is
         // preferable.
