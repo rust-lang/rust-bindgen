@@ -105,7 +105,7 @@ if [ "$BINDGEN_RUST_FOR_LINUX_TEST" == "1" ]; then
   # and each update should only contain this change.
   #
   # Both commit hashes and tags are supported.
-  LINUX_VERSION=v6.12-rc5
+  LINUX_VERSION=v6.13-rc1
 
   # Download Linux at a specific commit
   mkdir -p linux
@@ -142,6 +142,6 @@ EOF
   # Build Rust for Linux
   make -C linux LLVM=1 -j$(($(nproc) + 1)) \
       samples/rust/rust_minimal.o \
-      samples/rust/rust_print.o \
+      samples/rust/rust_print_main.o \
       drivers/net/phy/ax88796b_rust.o
 fi
