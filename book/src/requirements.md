@@ -82,6 +82,6 @@ instructions [here](http://clang.llvm.org/get_started.html).
 Those instructions list optional steps. For `bindgen`:
 
 * Checkout and build clang
-* Checkout and build the extra-clang-tools
+* Checkout and build `clang-tools-extra`
 * You do not need to checkout or build compiler-rt
 * You do not need to checkout or build libcxx
