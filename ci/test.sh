@@ -27,9 +27,6 @@ assert_no_diff() {
 
 get_cargo_args() {
   local args=""
-  if [ ! -z "$RUST_TARGET" ]; then
-    args+=" --target $RUST_TARGET"
-  fi
   if [ "$BINDGEN_RELEASE_BUILD" == "1" ]; then
     args+=" --release"
   fi
@@ -50,10 +47,6 @@ get_cargo_args() {
 }
 
 set_llvm_env
-
-if [ ! -z "$RUST_CROSS_COMPILER" ]; then
-  export RUSTFLAGS="-C linker=${RUST_CROSS_COMPILER}-gcc"
-fi
 
 CARGO_ARGS=`get_cargo_args`
 
