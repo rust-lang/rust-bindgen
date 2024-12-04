@@ -8,64 +8,15 @@ set -x
 # Give a pipeline a non-zero exit code if one of its constituents fails
 set -o pipefail
 
-function llvm_linux_target_triple() {
-  case "$1" in
-    9.0.1)  echo "x86_64-linux-gnu-ubuntu-16.04" ;;
-    *)      echo "x86_64-linux-gnu-ubuntu-18.04" ;;
-  esac
-}
-
-function llvm_macos_target_triple() {
-  case "$1" in
-    9.0.1)  echo "x86_64-apple-darwin" ;;
-    *)      echo "arm64-apple-darwin22.0" ;;
-  esac
-}
-
-function llvm_version_triple() {
-  case "$1" in
-    9.0) echo "9.0.1" ;;
-    # By default, take the .0 patch release
-    *)   echo "$1.0"  ;;
-  esac
-}
-
-function llvm_base_url() {
-  local llvm_version_triple=$1
-  echo "https://github.com/llvm/llvm-project/releases/download/llvmorg-$llvm_version_triple"
-}
-
-function llvm_download() {
-  local base_url=$1
-  local arch=$2
-
-  export LLVM=clang+llvm-${LLVM_VERSION_TRIPLE}-$arch
-  export LLVM_DIRECTORY="$HOME/.llvm/${LLVM}"
-
-  if [ -d "${LLVM_DIRECTORY}" ]; then
-    echo "Using cached LLVM download for ${LLVM}..."
-  else
-    wget --no-verbose $base_url/${LLVM}.tar.xz
-    mkdir -p "${LLVM_DIRECTORY}"
-    tar xf ${LLVM}.tar.xz -C "${LLVM_DIRECTORY}" --strip-components=1
-  fi
-
-  export LIBCLANG_PATH="${LLVM_DIRECTORY}/lib"
-  export LLVM_CONFIG_PATH="${LLVM_DIRECTORY}/bin/llvm-config"
-}
-
-# Download and set up a sane LLVM version
 set_llvm_env() {
-  export LLVM_VERSION_TRIPLE=`llvm_version_triple ${LLVM_VERSION}`
-  local base_url=`llvm_base_url ${LLVM_VERSION_TRIPLE}`
+  export LLVM_CONFIG_PATH=${LLVM_PATH}/bin/llvm-config
+  echo "LLVM_CONFIG_PATH=$LLVM_CONFIG_PATH"
+  
+  export LIBCLANG_PATH=${LLVM_PATH}/lib/
+  echo "LIBCLANG_PATH=$LIBCLANG_PATH"
 
-  if [ "$GITHUB_ACTIONS_OS" == "ubuntu-latest" ]; then
-    llvm_download $base_url `llvm_linux_target_triple ${LLVM_VERSION_TRIPLE}`
-    export LD_LIBRARY_PATH="${LLVM_DIRECTORY}/lib":${LD_LIBRARY_PATH:-}
-  else
-    llvm_download $base_url `llvm_macos_target_triple ${LLVM_VERSION_TRIPLE}`
-    export DYLD_LIBRARY_PATH="${LLVM_DIRECTORY}/lib":${DYLD_LIBRARY_PATH:-}
-  fi
+  export CLANG_PATH=${LLVM_PATH}/bin/clang
+  echo "CLANG_PATH=$CLANG_PATH"
 }
 
 assert_no_diff() {
@@ -73,8 +24,6 @@ assert_no_diff() {
   git diff @
   git diff-index --quiet HEAD
 }
-
-set_llvm_env
 
 get_cargo_args() {
   local args=""
@@ -99,6 +48,8 @@ get_cargo_args() {
   fi
   echo $args
 }
+
+set_llvm_env
 
 if [ ! -z "$RUST_CROSS_COMPILER" ]; then
   export RUSTFLAGS="-C linker=${RUST_CROSS_COMPILER}-gcc"
@@ -128,7 +79,7 @@ if [ "$BINDGEN_RUST_FOR_LINUX_TEST" == "1" ]; then
 
   # Put LLVM binaries in the path for `LLVM=1`. The LLVM `bin` directory should
   # go first since there are others in the Ubuntu image.
-  export PATH="${LLVM_DIRECTORY}/bin:${PATH}"
+  export PATH="${LLVM_PATH}/bin:${PATH}"
 
   # Kernel build dependency: `bindgen-cli`, which is under test.
   #

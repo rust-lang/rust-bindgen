@@ -162,11 +162,8 @@ jobs:
           #   feature_extra_asserts: 0
 
           # Ensure stuff works on macos too
-          # FIXME: Ideally should use the latest llvm version, but llvm doesn't
-          # provide releases for x86-64 macOS anymore which is what the runner uses.
-          #
           - os: macos-latest
-            llvm_version: "9.0"
+            llvm_version: "16.0"
             release_build: 0
             no_default_features: 0
             feature_extra_asserts: 0
@@ -198,12 +195,15 @@ jobs:
         run: |
           wget https://mirrors.kernel.org/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
           sudo dpkg -i libtinfo5_6.3-2ubuntu0.1_amd64.deb
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v2.0.5
+        with:
+          version: ${{matrix.llvm_version}}
       - name: Run all the tests
         env:
           GITHUB_ACTIONS_OS: ${{matrix.os}}
           RUST_CROSS_COMPILER: ${{matrix.target.cross}}
           RUST_TARGET: ${{matrix.target.rust}}
-          LLVM_VERSION: ${{matrix.llvm_version}}
           BINDGEN_MAIN_TESTS: ${{matrix.main_tests}}
           BINDGEN_RELEASE_BUILD: ${{matrix.release_build}}
           BINDGEN_FEATURE_RUNTIME: ${{matrix.feature_runtime}}
