@@ -126,7 +126,6 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         llvm_version: ["9.0", "16.0"]
-        main_tests: [1]
         release_build: [0, 1]
         no_default_features: [0, 1]
         # FIXME: There are no pre-built static libclang libraries, so the
@@ -168,7 +167,6 @@ jobs:
       - name: Run all the tests
         env:
           GITHUB_ACTIONS_OS: ${{matrix.os}}
-          BINDGEN_MAIN_TESTS: ${{matrix.main_tests}}
           BINDGEN_RELEASE_BUILD: ${{matrix.release_build}}
           BINDGEN_FEATURE_RUNTIME: ${{matrix.feature_runtime}}
           BINDGEN_FEATURE_EXTRA_ASSERTS: ${{matrix.feature_extra_asserts}}

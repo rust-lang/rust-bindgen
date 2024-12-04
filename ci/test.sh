@@ -53,10 +53,8 @@ CARGO_ARGS=`get_cargo_args`
 # Ensure we build without warnings
 RUSTFLAGS="-Dwarnings" cargo check $CARGO_ARGS
 
-if [ "$BINDGEN_MAIN_TESTS" == "1" ]; then
-  # Run the tests
-  (cd bindgen-tests && cargo test $CARGO_ARGS)
-fi
+# Run the tests
+(cd bindgen-tests && cargo test $CARGO_ARGS)
 
 assert_no_diff
 
