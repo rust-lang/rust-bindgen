@@ -75,7 +75,7 @@ Add `export LIBCLANG_PATH=/usr/local/lib` to your profile.
 
 #### From source
 
-If your package manager doesn't yet offer Clang 5.0, you'll need to build from
+If your package manager doesn't yet offer Clang 9.0, you'll need to build from
 source. For that, follow the
 instructions [here](http://clang.llvm.org/get_started.html).
 
