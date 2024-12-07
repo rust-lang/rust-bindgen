@@ -146,7 +146,7 @@ fn parse_custom_attribute(
 #[allow(clippy::doc_markdown)]
 struct BindgenCommand {
     /// C or C++ header file.
-    header: String,
+    header: Option<String>,
     /// Path to write depfile to.
     #[arg(long)]
     depfile: Option<String>,
@@ -657,6 +657,33 @@ where
         clang_args,
     } = command;
 
+    if let Some(shell) = generate_shell_completions {
+        clap_complete::generate(
+            shell,
+            &mut BindgenCommand::command(),
+            "bindgen",
+            &mut io::stdout(),
+        );
+
+        exit(0)
+    }
+
+    if version {
+        println!(
+            "bindgen {}",
+            option_env!("CARGO_PKG_VERSION").unwrap_or("unknown")
+        );
+        if verbose {
+            println!("Clang: {}", crate::clang_version().full);
+        }
+
+        exit(0)
+    }
+
+    if header.is_none() {
+        return Err(io::Error::new(io::ErrorKind::Other, "Header not found"));
+    }
+
     let mut builder = builder();
 
     #[derive(Debug)]
@@ -804,31 +831,8 @@ where
         }
     }
 
-    let header = Some(header);
-
     builder = apply_args!(
         builder {
-            generate_shell_completions => |_, shell| {
-                clap_complete::generate(
-                    shell,
-                    &mut BindgenCommand::command(),
-                    "bindgen",
-                    &mut io::stdout(),
-                );
-
-                exit(0)
-            },
-            version => |_, _| {
-                println!(
-                    "bindgen {}",
-                    option_env!("CARGO_PKG_VERSION").unwrap_or("unknown")
-                );
-                if verbose {
-                    println!("Clang: {}", crate::clang_version().full);
-                }
-
-                exit(0)
-            },
             header,
             rust_target,
             rust_edition,
