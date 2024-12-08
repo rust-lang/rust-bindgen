@@ -10,7 +10,7 @@ You can always check the latest version at
 
 ```toml
 [build-dependencies]
-bindgen = "0.65.1"
+bindgen = "0.71.0"
 ```
 
 > ⚠️ **Warning**
