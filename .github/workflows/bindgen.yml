@@ -201,12 +201,27 @@ jobs:
           ./mdbook build book
           ./mdbook test book
 
+  # FIXME(pvdrz): this should be done inside `bindgen-test` instead
+  test-no-headers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test `--help`
+        run: cargo run -- --help
+
+      - name: Test `--version`
+        run: cargo run -- --version
+
+      - name: Test `--generate-shell-completions`
+        run: cargo run -- --generate-shell-completions=bash
+
   # One job that "summarizes" the success state of this pipeline. This can then
   # be added to branch protection, rather than having to add each job
   # separately.
   success:
     runs-on: ubuntu-latest
-    needs: [rustfmt-clippy, msrv, minimal, docs, quickchecking, test-expectations, test, check-cfg, test-book]
+    needs: [rustfmt-clippy, msrv, minimal, docs, quickchecking, test-expectations, test, check-cfg, test-book, test-no-headers]
     # GitHub branch protection is exceedingly silly and treats "jobs skipped
     # because a dependency failed" as success. So we have to do some
     # contortions to ensure the job fails if any of its dependencies fails.
