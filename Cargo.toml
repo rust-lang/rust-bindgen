@@ -81,7 +81,7 @@ install-path = "CARGO_HOME"
 
 [workspace.metadata.dist.github-custom-runners]
 aarch64-apple-darwin = "macos-14"
-x86_64-apple-darwin = "macos-12"
+x86_64-apple-darwin = "macos-13"
 
 # Config for 'cargo release'
 [workspace.metadata.release]
