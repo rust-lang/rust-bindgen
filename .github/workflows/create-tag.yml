@@ -4,10 +4,16 @@ on:
   pull_request:
     types:
       - closed
-
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: 'Commit hash'
+        required: true
+        type: string
 jobs:
   create-tag:
     if: >-
+      (inputs.commit || false)
       github.event.pull_request.merged == true &&
       github.event.pull_request.user.login == 'github-actions' &&
       github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name &&
@@ -16,6 +22,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit || '' }}
 
       - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@stable
