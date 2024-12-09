@@ -22,4 +22,4 @@ install-path = "CARGO_HOME"
 
 [dist.github-custom-runners]
 aarch64-apple-darwin = "macos-14"
-x86_64-apple-darwin = "macos-12"
+x86_64-apple-darwin = "macos-13"
