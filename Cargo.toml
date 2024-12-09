@@ -60,7 +60,6 @@ tempfile = "3"
 # transmute-int-to-bool = "allow"
 # unnecessary-cast = "allow"
 # useless-transmute  = "allow"
-
 # Config for 'cargo dist'
 [workspace.metadata.dist]
 # The preferred cargo-dist version to use in CI (Cargo.toml SemVer syntax)
