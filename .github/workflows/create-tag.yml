@@ -13,7 +13,7 @@ on:
 jobs:
   create-tag:
     if: >-
-      (inputs.commit || false)
+      (inputs.commit || false) &&
       github.event.pull_request.merged == true &&
       github.event.pull_request.user.login == 'github-actions' &&
       github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name &&
