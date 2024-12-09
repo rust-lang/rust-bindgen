@@ -25,14 +25,14 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Checkout to the input commit
+      - name: Compute the commit
         run: |
           if [[ -z "${{ inputs.commit }}" ]]; then
             COMMIT=$(git rev-parse ${{ github.sha }}^@ | grep -Fvx ${{ github.event.pull_request.head.sha }})
           else
             COMMIT="${{ inputs.commit }}"
           fi
-          git checkout $COMMIT
+          echo "commit=$COMMIT" >> $GITHUB_ENV
 
       - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -42,7 +42,8 @@ jobs:
           echo "version=$(cargo pkgid -p bindgen | cut -d '#' -f 2)" >> $GITHUB_ENV
  
       - name: Create tag
-        run: |
-          TAG_NAME="v${{ env.version }}"
-          git tag -s $TAG_NAME
-          git push origin $TAG_NAME
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_sha: ${{ env.commit }} 
+          custom_tag: ${{ env.version }}
