@@ -37,7 +37,7 @@ log = "0.4"
 objc = "0.2"
 owo-colors = "4.1.0"
 prettyplease = "0.2.7"
-proc-macro2 = "1"
+proc-macro2 = "1.0.80"
 quickcheck = "1.0"
 quote = { version = "1", default-features = false }
 regex = { version = "1.5.3", default-features = false }
