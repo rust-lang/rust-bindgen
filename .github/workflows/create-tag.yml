@@ -22,8 +22,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.commit || '' }}
+      
+      - name: Checkout to the input commit
+        run: |
+          if [[ -z "${{ inputs.commit }}" ]]; then
+            COMMIT="${{ inputs.commit }}"
+          else
+            COMMIT=git rev-parse ${{ github.sha }}^@ | grep -Fvx ${{ github.event.pull_request.head.sha }}
+          fi
+          git checkout $COMMIT
 
       - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@stable
