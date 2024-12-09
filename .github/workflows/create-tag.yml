@@ -26,9 +26,9 @@ jobs:
       - name: Checkout to the input commit
         run: |
           if [[ -z "${{ inputs.commit }}" ]]; then
-            COMMIT="${{ inputs.commit }}"
-          else
             COMMIT=$(git rev-parse ${{ github.sha }}^@ | grep -Fvx ${{ github.event.pull_request.head.sha }})
+          else
+            COMMIT="${{ inputs.commit }}"
           fi
           git checkout $COMMIT
 
