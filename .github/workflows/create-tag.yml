@@ -13,11 +13,11 @@ on:
 jobs:
   create-tag:
     if: >-
-      (inputs.commit || false) &&
-      github.event.pull_request.merged == true &&
-      github.event.pull_request.user.login == 'github-actions' &&
-      github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name &&
-      startsWith(github.event.pull_request.head.ref, 'bump-version')
+      (inputs.commit || false) ||
+      (github.event.pull_request.merged == true &&
+       github.event.pull_request.user.login == 'github-actions' &&
+       github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name &&
+       startsWith(github.event.pull_request.head.ref, 'bump-version') )
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
