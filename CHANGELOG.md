@@ -6,7 +6,6 @@
   - [Changed](#changed)
   - [Removed](#removed)
   - [Fixed](#fixed)
-  - [Security](#security)
 - [0.71.0 (2024-12-06)](#0710-2024-12-06)
   - [Added](#added-1)
   - [Changed](#changed-1)
@@ -219,11 +218,8 @@
 
 --------------------------------------------------------------------------------
 # Unreleased
-## Added
-## Changed
-## Removed
 ## Fixed
-## Security
+- Fix `--version` and `--generate-shell-completions` (#3040)
 
 # 0.71.0 (2024-12-06)
 ## Added
