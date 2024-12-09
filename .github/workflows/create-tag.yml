@@ -28,7 +28,7 @@ jobs:
           if [[ -z "${{ inputs.commit }}" ]]; then
             COMMIT="${{ inputs.commit }}"
           else
-            COMMIT=git rev-parse ${{ github.sha }}^@ | grep -Fvx ${{ github.event.pull_request.head.sha }}
+            COMMIT=$(git rev-parse ${{ github.sha }}^@ | grep -Fvx ${{ github.event.pull_request.head.sha }})
           fi
           git checkout $COMMIT
 
