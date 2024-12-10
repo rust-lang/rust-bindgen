@@ -4,37 +4,24 @@
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>FAQ - The bindgen User Guide</title>
-        
-        
 
 
         <!-- Custom HTML head -->
         
-
-
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <meta name="description" content="`bindgen` automatically generates Rust FFI bindings to C and C++ libraries.">
+        <meta name="description" content="&#x60;bindgen&#x60; automatically generates Rust FFI bindings to C and C++ libraries.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        
         <link rel="icon" href="favicon.svg">
-        
-        
         <link rel="shortcut icon" href="favicon.png">
-        
         <link rel="stylesheet" href="css/variables.css">
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
-        
         <link rel="stylesheet" href="css/print.css" media="print">
-        
 
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        
         <link rel="stylesheet" href="fonts/fonts.css">
-        
 
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
@@ -42,19 +29,18 @@
         <link rel="stylesheet" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        
 
-        
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
-        <script type="text/javascript">
+        <script>
             var path_to_root = "";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
                 var theme = localStorage.getItem('mdbook-theme');
                 var sidebar = localStorage.getItem('mdbook-sidebar');
@@ -70,7 +56,7 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
+        <script>
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
@@ -82,12 +68,14 @@
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
+        <script>
             var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var sidebar = null;
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
@@ -100,12 +88,33 @@
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                
-                <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
@@ -114,39 +123,36 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        
                         <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
-                        
                     </div>
 
                     <h1 class="menu-title">The bindgen User Guide</h1>
 
                     <div class="right-buttons">
-                        
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        
-                        
                         <a href="https://github.com/rust-lang/rust-bindgen" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
-                        
+                        <a href="https://github.com/rust-lang/rust-bindgen/edit/main/book/src/faq.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
                     </div>
                 </div>
 
-                
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -154,10 +160,9 @@
                         </ul>
                     </div>
                 </div>
-                
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
+                <script>
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
                     document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
                     Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
@@ -167,7 +172,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#frequently-asked-questions" id="frequently-asked-questions">Frequently Asked Questions</a></h1>
+                        <h1 id="frequently-asked-questions"><a class="header" href="#frequently-asked-questions">Frequently Asked Questions</a></h1>
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 <ul>
@@ -179,7 +184,7 @@
 <li><a href="#why-isnt-bindgen-generating-documentation-for-system-headers">Why isn't <code>bindgen</code> generating documentation for system headers?</a></li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<h3><a class="header" href="#why-isnt-bindgen-generating-methods-for-this-allowlisted-class" id="why-isnt-bindgen-generating-methods-for-this-allowlisted-class">Why isn't <code>bindgen</code> generating methods for this allowlisted class?</a></h3>
+<h3 id="why-isnt-bindgen-generating-methods-for-this-allowlisted-class"><a class="header" href="#why-isnt-bindgen-generating-methods-for-this-allowlisted-class">Why isn't <code>bindgen</code> generating methods for this allowlisted class?</a></h3>
 <p>Are the methods <code>inline</code> methods, or defined inline in the class? For example:</p>
 <pre><code class="language-c++">class Dooder {
   public:
@@ -198,7 +203,7 @@ inline bool Dooder::example_two() {
 <p>If so, see
 <a href="#why-isnt-bindgen-generating-bindings-to-inline-functions">&quot;Why isn't <code>bindgen</code> generating bindings to inline functions?&quot;</a></p>
 <p>If not, consider filing an issue!</p>
-<h3><a class="header" href="#why-isnt-bindgen-generating-bindings-to-inline-functions" id="why-isnt-bindgen-generating-bindings-to-inline-functions">Why isn't <code>bindgen</code> generating bindings to inline functions?</a></h3>
+<h3 id="why-isnt-bindgen-generating-bindings-to-inline-functions"><a class="header" href="#why-isnt-bindgen-generating-bindings-to-inline-functions">Why isn't <code>bindgen</code> generating bindings to inline functions?</a></h3>
 <p>These functions don't typically end up in object files or shared libraries with
 symbols that we can reliably link to, since they are instead inlined into each
 of their call sites. Therefore, we don't generate bindings to them, since that
@@ -217,7 +222,7 @@ Which generates a C source file that can be compiled against the input headers
 to produce Rust headers for <code>static</code> and <code>static inline</code> functions. See <a href="https://github.com/rust-lang/rust-bindgen/discussions/2405">How to
 handle <code>static inline</code> functions</a>
 for further information.</p>
-<h3><a class="header" href="#does-bindgen-support-the-c-standard-template-library-stl" id="does-bindgen-support-the-c-standard-template-library-stl">Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</a></h3>
+<h3 id="does-bindgen-support-the-c-standard-template-library-stl"><a class="header" href="#does-bindgen-support-the-c-standard-template-library-stl">Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</a></h3>
 <p>Sort of. A little. Depends what you mean by &quot;support&quot;.</p>
 <p>Most functions, methods, constructors, and destructors are inline in the
 STL. That ties our hands when it comes to linking: <a href="#why-isnt-bindgen-generating-bindings-to-inline-functions">&quot;Why isn't <code>bindgen</code> generating bindings to inline functions?&quot;</a></p>
@@ -226,7 +231,7 @@ STL. That ties our hands when it comes to linking: <a href="#why-isnt-bindgen-ge
 transitively contain STL things. We generally recommend marking <code>std::.*</code> as
 opaque, and then allowlisting only the specific things you need from the library
 you're binding to that is pulling in STL headers.</p>
-<h3><a class="header" href="#how-to-deal-with-bindgen-generated-padding-fields" id="how-to-deal-with-bindgen-generated-padding-fields">How to deal with bindgen generated padding fields?</a></h3>
+<h3 id="how-to-deal-with-bindgen-generated-padding-fields"><a class="header" href="#how-to-deal-with-bindgen-generated-padding-fields">How to deal with bindgen generated padding fields?</a></h3>
 <p>Depending the architecture, toolchain versions and source struct, it is
 possible that bindgen will generate padding fields named <code>__bindgen_padding_N</code>.
 As these fields might be present when compiling for one architecture but not
@@ -238,18 +243,16 @@ implement this per struct using:</p>
     fn default() -&gt; Self {
         unsafe { std::mem::zeroed() }
     }
-}
-</code></pre>
+}</code></pre>
 <p>This makes it possible to initialize <code>SRC_DATA</code> by:</p>
 <pre><code class="language-rust ignore">SRC_DATA {
     field_a: &quot;foo&quot;,
     field_b: &quot;bar&quot;,
     ..Default::default()
-}
-</code></pre>
+}</code></pre>
 <p>In the case bindgen generates a padding field, then this field will
 be automatically initialized by <code>..Default::default()</code>.</p>
-<h3><a class="header" href="#how-to-generate-bindings-for-a-custom-target" id="how-to-generate-bindings-for-a-custom-target">How to generate bindings for a custom target?</a></h3>
+<h3 id="how-to-generate-bindings-for-a-custom-target"><a class="header" href="#how-to-generate-bindings-for-a-custom-target">How to generate bindings for a custom target?</a></h3>
 <p>To generate bindings for a custom target you only need to pass the <code>--target</code>
 argument to <code>libclang</code>. For example, if you want to generate bindings for the
 <code>armv7a-none-eabi</code> target using the command line, you need to invoke <code>bindgen</code>
@@ -258,7 +261,7 @@ like so:</p>
 </code></pre>
 <p>If you are using <code>bindgen</code> as a library, you should call
 <code>builder.clang_arg(&quot;--target=armv7a-none-eabi&quot;)</code> on your <code>builder</code>.</p>
-<h3><a class="header" href="#why-isnt-bindgen-generating-documentation-for-system-headers" id="why-isnt-bindgen-generating-documentation-for-system-headers">Why isn't <code>bindgen</code> generating documentation for system headers?</a></h3>
+<h3 id="why-isnt-bindgen-generating-documentation-for-system-headers"><a class="header" href="#why-isnt-bindgen-generating-documentation-for-system-headers">Why isn't <code>bindgen</code> generating documentation for system headers?</a></h3>
 <p>By default, Bindgen does not generate documentation for system headers because
 <code>libclang</code> does not provide this information. To address this, you should call
 <code>builder.clang_arg(&quot;-fretain-comments-from-system-headers&quot;)</code> on your <code>builder</code>.</p>
@@ -267,13 +270,10 @@ like so:</p>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                        
                             <a rel="prev" href="using-fam.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                        
 
-                        
 
                         <div style="clear: both"></div>
                     </nav>
@@ -281,45 +281,33 @@ like so:</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                
                     <a rel="prev" href="using-fam.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                
 
-                
             </nav>
 
         </div>
 
-        
 
-        
 
-        
 
-        
-        <script type="text/javascript">
+        <script>
             window.playground_copyable = true;
         </script>
-        
 
-        
 
-        
-        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
-        
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
 
-        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
 
         <!-- Custom JS scripts -->
-        
 
-        
 
+    </div>
     </body>
 </html>
