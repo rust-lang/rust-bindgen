@@ -67,6 +67,7 @@ enum Version {
     Nightly,
 }
 
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum InvalidRustTarget {
     TooEarly,
 }
