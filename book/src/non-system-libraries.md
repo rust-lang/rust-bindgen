@@ -20,8 +20,6 @@ library:
 use std::env;
 use std::path::PathBuf;
 
-use bindgen::CargoCallbacks;
-
 fn main() {
     // This is the directory where the `c` library is located.
     let libdir_path = PathBuf::from("hello")
@@ -86,7 +84,7 @@ fn main() {
         .header(headers_path_str)
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
-        .parse_callbacks(Box::new(CargoCallbacks::new()))
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         // Finish the builder and generate the bindings.
         .generate()
         // Unwrap the Result and panic on failure.
