@@ -208,7 +208,7 @@ impl std::fmt::Display for Formatter {
             Self::Prettyplease => "prettyplease",
         };
 
-        s.fmt(f)
+        std::fmt::Display::fmt(&s, f)
     }
 }
 
@@ -998,6 +998,12 @@ impl Bindings {
         {
             cmd.args(["--config-path", path]);
         }
+
+        let edition = self
+            .options
+            .rust_edition
+            .unwrap_or_else(|| self.options.rust_target.latest_edition());
+        cmd.args(["--edition", &format!("{edition}")]);
 
         let mut child = cmd.spawn()?;
         let mut child_stdin = child.stdin.take().unwrap();
