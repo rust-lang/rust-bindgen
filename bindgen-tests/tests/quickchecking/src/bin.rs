@@ -41,9 +41,10 @@ fn parse_tests_count(v: &str) -> Result<u64, String> {
 // Parse CLI argument input for fuzzed headers output path.
 fn parse_path(v: &str) -> Result<PathBuf, String> {
     let path = PathBuf::from(v);
-    match path.is_dir() {
-        true => Ok(path),
-        false => Err(String::from("Provided directory path does not exist.")),
+    if path.is_dir() {
+        Ok(path)
+    } else {
+        Err(String::from("Provided directory path does not exist."))
     }
 }
 

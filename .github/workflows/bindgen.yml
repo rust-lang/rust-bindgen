@@ -30,7 +30,7 @@ jobs:
         run: cargo fmt -- --check
 
       - name: Run clippy
-        run: cargo clippy --tests
+        run: cargo clippy --all-targets --workspace --exclude bindgen-integration --exclude tests_expectations
 
   msrv:
     runs-on: ubuntu-latest

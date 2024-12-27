@@ -504,7 +504,7 @@ fn is_invalid_type_param_invalid_remaining() {
 }
 
 #[test]
-#[should_panic]
+#[should_panic(expected = "Unnamed named type")]
 fn is_invalid_type_param_unnamed() {
     let ty = Type::new(None, None, TypeKind::TypeParam, false);
     assert!(ty.is_invalid_type_param());
@@ -512,7 +512,7 @@ fn is_invalid_type_param_unnamed() {
 
 #[test]
 fn is_invalid_type_param_empty_name() {
-    let ty = Type::new(Some("".into()), None, TypeKind::TypeParam, false);
+    let ty = Type::new(Some(String::new()), None, TypeKind::TypeParam, false);
     assert!(ty.is_invalid_type_param());
 }
 
