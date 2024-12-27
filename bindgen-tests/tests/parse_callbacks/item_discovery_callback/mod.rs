@@ -94,12 +94,10 @@ pub fn compare_item_caches(generated: ItemCache, expected: ItemCache) {
             )
         });
 
-        if found.is_none() {
-            panic!(
-                "Missing Expected Item: {:#?}\n in {:#?}",
-                expected_item, generated
-            );
-        }
+        assert!(
+            found.is_some(),
+            "Missing Expected Item: {expected_item:#?}\n in {generated:#?}"
+        );
     }
 }
 
@@ -235,12 +233,9 @@ pub fn compare_alias_info(
     let expected_aliased = expected.get(expected_alias_for).unwrap();
 
     // We must have the aliased type in the cache
-    let generated_aliased =
-        if let Some(generated_aliased) = generated.get(generated_alias_for) {
-            generated_aliased
-        } else {
-            return false;
-        };
+    let Some(generated_aliased) = generated.get(generated_alias_for) else {
+        return false;
+    };
 
     compare_item_info(expected_aliased, generated_aliased, expected, generated)
 }

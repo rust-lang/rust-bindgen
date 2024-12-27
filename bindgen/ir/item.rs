@@ -1856,16 +1856,11 @@ impl Item {
         let parent = ctx.root_module().into();
 
         if let Some(id) = ctx.get_type_param(&definition) {
-            if let Some(with_id) = with_id {
-                return Some(ctx.build_ty_wrapper(
-                    with_id,
-                    id,
-                    Some(parent),
-                    &ty,
-                ));
+            return Some(if let Some(with_id) = with_id {
+                ctx.build_ty_wrapper(with_id, id, Some(parent), &ty)
             } else {
-                return Some(id);
-            }
+                id
+            });
         }
 
         // See tests/headers/const_tparam.hpp and

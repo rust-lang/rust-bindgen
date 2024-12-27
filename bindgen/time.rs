@@ -29,7 +29,7 @@ impl<'a> Timer<'a> {
 
     /// Returns the time elapsed since the timer's creation
     pub fn elapsed(&self) -> Duration {
-        Instant::now() - self.start
+        self.start.elapsed()
     }
 
     fn print_elapsed(&mut self) {

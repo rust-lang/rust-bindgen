@@ -86,10 +86,12 @@ pub const DEFAULT_ANON_FIELDS_PREFIX: &str = "__bindgen_anon_";
 const DEFAULT_NON_EXTERN_FNS_SUFFIX: &str = "__extern";
 
 fn file_is_cpp(name_file: &str) -> bool {
-    name_file.ends_with(".hpp") ||
-        name_file.ends_with(".hxx") ||
-        name_file.ends_with(".hh") ||
-        name_file.ends_with(".h++")
+    Path::new(name_file).extension().map_or(false, |ext| {
+        ext.eq_ignore_ascii_case("hpp") ||
+            ext.eq_ignore_ascii_case("hxx") ||
+            ext.eq_ignore_ascii_case("hh") ||
+            ext.eq_ignore_ascii_case("h++")
+    })
 }
 
 fn args_are_cpp(clang_args: &[Box<str>]) -> bool {

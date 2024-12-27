@@ -48,18 +48,51 @@ syn = "2.0"
 tempfile = "3"
 
 [workspace.lints.rust]
-# unused_qualifications = "warn"
+unused_qualifications = "warn"
 
 [workspace.lints.clippy]
-# disallowed-names = "allow"
-# manual-c-str-literals = "allow"
-# missing-safety-doc = "allow"
-# op-ref = "allow"
-# ptr-offset-with-cast = "allow"
-# too-many-arguments = "allow"
-# transmute-int-to-bool = "allow"
-# unnecessary-cast = "allow"
-# useless-transmute  = "allow"
+pedantic = { level = "warn", priority = -1 }
+
+cast_possible_truncation = "allow"
+cast_possible_wrap = "allow"
+cast_precision_loss = "allow"
+cast_sign_loss = "allow"
+checked_conversions = "allow"
+default_trait_access = "allow"
+explicit_into_iter_loop = "allow"
+flat_map_option = "allow"
+ignored_unit_patterns = "allow"
+implicit_hasher = "allow"
+inconsistent_struct_constructor = "allow"
+items_after_statements = "allow"
+maybe_infinite_iter = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+ptr_as_ptr = "allow"
+redundant_closure_for_method_calls = "allow"
+return_self_not_must_use = "allow"
+#should_panic_without_expect = "allow"
+similar_names = "allow"
+struct_excessive_bools = "allow"
+struct_field_names = "allow"
+unnecessary_wraps = "allow"
+unnested_or_patterns = "allow"
+unreadable_literal = "allow"
+used_underscore_binding = "allow"
+wildcard_imports = "allow"
+
+# TODO
+borrow_as_ptr = "allow"
+match_same_arms = "allow"
+trivially_copy_pass_by_ref = "allow"
+needless_pass_by_value = "allow"
+unused_self = "allow"
+
+# Theese seem to be ok to ignore for now
+enum_glob_use = "allow"
+too_many_lines = "allow"
 
 # Config for 'cargo release'
 [workspace.metadata.release]

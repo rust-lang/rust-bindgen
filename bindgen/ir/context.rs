@@ -2271,21 +2271,17 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                             );
                         }
                         break;
-                    } else {
-                        // This is _likely_, but not certainly, a macro that's
-                        // been placed just before the namespace keyword.
-                        // Unfortunately, clang tokens don't let us easily see
-                        // through the ifdef tokens, so we don't know what this
-                        // token should really be. Instead of panicking though,
-                        // we warn the user that we assumed the token was blank,
-                        // and then move on.
-                        //
-                        // See also https://github.com/rust-lang/rust-bindgen/issues/1676.
-                        warn!(
-                            "Ignored unknown namespace prefix '{}' at {token:?} in {cursor:?}",
-                            String::from_utf8_lossy(name),
-                        );
                     }
+                    // This is _likely_, but not certainly, a macro that's
+                    // been placed just before the namespace keyword.
+                    // Unfortunately, clang tokens don't let us easily see
+                    // through the ifdef tokens, so we don't know what this
+                    // token should really be. Instead of panicking though,
+                    // we warn the user that we assumed the token was blank,
+                    // and then move on.
+                    //
+                    // See also https://github.com/rust-lang/rust-bindgen/issues/1676.
+                    warn!("Ignored unknown namespace prefix '{}' at {token:?} in {cursor:?}", String::from_utf8_lossy(name));
                 }
             }
         }
@@ -2613,7 +2609,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Call if an opaque array is generated
     pub(crate) fn generated_opaque_array(&self) {
-        self.generated_opaque_array.set(true)
+        self.generated_opaque_array.set(true);
     }
 
     /// Whether we need to generate the opaque array type

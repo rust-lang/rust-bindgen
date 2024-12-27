@@ -4565,7 +4565,7 @@ impl CodeGenerator for Function {
             FunctionKind::Function => {
                 ctx.options().dynamic_library_name.is_some()
             }
-            _ => false,
+            FunctionKind::Method(_) => false,
         };
 
         // Similar to static member variables in a class template, we can't
@@ -5878,7 +5878,7 @@ pub(crate) mod utils {
 
         // Check that the mangled name contains the canonical name after the
         // prefix
-        if &mangled_name[1..canonical_name.len() + 1] != canonical_name {
+        if &mangled_name[1..=canonical_name.len()] != canonical_name {
             return false;
         }
 
