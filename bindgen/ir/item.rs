@@ -876,7 +876,9 @@ impl Item {
                 true
             });
 
-        let ids: Vec<_> = if ctx.options().disable_nested_struct_naming {
+        let ids: Vec<_> = if ctx.options().disable_nested_struct_naming ||
+            ctx.options().disable_name_namespacing
+        {
             let mut ids = Vec::new();
 
             // If target is anonymous we need find its first named ancestor.
