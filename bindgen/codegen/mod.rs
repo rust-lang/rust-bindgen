@@ -806,10 +806,17 @@ impl CodeGenerator for Var {
                 .unsafe_extern_blocks
                 .then(|| quote!(unsafe));
 
+            let (safety_comment, var_safety) = utils::declare_safe(
+                &canonical_ident,
+                crate::callbacks::ItemKind::Var,
+                ctx,
+            );
+
             let tokens = quote!(
                 #safety extern "C" {
                     #(#attrs)*
-                    pub static #maybe_mut #canonical_ident: #ty;
+                    #safety_comment
+                    pub #var_safety static #maybe_mut #canonical_ident: #ty;
                 }
             );
 
@@ -4717,11 +4724,18 @@ impl CodeGenerator for Function {
             .unsafe_extern_blocks
             .then(|| quote!(unsafe));
 
+        let (safety_comment, fn_safety) = utils::declare_safe(
+            &ident,
+            crate::callbacks::ItemKind::Function,
+            ctx,
+        );
+
         let tokens = quote! {
             #wasm_link_attribute
             #safety extern #abi {
                 #(#attributes)*
-                pub fn #ident ( #( #args ),* ) #ret;
+                #safety_comment
+                pub #fn_safety fn #ident ( #( #args ),* ) #ret;
             }
         };
 
@@ -5177,17 +5191,54 @@ pub(crate) mod utils {
     use super::helpers::BITFIELD_UNIT;
     use super::serialize::CSerialize;
     use super::{error, CodegenError, CodegenResult, ToRustTyOrOpaque};
+    use crate::callbacks::{ItemInfo, ItemKind};
     use crate::ir::context::BindgenContext;
     use crate::ir::context::TypeId;
     use crate::ir::function::{Abi, ClangAbi, FunctionSig};
     use crate::ir::item::{Item, ItemCanonicalPath};
     use crate::ir::ty::TypeKind;
     use crate::{args_are_cpp, file_is_cpp};
+    use proc_macro2::{Ident, TokenStream};
     use std::borrow::Cow;
     use std::io::Write;
     use std::mem;
     use std::path::PathBuf;
     use std::str::FromStr;
+
+    pub(super) fn declare_safe(
+        item_ident: &Ident,
+        item_kind: ItemKind,
+        context: &BindgenContext,
+    ) -> (Option<TokenStream>, Option<TokenStream>) {
+        let safety_comment = context
+            .options()
+            .rust_features
+            .unsafe_extern_blocks
+            .then( || {
+                context.options().last_callback(|cb| {
+                    cb.declare_safe(ItemInfo {
+                        name: &item_ident.to_string(),
+                        kind: item_kind,
+                    })
+                })
+            })
+            .flatten()
+            .map(|safety_comment| {
+                let comment =
+                    proc_macro2::Punct::new('/', proc_macro2::Spacing::Joint);
+                let comment2 =
+                    proc_macro2::Punct::new('*', proc_macro2::Spacing::Alone);
+                let comment3 =
+                    proc_macro2::Punct::new('*', proc_macro2::Spacing::Joint);
+                let comment4 =
+                    proc_macro2::Punct::new('/', proc_macro2::Spacing::Alone);
+
+                quote!(#comment #comment2 Safety: #safety_comment #comment3 #comment4)
+            });
+
+        let item_safety = safety_comment.is_some().then_some(quote!(safe));
+        (safety_comment, item_safety)
+    }
 
     pub(super) fn serialize_items(
         result: &CodegenResult,
