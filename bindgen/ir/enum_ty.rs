@@ -150,7 +150,7 @@ impl Enum {
         Ok(Enum::new(repr, variants))
     }
 
-    fn is_matching_enum(
+    pub(crate) fn is_matching_enum(
         &self,
         ctx: &BindgenContext,
         enums: &RegexSet,
