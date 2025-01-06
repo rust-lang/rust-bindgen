@@ -3595,6 +3595,18 @@ impl CodeGenerator for Enum {
         let layout = enum_ty.layout(ctx);
         let variation = self.computed_enum_variation(ctx, item);
 
+        // blocklist anonymous enums based on variants.
+        if enum_ty.name().is_none() &&
+            self.is_matching_enum(
+                ctx,
+                &ctx.options().blocklisted_items,
+                item,
+            )
+        {
+            debug!("Blocklisting anonymous enum.");
+            return;
+        }
+
         let repr_translated;
         let repr = match self.repr().map(|repr| ctx.resolve_type(repr)) {
             Some(repr)
