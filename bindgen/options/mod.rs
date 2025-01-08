@@ -1234,6 +1234,11 @@ options! {
         // This field is handled specially inside the macro.
         as_args: ignore,
     },
+    /// The set of arguments to be passed straight through to Clang for the macro fallback code.
+    fallback_clang_args: Vec<Box<str>> {
+        methods: {},
+        as_args: ignore,
+    },
     /// Tuples of unsaved file contents of the form (name, contents).
     input_header_contents: Vec<(Box<str>, Box<str>)> {
         methods: {

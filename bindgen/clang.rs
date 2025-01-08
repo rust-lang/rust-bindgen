@@ -1914,7 +1914,6 @@ impl Drop for TranslationUnit {
 /// Translation unit used for macro fallback parsing
 pub(crate) struct FallbackTranslationUnit {
     file_path: String,
-    header_path: String,
     pch_path: String,
     idx: Box<Index>,
     tu: TranslationUnit,
@@ -1930,7 +1929,6 @@ impl FallbackTranslationUnit {
     /// Create a new fallback translation unit
     pub(crate) fn new(
         file: String,
-        header_path: String,
         pch_path: String,
         c_args: &[Box<str>],
     ) -> Option<Self> {
@@ -1952,7 +1950,6 @@ impl FallbackTranslationUnit {
         )?;
         Some(FallbackTranslationUnit {
             file_path: file,
-            header_path,
             pch_path,
             tu: f_translation_unit,
             idx: f_index,
@@ -1991,7 +1988,6 @@ impl FallbackTranslationUnit {
 impl Drop for FallbackTranslationUnit {
     fn drop(&mut self) {
         let _ = std::fs::remove_file(&self.file_path);
-        let _ = std::fs::remove_file(&self.header_path);
         let _ = std::fs::remove_file(&self.pch_path);
     }
 }
