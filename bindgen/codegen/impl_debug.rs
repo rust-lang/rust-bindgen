@@ -130,7 +130,7 @@ impl<'a> ImplDebug<'a> for Item {
 
         fn debug_print(
             name: &str,
-            name_ident: proc_macro2::TokenStream,
+            name_ident: &proc_macro2::TokenStream,
         ) -> Option<(String, Vec<proc_macro2::TokenStream>)> {
             Some((
                 format!("{name}: {{:?}}"),
@@ -154,13 +154,13 @@ impl<'a> ImplDebug<'a> for Item {
             TypeKind::ObjCInterface(..) |
             TypeKind::ObjCId |
             TypeKind::Comp(..) |
-            TypeKind::ObjCSel => debug_print(name, quote! { #name_ident }),
+            TypeKind::ObjCSel => debug_print(name, &quote! { #name_ident }),
 
             TypeKind::TemplateInstantiation(ref inst) => {
                 if inst.is_opaque(ctx, self) {
                     Some((format!("{name}: opaque"), vec![]))
                 } else {
-                    debug_print(name, quote! { #name_ident })
+                    debug_print(name, &quote! { #name_ident })
                 }
             }
 
@@ -177,7 +177,7 @@ impl<'a> ImplDebug<'a> for Item {
                     ctx.options().rust_features().larger_arrays
                 {
                     // The simple case
-                    debug_print(name, quote! { #name_ident })
+                    debug_print(name, &quote! { #name_ident })
                 } else if ctx.options().use_core {
                     // There is no String in core; reducing field visibility to avoid breaking
                     // no_std setups.
@@ -233,7 +233,7 @@ impl<'a> ImplDebug<'a> for Item {
                     {
                         Some((format!("{name}: FunctionPointer"), vec![]))
                     }
-                    _ => debug_print(name, quote! { #name_ident }),
+                    _ => debug_print(name, &quote! { #name_ident }),
                 }
             }
 
