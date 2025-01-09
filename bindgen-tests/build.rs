@@ -1,6 +1,5 @@
 use std::char;
 use std::env;
-use std::ffi::OsStr;
 use std::fs::{self, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -23,23 +22,19 @@ pub fn main() {
     println!("cargo:rerun-if-changed=tests/headers");
 
     for entry in entries {
-        match entry.path().extension().and_then(OsStr::to_str) {
-            Some("h") | Some("hpp") => {
-                let func = entry
-                    .file_name()
-                    .to_str()
-                    .unwrap()
-                    .replace(|c| !char::is_alphanumeric(c), "_")
-                    .replace("__", "_")
-                    .to_lowercase();
-                writeln!(
-                    dst,
-                    "test_header!(header_{func}, {:?});",
-                    entry.path(),
-                )
+        // TODO: file_is_cpp() in bindgen/lib.rs checks for hpp,hxx,hh, and h++ - should this be consistent?
+        if entry.path().extension().map_or(false, |ext| {
+            ext.eq_ignore_ascii_case("h") || ext.eq_ignore_ascii_case("hpp")
+        }) {
+            let func = entry
+                .file_name()
+                .to_str()
+                .unwrap()
+                .replace(|c| !char::is_alphanumeric(c), "_")
+                .replace("__", "_")
+                .to_lowercase();
+            writeln!(dst, "test_header!(header_{func}, {:?});", entry.path())
                 .unwrap();
-            }
-            _ => {}
         }
     }
 

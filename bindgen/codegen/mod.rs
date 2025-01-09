@@ -3003,7 +3003,7 @@ impl Method {
             let cc = &ctx.options().codegen_config;
             match self.kind() {
                 MethodKind::Constructor => cc.constructors(),
-                MethodKind::Destructor => cc.destructors(),
+                MethodKind::Destructor |
                 MethodKind::VirtualDestructor { .. } => cc.destructors(),
                 MethodKind::Static |
                 MethodKind::Normal |
