@@ -2629,12 +2629,9 @@ impl CodeGenerator for CompInfo {
                     } else {
                         self.fields()
                             .iter()
-                            .filter_map(|field| match *field {
-                                Field::DataMember(ref f) if f.name().is_some() => Some(f),
-                                _ => None,
-                            })
-                            .flat_map(|field| {
-                                let name = field.name().unwrap();
+                            .filter_map(|field| {
+                                let Field::DataMember(field) = field else { return None };
+                                let name = field.name()?;
                                 field.offset().map(|offset| {
                                     let field_offset = offset / 8;
                                     let field_name = ctx.rust_ident(name);
