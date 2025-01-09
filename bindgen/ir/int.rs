@@ -99,9 +99,7 @@ impl IntKind {
             SChar | Short | Int | Long | LongLong | I8 | I16 | I32 | I64 |
             I128 => true,
 
-            Char { is_signed } => is_signed,
-
-            Custom { is_signed, .. } => is_signed,
+            Char { is_signed } | Custom { is_signed, .. } => is_signed,
         }
     }
 

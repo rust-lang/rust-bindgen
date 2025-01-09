@@ -290,15 +290,15 @@ pub(crate) struct FunctionSig {
 fn get_abi(cc: CXCallingConv) -> ClangAbi {
     use clang_sys::*;
     match cc {
-        CXCallingConv_Default => ClangAbi::Known(Abi::C),
-        CXCallingConv_C => ClangAbi::Known(Abi::C),
+        CXCallingConv_Default | CXCallingConv_C => ClangAbi::Known(Abi::C),
         CXCallingConv_X86StdCall => ClangAbi::Known(Abi::Stdcall),
         CXCallingConv_X86FastCall => ClangAbi::Known(Abi::Fastcall),
         CXCallingConv_X86ThisCall => ClangAbi::Known(Abi::ThisCall),
-        CXCallingConv_X86VectorCall => ClangAbi::Known(Abi::Vectorcall),
+        CXCallingConv_X86VectorCall | CXCallingConv_AArch64VectorCall => {
+            ClangAbi::Known(Abi::Vectorcall)
+        }
         CXCallingConv_AAPCS => ClangAbi::Known(Abi::Aapcs),
         CXCallingConv_X86_64Win64 => ClangAbi::Known(Abi::Win64),
-        CXCallingConv_AArch64VectorCall => ClangAbi::Known(Abi::Vectorcall),
         other => ClangAbi::Unknown(other),
     }
 }

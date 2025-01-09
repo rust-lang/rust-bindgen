@@ -524,7 +524,7 @@ impl DeriveTrait {
 
     fn can_derive_fnptr(&self, f: &FunctionSig) -> CanDerive {
         match (self, f.function_pointers_can_derive()) {
-            (DeriveTrait::Copy, _) | (DeriveTrait::Default, _) | (_, true) => {
+            (DeriveTrait::Copy | DeriveTrait::Default, _) | (_, true) => {
                 trace!("    function pointer can derive {self}");
                 CanDerive::Yes
             }
@@ -565,14 +565,17 @@ impl DeriveTrait {
     fn can_derive_simple(&self, kind: &TypeKind) -> CanDerive {
         match (self, kind) {
             // === Default ===
-            (DeriveTrait::Default, TypeKind::Void) |
-            (DeriveTrait::Default, TypeKind::NullPtr) |
-            (DeriveTrait::Default, TypeKind::Enum(..)) |
-            (DeriveTrait::Default, TypeKind::Reference(..)) |
-            (DeriveTrait::Default, TypeKind::TypeParam) |
-            (DeriveTrait::Default, TypeKind::ObjCInterface(..)) |
-            (DeriveTrait::Default, TypeKind::ObjCId) |
-            (DeriveTrait::Default, TypeKind::ObjCSel) => {
+            (
+                DeriveTrait::Default,
+                TypeKind::Void |
+                TypeKind::NullPtr |
+                TypeKind::Enum(..) |
+                TypeKind::Reference(..) |
+                TypeKind::TypeParam |
+                TypeKind::ObjCInterface(..) |
+                TypeKind::ObjCId |
+                TypeKind::ObjCSel,
+            ) => {
                 trace!("    types that always cannot derive Default");
                 CanDerive::No
             }
@@ -582,8 +585,10 @@ impl DeriveTrait {
                 )
             }
             // === Hash ===
-            (DeriveTrait::Hash, TypeKind::Float(..)) |
-            (DeriveTrait::Hash, TypeKind::Complex(..)) => {
+            (
+                DeriveTrait::Hash,
+                TypeKind::Float(..) | TypeKind::Complex(..),
+            ) => {
                 trace!("    float cannot derive Hash");
                 CanDerive::No
             }

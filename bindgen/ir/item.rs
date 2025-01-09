@@ -1012,15 +1012,15 @@ impl Item {
                 FunctionKind::Method(MethodKind::Constructor) => {
                     cc.constructors()
                 }
-                FunctionKind::Method(MethodKind::Destructor) |
-                FunctionKind::Method(MethodKind::VirtualDestructor {
-                    ..
-                }) => cc.destructors(),
-                FunctionKind::Method(MethodKind::Static) |
-                FunctionKind::Method(MethodKind::Normal) |
-                FunctionKind::Method(MethodKind::Virtual { .. }) => {
-                    cc.methods()
-                }
+                FunctionKind::Method(
+                    MethodKind::Destructor |
+                    MethodKind::VirtualDestructor { .. },
+                ) => cc.destructors(),
+                FunctionKind::Method(
+                    MethodKind::Static |
+                    MethodKind::Normal |
+                    MethodKind::Virtual { .. },
+                ) => cc.methods(),
             },
         }
     }
@@ -1415,7 +1415,7 @@ impl Item {
             CXCursor_UsingDirective |
             CXCursor_StaticAssert |
             CXCursor_FunctionTemplate => {
-                debug!("Unhandled cursor kind {:?}: {cursor:?}", cursor.kind(),);
+                debug!("Unhandled cursor kind {:?}: {cursor:?}", cursor.kind());
                 Err(ParseError::Continue)
             }
 
