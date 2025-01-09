@@ -79,7 +79,6 @@ used_underscore_binding = "allow"
 wildcard_imports = "allow"
 
 # TODO
-borrow_as_ptr = "allow"
 trivially_copy_pass_by_ref = "allow"
 unused_self = "allow"
 
