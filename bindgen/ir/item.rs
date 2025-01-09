@@ -103,6 +103,7 @@ impl DebugOnlyItemSet {
         DebugOnlyItemSet
     }
 
+    #[allow(clippy::trivially_copy_pass_by_ref)]
     fn contains(&self, _id: &ItemId) -> bool {
         false
     }

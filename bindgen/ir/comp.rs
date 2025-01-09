@@ -56,16 +56,16 @@ pub(crate) enum MethodKind {
 
 impl MethodKind {
     /// Is this a destructor method?
-    pub(crate) fn is_destructor(&self) -> bool {
+    pub(crate) fn is_destructor(self) -> bool {
         matches!(
-            *self,
+            self,
             MethodKind::Destructor | MethodKind::VirtualDestructor { .. }
         )
     }
 
     /// Is this a pure virtual method?
-    pub(crate) fn is_pure_virtual(&self) -> bool {
-        match *self {
+    pub(crate) fn is_pure_virtual(self) -> bool {
+        match self {
             MethodKind::Virtual { pure_virtual } |
             MethodKind::VirtualDestructor { pure_virtual } => pure_virtual,
             _ => false,
