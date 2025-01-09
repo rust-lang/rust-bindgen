@@ -363,7 +363,7 @@ impl Builder {
                 })
                 .collect::<Vec<_>>();
 
-        Bindings::generate(self.options, input_unsaved_files)
+        Bindings::generate(self.options, &input_unsaved_files)
     }
 
     /// Preprocess and dump the input header files to disk.
@@ -729,7 +729,7 @@ impl Bindings {
     /// Generate bindings for the given options.
     pub(crate) fn generate(
         mut options: BindgenOptions,
-        input_unsaved_files: Vec<clang::UnsavedFile>,
+        input_unsaved_files: &[clang::UnsavedFile],
     ) -> Result<Bindings, BindgenError> {
         ensure_libclang_is_loaded();
 
@@ -886,7 +886,7 @@ impl Bindings {
         debug!("Fixed-up options: {options:?}");
 
         let time_phases = options.time_phases;
-        let mut context = BindgenContext::new(options, &input_unsaved_files);
+        let mut context = BindgenContext::new(options, input_unsaved_files);
 
         if is_host_build {
             debug_assert_eq!(

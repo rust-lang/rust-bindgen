@@ -75,7 +75,7 @@ impl DynamicItems {
 
     pub(crate) fn get_tokens(
         &self,
-        lib_ident: Ident,
+        lib_ident: &Ident,
         ctx: &BindgenContext,
     ) -> TokenStream {
         let struct_members = &self.struct_members;
@@ -130,15 +130,15 @@ impl DynamicItems {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn push_func(
         &mut self,
-        ident: Ident,
+        ident: &Ident,
         abi: ClangAbi,
         is_variadic: bool,
         is_required: bool,
-        args: Vec<TokenStream>,
-        args_identifiers: Vec<TokenStream>,
-        ret: TokenStream,
-        ret_ty: TokenStream,
-        attributes: Vec<TokenStream>,
+        args: &[TokenStream],
+        args_identifiers: &[TokenStream],
+        ret: &TokenStream,
+        ret_ty: &TokenStream,
+        attributes: &[TokenStream],
         ctx: &BindgenContext,
     ) {
         if !is_variadic {
@@ -205,8 +205,8 @@ impl DynamicItems {
 
     pub fn push_var(
         &mut self,
-        ident: Ident,
-        ty: TokenStream,
+        ident: &Ident,
+        ty: &TokenStream,
         is_required: bool,
         wrap_unsafe_ops: bool,
     ) {
