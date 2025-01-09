@@ -52,7 +52,7 @@ pub(crate) mod attributes {
         }
     }
 
-    pub(crate) fn doc(comment: String) -> TokenStream {
+    pub(crate) fn doc(comment: &str) -> TokenStream {
         if comment.is_empty() {
             quote!()
         } else {

@@ -677,7 +677,7 @@ impl CodeGenerator for Var {
 
         let mut attrs = vec![];
         if let Some(comment) = item.comment(ctx) {
-            attrs.push(attributes::doc(comment));
+            attrs.push(attributes::doc(&comment));
         }
 
         let var_ty = self.ty();
@@ -815,8 +815,9 @@ impl CodeGenerator for Var {
 
             if ctx.options().dynamic_library_name.is_some() {
                 result.dynamic_items().push_var(
-                    canonical_ident,
-                    self.ty()
+                    &canonical_ident,
+                    &self
+                        .ty()
                         .to_rust_ty_or_opaque(ctx, &())
                         .into_token_stream(),
                     ctx.options().dynamic_link_require_all,
@@ -886,7 +887,7 @@ impl CodeGenerator for Type {
                 let rust_name = ctx.rust_ident(name);
 
                 let mut tokens = if let Some(comment) = item.comment(ctx) {
-                    attributes::doc(comment)
+                    attributes::doc(&comment)
                 } else {
                     quote! {}
                 };
@@ -1006,7 +1007,7 @@ impl CodeGenerator for Type {
                 });
 
                 let mut tokens = if let Some(comment) = item.comment(ctx) {
-                    attributes::doc(comment)
+                    attributes::doc(&comment)
                 } else {
                     quote! {}
                 };
@@ -1532,7 +1533,7 @@ impl FieldCodegen<'_> for FieldData {
         if ctx.options().generate_comments {
             if let Some(raw_comment) = self.comment() {
                 let comment = ctx.options().process_comment(raw_comment);
-                field = attributes::doc(comment);
+                field = attributes::doc(&comment);
             }
         }
 
@@ -1654,7 +1655,7 @@ impl Bitfield {
     fn extend_ctor_impl(
         &self,
         ctx: &BindgenContext,
-        param_name: proc_macro2::TokenStream,
+        param_name: &proc_macro2::TokenStream,
         mut ctor_impl: proc_macro2::TokenStream,
     ) -> proc_macro2::TokenStream {
         let bitfield_ty = ctx.resolve_type(self.ty());
@@ -1857,7 +1858,7 @@ impl FieldCodegen<'_> for BitfieldUnit {
             ctor_params.push(quote! {
                 #param_name : #bitfield_ty
             });
-            ctor_impl = bf.extend_ctor_impl(ctx, param_name, ctor_impl);
+            ctor_impl = bf.extend_ctor_impl(ctx, &param_name, ctor_impl);
         }
 
         let access_spec = access_specifier(unit_visibility);
@@ -2409,7 +2410,7 @@ impl CodeGenerator for CompInfo {
         let mut needs_partialeq_impl = false;
         let needs_flexarray_impl = flex_array_generic.is_some();
         if let Some(comment) = item.comment(ctx) {
-            attributes.push(attributes::doc(comment));
+            attributes.push(attributes::doc(&comment));
         }
 
         // if a type has both a "packed" attribute and an "align(N)" attribute, then check if the
@@ -2764,7 +2765,7 @@ impl CodeGenerator for CompInfo {
             result.push(self.generate_flexarray(
                 ctx,
                 &canonical_ident,
-                flex_inner_ty,
+                flex_inner_ty.as_ref(),
                 &generic_param_names,
                 &impl_generics_labels,
             ));
@@ -2859,7 +2860,7 @@ impl CompInfo {
         &self,
         ctx: &BindgenContext,
         canonical_ident: &Ident,
-        flex_inner_ty: Option<proc_macro2::TokenStream>,
+        flex_inner_ty: Option<&proc_macro2::TokenStream>,
         generic_param_names: &[Ident],
         impl_generics_labels: &proc_macro2::TokenStream,
     ) -> proc_macro2::TokenStream {
@@ -3299,7 +3300,7 @@ impl<'a> EnumBuilder<'a> {
     fn new(
         name: &'a str,
         mut attrs: Vec<proc_macro2::TokenStream>,
-        repr: syn::Type,
+        repr: &syn::Type,
         enum_variation: EnumVariation,
         has_typedef: bool,
     ) -> Self {
@@ -3368,7 +3369,7 @@ impl<'a> EnumBuilder<'a> {
         ctx: &BindgenContext,
         variant: &EnumVariant,
         mangling_prefix: Option<&str>,
-        rust_ty: syn::Type,
+        rust_ty: &syn::Type,
         result: &mut CodegenResult<'_>,
         is_ty_named: bool,
     ) -> Self {
@@ -3387,7 +3388,7 @@ impl<'a> EnumBuilder<'a> {
         if ctx.options().generate_comments {
             if let Some(raw_comment) = variant.comment() {
                 let comment = ctx.options().process_comment(raw_comment);
-                doc = attributes::doc(comment);
+                doc = attributes::doc(&comment);
             }
         }
 
@@ -3480,7 +3481,7 @@ impl<'a> EnumBuilder<'a> {
     fn build(
         self,
         ctx: &BindgenContext,
-        rust_ty: syn::Type,
+        rust_ty: &syn::Type,
         result: &mut CodegenResult<'_>,
     ) -> proc_macro2::TokenStream {
         match self {
@@ -3679,7 +3680,7 @@ impl CodeGenerator for Enum {
         };
 
         if let Some(comment) = item.comment(ctx) {
-            attrs.push(attributes::doc(comment));
+            attrs.push(attributes::doc(&comment));
         }
 
         if item.must_use(ctx) {
@@ -3746,7 +3747,7 @@ impl CodeGenerator for Enum {
             // value.
             variant_name: &Ident,
             referenced_name: &Ident,
-            enum_rust_ty: syn::Type,
+            enum_rust_ty: &syn::Type,
             result: &mut CodegenResult<'_>,
         ) {
             let constant_name = if enum_.name().is_some() {
@@ -3770,7 +3771,7 @@ impl CodeGenerator for Enum {
         let has_typedef = ctx.is_enum_typedef_combo(item.id());
 
         let mut builder =
-            EnumBuilder::new(&name, attrs, repr, variation, has_typedef);
+            EnumBuilder::new(&name, attrs, &repr, variation, has_typedef);
 
         // A map where we keep a value -> variant relation.
         let mut seen_values = HashMap::<_, Ident>::default();
@@ -3846,7 +3847,7 @@ impl CodeGenerator for Enum {
                                 &ident,
                                 &Ident::new(&mangled_name, Span::call_site()),
                                 existing_variant_name,
-                                enum_rust_ty.clone(),
+                                &enum_rust_ty,
                                 result,
                             );
                         }
@@ -3855,7 +3856,7 @@ impl CodeGenerator for Enum {
                             ctx,
                             variant,
                             constant_mangling_prefix,
-                            enum_rust_ty.clone(),
+                            &enum_rust_ty,
                             result,
                             enum_ty.name().is_some(),
                         );
@@ -3866,7 +3867,7 @@ impl CodeGenerator for Enum {
                         ctx,
                         variant,
                         constant_mangling_prefix,
-                        enum_rust_ty.clone(),
+                        &enum_rust_ty,
                         result,
                         enum_ty.name().is_some(),
                     );
@@ -3897,7 +3898,7 @@ impl CodeGenerator for Enum {
                             &ident,
                             &mangled_name,
                             &variant_name,
-                            enum_rust_ty.clone(),
+                            &enum_rust_ty,
                             result,
                         );
                     }
@@ -3907,7 +3908,7 @@ impl CodeGenerator for Enum {
             }
         }
 
-        let item = builder.build(ctx, enum_rust_ty, result);
+        let item = builder.build(ctx, &enum_rust_ty, result);
         result.push(item);
     }
 }
@@ -4609,7 +4610,7 @@ impl CodeGenerator for Function {
         }
 
         if let Some(comment) = item.comment(ctx) {
-            attributes.push(attributes::doc(comment));
+            attributes.push(attributes::doc(&comment));
         }
 
         let abi = match signature.abi(ctx, Some(name)) {
@@ -4738,15 +4739,15 @@ impl CodeGenerator for Function {
                 utils::fnsig_argument_identifiers(ctx, signature);
             let ret_ty = utils::fnsig_return_ty(ctx, signature);
             result.dynamic_items().push_func(
-                ident,
+                &ident,
                 abi,
                 signature.is_variadic(),
                 ctx.options().dynamic_link_require_all,
-                args,
-                args_identifiers,
-                ret,
-                ret_ty,
-                attributes,
+                &args,
+                &args_identifiers,
+                &ret,
+                &ret_ty,
+                &attributes,
                 ctx,
             );
         } else {
@@ -5160,7 +5161,7 @@ pub(crate) fn codegen(
         if let Some(ref lib_name) = context.options().dynamic_library_name {
             let lib_ident = context.rust_ident(lib_name);
             let dynamic_items_tokens =
-                result.dynamic_items().get_tokens(lib_ident, context);
+                result.dynamic_items().get_tokens(&lib_ident, context);
             result.push(dynamic_items_tokens);
         }
 

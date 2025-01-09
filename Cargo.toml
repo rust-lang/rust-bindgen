@@ -87,7 +87,6 @@ wildcard_imports = "allow"
 borrow_as_ptr = "allow"
 match_same_arms = "allow"
 trivially_copy_pass_by_ref = "allow"
-needless_pass_by_value = "allow"
 unused_self = "allow"
 
 # Theese seem to be ok to ignore for now

@@ -37,7 +37,7 @@ static CONTEXT: Mutex<Context> = Mutex::new(Context { output_path: None });
 // Passes fuzzed header to the `csmith-fuzzing/predicate.py` script, returns
 // output of the associated command.
 fn run_predicate_script(
-    header: fuzzers::HeaderC,
+    header: &fuzzers::HeaderC,
 ) -> Result<Output, Box<dyn Error>> {
     let dir = Builder::new().prefix("bindgen_prop").tempdir()?;
     let header_path = dir.path().join("prop_test.h");
@@ -77,8 +77,9 @@ fn run_predicate_script(
 // Generatable property. Pass generated headers off to run through the
 // `csmith-fuzzing/predicate.py` script. Success is measured by the success
 // status of that command.
+#[allow(clippy::needless_pass_by_value)]
 fn bindgen_prop(header: fuzzers::HeaderC) -> TestResult {
-    match run_predicate_script(header) {
+    match run_predicate_script(&header) {
         Ok(o) => TestResult::from_bool(o.status.success()),
         Err(e) => {
             println!("{e:?}");
