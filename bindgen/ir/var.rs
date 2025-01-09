@@ -234,10 +234,7 @@ impl ClangSubItemParser for Var {
                                 assert_eq!(c.len_utf8(), 1);
                                 c as u8
                             }
-                            CChar::Raw(c) => {
-                                assert!(c <= u64::from(u8::MAX));
-                                c as u8
-                            }
+                            CChar::Raw(c) => u8::try_from(c).unwrap(),
                         };
 
                         (TypeKind::Int(IntKind::U8), VarType::Char(c))
