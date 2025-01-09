@@ -837,7 +837,7 @@ impl Bindings {
             };
 
             if let Some(search_paths) = search_paths {
-                for path in search_paths.into_iter() {
+                for path in search_paths {
                     if let Ok(path) = path.into_os_string().into_string() {
                         options.clang_args.push("-isystem".into());
                         options.clang_args.push(path.into_boxed_str());
