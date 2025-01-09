@@ -494,7 +494,7 @@ impl Cursor {
     where
         Visitor: FnMut(Cursor) -> CXChildVisitResult,
     {
-        let data = &mut visitor as *mut Visitor;
+        let data = ptr::addr_of_mut!(visitor);
         unsafe {
             clang_visitChildren(self.x, visit_children::<Visitor>, data.cast());
         }
