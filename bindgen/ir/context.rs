@@ -198,8 +198,8 @@ impl From<ItemId> for usize {
 
 impl ItemId {
     /// Get a numeric representation of this ID.
-    pub(crate) fn as_usize(&self) -> usize {
-        (*self).into()
+    pub(crate) fn as_usize(self) -> usize {
+        self.into()
     }
 }
 

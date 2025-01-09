@@ -451,7 +451,7 @@ impl CannotDerive<'_> {
 }
 
 impl DeriveTrait {
-    fn not_by_name(&self, ctx: &BindgenContext, item: &Item) -> bool {
+    fn not_by_name(self, ctx: &BindgenContext, item: &Item) -> bool {
         match self {
             DeriveTrait::Copy => ctx.no_copy_by_name(item),
             DeriveTrait::Debug => ctx.no_debug_by_name(item),
@@ -463,21 +463,21 @@ impl DeriveTrait {
         }
     }
 
-    fn consider_edge_comp(&self) -> EdgePredicate {
+    fn consider_edge_comp(self) -> EdgePredicate {
         match self {
             DeriveTrait::PartialEqOrPartialOrd => consider_edge_default,
             _ => |kind| matches!(kind, EdgeKind::BaseMember | EdgeKind::Field),
         }
     }
 
-    fn consider_edge_typeref(&self) -> EdgePredicate {
+    fn consider_edge_typeref(self) -> EdgePredicate {
         match self {
             DeriveTrait::PartialEqOrPartialOrd => consider_edge_default,
             _ => |kind| kind == EdgeKind::TypeReference,
         }
     }
 
-    fn consider_edge_tmpl_inst(&self) -> EdgePredicate {
+    fn consider_edge_tmpl_inst(self) -> EdgePredicate {
         match self {
             DeriveTrait::PartialEqOrPartialOrd => consider_edge_default,
             _ => |kind| {
@@ -489,7 +489,7 @@ impl DeriveTrait {
         }
     }
 
-    fn can_derive_large_array(&self, ctx: &BindgenContext) -> bool {
+    fn can_derive_large_array(self, ctx: &BindgenContext) -> bool {
         if ctx.options().rust_features().larger_arrays {
             !matches!(self, DeriveTrait::Default)
         } else {
@@ -497,23 +497,23 @@ impl DeriveTrait {
         }
     }
 
-    fn can_derive_union(&self) -> bool {
+    fn can_derive_union(self) -> bool {
         matches!(self, DeriveTrait::Copy)
     }
 
-    fn can_derive_compound_with_destructor(&self) -> bool {
+    fn can_derive_compound_with_destructor(self) -> bool {
         !matches!(self, DeriveTrait::Copy)
     }
 
-    fn can_derive_compound_with_vtable(&self) -> bool {
+    fn can_derive_compound_with_vtable(self) -> bool {
         !matches!(self, DeriveTrait::Default)
     }
 
-    fn can_derive_compound_forward_decl(&self) -> bool {
+    fn can_derive_compound_forward_decl(self) -> bool {
         matches!(self, DeriveTrait::Copy | DeriveTrait::Debug)
     }
 
-    fn can_derive_incomplete_array(&self) -> bool {
+    fn can_derive_incomplete_array(self) -> bool {
         !matches!(
             self,
             DeriveTrait::Copy |
@@ -522,7 +522,7 @@ impl DeriveTrait {
         )
     }
 
-    fn can_derive_fnptr(&self, f: &FunctionSig) -> CanDerive {
+    fn can_derive_fnptr(self, f: &FunctionSig) -> CanDerive {
         match (self, f.function_pointers_can_derive()) {
             (DeriveTrait::Copy, _) | (DeriveTrait::Default, _) | (_, true) => {
                 trace!("    function pointer can derive {self}");
@@ -539,8 +539,8 @@ impl DeriveTrait {
         }
     }
 
-    fn can_derive_vector(&self) -> CanDerive {
-        if *self == DeriveTrait::PartialEqOrPartialOrd {
+    fn can_derive_vector(self) -> CanDerive {
+        if self == DeriveTrait::PartialEqOrPartialOrd {
             // FIXME: vectors always can derive PartialEq, but they should
             // not derive PartialOrd:
             // https://github.com/rust-lang-nursery/packed_simd/issues/48
@@ -552,8 +552,8 @@ impl DeriveTrait {
         }
     }
 
-    fn can_derive_pointer(&self) -> CanDerive {
-        if *self == DeriveTrait::Default {
+    fn can_derive_pointer(self) -> CanDerive {
+        if self == DeriveTrait::Default {
             trace!("    pointer cannot derive Default");
             CanDerive::No
         } else {
@@ -562,7 +562,7 @@ impl DeriveTrait {
         }
     }
 
-    fn can_derive_simple(&self, kind: &TypeKind) -> CanDerive {
+    fn can_derive_simple(self, kind: &TypeKind) -> CanDerive {
         match (self, kind) {
             // === Default ===
             (DeriveTrait::Default, TypeKind::Void) |
