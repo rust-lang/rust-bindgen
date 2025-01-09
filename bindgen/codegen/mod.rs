@@ -3188,14 +3188,14 @@ pub enum EnumVariation {
 }
 
 impl EnumVariation {
-    fn is_rust(&self) -> bool {
-        matches!(*self, EnumVariation::Rust { .. })
+    fn is_rust(self) -> bool {
+        matches!(self, EnumVariation::Rust { .. })
     }
 
     /// Both the `Const` and `ModuleConsts` variants will cause this to return
     /// true.
-    fn is_const(&self) -> bool {
-        matches!(*self, EnumVariation::Consts | EnumVariation::ModuleConsts)
+    fn is_const(self) -> bool {
+        matches!(self, EnumVariation::Consts | EnumVariation::ModuleConsts)
     }
 }
 
@@ -5701,7 +5701,7 @@ pub(crate) mod utils {
 
     pub(crate) fn fnsig_argument_type(
         ctx: &BindgenContext,
-        ty: &TypeId,
+        ty: TypeId,
     ) -> syn::Type {
         use super::ToPtr;
 
@@ -5753,7 +5753,7 @@ pub(crate) mod utils {
         let mut unnamed_arguments = 0;
         let mut args = args_iter
             .map(|(name, ty)| {
-                let arg_ty = fnsig_argument_type(ctx, ty);
+                let arg_ty = fnsig_argument_type(ctx, *ty);
 
                 let arg_name = if let Some(ref name) = *name {
                     ctx.rust_mangle(name).into_owned()

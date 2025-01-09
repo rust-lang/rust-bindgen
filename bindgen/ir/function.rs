@@ -247,8 +247,8 @@ pub(crate) enum ClangAbi {
 
 impl ClangAbi {
     /// Returns whether this Abi is known or not.
-    fn is_unknown(&self) -> bool {
-        matches!(*self, ClangAbi::Unknown(..))
+    fn is_unknown(self) -> bool {
+        matches!(self, ClangAbi::Unknown(..))
     }
 }
 
