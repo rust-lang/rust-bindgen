@@ -1146,8 +1146,9 @@ fn parse(context: &mut BindgenContext) -> Result<(), BindgenError> {
         cursor.visit_sorted(ctx, |ctx, child| parse_one(ctx, child, None));
     });
 
-    assert!(
-        context.current_module() == context.root_module(),
+    assert_eq!(
+        context.current_module(),
+        context.root_module(),
         "How did this happen?"
     );
     Ok(())

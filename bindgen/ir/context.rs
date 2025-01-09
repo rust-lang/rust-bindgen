@@ -782,7 +782,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// codegen'd, even if its parent is not allowlisted. See issue #769 for
     /// details.
     fn add_item_to_module(&mut self, item: &Item) {
-        assert!(item.id() != self.root_module);
+        assert_ne!(item.id(), self.root_module);
         assert!(self.resolve_item_fallible(item.id()).is_none());
 
         if let Some(ref mut parent) = self.items[item.parent_id().0] {
@@ -804,7 +804,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             self.current_module
         );
 
-        self.items[(self.current_module.0).0]
+        self.items[self.current_module.0 .0]
             .as_mut()
             .expect("Should always have an item for self.current_module")
             .as_module_mut()
@@ -1232,7 +1232,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         &self,
     ) -> traversal::AssertNoDanglingItemsTraversal {
         assert!(self.in_codegen_phase());
-        assert!(self.current_module == self.root_module);
+        assert_eq!(self.current_module, self.root_module);
 
         let roots = self.items().map(|(id, _)| id);
         traversal::AssertNoDanglingItemsTraversal::new(
@@ -1248,7 +1248,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     fn assert_every_item_in_a_module(&self) {
         if cfg!(feature = "__testing_only_extra_assertions") {
             assert!(self.in_codegen_phase());
-            assert!(self.current_module == self.root_module);
+            assert_eq!(self.current_module, self.root_module);
 
             for (id, _item) in self.items() {
                 if id == self.root_module {
@@ -2346,7 +2346,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// allowlisted.
     pub(crate) fn allowlisted_items(&self) -> &ItemSet {
         assert!(self.in_codegen_phase());
-        assert!(self.current_module == self.root_module);
+        assert_eq!(self.current_module, self.root_module);
 
         self.allowlisted.as_ref().unwrap()
     }
@@ -2359,7 +2359,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         derive_trait: DeriveTrait,
     ) -> CanDerive {
         assert!(self.in_codegen_phase());
-        assert!(self.current_module == self.root_module);
+        assert_eq!(self.current_module, self.root_module);
 
         *self
             .blocklisted_types_implement_traits
@@ -2407,14 +2407,14 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Get a reference to the set of items we should generate.
     pub(crate) fn codegen_items(&self) -> &ItemSet {
         assert!(self.in_codegen_phase());
-        assert!(self.current_module == self.root_module);
+        assert_eq!(self.current_module, self.root_module);
         self.codegen_items.as_ref().unwrap()
     }
 
     /// Compute the allowlisted items set and populate `self.allowlisted`.
     fn compute_allowlisted_and_codegen_items(&mut self) {
         assert!(self.in_codegen_phase());
-        assert!(self.current_module == self.root_module);
+        assert_eq!(self.current_module, self.root_module);
         assert!(self.allowlisted.is_none());
         let _t = self.timer("compute_allowlisted_and_codegen_items");
 

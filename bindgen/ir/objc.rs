@@ -294,10 +294,7 @@ impl ObjCMethod {
         }
 
         // Check right amount of arguments
-        assert!(
-            args.len() == split_name.len() - 1,
-            "Incorrect method name or arguments for objc method, {args:?} vs {split_name:?}"
-        );
+        assert_eq!(args.len(), split_name.len() - 1, "Incorrect method name or arguments for objc method, {args:?} vs {split_name:?}");
 
         // Get arguments without type signatures to pass to `msg_send!`
         let mut args_without_types = vec![];
