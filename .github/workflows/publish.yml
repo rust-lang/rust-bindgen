@@ -11,7 +11,7 @@ env:
 jobs:
   cargo-publish:
     runs-on: ubuntu-latest
-    if: ${{ (github.event.workflow_run.conclusion == 'success') && (github.event.workflow.name == 'Release') }}
+    if: ${{ !github.event.pull_request && (github.event.workflow_run.conclusion == 'success') && (github.event.workflow.name == 'Release') }}
     steps:
       - name: Print workflow event name
         run: echo "${{ github.event.workflow.name }}"
