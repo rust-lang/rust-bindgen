@@ -2703,7 +2703,7 @@ impl CodeGenerator for CompInfo {
             let mut method_names = Default::default();
             if ctx.options().codegen_config.methods() {
                 for method in self.methods() {
-                    assert!(method.kind() != MethodKind::Constructor);
+                    assert_ne!(method.kind(), MethodKind::Constructor);
                     method.codegen_method(
                         ctx,
                         &mut methods,
