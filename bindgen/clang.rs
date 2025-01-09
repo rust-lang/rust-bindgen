@@ -1045,9 +1045,7 @@ pub(crate) struct ClangToken {
 impl ClangToken {
     /// Get the token spelling, without being converted to utf-8.
     pub(crate) fn spelling(&self) -> &[u8] {
-        let c_str = unsafe {
-            CStr::from_ptr(clang_getCString(self.spelling) as *const _)
-        };
+        let c_str = unsafe { CStr::from_ptr(clang_getCString(self.spelling)) };
         c_str.to_bytes()
     }
 
@@ -1098,9 +1096,9 @@ impl Iterator for ClangTokenIterator<'_> {
             let spelling = clang_getTokenSpelling(self.tu, *raw);
             let extent = clang_getTokenExtent(self.tu, *raw);
             Some(ClangToken {
-                kind,
-                extent,
                 spelling,
+                extent,
+                kind,
             })
         }
     }
@@ -1124,7 +1122,7 @@ extern "C" fn visit_children<Visitor>(
 where
     Visitor: FnMut(Cursor) -> CXChildVisitResult,
 {
-    let func: &mut Visitor = unsafe { &mut *(data as *mut Visitor) };
+    let func: &mut Visitor = unsafe { &mut *data.cast::<Visitor>() };
     let child = Cursor { x: cur };
 
     (*func)(child)
@@ -1763,7 +1761,7 @@ fn cxstring_to_string_leaky(s: CXString) -> String {
     if s.data.is_null() {
         return String::new();
     }
-    let c_str = unsafe { CStr::from_ptr(clang_getCString(s) as *const _) };
+    let c_str = unsafe { CStr::from_ptr(clang_getCString(s)) };
     c_str.to_string_lossy().into_owned()
 }
 
