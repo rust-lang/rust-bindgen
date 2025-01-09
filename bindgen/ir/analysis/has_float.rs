@@ -56,7 +56,7 @@ impl HasFloat<'_> {
             EdgeKind::FunctionParameter |
             EdgeKind::InnerType |
             EdgeKind::InnerVar |
-            EdgeKind::Method => false,
+            EdgeKind::Method |
             EdgeKind::Generic => false,
         }
     }
