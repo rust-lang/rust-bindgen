@@ -1,7 +1,5 @@
 //! Compound types (unions and structs) in our intermediate representation.
 
-use itertools::Itertools;
-
 use super::analysis::Sizedness;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, FunctionId, ItemId, TypeId, VarId};
@@ -19,6 +17,7 @@ use crate::HashMap;
 use crate::NonCopyUnionStyle;
 use std::cmp;
 use std::io;
+use std::iter;
 use std::mem;
 
 /// The kind of compound type.
@@ -491,23 +490,20 @@ where
 
     loop {
         // While we have plain old data members, just keep adding them to our
-        // resulting fields. We introduce a scope here so that we can use
-        // `raw_fields` again after the `by_ref` iterator adaptor is dropped.
-        {
-            let non_bitfields = raw_fields
-                .by_ref()
-                .peeking_take_while(|f| f.bitfield_width().is_none())
-                .map(|f| Field::DataMember(f.0));
-            fields.extend(non_bitfields);
-        }
+        // resulting fields.
+        let non_bitfields = iter::from_fn(|| {
+            raw_fields.next_if(|f| f.bitfield_width().is_none())
+        })
+        .map(|f| Field::DataMember(f.0));
+        fields.extend(non_bitfields);
 
         // Now gather all the consecutive bitfields. Only consecutive bitfields
         // may potentially share a bitfield allocation unit with each other in
         // the Itanium C++ ABI.
-        let mut bitfields = raw_fields
-            .by_ref()
-            .peeking_take_while(|f| f.bitfield_width().is_some())
-            .peekable();
+        let mut bitfields = iter::from_fn(|| {
+            raw_fields.next_if(|f| f.bitfield_width().is_some())
+        })
+        .peekable();
 
         if bitfields.peek().is_none() {
             break;
