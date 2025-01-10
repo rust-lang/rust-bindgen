@@ -348,6 +348,13 @@ impl Builder {
         }
 
         // Transform input headers to arguments on the clang command line.
+        self.options.fallback_clang_args = self
+            .options
+            .clang_args
+            .iter()
+            .filter(|arg| !arg.contains("-MMD") && !arg.contains("-MD"))
+            .cloned()
+            .collect::<Vec<_>>();
         self.options.clang_args.extend(
             self.options.input_headers
                 [..self.options.input_headers.len().saturating_sub(1)]
