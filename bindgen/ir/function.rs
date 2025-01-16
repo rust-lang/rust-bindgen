@@ -19,7 +19,7 @@ const RUST_DERIVE_FUNPTR_LIMIT: usize = 12;
 
 /// What kind of function are we looking at?
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub(crate) enum FunctionKind {
+pub enum FunctionKind {
     /// A plain, free function.
     Function,
     /// A method of some kind.

@@ -32,7 +32,7 @@ pub(crate) enum CompKind {
 
 /// The kind of C++ method.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub(crate) enum MethodKind {
+pub enum MethodKind {
     /// A constructor. We represent it as method for convenience, to avoid code
     /// duplication.
     Constructor,

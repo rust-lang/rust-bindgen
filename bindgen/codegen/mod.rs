@@ -21,8 +21,8 @@ use self::struct_layout::StructLayoutTracker;
 use super::BindgenOptions;
 
 use crate::callbacks::{
-    AttributeInfo, DeriveInfo, DiscoveredItem, DiscoveredItemId, FieldInfo,
-    TypeKind as DeriveTypeKind,
+    AttributeInfo, AttributeItemKind, DeriveInfo, DiscoveredItem,
+    DiscoveredItemId, FieldInfo, TypeKind as DeriveTypeKind,
 };
 use crate::codegen::error::Error;
 use crate::ir::analysis::{HasVtable, Sizedness};
@@ -1070,7 +1070,7 @@ impl CodeGenerator for Type {
                             ctx.options().all_callbacks(|cb| {
                                 cb.add_attributes(&AttributeInfo {
                                     name: &name,
-                                    kind: DeriveTypeKind::Struct,
+                                    kind: AttributeItemKind::Struct,
                                 })
                             });
                         attributes.extend(
@@ -2533,9 +2533,9 @@ impl CodeGenerator for CompInfo {
             cb.add_attributes(&AttributeInfo {
                 name: &canonical_name,
                 kind: if is_rust_union {
-                    DeriveTypeKind::Union
+                    AttributeItemKind::Union
                 } else {
-                    DeriveTypeKind::Struct
+                    AttributeItemKind::Struct
                 },
             })
         });
@@ -3064,11 +3064,11 @@ impl Method {
 
         method_names.insert(name.clone());
 
-        let mut function_name = function_item.canonical_name(ctx);
+        let mut canonical_name = function_item.canonical_name(ctx);
         if times_seen > 0 {
-            write!(&mut function_name, "{times_seen}").unwrap();
+            write!(&mut canonical_name, "{times_seen}").unwrap();
         }
-        let function_name = ctx.rust_ident(function_name);
+        let function_name = ctx.rust_ident(&canonical_name);
         let mut args = utils::fnsig_arguments(ctx, signature);
         let mut ret = utils::fnsig_return_ty(ctx, signature);
 
@@ -3147,6 +3147,23 @@ impl Method {
         let block = ctx.wrap_unsafe_ops(quote! ( #( #stmts );*));
 
         let mut attrs = vec![attributes::inline()];
+        attrs.extend(
+            function_item
+                .annotations()
+                .attributes()
+                .iter()
+                .map(|s| s.parse().unwrap()),
+        );
+
+        let custom_attributes = ctx.options().all_callbacks(|cb| {
+            cb.add_attributes(&AttributeInfo {
+                name: &canonical_name,
+                kind: AttributeItemKind::Function(FunctionKind::Method(
+                    self.kind(),
+                )),
+            })
+        });
+        attrs.extend(custom_attributes.iter().map(|s| s.parse().unwrap()));
 
         if signature.must_use() {
             attrs.push(attributes::must_use());
@@ -3728,7 +3745,7 @@ impl CodeGenerator for Enum {
             let custom_attributes = ctx.options().all_callbacks(|cb| {
                 cb.add_attributes(&AttributeInfo {
                     name: &name,
-                    kind: DeriveTypeKind::Enum,
+                    kind: AttributeItemKind::Enum,
                 })
             });
             attrs.extend(custom_attributes.iter().map(|s| s.parse().unwrap()));
@@ -4592,6 +4609,20 @@ impl CodeGenerator for Function {
         }
 
         let mut attributes = vec![];
+        attributes.extend(
+            item.annotations()
+                .attributes()
+                .iter()
+                .map(|s| s.parse().unwrap()),
+        );
+
+        let custom_attributes = ctx.options().all_callbacks(|cb| {
+            cb.add_attributes(&AttributeInfo {
+                name: &canonical_name,
+                kind: AttributeItemKind::Function(self.kind()),
+            })
+        });
+        attributes.extend(custom_attributes.iter().map(|s| s.parse().unwrap()));
 
         if true {
             let must_use = signature.must_use() || {
