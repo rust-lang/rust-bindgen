@@ -1,4 +1,4 @@
-// bindgen-flags: -- --target=i686-pc-win32
+// bindgen-flags: --raw-line '#![cfg(target = "i686-pc-windows-msvc")]' -- --target=i686-pc-win32
 
 extern "C" void foo();
 

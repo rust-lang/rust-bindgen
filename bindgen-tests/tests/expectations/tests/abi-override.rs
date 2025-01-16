@@ -1,4 +1,5 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
+#![cfg(target = "i686-pc-windows-msvc")]
 unsafe extern "fastcall" {
     pub fn foo();
 }
