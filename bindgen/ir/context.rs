@@ -867,7 +867,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 "abstract" | "alignof" | "as" | "async" | "await" | "become" |
                     "box" | "break" | "const" | "continue" | "crate" | "do" |
                     "dyn" | "else" | "enum" | "extern" | "false" | "final" |
-                    "fn" | "for" | "if" | "impl" | "in" | "let" | "loop" |
+                    "fn" | "for" | "gen" | "if" | "impl" | "in" | "let" | "loop" |
                     "macro" | "match" | "mod" | "move" | "mut" | "offsetof" |
                     "override" | "priv" | "proc" | "pub" | "pure" | "ref" |
                     "return" | "Self" | "self" | "sizeof" | "static" |

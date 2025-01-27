@@ -21,6 +21,7 @@ int box;
 int crate;
 int false;
 int fn;
+int gen;
 int impl;
 int in;
 int let;

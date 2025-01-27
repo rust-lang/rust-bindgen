@@ -88,6 +88,10 @@ unsafe extern "C" {
     pub static mut fn_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
+    #[link_name = "\u{1}gen"]
+    pub static mut gen_: ::std::os::raw::c_int;
+}
+unsafe extern "C" {
     #[link_name = "\u{1}impl"]
     pub static mut impl_: ::std::os::raw::c_int;
 }
