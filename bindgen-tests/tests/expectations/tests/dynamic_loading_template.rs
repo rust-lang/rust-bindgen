@@ -20,8 +20,8 @@ impl TestLib {
         L: Into<::libloading::Library>,
     {
         let __library = library.into();
-        let foo = __library.get(b"foo\0").map(|sym| *sym);
-        let foo1 = __library.get(b"foo1\0").map(|sym| *sym);
+        let foo = __library.get(b"_Z3fooIiET_S0_\0").map(|sym| *sym);
+        let foo1 = __library.get(b"_Z3fooIfET_S0_\0").map(|sym| *sym);
         Ok(TestLib { __library, foo, foo1 })
     }
     pub unsafe fn foo(&self, x: ::std::os::raw::c_int) -> ::std::os::raw::c_int {

@@ -27,9 +27,9 @@ impl TestLib {
         L: Into<::libloading::Library>,
     {
         let __library = library.into();
-        let foo = __library.get(b"foo\0").map(|sym| *sym);
-        let baz = __library.get(b"baz\0").map(|sym| *sym);
-        let bazz = __library.get(b"bazz\0").map(|sym| *sym);
+        let foo = __library.get(b"_Z3fooPv\0").map(|sym| *sym);
+        let baz = __library.get(b"_Z3bazPv\0").map(|sym| *sym);
+        let bazz = __library.get(b"_Z4bazziz\0").map(|sym| *sym);
         Ok(TestLib {
             __library,
             foo,

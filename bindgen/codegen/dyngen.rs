@@ -131,6 +131,7 @@ impl DynamicItems {
     pub(crate) fn push_func(
         &mut self,
         ident: &Ident,
+        symbol: &str,
         abi: ClangAbi,
         is_variadic: bool,
         is_required: bool,
@@ -181,11 +182,12 @@ impl DynamicItems {
         }
 
         // N.B: Unwrap the signature upon construction if it is required to be resolved.
-        let ident_str = codegen::helpers::ast_ty::cstr_expr(ident.to_string());
+        let symbol_cstr =
+            codegen::helpers::ast_ty::cstr_expr(symbol.to_string());
         let library_get = if ctx.options().wrap_unsafe_ops {
-            quote!(unsafe { __library.get(#ident_str) })
+            quote!(unsafe { __library.get(#symbol_cstr) })
         } else {
-            quote!(__library.get(#ident_str))
+            quote!(__library.get(#symbol_cstr))
         };
 
         self.constructor_inits.push(if is_required {
@@ -206,6 +208,7 @@ impl DynamicItems {
     pub fn push_var(
         &mut self,
         ident: &Ident,
+        symbol: &str,
         ty: &TokenStream,
         is_required: bool,
         wrap_unsafe_ops: bool,
@@ -231,12 +234,13 @@ impl DynamicItems {
             }
         });
 
-        let ident_str = codegen::helpers::ast_ty::cstr_expr(ident.to_string());
+        let symbol_cstr =
+            codegen::helpers::ast_ty::cstr_expr(symbol.to_string());
 
         let library_get = if wrap_unsafe_ops {
-            quote!(unsafe { __library.get::<*mut #ty>(#ident_str) })
+            quote!(unsafe { __library.get::<*mut #ty>(#symbol_cstr) })
         } else {
-            quote!(__library.get::<*mut #ty>(#ident_str))
+            quote!(__library.get::<*mut #ty>(#symbol_cstr))
         };
 
         let qmark = if is_required { quote!(?) } else { quote!() };
