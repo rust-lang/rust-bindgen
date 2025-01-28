@@ -779,20 +779,20 @@ impl CodeGenerator for Var {
                 }
             }
         } else {
-            // If necessary, apply a `#[link_name]` attribute
-            if let Some(link_name) = self.link_name() {
-                attrs.push(attributes::link_name::<false>(link_name));
-            } else {
+            let symbol: &str = self.link_name().unwrap_or_else(|| {
                 let link_name =
                     self.mangled_name().unwrap_or_else(|| self.name());
-                if !utils::names_will_be_identical_after_mangling(
+                if utils::names_will_be_identical_after_mangling(
                     &canonical_name,
                     link_name,
                     None,
                 ) {
+                    canonical_name.as_str()
+                } else {
                     attrs.push(attributes::link_name::<false>(link_name));
+                    link_name
                 }
-            }
+            });
 
             let maybe_mut = if self.is_const() {
                 quote! {}
@@ -816,6 +816,7 @@ impl CodeGenerator for Var {
             if ctx.options().dynamic_library_name.is_some() {
                 result.dynamic_items().push_var(
                     &canonical_ident,
+                    symbol,
                     &self
                         .ty()
                         .to_rust_ty_or_opaque(ctx, &())
@@ -4639,21 +4640,19 @@ impl CodeGenerator for Function {
             write!(&mut canonical_name, "{times_seen}").unwrap();
         }
 
-        let mut has_link_name_attr = false;
-        if let Some(link_name) = self.link_name() {
-            attributes.push(attributes::link_name::<false>(link_name));
-            has_link_name_attr = true;
-        } else {
-            let link_name = mangled_name.unwrap_or(name);
-            if !is_dynamic_function &&
-                !utils::names_will_be_identical_after_mangling(
-                    &canonical_name,
-                    link_name,
-                    Some(abi),
-                )
-            {
+        let link_name_attr = self.link_name().or_else(|| {
+            let mangled_name = mangled_name.unwrap_or(name);
+            (!utils::names_will_be_identical_after_mangling(
+                &canonical_name,
+                mangled_name,
+                Some(abi),
+            ))
+            .then(|| mangled_name)
+        });
+
+        if let Some(link_name) = link_name_attr {
+            if !is_dynamic_function {
                 attributes.push(attributes::link_name::<false>(link_name));
-                has_link_name_attr = true;
             }
         }
 
@@ -4665,8 +4664,9 @@ impl CodeGenerator for Function {
                 quote! { #[link(wasm_import_module = #name)] }
             });
 
-        let should_wrap =
-            is_internal && ctx.options().wrap_static_fns && !has_link_name_attr;
+        let should_wrap = is_internal &&
+            ctx.options().wrap_static_fns &&
+            link_name_attr.is_none();
 
         if should_wrap {
             let name = canonical_name.clone() + ctx.wrap_static_fns_suffix();
@@ -4732,11 +4732,14 @@ impl CodeGenerator for Function {
 
         // If we're doing dynamic binding generation, add to the dynamic items.
         if is_dynamic_function {
+            let ident_str = ident.to_string();
+            let symbol = link_name_attr.unwrap_or(&ident_str);
             let args_identifiers =
                 utils::fnsig_argument_identifiers(ctx, signature);
             let ret_ty = utils::fnsig_return_ty(ctx, signature);
             result.dynamic_items().push_func(
                 &ident,
+                symbol,
                 abi,
                 signature.is_variadic(),
                 ctx.options().dynamic_link_require_all,
