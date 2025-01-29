@@ -438,6 +438,27 @@ options! {
         },
         as_args: "--newtype-enum",
     },
+   /// `enum`s marked as `Result<(), ErrorEnum>`.
+    result_error_enums: RegexSet {
+        methods: {
+            regex_option! {
+                /// Mark the given `enum` as a `Result<(), ErrorEnum>`, where ErrorEnum is a newtupe.
+                ///
+                /// This means that a NonZero integer newtype will be declared to represent the `enum`
+                /// type, without the zero variant, and the error variants will be represented as
+                ///  constants inside of this type's `impl` block. The 0 variant of the enum will
+                /// be mapped to the `Ok(())` variant of the Result.
+                ///
+                /// Note: Using This API requires --rust-target 1.79 or newer due to the usage
+                ///       of `NonZero`!
+                pub fn result_error_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+                    self.options.result_error_enums.insert(arg);
+                    self
+                }
+            }
+        },
+        as_args: "--result-error-enum",
+    },
     /// `enum`s marked as global newtypes .
     newtype_global_enums: RegexSet {
         methods: {
