@@ -118,8 +118,7 @@ pub trait ParseCallbacks: fmt::Debug {
     ///
     /// The above callback would result in the following rust binding:
     ///
-    /// ```no_run
-    /// # // Note: doctests break when running with MSRV.
+    /// ```ignore
     /// pub type MyResult = Result<(), MyError>;
     /// #[repr(transparent)]
     /// #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
