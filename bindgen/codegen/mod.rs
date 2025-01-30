@@ -3316,6 +3316,7 @@ impl<'a> EnumBuilder<'a> {
     /// the representation, and which variation it should be generated as.
     fn new(
         name: &'a str,
+        ctx: &BindgenContext,
         mut attrs: Vec<proc_macro2::TokenStream>,
         repr: syn::Type,
         enum_variation: EnumVariation,
@@ -3329,8 +3330,12 @@ impl<'a> EnumBuilder<'a> {
                 is_global,
                 is_result_type: true,
             } => {
-                // Todo: This identifier perhaps could be determined by a ParseCallback.
-                let error_ident = format_ident!("{}Error", ident);
+                let error_enum_name = ctx
+                    .options()
+                    .last_callback(|c| c.result_error_enum_name(&name))
+                    .unwrap_or(format!("{name}Error"));
+                let error_ident =
+                    Ident::new(&error_enum_name, Span::call_site());
                 EnumBuilder::NewType {
                     canonical_name: name,
                     tokens: quote! {
@@ -3837,7 +3842,7 @@ impl CodeGenerator for Enum {
         let has_typedef = ctx.is_enum_typedef_combo(item.id());
 
         let mut builder =
-            EnumBuilder::new(&name, attrs, repr, variation, has_typedef);
+            EnumBuilder::new(&name, ctx, attrs, repr, variation, has_typedef);
 
         // A map where we keep a value -> variant relation.
         let mut seen_values = HashMap::<_, Ident>::default();
