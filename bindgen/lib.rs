@@ -582,9 +582,7 @@ impl BindgenOptions {
 
     fn process_comment(&self, comment: &str) -> String {
         let comment = comment::preprocess(comment);
-        self.parse_callbacks
-            .last()
-            .and_then(|cb| cb.process_comment(&comment))
+        self.last_callback(|cb| cb.process_comment(&comment))
             .unwrap_or(comment)
     }
 }
