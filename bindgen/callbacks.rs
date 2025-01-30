@@ -79,6 +79,59 @@ pub trait ParseCallbacks: fmt::Debug {
         None
     }
 
+    /// Allows to rename the error enum name for a result-error-enum
+    ///
+    /// When the original C-enum is translated to a `Result<(), NonZero<ErrorEnum>>` representation,
+    /// the original enum name is used as a type alias for the result.
+    /// The error enum hence must have a different name. By default, we simply append an `Error` to
+    /// the typename, but this callback allows overriding the name for the error enum.
+    /// Please note that the new enum name returned by this callback must be distinct from the
+    /// original enum name.
+    ///
+    /// ### Example
+    ///
+    /// Given a header file like this:
+    /// ```c
+    /// enum MyResult {
+    ///     MyResultOk = 0,
+    ///     MyResultInvalid,
+    ///     MyResultAnotherError,
+    /// };
+    /// ```
+    /// A user could the implement the following callback:
+    /// ```rust
+    /// # use bindgen::callbacks::ParseCallbacks;
+    /// #[derive(Debug)]
+    /// struct ResultErrorEnumRename;
+    ///
+    /// impl ParseCallbacks for ResultErrorEnumRename {
+    ///     fn result_error_enum_name(
+    ///         &self,
+    ///         original_enum_name: &str,
+    ///     ) -> Option<String> {
+    ///         original_enum_name
+    ///             .strip_suffix("Result")
+    ///             .map(|base| format!("{base}Error"))
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// The above callback would result in the following rust binding:
+    ///
+    /// ```ignore
+    /// pub type MyResult = Result<(), MyError>;
+    /// #[repr(transparent)]
+    /// #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+    /// pub struct MyError(pub core::num::NonZero<::std::os::raw::c_uint>);
+    /// // <Definition of MyError variants>
+    /// ```
+    fn result_error_enum_name(
+        &self,
+        _original_enum_name: &str,
+    ) -> Option<String> {
+        None
+    }
+
     /// Allows to rename an enum variant, replacing `_original_variant_name`.
     fn enum_variant_name(
         &self,

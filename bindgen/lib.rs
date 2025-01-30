@@ -457,7 +457,7 @@ impl Builder {
 
 impl BindgenOptions {
     fn build(&mut self) {
-        const REGEX_SETS_LEN: usize = 29;
+        const REGEX_SETS_LEN: usize = 30;
 
         let regex_sets: [_; REGEX_SETS_LEN] = [
             &mut self.blocklisted_types,
@@ -476,6 +476,7 @@ impl BindgenOptions {
             &mut self.constified_enum_modules,
             &mut self.newtype_enums,
             &mut self.newtype_global_enums,
+            &mut self.result_error_enums,
             &mut self.rustified_enums,
             &mut self.rustified_non_exhaustive_enums,
             &mut self.type_alias,
@@ -511,6 +512,7 @@ impl BindgenOptions {
                     "--bitfield-enum",
                     "--newtype-enum",
                     "--newtype-global-enum",
+                    "--result-error-enum",
                     "--rustified-enum",
                     "--rustified-enum-non-exhaustive",
                     "--constified-enum-module",

@@ -73,6 +73,20 @@ impl ParseCallbacks for EnumVariantRename {
 }
 
 #[derive(Debug)]
+struct ResultErrorEnumRename;
+
+impl ParseCallbacks for ResultErrorEnumRename {
+    fn result_error_enum_name(
+        &self,
+        original_enum_name: &str,
+    ) -> Option<String> {
+        original_enum_name
+            .strip_suffix("Result")
+            .map(|base| format!("{base}Error"))
+    }
+}
+
+#[derive(Debug)]
 struct BlocklistedTypeImplementsTrait;
 
 impl ParseCallbacks for BlocklistedTypeImplementsTrait {
@@ -149,6 +163,7 @@ impl ParseCallbacks for WrapAsVariadicFn {
 pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
     match cb {
         "enum-variant-rename" => Box::new(EnumVariantRename),
+        "result-error-enum-rename" => Box::new(ResultErrorEnumRename),
         "blocklisted-type-implements-trait" => {
             Box::new(BlocklistedTypeImplementsTrait)
         }

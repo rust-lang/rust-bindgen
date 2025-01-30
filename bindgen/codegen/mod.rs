@@ -3178,6 +3178,9 @@ pub enum EnumVariation {
         is_bitfield: bool,
         /// Indicates whether the variants will be represented as global constants
         is_global: bool,
+        /// Indicates whether this enum is a result type, where 0 indicates success.
+        /// The enum will then be a NonZero type, and usages wrapped in Result.
+        is_result_type: bool,
     },
     /// The code for this enum will use consts
     #[default]
@@ -3212,7 +3215,13 @@ impl fmt::Display for EnumVariation {
             } => "bitfield",
             Self::NewType {
                 is_bitfield: false,
+                is_global: false,
+                is_result_type: true,
+            } => "result_error_enum",
+            Self::NewType {
+                is_bitfield: false,
                 is_global,
+                ..
             } => {
                 if *is_global {
                     "newtype_global"
@@ -3242,16 +3251,24 @@ impl FromStr for EnumVariation {
             "bitfield" => Ok(EnumVariation::NewType {
                 is_bitfield: true,
                 is_global: false,
+                is_result_type: false,
             }),
             "consts" => Ok(EnumVariation::Consts),
             "moduleconsts" => Ok(EnumVariation::ModuleConsts),
             "newtype" => Ok(EnumVariation::NewType {
                 is_bitfield: false,
                 is_global: false,
+                is_result_type: false,
             }),
             "newtype_global" => Ok(EnumVariation::NewType {
                 is_bitfield: false,
                 is_global: true,
+                is_result_type: false,
+            }),
+            "result_error_enum" => Ok(EnumVariation::NewType {
+                is_bitfield: false,
+                is_global: false,
+                is_result_type: true,
             }),
             _ => Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidInput,
@@ -3278,6 +3295,7 @@ enum EnumBuilder<'a> {
         tokens: proc_macro2::TokenStream,
         is_bitfield: bool,
         is_global: bool,
+        result_error_enum_ident: Option<Ident>,
     },
     Consts {
         variants: Vec<proc_macro2::TokenStream>,
@@ -3298,6 +3316,7 @@ impl<'a> EnumBuilder<'a> {
     /// the representation, and which variation it should be generated as.
     fn new(
         name: &'a str,
+        ctx: &BindgenContext,
         mut attrs: Vec<proc_macro2::TokenStream>,
         repr: syn::Type,
         enum_variation: EnumVariation,
@@ -3309,6 +3328,31 @@ impl<'a> EnumBuilder<'a> {
             EnumVariation::NewType {
                 is_bitfield,
                 is_global,
+                is_result_type: true,
+            } => {
+                let error_enum_name = ctx
+                    .options()
+                    .last_callback(|c| c.result_error_enum_name(&name))
+                    .unwrap_or(format!("{name}Error"));
+                let error_ident =
+                    Ident::new(&error_enum_name, Span::call_site());
+                EnumBuilder::NewType {
+                    canonical_name: name,
+                    tokens: quote! {
+                        pub type #ident = Result<(), #error_ident>;
+
+                        #( #attrs )*
+                        pub struct #error_ident (pub core::num::NonZero<#repr>);
+                    },
+                    is_bitfield,
+                    is_global,
+                    result_error_enum_ident: Some(error_ident),
+                }
+            }
+            EnumVariation::NewType {
+                is_bitfield,
+                is_global,
+                ..
             } => EnumBuilder::NewType {
                 canonical_name: name,
                 tokens: quote! {
@@ -3317,6 +3361,7 @@ impl<'a> EnumBuilder<'a> {
                 },
                 is_bitfield,
                 is_global,
+                result_error_enum_ident: None,
             },
 
             EnumVariation::Rust { .. } => {
@@ -3409,6 +3454,33 @@ impl<'a> EnumBuilder<'a> {
                     },
                     emitted_any_variants: true,
                 }
+            }
+
+            EnumBuilder::NewType {
+                result_error_enum_ident: Some(ref enum_ident),
+                ..
+            } => {
+                assert!(is_ty_named);
+                if matches!(
+                    variant.val(),
+                    EnumVariantValue::Signed(0) | EnumVariantValue::Unsigned(0)
+                ) {
+                    return self;
+                }
+
+                let variant_ident = ctx.rust_ident(variant_name);
+                // Wrapping the unwrap in the const block ensures we get
+                // a compile-time panic.
+                let expr = quote! { const { core::num::NonZero::new(#expr).unwrap() } };
+
+                result.push(quote! {
+                    impl #enum_ident {
+                        #doc
+                        pub const #variant_ident : #enum_ident = #enum_ident ( #expr );
+                    }
+                });
+
+                self
             }
 
             EnumBuilder::NewType {
@@ -3770,7 +3842,7 @@ impl CodeGenerator for Enum {
         let has_typedef = ctx.is_enum_typedef_combo(item.id());
 
         let mut builder =
-            EnumBuilder::new(&name, attrs, repr, variation, has_typedef);
+            EnumBuilder::new(&name, ctx, attrs, repr, variation, has_typedef);
 
         // A map where we keep a value -> variant relation.
         let mut seen_values = HashMap::<_, Ident>::default();

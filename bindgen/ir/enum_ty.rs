@@ -4,10 +4,11 @@ use super::super::codegen::EnumVariation;
 use super::context::{BindgenContext, TypeId};
 use super::item::Item;
 use super::ty::{Type, TypeKind};
-use crate::clang;
 use crate::ir::annotations::Annotations;
 use crate::parse::ParseError;
 use crate::regex_set::RegexSet;
+use crate::{clang, RustTarget};
+use std::str::FromStr;
 
 /// An enum representing custom handling that can be given to a variant.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -193,12 +194,37 @@ impl Enum {
             EnumVariation::NewType {
                 is_bitfield: true,
                 is_global: false,
+                is_result_type: false,
+            }
+        } else if self.is_matching_enum(
+            ctx,
+            &ctx.options().result_error_enums,
+            item,
+        ) && ctx
+            .options()
+            .rust_target
+            .ge(&RustTarget::from_str("1.79").unwrap())
+        {
+            let zero_variant = self.variants.iter().find(|x| {
+                matches!(
+                    x.val,
+                    EnumVariantValue::Signed(0) | EnumVariantValue::Unsigned(0)
+                )
+            });
+            if zero_variant.is_none() {
+                panic!("Result-error-enum must have a zero variant. (Item: {item:?})");
+            }
+            EnumVariation::NewType {
+                is_bitfield: false,
+                is_global: false,
+                is_result_type: true,
             }
         } else if self.is_matching_enum(ctx, &ctx.options().newtype_enums, item)
         {
             EnumVariation::NewType {
                 is_bitfield: false,
                 is_global: false,
+                is_result_type: false,
             }
         } else if self.is_matching_enum(
             ctx,
@@ -208,6 +234,7 @@ impl Enum {
             EnumVariation::NewType {
                 is_bitfield: false,
                 is_global: true,
+                is_result_type: false,
             }
         } else if self.is_matching_enum(
             ctx,
