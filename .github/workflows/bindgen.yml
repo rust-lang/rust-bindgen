@@ -66,12 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Check without default features 
+      - name: Check without default features
         run: cargo check -p bindgen --no-default-features --features=runtime 
 
   docs:
@@ -81,12 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Generate documentation for `bindgen` 
+      - name: Generate documentation for `bindgen`
         run: cargo doc --document-private-items --no-deps -p bindgen 
 
       - name: Generate documentation for `bindgen-cli` 
@@ -96,11 +86,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
 
       # TODO: Actually run quickchecks once `bindgen` is reliable enough.
       - name: Build quickcheck tests
@@ -113,11 +98,6 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
 
       - name: Test expectations
         run: cd bindgen-tests/tests/expectations && cargo test
