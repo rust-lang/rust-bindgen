@@ -18,19 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install nightly
-        uses: dtolnay/rust-toolchain@master
-        with:
-          # TODO: Should ideally be stable, but we use some nightly-only
-          # features.
-          toolchain: nightly
-          components: rustfmt, clippy
-
       - name: Run rustfmt
         run: cargo fmt -- --check
 
       - name: Run clippy
-        run: cargo clippy --all-targets --workspace --exclude bindgen-integration --exclude tests_expectations
+        run: cargo clippy --all-targets --workspace --exclude bindgen-integration --exclude tests_expectations -- -D warnings
 
   msrv:
     runs-on: ubuntu-latest
