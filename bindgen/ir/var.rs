@@ -271,6 +271,14 @@ impl ClangSubItemParser for Var {
             }
             CXCursor_VarDecl => {
                 let mut name = cursor.spelling();
+
+                let link_name = ctx.options().last_callback(|callbacks| {
+                    callbacks.generated_link_name_override(ItemInfo {
+                        name: name.as_str(),
+                        kind: ItemKind::Var,
+                    })
+                });
+
                 if cursor.linkage() == CXLinkage_External {
                     if let Some(nm) = ctx.options().last_callback(|callbacks| {
                         callbacks.generated_name_override(ItemInfo {
@@ -288,13 +296,6 @@ impl ClangSubItemParser for Var {
                     warn!("Empty constant name?");
                     return Err(ParseError::Continue);
                 }
-
-                let link_name = ctx.options().last_callback(|callbacks| {
-                    callbacks.generated_link_name_override(ItemInfo {
-                        name: name.as_str(),
-                        kind: ItemKind::Var,
-                    })
-                });
 
                 let ty = cursor.cur_type();
 

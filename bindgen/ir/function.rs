@@ -784,6 +784,14 @@ impl ClangSubItemParser for Function {
             // but seems easy enough to handle it here.
             name.push_str("_destructor");
         }
+
+        let link_name = context.options().last_callback(|callbacks| {
+            callbacks.generated_link_name_override(ItemInfo {
+                name: name.as_str(),
+                kind: ItemKind::Function,
+            })
+        });
+        
         if let Some(nm) = context.options().last_callback(|callbacks| {
             callbacks.generated_name_override(ItemInfo {
                 name: name.as_str(),
@@ -795,13 +803,6 @@ impl ClangSubItemParser for Function {
         assert!(!name.is_empty(), "Empty function name.");
 
         let mangled_name = cursor_mangling(context, &cursor);
-
-        let link_name = context.options().last_callback(|callbacks| {
-            callbacks.generated_link_name_override(ItemInfo {
-                name: name.as_str(),
-                kind: ItemKind::Function,
-            })
-        });
 
         let function = Self::new(
             name.clone(),
