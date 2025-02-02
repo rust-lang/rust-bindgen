@@ -271,10 +271,12 @@ impl ClangSubItemParser for Var {
             }
             CXCursor_VarDecl => {
                 let mut name = cursor.spelling();
+                let mangling = cursor_mangling(ctx, &cursor);
 
                 let link_name = ctx.options().last_callback(|callbacks| {
                     callbacks.generated_link_name_override(ItemInfo {
                         name: name.as_str(),
+                        mangled_name: mangling.as_deref(),
                         kind: ItemKind::Var,
                     })
                 });
@@ -283,6 +285,7 @@ impl ClangSubItemParser for Var {
                     if let Some(nm) = ctx.options().last_callback(|callbacks| {
                         callbacks.generated_name_override(ItemInfo {
                             name: name.as_str(),
+                            mangled_name: mangling.as_deref(),
                             kind: ItemKind::Var,
                         })
                     }) {
@@ -365,7 +368,6 @@ impl ClangSubItemParser for Var {
                         .map(VarType::String)
                 };
 
-                let mangling = cursor_mangling(ctx, &cursor);
                 let var =
                     Var::new(name, mangling, link_name, ty, value, is_const);
 
