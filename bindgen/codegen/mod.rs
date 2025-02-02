@@ -2521,7 +2521,17 @@ impl CodeGenerator for CompInfo {
             }
         }
 
-        let derivable_traits = derives_of_item(item, ctx, packed);
+        let derivable_traits = if self.is_forward_declaration() {
+            // The only trait we can derive for forward declared types is `Debug`,
+            // since we don't know anything about the layout or type.
+            let mut derivable_traits = DerivableTraits::empty();
+            if !item.annotations().disallow_debug() {
+                derivable_traits |= DerivableTraits::DEBUG;
+            };
+            derivable_traits
+        } else {
+            derives_of_item(item, ctx, packed)
+        };
         if !derivable_traits.contains(DerivableTraits::DEBUG) {
             needs_debug_impl = ctx.options().derive_debug &&
                 ctx.options().impl_debug &&

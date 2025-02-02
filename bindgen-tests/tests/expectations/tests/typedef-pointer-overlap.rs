@@ -24,7 +24,7 @@ const _: () = {
 };
 pub type bar_ptr = *mut bar;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct baz {
     _unused: [u8; 0],
 }

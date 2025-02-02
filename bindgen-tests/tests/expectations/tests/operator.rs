@@ -4,7 +4,7 @@ unsafe extern "C" {
     pub fn operator_information() -> ::std::os::raw::c_int;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct Foo {
     _unused: [u8; 0],
 }
