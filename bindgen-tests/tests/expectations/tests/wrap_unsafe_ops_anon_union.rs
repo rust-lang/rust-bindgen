@@ -10,12 +10,12 @@ pub const TErrorResult_UnionState_HasMessage: TErrorResult_UnionState = 0;
 pub const TErrorResult_UnionState_HasException: TErrorResult_UnionState = 0;
 pub type TErrorResult_UnionState = i32;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct TErrorResult_Message {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct TErrorResult_DOMExceptionInfo {
     _unused: [u8; 0],
 }

@@ -20,7 +20,7 @@ impl Struct {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug)]
 pub struct Union {
     _unused: [u8; 0],
 }

@@ -4,7 +4,9 @@ typedef int MustUseInt;
 
 MustUseInt return_int();
 
-struct MustUseStruct;
+struct MustUseStruct {
+    int a;
+};
 
 struct MustUseStruct return_struct();
 
@@ -20,11 +22,15 @@ int return_plain_int();
 /**
  * <div rustbindgen mustusetype></div>
  */
-struct AnnotatedStruct {};
+struct AnnotatedStruct {
+    int a;
+};
 
 struct AnnotatedStruct return_annotated_struct();
 
-struct PlainStruct {};
+struct PlainStruct {
+    int a;
+};
 
 /**
  * <div rustbindgen mustusetype></div>
