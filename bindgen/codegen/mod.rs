@@ -4729,7 +4729,7 @@ impl CodeGenerator for Function {
                 mangled_name,
                 Some(abi),
             ))
-            .then(|| mangled_name)
+            .then_some(mangled_name)
         });
 
         if let Some(link_name) = link_name_attr {
