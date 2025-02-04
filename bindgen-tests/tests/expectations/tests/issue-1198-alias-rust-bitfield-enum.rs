@@ -1,11 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 impl MyDupeEnum {
     pub const A: MyDupeEnum = MyDupeEnum(0);
-}
-impl MyDupeEnum {
     pub const A_alias: MyDupeEnum = MyDupeEnum(0);
-}
-impl MyDupeEnum {
     pub const B: MyDupeEnum = MyDupeEnum(1);
 }
 impl ::std::ops::BitOr<MyDupeEnum> for MyDupeEnum {
@@ -39,11 +35,7 @@ impl ::std::ops::BitAndAssign for MyDupeEnum {
 pub struct MyDupeEnum(pub ::std::os::raw::c_uint);
 impl MyOtherDupeEnum {
     pub const C: MyOtherDupeEnum = MyOtherDupeEnum(0);
-}
-impl MyOtherDupeEnum {
     pub const C_alias: MyOtherDupeEnum = MyOtherDupeEnum(0);
-}
-impl MyOtherDupeEnum {
     pub const D: MyOtherDupeEnum = MyOtherDupeEnum(1);
 }
 impl ::std::ops::BitOr<MyOtherDupeEnum> for MyOtherDupeEnum {
