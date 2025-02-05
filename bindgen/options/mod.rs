@@ -1985,12 +1985,12 @@ options! {
         },
         as_args: "--merge-extern-blocks",
     },
-    /// Whether to deduplicate `extern` blocks.
+    /// Whether to deduplicate `cfg` attributes.
     merge_cfg_attributes: bool {
         methods: {
-            /// Merge all extern blocks under the same module into a single one.
+            /// Merge all unique combinations of cfg attributes into a module
             ///
-            /// Extern blocks are not merged by default.
+            /// Cfg attributes are not merged by default.
             pub fn merge_cfg_attributes(mut self, doit: bool) -> Self {
                 self.options.merge_cfg_attributes = doit;
                 self
