@@ -26,3 +26,8 @@ struct my_type2 {
 struct my_type3 {
     unsigned long a;
 };
+
+/**
+ * <div rustbindgen attribute="#[must_use]" attribute="#[doc(hidden)]"></div>
+ */
+int function_attributes() { return 1; }

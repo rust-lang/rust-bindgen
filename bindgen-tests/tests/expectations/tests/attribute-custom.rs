@@ -20,3 +20,9 @@ pub struct my_type2 {
 pub struct my_type3 {
     pub a: ::std::os::raw::c_ulong,
 }
+unsafe extern "C" {
+    #[must_use]
+    #[doc(hidden)]
+    /// <div rustbindgen attribute="#[must_use]" attribute="#[doc(hidden)]"></div>
+    pub fn function_attributes() -> ::std::os::raw::c_int;
+}

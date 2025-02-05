@@ -46,3 +46,9 @@ const _: () = {
         "Offset of field: non_matching::inner",
     ][::std::mem::offset_of!(non_matching, inner) - 0usize];
 };
+unsafe extern "C" {
+    #[doc(hidden)]
+    #[must_use]
+    #[doc(hidden)]
+    pub fn foo_function() -> ::std::os::raw::c_int;
+}
