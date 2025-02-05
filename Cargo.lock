@@ -71,6 +71,7 @@ version = "0.1.0"
 dependencies = [
  "bindgen",
  "cc",
+ "syn 2.0.90",
 ]
 
 [[package]]
