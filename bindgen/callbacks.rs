@@ -129,8 +129,17 @@ pub trait ParseCallbacks: fmt::Debug {
         vec![]
     }
 
+    /// Provide a list of custom attributes.
+    ///
+    /// If no additional attributes are wanted, this function should return an
+    /// empty `Vec`.
+    // TODO: Call this process_attributes function in codegen/mod.rs
+    fn add_attributes(&self, _info: &AttributeInfo<'_>) -> Vec<String> {
+        vec![]
+    }
+
     /// Process an item's attribute
-    fn process_attributes(&self, _info: &AttributeInfo<'_>, _attributes: &mut HashSet<String>) {}
+    fn process_attributes(&self, _info: &AttributeInfo<'_>, _attributes: &mut Vec<String>) {}
 
     /// Process a source code comment.
     fn process_comment(&self, _comment: &str) -> Option<String> {

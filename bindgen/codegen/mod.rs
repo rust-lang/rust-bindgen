@@ -233,7 +233,7 @@ where
         .collect()
 }
 
-fn normalize_attributes(attrs: HashSet<String>) -> HashSet<String> {
+fn normalize_attributes(attrs: Vec<String>) -> Vec<String> {
     attrs
         .iter()
         .map(|attr| {
@@ -261,7 +261,7 @@ fn process_attributes(
     result: &mut CodegenResult,
     item: &Item,
     ctx: &BindgenContext,
-    attrs: HashSet<String>,
+    attrs: Vec<String>,
     kind: AttributeItemKind,
 ) -> Vec<TokenStream> {
     // TODO:  attrs.extend(parse_tokens(item.annotations().attributes()));
@@ -338,7 +338,7 @@ struct CodegenResult<'a> {
     items_to_serialize: Vec<(ItemId, Option<WrapAsVariadic>)>,
 
     /// Tracks attributes of items during codegen
-    item_attributes: HashMap<ItemId, HashSet<String>>,
+    item_attributes: HashMap<ItemId, Vec<String>>,
 }
 
 impl<'a> CodegenResult<'a> {
@@ -361,14 +361,14 @@ impl<'a> CodegenResult<'a> {
         }
     }
 
-    fn set_attributes(&mut self, item_id: ItemId, attributes: HashSet<String>) {
+    fn set_attributes(&mut self, item_id: ItemId, attributes: Vec<String>) {
         *self
             .item_attributes
             .entry(item_id)
-            .or_insert_with(HashSet::default) = attributes;
+            .or_insert_with(Default::default) = attributes;
     }
 
-    fn get_attributes(&self, item_id: ItemId) -> Option<&HashSet<String>> {
+    fn get_attributes(&self, item_id: ItemId) -> Option<&Vec<String>> {
         self.item_attributes.get(&item_id)
     }
 
@@ -1117,7 +1117,8 @@ impl CodeGenerator for Type {
                     attrs.insert(attributes::doc(&comment).to_string());
                 }
 
-                let mut attrs = HashSet::default();
+                let mut attrs = vec![];
+                
                 if let Some(inner_attrs) =
                     result.get_attributes(inner_item.id())
                 {
