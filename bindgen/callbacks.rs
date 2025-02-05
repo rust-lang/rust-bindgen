@@ -232,11 +232,8 @@ pub struct DeriveInfo<'a> {
 #[derive(Debug)]
 #[non_exhaustive]
 pub struct AttributeInfo<'a> {
-    /// The name of the type.
     /// The name of the item.
     pub name: &'a str,
-    /// The kind of the type.
-    pub kind: TypeKind,
     /// The kind of the item.
     pub kind: AttributeItemKind,
 }

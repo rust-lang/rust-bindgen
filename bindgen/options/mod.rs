@@ -1997,6 +1997,7 @@ options! {
             }
         },
         as_args: "--merge-cfg-attributes",
+    },
     /// Whether to wrap unsafe operations in unsafe blocks.
     wrap_unsafe_ops: bool {
         methods: {
