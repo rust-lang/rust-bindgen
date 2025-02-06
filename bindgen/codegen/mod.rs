@@ -4798,15 +4798,18 @@ impl CodeGenerator for Function {
         }
 
         let mut attrs = attrs_for_item(item, ctx);
-        set_must_use(
-            &mut attrs,
-            signature
-                .return_type()
-                .into_resolver()
-                .through_type_refs()
-                .resolve(ctx)
-                .must_use(ctx),
-        );
+
+        if !is_dynamic_function {
+            set_must_use(
+                &mut attrs,
+                signature
+                    .return_type()
+                    .into_resolver()
+                    .through_type_refs()
+                    .resolve(ctx)
+                    .must_use(ctx),
+            );
+        }
 
         let abi = match signature.abi(ctx, Some(name)) {
             Err(err) => {
