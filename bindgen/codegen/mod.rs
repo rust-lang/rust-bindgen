@@ -3316,6 +3316,10 @@ impl Method {
 
         let mut attrs = attrs_for_item(function_item, ctx); 
         attrs.push(attributes::inline());
+        
+        attrs.retain(|attr| {
+            attr.to_string() != attributes::must_use().to_string()
+        });
 
         if signature.must_use() {
             attrs.push(attributes::must_use());
@@ -4794,7 +4798,6 @@ impl CodeGenerator for Function {
             .return_type()
             .into_resolver()
             .through_type_refs()
-            .through_type_aliases()
             .resolve(ctx)
             .must_use(ctx)
         {
