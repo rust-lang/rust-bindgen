@@ -813,10 +813,10 @@ impl CodeGenerator for Var {
         let ty = var_ty.to_rust_ty_or_opaque(ctx, &());
 
         let is_extern_var = self.val().is_none();
-        let mut link_name = MaybeUninit::<&str>::uninit();
+        let mut maybe_link_name = MaybeUninit::<&str>::uninit();
 
         if is_extern_var {
-            link_name.write(self.link_name().unwrap_or_else(|| {
+            maybe_link_name.write(self.link_name().unwrap_or_else(|| {
                 let link_name =
                     self.mangled_name().unwrap_or_else(|| self.name());
                 if utils::names_will_be_identical_after_mangling(
@@ -842,7 +842,7 @@ impl CodeGenerator for Var {
 
         if is_extern_var {
             // SAFETY: We've already initialized `symbol` when dealing with extern variables.
-            let symbol: &str = unsafe { link_name.assume_init() };
+            let link_name: &str = unsafe { maybe_link_name.assume_init() };
             let maybe_mut = if self.is_const() {
                 quote! {}
             } else {
@@ -865,7 +865,7 @@ impl CodeGenerator for Var {
             if ctx.options().dynamic_library_name.is_some() {
                 result.dynamic_items().push_var(
                     &canonical_ident,
-                    symbol,
+                    link_name,
                     &self
                         .ty()
                         .to_rust_ty_or_opaque(ctx, &())
@@ -877,13 +877,13 @@ impl CodeGenerator for Var {
                 result.push(tokens);
             }
 
-            // Required for SAFETY of the match below
+            // Required for SAFETY of the match below.
             return;
         }
 
         // SAFETY: This part only runs if `is_extern_var` is false,
-        //         meaning `self.val()` must be `Some(_)`
-        // Note: `symbol` remains uninitialized here
+        //         meaning `self.val()` must be `Some(_)`.
+        // Note: `symbol` remains uninitialized here.
         match *unsafe { self.val().unwrap_unchecked() } {
             VarType::Bool(val) => {
                 result.push(quote! {
