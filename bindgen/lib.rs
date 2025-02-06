@@ -174,7 +174,6 @@ pub enum Formatter {
     None,
     /// Use `rustfmt` to format the bindings.
     Rustfmt,
-    #[cfg(feature = "prettyplease")]
     /// Use `prettyplease` to format the bindings.
     Prettyplease,
 }
@@ -192,7 +191,6 @@ impl FromStr for Formatter {
         match s {
             "none" => Ok(Self::None),
             "rustfmt" => Ok(Self::Rustfmt),
-            #[cfg(feature = "prettyplease")]
             "prettyplease" => Ok(Self::Prettyplease),
             _ => Err(format!("`{s}` is not a valid formatter")),
         }
@@ -204,7 +202,6 @@ impl std::fmt::Display for Formatter {
         let s = match self {
             Self::None => "none",
             Self::Rustfmt => "rustfmt",
-            #[cfg(feature = "prettyplease")]
             Self::Prettyplease => "prettyplease",
         };
 
@@ -986,7 +983,6 @@ fn format_tokens(
 
     match options.formatter {
         Formatter::None => return Ok(tokens.to_string()),
-        #[cfg(feature = "prettyplease")]
         Formatter::Prettyplease => {
             return Ok(prettyplease::unparse(&syn::parse_quote!(#tokens)));
         }

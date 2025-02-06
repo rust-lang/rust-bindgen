@@ -22,7 +22,7 @@ path = "main.rs"
 name = "bindgen"
 
 [dependencies]
-bindgen = { workspace = true, features = ["__cli", "experimental", "prettyplease"] }
+bindgen = { workspace = true, features = ["__cli", "experimental"] }
 env_logger = { workspace = true, optional = true }
 log = { workspace = true, optional = true }
 proc-macro2.workspace = true
@@ -33,7 +33,6 @@ default = ["logging", "runtime"]
 logging = ["bindgen/logging", "dep:env_logger", "dep:log"]
 static = ["bindgen/static"]
 runtime = ["bindgen/runtime"]
-prettyplease = ["bindgen/prettyplease"]
 
 ## The following features are for internal use and they shouldn't be used if
 ## you're not hacking on bindgen
