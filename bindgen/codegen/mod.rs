@@ -252,12 +252,11 @@ fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
         .join("\n")
         .lines()
     {
-        let trimmed = line.trim();
-        if trimmed.starts_with("/*") {
+        if line.starts_with("/*") {
             block_comment = true;
         }
 
-        let cleaned = trimmed
+        let cleaned = line
             .trim_start_matches('/')
             .trim_start_matches('*')
             .trim_start_matches('!')
@@ -265,8 +264,8 @@ fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
             .trim_end_matches('*');
 
         if block_comment ||
-            trimmed.starts_with("///") ||
-            trimmed.starts_with("//")
+            line.starts_with("///") ||
+            line.starts_with("//")
         {
             comments.push(cleaned.to_string());
         } else if trimmed.starts_with('#') {
@@ -278,11 +277,8 @@ fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
         }
     }
 
-    let comment = itertools::interleave(
-        comments.iter().take(1).map(|c| c.to_string()),
-        comments.iter().skip(1).map(|c| format!(" {}", c)),
-    )
-    .join("\n");
+    let comment = comments.join("\n");
+
     // Only insert the attribute if there are formatted comments
     if !comment.is_empty() {
         attrs.insert(0, format!("#[doc = \"{}\"]", comment));
