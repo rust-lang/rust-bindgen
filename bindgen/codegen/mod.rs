@@ -278,7 +278,7 @@ fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
 
     // Only insert the attribute if there are formatted comments
     if !comment.is_empty() {
-        attrs.insert(0, format!("#[doc = \"{comment}\"]"));
+        attrs.insert(0, format!("#[doc = \"{}\"]", comment));
     }
 
     attrs
@@ -1152,9 +1152,17 @@ impl CodeGenerator for Type {
                 };
 
                 let mut attrs = attrs_for_item(item, ctx);
-                attrs.retain(|attr| {
+                /*attrs.retain(|attr| {
                     attr.to_string() != attributes::must_use().to_string()
                 });
+                TODO: See if this disappears:
+                +++ generated from: "/home/runner/work/rust-bindgen/rust-bindgen/bindgen-tests/tests/headers/dynamic_loading_attributes.h"
+24  24  |          let baz = __library.get(b"baz\0").map(|sym| *sym)?;
+25  25  |          Ok(TestLib { __library, foo, baz })
+26  26  |      }
+27      | -    #[must_use]
+28  27  |      /** @brief A function
+                */
 
                 if let Some(inner_attrs) =
                     result.get_attributes(inner_item.id())
@@ -3307,7 +3315,7 @@ impl Method {
 
         let block = ctx.wrap_unsafe_ops(quote! ( #( #stmts );*));
 
-        let mut attrs = attrs_for_item(function_item, ctx);
+        let mut attrs = attrs_for_item(function_item, ctx); 
         attrs.push(attributes::inline());
 
         if signature.must_use() {
