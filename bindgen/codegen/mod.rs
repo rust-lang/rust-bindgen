@@ -4794,6 +4794,7 @@ impl CodeGenerator for Function {
             .return_type()
             .into_resolver()
             .through_type_refs()
+            .through_type_aliases()
             .resolve(ctx)
             .must_use(ctx)
         {
