@@ -239,10 +239,6 @@ fn format_attribute_tokens(attrs: Vec<TokenStream>) -> Vec<String> {
     if attrs.is_empty() || !attrs.iter().any(|attr| !attr.is_empty()) {
         vec![]
     } else {
-        println!(
-            "cargo:warning=attrs in: {:?}",
-            attrs.iter().map(|x| x.to_string()).collect_vec()
-        );
         // If this ever errors, we may have to - depending on the attributes - use different dummy items to
         // attach the attributes to. This is necessary to get a valid unparse from prettyplease/rustfmt
         let attrs_with_body = quote! {
@@ -290,8 +286,6 @@ fn format_attribute_tokens(attrs: Vec<TokenStream>) -> Vec<String> {
             attrs.push(format!("#[doc = \"{}\"]", comments.join("\n")));
         }
 
-        println!("cargo:warning=attrs: {attrs:?}");
-
         attrs
     }
 }
@@ -300,7 +294,7 @@ fn process_attributes(
     result: &mut CodegenResult,
     item: &Item,
     ctx: &BindgenContext,
-    mut attrs: Vec<TokenStream>,
+    attrs: Vec<TokenStream>,
     kind: AttributeItemKind,
 ) -> Vec<TokenStream> {
     let mut attrs = format_attribute_tokens(attrs);
@@ -316,12 +310,9 @@ fn process_attributes(
         );
     });
 
-    // TODO: Store as token stream here
-    result.set_attributes(
-        item.id(),
-        attrs.iter().map(|t| t.to_string()).collect(),
-    );
-    parse_tokens(attrs)
+    let attrs = parse_tokens(attrs);
+    result.set_attributes(item.id(), attrs.clone());
+    attrs
 }
 
 fn attrs_for_item(item: &Item, ctx: &BindgenContext) -> Vec<TokenStream> {
@@ -397,7 +388,7 @@ struct CodegenResult<'a> {
     items_to_serialize: Vec<(ItemId, Option<WrapAsVariadic>)>,
 
     /// Tracks attributes of items during codegen
-    item_attributes: HashMap<ItemId, Vec<String>>,
+    item_attributes: HashMap<ItemId, Vec<TokenStream>>,
 }
 
 impl<'a> CodegenResult<'a> {
@@ -420,14 +411,14 @@ impl<'a> CodegenResult<'a> {
         }
     }
 
-    fn set_attributes(&mut self, item_id: ItemId, attributes: Vec<String>) {
+    fn set_attributes(&mut self, item_id: ItemId, attributes: Vec<TokenStream>) {
         *self
             .item_attributes
             .entry(item_id)
             .or_insert_with(Default::default) = attributes;
     }
 
-    fn get_attributes(&self, item_id: ItemId) -> Option<&Vec<String>> {
+    fn get_attributes(&self, item_id: ItemId) -> Option<&Vec<TokenStream>> {
         self.item_attributes.get(&item_id)
     }
 
@@ -1171,8 +1162,7 @@ impl CodeGenerator for Type {
                     result.get_attributes(inner_item.id())
                 {
                     // Only apply attributes through type aliases when they are relevant to compilation
-                    attrs.extend(
-                        parse_tokens(inner_attrs)
+                    attrs.extend(inner_attrs
                             .into_iter()
                             .filter(|t| !t.is_empty())
                             .map(|t| parse_quote! {#t})
