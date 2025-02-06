@@ -324,11 +324,16 @@ fn attrs_for_item(item: &Item, ctx: &BindgenContext) -> Vec<TokenStream> {
     attrs
 }
 
-fn set_must_use(attrs: &mut Vec<TokenStream>, must_use: bool) {
+fn combine_must_use(attrs: &mut Vec<TokenStream>, must_use: bool) {
     let must_use_tokens = attributes::must_use();
     let must_use_str = must_use_tokens.to_string();
+    let before = attrs.len();
     attrs.retain(|attr| attr.to_string() != must_use_str);
+    let after = attrs.len();
+
     if must_use {
+        attrs.push(must_use_tokens);
+    } else if before != after {
         attrs.push(must_use_tokens);
     }
 }
@@ -3330,11 +3335,11 @@ impl Method {
 
         let mut attrs = attrs_for_item(function_item, ctx);
         attrs.push(attributes::inline());
-        
+
         /*if signature.must_use() {
             attrs.push(attributes::must_use());
         }*/
-        set_must_use(&mut attrs, signature.must_use());
+        combine_must_use(&mut attrs, signature.must_use());
 
         let attrs = process_attributes(
             result,
@@ -4800,8 +4805,7 @@ impl CodeGenerator for Function {
 
         let mut attrs = attrs_for_item(item, ctx);
 
-        if !is_dynamic_function {
-            set_must_use(
+        combine_must_use(
                 &mut attrs,
                 signature
                     .return_type()
@@ -4810,7 +4814,6 @@ impl CodeGenerator for Function {
                     .resolve(ctx)
                     .must_use(ctx),
             );
-        }
 
         let abi = match signature.abi(ctx, Some(name)) {
             Err(err) => {
