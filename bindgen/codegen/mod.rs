@@ -4785,6 +4785,10 @@ impl CodeGenerator for Function {
 
         let mut attrs = attrs_for_item(item, ctx);
 
+        attrs.retain(|attr| {
+            attr.to_string() != attributes::must_use().to_string()
+        });
+
         // Resolve #[must_use] attribute through return type
         if signature
             .return_type()
