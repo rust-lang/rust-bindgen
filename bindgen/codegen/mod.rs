@@ -4772,7 +4772,7 @@ impl CodeGenerator for Function {
         }
 
         let mut attrs = attrs_for_item(item, ctx);
-
+        
         // Resolve #[must_use] attribute through return type
         if signature
             .return_type()

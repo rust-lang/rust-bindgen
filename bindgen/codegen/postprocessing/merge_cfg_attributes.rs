@@ -1,5 +1,4 @@
 use crate::HashMap;
-use crate::HashSet;
 use itertools::Itertools;
 use proc_macro2::Span;
 use quote::{quote, ToTokens};
@@ -36,9 +35,9 @@ impl SyntheticMod {
 
 #[derive(Default, Clone)]
 struct AttributeSet {
-    cfg_attrs: HashSet<Attribute>,
-    cc_attrs: HashSet<Attribute>,
-    other_attrs: HashSet<Attribute>,
+    cfg_attrs: Vec<Attribute>,
+    cc_attrs: Vec<Attribute>,
+    other_attrs: Vec<Attribute>,
     unsafety: Option<Unsafe>,
     abi: Option<Abi>,
 }
@@ -61,7 +60,7 @@ impl AttributeSet {
             } else {
                 &mut attribute_set.other_attrs
             };
-            target_set.insert(attr.clone());
+            target_set.push(attr.clone());
         }
         attribute_set.unsafety = unsafety;
         attribute_set.abi = abi;
