@@ -10,8 +10,8 @@ use crate::{
     ir::function::FunctionKind,
     regex_set::RegexSet,
     Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
-    FieldVisibilityKind, Formatter, MacroTypeVariation,
-    NonCopyUnionStyle, RustTarget,
+    FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
+    RustTarget,
 };
 use clap::{
     error::{Error, ErrorKind},
