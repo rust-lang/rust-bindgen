@@ -933,7 +933,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 *ty.kind()
             {
                 typerefs.push((id, *ty, loc, parent_id));
-            };
+            }
         }
         typerefs
     }
@@ -3095,7 +3095,7 @@ impl TemplateParameters for PartialType {
                             num_params += 1;
                         }
                         _ => {}
-                    };
+                    }
                     clang_sys::CXChildVisit_Continue
                 });
                 num_params

@@ -230,7 +230,7 @@ where
 
 // ["# [repr (C)]", "# [repr (align (4))]", "# [derive (Debug , Default , Copy , Clone)]"]
 // ["#[repr(C)]", "#[repr(align(4))]", "#[derive(Debug, Default, Copy, Clone)]"]
-fn format_attribute_tokens(attrs: Vec<TokenStream>) -> Vec<String> {
+fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
     if attrs.is_empty() || !attrs.iter().any(|attr| !attr.is_empty()) {
         vec![]
     } else {
@@ -289,7 +289,7 @@ fn process_attributes(
     result: &mut CodegenResult,
     item: &Item,
     ctx: &BindgenContext,
-    attrs: Vec<TokenStream>,
+    attrs: &[TokenStream],
     kind: AttributeItemKind,
 ) -> Vec<TokenStream> {
     let mut attrs = format_attribute_tokens(attrs);
@@ -414,7 +414,7 @@ impl<'a> CodegenResult<'a> {
         *self
             .item_attributes
             .entry(item_id)
-            .or_insert_with(Default::default) = attributes;
+            .or_default() = attributes;
     }
 
     fn get_attributes(&self, item_id: ItemId) -> Option<&Vec<TokenStream>> {
@@ -826,7 +826,7 @@ impl CodeGenerator for Var {
             result,
             item,
             ctx,
-            attrs,
+            &attrs,
             AttributeItemKind::Var,
         );
 
@@ -1163,7 +1163,7 @@ impl CodeGenerator for Type {
                     // Only apply attributes through type aliases when they are relevant to compilation
                     attrs.extend(
                         inner_attrs
-                            .into_iter()
+                            .iter()
                             .filter(|t| !t.is_empty())
                             .map(|t| parse_quote! {#t})
                             .filter_map(|attr: Attribute| {
@@ -1182,7 +1182,7 @@ impl CodeGenerator for Type {
                     result,
                     item,
                     ctx,
-                    attrs,
+                    &attrs,
                     AttributeItemKind::Struct,
                 );
 
@@ -2691,7 +2691,7 @@ impl CodeGenerator for CompInfo {
             result,
             item,
             ctx,
-            attrs,
+            &attrs,
             if is_rust_union {
                 AttributeItemKind::Union
             } else {
@@ -3290,7 +3290,7 @@ impl Method {
             exprs[0] = quote! {
                 self
             };
-        };
+        }
 
         let call = quote! {
             #function_name (#( #exprs ),* )
@@ -3322,7 +3322,7 @@ impl Method {
             result,
             function_item,
             ctx,
-            attrs,
+            &attrs,
             AttributeItemKind::Function(FunctionKind::Method(self.kind())),
         );
 
@@ -3859,7 +3859,7 @@ impl CodeGenerator for Enum {
                 }
             }
             _ => {}
-        };
+        }
 
         if !variation.is_const() {
             let packed = false; // Enums can't be packed in Rust.
@@ -3897,7 +3897,7 @@ impl CodeGenerator for Enum {
                 result,
                 item,
                 ctx,
-                attrs,
+                &attrs,
                 AttributeItemKind::Enum,
             );
         }
@@ -3939,7 +3939,7 @@ impl CodeGenerator for Enum {
             result,
             item,
             ctx,
-            attrs.clone(),
+            &attrs,
             AttributeItemKind::Enum,
         );
 
@@ -4820,7 +4820,7 @@ impl CodeGenerator for Function {
                 mangled_name,
                 Some(abi),
             ))
-            .then(|| mangled_name)
+            .then_some(mangled_name)
         });
 
         if let Some(link_name) = link_name_attr {
@@ -4892,7 +4892,7 @@ impl CodeGenerator for Function {
             result,
             item,
             ctx,
-            attrs,
+            &attrs,
             AttributeItemKind::Function(FunctionKind::Function),
         );
 

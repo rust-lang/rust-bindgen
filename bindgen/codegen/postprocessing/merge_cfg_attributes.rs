@@ -192,7 +192,7 @@ impl Visitor {
                 Item::Impl(ItemImpl { ref mut attrs, .. }) |
                 Item::Fn(ItemFn { ref mut attrs, .. }) => {
                     let attr_set = AttributeSet::new(attrs, None, None);
-                    *attrs = attr_set.other_attrs.iter().cloned().collect();
+                    attrs.clone_from(&attr_set.other_attrs);
                     self.insert_item_into_mod(attr_set, item);
                 }
                 Item::ForeignMod(foreign_mod) => {
@@ -227,7 +227,7 @@ impl Visitor {
                 Some(foreign_mod.abi.clone()),
             );
             attr_set.extend(inner_attrs, inner_unsafety, inner_abi);
-            *inner_attrs = attr_set.other_attrs.iter().cloned().collect();
+            *inner_attrs = attr_set.other_attrs.clone();
 
             self.insert_item_into_mod(
                 attr_set,

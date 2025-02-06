@@ -44,7 +44,7 @@ fn preprocess_single_lines(comment: &str) -> String {
     lines.join("\n")
 }
 
-pub(crate) fn preprocess_multi_line(comment: &str) -> String {
+fn preprocess_multi_line(comment: &str) -> String {
     let comment = comment
         .trim_start_matches('/')
         .trim_end_matches('/')
