@@ -1153,15 +1153,15 @@ impl CodeGenerator for Type {
 
                 let mut attrs = attrs_for_item(item, ctx);
                 /*attrs.retain(|attr| {
-                    attr.to_string() != attributes::must_use().to_string()
-                });
-                TODO: See if this disappears:
-                +++ generated from: "/home/runner/work/rust-bindgen/rust-bindgen/bindgen-tests/tests/headers/dynamic_loading_attributes.h"
-24  24  |          let baz = __library.get(b"baz\0").map(|sym| *sym)?;
-25  25  |          Ok(TestLib { __library, foo, baz })
-26  26  |      }
-27      | -    #[must_use]
-                */
+                                    attr.to_string() != attributes::must_use().to_string()
+                                });
+                                TODO: See if this disappears:
+                                +++ generated from: "/home/runner/work/rust-bindgen/rust-bindgen/bindgen-tests/tests/headers/dynamic_loading_attributes.h"
+                24  24  |          let baz = __library.get(b"baz\0").map(|sym| *sym)?;
+                25  25  |          Ok(TestLib { __library, foo, baz })
+                26  26  |      }
+                27      | -    #[must_use]
+                                */
 
                 if let Some(inner_attrs) =
                     result.get_attributes(inner_item.id())
@@ -3314,9 +3314,9 @@ impl Method {
 
         let block = ctx.wrap_unsafe_ops(quote! ( #( #stmts );*));
 
-        let mut attrs = attrs_for_item(function_item, ctx); 
+        let mut attrs = attrs_for_item(function_item, ctx);
         attrs.push(attributes::inline());
-        
+
         attrs.retain(|attr| {
             attr.to_string() != attributes::must_use().to_string()
         });
@@ -4789,9 +4789,6 @@ impl CodeGenerator for Function {
 
         let mut attrs = attrs_for_item(item, ctx);
 
-        attrs.retain(|attr| {
-            attr.to_string() != attributes::must_use().to_string()
-        });
 
         // Resolve #[must_use] attribute through return type
         if signature
@@ -4907,6 +4904,12 @@ impl CodeGenerator for Function {
             .rust_features
             .unsafe_extern_blocks
             .then(|| quote!(unsafe));
+        
+        if !is_dynamic_function {
+            attrs.retain(|attr| {
+                attr.to_string() != attributes::must_use().to_string()
+            });
+        }
 
         let attrs = process_attributes(
             result,
