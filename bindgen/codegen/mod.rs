@@ -3330,10 +3330,11 @@ impl Method {
 
         let mut attrs = attrs_for_item(function_item, ctx);
         attrs.push(attributes::inline());
-        if signature.must_use() {
+        
+        /*if signature.must_use() {
             attrs.push(attributes::must_use());
-        }
-        //set_must_use(&mut attrs, signature.must_use());
+        }*/
+        set_must_use(&mut attrs, signature.must_use());
 
         let attrs = process_attributes(
             result,
