@@ -411,7 +411,11 @@ impl<'a> CodegenResult<'a> {
         }
     }
 
-    fn set_attributes(&mut self, item_id: ItemId, attributes: Vec<TokenStream>) {
+    fn set_attributes(
+        &mut self,
+        item_id: ItemId,
+        attributes: Vec<TokenStream>,
+    ) {
         *self
             .item_attributes
             .entry(item_id)
@@ -1162,7 +1166,8 @@ impl CodeGenerator for Type {
                     result.get_attributes(inner_item.id())
                 {
                     // Only apply attributes through type aliases when they are relevant to compilation
-                    attrs.extend(inner_attrs
+                    attrs.extend(
+                        inner_attrs
                             .into_iter()
                             .filter(|t| !t.is_empty())
                             .map(|t| parse_quote! {#t})
@@ -4772,7 +4777,7 @@ impl CodeGenerator for Function {
         }
 
         let mut attrs = attrs_for_item(item, ctx);
-        
+
         // Resolve #[must_use] attribute through return type
         if signature
             .return_type()

@@ -353,7 +353,6 @@ fn test_custom_fn_attribute() {
     );
 }
 
-
 #[test]
 fn test_custom_attributes() {
     // The `add_attributes` callback should have added `#[cfg_attr(test, derive(PartialOrd))])`
