@@ -25,7 +25,6 @@ use crate::callbacks::{
     DiscoveredItemId, FieldInfo, TypeKind as DeriveTypeKind,
 };
 use crate::codegen::error::Error;
-use crate::comment::{self, preprocess};
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::{
     Annotations, FieldAccessorKind, FieldVisibilityKind,
@@ -58,15 +57,10 @@ use crate::ir::var::Var;
 
 use crate::quote::{ToTokens, TokenStreamExt};
 use itertools::Itertools;
-use proc_macro2::{Group, Ident, Span, TokenStream, TokenTree};
-use syn::meta::ParseNestedMeta;
-use syn::parse::{ParseBuffer, ParseStream};
-use syn::{
-    parse, parse_quote, Attribute, Expr, ForeignItemMacro, Lit, Meta, MetaList,
-    MetaNameValue,
-};
+use proc_macro2::{Ident, Span, TokenStream};
+use syn::{parse_quote, Attribute};
 
-use crate::{format_tokens, Entry, HashMap, HashSet};
+use crate::{Entry, HashMap, HashSet};
 use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::VecDeque;

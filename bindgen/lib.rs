@@ -977,7 +977,7 @@ pub(crate) fn rustfmt_path(
 }
 
 /// Formats a token stream with the formatter set up in `BindgenOptions`.
-pub(crate) fn format_tokens(
+fn format_tokens(
     options: &BindgenOptions,
     tokens: &proc_macro2::TokenStream,
 ) -> io::Result<String> {

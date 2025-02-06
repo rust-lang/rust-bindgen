@@ -21,7 +21,7 @@ pub(crate) fn preprocess(comment: &str) -> String {
 }
 
 /// Gets the kind of the doc comment, if it is one.
-pub(crate) fn kind(comment: &str) -> Option<Kind> {
+fn kind(comment: &str) -> Option<Kind> {
     if comment.starts_with("/*") {
         Some(Kind::MultiLine)
     } else if comment.starts_with("//") {
