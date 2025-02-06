@@ -278,7 +278,7 @@ fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
 
     // Only insert the attribute if there are formatted comments
     if !comment.is_empty() {
-        attrs.insert(0, format!("#[doc = \"{}\"]", comment));
+        attrs.insert(0, format!("#[doc = \"{comment}\"]"));
     }
 
     attrs
