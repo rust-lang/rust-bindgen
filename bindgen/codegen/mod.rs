@@ -232,17 +232,13 @@ where
         .collect()
 }
 
-fn process_attributes(
-    result: &mut CodegenResult,
-    item: &Item,
-    ctx: &BindgenContext,
-    mut attrs: Vec<TokenStream>,
-    kind: AttributeItemKind,
-) -> Vec<TokenStream> {
-    attrs.extend(parse_tokens(item.annotations().attributes()));
-
-    let mut attrs_out = vec![];
-    if !attrs.is_empty() && attrs.iter().any(|attr| !attr.is_empty()) {
+// ["# [repr (C)]", "# [repr (align (4))]", "# [derive (Debug , Default , Copy , Clone)]"]
+// ["#[repr(C)]", "#[repr(align(4))]", "#[derive(Debug, Default, Copy, Clone)]"]
+fn format_attribute_tokens(attrs: Vec<TokenStream>) -> Vec<String> {
+    if attrs.is_empty() || !attrs.iter().any(|attr| !attr.is_empty()) {
+        vec![]
+    } else {
+        println!("cargo:warning=attrs in: {:?}", attrs.iter().map(|x|x.to_string()).collect_vec());
         // If this ever errors, we may have to - depending on the attributes - use different dummy items to
         // attach the attributes to. This is necessary to get a valid unparse from prettyplease/rustfmt
         let attrs_with_body = quote! {
@@ -250,14 +246,11 @@ fn process_attributes(
             fn body() {}
         };
 
+        let mut attrs = vec![];
         let mut comments = vec![];
         let mut block_comment = false;
 
-        // TODO: It might be a good idea to just default to prettyplease::unparse here
-        // TODO: as the user may have `None` in their config and `Rustfmt` invocations can
-        // TODO: become quite expensive when ran against each attribute. 
-        for line in format_tokens(ctx.options(), &attrs_with_body)
-            .expect("can format attrs")
+        for line in prettyplease::unparse(&syn::parse_quote!(#attrs_with_body))
             .split('\n')
             .take_while(|line| !line.starts_with("fn body"))
             .join("\n")
@@ -281,7 +274,7 @@ fn process_attributes(
             {
                 comments.push(cleaned.to_string());
             } else if trimmed.starts_with('#') {
-                attrs_out.push(line.into());
+                attrs.push(line.into());
             }
 
             if trimmed.ends_with("*/") {
@@ -289,12 +282,24 @@ fn process_attributes(
             }
         }
 
-        if !comments.is_empty() {
-            attrs_out.push(format!("#[doc = \"{}\"]", comments.join("\n")));
+        if !comments.is_empty() && comments.iter().any(|c| !c.is_empty()) {
+            attrs.push(format!("#[doc = \"{}\"]", comments.join("\n")));
         }
         
-        //println!("cargo:warning=attrs: {attrs_out:?}");
+        println!("cargo:warning=attrs: {attrs:?}");
+        
+        attrs
     }
+}
+
+fn process_attributes(
+    result: &mut CodegenResult,
+    item: &Item,
+    ctx: &BindgenContext,
+    mut attrs: Vec<TokenStream>,
+    kind: AttributeItemKind,
+) -> Vec<TokenStream> {
+    let mut attrs = format_attribute_tokens(attrs);
 
     // TODO: Call add_attributes and renormalize attributes
     ctx.options().for_each_callback_mut(|cb| {
@@ -303,16 +308,31 @@ fn process_attributes(
                 name: &item.canonical_name(ctx),
                 kind,
             },
-            &mut attrs_out,
+            &mut attrs,
         );
     });
 
     // TODO: Store as token stream here
     result.set_attributes(
         item.id(),
-        attrs_out.iter().map(|t| t.to_string()).collect(),
+        attrs.iter().map(|t| t.to_string()).collect(),
     );
-    parse_tokens(attrs_out)
+    parse_tokens(attrs)
+}
+
+fn attrs_for_item(item: &Item, ctx: &BindgenContext) -> Vec<TokenStream> {
+    let mut attrs = vec![];
+    attrs.extend(parse_tokens(item.annotations().attributes()));
+
+    if let Some(comment) = item.comment(ctx) {
+        attrs.push(attributes::doc(&comment));
+    }
+    
+    if item.must_use(ctx) {
+        attrs.push(attributes::must_use());
+    }
+
+    attrs
 }
 
 struct WrapAsVariadic {
@@ -783,12 +803,7 @@ impl CodeGenerator for Var {
             return;
         }
 
-        let mut attrs = vec![];
-        if let Some(comment) = item.comment(ctx) {
-            attrs.push(attributes::doc(&comment));
-        }
-
-        attrs.extend(parse_tokens(item.annotations().attributes()));
+        let mut attrs = attrs_for_item(item, ctx);
 
         let var_ty = self.ty();
         let ty = var_ty.to_rust_ty_or_opaque(ctx, &());
@@ -1144,13 +1159,7 @@ impl CodeGenerator for Type {
                     ctx.options().default_alias_style
                 };
 
-                let mut attrs = vec![];
-
-                attrs.extend(parse_tokens(item.annotations().attributes()));
-
-                if let Some(comment) = item.comment(ctx) {
-                    attrs.push(attributes::doc(&comment));
-                }
+                let mut attrs = attrs_for_item(item, ctx);
 
                 if let Some(inner_attrs) =
                     result.get_attributes(inner_item.id())
@@ -1210,6 +1219,13 @@ impl CodeGenerator for Type {
                         pub type #rust_name
                     },
                     AliasVariation::NewType | AliasVariation::NewTypeDeref => {
+                        // NB: Attributes for the actual item as well as its `process_attribute` callback
+                        //     have already been processed. It may be a good idea to emit these attributes
+                        //     earlier, to have them included in the callback.
+                        //
+                        //     All of these attributes are additional and quoted below the processed attributes
+                        // TODO: Finally introduce a TypeAlias variant to at least forward the alias_style,
+                        // TODO: it should also include from and to type (cannonical name) 
                         let mut attrs = vec![attributes::repr("transparent")];
                         let packed = false; // Types can't be packed in Rust.
                         let derivable_traits =
@@ -1228,8 +1244,6 @@ impl CodeGenerator for Type {
                         derives
                             .extend(custom_derives.iter().map(|s| s.as_str()));
                         attrs.push(attributes::derives(&derives));
-
-                        // TODO: Add custom attributes from callback here
 
                         quote! {
                             #( #attrs )*
@@ -1683,6 +1697,8 @@ impl FieldCodegen<'_> for FieldData {
         };
 
         let mut field = quote! {};
+        // NB: Item::comment(str) does this internally, fields aren't
+        // actually Items so we do this manually here.
         if ctx.options().generate_comments {
             if let Some(raw_comment) = self.comment() {
                 let comment = ctx.options().process_comment(raw_comment);
@@ -2554,16 +2570,14 @@ impl CodeGenerator for CompInfo {
                 (quote! {}, quote! {}, quote! {})
             };
 
-        let mut attrs = vec![];
+            
+        let mut attrs = attrs_for_item(item, ctx);
         let mut needs_clone_impl = false;
         let mut needs_default_impl = false;
         let mut needs_debug_impl = false;
         let mut needs_partialeq_impl = false;
         let needs_flexarray_impl = flex_array_generic.is_some();
-        if let Some(comment) = item.comment(ctx) {
-            attrs.push(attributes::doc(&comment));
-        }
-
+        
         // if a type has both a "packed" attribute and an "align(N)" attribute, then check if the
         // "packed" attr is redundant, and do not include it if so.
         if packed &&
@@ -3551,6 +3565,8 @@ impl<'a> EnumBuilder<'a> {
         };
 
         let mut doc = quote! {};
+        // NB: Item::comment(str) does this internally, fields aren't
+        // actually Items so we do this manually here.
         if ctx.options().generate_comments {
             if let Some(raw_comment) = variant.comment() {
                 let comment = ctx.options().process_comment(raw_comment);
@@ -3825,7 +3841,7 @@ impl CodeGenerator for Enum {
             }
         };
 
-        let mut attrs = vec![];
+        let mut attrs = attrs_for_item(item, ctx);
 
         // TODO(emilio): Delegate this to the builders?
         match variation {
@@ -3849,14 +3865,6 @@ impl CodeGenerator for Enum {
             }
             _ => {}
         };
-
-        if let Some(comment) = item.comment(ctx) {
-            attrs.push(attributes::doc(&comment));
-        }
-
-        if item.must_use(ctx) {
-            attrs.push(attributes::must_use());
-        }
 
         if !variation.is_const() {
             let packed = false; // Enums can't be packed in Rust.
@@ -3931,10 +3939,6 @@ impl CodeGenerator for Enum {
 
         let repr = repr.to_rust_ty_or_opaque(ctx, item);
         let has_typedef = ctx.is_enum_typedef_combo(item.id());
-
-        // The custom attribute callback may return a list of attributes;
-        // add them to the end of the list.
-        attrs.extend(parse_tokens(item.annotations().attributes().clone()));
 
         let attrs = process_attributes(
             result,
@@ -4772,24 +4776,16 @@ impl CodeGenerator for Function {
             result.saw_function(seen_symbol_name);
         }
 
-        let mut attrs = vec![];
-        attrs.extend(parse_tokens(item.annotations().attributes()));
+        let mut attrs = attrs_for_item(item, ctx);
 
-        let must_use = signature.must_use() || {
-            let ret_ty = signature
-                .return_type()
-                .into_resolver()
-                .through_type_refs()
-                .resolve(ctx);
-            ret_ty.must_use(ctx)
-        };
-
-        if must_use {
+        // Resolve #[must_use] attribute through return type
+        if signature
+            .return_type()
+            .into_resolver()
+            .through_type_refs()
+            .resolve(ctx)
+            .must_use(ctx) {
             attrs.push(attributes::must_use());
-        }
-
-        if let Some(comment) = item.comment(ctx) {
-            attrs.push(attributes::doc(&comment));
         }
 
         let abi = match signature.abi(ctx, Some(name)) {
