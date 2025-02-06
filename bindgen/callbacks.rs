@@ -241,7 +241,6 @@ pub struct DeriveInfo<'a> {
     pub kind: TypeKind,
 }
 
-/// Relevant information about a type to which new attributes will be added using
 /// Relevant information about an item to which new attributes will be added using
 /// [`ParseCallbacks::add_attributes`].
 #[derive(Debug)]
