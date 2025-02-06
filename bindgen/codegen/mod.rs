@@ -280,7 +280,6 @@ fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
 
     let comment = comments
         .into_iter()
-        .filter(|c| !c.is_empty())
         .skip(1)
         .map(|c| format!(" {}", c))
         .join("\n");
