@@ -324,9 +324,10 @@ fn attrs_for_item(item: &Item, ctx: &BindgenContext) -> Vec<TokenStream> {
     attrs
 }
 
-fn set_must_use(attrs: &Vec<Attribute>, must_use: bool) {
+fn set_must_use(attrs: &mut Vec<TokenStream>, must_use: bool) {
     let must_use_tokens = attributes::must_use();
-    attrs.retain(|attr| attr != &must_use_tokens);
+    let must_use_str = must_use_tokens.to_string();
+    attrs.retain(|attr| attr.to_string() == must_use_str);
     if must_use {
         attrs.push(must_use_tokens);
     }
@@ -1161,9 +1162,9 @@ impl CodeGenerator for Type {
 
                 let mut attrs = attrs_for_item(item, ctx);
                 attrs.retain(|attr| {
-                                    attr.to_string() != attributes::must_use().to_string()
-                                });
-                                /* 
+                    attr.to_string() != attributes::must_use().to_string()
+                });
+                /*
                                 TODO: See if this disappears:
                                 +++ generated from: "/home/runner/work/rust-bindgen/rust-bindgen/bindgen-tests/tests/headers/dynamic_loading_attributes.h"
                 24  24  |          let baz = __library.get(b"baz\0").map(|sym| *sym)?;
@@ -3267,7 +3268,6 @@ impl Method {
             ret = quote! { -> Self };
         }
 
-
         // TODO: Why can't we use
         // TODO:    let mut exprs = utils::fnsig_arguments(ctx, signature);
         // TODO: here instead?
@@ -3331,7 +3331,7 @@ impl Method {
         let mut attrs = attrs_for_item(function_item, ctx);
         attrs.push(attributes::inline());
 
-        set_must_use(attrs, signature.must_use());
+        set_must_use(&mut attrs, signature.must_use());
 
         let attrs = process_attributes(
             result,
@@ -4796,12 +4796,15 @@ impl CodeGenerator for Function {
         }
 
         let mut attrs = attrs_for_item(item, ctx);
-        set_must_use(attrs, signature
-            .return_type()
-            .into_resolver()
-            .through_type_refs()
-            .resolve(ctx)
-            .must_use(ctx));
+        set_must_use(
+            &mut attrs,
+            signature
+                .return_type()
+                .into_resolver()
+                .through_type_refs()
+                .resolve(ctx)
+                .must_use(ctx),
+        );
 
         let abi = match signature.abi(ctx, Some(name)) {
             Err(err) => {
@@ -4906,7 +4909,6 @@ impl CodeGenerator for Function {
             .rust_features
             .unsafe_extern_blocks
             .then(|| quote!(unsafe));
-
 
         let attrs = process_attributes(
             result,
