@@ -1161,7 +1161,6 @@ impl CodeGenerator for Type {
 25  25  |          Ok(TestLib { __library, foo, baz })
 26  26  |      }
 27      | -    #[must_use]
-28  27  |      /** @brief A function
                 */
 
                 if let Some(inner_attrs) =
