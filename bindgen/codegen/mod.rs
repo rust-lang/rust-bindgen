@@ -1152,7 +1152,9 @@ impl CodeGenerator for Type {
                 };
 
                 let mut attrs = attrs_for_item(item, ctx);
-                attrs.retain(|attr| attr.to_string() != attributes::must_use().to_string());
+                attrs.retain(|attr| {
+                    attr.to_string() != attributes::must_use().to_string()
+                });
 
                 if let Some(inner_attrs) =
                     result.get_attributes(inner_item.id())
