@@ -1152,9 +1152,10 @@ impl CodeGenerator for Type {
                 };
 
                 let mut attrs = attrs_for_item(item, ctx);
-                /*attrs.retain(|attr| {
+                attrs.retain(|attr| {
                                     attr.to_string() != attributes::must_use().to_string()
                                 });
+                                /* 
                                 TODO: See if this disappears:
                                 +++ generated from: "/home/runner/work/rust-bindgen/rust-bindgen/bindgen-tests/tests/headers/dynamic_loading_attributes.h"
                 24  24  |          let baz = __library.get(b"baz\0").map(|sym| *sym)?;
@@ -4904,7 +4905,7 @@ impl CodeGenerator for Function {
             .unsafe_extern_blocks
             .then(|| quote!(unsafe));
 
-        if !is_dynamic_function {
+        if is_dynamic_function {
             attrs.retain(|attr| {
                 attr.to_string() != attributes::must_use().to_string()
             });
