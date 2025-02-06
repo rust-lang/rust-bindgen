@@ -59,6 +59,7 @@ use crate::quote::{ToTokens, TokenStreamExt};
 use itertools::Itertools;
 use proc_macro2::{Ident, Span, TokenStream};
 use syn::{parse_quote, Attribute};
+use prettyplease::unparse; 
 
 use crate::{Entry, HashMap, HashSet};
 use std::borrow::Cow;
@@ -244,7 +245,7 @@ fn format_attribute_tokens(attrs: Vec<TokenStream>) -> Vec<String> {
         let mut comments = vec![];
         let mut block_comment = false;
 
-        for line in prettyplease::unparse(&syn::parse_quote!(#attrs_with_body))
+        for line in unparse(&syn::parse_quote!(#attrs_with_body))
             .split('\n')
             .take_while(|line| !line.starts_with("fn body"))
             .join("\n")

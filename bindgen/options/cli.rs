@@ -10,7 +10,7 @@ use crate::{
     ir::function::FunctionKind,
     regex_set::RegexSet,
     Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
-    FieldVisibilityKind, Formatter, HashSet, MacroTypeVariation,
+    FieldVisibilityKind, Formatter, MacroTypeVariation,
     NonCopyUnionStyle, RustTarget,
 };
 use clap::{
@@ -793,7 +793,7 @@ where
         fn process_attributes(
             &self,
             info: &AttributeInfo<'_>,
-            attrs: &mut HashSet<String>,
+            attrs: &mut Vec<String>,
         ) {
             if self.kind.map_or(true, |kind| kind == info.kind) &&
                 self.regex_set.matches(info.name)
@@ -1045,7 +1045,7 @@ where
             "--with-attribute-custom-union",
         ),
         (
-            with_attribute_custom_function,
+            with_attribute_custom_var,
             Some(AttributeItemKind::Var),
             "--with-attribute-custom-var",
         ),
