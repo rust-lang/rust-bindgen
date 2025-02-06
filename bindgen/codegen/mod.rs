@@ -411,10 +411,7 @@ impl<'a> CodegenResult<'a> {
         item_id: ItemId,
         attributes: Vec<TokenStream>,
     ) {
-        *self
-            .item_attributes
-            .entry(item_id)
-            .or_default() = attributes;
+        *self.item_attributes.entry(item_id).or_default() = attributes;
     }
 
     fn get_attributes(&self, item_id: ItemId) -> Option<&Vec<TokenStream>> {
