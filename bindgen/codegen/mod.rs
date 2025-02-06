@@ -2680,10 +2680,6 @@ impl CodeGenerator for CompInfo {
             attrs.push(attributes::derives(&derives));
         }
 
-        if item.must_use(ctx) {
-            attrs.push(attributes::must_use());
-        }
-
         let attrs = process_attributes(
             result,
             item,
@@ -3940,6 +3936,15 @@ impl CodeGenerator for Enum {
             AttributeItemKind::Enum,
         );
 
+        let cfg_attrs = attrs
+            .iter()
+            .filter(|t| !t.is_empty())
+            .map(|t| parse_quote! {#t})
+            .filter(|attr: &Attribute| {
+                attr.path().is_ident("cfg") || attr.path().is_ident("link")
+            })
+            .collect_vec();
+
         let mut builder = EnumBuilder::new(
             &name,
             attrs.clone(),
@@ -4011,7 +4016,7 @@ impl CodeGenerator for Enum {
                                 ctx.rust_ident_raw(&*mangled_name);
                             // TODO: Only quote in #(#cfg_attrs)*
                             result.push(quote! {
-                                #(#attrs)*
+                                #(#cfg_attrs)*
                                 impl #enum_rust_ty {
                                     pub const #variant_name : #enum_rust_ty =
                                         #enum_canonical_name :: #existing_variant_name ;
