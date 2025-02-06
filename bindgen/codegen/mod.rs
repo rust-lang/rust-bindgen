@@ -244,6 +244,7 @@ fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
         let mut attrs = vec![];
         let mut comments = vec![];
         let mut block_comment = false;
+        let mut block_comment_count = 0;
 
         for line in unparse(&syn::parse_quote!(#attrs_with_body))
             .split('\n')
@@ -253,6 +254,7 @@ fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
         {
             let trimmed = line.trim();
             if trimmed.starts_with("/*") {
+                block_comment_count += 1;
                 block_comment = true;
             }
 
@@ -267,12 +269,13 @@ fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
                 trimmed.starts_with("///") ||
                 trimmed.starts_with("//")
             {
-                comments.push(cleaned.to_string());
+                comments.push(format!("{}{}", if block_comment_count > 0 {" "} else {""}, cleaned.to_string()));
             } else if trimmed.starts_with('#') {
                 attrs.push(line.into());
             }
 
             if trimmed.ends_with("*/") {
+                block_comment_count = 0;
                 block_comment = false;
             }
         }
