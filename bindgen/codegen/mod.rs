@@ -841,7 +841,7 @@ impl CodeGenerator for Var {
         );
 
         if is_extern_var {
-            // SAFETY: We've already initialized `symbol` when dealing with extern variables.
+            // SAFETY: We've already initialized `maybe_link_name` when dealing with extern variables.
             let link_name: &str = unsafe { maybe_link_name.assume_init() };
             let maybe_mut = if self.is_const() {
                 quote! {}
@@ -883,7 +883,7 @@ impl CodeGenerator for Var {
 
         // SAFETY: This part only runs if `is_extern_var` is false,
         //         meaning `self.val()` must be `Some(_)`.
-        // Note: `symbol` remains uninitialized here.
+        // Note: `maybe_link_name` remains uninitialized here.
         match *unsafe { self.val().unwrap_unchecked() } {
             VarType::Bool(val) => {
                 result.push(quote! {
