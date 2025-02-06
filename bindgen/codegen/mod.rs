@@ -4789,7 +4789,6 @@ impl CodeGenerator for Function {
 
         let mut attrs = attrs_for_item(item, ctx);
 
-
         // Resolve #[must_use] attribute through return type
         if signature
             .return_type()
@@ -4904,7 +4903,7 @@ impl CodeGenerator for Function {
             .rust_features
             .unsafe_extern_blocks
             .then(|| quote!(unsafe));
-        
+
         if !is_dynamic_function {
             attrs.retain(|attr| {
                 attr.to_string() != attributes::must_use().to_string()
