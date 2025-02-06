@@ -263,10 +263,7 @@ fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
             .trim_end_matches('/')
             .trim_end_matches('*');
 
-        if block_comment ||
-            line.starts_with("///") ||
-            line.starts_with("//")
-        {
+        if block_comment || line.starts_with("///") || line.starts_with("//") {
             comments.push(cleaned.to_string());
         } else if line.starts_with('#') {
             attrs.push(line.to_string());
