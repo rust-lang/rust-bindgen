@@ -57,9 +57,9 @@ use crate::ir::var::Var;
 
 use crate::quote::{ToTokens, TokenStreamExt};
 use itertools::Itertools;
+use prettyplease::unparse;
 use proc_macro2::{Ident, Span, TokenStream};
 use syn::{parse_quote, Attribute};
-use prettyplease::unparse; 
 
 use crate::{Entry, HashMap, HashSet};
 use std::borrow::Cow;
