@@ -324,6 +324,14 @@ fn attrs_for_item(item: &Item, ctx: &BindgenContext) -> Vec<TokenStream> {
     attrs
 }
 
+fn set_must_use(attrs: &Vec<Attribute>, must_use: bool) {
+    let must_use_tokens = attributes::must_use();
+    attrs.retain(|attr| attr != &must_use_tokens);
+    if must_use {
+        attrs.push(must_use_tokens);
+    }
+}
+
 struct WrapAsVariadic {
     new_name: String,
     idx_of_va_list_arg: usize,
@@ -3322,14 +3330,8 @@ impl Method {
 
         let mut attrs = attrs_for_item(function_item, ctx);
         attrs.push(attributes::inline());
-        
-        attrs.retain(|attr| {
-            attr.to_string() != attributes::must_use().to_string()
-        });
 
-        if signature.must_use() {
-            attrs.push(attributes::must_use());
-        }
+        set_must_use(attrs, signature.must_use());
 
         let attrs = process_attributes(
             result,
@@ -4794,23 +4796,12 @@ impl CodeGenerator for Function {
         }
 
         let mut attrs = attrs_for_item(item, ctx);
-
-        if !is_dynamic_function {
-            attrs.retain(|attr| {
-                attr.to_string() != attributes::must_use().to_string()
-            });
-        }
-
-        // Resolve #[must_use] attribute through return type
-        if signature
+        set_must_use(attrs, signature
             .return_type()
             .into_resolver()
             .through_type_refs()
             .resolve(ctx)
-            .must_use(ctx)
-        {
-            attrs.push(attributes::must_use());
-        }
+            .must_use(ctx));
 
         let abi = match signature.abi(ctx, Some(name)) {
             Err(err) => {
