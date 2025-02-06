@@ -3322,11 +3322,10 @@ impl Method {
 
         let mut attrs = attrs_for_item(function_item, ctx);
         attrs.push(attributes::inline());
-
-        /* maybe add to methods afterall?
+        
         attrs.retain(|attr| {
             attr.to_string() != attributes::must_use().to_string()
-        });*/
+        });
 
         if signature.must_use() {
             attrs.push(attributes::must_use());
@@ -4796,6 +4795,12 @@ impl CodeGenerator for Function {
 
         let mut attrs = attrs_for_item(item, ctx);
 
+        if !is_dynamic_function {
+            attrs.retain(|attr| {
+                attr.to_string() != attributes::must_use().to_string()
+            });
+        }
+
         // Resolve #[must_use] attribute through return type
         if signature
             .return_type()
@@ -4911,11 +4916,6 @@ impl CodeGenerator for Function {
             .unsafe_extern_blocks
             .then(|| quote!(unsafe));
 
-        if is_dynamic_function {
-            attrs.retain(|attr| {
-                attr.to_string() != attributes::must_use().to_string()
-            });
-        }
 
         let attrs = process_attributes(
             result,
