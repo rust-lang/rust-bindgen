@@ -278,7 +278,7 @@ fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
         }
 
         if !comments.is_empty() && comments.iter().any(|c| !c.is_empty()) {
-            attrs.push(format!("#[doc = \"{}\"]", comments.join("\n")));
+            attrs.insert(0, format!("#[doc = \"{}\"]", comments.join("\n")));
         }
 
         attrs
