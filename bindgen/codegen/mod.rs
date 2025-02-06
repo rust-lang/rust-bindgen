@@ -72,6 +72,7 @@ use std::cell::Cell;
 use std::collections::VecDeque;
 use std::ffi::CStr;
 use std::fmt::{self, Write};
+use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
 use std::str::{self, FromStr};
 
@@ -238,7 +239,10 @@ fn format_attribute_tokens(attrs: Vec<TokenStream>) -> Vec<String> {
     if attrs.is_empty() || !attrs.iter().any(|attr| !attr.is_empty()) {
         vec![]
     } else {
-        println!("cargo:warning=attrs in: {:?}", attrs.iter().map(|x|x.to_string()).collect_vec());
+        println!(
+            "cargo:warning=attrs in: {:?}",
+            attrs.iter().map(|x| x.to_string()).collect_vec()
+        );
         // If this ever errors, we may have to - depending on the attributes - use different dummy items to
         // attach the attributes to. This is necessary to get a valid unparse from prettyplease/rustfmt
         let attrs_with_body = quote! {
@@ -285,9 +289,9 @@ fn format_attribute_tokens(attrs: Vec<TokenStream>) -> Vec<String> {
         if !comments.is_empty() && comments.iter().any(|c| !c.is_empty()) {
             attrs.push(format!("#[doc = \"{}\"]", comments.join("\n")));
         }
-        
+
         println!("cargo:warning=attrs: {attrs:?}");
-        
+
         attrs
     }
 }
@@ -327,7 +331,7 @@ fn attrs_for_item(item: &Item, ctx: &BindgenContext) -> Vec<TokenStream> {
     if let Some(comment) = item.comment(ctx) {
         attrs.push(attributes::doc(&comment));
     }
-    
+
     if item.must_use(ctx) {
         attrs.push(attributes::must_use());
     }
@@ -808,112 +812,11 @@ impl CodeGenerator for Var {
         let var_ty = self.ty();
         let ty = var_ty.to_rust_ty_or_opaque(ctx, &());
 
-        if let Some(val) = self.val() {
-            // TODO: Review why this is inside the if block
-            let attrs = process_attributes(
-                result,
-                item,
-                ctx,
-                attrs,
-                AttributeItemKind::Var,
-            );
+        let is_extern_var = self.val().is_none();
+        let mut link_name = MaybeUninit::<&str>::uninit();
 
-            match *val {
-                VarType::Bool(val) => {
-                    result.push(quote! {
-                        #(#attrs)*
-                        pub const #canonical_ident : #ty = #val ;
-                    });
-                }
-                VarType::Int(val) => {
-                    let int_kind = var_ty
-                        .into_resolver()
-                        .through_type_aliases()
-                        .through_type_refs()
-                        .resolve(ctx)
-                        .expect_type()
-                        .as_integer()
-                        .unwrap();
-                    let val = if int_kind.is_signed() {
-                        helpers::ast_ty::int_expr(val)
-                    } else {
-                        helpers::ast_ty::uint_expr(val as _)
-                    };
-                    result.push(quote! {
-                        #(#attrs)*
-                        pub const #canonical_ident : #ty = #val ;
-                    });
-                }
-                VarType::String(ref bytes) => {
-                    let prefix = ctx.trait_prefix();
-
-                    let options = ctx.options();
-                    let rust_features = options.rust_features;
-
-                    let mut cstr_bytes = bytes.clone();
-                    cstr_bytes.push(0);
-                    let len = proc_macro2::Literal::usize_unsuffixed(
-                        cstr_bytes.len(),
-                    );
-                    let cstr =
-                        if options.generate_cstr && rust_features.const_cstr {
-                            CStr::from_bytes_with_nul(&cstr_bytes).ok()
-                        } else {
-                            None
-                        };
-
-                    if let Some(cstr) = cstr {
-                        let cstr_ty = quote! { ::#prefix::ffi::CStr };
-                        if rust_features.literal_cstr {
-                            let cstr = proc_macro2::Literal::c_string(cstr);
-                            result.push(quote! {
-                                #(#attrs)*
-                                pub const #canonical_ident: &#cstr_ty = #cstr;
-                            });
-                        } else {
-                            let bytes =
-                                proc_macro2::Literal::byte_string(&cstr_bytes);
-                            result.push(quote! {
-                                #(#attrs)*
-                                #[allow(unsafe_code)]
-                                pub const #canonical_ident: &#cstr_ty = unsafe {
-                                    #cstr_ty::from_bytes_with_nul_unchecked(#bytes)
-                                };
-                            });
-                        }
-                    } else {
-                        // TODO: Here we ignore the type we just made up, probably
-                        // we should refactor how the variable type and ty ID work.
-                        let array_ty = quote! { [u8; #len] };
-                        let bytes =
-                            proc_macro2::Literal::byte_string(&cstr_bytes);
-                        let lifetime =
-                            if true { None } else { Some(quote! { 'static }) }
-                                .into_iter();
-
-                        result.push(quote! {
-                            #(#attrs)*
-                            pub const #canonical_ident: &#(#lifetime )*#array_ty = #bytes ;
-                        });
-                    }
-                }
-                VarType::Float(f) => {
-                    if let Ok(expr) = helpers::ast_ty::float_expr(ctx, f) {
-                        result.push(quote! {
-                            #(#attrs)*
-                            pub const #canonical_ident : #ty = #expr ;
-                        });
-                    }
-                }
-                VarType::Char(c) => {
-                    result.push(quote! {
-                        #(#attrs)*
-                        pub const #canonical_ident : #ty = #c ;
-                    });
-                }
-            }
-        } else {
-            let symbol: &str = self.link_name().unwrap_or_else(|| {
+        if is_extern_var {
+            link_name.write(self.link_name().unwrap_or_else(|| {
                 let link_name =
                     self.mangled_name().unwrap_or_else(|| self.name());
                 if utils::names_will_be_identical_after_mangling(
@@ -926,16 +829,20 @@ impl CodeGenerator for Var {
                     attrs.push(attributes::link_name::<false>(link_name));
                     link_name
                 }
-            });
+            }));
+        }
 
-            let attrs = process_attributes(
-                result,
-                item,
-                ctx,
-                attrs,
-                AttributeItemKind::Var,
-            );
+        let attrs = process_attributes(
+            result,
+            item,
+            ctx,
+            attrs,
+            AttributeItemKind::Var,
+        );
 
+        if is_extern_var {
+            // SAFETY: We've already initialized `symbol` when dealing with extern variables.
+            let symbol: &str = unsafe { link_name.assume_init() };
             let maybe_mut = if self.is_const() {
                 quote! {}
             } else {
@@ -968,6 +875,105 @@ impl CodeGenerator for Var {
                 );
             } else {
                 result.push(tokens);
+            }
+
+            // Required for SAFETY of the match below
+            return;
+        }
+
+        // SAFETY: This part only runs if `is_extern_var` is false,
+        //         meaning `self.val()` must be `Some(_)`
+        // Note: `symbol` remains uninitialized here
+        match *unsafe { self.val().unwrap_unchecked() } {
+            VarType::Bool(val) => {
+                result.push(quote! {
+                    #(#attrs)*
+                    pub const #canonical_ident : #ty = #val ;
+                });
+            }
+            VarType::Int(val) => {
+                let int_kind = var_ty
+                    .into_resolver()
+                    .through_type_aliases()
+                    .through_type_refs()
+                    .resolve(ctx)
+                    .expect_type()
+                    .as_integer()
+                    .unwrap();
+                let val = if int_kind.is_signed() {
+                    helpers::ast_ty::int_expr(val)
+                } else {
+                    helpers::ast_ty::uint_expr(val as _)
+                };
+                result.push(quote! {
+                    #(#attrs)*
+                    pub const #canonical_ident : #ty = #val ;
+                });
+            }
+            VarType::String(ref bytes) => {
+                let prefix = ctx.trait_prefix();
+
+                let options = ctx.options();
+                let rust_features = options.rust_features;
+
+                let mut cstr_bytes = bytes.clone();
+                cstr_bytes.push(0);
+                let len =
+                    proc_macro2::Literal::usize_unsuffixed(cstr_bytes.len());
+                let cstr = if options.generate_cstr && rust_features.const_cstr
+                {
+                    CStr::from_bytes_with_nul(&cstr_bytes).ok()
+                } else {
+                    None
+                };
+
+                if let Some(cstr) = cstr {
+                    let cstr_ty = quote! { ::#prefix::ffi::CStr };
+                    if rust_features.literal_cstr {
+                        let cstr = proc_macro2::Literal::c_string(cstr);
+                        result.push(quote! {
+                            #(#attrs)*
+                            pub const #canonical_ident: &#cstr_ty = #cstr;
+                        });
+                    } else {
+                        let bytes =
+                            proc_macro2::Literal::byte_string(&cstr_bytes);
+                        result.push(quote! {
+                            #(#attrs)*
+                            #[allow(unsafe_code)]
+                            pub const #canonical_ident: &#cstr_ty = unsafe {
+                                #cstr_ty::from_bytes_with_nul_unchecked(#bytes)
+                            };
+                        });
+                    }
+                } else {
+                    // TODO: Here we ignore the type we just made up, probably
+                    // we should refactor how the variable type and ty ID work.
+                    let array_ty = quote! { [u8; #len] };
+                    let bytes = proc_macro2::Literal::byte_string(&cstr_bytes);
+                    let lifetime =
+                        if true { None } else { Some(quote! { 'static }) }
+                            .into_iter();
+
+                    result.push(quote! {
+                        #(#attrs)*
+                        pub const #canonical_ident: &#(#lifetime )*#array_ty = #bytes ;
+                    });
+                }
+            }
+            VarType::Float(f) => {
+                if let Ok(expr) = helpers::ast_ty::float_expr(ctx, f) {
+                    result.push(quote! {
+                        #(#attrs)*
+                        pub const #canonical_ident : #ty = #expr ;
+                    });
+                }
+            }
+            VarType::Char(c) => {
+                result.push(quote! {
+                    #(#attrs)*
+                    pub const #canonical_ident : #ty = #c ;
+                });
             }
         }
     }
@@ -1225,7 +1231,7 @@ impl CodeGenerator for Type {
                         //
                         //     All of these attributes are additional and quoted below the processed attributes
                         // TODO: Finally introduce a TypeAlias variant to at least forward the alias_style,
-                        // TODO: it should also include from and to type (cannonical name) 
+                        // TODO: it should also include from and to type (cannonical name)
                         let mut attrs = vec![attributes::repr("transparent")];
                         let packed = false; // Types can't be packed in Rust.
                         let derivable_traits =
@@ -2570,14 +2576,13 @@ impl CodeGenerator for CompInfo {
                 (quote! {}, quote! {}, quote! {})
             };
 
-            
         let mut attrs = attrs_for_item(item, ctx);
         let mut needs_clone_impl = false;
         let mut needs_default_impl = false;
         let mut needs_debug_impl = false;
         let mut needs_partialeq_impl = false;
         let needs_flexarray_impl = flex_array_generic.is_some();
-        
+
         // if a type has both a "packed" attribute and an "align(N)" attribute, then check if the
         // "packed" attr is redundant, and do not include it if so.
         if packed &&
@@ -4784,7 +4789,8 @@ impl CodeGenerator for Function {
             .into_resolver()
             .through_type_refs()
             .resolve(ctx)
-            .must_use(ctx) {
+            .must_use(ctx)
+        {
             attrs.push(attributes::must_use());
         }
 
