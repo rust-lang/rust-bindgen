@@ -3307,7 +3307,8 @@ impl Method {
 
         let block = ctx.wrap_unsafe_ops(quote! ( #( #stmts );*));
 
-        let mut attrs = vec![attributes::inline()];
+        let mut attrs = attrs_for_item(function_item, ctx); 
+        attrs.push(attributes::inline());
 
         if signature.must_use() {
             attrs.push(attributes::must_use());

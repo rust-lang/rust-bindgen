@@ -14,8 +14,8 @@ const _: () = {
     ][::std::mem::offset_of!(foo_struct, inner) - 0usize];
 };
 #[repr(u32)]
-#[cfg_attr(test, derive(PartialOrd, Copy))]
 #[derive(Clone, Hash, PartialEq, Eq)]
+#[cfg_attr(test, derive(PartialOrd, Copy))]
 pub enum foo_enum {
     inner = 0,
 }
