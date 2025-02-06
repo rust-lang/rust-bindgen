@@ -2,7 +2,7 @@
 
 /// The type of a comment.
 #[derive(Debug, PartialEq, Eq)]
-enum Kind {
+pub(crate) enum Kind {
     /// A `///` comment, or something of the like.
     /// All lines in a comment should start with the same symbol.
     SingleLines,
@@ -21,7 +21,7 @@ pub(crate) fn preprocess(comment: &str) -> String {
 }
 
 /// Gets the kind of the doc comment, if it is one.
-fn kind(comment: &str) -> Option<Kind> {
+pub(crate) fn kind(comment: &str) -> Option<Kind> {
     if comment.starts_with("/*") {
         Some(Kind::MultiLine)
     } else if comment.starts_with("//") {
@@ -44,7 +44,7 @@ fn preprocess_single_lines(comment: &str) -> String {
     lines.join("\n")
 }
 
-fn preprocess_multi_line(comment: &str) -> String {
+pub(crate) fn preprocess_multi_line(comment: &str) -> String {
     let comment = comment
         .trim_start_matches('/')
         .trim_end_matches('/')

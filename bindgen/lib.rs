@@ -579,8 +579,11 @@ impl BindgenOptions {
     fn for_each_callback(&self, f: impl Fn(&dyn callbacks::ParseCallbacks)) {
         self.parse_callbacks.iter().for_each(|cb| f(cb.as_ref()));
     }
-    
-    fn for_each_callback_mut(&self, mut f: impl FnMut(&dyn callbacks::ParseCallbacks)) {
+
+    fn for_each_callback_mut(
+        &self,
+        mut f: impl FnMut(&dyn callbacks::ParseCallbacks),
+    ) {
         self.parse_callbacks.iter().for_each(|cb| f(cb.as_ref()));
     }
 
@@ -942,7 +945,7 @@ impl Bindings {
             writer.write_all(NL.as_bytes())?;
         }
 
-        match self.format_tokens(&self.module) {
+        match format_tokens(&self.options, &self.module) {
             Ok(formatted_bindings) => {
                 writer.write_all(formatted_bindings.as_bytes())?;
             }
@@ -955,102 +958,102 @@ impl Bindings {
         }
         Ok(())
     }
+}
 
-    /// Gets the rustfmt path to rustfmt the generated bindings.
-    fn rustfmt_path(&self) -> io::Result<Cow<PathBuf>> {
-        debug_assert!(matches!(self.options.formatter, Formatter::Rustfmt));
-        if let Some(ref p) = self.options.rustfmt_path {
-            return Ok(Cow::Borrowed(p));
+/// Gets the rustfmt path to rustfmt the generated bindings.
+pub(crate) fn rustfmt_path(
+    options: &BindgenOptions,
+) -> io::Result<Cow<PathBuf>> {
+    debug_assert!(matches!(options.formatter, Formatter::Rustfmt));
+    if let Some(ref p) = options.rustfmt_path {
+        return Ok(Cow::Borrowed(p));
+    }
+    if let Ok(rustfmt) = env::var("RUSTFMT") {
+        return Ok(Cow::Owned(rustfmt.into()));
+    }
+    // No rustfmt binary was specified, so assume that the binary is called
+    // "rustfmt" and that it is in the user's PATH.
+    Ok(Cow::Owned("rustfmt".into()))
+}
+
+/// Formats a token stream with the formatter set up in `BindgenOptions`.
+pub(crate) fn format_tokens(
+    options: &BindgenOptions,
+    tokens: &proc_macro2::TokenStream,
+) -> io::Result<String> {
+    let _t = time::Timer::new("rustfmt_generated_string")
+        .with_output(options.time_phases);
+
+    match options.formatter {
+        Formatter::None => return Ok(tokens.to_string()),
+        #[cfg(feature = "prettyplease")]
+        Formatter::Prettyplease => {
+            return Ok(prettyplease::unparse(&syn::parse_quote!(#tokens)));
         }
-        if let Ok(rustfmt) = env::var("RUSTFMT") {
-            return Ok(Cow::Owned(rustfmt.into()));
-        }
-        // No rustfmt binary was specified, so assume that the binary is called
-        // "rustfmt" and that it is in the user's PATH.
-        Ok(Cow::Owned("rustfmt".into()))
+        Formatter::Rustfmt => (),
     }
 
-    /// Formats a token stream with the formatter set up in `BindgenOptions`.
-    fn format_tokens(
-        &self,
-        tokens: &proc_macro2::TokenStream,
-    ) -> io::Result<String> {
-        let _t = time::Timer::new("rustfmt_generated_string")
-            .with_output(self.options.time_phases);
+    let rustfmt = rustfmt_path(&options)?;
+    let mut cmd = Command::new(&*rustfmt);
 
-        match self.options.formatter {
-            Formatter::None => return Ok(tokens.to_string()),
-            #[cfg(feature = "prettyplease")]
-            Formatter::Prettyplease => {
-                return Ok(prettyplease::unparse(&syn::parse_quote!(#tokens)));
+    cmd.stdin(Stdio::piped()).stdout(Stdio::piped());
+
+    if let Some(path) = options
+        .rustfmt_configuration_file
+        .as_ref()
+        .and_then(|f| f.to_str())
+    {
+        cmd.args(["--config-path", path]);
+    }
+
+    let edition = options
+        .rust_edition
+        .unwrap_or_else(|| options.rust_target.latest_edition());
+    cmd.args(["--edition", &format!("{edition}")]);
+
+    let mut child = cmd.spawn()?;
+    let mut child_stdin = child.stdin.take().unwrap();
+    let mut child_stdout = child.stdout.take().unwrap();
+
+    let source = tokens.to_string();
+
+    // Write to stdin in a new thread, so that we can read from stdout on this
+    // thread. This keeps the child from blocking on writing to its stdout which
+    // might block us from writing to its stdin.
+    let stdin_handle = ::std::thread::spawn(move || {
+        let _ = child_stdin.write_all(source.as_bytes());
+        source
+    });
+
+    let mut output = vec![];
+    io::copy(&mut child_stdout, &mut output)?;
+
+    let status = child.wait()?;
+    let source = stdin_handle.join().expect(
+        "The thread writing to rustfmt's stdin doesn't do \
+         anything that could panic",
+    );
+
+    match String::from_utf8(output) {
+        Ok(bindings) => match status.code() {
+            Some(0) => Ok(bindings),
+            Some(2) => Err(io::Error::new(
+                io::ErrorKind::Other,
+                "Rustfmt parsing errors.".to_string(),
+            )),
+            Some(3) => {
+                rustfmt_non_fatal_error_diagnostic(
+                    "Rustfmt could not format some lines",
+                    &options,
+                );
+                Ok(bindings)
             }
-            Formatter::Rustfmt => (),
-        }
-
-        let rustfmt = self.rustfmt_path()?;
-        let mut cmd = Command::new(&*rustfmt);
-
-        cmd.stdin(Stdio::piped()).stdout(Stdio::piped());
-
-        if let Some(path) = self
-            .options
-            .rustfmt_configuration_file
-            .as_ref()
-            .and_then(|f| f.to_str())
-        {
-            cmd.args(["--config-path", path]);
-        }
-
-        let edition = self
-            .options
-            .rust_edition
-            .unwrap_or_else(|| self.options.rust_target.latest_edition());
-        cmd.args(["--edition", &format!("{edition}")]);
-
-        let mut child = cmd.spawn()?;
-        let mut child_stdin = child.stdin.take().unwrap();
-        let mut child_stdout = child.stdout.take().unwrap();
-
-        let source = tokens.to_string();
-
-        // Write to stdin in a new thread, so that we can read from stdout on this
-        // thread. This keeps the child from blocking on writing to its stdout which
-        // might block us from writing to its stdin.
-        let stdin_handle = ::std::thread::spawn(move || {
-            let _ = child_stdin.write_all(source.as_bytes());
-            source
-        });
-
-        let mut output = vec![];
-        io::copy(&mut child_stdout, &mut output)?;
-
-        let status = child.wait()?;
-        let source = stdin_handle.join().expect(
-            "The thread writing to rustfmt's stdin doesn't do \
-             anything that could panic",
-        );
-
-        match String::from_utf8(output) {
-            Ok(bindings) => match status.code() {
-                Some(0) => Ok(bindings),
-                Some(2) => Err(io::Error::new(
-                    io::ErrorKind::Other,
-                    "Rustfmt parsing errors.".to_string(),
-                )),
-                Some(3) => {
-                    rustfmt_non_fatal_error_diagnostic(
-                        "Rustfmt could not format some lines",
-                        &self.options,
-                    );
-                    Ok(bindings)
-                }
-                _ => Err(io::Error::new(
-                    io::ErrorKind::Other,
-                    "Internal rustfmt error".to_string(),
-                )),
-            },
-            _ => Ok(source),
-        }
+            _ => Err(io::Error::new(
+                io::ErrorKind::Other,
+                "Internal rustfmt error".to_string(),
+            )),
+        },
+        _ => Ok(source),
     }
 }
 

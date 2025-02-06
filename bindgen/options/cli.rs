@@ -1,10 +1,17 @@
 #![allow(unused_qualifications)] // Clap somehow generates a lot of these
 
 use crate::{
-    builder, callbacks::{
+    builder,
+    callbacks::{
         AttributeInfo, AttributeItemKind, DeriveInfo, ItemInfo, ParseCallbacks,
         TypeKind,
-    }, features::{RustEdition, EARLIEST_STABLE_RUST}, ir::function::FunctionKind, regex_set::RegexSet, Abi, AliasVariation, Builder, CodegenConfig, EnumVariation, FieldVisibilityKind, Formatter, HashSet, MacroTypeVariation, NonCopyUnionStyle, RustTarget
+    },
+    features::{RustEdition, EARLIEST_STABLE_RUST},
+    ir::function::FunctionKind,
+    regex_set::RegexSet,
+    Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
+    FieldVisibilityKind, Formatter, HashSet, MacroTypeVariation,
+    NonCopyUnionStyle, RustTarget,
 };
 use clap::{
     error::{Error, ErrorKind},
@@ -765,13 +772,11 @@ where
                 Some(AttributeItemKind::Union) => {
                     "--with-attribute-custom-union"
                 }
-                Some(AttributeItemKind::Var) => {
-                    "--with-attribute-custom-var"
-                }
+                Some(AttributeItemKind::Var) => "--with-attribute-custom-var",
                 Some(AttributeItemKind::Function(_)) => {
                     "--with-attribute-custom-function"
                 }
-   };
+            };
 
             let attributes = self.attributes.join(",");
 
@@ -785,7 +790,11 @@ where
             args
         }
 
-        fn process_attributes(&self, info: &AttributeInfo<'_>, attrs: &mut HashSet<String>) {
+        fn process_attributes(
+            &self,
+            info: &AttributeInfo<'_>,
+            attrs: &mut HashSet<String>,
+        ) {
             if self.kind.map_or(true, |kind| kind == info.kind) &&
                 self.regex_set.matches(info.name)
             {

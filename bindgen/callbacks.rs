@@ -3,6 +3,7 @@
 pub use crate::ir::analysis::DeriveTrait;
 pub use crate::ir::derive::CanDerive as ImplementsTrait;
 pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
+pub use crate::ir::function::FunctionKind;
 pub use crate::ir::int::IntKind;
 use std::fmt;
 
@@ -139,7 +140,12 @@ pub trait ParseCallbacks: fmt::Debug {
     }
 
     /// Process an item's attribute
-    fn process_attributes(&self, _info: &AttributeInfo<'_>, _attributes: &mut Vec<String>) {}
+    fn process_attributes(
+        &self,
+        _info: &AttributeInfo<'_>,
+        _attributes: &mut Vec<String>,
+    ) {
+    }
 
     /// Process a source code comment.
     fn process_comment(&self, _comment: &str) -> Option<String> {
@@ -260,7 +266,6 @@ pub enum AttributeItemKind {
     Var,
     /// The item is a Rust `fn`.
     Function(FunctionKind),
-    // TODO: Add `Alias` variant and more information about other items
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

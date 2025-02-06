@@ -25,6 +25,7 @@ use crate::callbacks::{
     DiscoveredItemId, FieldInfo, TypeKind as DeriveTypeKind,
 };
 use crate::codegen::error::Error;
+use crate::comment::{self, preprocess};
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::{
     Annotations, FieldAccessorKind, FieldVisibilityKind,
@@ -55,19 +56,23 @@ use crate::ir::template::{
 use crate::ir::ty::{Type, TypeKind};
 use crate::ir::var::Var;
 
-use proc_macro2::{Ident, Span, TokenStream};
-use quote::{ToTokens, TokenStreamExt};
-use syn::parse::ParseStream;
-use syn::token::Pound;
-use syn::{parse, parse2, parse_quote, parse_str, Attribute, Block};
- 
-use crate::{Entry, HashMap, HashSet};
+use crate::quote::{ToTokens, TokenStreamExt};
+use itertools::Itertools;
+use proc_macro2::{Group, Ident, Span, TokenStream, TokenTree};
+use syn::meta::ParseNestedMeta;
+use syn::parse::{ParseBuffer, ParseStream};
+use syn::{
+    parse, parse_quote, Attribute, Expr, ForeignItemMacro, Lit, Meta, MetaList,
+    MetaNameValue,
+};
+
+use crate::{format_tokens, Entry, HashMap, HashSet};
 use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::VecDeque;
 use std::ffi::CStr;
 use std::fmt::{self, Write};
-use std::ops::{self, Deref};
+use std::ops::{Deref, DerefMut};
 use std::str::{self, FromStr};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -96,10 +101,7 @@ impl fmt::Display for CodegenError {
 // Name of type defined in constified enum module
 pub(crate) static CONSTIFIED_ENUM_MODULE_REPR_NAME: &str = "Type";
 
-fn top_level_path(
-    ctx: &BindgenContext,
-    item: &Item,
-) -> Vec<proc_macro2::TokenStream> {
+fn top_level_path(ctx: &BindgenContext, item: &Item) -> Vec<TokenStream> {
     let mut path = vec![quote! { self }];
 
     if ctx.options().enable_cxx_namespaces {
@@ -111,10 +113,7 @@ fn top_level_path(
     path
 }
 
-fn root_import(
-    ctx: &BindgenContext,
-    module: &Item,
-) -> proc_macro2::TokenStream {
+fn root_import(ctx: &BindgenContext, module: &Item) -> TokenStream {
     assert!(ctx.options().enable_cxx_namespaces, "Somebody messed it up");
     assert!(module.is_module());
 
@@ -233,51 +232,87 @@ where
         .collect()
 }
 
-fn normalize_attributes(attrs: Vec<String>) -> Vec<String> {
-    attrs
-        .iter()
-        .map(|attr| {
-            let mut in_quotes = None;
-            attr.chars()
-                .filter_map(|c| match c {
-                    '"' | '\'' if in_quotes.is_none() => {
-                        in_quotes = Some(c);
-                        Some(c)
-                    }
-                    c if in_quotes == Some(c) => {
-                        in_quotes = None;
-                        Some(c)
-                    }
-                    c if in_quotes.is_some() => Some(c),
-                    c if !c.is_whitespace() => Some(c),
-                    _ => None,
-                })
-                .collect()
-        })
-        .collect()
-}
-
 fn process_attributes(
     result: &mut CodegenResult,
     item: &Item,
     ctx: &BindgenContext,
-    attrs: Vec<String>,
+    mut attrs: Vec<TokenStream>,
     kind: AttributeItemKind,
 ) -> Vec<TokenStream> {
-    // TODO:  attrs.extend(parse_tokens(item.annotations().attributes()));
+    attrs.extend(parse_tokens(item.annotations().attributes()));
+
+    let mut attrs_out = vec![];
+    if !attrs.is_empty() && attrs.iter().any(|attr| !attr.is_empty()) {
+        // If this ever errors, we may have to - depending on the attributes - use different dummy items to
+        // attach the attributes to. This is necessary to get a valid unparse from prettyplease/rustfmt
+        let attrs_with_body = quote! {
+            #(#attrs)*
+            fn body() {}
+        };
+
+        let mut comments = vec![];
+        let mut block_comment = false;
+
+        // TODO: It might be a good idea to just default to prettyplease::unparse here
+        // TODO: as the user may have `None` in their config and `Rustfmt` invocations can
+        // TODO: become quite expensive when ran against each attribute. 
+        for line in format_tokens(ctx.options(), &attrs_with_body)
+            .expect("can format attrs")
+            .split('\n')
+            .take_while(|line| !line.starts_with("fn body"))
+            .join("\n")
+            .lines()
+        {
+            let trimmed = line.trim();
+            if trimmed.starts_with("/*") {
+                block_comment = true;
+            }
+
+            let cleaned = trimmed
+                .trim_start_matches('/')
+                .trim_start_matches('*')
+                .trim_start_matches('!')
+                .trim_end_matches('/')
+                .trim_end_matches('*');
+
+            if block_comment ||
+                trimmed.starts_with("///") ||
+                trimmed.starts_with("//")
+            {
+                comments.push(cleaned.to_string());
+            } else if trimmed.starts_with('#') {
+                attrs_out.push(line.into());
+            }
+
+            if trimmed.ends_with("*/") {
+                block_comment = false;
+            }
+        }
+
+        if !comments.is_empty() {
+            attrs_out.push(format!("#[doc = \"{}\"]", comments.join("\n")));
+        }
         
-    let mut attrs = normalize_attributes(attrs);
+        //println!("cargo:warning=attrs: {attrs_out:?}");
+    }
+
+    // TODO: Call add_attributes and renormalize attributes
     ctx.options().for_each_callback_mut(|cb| {
         cb.process_attributes(
             &AttributeInfo {
                 name: &item.canonical_name(ctx),
                 kind,
             },
-            &mut attrs,
+            &mut attrs_out,
         );
     });
-    result.set_attributes(item.id(), attrs.clone());
-    parse_tokens(normalize_attributes(attrs))
+
+    // TODO: Store as token stream here
+    result.set_attributes(
+        item.id(),
+        attrs_out.iter().map(|t| t.to_string()).collect(),
+    );
+    parse_tokens(attrs_out)
 }
 
 struct WrapAsVariadic {
@@ -286,7 +321,7 @@ struct WrapAsVariadic {
 }
 
 struct CodegenResult<'a> {
-    items: Vec<proc_macro2::TokenStream>,
+    items: Vec<TokenStream>,
     dynamic_items: DynamicItems,
 
     /// A monotonic counter used to add stable unique ID's to stuff that doesn't
@@ -430,7 +465,7 @@ impl<'a> CodegenResult<'a> {
         self.vars_seen.insert(name.into());
     }
 
-    fn inner<F>(&mut self, cb: F) -> Vec<proc_macro2::TokenStream>
+    fn inner<F>(&mut self, cb: F) -> Vec<TokenStream>
     where
         F: FnOnce(&mut Self),
     {
@@ -448,15 +483,15 @@ impl<'a> CodegenResult<'a> {
     }
 }
 
-impl ops::Deref for CodegenResult<'_> {
-    type Target = Vec<proc_macro2::TokenStream>;
+impl Deref for CodegenResult<'_> {
+    type Target = Vec<TokenStream>;
 
     fn deref(&self) -> &Self::Target {
         &self.items
     }
 }
 
-impl ops::DerefMut for CodegenResult<'_> {
+impl DerefMut for CodegenResult<'_> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.items
     }
@@ -687,9 +722,7 @@ impl CodeGenerator for Module {
             if let Some(raw_lines) = ctx.options().module_lines.get(&path) {
                 for raw_line in raw_lines {
                     found_any = true;
-                    result.push(
-                        TokenStream::from_str(raw_line).unwrap(),
-                    );
+                    result.push(TokenStream::from_str(raw_line).unwrap());
                 }
             }
 
@@ -755,7 +788,7 @@ impl CodeGenerator for Var {
             attrs.push(attributes::doc(&comment));
         }
 
-        attrs.extend(item.annotations().attributes());
+        attrs.extend(parse_tokens(item.annotations().attributes()));
 
         let var_ty = self.ty();
         let ty = var_ty.to_rust_ty_or_opaque(ctx, &());
@@ -1110,15 +1143,15 @@ impl CodeGenerator for Type {
                 } else {
                     ctx.options().default_alias_style
                 };
-                
-                attrs.extend(item.annotations().attributes().iter().cloned());
-                
-                if let Some(comment) = item.comment(ctx) {
-                    attrs.insert(attributes::doc(&comment).to_string());
-                }
 
                 let mut attrs = vec![];
-                
+
+                attrs.extend(parse_tokens(item.annotations().attributes()));
+
+                if let Some(comment) = item.comment(ctx) {
+                    attrs.push(attributes::doc(&comment));
+                }
+
                 if let Some(inner_attrs) =
                     result.get_attributes(inner_item.id())
                 {
@@ -1132,7 +1165,7 @@ impl CodeGenerator for Type {
                                 if attr.path().is_ident("cfg") ||
                                     attr.path().is_ident("link")
                                 {
-                                    Some(attr.to_token_stream().to_string())
+                                    Some(attr.to_token_stream())
                                 } else {
                                     None
                                 }
@@ -1197,9 +1230,9 @@ impl CodeGenerator for Type {
                         attrs.push(attributes::derives(&derives));
 
                         // TODO: Add custom attributes from callback here
-                        
+
                         quote! {
-                            #( #attributes )*
+                            #( #attrs )*
                             pub struct #rust_name
                         }
                     }
@@ -1262,7 +1295,7 @@ impl CodeGenerator for Type {
                 if alias_style == AliasVariation::NewTypeDeref {
                     let prefix = ctx.trait_prefix();
                     tokens.append_all(quote! {
-                        #( #cfg_attrs )*
+                        #( #attrs )*
                         impl ::#prefix::ops::Deref for #rust_name {
                             type Target = #inner_rust_type;
                             #[inline]
@@ -1270,7 +1303,7 @@ impl CodeGenerator for Type {
                                 &self.0
                             }
                         }
-                        #( #cfg_attrs )*
+                        #( #attrs )*
                         impl ::#prefix::ops::DerefMut for #rust_name {
                             #[inline]
                             fn deref_mut(&mut self) -> &mut Self::Target {
@@ -1757,7 +1790,7 @@ impl FieldCodegen<'_> for FieldData {
 
 impl BitfieldUnit {
     /// Get the constructor name for this bitfield unit.
-    fn ctor_name(&self) -> proc_macro2::TokenStream {
+    fn ctor_name(&self) -> TokenStream {
         let ctor_name = Ident::new(
             &format!("new_bitfield_{}", self.nth()),
             Span::call_site(),
@@ -1775,9 +1808,9 @@ impl Bitfield {
     fn extend_ctor_impl(
         &self,
         ctx: &BindgenContext,
-        param_name: &proc_macro2::TokenStream,
-        mut ctor_impl: proc_macro2::TokenStream,
-    ) -> proc_macro2::TokenStream {
+        param_name: &TokenStream,
+        mut ctor_impl: TokenStream,
+    ) -> TokenStream {
         let bitfield_ty = ctx.resolve_type(self.ty());
         let bitfield_ty_layout = bitfield_ty
             .layout(ctx)
@@ -1808,9 +1841,7 @@ impl Bitfield {
     }
 }
 
-fn access_specifier(
-    visibility: FieldVisibilityKind,
-) -> proc_macro2::TokenStream {
+fn access_specifier(visibility: FieldVisibilityKind) -> TokenStream {
     match visibility {
         FieldVisibilityKind::Private => quote! {},
         FieldVisibilityKind::PublicCrate => quote! { pub(crate) },
@@ -2644,10 +2675,8 @@ impl CodeGenerator for CompInfo {
         }
 
         if item.must_use(ctx) {
-            attrs.insert(attributes::must_use().to_string());
+            attrs.push(attributes::must_use());
         }
-
-        attrs.extend(item.annotations().attributes().iter().cloned());
 
         let attrs = process_attributes(
             result,
@@ -2658,16 +2687,17 @@ impl CodeGenerator for CompInfo {
                 AttributeItemKind::Union
             } else {
                 AttributeItemKind::Struct
-            }
+            },
         );
-        
+
         let cfg_attrs = attrs
             .iter()
             .filter(|t| !t.is_empty())
             .map(|t| parse_quote! {#t})
             .filter(|attr: &Attribute| {
                 attr.path().is_ident("cfg") || attr.path().is_ident("link")
-            });
+            })
+            .collect_vec();
 
         let mut tokens = if is_rust_union {
             quote! {
@@ -2986,10 +3016,10 @@ impl CompInfo {
         &self,
         ctx: &BindgenContext,
         canonical_ident: &Ident,
-        flex_inner_ty: Option<&proc_macro2::TokenStream>,
+        flex_inner_ty: Option<&TokenStream>,
         generic_param_names: &[Ident],
-        impl_generics_labels: &proc_macro2::TokenStream,
-    ) -> proc_macro2::TokenStream {
+        impl_generics_labels: &TokenStream,
+    ) -> TokenStream {
         let prefix = ctx.trait_prefix();
 
         let flex_array = flex_inner_ty.as_ref().map(|ty| quote! { [ #ty ] });
@@ -3416,8 +3446,6 @@ enum EnumBuilder<'a> {
     },
     Consts {
         variants: Vec<TokenStream>,
-        // TODO: Investigate if we end up using this
-        attrs: Vec<TokenStream>,
     },
     ModuleConsts {
         module_name: &'a str,
@@ -3479,7 +3507,7 @@ impl<'a> EnumBuilder<'a> {
                     });
                 }
 
-                EnumBuilder::Consts { variants, attrs }
+                EnumBuilder::Consts { variants }
             }
 
             EnumVariation::ModuleConsts => {
@@ -3495,7 +3523,7 @@ impl<'a> EnumBuilder<'a> {
                 EnumBuilder::ModuleConsts {
                     module_name: name,
                     module_items: vec![type_definition],
-                    attrs
+                    attrs,
                 }
             }
         }
@@ -3582,7 +3610,7 @@ impl<'a> EnumBuilder<'a> {
                 self
             }
 
-            EnumBuilder::Consts { ref attrs, .. } => {
+            EnumBuilder::Consts { .. } => {
                 let constant_name = match mangling_prefix {
                     Some(prefix) => {
                         Cow::Owned(format!("{prefix}_{variant_name}"))
@@ -3601,7 +3629,7 @@ impl<'a> EnumBuilder<'a> {
             EnumBuilder::ModuleConsts {
                 module_name,
                 mut module_items,
-                attrs
+                attrs,
             } => {
                 let name = ctx.rust_ident(variant_name);
                 let ty = ctx.rust_ident(CONSTIFIED_ENUM_MODULE_REPR_NAME);
@@ -3613,7 +3641,7 @@ impl<'a> EnumBuilder<'a> {
                 EnumBuilder::ModuleConsts {
                     module_name,
                     module_items,
-                    attrs
+                    attrs,
                 }
             }
         }
@@ -3860,22 +3888,15 @@ impl CodeGenerator for Enum {
             // In most cases this will be a no-op, since custom_derives will be empty.
             derives.extend(custom_derives.iter().map(|s| s.as_str()));
 
-            // TODO: Try and make sure this makes sense attrs.extend(item.annotations().attributes());
-            attrs.extend(
-                item.annotations()
-                    .attributes()
-                    .iter()
-                    .map(|s| s.parse().unwrap()),
-            );
-            let attrs = process_attributes(
+            attrs.push(attributes::derives(&derives));
+
+            attrs = process_attributes(
                 result,
                 item,
                 ctx,
                 attrs,
                 AttributeItemKind::Enum,
             );
-
-            attrs.push(attributes::derives(&derives));
         }
 
         fn add_constant(
@@ -3911,18 +3932,15 @@ impl CodeGenerator for Enum {
         let repr = repr.to_rust_ty_or_opaque(ctx, item);
         let has_typedef = ctx.is_enum_typedef_combo(item.id());
 
-        let mut builder =
-            EnumBuilder::new(&name, attrs, &repr, variation, has_typedef);
-
-            // The custom attribute callback may return a list of attributes;
+        // The custom attribute callback may return a list of attributes;
         // add them to the end of the list.
-        attrs.extend(item.annotations().attributes().iter().cloned());
+        attrs.extend(parse_tokens(item.annotations().attributes().clone()));
 
         let attrs = process_attributes(
             result,
             item,
             ctx,
-            attrs,
+            attrs.clone(),
             AttributeItemKind::Enum,
         );
 
@@ -4470,8 +4488,7 @@ impl TryToRustTy for Type {
             }
             TypeKind::Enum(..) => {
                 let path = item.namespace_aware_canonical_path(ctx);
-                let path = TokenStream::from_str(&path.join("::"))
-                    .unwrap();
+                let path = TokenStream::from_str(&path.join("::")).unwrap();
                 Ok(syn::parse_quote!(#path))
             }
             TypeKind::TemplateInstantiation(ref inst) => {
@@ -4757,7 +4774,7 @@ impl CodeGenerator for Function {
 
         let mut attrs = vec![];
         attrs.extend(parse_tokens(item.annotations().attributes()));
-        
+
         let must_use = signature.must_use() || {
             let ret_ty = signature
                 .return_type()
@@ -4878,7 +4895,7 @@ impl CodeGenerator for Function {
             .rust_features
             .unsafe_extern_blocks
             .then(|| quote!(unsafe));
-        
+
         let attrs = process_attributes(
             result,
             item,
@@ -4919,7 +4936,7 @@ impl CodeGenerator for Function {
                 &args_identifiers,
                 &ret,
                 &ret_ty,
-                &attributes,
+                &attrs,
                 ctx,
             );
         } else {
