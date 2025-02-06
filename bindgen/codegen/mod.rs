@@ -3259,6 +3259,11 @@ impl Method {
             ret = quote! { -> Self };
         }
 
+
+        // TODO: Why can't we use
+        // TODO:    let mut exprs = utils::fnsig_arguments(ctx, signature);
+        // TODO: here instead?
+        // TODO: Seems like `arguments_from_signature` is a less powerful implementation of that.
         let mut exprs =
             helpers::ast_ty::arguments_from_signature(signature, ctx);
 
@@ -3318,9 +3323,10 @@ impl Method {
         let mut attrs = attrs_for_item(function_item, ctx);
         attrs.push(attributes::inline());
 
+        /* maybe add to methods afterall?
         attrs.retain(|attr| {
             attr.to_string() != attributes::must_use().to_string()
-        });
+        });*/
 
         if signature.must_use() {
             attrs.push(attributes::must_use());
