@@ -278,12 +278,11 @@ fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
         }
     }
 
-    let comment = comments
-        .into_iter()
-        .take(1)
-        .map(|c| format!(" {}", c))
-        .join("\n");
-
+    let comment = itertools::interleave(
+        comments.iter().take(1).map(|c| c.to_string()),
+        comments.iter().skip(1).map(|c| format!(" {}", c)),
+    )
+    .join("\n");
     // Only insert the attribute if there are formatted comments
     if !comment.is_empty() {
         attrs.insert(0, format!("#[doc = \"{}\"]", comment));
