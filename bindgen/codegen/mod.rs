@@ -232,64 +232,65 @@ where
 // ["#[repr(C)]", "#[repr(align(4))]", "#[derive(Debug, Default, Copy, Clone)]"]
 fn format_attribute_tokens(attrs: &[TokenStream]) -> Vec<String> {
     if attrs.is_empty() || !attrs.iter().any(|attr| !attr.is_empty()) {
-        vec![]
-    } else {
-        // If this ever errors, we may have to - depending on the attributes - use different dummy items to
-        // attach the attributes to. This is necessary to get a valid unparse from prettyplease/rustfmt
-        let attrs_with_body = quote! {
-            #(#attrs)*
-            fn body() {}
-        };
-
-        let mut attrs = vec![];
-        let mut comments = vec![];
-        let mut block_comment = false;
-        let mut block_comment_count = 0;
-
-        for line in unparse(&syn::parse_quote!(#attrs_with_body))
-            .split('\n')
-            .take_while(|line| !line.starts_with("fn body"))
-            .join("\n")
-            .lines()
-        {
-            let trimmed = line.trim();
-            if trimmed.starts_with("/*") {
-                block_comment_count += 1;
-                block_comment = true;
-            }
-
-            let cleaned = trimmed
-                .trim_start_matches('/')
-                .trim_start_matches('*')
-                .trim_start_matches('!')
-                .trim_end_matches('/')
-                .trim_end_matches('*');
-
-            if block_comment ||
-                trimmed.starts_with("///") ||
-                trimmed.starts_with("//")
-            {
-                comments.push(format!(
-                    "{}{}",
-                    if block_comment_count > 0 { " " } else { "" },
-                    cleaned
-                ));
-            } else if trimmed.starts_with('#') {
-                attrs.push(line.into());
-            }
-
-            if trimmed.ends_with("*/") {
-                block_comment_count = 0;
-                block_comment = false;
-            }
-        }
-
-        if !comments.is_empty() && comments.iter().any(|c| !c.is_empty()) {
-            attrs.insert(0, format!("#[doc = \"{}\"]", comments.join("\n")));
-        }
-
-        attrs
+        return vec![];
     }
+
+    // If this ever errors, we may have to - depending on the attributes - use different dummy items to
+    // attach the attributes to. This is necessary to get a valid unparse from prettyplease/rustfmt
+    let attrs_with_body = quote! {
+        #(#attrs)*
+        fn body() {}
+    };
+
+    let mut attrs = vec![];
+    let mut comments = vec![];
+    let mut block_comment = false;
+
+    for line in unparse(&syn::parse_quote!(#attrs_with_body))
+        .split('\n')
+        .take_while(|line| !line.starts_with("fn body() {}"))
+        .join("\n")
+        .lines()
+    {
+        let trimmed = line.trim();
+        if trimmed.starts_with("/*") {
+            block_comment = true;
+        }
+
+        let cleaned = trimmed
+            .trim_start_matches('/')
+            .trim_start_matches('*')
+            .trim_start_matches('!')
+            .trim_end_matches('/')
+            .trim_end_matches('*');
+
+        if block_comment ||
+            trimmed.starts_with("///") ||
+            trimmed.starts_with("//")
+        {
+            comments.push(cleaned.to_string());
+        } else if trimmed.starts_with('#') {
+            attrs.push(line.to_string());
+        }
+
+        if trimmed.ends_with("*/") {
+            block_comment = false;
+        }
+    }
+
+    let comment = comments
+        .into_iter()
+        .filter(|c| !c.is_empty())
+        .skip(1)
+        .map(|c| format!(" {}", c))
+        .join("\n");
+
+    // Only insert the attribute if there are formatted comments
+    if !comment.is_empty() {
+        attrs.insert(0, format!("#[doc = \"{}\"]", comment));
+    }
+
+    attrs
 }
 
 fn process_attributes(
