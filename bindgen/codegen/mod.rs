@@ -327,7 +327,7 @@ fn attrs_for_item(item: &Item, ctx: &BindgenContext) -> Vec<TokenStream> {
 fn set_must_use(attrs: &mut Vec<TokenStream>, must_use: bool) {
     let must_use_tokens = attributes::must_use();
     let must_use_str = must_use_tokens.to_string();
-    attrs.retain(|attr| attr.to_string() == must_use_str);
+    attrs.retain(|attr| attr.to_string() != must_use_str);
     if must_use {
         attrs.push(must_use_tokens);
     }
