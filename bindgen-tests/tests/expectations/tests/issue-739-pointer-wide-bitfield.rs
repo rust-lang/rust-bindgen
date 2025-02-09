@@ -63,8 +63,10 @@ where
     pub unsafe fn raw_set_bit(this: *mut Self, index: usize, val: bool) {
         debug_assert!(index / 8 < core::mem::size_of::<Storage>());
         let byte_index = index / 8;
-        let byte = (core::ptr::addr_of_mut!((*this).storage) as *mut u8)
-            .offset(byte_index as isize);
+        let byte = unsafe {
+            (core::ptr::addr_of_mut!((*this).storage) as *mut u8)
+                .offset(byte_index as isize)
+        };
         unsafe { *byte = Self::change_bit(*byte, index, val) };
     }
     #[inline]
