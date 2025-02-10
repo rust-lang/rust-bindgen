@@ -25,11 +25,11 @@ impl TestLib {
         Ok(TestLib { __library, foo, baz })
     }
     #[must_use]
-    /** @brief A function
-
- @param x
- @param y
- @return int*/
+    /// @brief A function
+    ///
+    /// @param x
+    /// @param y
+    /// @return int
     pub unsafe fn foo(
         &self,
         x: ::std::os::raw::c_int,

@@ -8,14 +8,14 @@ pub const RTE_HEAP_NUM_FREELISTS: u32 = 13;
 pub struct rte_mempool {
     _unused: [u8; 0],
 }
-/** Prototype for implementation specific data provisioning function.
-
- The function should provide the implementation specific memory for
- for use by the other mempool ops functions in a given mempool ops struct.
- E.g. the default ops provides an instance of the rte_ring for this purpose.
- it will most likely point to a different type of data structure, and
- will be transparent to the application programmer.
- This function should set mp->pool_data.*/
+/// Prototype for implementation specific data provisioning function.
+///
+/// The function should provide the implementation specific memory for
+/// for use by the other mempool ops functions in a given mempool ops struct.
+/// E.g. the default ops provides an instance of the rte_ring for this purpose.
+/// it will most likely point to a different type of data structure, and
+/// will be transparent to the application programmer.
+/// This function should set mp->pool_data.
 pub type rte_mempool_alloc_t = ::std::option::Option<
     unsafe extern "C" fn(mp: *mut rte_mempool) -> ::std::os::raw::c_int,
 >;
@@ -149,13 +149,13 @@ fn bindgen_test_layout_rte_spinlock_t() {
         "Offset of field: rte_spinlock_t::locked",
     );
 }
-/** Structure storing the table of registered ops structs, each of which contain
- the function pointers for the mempool ops functions.
- Each process has its own storage for this ops struct array so that
- the mempools can be shared across primary and secondary processes.
- The indices used to access the array are valid across processes, whereas
- any function pointers stored directly in the mempool struct would not be.
- This results in us simply having "ops_index" in the mempool struct.*/
+/// Structure storing the table of registered ops structs, each of which contain
+/// the function pointers for the mempool ops functions.
+/// Each process has its own storage for this ops struct array so that
+/// the mempools can be shared across primary and secondary processes.
+/// The indices used to access the array are valid across processes, whereas
+/// any function pointers stored directly in the mempool struct would not be.
+/// This results in us simply having "ops_index" in the mempool struct.
 #[repr(C)]
 #[repr(align(64))]
 #[derive(Copy, Clone)]

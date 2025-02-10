@@ -125,8 +125,8 @@ fn bindgen_test_layout_ip_frag_key() {
         "Offset of field: ip_frag_key::key_len",
     );
 }
-/** @internal Fragmented packet to reassemble.
- First two entries in the frags[] array are for the last and first fragments.*/
+/// @internal Fragmented packet to reassemble.
+/// First two entries in the frags[] array are for the last and first fragments.
 #[repr(C)]
 #[repr(align(64))]
 #[derive(Copy, Clone)]

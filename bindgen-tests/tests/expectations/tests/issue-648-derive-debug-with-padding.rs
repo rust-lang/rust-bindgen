@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-/** We emit a `[u8; 63usize]` padding field for this struct, which cannot derive
- Debug/Hash because 63 is over the hard coded limit.*/
+/// We emit a `[u8; 63usize]` padding field for this struct, which cannot derive
+/// Debug/Hash because 63 is over the hard coded limit.
 #[repr(C)]
 #[repr(align(64))]
 #[derive(Copy, Clone)]
@@ -33,10 +33,10 @@ impl ::std::cmp::PartialEq for NoDebug {
         self.c == other.c
     }
 }
-/** This should derive Debug/Hash/PartialEq/Eq because the padding size is less than the max derive
- Debug/Hash/PartialEq/Eq impl for arrays. However, we conservatively don't derive Debug/Hash because
- we determine Debug derive-ability before we compute padding, which happens at
- codegen.*/
+/// This should derive Debug/Hash/PartialEq/Eq because the padding size is less than the max derive
+/// Debug/Hash/PartialEq/Eq impl for arrays. However, we conservatively don't derive Debug/Hash because
+/// we determine Debug derive-ability before we compute padding, which happens at
+/// codegen.
 #[repr(C)]
 #[repr(align(64))]
 #[derive(Copy, Clone)]
