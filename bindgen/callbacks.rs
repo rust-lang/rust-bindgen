@@ -258,6 +258,8 @@ pub enum TypeKind {
 pub struct ItemInfo<'a> {
     /// The name of the item
     pub name: &'a str,
+    /// The mangled name of the item, if available
+    pub mangled_name: Option<&'a str>,
     /// The kind of item
     pub kind: ItemKind,
 }
