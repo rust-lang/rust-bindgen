@@ -150,7 +150,11 @@ impl Enum {
         Ok(Enum::new(repr, variants))
     }
 
-    fn is_matching_enum(
+    /// Checks if the enum matches any of the regular expressions in `enums`
+    ///
+    /// For anonymous enums, returns true if any of the enum variants matches
+    /// any of the regular expressions in `enums`.
+    pub(crate) fn is_matching_enum(
         &self,
         ctx: &BindgenContext,
         enums: &RegexSet,
