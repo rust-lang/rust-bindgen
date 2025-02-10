@@ -31,6 +31,7 @@ use std::cell::{Cell, RefCell};
 use std::collections::{BTreeSet, HashMap as StdHashMap};
 use std::mem;
 use std::path::Path;
+use tempfile::TempDir;
 
 /// An identifier for some kind of IR item.
 #[derive(Debug, Copy, Clone, Eq, PartialOrd, Ord, Hash)]
@@ -555,7 +556,7 @@ impl BindgenContext {
 
             clang::TranslationUnit::parse(
                 &index,
-                "",
+                None,
                 &options.clang_args,
                 input_unsaved_files,
                 parse_options,
@@ -2040,20 +2041,18 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         &mut self,
     ) -> Option<&mut clang::FallbackTranslationUnit> {
         if self.fallback_tu.is_none() {
-            let file = format!(
-                "{}/.macro_eval.c",
-                match self.options().clang_macro_fallback_build_dir {
-                    Some(ref path) => path.as_os_str().to_str()?,
-                    None => ".",
-                }
-            );
+            let temp_dir = TempDir::new().unwrap();
+
+            let file = temp_dir.path().join(".macro_eval.c");
 
             let index = clang::Index::new(false, false);
 
             let mut header_names_to_compile = Vec::new();
             let mut header_paths = Vec::new();
             let mut header_includes = Vec::new();
-            let single_header = self.options().input_headers.last().cloned()?;
+            let single_header =
+                Path::new(&self.options().input_headers.last()?.as_ref())
+                    .to_owned();
             for input_header in &self.options.input_headers
                 [..self.options.input_headers.len() - 1]
             {
@@ -2072,14 +2071,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 header_names_to_compile
                     .push(header_name.split(".h").next()?.to_string());
             }
-            let pch = format!(
-                "{}/{}",
-                match self.options().clang_macro_fallback_build_dir {
-                    Some(ref path) => path.as_os_str().to_str()?,
-                    None => ".",
-                },
-                header_names_to_compile.join("-") + "-precompile.h.pch"
-            );
+            let pch = temp_dir
+                .path()
+                .join(header_names_to_compile.join("-") + "-precompile.h.pch");
 
             let mut c_args = self.options.fallback_clang_args.clone();
             c_args.push("-x".to_string().into_boxed_str());
@@ -2093,7 +2087,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             }
             let mut tu = clang::TranslationUnit::parse(
                 &index,
-                &single_header,
+                Some(&single_header),
                 &c_args,
                 &[],
                 clang_sys::CXTranslationUnit_ForSerialization,
@@ -2102,7 +2096,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
             let mut c_args = vec![
                 "-include-pch".to_string().into_boxed_str(),
-                pch.clone().into_boxed_str(),
+                pch.to_string_lossy().into_owned().into_boxed_str(),
             ];
             let mut skip_next = false;
             for arg in self.options.fallback_clang_args.iter() {
@@ -2114,8 +2108,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     c_args.push(arg.clone())
                 }
             }
-            self.fallback_tu =
-                Some(clang::FallbackTranslationUnit::new(file, pch, &c_args)?);
+            self.fallback_tu = Some(clang::FallbackTranslationUnit::new(
+                temp_dir, file, pch, &c_args,
+            )?);
         }
 
         self.fallback_tu.as_mut()

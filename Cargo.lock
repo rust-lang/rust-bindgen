@@ -52,6 +52,7 @@ dependencies = [
  "rustc-hash",
  "shlex",
  "syn 2.0.90",
+ "tempfile",
 ]
 
 [[package]]
