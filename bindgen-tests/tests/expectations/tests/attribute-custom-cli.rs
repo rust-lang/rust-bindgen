@@ -14,8 +14,8 @@ const _: () = {
     ][::std::mem::offset_of!(foo_struct, inner) - 0usize];
 };
 #[repr(u32)]
-#[cfg_attr(test, derive(PartialOrd, Copy))]
 #[derive(Clone, Hash, PartialEq, Eq)]
+#[cfg_attr(test, derive(PartialOrd, Copy))]
 pub enum foo_enum {
     inner = 0,
 }
@@ -46,3 +46,9 @@ const _: () = {
         "Offset of field: non_matching::inner",
     ][::std::mem::offset_of!(non_matching, inner) - 0usize];
 };
+unsafe extern "C" {
+    #[doc(hidden)]
+    #[must_use]
+    #[doc(hidden)]
+    pub fn foo_function() -> ::std::os::raw::c_int;
+}

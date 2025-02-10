@@ -10,6 +10,9 @@ build = "build.rs"
 rust-version.workspace = true
 edition.workspace = true
 
+[dependencies]
+syn = { workspace = true, features = ["full", "visit"] }
+
 [build-dependencies]
 bindgen = { workspace = true, default-features = true, features = ["experimental"] }
 cc.workspace = true

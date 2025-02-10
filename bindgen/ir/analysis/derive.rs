@@ -197,7 +197,7 @@ impl CannotDerive<'_> {
                         self.derive_trait
                     );
                 }
-            };
+            }
             return layout_can_derive;
         }
 
@@ -355,7 +355,7 @@ impl CannotDerive<'_> {
                                     self.derive_trait
                                 );
                             }
-                        };
+                        }
                         return layout_can_derive;
                     }
                 }

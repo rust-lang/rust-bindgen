@@ -3,6 +3,7 @@
 pub use crate::ir::analysis::DeriveTrait;
 pub use crate::ir::derive::CanDerive as ImplementsTrait;
 pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
+pub use crate::ir::function::FunctionKind;
 pub use crate::ir::int::IntKind;
 use std::fmt;
 
@@ -133,8 +134,17 @@ pub trait ParseCallbacks: fmt::Debug {
     ///
     /// If no additional attributes are wanted, this function should return an
     /// empty `Vec`.
+    // TODO: Call this process_attributes function in codegen/mod.rs
     fn add_attributes(&self, _info: &AttributeInfo<'_>) -> Vec<String> {
         vec![]
+    }
+
+    /// Process an item's attribute
+    fn process_attributes(
+        &self,
+        _info: &AttributeInfo<'_>,
+        _attributes: &mut Vec<String>,
+    ) {
     }
 
     /// Process a source code comment.
@@ -231,15 +241,30 @@ pub struct DeriveInfo<'a> {
     pub kind: TypeKind,
 }
 
-/// Relevant information about a type to which new attributes will be added using
+/// Relevant information about an item to which new attributes will be added using
 /// [`ParseCallbacks::add_attributes`].
 #[derive(Debug)]
 #[non_exhaustive]
 pub struct AttributeInfo<'a> {
-    /// The name of the type.
+    /// The name of the item.
     pub name: &'a str,
-    /// The kind of the type.
-    pub kind: TypeKind,
+    /// The kind of the item.
+    pub kind: AttributeItemKind,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// The kind of the current item.
+pub enum AttributeItemKind {
+    /// The item is a Rust `struct`.
+    Struct,
+    /// The item is a Rust `enum`.
+    Enum,
+    /// The item is a Rust `union`.
+    Union,
+    /// The item is a Rust variable.
+    Var,
+    /// The item is a Rust `fn`.
+    Function(FunctionKind),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

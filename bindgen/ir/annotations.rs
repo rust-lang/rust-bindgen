@@ -172,7 +172,7 @@ impl Annotations {
     }
 
     /// The list of attributes that have been specified in this annotation.
-    pub(crate) fn attributes(&self) -> &[String] {
+    pub(crate) fn attributes(&self) -> &Vec<String> {
         &self.attributes
     }
 

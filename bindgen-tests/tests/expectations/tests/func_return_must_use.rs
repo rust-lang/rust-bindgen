@@ -4,9 +4,9 @@ unsafe extern "C" {
     #[must_use]
     pub fn return_int() -> MustUseInt;
 }
+#[must_use]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-#[must_use]
 pub struct MustUseStruct {
     _unused: [u8; 0],
 }
@@ -24,9 +24,9 @@ unsafe extern "C" {
     pub fn return_plain_int() -> ::std::os::raw::c_int;
 }
 /// <div rustbindgen mustusetype></div>
+#[must_use]
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
-#[must_use]
 pub struct AnnotatedStruct {}
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {

@@ -368,7 +368,7 @@ impl<'a> CSerialize<'a> for Type {
                 match comp_info.kind() {
                     CompKind::Struct => write!(writer, "struct {name}")?,
                     CompKind::Union => write!(writer, "union {name}")?,
-                };
+                }
             }
             TypeKind::Enum(_enum_ty) => {
                 if self.is_const() {
@@ -384,7 +384,7 @@ impl<'a> CSerialize<'a> for Type {
                     loc: get_loc(item),
                 })
             }
-        };
+        }
 
         if !stack.is_empty() {
             write!(writer, " ")?;

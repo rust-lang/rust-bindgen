@@ -34,7 +34,7 @@ clap = { workspace = true, features = ["derive"], optional = true }
 clap_complete = { workspace = true, optional = true }
 itertools = { workspace = true }
 log = { workspace = true, optional = true }
-prettyplease = { workspace = true, optional = true, features = ["verbatim"] }
+prettyplease = { workspace = true, features = ["verbatim"] }
 proc-macro2.workspace = true
 quote.workspace = true
 regex = { workspace = true, features = ["std", "unicode-perl"] }
@@ -43,7 +43,7 @@ shlex.workspace = true
 syn = { workspace = true, features = ["full", "extra-traits", "visit-mut"] }
 
 [features]
-default = ["logging", "prettyplease", "runtime"]
+default = ["logging", "runtime"]
 logging = ["dep:log"]
 static = ["clang-sys/static"]
 runtime = ["clang-sys/runtime"]
