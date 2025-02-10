@@ -129,6 +129,17 @@ pub trait ParseCallbacks: fmt::Debug {
         vec![]
     }
 
+    /// Allows declaring items as `safe`.
+    ///
+    /// The returned string will be prepended to the item as `Safety: ...` comment.
+    ///
+    /// When using [`Formatter::Prettyplease`][crate::Formatter::Prettyplease] to format code, non-doc comments are removed ([issue][doc_removal]).
+    ///
+    /// [doc_removal]: https://github.com/dtolnay/prettyplease/issues/50
+    fn declare_safe(&self, _item_info: ItemInfo<'_>) -> Option<String> {
+        None
+    }
+
     /// Provide a list of custom attributes.
     ///
     /// If no additional attributes are wanted, this function should return an
@@ -263,6 +274,7 @@ pub struct ItemInfo<'a> {
 }
 
 /// An enum indicating the kind of item for an `ItemInfo`.
+#[derive(Copy, Clone)]
 #[non_exhaustive]
 pub enum ItemKind {
     /// A Function
