@@ -36,7 +36,7 @@ unsafe extern "C" {
     pub fn bar(foo: Foo<::std::os::raw::c_int>);
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct mozilla_Foo {
     _unused: [u8; 0],
 }
