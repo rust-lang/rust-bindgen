@@ -1,14 +1,8 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 impl Foo {
     pub const Bar: Foo = Foo(2);
-}
-impl Foo {
     pub const Baz: Foo = Foo(4);
-}
-impl Foo {
     pub const Duplicated: Foo = Foo(4);
-}
-impl Foo {
     pub const Negative: Foo = Foo(-3);
 }
 impl ::std::ops::BitOr<Foo> for Foo {
@@ -42,14 +36,8 @@ impl ::std::ops::BitAndAssign for Foo {
 pub struct Foo(pub ::std::os::raw::c_int);
 impl Buz {
     pub const Bar: Buz = Buz(2);
-}
-impl Buz {
     pub const Baz: Buz = Buz(4);
-}
-impl Buz {
     pub const Duplicated: Buz = Buz(4);
-}
-impl Buz {
     pub const Negative: Buz = Buz(-3);
 }
 impl ::std::ops::BitOr<Buz> for Buz {

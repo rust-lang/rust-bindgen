@@ -52,8 +52,6 @@ impl Default for foo {
 }
 impl Foo {
     pub const Bar: Foo = Foo(0);
-}
-impl Foo {
     pub const Qux: Foo = Foo(1);
 }
 impl ::std::ops::BitOr<Foo> for Foo {
@@ -92,8 +90,6 @@ pub mod Neg {
 }
 impl NoDebug {
     pub const NoDebug1: NoDebug = NoDebug(0);
-}
-impl NoDebug {
     pub const NoDebug2: NoDebug = NoDebug(1);
 }
 impl ::std::ops::BitOr<NoDebug> for NoDebug {
@@ -128,8 +124,6 @@ impl ::std::ops::BitAndAssign for NoDebug {
 pub struct NoDebug(pub ::std::os::raw::c_uint);
 impl Debug {
     pub const Debug1: Debug = Debug(0);
-}
-impl Debug {
     pub const Debug2: Debug = Debug(1);
 }
 impl ::std::ops::BitOr<Debug> for Debug {
