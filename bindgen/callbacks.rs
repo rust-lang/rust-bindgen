@@ -89,8 +89,8 @@ pub trait ParseCallbacks: fmt::Debug {
         None
     }
 
-    /// Allows to rename an item, replacing `_original_item_name`.
-    fn item_name(&self, _original_item_name: &str) -> Option<String> {
+    /// Allows to rename an item, replacing `_item_info.name`.
+    fn item_name(&self, _item_info: ItemInfo) -> Option<String> {
         None
     }
 
@@ -254,6 +254,7 @@ pub enum TypeKind {
 }
 
 /// A struct providing information about the item being passed to [`ParseCallbacks::generated_name_override`].
+#[derive(Clone, Copy)]
 #[non_exhaustive]
 pub struct ItemInfo<'a> {
     /// The name of the item
@@ -263,6 +264,7 @@ pub struct ItemInfo<'a> {
 }
 
 /// An enum indicating the kind of item for an `ItemInfo`.
+#[derive(Clone, Copy)]
 #[non_exhaustive]
 pub enum ItemKind {
     /// A Function
