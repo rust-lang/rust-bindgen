@@ -1,7 +1,8 @@
 extern crate bindgen;
 
 use bindgen::callbacks::{
-    DeriveInfo, IntKind, MacroParsingBehavior, ParseCallbacks, Token, TokenKind,
+    DeriveInfo, IntKind, ItemInfo, MacroParsingBehavior, ParseCallbacks, Token,
+    TokenKind,
 };
 use bindgen::{Builder, EnumVariation, Formatter};
 use std::collections::HashSet;
@@ -103,16 +104,18 @@ impl ParseCallbacks for MacroCallback {
         }
     }
 
-    fn item_name(&self, original_item_name: &str) -> Option<String> {
-        if original_item_name.starts_with("my_prefixed_") {
+    fn item_name(&self, item_info: ItemInfo) -> Option<String> {
+        if item_info.name.starts_with("my_prefixed_") {
             Some(
-                original_item_name
+                item_info
+                    .name
                     .trim_start_matches("my_prefixed_")
                     .to_string(),
             )
-        } else if original_item_name.starts_with("MY_PREFIXED_") {
+        } else if item_info.name.starts_with("MY_PREFIXED_") {
             Some(
-                original_item_name
+                item_info
+                    .name
                     .trim_start_matches("MY_PREFIXED_")
                     .to_string(),
             )
