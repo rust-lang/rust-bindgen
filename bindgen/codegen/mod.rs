@@ -3770,6 +3770,15 @@ impl CodeGenerator for Enum {
         let repr = repr.to_rust_ty_or_opaque(ctx, item);
         let has_typedef = ctx.is_enum_typedef_combo(item.id());
 
+        ctx.options().for_each_callback(|cb| {
+            cb.new_item_found(
+                DiscoveredItemId::new(item.id().as_usize()),
+                DiscoveredItem::Enum {
+                    final_name: name.to_string(),
+                },
+            );
+        });
+
         let mut builder =
             EnumBuilder::new(&name, attrs, &repr, variation, has_typedef);
 
