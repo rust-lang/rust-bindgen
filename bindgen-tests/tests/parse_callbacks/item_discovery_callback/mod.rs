@@ -61,6 +61,19 @@ pub fn test_item_discovery_callback() {
             },
         ),
         (
+            DiscoveredItemId::new(27),
+            DiscoveredItem::Alias {
+                alias_name: "AliasOfNamedEnum".to_string(),
+                alias_for: DiscoveredItemId::new(24),
+            },
+        ),
+        (
+            DiscoveredItemId::new(24),
+            DiscoveredItem::Enum {
+                final_name: "NamedEnum".to_string(),
+            },
+        ),
+        (
             DiscoveredItemId::new(30),
             DiscoveredItem::Struct {
                 original_name: None,
@@ -126,6 +139,9 @@ fn compare_item_info(
             expected,
             generated,
         ),
+        DiscoveredItem::Enum { .. } => {
+            compare_enum_info(expected_item, generated_item)
+        }
     }
 }
 
@@ -201,6 +217,30 @@ pub fn compare_union_info(
         }
         _ => false,
     }
+}
+
+pub fn compare_enum_info(
+    expected_item: &DiscoveredItem,
+    generated_item: &DiscoveredItem,
+) -> bool {
+    let DiscoveredItem::Enum {
+        final_name: expected_final_name,
+    } = expected_item
+    else {
+        unreachable!()
+    };
+
+    let DiscoveredItem::Enum {
+        final_name: generated_final_name,
+    } = generated_item
+    else {
+        unreachable!()
+    };
+
+    if !compare_names(expected_final_name, generated_final_name) {
+        return false;
+    }
+    true
 }
 
 pub fn compare_alias_info(
