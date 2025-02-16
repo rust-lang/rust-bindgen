@@ -153,6 +153,28 @@ macro_rules! options {
 }
 
 options! {
+    /// Whether we should distinguish between 'char16_t' and 'u16'.
+    /// As standard, bindgen represents `char16_t` as `u16`.
+    /// Rust does not have a `std::os::raw::c_char16_t` type, and thus
+    /// we can't use a built-in Rust type in the generated bindings.
+    /// But for some uses of bindgen, especially when downstream
+    /// post-processing occurs, it's important to distinguish `char16_t`
+    /// from normal `uint16_t`. When this option is enabled, bindgen
+    /// generates a fake type called `bindgen_cchar16_t`. Downstream
+    /// code post-processors should arrange to replace this with a
+    /// real type.
+    use_distinct_char16_t: bool {
+        methods: {
+            /// If this is true, denote 'char16_t' as a separate type from 'u16'
+            /// Disabled by default.
+            pub fn use_distinct_char16_t(mut self, doit: bool) -> Builder {
+                self.options.use_distinct_char16_t = doit;
+                self
+            }
+        },
+        as_args: "--use-distinct-char16-t",
+    },
+
     /// Types that have been blocklisted and should not appear anywhere in the generated code.
     blocklisted_types: RegexSet {
         methods: {

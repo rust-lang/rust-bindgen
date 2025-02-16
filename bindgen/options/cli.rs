@@ -441,6 +441,9 @@ struct BindgenCommand {
     /// Always output explicit padding fields.
     #[arg(long)]
     explicit_padding: bool,
+    /// Use distinct char16_t
+    #[arg(long)]
+    use_distinct_char16_t: bool,
     /// Enables generation of vtable functions.
     #[arg(long)]
     vtable_generation: bool,
@@ -629,6 +632,7 @@ where
         translate_enum_integer_types,
         c_naming,
         explicit_padding,
+        use_distinct_char16_t,
         vtable_generation,
         sort_semantically,
         merge_extern_blocks,
@@ -926,6 +930,7 @@ where
             translate_enum_integer_types,
             c_naming,
             explicit_padding,
+            use_distinct_char16_t,
             vtable_generation,
             sort_semantically,
             merge_extern_blocks,

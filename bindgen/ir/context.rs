@@ -1980,6 +1980,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             CXType_Short => TypeKind::Int(IntKind::Short),
             CXType_UShort => TypeKind::Int(IntKind::UShort),
             CXType_WChar => TypeKind::Int(IntKind::WChar),
+            CXType_Char16 if self.options().use_distinct_char16_t => {
+                TypeKind::Int(IntKind::Char16)
+            }
             CXType_Char16 => TypeKind::Int(IntKind::U16),
             CXType_Char32 => TypeKind::Int(IntKind::U32),
             CXType_Long => TypeKind::Int(IntKind::Long),
