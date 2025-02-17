@@ -3,9 +3,11 @@
 use crate::{
     builder,
     callbacks::{
-        AttributeInfo, DeriveInfo, ItemInfo, ParseCallbacks, TypeKind,
+        AttributeInfo, AttributeItemKind, DeriveInfo, ItemInfo, ParseCallbacks,
+        TypeKind,
     },
     features::{RustEdition, EARLIEST_STABLE_RUST},
+    ir::function::FunctionKind,
     regex_set::RegexSet,
     Abi, AliasVariation, Builder, CodegenConfig, EnumVariation,
     FieldVisibilityKind, Formatter, MacroTypeVariation, NonCopyUnionStyle,
@@ -480,7 +482,7 @@ struct BindgenCommand {
     /// Derive custom traits on a `union`. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a coma-separated list of derive macros.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_derive)]
     with_derive_custom_union: Vec<(Vec<String>, String)>,
-    /// Add custom attributes on any kind of type. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
+    /// Add custom attributes on any item. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_attribute)]
     with_attribute_custom: Vec<(Vec<String>, String)>,
     /// Add custom attributes on a `struct`. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
@@ -492,6 +494,12 @@ struct BindgenCommand {
     /// Add custom attributes on a `union`. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_attribute)]
     with_attribute_custom_union: Vec<(Vec<String>, String)>,
+    /// Add custom attributes on a variable. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
+    #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_attribute)]
+    with_attribute_custom_var: Vec<(Vec<String>, String)>,
+    /// Add custom attributes on an `fn`. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
+    #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_attribute)]
+    with_attribute_custom_function: Vec<(Vec<String>, String)>,
     /// Generate wrappers for `static` and `static inline` functions.
     #[arg(long)]
     wrap_static_fns: bool,
@@ -649,6 +657,8 @@ where
         with_attribute_custom_struct,
         with_attribute_custom_enum,
         with_attribute_custom_union,
+        with_attribute_custom_var,
+        with_attribute_custom_function,
         wrap_static_fns,
         wrap_static_fns_path,
         wrap_static_fns_suffix,
@@ -749,7 +759,7 @@ where
     #[derive(Debug)]
     struct CustomAttributeCallback {
         attributes: Vec<String>,
-        kind: Option<TypeKind>,
+        kind: Option<AttributeItemKind>,
         regex_set: RegexSet,
     }
 
@@ -759,9 +769,17 @@ where
 
             let flag = match &self.kind {
                 None => "--with-attribute-custom",
-                Some(TypeKind::Struct) => "--with-attribute-custom-struct",
-                Some(TypeKind::Enum) => "--with-attribute-custom-enum",
-                Some(TypeKind::Union) => "--with-attribute-custom-union",
+                Some(AttributeItemKind::Struct) => {
+                    "--with-attribute-custom-struct"
+                }
+                Some(AttributeItemKind::Enum) => "--with-attribute-custom-enum",
+                Some(AttributeItemKind::Union) => {
+                    "--with-attribute-custom-union"
+                }
+                Some(AttributeItemKind::Var) => "--with-attribute-custom-var",
+                Some(AttributeItemKind::Function(_)) => {
+                    "--with-attribute-custom-function"
+                }
             };
 
             let attributes = self.attributes.join(",");
@@ -776,13 +794,16 @@ where
             args
         }
 
-        fn add_attributes(&self, info: &AttributeInfo<'_>) -> Vec<String> {
+        fn process_attributes(
+            &self,
+            info: &AttributeInfo<'_>,
+            attrs: &mut Vec<String>,
+        ) {
             if self.kind.map_or(true, |kind| kind == info.kind) &&
                 self.regex_set.matches(info.name)
             {
-                return self.attributes.clone();
+                attrs.extend(self.attributes.clone());
             }
-            vec![]
         }
     }
 
@@ -1015,18 +1036,28 @@ where
         (with_attribute_custom, None, "--with-attribute-custom"),
         (
             with_attribute_custom_struct,
-            Some(TypeKind::Struct),
+            Some(AttributeItemKind::Struct),
             "--with-attribute-custom-struct",
         ),
         (
             with_attribute_custom_enum,
-            Some(TypeKind::Enum),
+            Some(AttributeItemKind::Enum),
             "--with-attribute-custom-enum",
         ),
         (
             with_attribute_custom_union,
-            Some(TypeKind::Union),
+            Some(AttributeItemKind::Union),
             "--with-attribute-custom-union",
+        ),
+        (
+            with_attribute_custom_var,
+            Some(AttributeItemKind::Var),
+            "--with-attribute-custom-var",
+        ),
+        (
+            with_attribute_custom_function,
+            Some(AttributeItemKind::Function(FunctionKind::Function)),
+            "--with-attribute-custom-function",
         ),
     ] {
         #[cfg(feature = "experimental")]

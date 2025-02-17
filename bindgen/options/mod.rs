@@ -2012,6 +2012,19 @@ options! {
         },
         as_args: "--merge-extern-blocks",
     },
+    /// Whether to deduplicate `cfg` attributes.
+    merge_cfg_attributes: bool {
+        methods: {
+            /// Merge all unique combinations of cfg attributes into a module
+            ///
+            /// Cfg attributes are not merged by default.
+            pub fn merge_cfg_attributes(mut self, doit: bool) -> Self {
+                self.options.merge_cfg_attributes = doit;
+                self
+            }
+        },
+        as_args: "--merge-cfg-attributes",
+    },
     /// Whether to wrap unsafe operations in unsafe blocks.
     wrap_unsafe_ops: bool {
         methods: {

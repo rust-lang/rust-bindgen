@@ -2,7 +2,7 @@
 
 /// The type of a comment.
 #[derive(Debug, PartialEq, Eq)]
-enum Kind {
+pub(crate) enum Kind {
     /// A `///` comment, or something of the like.
     /// All lines in a comment should start with the same symbol.
     SingleLines,
