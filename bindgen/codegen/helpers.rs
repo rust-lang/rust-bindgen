@@ -56,7 +56,9 @@ pub(crate) mod attributes {
         if comment.is_empty() {
             quote!()
         } else {
-            quote!(#[doc = #comment])
+            let doc_lines =
+                comment.lines().map(|line| quote! { #[doc = #line] });
+            quote!(#(#doc_lines)*)
         }
     }
 

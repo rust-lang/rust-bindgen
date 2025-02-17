@@ -4,8 +4,8 @@
 pub struct OpaqueTemplate {
     pub _address: u8,
 }
-/** This should not end up deriving Debug/Hash because its `mBlah` field cannot derive
- Debug/Hash because the instantiation's definition cannot derive Debug/Hash.*/
+/// This should not end up deriving Debug/Hash because its `mBlah` field cannot derive
+/// Debug/Hash because the instantiation's definition cannot derive Debug/Hash.
 #[repr(C)]
 pub struct ContainsOpaqueTemplate {
     pub mBlah: [u32; 101usize],
@@ -50,8 +50,8 @@ impl ::std::cmp::PartialEq for ContainsOpaqueTemplate {
         &self.mBlah[..] == &other.mBlah[..] && self.mBaz == other.mBaz
     }
 }
-/** This should not end up deriving Debug/Hash either, for similar reasons, although
- we're exercising base member edges now.*/
+/// This should not end up deriving Debug/Hash either, for similar reasons, although
+/// we're exercising base member edges now.
 #[repr(C)]
 pub struct InheritsOpaqueTemplate {
     pub _base: [u8; 401usize],
