@@ -731,8 +731,7 @@ impl ClangSubItemParser for Function {
         if visibility != CXVisibility_Default {
             return Err(ParseError::Continue);
         }
-
-        if cursor.access_specifier() == CX_CXXPrivate {
+        if cursor.access_specifier() == CX_CXXPrivate && !context.options().generate_private_functions {
             return Err(ParseError::Continue);
         }
 
@@ -752,7 +751,7 @@ impl ClangSubItemParser for Function {
                 return Err(ParseError::Continue);
             }
 
-            if cursor.is_deleted_function() {
+            if cursor.is_deleted_function() && !context.options().generate_deleted_functions {
                 return Err(ParseError::Continue);
             }
 

@@ -507,6 +507,18 @@ struct BindgenCommand {
     /// bitfields. This flag is ignored if the `--respect-cxx-access-specs` flag is used.
     #[arg(long, value_name = "VISIBILITY")]
     default_visibility: Option<FieldVisibilityKind>,
+    /// Whether to generate C++ functions marked with "=delete" even though they
+    /// can't be called.
+    #[arg(long)]
+    generate_deleted_functions: bool,
+    /// Whether to generate C++ "pure virtual" functions even though they can't
+    /// be called.
+    #[arg(long)]
+    generate_pure_virtual_functions: bool,
+    /// Whether to generate C++ private functions even though they can't
+    /// be called.
+    #[arg(long)]
+    generate_private_functions: bool,
     /// Whether to emit diagnostics or not.
     #[cfg(feature = "experimental")]
     #[arg(long, requires = "experimental")]
@@ -653,6 +665,9 @@ where
         wrap_static_fns_path,
         wrap_static_fns_suffix,
         default_visibility,
+        generate_deleted_functions,
+        generate_pure_virtual_functions,
+        generate_private_functions,
         #[cfg(feature = "experimental")]
         emit_diagnostics,
         generate_shell_completions,
@@ -943,6 +958,9 @@ where
             wrap_static_fns_path,
             wrap_static_fns_suffix,
             default_visibility,
+            generate_deleted_functions,
+            generate_pure_virtual_functions,
+            generate_private_functions,
         }
     );
 

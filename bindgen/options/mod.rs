@@ -2193,4 +2193,58 @@ options! {
         },
         as_args: "--clang-macro-fallback-build-dir",
     }
+    /// Whether to always report C++ "deleted" functions.
+    generate_deleted_functions: bool {
+        methods: {
+            /// Set whether to generate C++ functions even marked "=deleted"
+            ///
+            /// Although not useful to call these functions, downstream code
+            /// generators may need to know whether they've been deleted in
+            /// order to determine the relocatability of a C++ type
+            /// (specifically by virtue of which constructors exist.)
+            pub fn generate_deleted_functions(mut self, doit: bool) -> Self {
+                self.options.generate_deleted_functions = doit;
+                self
+            }
+
+        },
+        as_args: "--generate-deleted-functions",
+    },
+    /// Whether to always report C++ "pure virtual" functions.
+    generate_pure_virtual_functions: bool {
+        methods: {
+            /// Set whether to generate C++ functions that are pure virtual.
+            ///
+            /// These functions can't be called, so the only reason
+            /// to generate them is if downstream postprocessors
+            /// need to know of their existence. This is necessary,
+            /// for instance, to determine whether a type itself is
+            /// pure virtual and thus can't be allocated.
+            /// Downstream code generators may choose to make code to
+            /// allow types to be allocated but need to avoid doing so
+            /// if the type contains pure virtual functions.
+            pub fn generate_pure_virtual_functions(mut self, doit: bool) -> Self {
+                self.options.generate_pure_virtual_functions = doit;
+                self
+            }
+
+        },
+        as_args: "--generate-pure-virtual-functions",
+    },
+    /// Whether to always report C++ "private" functions.
+    generate_private_functions: bool {
+        methods: {
+            /// Set whether to generate C++ functions that are private.
+            ///
+            /// These functions can't be called, so the only reason
+            /// to generate them is if downstream postprocessors
+            /// need to know of their existence.
+            pub fn generate_private_functions(mut self, doit: bool) -> Self {
+                self.options.generate_private_functions = doit;
+                self
+            }
+
+        },
+        as_args: "--generate-private-functions",
+    },
 }
