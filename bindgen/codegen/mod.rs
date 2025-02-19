@@ -2481,6 +2481,7 @@ impl CodeGenerator for CompInfo {
 
         let is_rust_union = is_union && struct_layout.is_rust_union();
 
+        let discovered_id = DiscoveredItemId::new(item.id().as_usize());
         ctx.options().for_each_callback(|cb| {
             let discovered_item = match self.kind() {
                 CompKind::Struct => DiscoveredItem::Struct {
@@ -2502,7 +2503,7 @@ impl CodeGenerator for CompInfo {
             };
 
             cb.new_item_found(
-                DiscoveredItemId::new(item.id().as_usize()),
+                discovered_id,
                 discovered_item,
             );
         });
@@ -2711,6 +2712,7 @@ impl CodeGenerator for CompInfo {
                         &mut method_names,
                         result,
                         self,
+                        discovered_id,
                     );
                 }
             }
@@ -2729,6 +2731,7 @@ impl CodeGenerator for CompInfo {
                         &mut method_names,
                         result,
                         self,
+                        discovered_id,
                     );
                 }
             }
@@ -2742,6 +2745,7 @@ impl CodeGenerator for CompInfo {
                         &mut method_names,
                         result,
                         self,
+                        discovered_id,
                     );
                 }
             }
@@ -2999,6 +3003,7 @@ impl Method {
         method_names: &mut HashSet<String>,
         result: &mut CodegenResult<'_>,
         _parent: &CompInfo,
+        parent_id: DiscoveredItemId,
     ) {
         assert!({
             let cc = &ctx.options().codegen_config;
@@ -3019,6 +3024,7 @@ impl Method {
 
         // First of all, output the actual function.
         let function_item = ctx.resolve_item(self.signature());
+        let id = DiscoveredItemId::new(function_item.id().as_usize());
         if !function_item.process_before_codegen(ctx, result) {
             return;
         }
@@ -3064,6 +3070,11 @@ impl Method {
         }
 
         method_names.insert(name.clone());
+
+        ctx.options().for_each_callback(|cb| cb.new_item_found(id, DiscoveredItem::Method {
+            parent: parent_id,
+            final_name: name.clone(),
+        }));
 
         let mut function_name = function_item.canonical_name(ctx);
         if times_seen > 0 {
@@ -4540,6 +4551,7 @@ impl CodeGenerator for Function {
     ) -> Self::Return {
         debug!("<Function as CodeGenerator>::codegen: item = {item:?}");
         debug_assert!(item.is_enabled_for_codegen(ctx));
+        let id = DiscoveredItemId::new(item.id().as_usize());
 
         let is_internal = matches!(self.linkage(), Linkage::Internal);
 
@@ -4656,6 +4668,14 @@ impl CodeGenerator for Function {
         if times_seen > 0 {
             write!(&mut canonical_name, "{times_seen}").unwrap();
         }
+        ctx.options().for_each_callback(|cb| {
+            cb.new_item_found(
+                id,
+                DiscoveredItem::Function {
+                    final_name: canonical_name.to_string(),
+                }
+            );
+        });
 
         let link_name_attr = self.link_name().or_else(|| {
             let mangled_name = mangled_name.unwrap_or(name);
