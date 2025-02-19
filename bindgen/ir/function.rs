@@ -533,7 +533,10 @@ impl FunctionSig {
             let is_const = is_method && cursor.method_is_const();
             let is_virtual = is_method && cursor.method_is_virtual();
             let is_static = is_method && cursor.method_is_static();
-            if !is_static && !is_virtual {
+            if !is_static &&
+                (!is_virtual ||
+                    ctx.options().use_specific_virtual_function_receiver)
+            {
                 let parent = cursor.semantic_parent();
                 let class = Item::parse(parent, None, ctx)
                     .expect("Expected to parse the class");

@@ -153,6 +153,21 @@ macro_rules! options {
 }
 
 options! {
+    /// Whether to specify the type of a virtual function receiver
+    use_specific_virtual_function_receiver: bool {
+        methods: {
+            /// Normally, virtual functions have void* as their 'this' type.
+            /// If this flag is enabled, override that behavior to indicate a
+            /// pointer of the specific type.
+            /// Disabled by default.
+            pub fn use_specific_virtual_function_receiver(mut self, doit: bool) -> Builder {
+                self.options.use_specific_virtual_function_receiver = doit;
+                self
+            }
+        },
+        as_args: "--use-specific-virtual-function-receiver",
+    },
+
     /// Whether we should distinguish between C++'s 'char16_t' and 'u16'.
     /// The C++ type `char16_t` is its own special type; it's not a typedef
     /// of some other integer (this differs from C).
