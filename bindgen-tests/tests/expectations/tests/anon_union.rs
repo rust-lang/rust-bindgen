@@ -15,12 +15,12 @@ pub enum TErrorResult_UnionState {
     HasMessage = 0,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct TErrorResult_Message {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct TErrorResult_DOMExceptionInfo {
     _unused: [u8; 0],
 }

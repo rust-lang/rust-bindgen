@@ -10,7 +10,7 @@ const _: () = {
     ["Alignment of Foo_empty"][::std::mem::align_of::<Foo_empty>() - 1usize];
 };
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct Foo {
     _unused: [u8; 0],
 }
@@ -39,7 +39,7 @@ unsafe extern "C" {
     pub fn baz_struct(f: *mut Foo);
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug)]
 pub struct Union {
     _unused: [u8; 0],
 }
@@ -48,7 +48,7 @@ unsafe extern "C" {
     pub fn baz_union(u: *mut Union);
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct Quux {
     _unused: [u8; 0],
 }
