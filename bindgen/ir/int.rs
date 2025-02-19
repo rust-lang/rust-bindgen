@@ -57,7 +57,7 @@ pub enum IntKind {
     /// A 16-bit integer, used only for enum size representation.
     U16,
 
-    /// Either a `char16_t` or a `wchar_t`.
+    /// The C++ type `char16_t`, which is its own type (unlike in C).
     Char16,
 
     /// A 32-bit signed integer.

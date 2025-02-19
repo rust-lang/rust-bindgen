@@ -153,10 +153,13 @@ macro_rules! options {
 }
 
 options! {
-    /// Whether we should distinguish between 'char16_t' and 'u16'.
-    /// As standard, bindgen represents `char16_t` as `u16`.
+    /// Whether we should distinguish between C++'s 'char16_t' and 'u16'.
+    /// The C++ type `char16_t` is its own special type; it's not a typedef
+    /// of some other integer (this differs from C).
+    /// As standard, bindgen represents C++ `char16_t` as `u16`.
     /// Rust does not have a `std::os::raw::c_char16_t` type, and thus
-    /// we can't use a built-in Rust type in the generated bindings.
+    /// we can't use a built-in Rust type in the generated bindings (and
+    /// nor would it be appropriate as it's a C++-specific type.)
     /// But for some uses of bindgen, especially when downstream
     /// post-processing occurs, it's important to distinguish `char16_t`
     /// from normal `uint16_t`. When this option is enabled, bindgen
