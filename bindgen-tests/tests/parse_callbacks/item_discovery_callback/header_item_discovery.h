@@ -26,3 +26,7 @@ enum NamedEnum {
 };
 
 typedef enum NamedEnum AliasOfNamedEnum;
+
+// Functions
+
+void named_function();
