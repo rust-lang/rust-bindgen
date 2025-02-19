@@ -267,6 +267,10 @@ pub struct ItemInfo<'a> {
 #[derive(Clone, Copy)]
 #[non_exhaustive]
 pub enum ItemKind {
+    /// A module
+    Module,
+    /// A type
+    Type,
     /// A Function
     Function,
     /// A Variable

@@ -926,10 +926,11 @@ impl Item {
             let item_info = ItemInfo {
                 name: &name,
                 kind: match self.kind() {
-                    ItemKind::Function(..) => {
-                        crate::callbacks::ItemKind::Function
-                    }
-                    _ => crate::callbacks::ItemKind::Var,
+                    ItemKind::Module(..) => crate::callbacks::ItemKind::Module,
+                    ItemKind::Type(..) => crate::callbacks::ItemKind::Type,
+                    ItemKind::Function(..) => crate::callbacks::ItemKind::Function,
+                    ItemKind::Var(..) => crate::callbacks::ItemKind::Var,
+                    _ => panic!("Unexpected item kind"),
                 },
             };
             ctx.options()
