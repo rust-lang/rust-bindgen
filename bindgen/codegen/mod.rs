@@ -5974,10 +5974,21 @@ pub(crate) mod utils {
         item: &Item,
         discovered_item_creator: impl Fn() -> crate::callbacks::DiscoveredItem,
     ) {
+        let source_location = item.location().map(|clang_location| {
+            let (file, line, col, byte_offset) = clang_location.location();
+            let file_name = file.name();
+            crate::callbacks::SourceLocation {
+                line,
+                col,
+                byte_offset,
+                file_name,
+            }
+        });
         ctx.options().for_each_callback(|cb| {
             cb.new_item_found(
                 DiscoveredItemId::new(item.id().as_usize()),
                 discovered_item_creator(),
+                source_location.as_ref(),
             );
         });
     }
