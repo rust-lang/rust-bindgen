@@ -238,8 +238,7 @@ pub enum DiscoveredItem {
 
         /// Type to which this method belongs.
         parent: DiscoveredItemId,
-    }
-    // modules, etc.
+    }, // modules, etc.
 }
 
 /// Relevant information about a type to which new derive attributes will be added using

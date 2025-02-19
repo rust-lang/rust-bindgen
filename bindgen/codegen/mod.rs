@@ -2502,10 +2502,7 @@ impl CodeGenerator for CompInfo {
                 },
             };
 
-            cb.new_item_found(
-                discovered_id,
-                discovered_item,
-            );
+            cb.new_item_found(discovered_id, discovered_item);
         });
 
         // The custom derives callback may return a list of derive attributes;
@@ -3071,10 +3068,15 @@ impl Method {
 
         method_names.insert(name.clone());
 
-        ctx.options().for_each_callback(|cb| cb.new_item_found(id, DiscoveredItem::Method {
-            parent: parent_id,
-            final_name: name.clone(),
-        }));
+        ctx.options().for_each_callback(|cb| {
+            cb.new_item_found(
+                id,
+                DiscoveredItem::Method {
+                    parent: parent_id,
+                    final_name: name.clone(),
+                },
+            )
+        });
 
         let mut function_name = function_item.canonical_name(ctx);
         if times_seen > 0 {
@@ -4673,7 +4675,7 @@ impl CodeGenerator for Function {
                 id,
                 DiscoveredItem::Function {
                     final_name: canonical_name.to_string(),
-                }
+                },
             );
         });
 
