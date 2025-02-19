@@ -17,20 +17,26 @@ impl ParseCallbacks for ItemDiscovery {
         self.0.borrow_mut().insert(_id, _item);
     }
 }
-#[test]
-pub fn test_item_discovery_callback() {
+
+fn test_item_discovery_callback(header: &str, expected: HashMap<DiscoveredItemId, DiscoveredItem>) {
     let discovery = ItemDiscovery::default();
     let info = Rc::clone(&discovery.0);
 
+    let mut header_path = env!("CARGO_MANIFEST_DIR").to_string();
+    header_path.push_str(header);
+
     Builder::default()
-        .header(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.h"
-        ))
+        .header(header_path)
         .parse_callbacks(Box::new(discovery))
         .generate()
         .expect("TODO: panic message");
 
+
+    compare_item_caches(&info.borrow(), &expected);
+}
+
+#[test]
+fn test_item_discovery_callback_c() {
     let expected = ItemCache::from([
         (
             DiscoveredItemId::new(10),
@@ -87,9 +93,38 @@ pub fn test_item_discovery_callback() {
                 final_name: "_bindgen_ty_*".to_string(),
             },
         ),
+        (
+            DiscoveredItemId::new(41),
+            DiscoveredItem::Function {
+                final_name: "named_function".to_string(),
+            },
+        ),
     ]);
+    test_item_discovery_callback(
+        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.h", expected);
+}
 
-    compare_item_caches(&info.borrow(), &expected);
+
+#[test]
+fn test_item_discovery_callback_cpp() {
+    let expected = ItemCache::from([
+        (
+            DiscoveredItemId::new(1),
+            DiscoveredItem::Struct {
+                original_name: Some("SomeClass".to_string()),
+                final_name: "SomeClass".to_string(),
+            },
+        ),
+        (
+            DiscoveredItemId::new(2),
+            DiscoveredItem::Method {
+                final_name: "named_method".to_string(),
+                parent: DiscoveredItemId::new(1),
+            },
+        ),
+    ]);
+    test_item_discovery_callback(
+        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.hpp", expected);
 }
 
 pub fn compare_item_caches(generated: &ItemCache, expected: &ItemCache) {
@@ -141,6 +176,12 @@ fn compare_item_info(
         ),
         DiscoveredItem::Enum { .. } => {
             compare_enum_info(expected_item, generated_item)
+        }
+        DiscoveredItem::Function { .. } => {
+            compare_function_info(expected_item, generated_item)
+        }
+        DiscoveredItem::Method { .. } => {
+            compare_method_info(expected_item, generated_item)
         }
     }
 }
@@ -278,4 +319,58 @@ pub fn compare_alias_info(
     };
 
     compare_item_info(expected_aliased, generated_aliased, expected, generated)
+}
+
+pub fn compare_function_info(
+    expected_item: &DiscoveredItem,
+    generated_item: &DiscoveredItem,
+) -> bool {
+    let DiscoveredItem::Function {
+        final_name: expected_final_name,
+    } = expected_item
+    else {
+        unreachable!()
+    };
+
+    let DiscoveredItem::Function {
+        final_name: generated_final_name,
+    } = generated_item
+    else {
+        unreachable!()
+    };
+
+    if !compare_names(expected_final_name, generated_final_name) {
+        return false;
+    }
+    true
+}
+
+pub fn compare_method_info(
+    expected_item: &DiscoveredItem,
+    generated_item: &DiscoveredItem,
+) -> bool {
+    let DiscoveredItem::Method {
+        final_name: expected_final_name,
+        parent: expected_parent,
+    } = expected_item
+    else {
+        unreachable!()
+    };
+
+    let DiscoveredItem::Method {
+        final_name: generated_final_name,
+        parent: generated_parent,
+    } = generated_item
+    else {
+        unreachable!()
+    };
+
+    if expected_parent != generated_parent {
+        return false;
+    }
+
+    if !compare_names(expected_final_name, generated_final_name) {
+        return false;
+    }
+    true
 }
