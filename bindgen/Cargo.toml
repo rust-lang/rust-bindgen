@@ -41,6 +41,7 @@ regex = { workspace = true, features = ["std", "unicode-perl"] }
 rustc-hash.workspace = true
 shlex.workspace = true
 syn = { workspace = true, features = ["full", "extra-traits", "visit-mut"] }
+tempfile.workspace = true
 
 [features]
 default = ["logging", "prettyplease", "runtime"]
