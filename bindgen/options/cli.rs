@@ -441,6 +441,9 @@ struct BindgenCommand {
     /// Always output explicit padding fields.
     #[arg(long)]
     explicit_padding: bool,
+    /// Always be specific about the 'receiver' of a virtual function.
+    #[arg(long)]
+    use_specific_virtual_function_receiver: bool,
     /// Use distinct char16_t
     #[arg(long)]
     use_distinct_char16_t: bool,
@@ -632,6 +635,7 @@ where
         translate_enum_integer_types,
         c_naming,
         explicit_padding,
+        use_specific_virtual_function_receiver,
         use_distinct_char16_t,
         vtable_generation,
         sort_semantically,
@@ -930,6 +934,7 @@ where
             translate_enum_integer_types,
             c_naming,
             explicit_padding,
+            use_specific_virtual_function_receiver,
             use_distinct_char16_t,
             vtable_generation,
             sort_semantically,
