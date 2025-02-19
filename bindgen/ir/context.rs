@@ -2108,13 +2108,13 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 pch.clone().into_boxed_str(),
             ];
             let mut skip_next = false;
-            for arg in self.options.fallback_clang_args.iter() {
+            for arg in &self.options.fallback_clang_args {
                 if arg.as_ref() == "-include" {
                     skip_next = true;
                 } else if skip_next {
                     skip_next = false;
                 } else {
-                    c_args.push(arg.clone())
+                    c_args.push(arg.clone());
                 }
             }
             self.fallback_tu =

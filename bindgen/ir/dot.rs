@@ -41,7 +41,7 @@ where
             if is_allowlisted { "black" } else { "gray" }
         )?;
         item.dot_attributes(ctx, &mut dot_file)?;
-        writeln!(&mut dot_file, r#"</table> >];"#)?;
+        writeln!(&mut dot_file, "</table> >];")?;
 
         item.trace(
             ctx,
