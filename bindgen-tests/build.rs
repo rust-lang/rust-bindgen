@@ -23,7 +23,7 @@ pub fn main() {
 
     for entry in entries {
         // TODO: file_is_cpp() in bindgen/lib.rs checks for hpp,hxx,hh, and h++ - should this be consistent?
-        if entry.path().extension().map_or(false, |ext| {
+        if entry.path().extension().is_some_and(|ext| {
             ext.eq_ignore_ascii_case("h") || ext.eq_ignore_ascii_case("hpp")
         }) {
             let func = entry
