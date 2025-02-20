@@ -20,10 +20,10 @@ impl B {
     pub const VAR_E: B = B(4);
 }
 impl B {
-    /** Document field with preceding star, with a loong long multiline
- comment.
-
- Very interesting documentation, definitely.*/
+    /// Document field with preceding star, with a loong long multiline
+    /// comment.
+    ///
+    /// Very interesting documentation, definitely.
     pub const VAR_F: B = B(5);
 }
 impl ::std::ops::BitOr<B> for B {

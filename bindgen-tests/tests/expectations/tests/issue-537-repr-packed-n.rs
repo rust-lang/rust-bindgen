@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #![cfg(feature = "nightly")]
-/** This should not be opaque; we can see the attributes and can pack the
- struct.*/
+/// This should not be opaque; we can see the attributes and can pack the
+/// struct.
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct AlignedToOne {
@@ -45,9 +45,9 @@ fn bindgen_test_layout_AlignedToTwo() {
         "Offset of field: AlignedToTwo::i",
     );
 }
-/** This should not be opaque because although `libclang` doesn't give us the
- `#pragma pack(1)`, we can detect that alignment is 1 and add
- `#[repr(packed)]` to the struct ourselves.*/
+/// This should not be opaque because although `libclang` doesn't give us the
+/// `#pragma pack(1)`, we can detect that alignment is 1 and add
+/// `#[repr(packed)]` to the struct ourselves.
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct PackedToOne {

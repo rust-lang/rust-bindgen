@@ -120,8 +120,8 @@ pub const RTE_ETH_FLOW_GENEVE: u32 = 20;
 pub const RTE_ETH_FLOW_NVGRE: u32 = 21;
 pub const RTE_ETH_FLOW_MAX: u32 = 22;
 #[repr(u32)]
-/**  A set of values to identify what method is to be used to route
-  packets to multiple queues.*/
+///  A set of values to identify what method is to be used to route
+///  packets to multiple queues.
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_rx_mq_mode {
     /// None of DCB,RSS or VMDQ mode
@@ -405,8 +405,8 @@ impl rte_eth_rxmode {
     }
 }
 #[repr(u32)]
-/** A set of values to identify what method is to be used to transmit
- packets using multi-TCs.*/
+/// A set of values to identify what method is to be used to transmit
+/// packets using multi-TCs.
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_tx_mq_mode {
     ///< It is in neither DCB nor VT mode.
@@ -540,21 +540,21 @@ impl rte_eth_txmode {
         __bindgen_bitfield_unit
     }
 }
-/** A structure used to configure the Receive Side Scaling (RSS) feature
- of an Ethernet port.
- If not NULL, the *rss_key* pointer of the *rss_conf* structure points
- to an array holding the RSS key to use for hashing specific header
- fields of received packets. The length of this array should be indicated
- by *rss_key_len* below. Otherwise, a default random hash key is used by
- the device driver.
-
- The *rss_key_len* field of the *rss_conf* structure indicates the length
- in bytes of the array pointed by *rss_key*. To be compatible, this length
- will be checked in i40e only. Others assume 40 bytes to be used as before.
-
- The *rss_hf* field of the *rss_conf* structure indicates the different
- types of IPv4/IPv6 packets to which the RSS hashing must be applied.
- Supplying an *rss_hf* equal to zero disables the RSS feature.*/
+/// A structure used to configure the Receive Side Scaling (RSS) feature
+/// of an Ethernet port.
+/// If not NULL, the *rss_key* pointer of the *rss_conf* structure points
+/// to an array holding the RSS key to use for hashing specific header
+/// fields of received packets. The length of this array should be indicated
+/// by *rss_key_len* below. Otherwise, a default random hash key is used by
+/// the device driver.
+///
+/// The *rss_key_len* field of the *rss_conf* structure indicates the length
+/// in bytes of the array pointed by *rss_key*. To be compatible, this length
+/// will be checked in i40e only. Others assume 40 bytes to be used as before.
+///
+/// The *rss_hf* field of the *rss_conf* structure indicates the different
+/// types of IPv4/IPv6 packets to which the RSS hashing must be applied.
+/// Supplying an *rss_hf* equal to zero disables the RSS feature.
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_rss_conf {
@@ -605,8 +605,8 @@ impl Default for rte_eth_rss_conf {
     }
 }
 #[repr(u32)]
-/** This enum indicates the possible number of traffic classes
- in DCB configratioins*/
+/// This enum indicates the possible number of traffic classes
+/// in DCB configratioins
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_nb_tcs {
     ///< 4 TCs with DCB.
@@ -615,8 +615,8 @@ pub enum rte_eth_nb_tcs {
     ETH_8_TCS = 8,
 }
 #[repr(u32)]
-/** This enum indicates the possible number of queue pools
- in VMDQ configurations.*/
+/// This enum indicates the possible number of queue pools
+/// in VMDQ configurations.
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_eth_nb_pools {
     ///< 8 VMDq pools.
@@ -628,15 +628,15 @@ pub enum rte_eth_nb_pools {
     ///< 64 VMDq pools.
     ETH_64_POOLS = 64,
 }
-/** A structure used to configure the VMDQ+DCB feature
- of an Ethernet port.
-
- Using this feature, packets are routed to a pool of queues, based
- on the vlan ID in the vlan tag, and then to a specific queue within
- that pool, using the user priority vlan tag field.
-
- A default pool may be used, if desired, to route all traffic which
- does not match the vlan filter rules.*/
+/// A structure used to configure the VMDQ+DCB feature
+/// of an Ethernet port.
+///
+/// Using this feature, packets are routed to a pool of queues, based
+/// on the vlan ID in the vlan tag, and then to a specific queue within
+/// that pool, using the user priority vlan tag field.
+///
+/// A default pool may be used, if desired, to route all traffic which
+/// does not match the vlan filter rules.
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct rte_eth_vmdq_dcb_conf {
@@ -1030,8 +1030,8 @@ pub enum rte_fdir_mode {
     RTE_FDIR_MODE_PERFECT_TUNNEL = 4,
 }
 #[repr(u32)]
-/**  Memory space that can be configured to store Flow Director filters
-  in the board memory.*/
+///  Memory space that can be configured to store Flow Director filters
+///  in the board memory.
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum rte_fdir_pballoc_type {
     ///< 64k.
@@ -1162,8 +1162,8 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
         "Offset of field: rte_eth_ipv6_flow::hop_limits",
     );
 }
-/**  A structure used to configure FDIR masks that are used by the device
-  to match the various fields of RX packet headers.*/
+///  A structure used to configure FDIR masks that are used by the device
+///  to match the various fields of RX packet headers.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_fdir_masks {
@@ -1177,13 +1177,13 @@ pub struct rte_eth_fdir_masks {
     pub src_port_mask: u16,
     /// Bit mask for L4 destination port in big endian.
     pub dst_port_mask: u16,
-    /** 6 bit mask for proper 6 bytes of Mac address, bit 0 matches the
-first byte on the wire*/
+    /// 6 bit mask for proper 6 bytes of Mac address, bit 0 matches the
+    ///first byte on the wire
     pub mac_addr_byte_mask: u8,
     /// Bit mask for tunnel ID in big endian.
     pub tunnel_id_mask: u32,
-    /**< 1 - Match tunnel type,
-0 - Ignore tunnel type.*/
+    ///< 1 - Match tunnel type,
+    ///0 - Ignore tunnel type.
     pub tunnel_type_mask: u8,
 }
 #[test]
@@ -1254,8 +1254,8 @@ pub enum rte_eth_payload_type {
     RTE_ETH_L4_PAYLOAD = 4,
     RTE_ETH_PAYLOAD_MAX = 8,
 }
-/** A structure used to select bytes extracted from the protocol layers to
- flexible payload for filter*/
+/// A structure used to select bytes extracted from the protocol layers to
+/// flexible payload for filter
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_flex_payload_cfg {
@@ -1297,8 +1297,8 @@ impl Default for rte_eth_flex_payload_cfg {
         }
     }
 }
-/** A structure used to define FDIR masks for flexible payload
- for each flow type*/
+/// A structure used to define FDIR masks for flexible payload
+/// for each flow type
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_fdir_flex_mask {
@@ -1330,8 +1330,8 @@ fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
         "Offset of field: rte_eth_fdir_flex_mask::mask",
     );
 }
-/** A structure used to define all flexible payload related setting
- include flex payload and flex mask*/
+/// A structure used to define all flexible payload related setting
+/// include flex payload and flex mask
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_fdir_flex_conf {
@@ -1386,10 +1386,10 @@ impl Default for rte_eth_fdir_flex_conf {
         }
     }
 }
-/** A structure used to configure the Flow Director (FDIR) feature
- of an Ethernet port.
-
- If mode is RTE_FDIR_DISABLE, the pballoc value is ignored.*/
+/// A structure used to configure the Flow Director (FDIR) feature
+/// of an Ethernet port.
+///
+/// If mode is RTE_FDIR_DISABLE, the pballoc value is ignored.
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_fdir_conf {
@@ -1488,36 +1488,36 @@ fn bindgen_test_layout_rte_intr_conf() {
         "Offset of field: rte_intr_conf::rxq",
     );
 }
-/** A structure used to configure an Ethernet port.
- Depending upon the RX multi-queue mode, extra advanced
- configuration settings may be needed.*/
+/// A structure used to configure an Ethernet port.
+/// Depending upon the RX multi-queue mode, extra advanced
+/// configuration settings may be needed.
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct rte_eth_conf {
-    /**< bitmap of ETH_LINK_SPEED_XXX of speeds to be
-used. ETH_LINK_SPEED_FIXED disables link
-autonegotiation, and a unique speed shall be
-set. Otherwise, the bitmap defines the set of
-speeds to be advertised. If the special value
-ETH_LINK_SPEED_AUTONEG (0) is used, all speeds
-supported are advertised.*/
+    ///< bitmap of ETH_LINK_SPEED_XXX of speeds to be
+    ///used. ETH_LINK_SPEED_FIXED disables link
+    ///autonegotiation, and a unique speed shall be
+    ///set. Otherwise, the bitmap defines the set of
+    ///speeds to be advertised. If the special value
+    ///ETH_LINK_SPEED_AUTONEG (0) is used, all speeds
+    ///supported are advertised.
     pub link_speeds: u32,
     ///< Port RX configuration.
     pub rxmode: rte_eth_rxmode,
     ///< Port TX configuration.
     pub txmode: rte_eth_txmode,
-    /**< Loopback operation mode. By default the value
-is 0, meaning the loopback mode is disabled.
-Read the datasheet of given ethernet controller
-for details. The possible values of this field
-are defined in implementation of each driver.*/
+    ///< Loopback operation mode. By default the value
+    ///is 0, meaning the loopback mode is disabled.
+    ///Read the datasheet of given ethernet controller
+    ///for details. The possible values of this field
+    ///are defined in implementation of each driver.
     pub lpbk_mode: u32,
     ///< Port RX filtering configuration (union).
     pub rx_adv_conf: rte_eth_conf__bindgen_ty_1,
     ///< Port TX DCB configuration (union).
     pub tx_adv_conf: rte_eth_conf__bindgen_ty_2,
-    /** Currently,Priority Flow Control(PFC) are supported,if DCB with PFC
-is needed,and the variable must be set ETH_DCB_PFC_SUPPORT.*/
+    /// Currently,Priority Flow Control(PFC) are supported,if DCB with PFC
+    ///is needed,and the variable must be set ETH_DCB_PFC_SUPPORT.
     pub dcb_capability_en: u32,
     ///< FDIR configuration.
     pub fdir_conf: rte_fdir_conf,
