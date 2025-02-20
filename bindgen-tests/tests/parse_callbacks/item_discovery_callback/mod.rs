@@ -134,7 +134,7 @@ fn compare_item_info(
 ) -> bool {
     if std::mem::discriminant(expected_item) !=
         std::mem::discriminant(generated_item)
-        {
+    {
         return false;
     }
 
