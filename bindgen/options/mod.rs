@@ -177,6 +177,24 @@ options! {
         },
         as_args: "--use-distinct-char16-t",
     },
+    /// Whether we should output C++ overloaded operators. By itself,
+    /// this option is not sufficient to produce valid output, because
+    /// such operators will have names that are not acceptable Rust
+    /// names (for example `operator=`). If you use this option, you'll also
+    /// have to rename the resulting functions - for example by using
+    /// [`ParseCallbacks::generated_name_override`].
+    represent_cxx_operators: bool {
+        methods: {
+            /// If this is true, output existence of C++ overloaded operators.
+            /// At present, only operator= is noted.
+            /// Disabled by default.
+            pub fn represent_cxx_operators(mut self, doit: bool) -> Builder {
+                self.options.represent_cxx_operators = doit;
+                self
+            }
+        },
+        as_args: "--represent-cxx-operators",
+    },
 
     /// Types that have been blocklisted and should not appear anywhere in the generated code.
     blocklisted_types: RegexSet {

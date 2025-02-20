@@ -146,6 +146,19 @@ impl ParseCallbacks for WrapAsVariadicFn {
     }
 }
 
+#[derive(Debug)]
+pub(super) struct OperatorRename;
+
+impl ParseCallbacks for OperatorRename {
+    fn generated_name_override(&self, info: ItemInfo) -> Option<String> {
+        if info.name == "operator=" {
+            Some("operatorequals".to_string())
+        } else {
+            None
+        }
+    }
+}
+
 pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
     match cb {
         "enum-variant-rename" => Box::new(EnumVariantRename),
@@ -154,6 +167,7 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
         }
         "wrap-as-variadic-fn" => Box::new(WrapAsVariadicFn),
         "type-visibility" => Box::new(TypeVisibility),
+        "operator-rename" => Box::new(OperatorRename),
         call_back => {
             if let Some(prefix) =
                 call_back.strip_prefix("remove-function-prefix-")
