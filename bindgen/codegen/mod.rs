@@ -995,16 +995,13 @@ impl CodeGenerator for Type {
 
                 let rust_name = ctx.rust_ident(&name);
 
-                ctx.options().for_each_callback(|cb| {
-                    cb.new_item_found(
-                        DiscoveredItemId::new(item.id().as_usize()),
-                        DiscoveredItem::Alias {
-                            alias_name: rust_name.to_string(),
-                            alias_for: DiscoveredItemId::new(
-                                inner_item.id().as_usize(),
-                            ),
-                        },
-                    );
+                utils::call_discovered_item_callback(ctx, item, || {
+                    DiscoveredItem::Alias {
+                        alias_name: rust_name.to_string(),
+                        alias_for: DiscoveredItemId::new(
+                            inner_item.id().as_usize(),
+                        ),
+                    }
                 });
 
                 let mut tokens = if let Some(comment) = item.comment(ctx) {
@@ -2481,30 +2478,23 @@ impl CodeGenerator for CompInfo {
 
         let is_rust_union = is_union && struct_layout.is_rust_union();
 
-        ctx.options().for_each_callback(|cb| {
-            let discovered_item = match self.kind() {
-                CompKind::Struct => DiscoveredItem::Struct {
-                    original_name: item
-                        .kind()
-                        .expect_type()
-                        .name()
-                        .map(String::from),
-                    final_name: canonical_ident.to_string(),
-                },
-                CompKind::Union => DiscoveredItem::Union {
-                    original_name: item
-                        .kind()
-                        .expect_type()
-                        .name()
-                        .map(String::from),
-                    final_name: canonical_ident.to_string(),
-                },
-            };
-
-            cb.new_item_found(
-                DiscoveredItemId::new(item.id().as_usize()),
-                discovered_item,
-            );
+        utils::call_discovered_item_callback(ctx, item, || match self.kind() {
+            CompKind::Struct => DiscoveredItem::Struct {
+                original_name: item
+                    .kind()
+                    .expect_type()
+                    .name()
+                    .map(String::from),
+                final_name: canonical_ident.to_string(),
+            },
+            CompKind::Union => DiscoveredItem::Union {
+                original_name: item
+                    .kind()
+                    .expect_type()
+                    .name()
+                    .map(String::from),
+                final_name: canonical_ident.to_string(),
+            },
         });
 
         // The custom derives callback may return a list of derive attributes;
@@ -2702,6 +2692,7 @@ impl CodeGenerator for CompInfo {
             }
 
             let mut method_names = Default::default();
+            let discovered_id = DiscoveredItemId::new(item.id().as_usize());
             if ctx.options().codegen_config.methods() {
                 for method in self.methods() {
                     assert_ne!(method.kind(), MethodKind::Constructor);
@@ -2711,6 +2702,7 @@ impl CodeGenerator for CompInfo {
                         &mut method_names,
                         result,
                         self,
+                        discovered_id,
                     );
                 }
             }
@@ -2729,6 +2721,7 @@ impl CodeGenerator for CompInfo {
                         &mut method_names,
                         result,
                         self,
+                        discovered_id,
                     );
                 }
             }
@@ -2742,6 +2735,7 @@ impl CodeGenerator for CompInfo {
                         &mut method_names,
                         result,
                         self,
+                        discovered_id,
                     );
                 }
             }
@@ -2999,6 +2993,7 @@ impl Method {
         method_names: &mut HashSet<String>,
         result: &mut CodegenResult<'_>,
         _parent: &CompInfo,
+        parent_id: DiscoveredItemId,
     ) {
         assert!({
             let cc = &ctx.options().codegen_config;
@@ -3064,6 +3059,13 @@ impl Method {
         }
 
         method_names.insert(name.clone());
+
+        utils::call_discovered_item_callback(ctx, function_item, || {
+            DiscoveredItem::Method {
+                parent: parent_id,
+                final_name: name.clone(),
+            }
+        });
 
         let mut function_name = function_item.canonical_name(ctx);
         if times_seen > 0 {
@@ -3770,13 +3772,10 @@ impl CodeGenerator for Enum {
         let repr = repr.to_rust_ty_or_opaque(ctx, item);
         let has_typedef = ctx.is_enum_typedef_combo(item.id());
 
-        ctx.options().for_each_callback(|cb| {
-            cb.new_item_found(
-                DiscoveredItemId::new(item.id().as_usize()),
-                DiscoveredItem::Enum {
-                    final_name: name.to_string(),
-                },
-            );
+        utils::call_discovered_item_callback(ctx, item, || {
+            DiscoveredItem::Enum {
+                final_name: name.to_string(),
+            }
         });
 
         let mut builder =
@@ -4650,6 +4649,11 @@ impl CodeGenerator for Function {
         if times_seen > 0 {
             write!(&mut canonical_name, "{times_seen}").unwrap();
         }
+        utils::call_discovered_item_callback(ctx, item, || {
+            DiscoveredItem::Function {
+                final_name: canonical_name.to_string(),
+            }
+        });
 
         let link_name_attr = self.link_name().or_else(|| {
             let mangled_name = mangled_name.unwrap_or(name);
@@ -5189,6 +5193,7 @@ pub(crate) mod utils {
     use super::helpers::BITFIELD_UNIT;
     use super::serialize::CSerialize;
     use super::{error, CodegenError, CodegenResult, ToRustTyOrOpaque};
+    use crate::callbacks::DiscoveredItemId;
     use crate::ir::context::BindgenContext;
     use crate::ir::context::TypeId;
     use crate::ir::function::{Abi, ClangAbi, FunctionSig};
@@ -5917,5 +5922,29 @@ pub(crate) mod utils {
         }
 
         true
+    }
+
+    pub(super) fn call_discovered_item_callback(
+        ctx: &BindgenContext,
+        item: &Item,
+        discovered_item_creator: impl Fn() -> crate::callbacks::DiscoveredItem,
+    ) {
+        let source_location = item.location().map(|clang_location| {
+            let (file, line, col, byte_offset) = clang_location.location();
+            let file_name = file.name();
+            crate::callbacks::SourceLocation {
+                line,
+                col,
+                byte_offset,
+                file_name,
+            }
+        });
+        ctx.options().for_each_callback(|cb| {
+            cb.new_item_found(
+                DiscoveredItemId::new(item.id().as_usize()),
+                discovered_item_creator(),
+                source_location.as_ref(),
+            );
+        });
     }
 }
