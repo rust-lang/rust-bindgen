@@ -164,7 +164,13 @@ pub trait ParseCallbacks: fmt::Debug {
     }
 
     /// This will get called everytime an item (currently struct, union, and alias) is found with some information about it
-    fn new_item_found(&self, _id: DiscoveredItemId, _item: DiscoveredItem) {}
+    fn new_item_found(
+        &self,
+        _id: DiscoveredItemId,
+        _item: DiscoveredItem,
+        _source_location: Option<&SourceLocation>,
+    ) {
+    }
 
     // TODO add callback for ResolvedTypeRef
 }
@@ -224,7 +230,21 @@ pub enum DiscoveredItem {
         /// The final name of the generated binding
         final_name: String,
     },
-    // functions, modules, etc.
+
+    /// A function or method.
+    Function {
+        /// The final name used.
+        final_name: String,
+    },
+
+    /// A method.
+    Method {
+        /// The final name used.
+        final_name: String,
+
+        /// Type to which this method belongs.
+        parent: DiscoveredItemId,
+    }, // modules, etc.
 }
 
 /// Relevant information about a type to which new derive attributes will be added using
@@ -289,4 +309,18 @@ pub struct FieldInfo<'a> {
     pub field_name: &'a str,
     /// The name of the type of the field.
     pub field_type_name: Option<&'a str>,
+}
+
+/// Location in the source code. Roughly equivalent to the same type
+/// within `clang_sys`.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SourceLocation {
+    /// Line number.
+    pub line: usize,
+    /// Column number within line.
+    pub col: usize,
+    /// Byte offset within file.
+    pub byte_offset: usize,
+    /// Filename, if known.
+    pub file_name: Option<String>,
 }
