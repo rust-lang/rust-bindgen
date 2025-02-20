@@ -433,7 +433,7 @@ impl FunctionSig {
             spelling.starts_with("operator") &&
                 !clang::is_valid_identifier(spelling)
         };
-        if is_operator(&spelling) {
+        if is_operator(&spelling) && !ctx.options().represent_cxx_operators {
             return Err(ParseError::Continue);
         }
 
