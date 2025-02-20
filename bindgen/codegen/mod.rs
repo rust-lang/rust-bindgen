@@ -4564,14 +4564,20 @@ impl CodeGenerator for Function {
             }
         }
 
-        // Pure virtual methods have no actual symbol, so we can't generate
-        // something meaningful for them.
-        let is_dynamic_function = match self.kind() {
-            FunctionKind::Method(ref method_kind)
-                if method_kind.is_pure_virtual() =>
-            {
-                return None;
+        let is_pure_virtual = match self.kind() {
+            FunctionKind::Method(ref method_kind) => {
+                method_kind.is_pure_virtual()
             }
+            _ => false,
+        };
+        if is_pure_virtual && !ctx.options().generate_pure_virtual_functions {
+            // Pure virtual methods have no actual symbol, so we can't generate
+            // something meaningful for them. Downstream code postprocessors
+            // might want to find out about them.
+            return None;
+        }
+
+        let is_dynamic_function = match self.kind() {
             FunctionKind::Function => {
                 ctx.options().dynamic_library_name.is_some()
             }
