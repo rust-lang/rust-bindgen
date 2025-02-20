@@ -227,18 +227,15 @@ fn compare_item_caches(
     //   if the header file or the bindgen logic is altered
     // - aliases have a DiscoveredItemId that we can't directly compare for the same instability reasons
     for expected_item in expected.values() {
-        let found =
-            generated
-                .iter()
-                .find(|(_generated_id, generated_item)| {
-                    compare_item_info(
-                        expected_item,
-                        generated_item,
-                        expected,
-                        generated,
-                        expected_filename,
-                    )
-                });
+        let found = generated.iter().find(|(_generated_id, generated_item)| {
+            compare_item_info(
+                expected_item,
+                generated_item,
+                expected,
+                generated,
+                expected_filename,
+            )
+        });
 
         assert!(
             found.is_some(),
@@ -254,8 +251,8 @@ fn compare_item_info(
     generated: &ItemCache,
     expected_filename: &str,
 ) -> bool {
-    if std::mem::discriminant(&expected_item.item)
-        != std::mem::discriminant(&generated_item.0)
+    if std::mem::discriminant(&expected_item.item) !=
+        std::mem::discriminant(&generated_item.0)
     {
         return false;
     }
@@ -288,8 +285,8 @@ fn compare_item_info(
     if is_a_match {
         // Compare source location
         assert!(
-            generated_item.1.is_some()
-                == expected_item.source_location.is_some(),
+            generated_item.1.is_some() ==
+                expected_item.source_location.is_some(),
             "No source location provided when one was expected"
         );
         if let Some(generated_location) = generated_item.1.as_ref() {

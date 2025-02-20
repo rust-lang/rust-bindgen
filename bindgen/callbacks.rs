@@ -164,7 +164,13 @@ pub trait ParseCallbacks: fmt::Debug {
     }
 
     /// This will get called everytime an item (currently struct, union, and alias) is found with some information about it
-    fn new_item_found(&self, _id: DiscoveredItemId, _item: DiscoveredItem, _source_location: Option<&SourceLocation>) {}
+    fn new_item_found(
+        &self,
+        _id: DiscoveredItemId,
+        _item: DiscoveredItem,
+        _source_location: Option<&SourceLocation>,
+    ) {
+    }
 
     // TODO add callback for ResolvedTypeRef
 }
