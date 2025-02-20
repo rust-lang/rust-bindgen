@@ -146,6 +146,28 @@ impl ParseCallbacks for WrapAsVariadicFn {
     }
 }
 
+#[derive(Debug)]
+struct DeclareSafe;
+
+impl ParseCallbacks for DeclareSafe {
+    fn declare_safe(&self, item_info: ItemInfo<'_>) -> Option<String> {
+        match item_info.kind {
+            ItemKind::Function => {
+                if item_info.name == "my_safe_func" {
+                    return Some("safe to call".to_owned());
+                }
+            }
+            ItemKind::Var => {
+                if item_info.name == "my_safe_var" {
+                    return Some("safe to access".to_owned());
+                }
+            }
+            _ => todo!(),
+        }
+        None
+    }
+}
+
 pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
     match cb {
         "enum-variant-rename" => Box::new(EnumVariantRename),
@@ -154,6 +176,7 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
         }
         "wrap-as-variadic-fn" => Box::new(WrapAsVariadicFn),
         "type-visibility" => Box::new(TypeVisibility),
+        "declare-safe" => Box::new(DeclareSafe),
         call_back => {
             if let Some(prefix) =
                 call_back.strip_prefix("remove-function-prefix-")
