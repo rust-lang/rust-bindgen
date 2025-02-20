@@ -371,7 +371,7 @@ impl Builder {
             std::mem::take(&mut self.options.input_header_contents)
                 .into_iter()
                 .map(|(name, contents)| {
-                    clang::UnsavedFile::new(name.as_ref(), contents.as_ref())
+                    clang::UnsavedFile::new((*name).as_ref(), contents.as_ref())
                 })
                 .collect::<Vec<_>>();
 
