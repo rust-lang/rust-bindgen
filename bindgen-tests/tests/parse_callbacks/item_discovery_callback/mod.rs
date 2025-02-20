@@ -4,7 +4,9 @@ use std::rc::Rc;
 
 use regex::Regex;
 
-use bindgen::callbacks::{DiscoveredItem, DiscoveredItemId, ParseCallbacks};
+use bindgen::callbacks::{
+    DiscoveredItem, DiscoveredItemId, Layout, ParseCallbacks,
+};
 use bindgen::Builder;
 
 #[derive(Debug, Default)]
@@ -37,6 +39,11 @@ pub fn test_item_discovery_callback() {
             DiscoveredItem::Struct {
                 original_name: Some("NamedStruct".to_string()),
                 final_name: "NamedStruct".to_string(),
+                layout: Some(Layout {
+                    size: 0,
+                    align: 1,
+                    packed: false,
+                }),
             },
         ),
         (
@@ -78,6 +85,11 @@ pub fn test_item_discovery_callback() {
             DiscoveredItem::Struct {
                 original_name: None,
                 final_name: "_bindgen_ty_*".to_string(),
+                layout: Some(Layout {
+                    size: 0,
+                    align: 1,
+                    packed: false,
+                }),
             },
         ),
         (
@@ -122,7 +134,7 @@ fn compare_item_info(
 ) -> bool {
     if std::mem::discriminant(expected_item) !=
         std::mem::discriminant(generated_item)
-    {
+        {
         return false;
     }
 
@@ -160,6 +172,7 @@ pub fn compare_struct_info(
     let DiscoveredItem::Struct {
         original_name: expected_original_name,
         final_name: expected_final_name,
+        layout: expected_layout,
     } = expected_item
     else {
         unreachable!()
@@ -168,6 +181,7 @@ pub fn compare_struct_info(
     let DiscoveredItem::Struct {
         original_name: generated_original_name,
         final_name: generated_final_name,
+        layout: generated_layout,
     } = generated_item
     else {
         unreachable!()
@@ -177,10 +191,20 @@ pub fn compare_struct_info(
         return false;
     }
 
-    match (expected_original_name, generated_original_name) {
+    if !match (expected_original_name, generated_original_name) {
         (None, None) => true,
         (Some(expected_original_name), Some(generated_original_name)) => {
             compare_names(expected_original_name, generated_original_name)
+        }
+        _ => false,
+    } {
+        return false;
+    }
+
+    match (expected_layout, generated_layout) {
+        (None, None) => true,
+        (Some(expected_layout), Some(actual_layout)) => {
+            expected_layout == actual_layout
         }
         _ => false,
     }

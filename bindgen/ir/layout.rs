@@ -7,14 +7,14 @@ use crate::ir::context::BindgenContext;
 use std::cmp;
 
 /// A type that represents the struct layout of a type.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) struct Layout {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
+pub struct Layout {
     /// The size (in bytes) of this layout.
-    pub(crate) size: usize,
+    pub size: usize,
     /// The alignment (in bytes) of this layout.
-    pub(crate) align: usize,
+    pub align: usize,
     /// Whether this layout's members are packed or not.
-    pub(crate) packed: bool,
+    pub packed: bool,
 }
 
 #[test]

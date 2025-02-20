@@ -4,6 +4,7 @@ pub use crate::ir::analysis::DeriveTrait;
 pub use crate::ir::derive::CanDerive as ImplementsTrait;
 pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
 pub use crate::ir::int::IntKind;
+pub use crate::ir::layout::Layout;
 use std::fmt;
 
 /// An enum to allow ignoring parsing of macros.
@@ -192,6 +193,10 @@ pub enum DiscoveredItem {
 
         /// The name of the generated binding
         final_name: String,
+
+        /// The layout of the structure in memory (size, alignment, etc.) if
+        /// known.
+        layout: Option<Layout>,
     },
 
     /// Represents a union with its original name in C and its generated binding name

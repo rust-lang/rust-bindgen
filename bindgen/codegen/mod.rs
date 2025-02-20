@@ -2490,6 +2490,7 @@ impl CodeGenerator for CompInfo {
                         .name()
                         .map(String::from),
                     final_name: canonical_ident.to_string(),
+                    layout,
                 },
                 CompKind::Union => DiscoveredItem::Union {
                     original_name: item
