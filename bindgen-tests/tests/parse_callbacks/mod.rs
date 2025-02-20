@@ -146,6 +146,27 @@ impl ParseCallbacks for WrapAsVariadicFn {
     }
 }
 
+#[derive(Debug)]
+struct DeriveTransparentSerialize(String);
+
+impl ParseCallbacks for DeriveTransparentSerialize {
+    fn add_derives(&self, info: &DeriveInfo<'_>) -> Vec<String> {
+        if info.name == &self.0 {
+            vec!["serde::Serialize".to_owned()]
+        } else {
+            vec![]
+        }
+    }
+
+    fn add_attributes(&self, info: &AttributeInfo<'_>) -> Vec<String> {
+        if info.name == &self.0 {
+            vec!["#[serde(rename_all = \"UPPERCASE\")]".to_owned()]
+        } else {
+            vec![]
+        }
+    }
+}
+
 pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
     match cb {
         "enum-variant-rename" => Box::new(EnumVariantRename),
@@ -155,7 +176,11 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
         "wrap-as-variadic-fn" => Box::new(WrapAsVariadicFn),
         "type-visibility" => Box::new(TypeVisibility),
         call_back => {
-            if let Some(prefix) =
+            if let Some(name) =
+                call_back.strip_prefix("derive-uppercase-serialize=")
+            {
+                Box::new(DeriveTransparentSerialize(name.to_owned()))
+            } else if let Some(prefix) =
                 call_back.strip_prefix("remove-function-prefix-")
             {
                 let lnopc = RemovePrefixParseCallback::new(prefix);

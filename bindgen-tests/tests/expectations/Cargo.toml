@@ -15,6 +15,7 @@ edition.workspace = true
 block.workspace = true
 libloading.workspace = true
 objc.workspace = true
+serde.workspace = true
 
 # Both of these sections need to be copied here from the workspace because
 # Cargo currently does not allow overriding workspace settings in a member
