@@ -447,6 +447,9 @@ struct BindgenCommand {
     /// Use distinct char16_t
     #[arg(long)]
     use_distinct_char16_t: bool,
+    /// Output C++ overloaded operators
+    #[arg(long)]
+    represent_cxx_operators: bool,
     /// Enables generation of vtable functions.
     #[arg(long)]
     vtable_generation: bool,
@@ -649,6 +652,7 @@ where
         explicit_padding,
         use_specific_virtual_function_receiver,
         use_distinct_char16_t,
+        represent_cxx_operators,
         vtable_generation,
         sort_semantically,
         merge_extern_blocks,
@@ -951,6 +955,7 @@ where
             explicit_padding,
             use_specific_virtual_function_receiver,
             use_distinct_char16_t,
+            represent_cxx_operators,
             vtable_generation,
             sort_semantically,
             merge_extern_blocks,
