@@ -1,8 +1,11 @@
 //! A public API for more fine-grained customization of bindgen behavior.
 
 pub use crate::ir::analysis::DeriveTrait;
+pub use crate::ir::comp::SpecialMemberKind;
 pub use crate::ir::derive::CanDerive as ImplementsTrait;
 pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
+pub use crate::ir::function::Explicitness;
+pub use crate::ir::function::Visibility;
 pub use crate::ir::int::IntKind;
 use std::fmt;
 
@@ -208,6 +211,10 @@ pub enum DiscoveredItem {
 
         /// The name of the generated binding
         final_name: String,
+
+        /// Its C++ visibility. [`Visibility::Public`] unless this is nested
+        /// in another type.
+        cpp_visibility: Visibility,
     },
 
     /// Represents a union with its original name in C and its generated binding name
@@ -218,6 +225,10 @@ pub enum DiscoveredItem {
 
         /// The name of the generated binding
         final_name: String,
+
+        /// Its C++ visibility. [`Visibility::Public`] unless this is nested
+        /// in another type.
+        cpp_visibility: Visibility,
     },
 
     /// Represents an alias like a typedef
@@ -239,6 +250,10 @@ pub enum DiscoveredItem {
     Enum {
         /// The final name of the generated binding
         final_name: String,
+
+        /// Its C++ visibility. [`Visibility::Public`] unless this is nested
+        /// in another type.
+        cpp_visibility: Visibility,
     },
 
     /// A module, representing a C++ namespace.
@@ -269,6 +284,20 @@ pub enum DiscoveredItem {
 
         /// Type to which this method belongs.
         parent: DiscoveredItemId,
+
+        /// Its C++ visibility.
+        cpp_visibility: Visibility,
+
+        /// Whether this is a C++ "special member".
+        cpp_special_member: Option<SpecialMemberKind>,
+
+        /// Whether this is a C++ virtual function.
+        cpp_virtual: Option<Virtualness>,
+
+        /// Whether this is a C++ function which has been marked
+        /// `=default` or `=deleted`. Note that deleted functions aren't
+        /// normally generated without special bindgen options.
+        cpp_explicit: Option<Explicitness>,
     },
 }
 
@@ -334,6 +363,15 @@ pub struct FieldInfo<'a> {
     pub field_name: &'a str,
     /// The name of the type of the field.
     pub field_type_name: Option<&'a str>,
+}
+
+/// Whether a method is virtual or pure virtual.
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum Virtualness {
+    /// Not pure virtual.
+    Virtual,
+    /// Pure virtual.
+    PureVirtual,
 }
 
 /// Location in the source code. Roughly equivalent to the same type

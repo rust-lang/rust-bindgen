@@ -21,8 +21,7 @@ use self::struct_layout::StructLayoutTracker;
 use super::BindgenOptions;
 
 use crate::callbacks::{
-    AttributeInfo, DeriveInfo, DiscoveredItem, DiscoveredItemId, FieldInfo,
-    TypeKind as DeriveTypeKind,
+    AttributeInfo, DeriveInfo, DiscoveredItem, DiscoveredItemId, FieldInfo, TypeKind as DeriveTypeKind, Virtualness
 };
 use crate::codegen::error::Error;
 use crate::ir::analysis::{HasVtable, Sizedness};
@@ -2499,6 +2498,7 @@ impl CodeGenerator for CompInfo {
                     .name()
                     .map(String::from),
                 final_name: canonical_ident.to_string(),
+                cpp_visibility: self.visibility(),
             },
             CompKind::Union => DiscoveredItem::Union {
                 original_name: item
@@ -2507,6 +2507,7 @@ impl CodeGenerator for CompInfo {
                     .name()
                     .map(String::from),
                 final_name: canonical_ident.to_string(),
+                cpp_visibility: self.visibility(),
             },
         });
 
@@ -3074,9 +3075,23 @@ impl Method {
         method_names.insert(name.clone());
 
         utils::call_discovered_item_callback(ctx, function_item, || {
+            let cpp_virtual = match function.kind() {
+                FunctionKind::Function => None,
+                FunctionKind::Method(method_kind) => if method_kind.is_pure_virtual() {
+                    Some(Virtualness::PureVirtual)
+                } else if method_kind.is_virtual() {
+                    Some(Virtualness::Virtual)
+                } else {
+                    None
+                }
+            };
             DiscoveredItem::Method {
                 parent: parent_id,
                 final_name: name.clone(),
+                cpp_visibility: function.visibility(),
+                cpp_special_member: function.special_member(),
+                cpp_virtual,
+                cpp_explicit: function.explicitness(),
             }
         });
 
@@ -3788,6 +3803,7 @@ impl CodeGenerator for Enum {
         utils::call_discovered_item_callback(ctx, item, || {
             DiscoveredItem::Enum {
                 final_name: name.to_string(),
+                cpp_visibility: self.visibility,
             }
         });
 

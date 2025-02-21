@@ -7,6 +7,7 @@ use regex::Regex;
 
 use bindgen::callbacks::{
     DiscoveredItem, DiscoveredItemId, ParseCallbacks, SourceLocation,
+    SpecialMemberKind, Visibility,
 };
 use bindgen::Builder;
 
@@ -101,6 +102,7 @@ fn test_item_discovery_callback_c() {
                 DiscoveredItem::Struct {
                     original_name: Some("NamedStruct".to_string()),
                     final_name: "NamedStruct".to_string(),
+                    cpp_visibility: Visibility::Public,
                 },
                 4,
                 8,
@@ -127,6 +129,7 @@ fn test_item_discovery_callback_c() {
                 DiscoveredItem::Union {
                     original_name: Some("NamedUnion".to_string()),
                     final_name: "NamedUnion".to_string(),
+                    cpp_visibility: Visibility::Public,
                 },
                 13,
                 7,
@@ -165,6 +168,7 @@ fn test_item_discovery_callback_c() {
             ItemExpectations::new(
                 DiscoveredItem::Enum {
                     final_name: "NamedEnum".to_string(),
+                    cpp_visibility: Visibility::Public,
                 },
                 24,
                 6,
@@ -178,6 +182,7 @@ fn test_item_discovery_callback_c() {
                 DiscoveredItem::Struct {
                     original_name: None,
                     final_name: "_bindgen_ty_*".to_string(),
+                    cpp_visibility: Visibility::Public,
                 },
                 2,
                 38,
@@ -191,6 +196,7 @@ fn test_item_discovery_callback_c() {
                 DiscoveredItem::Union {
                     original_name: None,
                     final_name: "_bindgen_ty_*".to_string(),
+                    cpp_visibility: Visibility::Public,
                 },
                 11,
                 37,
@@ -216,7 +222,7 @@ fn test_item_discovery_callback_c() {
 }
 
 #[test]
-fn test_item_discovery_callback_cpp() {
+fn test_item_discovery_callback_cpp_features() {
     let expected = ExpectationMap::from([
         (
             DiscoveredItemId::new(1),
@@ -224,6 +230,7 @@ fn test_item_discovery_callback_cpp() {
                 DiscoveredItem::Struct {
                     original_name: Some("SomeClass".to_string()),
                     final_name: "SomeClass".to_string(),
+                    cpp_visibility: Visibility::Public,
                 },
                 3,
                 7,
@@ -237,16 +244,57 @@ fn test_item_discovery_callback_cpp() {
                 DiscoveredItem::Method {
                     final_name: "named_method".to_string(),
                     parent: DiscoveredItemId::new(1),
+                    cpp_visibility: Visibility::Public,
+                    cpp_special_member: None,
+                    cpp_virtual: None,
+                    cpp_explicit: None,
                 },
-                5,
+                8,
                 10,
-                47,
+                144,
+                None,
+            ),
+        ),
+        (
+            DiscoveredItemId::new(48),
+            ItemExpectations::new(
+                DiscoveredItem::Method {
+                    final_name: "protected_method".to_string(),
+                    parent: DiscoveredItemId::new(1),
+                    cpp_visibility: Visibility::Protected,
+                    cpp_special_member: None,
+                    cpp_virtual: None,
+                    cpp_explicit: None,
+                },
+                14,
+                10,
+                295,
+                None,
+            ),
+        ),
+        (
+            DiscoveredItemId::new(19),
+            ItemExpectations::new(
+                DiscoveredItem::Method {
+                    final_name: "new".to_string(),
+                    parent: DiscoveredItemId::new(1),
+                    cpp_visibility: Visibility::Public,
+                    cpp_special_member: Some(
+                        SpecialMemberKind::MoveConstructor,
+                    ),
+                    cpp_virtual: None,
+                    cpp_explicit: None,
+                },
+                7,
+                5,
+                111,
                 None,
             ),
         ),
     ]);
+
     test_item_discovery_callback(
-        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.hpp", expected, identity);
+        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.hpp", expected, |b| b.clang_arg("--std=c++11"));
 }
 
 /// Returns the expectations corresponding to header_item_discovery_with_namespaces.hpp,
@@ -361,6 +409,7 @@ fn cpp_expectation_map() -> ExpectationMap {
                 DiscoveredItem::Struct {
                     final_name: "L".to_string(),
                     original_name: Some("L".to_string()),
+                    cpp_visibility: Visibility::Public,
                 },
                 25,
                 12,
@@ -374,6 +423,7 @@ fn cpp_expectation_map() -> ExpectationMap {
                 DiscoveredItem::Struct {
                     final_name: "L_M".to_string(),
                     original_name: Some("M".to_string()),
+                    cpp_visibility: Visibility::Public,
                 },
                 26,
                 16,
@@ -597,6 +647,7 @@ pub fn compare_struct_info(
     let DiscoveredItem::Struct {
         original_name: expected_original_name,
         final_name: expected_final_name,
+        cpp_visibility: expected_cpp_visibility,
     } = expected_item
     else {
         unreachable!()
@@ -605,12 +656,17 @@ pub fn compare_struct_info(
     let DiscoveredItem::Struct {
         original_name: generated_original_name,
         final_name: generated_final_name,
+        cpp_visibility: generated_cpp_visibility,
     } = generated_item
     else {
         unreachable!()
     };
 
     if !compare_names(expected_final_name, generated_final_name) {
+        return false;
+    }
+
+    if expected_cpp_visibility != generated_cpp_visibility {
         return false;
     }
 
@@ -630,6 +686,7 @@ pub fn compare_union_info(
     let DiscoveredItem::Union {
         original_name: expected_original_name,
         final_name: expected_final_name,
+        cpp_visibility: expected_cpp_visibility,
     } = expected_item
     else {
         unreachable!()
@@ -638,12 +695,17 @@ pub fn compare_union_info(
     let DiscoveredItem::Union {
         original_name: generated_original_name,
         final_name: generated_final_name,
+        cpp_visibility: generated_cpp_visibility,
     } = generated_item
     else {
         unreachable!()
     };
 
     if !compare_names(expected_final_name, generated_final_name) {
+        return false;
+    }
+
+    if expected_cpp_visibility != generated_cpp_visibility {
         return false;
     }
 
@@ -662,6 +724,7 @@ pub fn compare_enum_info(
 ) -> bool {
     let DiscoveredItem::Enum {
         final_name: expected_final_name,
+        cpp_visibility: expected_cpp_visibility,
     } = expected_item
     else {
         unreachable!()
@@ -669,6 +732,7 @@ pub fn compare_enum_info(
 
     let DiscoveredItem::Enum {
         final_name: generated_final_name,
+        cpp_visibility: generated_cpp_visibility,
     } = generated_item
     else {
         unreachable!()
@@ -677,6 +741,11 @@ pub fn compare_enum_info(
     if !compare_names(expected_final_name, generated_final_name) {
         return false;
     }
+
+    if expected_cpp_visibility != generated_cpp_visibility {
+        return false;
+    }
+
     true
 }
 
@@ -755,6 +824,10 @@ pub fn compare_method_info(
     let DiscoveredItem::Method {
         final_name: expected_final_name,
         parent: expected_parent,
+        cpp_visibility: expected_cpp_visibility,
+        cpp_special_member: expected_cpp_special_member,
+        cpp_virtual: expected_cpp_virtual,
+        cpp_explicit: expected_cpp_explicit,
     } = expected_item
     else {
         unreachable!()
@@ -763,12 +836,21 @@ pub fn compare_method_info(
     let DiscoveredItem::Method {
         final_name: generated_final_name,
         parent: generated_parent,
+        cpp_visibility: generated_cpp_visibility,
+        cpp_special_member: generated_cpp_special_member,
+        cpp_virtual: generated_cpp_virtual,
+        cpp_explicit: generated_cpp_explicit,
     } = generated_item
     else {
         unreachable!()
     };
 
-    if expected_parent != generated_parent {
+    if expected_parent != generated_parent
+        || expected_cpp_explicit != generated_cpp_explicit
+        || expected_cpp_special_member != generated_cpp_special_member
+        || expected_cpp_virtual != generated_cpp_virtual
+        || expected_cpp_visibility != generated_cpp_visibility
+    {
         return false;
     }
 
