@@ -3077,12 +3077,14 @@ impl Method {
         utils::call_discovered_item_callback(ctx, function_item, || {
             let cpp_virtual = match function.kind() {
                 FunctionKind::Function => None,
-                FunctionKind::Method(method_kind) => if method_kind.is_pure_virtual() {
-                    Some(Virtualness::PureVirtual)
-                } else if method_kind.is_virtual() {
-                    Some(Virtualness::Virtual)
-                } else {
-                    None
+                FunctionKind::Method(method_kind) => {
+                    if method_kind.is_pure_virtual() {
+                        Some(Virtualness::PureVirtual)
+                    } else if method_kind.is_virtual() {
+                        Some(Virtualness::Virtual)
+                    } else {
+                        None
+                    }
                 }
             };
             DiscoveredItem::Method {

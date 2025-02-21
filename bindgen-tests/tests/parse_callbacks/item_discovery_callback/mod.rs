@@ -845,11 +845,11 @@ pub fn compare_method_info(
         unreachable!()
     };
 
-    if expected_parent != generated_parent
-        || expected_cpp_explicit != generated_cpp_explicit
-        || expected_cpp_special_member != generated_cpp_special_member
-        || expected_cpp_virtual != generated_cpp_virtual
-        || expected_cpp_visibility != generated_cpp_visibility
+    if expected_parent != generated_parent ||
+        expected_cpp_explicit != generated_cpp_explicit ||
+        expected_cpp_special_member != generated_cpp_special_member ||
+        expected_cpp_virtual != generated_cpp_virtual ||
+        expected_cpp_visibility != generated_cpp_visibility
     {
         return false;
     }
