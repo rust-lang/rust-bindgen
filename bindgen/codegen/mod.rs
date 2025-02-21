@@ -21,7 +21,8 @@ use self::struct_layout::StructLayoutTracker;
 use super::BindgenOptions;
 
 use crate::callbacks::{
-    AttributeInfo, DeriveInfo, DiscoveredItem, DiscoveredItemId, FieldInfo, TypeKind as DeriveTypeKind, Virtualness
+    AttributeInfo, DeriveInfo, DiscoveredItem, DiscoveredItemId, FieldInfo,
+    TypeKind as DeriveTypeKind, Virtualness,
 };
 use crate::codegen::error::Error;
 use crate::ir::analysis::{HasVtable, Sizedness};
