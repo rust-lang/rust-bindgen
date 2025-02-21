@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::convert::identity;
 use std::rc::Rc;
 
 use regex::Regex;
@@ -15,7 +16,11 @@ struct ItemDiscovery(Rc<RefCell<ItemCache>>);
 pub type ItemCache = HashMap<DiscoveredItemId, DiscoveredInformation>;
 
 #[derive(Debug)]
-pub struct DiscoveredInformation(DiscoveredItem, Option<SourceLocation>);
+pub struct DiscoveredInformation(
+    DiscoveredItem,
+    Option<SourceLocation>,
+    Option<DiscoveredItemId>,
+);
 
 impl ParseCallbacks for ItemDiscovery {
     fn new_item_found(
@@ -23,10 +28,12 @@ impl ParseCallbacks for ItemDiscovery {
         id: DiscoveredItemId,
         item: DiscoveredItem,
         source_location: Option<&SourceLocation>,
+        parent: Option<DiscoveredItemId>,
     ) {
-        self.0
-            .borrow_mut()
-            .insert(id, DiscoveredInformation(item, source_location.cloned()));
+        self.0.borrow_mut().insert(
+            id,
+            DiscoveredInformation(item, source_location.cloned(), parent),
+        );
     }
 }
 
@@ -34,6 +41,7 @@ impl ParseCallbacks for ItemDiscovery {
 pub struct ItemExpectations {
     item: DiscoveredItem,
     source_location: Option<(usize, usize, usize)>,
+    parent: Option<DiscoveredItemId>,
 }
 
 impl ItemExpectations {
@@ -42,19 +50,33 @@ impl ItemExpectations {
         line: usize,
         col: usize,
         byte_offset: usize,
+        parent: Option<DiscoveredItemId>,
     ) -> Self {
         Self {
             item,
             source_location: Some((line, col, byte_offset)),
+            parent,
+        }
+    }
+
+    fn new_no_source_location(
+        item: DiscoveredItem,
+        parent: Option<DiscoveredItemId>,
+    ) -> Self {
+        Self {
+            item,
+            source_location: None,
+            parent,
         }
     }
 }
 
 type ExpectationMap = HashMap<DiscoveredItemId, ItemExpectations>;
 
-fn test_item_discovery_callback(
+fn test_item_discovery_callback<F: FnOnce(Builder) -> Builder>(
     header: &str,
     expected: HashMap<DiscoveredItemId, ItemExpectations>,
+    builder_adjuster: F,
 ) {
     let discovery = ItemDiscovery::default();
     let info = Rc::clone(&discovery.0);
@@ -62,11 +84,10 @@ fn test_item_discovery_callback(
     let mut header_path = env!("CARGO_MANIFEST_DIR").to_string();
     header_path.push_str(header);
 
-    Builder::default()
+    let b = Builder::default()
         .header(header_path)
-        .parse_callbacks(Box::new(discovery))
-        .generate()
-        .expect("TODO: panic message");
+        .parse_callbacks(Box::new(discovery));
+    builder_adjuster(b).generate().expect("TODO: panic message");
 
     compare_item_caches(&info.borrow(), &expected, header);
 }
@@ -84,6 +105,7 @@ fn test_item_discovery_callback_c() {
                 4,
                 8,
                 73,
+                None,
             ),
         ),
         (
@@ -96,6 +118,7 @@ fn test_item_discovery_callback_c() {
                 7,
                 28,
                 118,
+                None,
             ),
         ),
         (
@@ -108,6 +131,7 @@ fn test_item_discovery_callback_c() {
                 13,
                 7,
                 209,
+                None,
             ),
         ),
         (
@@ -120,6 +144,7 @@ fn test_item_discovery_callback_c() {
                 16,
                 26,
                 251,
+                None,
             ),
         ),
         (
@@ -132,6 +157,7 @@ fn test_item_discovery_callback_c() {
                 28,
                 24,
                 515,
+                None,
             ),
         ),
         (
@@ -143,6 +169,7 @@ fn test_item_discovery_callback_c() {
                 24,
                 6,
                 466,
+                None,
             ),
         ),
         (
@@ -155,6 +182,7 @@ fn test_item_discovery_callback_c() {
                 2,
                 38,
                 48,
+                None,
             ),
         ),
         (
@@ -167,6 +195,7 @@ fn test_item_discovery_callback_c() {
                 11,
                 37,
                 186,
+                None,
             ),
         ),
         (
@@ -178,11 +207,12 @@ fn test_item_discovery_callback_c() {
                 32,
                 6,
                 553,
+                None,
             ),
         ),
     ]);
     test_item_discovery_callback(
-        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.h", expected);
+        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.h", expected, identity);
 }
 
 #[test]
@@ -198,6 +228,7 @@ fn test_item_discovery_callback_cpp() {
                 3,
                 7,
                 18,
+                None,
             ),
         ),
         (
@@ -210,11 +241,231 @@ fn test_item_discovery_callback_cpp() {
                 5,
                 10,
                 47,
+                None,
             ),
         ),
     ]);
     test_item_discovery_callback(
-        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.hpp", expected);
+        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.hpp", expected, identity);
+}
+
+/// Returns the expectations corresponding to header_item_discovery_with_namespaces.hpp,
+/// other than those items whose behavior changes based on the setting for
+/// conservative inline namespaces, which we test each way.
+fn cpp_expectation_map() -> ExpectationMap {
+    ExpectationMap::from([
+        (
+            DiscoveredItemId::new(0),
+            ItemExpectations::new_no_source_location(
+                DiscoveredItem::Mod {
+                    final_name: "".to_string(),
+                    anonymous: false,
+                    inline: false,
+                },
+                None,
+            ),
+        ),
+        (
+            DiscoveredItemId::new(4),
+            ItemExpectations::new(
+                DiscoveredItem::Function {
+                    final_name: "a".to_string(),
+                },
+                1,
+                6,
+                5,
+                Some(DiscoveredItemId::new(0)),
+            ),
+        ),
+        (
+            DiscoveredItemId::new(5),
+            ItemExpectations::new(
+                DiscoveredItem::Mod {
+                    final_name: "B".to_string(),
+                    anonymous: false,
+                    inline: false,
+                },
+                3,
+                11,
+                21,
+                Some(DiscoveredItemId::new(0)),
+            ),
+        ),
+        (
+            DiscoveredItemId::new(9),
+            ItemExpectations::new(
+                DiscoveredItem::Function {
+                    final_name: "c".to_string(),
+                },
+                4,
+                10,
+                34,
+                Some(DiscoveredItemId::new(5)),
+            ),
+        ),
+        (
+            DiscoveredItemId::new(10),
+            ItemExpectations::new(
+                DiscoveredItem::Mod {
+                    final_name: "D".to_string(),
+                    anonymous: false,
+                    inline: false,
+                },
+                6,
+                15,
+                54,
+                Some(DiscoveredItemId::new(5)),
+            ),
+        ),
+        (
+            DiscoveredItemId::new(14),
+            ItemExpectations::new(
+                DiscoveredItem::Function {
+                    final_name: "e".to_string(),
+                },
+                7,
+                14,
+                71,
+                Some(DiscoveredItemId::new(10)),
+            ),
+        ),
+        (
+            DiscoveredItemId::new(16),
+            ItemExpectations::new(
+                DiscoveredItem::Mod {
+                    final_name: "".to_string(),
+                    anonymous: true,
+                    inline: false,
+                },
+                14,
+                15,
+                167,
+                Some(DiscoveredItemId::new(5)),
+            ),
+        ),
+        (
+            DiscoveredItemId::new(30),
+            ItemExpectations::new(
+                DiscoveredItem::Function {
+                    final_name: "k".to_string(),
+                },
+                21,
+                18,
+                276,
+                Some(DiscoveredItemId::new(26)),
+            ),
+        ),
+        (
+            DiscoveredItemId::new(31),
+            ItemExpectations::new(
+                DiscoveredItem::Struct {
+                    final_name: "L".to_string(),
+                    original_name: Some("L".to_string()),
+                },
+                25,
+                12,
+                309,
+                Some(DiscoveredItemId::new(5)),
+            ),
+        ),
+        (
+            DiscoveredItemId::new(32),
+            ItemExpectations::new(
+                DiscoveredItem::Struct {
+                    final_name: "L_M".to_string(),
+                    original_name: Some("M".to_string()),
+                },
+                26,
+                16,
+                328,
+                Some(DiscoveredItemId::new(31)),
+            ),
+        ),
+    ])
+}
+
+#[test]
+fn test_item_discovery_callback_cpp_namespaces_no_inline_namespaces() {
+    let mut expected = cpp_expectation_map();
+    expected.insert(
+        DiscoveredItemId::new(25),
+        ItemExpectations::new(
+            DiscoveredItem::Function {
+                final_name: "i".to_string(),
+            },
+            19,
+            14,
+            232,
+            Some(DiscoveredItemId::new(5)),
+        ),
+    );
+    expected.insert(
+        DiscoveredItemId::new(26),
+        ItemExpectations::new(
+            DiscoveredItem::Mod {
+                final_name: "J".to_string(),
+                anonymous: false,
+                inline: false,
+            },
+            20,
+            19,
+            255,
+            Some(DiscoveredItemId::new(5)),
+        ),
+    );
+
+    // C++11 for inline namespace
+    test_item_discovery_callback(
+        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery_with_namespaces.hpp", expected, |b| b.enable_cxx_namespaces().clang_arg("--std=c++11"));
+}
+
+#[test]
+fn test_item_discovery_callback_cpp_namespaces_with_inline_namespaces() {
+    let mut expected = cpp_expectation_map();
+    expected.insert(
+        DiscoveredItemId::new(21),
+        ItemExpectations::new(
+            DiscoveredItem::Mod {
+                final_name: "H".to_string(),
+                anonymous: false,
+                inline: true,
+            },
+            18,
+            22,
+            215,
+            Some(DiscoveredItemId::new(5)),
+        ),
+    );
+    expected.insert(
+        DiscoveredItemId::new(25),
+        ItemExpectations::new(
+            DiscoveredItem::Function {
+                final_name: "i".to_string(),
+            },
+            19,
+            14,
+            232,
+            Some(DiscoveredItemId::new(21)),
+        ),
+    );
+    expected.insert(
+        DiscoveredItemId::new(26),
+        ItemExpectations::new(
+            DiscoveredItem::Mod {
+                final_name: "J".to_string(),
+                anonymous: false,
+                inline: false,
+            },
+            20,
+            19,
+            255,
+            Some(DiscoveredItemId::new(21)),
+        ),
+    );
+
+    // C++11 for inline namespace
+    test_item_discovery_callback(
+        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery_with_namespaces.hpp", expected, |b| b.enable_cxx_namespaces().conservative_inline_namespaces().clang_arg("--std=c++11"));
 }
 
 fn compare_item_caches(
@@ -251,8 +502,8 @@ fn compare_item_info(
     generated: &ItemCache,
     expected_filename: &str,
 ) -> bool {
-    if std::mem::discriminant(&expected_item.item) !=
-        std::mem::discriminant(&generated_item.0)
+    if std::mem::discriminant(&expected_item.item)
+        != std::mem::discriminant(&generated_item.0)
     {
         return false;
     }
@@ -280,6 +531,9 @@ fn compare_item_info(
         DiscoveredItem::Method { .. } => {
             compare_method_info(&expected_item.item, &generated_item.0)
         }
+        DiscoveredItem::Mod { .. } => {
+            compare_mod_info(&expected_item.item, &generated_item.0)
+        }
     };
 
     if is_a_match {
@@ -287,7 +541,7 @@ fn compare_item_info(
         assert!(
             generated_item.1.is_some() ==
                 expected_item.source_location.is_some(),
-            "No source location provided when one was expected"
+            "Source location wasn't as expected for generated={generated_item:?}, expected={expected_item:?}"
         );
         if let Some(generated_location) = generated_item.1.as_ref() {
             let expected_location = expected_item.source_location.unwrap();
@@ -307,6 +561,21 @@ fn compare_item_info(
                 ),
                 expected_location,
                 "Line/col/offsets differ"
+            );
+        }
+
+        // Compare C++ name info
+        assert!(
+            generated_item.2.is_some() ==
+                expected_item.parent.is_some(),
+            "Parent information didn't match: generated item {generated_item:?}"
+        );
+
+        if let Some(generated_parent) = generated_item.2.as_ref() {
+            let expected_parent = expected_item.parent.as_ref().unwrap();
+            assert_eq!(
+                generated_parent, expected_parent,
+                "Parent didn't match for {expected_item:?}"
             );
         }
     }
@@ -505,6 +774,45 @@ pub fn compare_method_info(
 
     if !compare_names(expected_final_name, generated_final_name) {
         return false;
+    }
+    true
+}
+
+pub fn compare_mod_info(
+    expected_item: &DiscoveredItem,
+    generated_item: &DiscoveredItem,
+) -> bool {
+    let DiscoveredItem::Mod {
+        final_name: expected_final_name,
+        anonymous: expected_anonymous,
+        inline: expected_inline,
+    } = expected_item
+    else {
+        unreachable!()
+    };
+
+    let DiscoveredItem::Mod {
+        final_name: generated_final_name,
+        anonymous: generated_anonymous,
+        inline: generated_inline,
+    } = generated_item
+    else {
+        unreachable!()
+    };
+
+    if expected_anonymous != generated_anonymous
+        || *expected_inline != *generated_inline
+    {
+        return false;
+    }
+
+    // We generate arbitrary names for anonymous namespaces - do not compare
+    if !expected_anonymous {
+        // Do not use regexes to compare mod names since the root mod
+        // has an empty name and would match everything
+        if expected_final_name != generated_final_name {
+            return false;
+        }
     }
     true
 }

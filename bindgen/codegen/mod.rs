@@ -627,6 +627,19 @@ impl CodeGenerator for Module {
         }
 
         let name = item.canonical_name(ctx);
+
+        utils::call_discovered_item_callback(ctx, item, || {
+            DiscoveredItem::Mod {
+                final_name: if item.id() == item.parent_id() {
+                    "".to_string() // root module
+                } else {
+                    name.clone()
+                },
+                anonymous: self.name().is_none(),
+                inline: self.is_inline(),
+            }
+        });
+
         let ident = ctx.rust_ident(name);
         result.push(if item.id() == ctx.root_module() {
             quote! {
@@ -5198,6 +5211,7 @@ pub(crate) mod utils {
     use crate::ir::context::TypeId;
     use crate::ir::function::{Abi, ClangAbi, FunctionSig};
     use crate::ir::item::{Item, ItemCanonicalPath};
+    use crate::ir::item_kind::ItemKind;
     use crate::ir::ty::TypeKind;
     use crate::{args_are_cpp, file_is_cpp};
     use std::borrow::Cow;
@@ -5939,12 +5953,64 @@ pub(crate) mod utils {
                 file_name,
             }
         });
+
         ctx.options().for_each_callback(|cb| {
             cb.new_item_found(
                 DiscoveredItemId::new(item.id().as_usize()),
                 discovered_item_creator(),
                 source_location.as_ref(),
+                find_reportable_parent(ctx, item),
             );
         });
+    }
+
+    /// Identify a suitable parent, the details of which will have
+    /// been passed to `ParseCallbacks`. We don't inform
+    /// [`crate::callbacks::ParseCallbacks::new_item_found`]
+    /// about everything - notably, not usually inline namespaces - and always
+    /// want to ensure that the `parent_id` we report within `new_item_found`
+    /// always corresponds to some other item which we'll have
+    /// told the client about. This function hops back through the ancestor
+    /// chain until it finds a reportable ID.
+    pub(super) fn find_reportable_parent(
+        ctx: &BindgenContext,
+        item: &Item,
+    ) -> Option<DiscoveredItemId> {
+        // We choose never to report parents if C++ namespaces are not
+        // enabled. Sometimes a struct might be within another struct, but
+        // for now we simply don't report parentage at all.
+        if !ctx.options().enable_cxx_namespaces {
+            return None;
+        }
+        let mut parent_item = ctx.resolve_item(item.parent_id());
+        while !is_reportable_parent(ctx, &parent_item) {
+            let parent_id = parent_item.parent_id();
+            if parent_id == parent_item.id() {
+                return None;
+            }
+            parent_item = ctx.resolve_item(parent_id);
+        }
+        if parent_item.id() == item.id() {
+            // This is itself the root module.
+            None
+        } else {
+            Some(DiscoveredItemId::new(parent_item.id().as_usize()))
+        }
+    }
+
+    /// Returns whether a given [`Item`] will have been reported, or will
+    /// be reported, in [`crate::callbacks::ParseCallbacks::new_item_found`].
+    fn is_reportable_parent(ctx: &BindgenContext, item: &Item) -> bool {
+        match item.kind() {
+            ItemKind::Module(ref module) => {
+                !module.is_inline()
+                    || ctx.options().conservative_inline_namespaces
+            }
+            ItemKind::Type(t) => match t.kind() {
+                TypeKind::Comp(..) | TypeKind::Enum(..) => true,
+                _ => false,
+            },
+            _ => false,
+        }
     }
 }
