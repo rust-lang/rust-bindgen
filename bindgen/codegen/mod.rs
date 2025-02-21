@@ -22,7 +22,7 @@ use super::BindgenOptions;
 
 use crate::callbacks::{
     AttributeInfo, DeriveInfo, DiscoveredItem, DiscoveredItemId, FieldInfo,
-    TypeKind as DeriveTypeKind,
+    TypeKind as DeriveTypeKind, Virtualness,
 };
 use crate::codegen::error::Error;
 use crate::ir::analysis::{HasVtable, Sizedness};
@@ -627,6 +627,19 @@ impl CodeGenerator for Module {
         }
 
         let name = item.canonical_name(ctx);
+
+        utils::call_discovered_item_callback(ctx, item, || {
+            DiscoveredItem::Mod {
+                final_name: if item.id() == item.parent_id() {
+                    "".to_string() // root module
+                } else {
+                    name.clone()
+                },
+                anonymous: self.name().is_none(),
+                inline: self.is_inline(),
+            }
+        });
+
         let ident = ctx.rust_ident(name);
         result.push(if item.id() == ctx.root_module() {
             quote! {
@@ -995,16 +1008,13 @@ impl CodeGenerator for Type {
 
                 let rust_name = ctx.rust_ident(&name);
 
-                ctx.options().for_each_callback(|cb| {
-                    cb.new_item_found(
-                        DiscoveredItemId::new(item.id().as_usize()),
-                        DiscoveredItem::Alias {
-                            alias_name: rust_name.to_string(),
-                            alias_for: DiscoveredItemId::new(
-                                inner_item.id().as_usize(),
-                            ),
-                        },
-                    );
+                utils::call_discovered_item_callback(ctx, item, || {
+                    DiscoveredItem::Alias {
+                        alias_name: rust_name.to_string(),
+                        alias_for: DiscoveredItemId::new(
+                            inner_item.id().as_usize(),
+                        ),
+                    }
                 });
 
                 let mut tokens = if let Some(comment) = item.comment(ctx) {
@@ -2481,30 +2491,25 @@ impl CodeGenerator for CompInfo {
 
         let is_rust_union = is_union && struct_layout.is_rust_union();
 
-        ctx.options().for_each_callback(|cb| {
-            let discovered_item = match self.kind() {
-                CompKind::Struct => DiscoveredItem::Struct {
-                    original_name: item
-                        .kind()
-                        .expect_type()
-                        .name()
-                        .map(String::from),
-                    final_name: canonical_ident.to_string(),
-                },
-                CompKind::Union => DiscoveredItem::Union {
-                    original_name: item
-                        .kind()
-                        .expect_type()
-                        .name()
-                        .map(String::from),
-                    final_name: canonical_ident.to_string(),
-                },
-            };
-
-            cb.new_item_found(
-                DiscoveredItemId::new(item.id().as_usize()),
-                discovered_item,
-            );
+        utils::call_discovered_item_callback(ctx, item, || match self.kind() {
+            CompKind::Struct => DiscoveredItem::Struct {
+                original_name: item
+                    .kind()
+                    .expect_type()
+                    .name()
+                    .map(String::from),
+                final_name: canonical_ident.to_string(),
+                cpp_visibility: self.visibility(),
+            },
+            CompKind::Union => DiscoveredItem::Union {
+                original_name: item
+                    .kind()
+                    .expect_type()
+                    .name()
+                    .map(String::from),
+                final_name: canonical_ident.to_string(),
+                cpp_visibility: self.visibility(),
+            },
         });
 
         // The custom derives callback may return a list of derive attributes;
@@ -2702,6 +2707,7 @@ impl CodeGenerator for CompInfo {
             }
 
             let mut method_names = Default::default();
+            let discovered_id = DiscoveredItemId::new(item.id().as_usize());
             if ctx.options().codegen_config.methods() {
                 for method in self.methods() {
                     assert_ne!(method.kind(), MethodKind::Constructor);
@@ -2711,6 +2717,7 @@ impl CodeGenerator for CompInfo {
                         &mut method_names,
                         result,
                         self,
+                        discovered_id,
                     );
                 }
             }
@@ -2729,6 +2736,7 @@ impl CodeGenerator for CompInfo {
                         &mut method_names,
                         result,
                         self,
+                        discovered_id,
                     );
                 }
             }
@@ -2742,6 +2750,7 @@ impl CodeGenerator for CompInfo {
                         &mut method_names,
                         result,
                         self,
+                        discovered_id,
                     );
                 }
             }
@@ -2999,6 +3008,7 @@ impl Method {
         method_names: &mut HashSet<String>,
         result: &mut CodegenResult<'_>,
         _parent: &CompInfo,
+        parent_id: DiscoveredItemId,
     ) {
         assert!({
             let cc = &ctx.options().codegen_config;
@@ -3064,6 +3074,29 @@ impl Method {
         }
 
         method_names.insert(name.clone());
+
+        utils::call_discovered_item_callback(ctx, function_item, || {
+            let cpp_virtual = match function.kind() {
+                FunctionKind::Function => None,
+                FunctionKind::Method(method_kind) => {
+                    if method_kind.is_pure_virtual() {
+                        Some(Virtualness::PureVirtual)
+                    } else if method_kind.is_virtual() {
+                        Some(Virtualness::Virtual)
+                    } else {
+                        None
+                    }
+                }
+            };
+            DiscoveredItem::Method {
+                parent: parent_id,
+                final_name: name.clone(),
+                cpp_visibility: function.visibility(),
+                cpp_special_member: function.special_member(),
+                cpp_virtual,
+                cpp_explicit: function.explicitness(),
+            }
+        });
 
         let mut function_name = function_item.canonical_name(ctx);
         if times_seen > 0 {
@@ -3770,13 +3803,11 @@ impl CodeGenerator for Enum {
         let repr = repr.to_rust_ty_or_opaque(ctx, item);
         let has_typedef = ctx.is_enum_typedef_combo(item.id());
 
-        ctx.options().for_each_callback(|cb| {
-            cb.new_item_found(
-                DiscoveredItemId::new(item.id().as_usize()),
-                DiscoveredItem::Enum {
-                    final_name: name.to_string(),
-                },
-            );
+        utils::call_discovered_item_callback(ctx, item, || {
+            DiscoveredItem::Enum {
+                final_name: name.to_string(),
+                cpp_visibility: self.visibility,
+            }
         });
 
         let mut builder =
@@ -4650,6 +4681,11 @@ impl CodeGenerator for Function {
         if times_seen > 0 {
             write!(&mut canonical_name, "{times_seen}").unwrap();
         }
+        utils::call_discovered_item_callback(ctx, item, || {
+            DiscoveredItem::Function {
+                final_name: canonical_name.to_string(),
+            }
+        });
 
         let link_name_attr = self.link_name().or_else(|| {
             let mangled_name = mangled_name.unwrap_or(name);
@@ -5189,10 +5225,12 @@ pub(crate) mod utils {
     use super::helpers::BITFIELD_UNIT;
     use super::serialize::CSerialize;
     use super::{error, CodegenError, CodegenResult, ToRustTyOrOpaque};
+    use crate::callbacks::DiscoveredItemId;
     use crate::ir::context::BindgenContext;
     use crate::ir::context::TypeId;
     use crate::ir::function::{Abi, ClangAbi, FunctionSig};
     use crate::ir::item::{Item, ItemCanonicalPath};
+    use crate::ir::item_kind::ItemKind;
     use crate::ir::ty::TypeKind;
     use crate::{args_are_cpp, file_is_cpp};
     use std::borrow::Cow;
@@ -5917,5 +5955,81 @@ pub(crate) mod utils {
         }
 
         true
+    }
+
+    pub(super) fn call_discovered_item_callback(
+        ctx: &BindgenContext,
+        item: &Item,
+        discovered_item_creator: impl Fn() -> crate::callbacks::DiscoveredItem,
+    ) {
+        let source_location = item.location().map(|clang_location| {
+            let (file, line, col, byte_offset) = clang_location.location();
+            let file_name = file.name();
+            crate::callbacks::SourceLocation {
+                line,
+                col,
+                byte_offset,
+                file_name,
+            }
+        });
+
+        ctx.options().for_each_callback(|cb| {
+            cb.new_item_found(
+                DiscoveredItemId::new(item.id().as_usize()),
+                discovered_item_creator(),
+                source_location.as_ref(),
+                find_reportable_parent(ctx, item),
+            );
+        });
+    }
+
+    /// Identify a suitable parent, the details of which will have
+    /// been passed to `ParseCallbacks`. We don't inform
+    /// [`crate::callbacks::ParseCallbacks::new_item_found`]
+    /// about everything - notably, not usually inline namespaces - and always
+    /// want to ensure that the `parent_id` we report within `new_item_found`
+    /// always corresponds to some other item which we'll have
+    /// told the client about. This function hops back through the ancestor
+    /// chain until it finds a reportable ID.
+    pub(super) fn find_reportable_parent(
+        ctx: &BindgenContext,
+        item: &Item,
+    ) -> Option<DiscoveredItemId> {
+        // We choose never to report parents if C++ namespaces are not
+        // enabled. Sometimes a struct might be within another struct, but
+        // for now we simply don't report parentage at all.
+        if !ctx.options().enable_cxx_namespaces {
+            return None;
+        }
+        let mut parent_item = ctx.resolve_item(item.parent_id());
+        while !is_reportable_parent(ctx, &parent_item) {
+            let parent_id = parent_item.parent_id();
+            if parent_id == parent_item.id() {
+                return None;
+            }
+            parent_item = ctx.resolve_item(parent_id);
+        }
+        if parent_item.id() == item.id() {
+            // This is itself the root module.
+            None
+        } else {
+            Some(DiscoveredItemId::new(parent_item.id().as_usize()))
+        }
+    }
+
+    /// Returns whether a given [`Item`] will have been reported, or will
+    /// be reported, in [`crate::callbacks::ParseCallbacks::new_item_found`].
+    fn is_reportable_parent(ctx: &BindgenContext, item: &Item) -> bool {
+        match item.kind() {
+            ItemKind::Module(ref module) => {
+                !module.is_inline() ||
+                    ctx.options().conservative_inline_namespaces
+            }
+            ItemKind::Type(t) => match t.kind() {
+                TypeKind::Comp(..) | TypeKind::Enum(..) => true,
+                _ => false,
+            },
+            _ => false,
+        }
     }
 }

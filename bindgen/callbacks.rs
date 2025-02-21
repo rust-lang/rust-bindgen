@@ -1,8 +1,11 @@
 //! A public API for more fine-grained customization of bindgen behavior.
 
 pub use crate::ir::analysis::DeriveTrait;
+pub use crate::ir::comp::SpecialMemberKind;
 pub use crate::ir::derive::CanDerive as ImplementsTrait;
 pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
+pub use crate::ir::function::Explicitness;
+pub use crate::ir::function::Visibility;
 pub use crate::ir::int::IntKind;
 use std::fmt;
 
@@ -163,8 +166,24 @@ pub trait ParseCallbacks: fmt::Debug {
         None
     }
 
-    /// This will get called everytime an item (currently struct, union, and alias) is found with some information about it
-    fn new_item_found(&self, _id: DiscoveredItemId, _item: DiscoveredItem) {}
+    /// This will get called everytime an item is found with some information about it.
+    /// `_parent` is the location in which the item has been found, if any.
+    /// This is guaranteed to be a [`DiscoveredItem`] as reported
+    /// by [`ParseCallbacks::new_item_found`], most likely a
+    /// [`DiscoveredItem::Mod`] but perhaps something else such as a
+    /// [`DiscoveredItem::Struct`].
+    /// If C++ namespace support has not been enabled in bindgen's options,
+    /// most items will have no declared `_parent`. If C++ namespace support
+    /// has been enabled, all items should have a parent other than the root
+    /// namespace.
+    fn new_item_found(
+        &self,
+        _id: DiscoveredItemId,
+        _item: DiscoveredItem,
+        _source_location: Option<&SourceLocation>,
+        _parent: Option<DiscoveredItemId>,
+    ) {
+    }
 
     // TODO add callback for ResolvedTypeRef
 }
@@ -192,6 +211,10 @@ pub enum DiscoveredItem {
 
         /// The name of the generated binding
         final_name: String,
+
+        /// Its C++ visibility. [`Visibility::Public`] unless this is nested
+        /// in another type.
+        cpp_visibility: Visibility,
     },
 
     /// Represents a union with its original name in C and its generated binding name
@@ -202,6 +225,10 @@ pub enum DiscoveredItem {
 
         /// The name of the generated binding
         final_name: String,
+
+        /// Its C++ visibility. [`Visibility::Public`] unless this is nested
+        /// in another type.
+        cpp_visibility: Visibility,
     },
 
     /// Represents an alias like a typedef
@@ -223,8 +250,55 @@ pub enum DiscoveredItem {
     Enum {
         /// The final name of the generated binding
         final_name: String,
+
+        /// Its C++ visibility. [`Visibility::Public`] unless this is nested
+        /// in another type.
+        cpp_visibility: Visibility,
     },
-    // functions, modules, etc.
+
+    /// A module, representing a C++ namespace.
+    /// The root module can be identified by the fact that it has a `None`
+    /// parent declared within [`ParseCallbacks::new_item_found`].
+    /// Inline namespaces won't be reported at all unless the
+    /// "enable conservative inline namespaces" option is enabled.
+    Mod {
+        /// The final name used.
+        final_name: String,
+        /// Whether this was originally an anonymous namespace.
+        /// bindgen will have assigned a name within `final_name`.
+        anonymous: bool,
+        /// Whether this is an inline namespace.
+        inline: bool,
+    },
+
+    /// A function or method.
+    Function {
+        /// The final name used.
+        final_name: String,
+    },
+
+    /// A method.
+    Method {
+        /// The final name used.
+        final_name: String,
+
+        /// Type to which this method belongs.
+        parent: DiscoveredItemId,
+
+        /// Its C++ visibility.
+        cpp_visibility: Visibility,
+
+        /// Whether this is a C++ "special member".
+        cpp_special_member: Option<SpecialMemberKind>,
+
+        /// Whether this is a C++ virtual function.
+        cpp_virtual: Option<Virtualness>,
+
+        /// Whether this is a C++ function which has been marked
+        /// `=default` or `=deleted`. Note that deleted functions aren't
+        /// normally generated without special bindgen options.
+        cpp_explicit: Option<Explicitness>,
+    },
 }
 
 /// Relevant information about a type to which new derive attributes will be added using
@@ -289,4 +363,27 @@ pub struct FieldInfo<'a> {
     pub field_name: &'a str,
     /// The name of the type of the field.
     pub field_type_name: Option<&'a str>,
+}
+
+/// Whether a method is virtual or pure virtual.
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum Virtualness {
+    /// Not pure virtual.
+    Virtual,
+    /// Pure virtual.
+    PureVirtual,
+}
+
+/// Location in the source code. Roughly equivalent to the same type
+/// within `clang_sys`.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SourceLocation {
+    /// Line number.
+    pub line: usize,
+    /// Column number within line.
+    pub col: usize,
+    /// Byte offset within file.
+    pub byte_offset: usize,
+    /// Filename, if known.
+    pub file_name: Option<String>,
 }

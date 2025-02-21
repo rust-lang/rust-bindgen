@@ -927,6 +927,21 @@ impl Cursor {
         unsafe { clang_isVirtualBase(self.x) != 0 }
     }
 
+    // Is this cursor's referent a default constructor?
+    pub fn is_default_constructor(&self) -> bool {
+        unsafe { clang_CXXConstructor_isDefaultConstructor(self.x) != 0 }
+    }
+
+    // Is this cursor's referent a copy constructor?
+    pub fn is_copy_constructor(&self) -> bool {
+        unsafe { clang_CXXConstructor_isCopyConstructor(self.x) != 0 }
+    }
+
+    // Is this cursor's referent a move constructor?
+    pub fn is_move_constructor(&self) -> bool {
+        unsafe { clang_CXXConstructor_isMoveConstructor(self.x) != 0 }
+    }
+
     /// Try to evaluate this cursor.
     pub(crate) fn evaluate(&self) -> Option<EvalResult> {
         EvalResult::new(*self)

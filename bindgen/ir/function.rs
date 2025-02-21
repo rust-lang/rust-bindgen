@@ -1,6 +1,6 @@
 //! Intermediate representation for C/C++ functions and methods.
 
-use super::comp::MethodKind;
+use super::comp::{MethodKind, SpecialMemberKind};
 use super::context::{BindgenContext, TypeId};
 use super::dot::DotAttributes;
 use super::item::Item;
@@ -9,7 +9,9 @@ use super::ty::TypeKind;
 use crate::callbacks::{ItemInfo, ItemKind};
 use crate::clang::{self, ABIKind, Attribute};
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
-use clang_sys::CXCallingConv;
+use clang_sys::{
+    CXCallingConv, CX_CXXAccessSpecifier, CX_CXXPrivate, CX_CXXProtected,
+};
 
 use quote::TokenStreamExt;
 use std::io;
@@ -70,6 +72,38 @@ pub(crate) enum Linkage {
     Internal,
 }
 
+/// C++ visibility.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum Visibility {
+    /// `public` visibility.
+    Public,
+    /// `protected` visibility.
+    Protected,
+    /// `private` visibility.
+    Private,
+}
+
+impl From<CX_CXXAccessSpecifier> for Visibility {
+    fn from(access_specifier: CX_CXXAccessSpecifier) -> Self {
+        if access_specifier == CX_CXXPrivate {
+            Visibility::Private
+        } else if access_specifier == CX_CXXProtected {
+            Visibility::Protected
+        } else {
+            Visibility::Public
+        }
+    }
+}
+
+/// Whether a C++ method has been explicitly defaulted or deleted.
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum Explicitness {
+    /// Defaulted function, i.e. `=default`
+    Defaulted,
+    /// Deleted function, i.e. `=delete`
+    Deleted,
+}
+
 /// A function declaration, with a signature, arguments, and argument names.
 ///
 /// The argument names vector must be the same length as the ones in the
@@ -93,6 +127,15 @@ pub(crate) struct Function {
 
     /// The linkage of the function.
     linkage: Linkage,
+
+    /// C++ Special member kind, if applicable
+    special_member: Option<SpecialMemberKind>,
+
+    /// Whether it is private
+    visibility: Visibility,
+
+    // Whether it is `=delete` or `=default`
+    explicitness: Option<Explicitness>,
 }
 
 impl Function {
@@ -104,6 +147,9 @@ impl Function {
         signature: TypeId,
         kind: FunctionKind,
         linkage: Linkage,
+        special_member: Option<SpecialMemberKind>,
+        visibility: Visibility,
+        explicitness: Option<Explicitness>,
     ) -> Self {
         Function {
             name,
@@ -112,6 +158,9 @@ impl Function {
             signature,
             kind,
             linkage,
+            special_member,
+            visibility,
+            explicitness,
         }
     }
 
@@ -143,6 +192,22 @@ impl Function {
     /// Get this function's linkage.
     pub(crate) fn linkage(&self) -> Linkage {
         self.linkage
+    }
+
+    /// Get this function's C++ special member kind.
+    pub fn special_member(&self) -> Option<SpecialMemberKind> {
+        self.special_member
+    }
+
+    /// Whether it is private, protected or public
+    pub fn visibility(&self) -> Visibility {
+        self.visibility
+    }
+
+    /// Whether this is a function that's been deleted (=delete)
+    /// or defaulted (=default)
+    pub fn explicitness(&self) -> Option<Explicitness> {
+        self.explicitness
     }
 }
 
@@ -739,6 +804,8 @@ impl ClangSubItemParser for Function {
             return Err(ParseError::Continue);
         }
 
+        let visibility = Visibility::from(cursor.access_specifier());
+
         let linkage = cursor.linkage();
         let linkage = match linkage {
             CXLinkage_External | CXLinkage_UniqueExternal => Linkage::External,
@@ -806,6 +873,26 @@ impl ClangSubItemParser for Function {
             })
         });
 
+        let special_member = if cursor.is_default_constructor() {
+            Some(SpecialMemberKind::DefaultConstructor)
+        } else if cursor.is_copy_constructor() {
+            Some(SpecialMemberKind::CopyConstructor)
+        } else if cursor.is_move_constructor() {
+            Some(SpecialMemberKind::MoveConstructor)
+        } else if cursor.kind() == CXCursor_Destructor {
+            Some(SpecialMemberKind::Destructor)
+        } else {
+            None
+        };
+
+        let explicitness = if cursor.is_deleted_function() {
+            Some(Explicitness::Deleted)
+        } else if cursor.is_defaulted_function() {
+            Some(Explicitness::Defaulted)
+        } else {
+            None
+        };
+
         let function = Self::new(
             name.clone(),
             mangled_name,
@@ -813,6 +900,9 @@ impl ClangSubItemParser for Function {
             sig,
             kind,
             linkage,
+            special_member,
+            visibility,
+            explicitness,
         );
 
         Ok(ParseResult::New(function, Some(cursor)))
