@@ -185,6 +185,17 @@ pub trait ParseCallbacks: fmt::Debug {
     ) {
     }
 
+    /// Notes that this type does not use all the template params
+    /// which were present in C++. Sometimes those template parameters
+    /// are not useful in Rust because they don't actually impact the
+    /// data stored in the type, so bindgen drops them. But this also means
+    /// that the bindgen output does not contain full and comprehensive
+    /// output about the original nature of the C++ type, so higher level
+    /// code generators may wish to behave differently. For example,
+    /// it would not be OK to attempt to generate additional C++ code
+    /// based on this.
+    fn denote_discards_template_param(&self, _id: DiscoveredItemId) {}
+
     // TODO add callback for ResolvedTypeRef
 }
 

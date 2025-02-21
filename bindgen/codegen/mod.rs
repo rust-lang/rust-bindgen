@@ -57,6 +57,7 @@ use crate::ir::var::Var;
 
 use proc_macro2::{Ident, Span};
 use quote::{ToTokens, TokenStreamExt};
+use utils::report_any_unused_template_params;
 
 use crate::{Entry, HashMap, HashSet};
 use std::borrow::Cow;
@@ -1022,6 +1023,13 @@ impl CodeGenerator for Type {
                 } else {
                     quote! {}
                 };
+                // We are handling (essentially) type X = Y;
+                // We want to denote only if X has unused template params, e.g.
+                // type X<A> = Y;
+                // We don't want to note whether Y has unused template params, e.g.
+                // type X = Y<B>
+                // because that information will be recorded against the definition of Y.
+                report_any_unused_template_params(ctx, item);
 
                 let alias_style = if ctx.options().type_alias.matches(&name) {
                     AliasVariation::TypeAlias
@@ -2444,6 +2452,7 @@ impl CodeGenerator for CompInfo {
         } else {
             attributes.push(attributes::repr("C"));
         }
+        report_any_unused_template_params(ctx, item);
 
         if true {
             if let Some(explicit) = explicit_align {
@@ -5231,6 +5240,7 @@ pub(crate) mod utils {
     use crate::ir::function::{Abi, ClangAbi, FunctionSig};
     use crate::ir::item::{Item, ItemCanonicalPath};
     use crate::ir::item_kind::ItemKind;
+    use crate::ir::template::TemplateParameters;
     use crate::ir::ty::TypeKind;
     use crate::{args_are_cpp, file_is_cpp};
     use std::borrow::Cow;
@@ -6031,5 +6041,19 @@ pub(crate) mod utils {
             },
             _ => false,
         }
+    }
+
+    /// Call the unused template param callback if needed.
+    pub(super) fn report_any_unused_template_params(
+        ctx: &BindgenContext,
+        item: &Item,
+    ) {
+        ctx.options().for_each_callback(|cb| {
+            if item.has_unused_template_params(ctx) {
+                cb.denote_discards_template_param(DiscoveredItemId::new(
+                    item.id().as_usize(),
+                ));
+            }
+        })
     }
 }
