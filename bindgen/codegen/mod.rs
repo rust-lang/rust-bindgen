@@ -6003,8 +6003,8 @@ pub(crate) mod utils {
     fn is_reportable_parent(ctx: &BindgenContext, item: &Item) -> bool {
         match item.kind() {
             ItemKind::Module(ref module) => {
-                !module.is_inline()
-                    || ctx.options().conservative_inline_namespaces
+                !module.is_inline() ||
+                    ctx.options().conservative_inline_namespaces
             }
             ItemKind::Type(t) => match t.kind() {
                 TypeKind::Comp(..) | TypeKind::Enum(..) => true,

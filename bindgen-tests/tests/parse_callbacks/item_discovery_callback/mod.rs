@@ -502,8 +502,8 @@ fn compare_item_info(
     generated: &ItemCache,
     expected_filename: &str,
 ) -> bool {
-    if std::mem::discriminant(&expected_item.item)
-        != std::mem::discriminant(&generated_item.0)
+    if std::mem::discriminant(&expected_item.item) !=
+        std::mem::discriminant(&generated_item.0)
     {
         return false;
     }
@@ -800,8 +800,8 @@ pub fn compare_mod_info(
         unreachable!()
     };
 
-    if expected_anonymous != generated_anonymous
-        || *expected_inline != *generated_inline
+    if expected_anonymous != generated_anonymous ||
+        *expected_inline != *generated_inline
     {
         return false;
     }
