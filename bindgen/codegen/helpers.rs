@@ -4,6 +4,7 @@ use proc_macro2::{Ident, Span};
 
 use crate::ir::context::BindgenContext;
 use crate::ir::layout::Layout;
+use crate::ir::ty::ReferenceKind;
 
 pub(crate) mod attributes {
     use proc_macro2::{Ident, Span, TokenStream};
@@ -81,6 +82,19 @@ pub(crate) mod attributes {
 /// TODO: Should this be `MaybeUninit`, since padding bytes are effectively
 /// uninitialized?
 pub(crate) fn blob(
+    ctx: &BindgenContext,
+    layout: Layout,
+    ffi_safe: bool,
+) -> syn::Type {
+    let inner_blob = blob_inner(ctx, layout, ffi_safe);
+    if ctx.options().use_opaque_newtype_wrapper {
+        syn::parse_quote! { __bindgen_marker_Opaque < #inner_blob > }
+    } else {
+        inner_blob
+    }
+}
+
+pub(crate) fn blob_inner(
     ctx: &BindgenContext,
     layout: Layout,
     ffi_safe: bool,
@@ -391,5 +405,25 @@ pub(crate) mod ast_ty {
                 quote! { #name }
             })
             .collect()
+    }
+}
+
+pub(crate) fn reference(
+    ty_ptr: syn::TypePtr,
+    kind: ReferenceKind,
+    ctx: &BindgenContext,
+) -> syn::Type {
+    let ptr = syn::Type::Ptr(ty_ptr);
+    if ctx.options().use_reference_newtype_wrapper {
+        match kind {
+            ReferenceKind::LValue => {
+                syn::parse_quote! { __bindgen_marker_Reference < #ptr >}
+            }
+            ReferenceKind::RValue => {
+                syn::parse_quote! { __bindgen_marker_RValueReference < #ptr >}
+            }
+        }
+    } else {
+        ptr
     }
 }
