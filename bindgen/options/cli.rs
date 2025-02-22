@@ -456,6 +456,9 @@ struct BindgenCommand {
     /// Deduplicates extern blocks.
     #[arg(long)]
     merge_extern_blocks: bool,
+    /// Deduplicates `impl` blocks.
+    #[arg(long)]
+    merge_impl_blocks: bool,
     /// Overrides the ABI of functions matching REGEX. The OVERRIDE value must be of the shape REGEX=ABI where ABI can be one of C, stdcall, efiapi, fastcall, thiscall, aapcs, win64 or C-unwind<.>
     #[arg(long, value_name = "OVERRIDE", value_parser = parse_abi_override)]
     override_abi: Vec<(Abi, String)>,
@@ -640,6 +643,7 @@ where
         vtable_generation,
         sort_semantically,
         merge_extern_blocks,
+        merge_impl_blocks,
         override_abi,
         wrap_unsafe_ops,
         clang_macro_fallback,
@@ -939,6 +943,7 @@ where
             vtable_generation,
             sort_semantically,
             merge_extern_blocks,
+            merge_impl_blocks,
             override_abi => |b, (abi, regex)| b.override_abi(abi, regex),
             wrap_unsafe_ops,
             clang_macro_fallback => |b, _| b.clang_macro_fallback(),

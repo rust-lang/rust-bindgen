@@ -5,9 +5,11 @@ use syn::{parse2, File};
 use crate::BindgenOptions;
 
 mod merge_extern_blocks;
+mod merge_impl_blocks;
 mod sort_semantically;
 
 use merge_extern_blocks::merge_extern_blocks;
+use merge_impl_blocks::merge_impl_blocks;
 use sort_semantically::sort_semantically;
 
 struct PostProcessingPass {
@@ -26,8 +28,11 @@ macro_rules! pass {
     };
 }
 
-const PASSES: &[PostProcessingPass] =
-    &[pass!(merge_extern_blocks), pass!(sort_semantically)];
+const PASSES: &[PostProcessingPass] = &[
+    pass!(merge_extern_blocks),
+    pass!(merge_impl_blocks),
+    pass!(sort_semantically),
+];
 
 pub(crate) fn postprocessing(
     items: Vec<TokenStream>,

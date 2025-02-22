@@ -2030,6 +2030,19 @@ options! {
         },
         as_args: "--merge-extern-blocks",
     },
+    /// Whether to deduplicate `impl` blocks.
+    merge_impl_blocks: bool {
+        methods: {
+            /// Merge all `impl` blocks under the same module into a single one.
+            ///
+            /// `impl` blocks are not merged by default.
+            pub fn merge_impl_blocks(mut self, doit: bool) -> Self {
+                self.options.merge_impl_blocks = doit;
+                self
+            }
+        },
+        as_args: "--merge-impl-blocks",
+    },
     /// Whether to wrap unsafe operations in unsafe blocks.
     wrap_unsafe_ops: bool {
         methods: {
