@@ -156,6 +156,23 @@ pub(crate) trait TemplateParameters: Sized {
             .filter(|p| ctx.uses_template_parameter(id, *p))
             .collect()
     }
+
+    /// Returns whether all the template parameters are used.
+    fn has_unused_template_params(&self, ctx: &BindgenContext) -> bool
+    where
+        Self: AsRef<ItemId>,
+    {
+        assert!(
+            ctx.in_codegen_phase(),
+            "template parameter usage is not computed until codegen"
+        );
+
+        let id = *self.as_ref();
+        ctx.resolve_item(id)
+            .all_template_params(ctx)
+            .into_iter()
+            .any(|p| !ctx.uses_template_parameter(id, p))
+    }
 }
 
 /// A trait for things which may or may not be a named template type parameter.

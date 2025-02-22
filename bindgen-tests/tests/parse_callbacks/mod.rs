@@ -1,4 +1,5 @@
 mod item_discovery_callback;
+mod unused_template_param;
 
 use bindgen::callbacks::*;
 use bindgen::FieldVisibilityKind;
