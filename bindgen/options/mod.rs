@@ -168,6 +168,49 @@ options! {
         as_args: "--use-specific-virtual-function-receiver",
     },
 
+    /// Use a newtype wrapper to clearly denote "opaque" types; that is,
+    /// types where bindgen has generated a type matching the size and
+    /// alignment of the C++ type but without any knowledge of what's
+    /// inside it. The newtype wrapper will be a fake type called
+    /// `bindgen_marker_Opaque`. It's assumed that you will replace this with some
+    /// real sensible newtype wrapper of your own, either by post-processing
+    /// the output of bindgen, or by using a `use` statemet injected using
+    /// `--module-raw-lines` or similar.
+    use_opaque_newtype_wrapper: bool {
+        methods: {
+            /// If this is true, wrap opaque types in a fake newtype
+            /// wrapper which post-processors can replace with something
+            /// more sensible.
+            pub fn use_opaque_newtype_wrapper(mut self, doit: bool) -> Builder {
+                self.options.use_opaque_newtype_wrapper = doit;
+                self
+            }
+        },
+        as_args: "--use-opaque-newtype-wrapper",
+    },
+
+    /// Use a newtype wrapper to clearly denote C++ reference types.
+    /// These are always generated as raw Rust pointers, and so otherwise
+    /// there's no way to distinguish references from pointers.
+    /// The newtype wrapper will be a fake type either called
+    /// `bindgen_marker_Reference` or `bindgen_marker_RVAlueReference`.
+    /// It's assumed that you will replace this with some
+    /// real sensible newtype wrapper of your own, either by post-processing
+    /// the output of bindgen, or by using a `use` statemet injected using
+    /// `--module-raw-lines` or similar.
+    use_reference_newtype_wrapper: bool {
+        methods: {
+            /// If this is true, wrap C++ references in a fake newtype
+            /// wrapper which post-processors can replace with something
+            /// more sensible.
+            pub fn use_reference_newtype_wrapper(mut self, doit: bool) -> Builder {
+                self.options.use_reference_newtype_wrapper = doit;
+                self
+            }
+        },
+        as_args: "--use-reference-newtype-wrapper",
+    },
+
     /// Whether we should distinguish between C++'s 'char16_t' and 'u16'.
     /// The C++ type `char16_t` is its own special type; it's not a typedef
     /// of some other integer (this differs from C).

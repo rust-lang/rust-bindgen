@@ -259,7 +259,9 @@ impl Type {
     ) -> Option<Cow<'a, str>> {
         let name_info = match *self.kind() {
             TypeKind::Pointer(inner) => Some((inner, Cow::Borrowed("ptr"))),
-            TypeKind::Reference(inner) => Some((inner, Cow::Borrowed("ref"))),
+            TypeKind::Reference(inner, _) => {
+                Some((inner, Cow::Borrowed("ref")))
+            }
             TypeKind::Array(inner, length) => {
                 Some((inner, format!("array{length}").into()))
             }
@@ -544,7 +546,7 @@ impl TemplateParameters for TypeKind {
             TypeKind::Enum(_) |
             TypeKind::Pointer(_) |
             TypeKind::BlockPointer(_) |
-            TypeKind::Reference(_) |
+            TypeKind::Reference(..) |
             TypeKind::UnresolvedTypeRef(..) |
             TypeKind::TypeParam |
             TypeKind::Alias(_) |
@@ -568,6 +570,15 @@ pub(crate) enum FloatKind {
     LongDouble,
     /// A `__float128`.
     Float128,
+}
+
+/// Different kinds of C++ reference
+#[derive(Debug, Clone, Copy)]
+pub(crate) enum ReferenceKind {
+    /// C++ lvalue reference
+    LValue,
+    /// C++ rvalue reference
+    RValue,
 }
 
 /// The different kinds of types that we can parse.
@@ -624,7 +635,8 @@ pub(crate) enum TypeKind {
     BlockPointer(TypeId),
 
     /// A reference to a type, as in: int& `foo()`.
-    Reference(TypeId),
+    /// The bool represents whether it's rvalue.
+    Reference(TypeId, ReferenceKind),
 
     /// An instantiation of an abstract template definition with a set of
     /// concrete template arguments.
@@ -1021,14 +1033,23 @@ impl Type {
                 }
                 // XXX: RValueReference is most likely wrong, but I don't think we
                 // can even add bindings for that, so huh.
-                CXType_RValueReference | CXType_LValueReference => {
+                CXType_LValueReference => {
                     let inner = Item::from_ty_or_ref(
                         ty.pointee_type().unwrap(),
                         location,
                         None,
                         ctx,
                     );
-                    TypeKind::Reference(inner)
+                    TypeKind::Reference(inner, ReferenceKind::LValue)
+                }
+                CXType_RValueReference => {
+                    let inner = Item::from_ty_or_ref(
+                        ty.pointee_type().unwrap(),
+                        location,
+                        None,
+                        ctx,
+                    );
+                    TypeKind::Reference(inner, ReferenceKind::RValue)
                 }
                 // XXX DependentSizedArray is wrong
                 CXType_VariableArray | CXType_DependentSizedArray => {
@@ -1205,7 +1226,7 @@ impl Trace for Type {
         }
         match *self.kind() {
             TypeKind::Pointer(inner) |
-            TypeKind::Reference(inner) |
+            TypeKind::Reference(inner, _) |
             TypeKind::Array(inner, _) |
             TypeKind::Vector(inner, _) |
             TypeKind::BlockPointer(inner) |
