@@ -3,6 +3,7 @@
 pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
+    struct PerModStruct;
     unsafe extern "C" {
         #[link_name = "\u{1}_Z9top_levelv"]
         pub fn top_level();
@@ -11,6 +12,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         pub type whatever_other_thing_t = whatever_int_t;
+        struct PerModStruct;
         pub type whatever_int_t = ::std::os::raw::c_int;
         unsafe extern "C" {
             #[link_name = "\u{1}_ZN8whatever11in_whateverEv"]
@@ -20,6 +22,7 @@ pub mod root {
     pub mod _bindgen_mod_id_17 {
         #[allow(unused_imports)]
         use self::super::super::root;
+        struct PerModStruct;
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct A {
@@ -53,6 +56,7 @@ pub mod root {
     pub mod w {
         #[allow(unused_imports)]
         use self::super::super::root;
+        struct PerModStruct;
         pub type whatever_int_t = ::std::os::raw::c_uint;
         #[repr(C)]
         #[derive(Debug)]
@@ -85,6 +89,7 @@ pub mod root {
     pub mod foobar {
         #[allow(unused_imports)]
         use self::super::super::root;
+        struct PerModStruct;
         unsafe extern "C" {
             #[link_name = "\u{1}_ZN6foobar3fooEv"]
             pub fn foo();
@@ -93,6 +98,7 @@ pub mod root {
     pub mod faraway {
         #[allow(unused_imports)]
         use self::super::super::root;
+        struct PerModStruct;
         unsafe extern "C" {
             #[link_name = "\u{1}_ZN7faraway3barEv"]
             pub fn bar();
