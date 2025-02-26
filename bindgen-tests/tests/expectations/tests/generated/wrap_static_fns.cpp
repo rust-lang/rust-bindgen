@@ -30,4 +30,4 @@ void wrap_as_variadic_fn2__extern(int i, ...) {
     wrap_as_variadic_fn2(i, ap);
     va_end(ap);
 }
-int foo__extern(void) { return foo(); }
+int qux_foo__extern(void) { return qux::foo(); }
