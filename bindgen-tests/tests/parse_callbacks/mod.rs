@@ -146,6 +146,20 @@ impl ParseCallbacks for WrapAsVariadicFn {
     }
 }
 
+#[derive(Debug)]
+pub(super) struct RenameConstructor;
+
+impl ParseCallbacks for RenameConstructor {
+    fn generated_name_override(&self, item_info: ItemInfo) -> Option<String> {
+        match item_info.kind {
+            ItemKind::Function if item_info.name == "new" => {
+                Some("create".into())
+            }
+            _ => None,
+        }
+    }
+}
+
 pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
     match cb {
         "enum-variant-rename" => Box::new(EnumVariantRename),
@@ -153,6 +167,7 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
             Box::new(BlocklistedTypeImplementsTrait)
         }
         "wrap-as-variadic-fn" => Box::new(WrapAsVariadicFn),
+        "rename-constructor" => Box::new(RenameConstructor),
         "type-visibility" => Box::new(TypeVisibility),
         call_back => {
             if let Some(prefix) =
