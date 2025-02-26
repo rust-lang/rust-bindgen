@@ -786,6 +786,7 @@ impl CodeGenerator for Var {
                     &canonical_name,
                     link_name,
                     None,
+                    ctx.options().enable_cxx_namespaces,
                 ) {
                     canonical_name.as_str()
                 } else {
@@ -4657,6 +4658,7 @@ impl CodeGenerator for Function {
                 &canonical_name,
                 mangled_name,
                 Some(abi),
+                ctx.options().enable_cxx_namespaces,
             ))
             .then(|| mangled_name)
         });
@@ -5851,6 +5853,7 @@ pub(crate) mod utils {
         canonical_name: &str,
         mangled_name: &str,
         call_conv: Option<ClangAbi>,
+        enable_cxx_namespaces: bool,
     ) -> bool {
         // If the mangled name and the canonical name are the same then no
         // mangling can have happened between the two versions.
@@ -5859,29 +5862,28 @@ pub(crate) mod utils {
         }
 
         // Check if the mangled name is a valid C++ symbol
-        if let Ok(demangled) = cpp_demangle::Symbol::new(mangled_name) {
-            let demangled_name = demangled.to_string().replace("::", "_");
+        if let Ok(demangled) = ::cpp_demangle::Symbol::new(mangled_name) {
+            let demangled_name = match demangled.demangle(
+                &::cpp_demangle::DemangleOptions::default()
+                    .no_params()
+                    .no_return_type(),
+            ) {
+                Ok(name) => name,
+                Err(_) => demangled.to_string(),
+            };
 
-            // Check that the demangled name is longer than the canonical name
-            if demangled_name.len() <= canonical_name.len() {
-                return false;
-            }
-
-            // Check that the demangled name starts with the canonical name
-            if !demangled_name.starts_with(canonical_name) {
-                return false;
-            }
-
-            // Check that the suffix is a signature
-            if let Some(suffix) = demangled_name.get(canonical_name.len()..) {
-                if !suffix.starts_with('(') || !suffix.ends_with(')') {
-                    return false;
-                }
+            // Either remove the namespace or replace "::" with "_" if cxx namespaces are enabled
+            let demangled_name = if enable_cxx_namespaces {
+                demangled_name
+                    .rsplit_once("::")
+                    .map(|(_, name)| name.to_string())
+                    .unwrap_or(demangled_name)
             } else {
-                return false;
-            }
+                demangled_name.replace("::", "_")
+            };
 
-            return true;
+            // Now that we processed the demangled name, we can compare it with the canonical name
+            return canonical_name == demangled_name;
         }
 
         // Working with &[u8] makes indexing simpler than with &str
