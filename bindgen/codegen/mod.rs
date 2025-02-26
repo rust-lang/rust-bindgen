@@ -5858,6 +5858,32 @@ pub(crate) mod utils {
             return true;
         }
 
+        // Check if the mangled name is a valid C++ symbol
+        if let Ok(demangled) = cpp_demangle::Symbol::new(mangled_name) {
+            let demangled_name = demangled.to_string().replace("::", "_");
+
+            // Check that the demangled name is longer than the canonical name
+            if demangled_name.len() <= canonical_name.len() {
+                return false;
+            }
+
+            // Check that the demangled name starts with the canonical name
+            if !demangled_name.starts_with(canonical_name) {
+                return false;
+            }
+
+            // Check that the suffix is a signature
+            if let Some(suffix) = demangled_name.get(canonical_name.len()..) {
+                if !suffix.starts_with('(') || !suffix.ends_with(')') {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+
+            return true;
+        }
+
         // Working with &[u8] makes indexing simpler than with &str
         let canonical_name = canonical_name.as_bytes();
         let mangled_name = mangled_name.as_bytes();
