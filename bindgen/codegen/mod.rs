@@ -5909,8 +5909,7 @@ pub(crate) mod utils {
 
             // Check that the suffix starts with '@' and is all ASCII decimals
             // after that.
-            if suffix[0] != b'@' ||
-                suffix[1..].iter().any(|&c| !c.is_ascii_digit())
+            if suffix[0] != b'@' || !suffix[1..].iter().all(u8::is_ascii_digit)
             {
                 return false;
             }
