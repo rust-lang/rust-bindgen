@@ -4677,7 +4677,7 @@ impl CodeGenerator for Function {
 
         let should_wrap = is_internal &&
             ctx.options().wrap_static_fns &&
-            link_name_attr.is_none();
+            (link_name_attr.is_none() || utils::is_cpp(ctx));
 
         if should_wrap {
             let name = canonical_name.clone() + ctx.wrap_static_fns_suffix();
@@ -5201,6 +5201,15 @@ pub(crate) mod utils {
     use std::path::PathBuf;
     use std::str::FromStr;
 
+    pub(super) fn is_cpp(context: &BindgenContext) -> bool {
+        args_are_cpp(&context.options().clang_args) ||
+            context
+                .options()
+                .input_headers
+                .iter()
+                .any(|h| file_is_cpp(h))
+    }
+
     pub(super) fn serialize_items(
         result: &CodegenResult,
         context: &BindgenContext,
@@ -5220,14 +5229,8 @@ pub(crate) mod utils {
             std::fs::create_dir_all(dir)?;
         }
 
-        let is_cpp = args_are_cpp(&context.options().clang_args) ||
-            context
-                .options()
-                .input_headers
-                .iter()
-                .any(|h| file_is_cpp(h));
-
-        let source_path = path.with_extension(if is_cpp { "cpp" } else { "c" });
+        let source_path =
+            path.with_extension(if is_cpp(context) { "cpp" } else { "c" });
 
         let mut code = Vec::new();
 
