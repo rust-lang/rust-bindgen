@@ -32,7 +32,6 @@ cexpr.workspace = true
 clang-sys = { workspace = true, features = ["clang_11_0"] }
 clap = { workspace = true, features = ["derive"], optional = true }
 clap_complete = { workspace = true, optional = true }
-cpp_demangle.workspace = true
 itertools = { workspace = true }
 log = { workspace = true, optional = true }
 prettyplease = { workspace = true, optional = true, features = ["verbatim"] }
