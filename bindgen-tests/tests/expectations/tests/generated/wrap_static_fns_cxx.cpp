@@ -1,4 +1,4 @@
-#include "tests/headers/wrap-static-fns.hpp"
+#include "tests/headers/wrap-static-fns-cxx.hpp"
 
 // Static wrappers
 

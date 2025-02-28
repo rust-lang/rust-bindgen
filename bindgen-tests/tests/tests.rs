@@ -759,20 +759,20 @@ fn test_wrap_static_fns() {
 }
 
 #[test]
-fn test_wrap_static_fns_cpp() {
+fn test_wrap_static_fns_cxx() {
     // This test is for testing diffs of the generated C source and header files
     // TODO: If another such feature is added, convert this test into a more generic
     //      test that looks at `tests/headers/generated` directory.
     let expect_path = PathBuf::from("tests/expectations/tests/generated")
-        .join("wrap_static_fns");
+        .join("wrap_static_fns_cxx");
     println!("In path is ::: {}", expect_path.display());
 
     let generated_path =
-        PathBuf::from(env::var("OUT_DIR").unwrap()).join("wrap_static_fns");
+        PathBuf::from(env::var("OUT_DIR").unwrap()).join("wrap_static_fns_cxx");
     println!("Out path is ::: {}", generated_path.display());
 
     let _bindings = Builder::default()
-        .header("tests/headers/wrap-static-fns.hpp")
+        .header("tests/headers/wrap-static-fns-cxx.hpp")
         .wrap_static_fns(true)
         .wrap_static_fns_path(generated_path.display().to_string())
         .parse_callbacks(Box::new(parse_callbacks::WrapAsVariadicFn))
@@ -780,10 +780,10 @@ fn test_wrap_static_fns_cpp() {
         .expect("Failed to generate bindings");
 
     let expected_cpp = fs::read_to_string(expect_path.with_extension("cpp"))
-        .expect("Could not read generated wrap_static_fns.cpp");
+        .expect("Could not read generated wrap_static_fns_cxx.cpp");
 
     let actual_cpp = fs::read_to_string(generated_path.with_extension("cpp"))
-        .expect("Could not read actual wrap_static_fns.cpp");
+        .expect("Could not read actual wrap_static_fns_cxx.cpp");
 
     if expected_cpp != actual_cpp {
         error_diff_mismatch(
