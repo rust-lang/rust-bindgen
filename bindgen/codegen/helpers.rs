@@ -254,7 +254,7 @@ pub(crate) mod ast_ty {
             }
             None => None,
         };
-        match dbg!(fk, ctx.options().convert_floats, bits) {
+        match (fk, ctx.options().convert_floats, bits) {
             (FloatKind::Float16, _, _) => {
                 // TODO: do f16 when rust lands it
                 ctx.generated_bindgen_float16();

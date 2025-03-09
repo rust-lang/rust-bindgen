@@ -4652,7 +4652,6 @@ impl CodeGenerator for Function {
         };
 
         if utils::sig_unsupported_types(ctx, signature) {
-            warn!("Skipping function which passes or returns by value types not available in Rust.");
             return None;
         }
 
