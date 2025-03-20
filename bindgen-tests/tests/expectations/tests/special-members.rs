@@ -10,19 +10,19 @@ const _: () = {
     ["Alignment of A"][::std::mem::align_of::<A>() - 1usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN1AC1Ev"]
+    #[link_name = "_ZN1AC1Ev"]
     pub fn A_A(this: *mut A);
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN1AC1ERS_"]
+    #[link_name = "_ZN1AC1ERS_"]
     pub fn A_A1(this: *mut A, arg1: *mut A);
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN1AC1EOS_"]
+    #[link_name = "_ZN1AC1EOS_"]
     pub fn A_A2(this: *mut A, arg1: *mut A);
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN1AD1Ev"]
+    #[link_name = "_ZN1AD1Ev"]
     pub fn A_A_destructor(this: *mut A);
 }
 impl A {
