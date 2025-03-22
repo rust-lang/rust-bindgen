@@ -1117,7 +1117,7 @@ impl Type {
 
                     TypeKind::Comp(complex)
                 }
-                CXType_Vector => {
+                CXType_Vector | CXType_ExtVector => {
                     let inner = Item::from_ty(
                         ty.elem_type().as_ref().unwrap(),
                         location,
