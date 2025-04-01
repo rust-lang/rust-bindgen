@@ -704,6 +704,10 @@ fn rust_to_clang_target(rust_target: &str) -> Box<str> {
         let idx = clang_target.rfind('-').expect(TRIPLE_HYPHENS_MESSAGE);
 
         clang_target.replace_range((idx + 1).., "elf");
+    } else if clang_target.ends_with("apple-ios-sim") {
+        let idx = clang_target.rfind('-').expect(TRIPLE_HYPHENS_MESSAGE);
+
+        clang_target.replace_range((idx + 1).., "simulator");
     }
 
     clang_target.into()
@@ -1387,5 +1391,13 @@ fn test_rust_to_clang_target_espidf() {
     assert_eq!(
         rust_to_clang_target("xtensa-esp32-espidf").as_ref(),
         "xtensa-esp32-elf"
+    );
+}
+
+#[test]
+fn test_rust_to_clang_target_simulator() {
+    assert_eq!(
+        rust_to_clang_target("aarch64-apple-ios-sim").as_ref(),
+        "arm64-apple-ios-simulator"
     );
 }
