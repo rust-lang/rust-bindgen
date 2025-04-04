@@ -125,13 +125,13 @@ CONFIG_KUNIT=y
 CONFIG_RUST_KERNEL_DOCTESTS=y
 EOF
 
-  make -C linux KBUILD_VERBOSE=1 LLVM=1 -j$(($(nproc) + 1)) \
+  make -C linux LLVM=1 -j$(($(nproc) + 1)) \
       rustavailable \
       defconfig \
       rfl-for-bindgen-ci.config
 
   # Build Rust for Linux
-  make -C linux LLVM=1 KBUILD_VERBOSE=1 -j$(($(nproc) + 1)) \
+  make -C linux LLVM=1 -j$(($(nproc) + 1)) \
       samples/rust/rust_minimal.o \
       samples/rust/rust_print_main.o \
       drivers/net/phy/ax88796b_rust.o
