@@ -154,7 +154,7 @@ jobs:
       - name: Install stable
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: 1.85.1
+          toolchain: stable
       - name: Install libtinfo
         if: matrix.os == 'ubuntu-latest'
         run: |
