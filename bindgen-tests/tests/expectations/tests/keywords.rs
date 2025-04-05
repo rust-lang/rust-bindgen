@@ -1,225 +1,225 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 unsafe extern "C" {
-    #[link_name = "\u{1}u8"]
+    #[link_name = "u8"]
     pub static mut u8_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}u16"]
+    #[link_name = "u16"]
     pub static mut u16_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}u32"]
+    #[link_name = "u32"]
     pub static mut u32_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}u64"]
+    #[link_name = "u64"]
     pub static mut u64_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}i8"]
+    #[link_name = "i8"]
     pub static mut i8_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}i16"]
+    #[link_name = "i16"]
     pub static mut i16_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}i32"]
+    #[link_name = "i32"]
     pub static mut i32_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}i64"]
+    #[link_name = "i64"]
     pub static mut i64_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}f32"]
+    #[link_name = "f32"]
     pub static mut f32_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}f64"]
+    #[link_name = "f64"]
     pub static mut f64_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}usize"]
+    #[link_name = "usize"]
     pub static mut usize_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}isize"]
+    #[link_name = "isize"]
     pub static mut isize_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}bool"]
+    #[link_name = "bool"]
     pub static mut bool_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}str"]
+    #[link_name = "str"]
     pub static mut str_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}dyn"]
+    #[link_name = "dyn"]
     pub static mut dyn_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}as"]
+    #[link_name = "as"]
     pub static mut as_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}async"]
+    #[link_name = "async"]
     pub static mut async_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}await"]
+    #[link_name = "await"]
     pub static mut await_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}box"]
+    #[link_name = "box"]
     pub static mut box_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}crate"]
+    #[link_name = "crate"]
     pub static mut crate_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}false"]
+    #[link_name = "false"]
     pub static mut false_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}fn"]
+    #[link_name = "fn"]
     pub static mut fn_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}gen"]
+    #[link_name = "gen"]
     pub static mut gen_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}impl"]
+    #[link_name = "impl"]
     pub static mut impl_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}in"]
+    #[link_name = "in"]
     pub static mut in_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}let"]
+    #[link_name = "let"]
     pub static mut let_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}loop"]
+    #[link_name = "loop"]
     pub static mut loop_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}match"]
+    #[link_name = "match"]
     pub static mut match_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}mod"]
+    #[link_name = "mod"]
     pub static mut mod_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}move"]
+    #[link_name = "move"]
     pub static mut move_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}mut"]
+    #[link_name = "mut"]
     pub static mut mut_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}pub"]
+    #[link_name = "pub"]
     pub static mut pub_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}ref"]
+    #[link_name = "ref"]
     pub static mut ref_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}self"]
+    #[link_name = "self"]
     pub static mut self_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}Self"]
+    #[link_name = "Self"]
     pub static mut Self_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}super"]
+    #[link_name = "super"]
     pub static mut super_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}trait"]
+    #[link_name = "trait"]
     pub static mut trait_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}true"]
+    #[link_name = "true"]
     pub static mut true_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}try"]
+    #[link_name = "try"]
     pub static mut try_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}type"]
+    #[link_name = "type"]
     pub static mut type_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}unsafe"]
+    #[link_name = "unsafe"]
     pub static mut unsafe_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}use"]
+    #[link_name = "use"]
     pub static mut use_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}where"]
+    #[link_name = "where"]
     pub static mut where_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}abstract"]
+    #[link_name = "abstract"]
     pub static mut abstract_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}alignof"]
+    #[link_name = "alignof"]
     pub static mut alignof_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}become"]
+    #[link_name = "become"]
     pub static mut become_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}final"]
+    #[link_name = "final"]
     pub static mut final_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}macro"]
+    #[link_name = "macro"]
     pub static mut macro_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}offsetof"]
+    #[link_name = "offsetof"]
     pub static mut offsetof_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}override"]
+    #[link_name = "override"]
     pub static mut override_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}priv"]
+    #[link_name = "priv"]
     pub static mut priv_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}proc"]
+    #[link_name = "proc"]
     pub static mut proc_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}pure"]
+    #[link_name = "pure"]
     pub static mut pure_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}unsized"]
+    #[link_name = "unsized"]
     pub static mut unsized_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}virtual"]
+    #[link_name = "virtual"]
     pub static mut virtual_: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}yield"]
+    #[link_name = "yield"]
     pub static mut yield_: ::std::os::raw::c_int;
 }
