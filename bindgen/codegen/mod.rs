@@ -3075,7 +3075,7 @@ impl Method {
                     parent: parent_id,
                     final_name: name.clone(),
                 },
-            )
+            );
         });
 
         let mut function_name = function_item.canonical_name(ctx);
@@ -3138,7 +3138,7 @@ impl Method {
             exprs[0] = quote! {
                 self
             };
-        };
+        }
 
         let call = quote! {
             #function_name (#( #exprs ),* )
@@ -3282,7 +3282,7 @@ impl FromStr for EnumVariation {
 struct EnumBuilder {
     /// Type identifier of the enum.
     ///
-    /// This is the base name, i.e. for ModuleConst enums, this does not include the module name.
+    /// This is the base name, i.e. for `ModuleConst` enums, this does not include the module name.
     enum_type: Ident,
     /// Attributes applying to the enum type
     attrs: Vec<proc_macro2::TokenStream>,
@@ -3453,7 +3453,7 @@ impl EnumBuilder {
     }
 
     fn newtype_bitfield_impl(
-        prefix: Ident,
+        prefix: &Ident,
         rust_ty: &syn::Type,
     ) -> proc_macro2::TokenStream {
         let rust_ty_name = &rust_ty;
@@ -3593,7 +3593,7 @@ impl EnumBuilder {
 
                 let prefix = ctx.trait_prefix();
                 let bitfield_impl_opt = is_bitfield
-                    .then(|| Self::newtype_bitfield_impl(prefix, rust_ty));
+                    .then(|| Self::newtype_bitfield_impl(&prefix, rust_ty));
 
                 quote! {
                     // Previously variant impls where before the enum definition.
@@ -4625,7 +4625,7 @@ impl CodeGenerator for Function {
             FunctionKind::Method(ref method_kind) => {
                 method_kind.is_pure_virtual()
             }
-            _ => false,
+            FunctionKind::Function => false,
         };
         if is_pure_virtual && !ctx.options().generate_pure_virtual_functions {
             // Pure virtual methods have no actual symbol, so we can't generate
