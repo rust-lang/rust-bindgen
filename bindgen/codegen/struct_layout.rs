@@ -266,11 +266,11 @@ impl<'a> StructLayoutTracker<'a> {
             }
         };
 
-        if !is_union {
-            self.latest_offset += field_layout.size;
-        } else {
+        if is_union {
             self.latest_offset =
                 cmp::max(self.latest_offset, field_layout.size);
+        } else {
+            self.latest_offset += field_layout.size;
         }
         self.latest_field_layout = Some(field_layout);
         self.max_field_align =

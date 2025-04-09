@@ -1855,7 +1855,7 @@ impl IsOpaque for CompInfo {
             // See https://github.com/rust-lang/rust-bindgen/issues/537 and
             // https://github.com/rust-lang/rust/issues/33158
             if self.is_packed(ctx, layout.as_ref()) &&
-                layout.map_or(false, |l| l.align > 1)
+                layout.is_some_and(|l| l.align > 1)
             {
                 warn!("Found a type that is both packed and aligned to greater than \
                        1; Rust before version 1.33 doesn't have `#[repr(packed(N))]`, so we \

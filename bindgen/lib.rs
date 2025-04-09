@@ -575,7 +575,7 @@ impl BindgenOptions {
         self.parse_callbacks
             .iter()
             .filter_map(|cb| f(cb.as_ref()))
-            .last()
+            .next_back()
     }
 
     fn all_callbacks<T>(
@@ -796,7 +796,7 @@ impl Bindings {
                 0,
                 format!("--target={effective_target}").into_boxed_str(),
             );
-        };
+        }
 
         fn detect_include_paths(options: &mut BindgenOptions) {
             if !options.detect_include_paths {
@@ -1209,7 +1209,7 @@ pub fn clang_version() -> ClangVersion {
                 };
             }
         }
-    };
+    }
     ClangVersion {
         parsed: None,
         full: raw_v.clone(),

@@ -1,5 +1,6 @@
 use quickcheck::{Arbitrary, Gen};
 use std::fmt;
+use std::fmt::Write as _;
 
 /// `BaseTypeC` is used in generation of C headers to represent the C language's
 /// primitive types as well as `void*`.
@@ -223,11 +224,10 @@ impl Arbitrary for DeclarationListC {
 /// Enables to string and format for `DeclarationListC` types.
 impl fmt::Display for DeclarationListC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut display = String::new();
         for decl in &self.decls {
-            display += &format!("{decl}");
+            write!(f, "{decl}")?;
         }
-        write!(f, "{display}")
+        Ok(())
     }
 }
 
@@ -330,7 +330,7 @@ impl Arbitrary for ArrayDimensionC {
 
         for _ in 1..dimensions {
             // 16 is an arbitrary "not too big" number for capping array size.
-            def += &format!("[{}]", gen_range(g, lower_bound, 16));
+            let _ = write!(def, "[{}]", gen_range(g, lower_bound, 16));
         }
         ArrayDimensionC { def }
     }
@@ -347,7 +347,7 @@ impl fmt::Display for ArrayDimensionC {
 /// identifiers unique.
 impl MakeUnique for BasicTypeDeclarationC {
     fn make_unique(&mut self, stamp: usize) {
-        self.ident_id += &format!("_{stamp}");
+        let _ = write!(self.ident_id, "_{stamp}");
     }
 }
 
@@ -384,7 +384,7 @@ impl fmt::Display for BasicTypeDeclarationC {
 /// identifiers unique.
 impl MakeUnique for StructDeclarationC {
     fn make_unique(&mut self, stamp: usize) {
-        self.ident_id += &format!("_{stamp}");
+        let _ = write!(self.ident_id, "_{stamp}");
     }
 }
 
@@ -432,7 +432,7 @@ impl fmt::Display for StructDeclarationC {
 /// identifiers unique.
 impl MakeUnique for UnionDeclarationC {
     fn make_unique(&mut self, stamp: usize) {
-        self.ident_id += &format!("_{stamp}");
+        let _ = write!(self.ident_id, "_{stamp}");
     }
 }
 
@@ -480,7 +480,7 @@ impl fmt::Display for UnionDeclarationC {
 /// `FunctionPointerDeclarationC` identifiers unique.
 impl MakeUnique for FunctionPointerDeclarationC {
     fn make_unique(&mut self, stamp: usize) {
-        self.ident_id += &format!("_{stamp}");
+        let _ = write!(self.ident_id, "_{stamp}");
     }
 }
 
@@ -517,7 +517,7 @@ impl fmt::Display for FunctionPointerDeclarationC {
 /// identifiers unique.
 impl MakeUnique for FunctionPrototypeC {
     fn make_unique(&mut self, stamp: usize) {
-        self.ident_id += &format!("_{stamp}");
+        let _ = write!(self.ident_id, "_{stamp}");
     }
 }
 
@@ -586,14 +586,13 @@ impl Arbitrary for ParameterListC {
 /// Enables to string and format for `ParameterListC` types.
 impl fmt::Display for ParameterListC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut display = String::new();
         for (i, p) in self.params.iter().enumerate() {
             match i {
-                0 => display += &format!("{p}"),
-                _ => display += &format!(",{p}"),
+                0 => write!(f, "{p}")?,
+                _ => write!(f, ",{p}")?,
             }
         }
-        write!(f, "{display}")
+        Ok(())
     }
 }
 
@@ -612,11 +611,10 @@ impl Arbitrary for HeaderC {
 /// Enables to string and format for `HeaderC` types.
 impl fmt::Display for HeaderC {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut display = String::new();
         for decl in &self.def.decls {
-            display += &format!("{decl}");
+            write!(f, "{decl}")?;
         }
-        write!(f, "{display}")
+        Ok(())
     }
 }
 

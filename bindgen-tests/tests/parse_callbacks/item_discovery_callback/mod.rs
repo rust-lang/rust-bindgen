@@ -20,7 +20,7 @@ impl ParseCallbacks for ItemDiscovery {
 
 fn test_item_discovery_callback(
     header: &str,
-    expected: HashMap<DiscoveredItemId, DiscoveredItem>,
+    expected: &HashMap<DiscoveredItemId, DiscoveredItem>,
 ) {
     let discovery = ItemDiscovery::default();
     let info = Rc::clone(&discovery.0);
@@ -34,7 +34,7 @@ fn test_item_discovery_callback(
         .generate()
         .expect("TODO: panic message");
 
-    compare_item_caches(&info.borrow(), &expected);
+    compare_item_caches(&info.borrow(), expected);
 }
 
 #[test]
@@ -103,7 +103,7 @@ fn test_item_discovery_callback_c() {
         ),
     ]);
     test_item_discovery_callback(
-        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.h", expected);
+        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.h", &expected);
 }
 
 #[test]
@@ -125,7 +125,7 @@ fn test_item_discovery_callback_cpp() {
         ),
     ]);
     test_item_discovery_callback(
-        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.hpp", expected);
+        "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.hpp", &expected);
 }
 
 pub fn compare_item_caches(generated: &ItemCache, expected: &ItemCache) {
