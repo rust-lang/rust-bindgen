@@ -79,7 +79,16 @@ impl<'a> CSerialize<'a> for Function {
 
         assert!(!signature.is_variadic());
 
-        let name = self.name();
+        // Get the function name + namespace
+        let name = {
+            let path = item.path_for_allowlisting(ctx).clone();
+            if path.get(0).is_some_and(|part| part == "root") {
+                &path[1..]
+            } else {
+                &path[..]
+            }
+            .join("::")
+        };
 
         // Function arguments stored as `(name, type_id)` tuples.
         let args = {
@@ -114,7 +123,11 @@ impl<'a> CSerialize<'a> for Function {
         };
 
         // The name used for the wrapper self.
-        let wrap_name = format!("{name}{}", ctx.wrap_static_fns_suffix());
+        let wrap_name = format!(
+            "{}{}",
+            item.canonical_name(ctx),
+            ctx.wrap_static_fns_suffix()
+        );
 
         // The function's return type
         let (ret_item, ret_ty) = {
