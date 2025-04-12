@@ -724,6 +724,10 @@ impl ClangSubItemParser for Function {
     ) -> Result<ParseResult<Self>, ParseError> {
         use clang_sys::*;
 
+        if cursor.kind() == CXCursor_FunctionTemplate {
+            return Err(ParseError::Recurse);
+        }
+
         let kind = match FunctionKind::from_cursor(&cursor) {
             None => return Err(ParseError::Continue),
             Some(k) => k,
