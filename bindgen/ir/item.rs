@@ -930,7 +930,6 @@ impl Item {
                     ItemKind::Type(..) => crate::callbacks::ItemKind::Type,
                     ItemKind::Function(..) => crate::callbacks::ItemKind::Function,
                     ItemKind::Var(..) => crate::callbacks::ItemKind::Var,
-                    _ => panic!("Unexpected item kind"),
                 },
             };
             ctx.options()
