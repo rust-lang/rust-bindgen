@@ -441,6 +441,15 @@ struct BindgenCommand {
     /// Always output explicit padding fields.
     #[arg(long)]
     explicit_padding: bool,
+    /// Always be specific about the 'receiver' of a virtual function.
+    #[arg(long)]
+    use_specific_virtual_function_receiver: bool,
+    /// Use distinct char16_t
+    #[arg(long)]
+    use_distinct_char16_t: bool,
+    /// Output C++ overloaded operators
+    #[arg(long)]
+    represent_cxx_operators: bool,
     /// Enables generation of vtable functions.
     #[arg(long)]
     vtable_generation: bool,
@@ -504,6 +513,18 @@ struct BindgenCommand {
     /// bitfields. This flag is ignored if the `--respect-cxx-access-specs` flag is used.
     #[arg(long, value_name = "VISIBILITY")]
     default_visibility: Option<FieldVisibilityKind>,
+    /// Whether to generate C++ functions marked with "=delete" even though they
+    /// can't be called.
+    #[arg(long)]
+    generate_deleted_functions: bool,
+    /// Whether to generate C++ "pure virtual" functions even though they can't
+    /// be called.
+    #[arg(long)]
+    generate_pure_virtual_functions: bool,
+    /// Whether to generate C++ private functions even though they can't
+    /// be called.
+    #[arg(long)]
+    generate_private_functions: bool,
     /// Whether to emit diagnostics or not.
     #[cfg(feature = "experimental")]
     #[arg(long, requires = "experimental")]
@@ -629,6 +650,9 @@ where
         translate_enum_integer_types,
         c_naming,
         explicit_padding,
+        use_specific_virtual_function_receiver,
+        use_distinct_char16_t,
+        represent_cxx_operators,
         vtable_generation,
         sort_semantically,
         merge_extern_blocks,
@@ -649,6 +673,9 @@ where
         wrap_static_fns_path,
         wrap_static_fns_suffix,
         default_visibility,
+        generate_deleted_functions,
+        generate_pure_virtual_functions,
+        generate_private_functions,
         #[cfg(feature = "experimental")]
         emit_diagnostics,
         generate_shell_completions,
@@ -926,6 +953,9 @@ where
             translate_enum_integer_types,
             c_naming,
             explicit_padding,
+            use_specific_virtual_function_receiver,
+            use_distinct_char16_t,
+            represent_cxx_operators,
             vtable_generation,
             sort_semantically,
             merge_extern_blocks,
@@ -938,6 +968,9 @@ where
             wrap_static_fns_path,
             wrap_static_fns_suffix,
             default_visibility,
+            generate_deleted_functions,
+            generate_pure_virtual_functions,
+            generate_private_functions,
         }
     );
 

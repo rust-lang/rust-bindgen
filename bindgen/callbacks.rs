@@ -217,7 +217,28 @@ pub enum DiscoveredItem {
 
         /// The identifier of the discovered type
         alias_for: DiscoveredItemId,
-    }, // functions, modules, etc.
+    },
+
+    /// Represents an enum.
+    Enum {
+        /// The final name of the generated binding
+        final_name: String,
+    },
+
+    /// A function or method.
+    Function {
+        /// The final name used.
+        final_name: String,
+    },
+
+    /// A method.
+    Method {
+        /// The final name used.
+        final_name: String,
+
+        /// Type to which this method belongs.
+        parent: DiscoveredItemId,
+    }, // modules, etc.
 }
 
 /// Relevant information about a type to which new derive attributes will be added using

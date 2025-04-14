@@ -187,6 +187,12 @@ pub(crate) mod ast_ty {
         match ik {
             IntKind::Bool => syn::parse_quote! { bool },
             IntKind::Char { .. } => raw_type(ctx, "c_char"),
+            // The following is used only when an unusual command-line
+            // argument is used. bindgen_cchar16_t is not a real type;
+            // but this allows downstream postprocessors to distinguish
+            // this case and do something special for C++ bindings
+            // containing the C++ type char16_t.
+            IntKind::Char16 => syn::parse_quote! { bindgen_cchar16_t },
             IntKind::SChar => raw_type(ctx, "c_schar"),
             IntKind::UChar => raw_type(ctx, "c_uchar"),
             IntKind::Short => raw_type(ctx, "c_short"),

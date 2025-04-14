@@ -931,7 +931,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 *ty.kind()
             {
                 typerefs.push((id, *ty, loc, parent_id));
-            };
+            }
         }
         typerefs
     }
@@ -1980,6 +1980,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             CXType_Short => TypeKind::Int(IntKind::Short),
             CXType_UShort => TypeKind::Int(IntKind::UShort),
             CXType_WChar => TypeKind::Int(IntKind::WChar),
+            CXType_Char16 if self.options().use_distinct_char16_t => {
+                TypeKind::Int(IntKind::Char16)
+            }
             CXType_Char16 => TypeKind::Int(IntKind::U16),
             CXType_Char32 => TypeKind::Int(IntKind::U32),
             CXType_Long => TypeKind::Int(IntKind::Long),
@@ -2105,13 +2108,13 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 pch.clone().into_boxed_str(),
             ];
             let mut skip_next = false;
-            for arg in self.options.fallback_clang_args.iter() {
+            for arg in &self.options.fallback_clang_args {
                 if arg.as_ref() == "-include" {
                     skip_next = true;
                 } else if skip_next {
                     skip_next = false;
                 } else {
-                    c_args.push(arg.clone())
+                    c_args.push(arg.clone());
                 }
             }
             self.fallback_tu =
@@ -3073,7 +3076,7 @@ impl TemplateParameters for PartialType {
                             num_params += 1;
                         }
                         _ => {}
-                    };
+                    }
                     clang_sys::CXChildVisit_Continue
                 });
                 num_params

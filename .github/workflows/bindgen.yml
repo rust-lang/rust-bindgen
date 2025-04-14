@@ -12,25 +12,27 @@ on:
       - main
 
 jobs:
-  rustfmt-clippy:
+  rustfmt:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install stable
+      - name: Install nightly
         uses: dtolnay/rust-toolchain@master
         with:
-          # TODO: Should ideally be stable, but we use some nightly-only
-          # features.
           toolchain: nightly
-          components: rustfmt, clippy
+          components: rustfmt
 
       - name: Run rustfmt
-        run: cargo fmt -- --check
+        run: cargo +nightly fmt -- --check
+
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Run clippy
-        run: cargo clippy --all-targets --workspace --exclude bindgen-integration --exclude tests_expectations
+        run: cargo clippy --all-targets --workspace --exclude bindgen-integration --exclude tests_expectations -- -D warnings
 
   msrv:
     runs-on: ubuntu-latest
@@ -64,12 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Check without default features 
+      - name: Check without default features
         run: cargo check -p bindgen --no-default-features --features=runtime 
 
   docs:
@@ -79,12 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Generate documentation for `bindgen` 
+      - name: Generate documentation for `bindgen`
         run: cargo doc --document-private-items --no-deps -p bindgen 
 
       - name: Generate documentation for `bindgen-cli` 
@@ -94,11 +86,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
 
       # TODO: Actually run quickchecks once `bindgen` is reliable enough.
       - name: Build quickcheck tests
@@ -111,11 +98,6 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
 
       - name: Test expectations
         run: cd bindgen-tests/tests/expectations && cargo test
@@ -174,21 +156,6 @@ jobs:
           BINDGEN_RUST_FOR_LINUX_TEST: ${{matrix.os == 'ubuntu-latest' && matrix.llvm_version == '16.0' && matrix.feature_extra_asserts == 0 && 1 || 0}}
         run: ./ci/test.sh
 
-  check-cfg:
-    runs-on: ubuntu-latest
-    env:
-      RUSTFLAGS: -D warnings
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Install nightly
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: nightly
-      
-      - name: Check cfg
-        run: cargo check -Z unstable-options -Z check-cfg
-
   test-book:
     runs-on: ubuntu-latest
     steps:
@@ -221,7 +188,7 @@ jobs:
   # separately.
   success:
     runs-on: ubuntu-latest
-    needs: [rustfmt-clippy, msrv, minimal, docs, quickchecking, test-expectations, test, check-cfg, test-book, test-no-headers]
+    needs: [rustfmt, clippy, msrv, minimal, docs, quickchecking, test-expectations, test, test-book, test-no-headers]
     # GitHub branch protection is exceedingly silly and treats "jobs skipped
     # because a dependency failed" as success. So we have to do some
     # contortions to ensure the job fails if any of its dependencies fails.

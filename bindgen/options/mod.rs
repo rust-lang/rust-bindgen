@@ -153,6 +153,64 @@ macro_rules! options {
 }
 
 options! {
+    /// Whether to specify the type of a virtual function receiver
+    use_specific_virtual_function_receiver: bool {
+        methods: {
+            /// Normally, virtual functions have void* as their 'this' type.
+            /// If this flag is enabled, override that behavior to indicate a
+            /// pointer of the specific type.
+            /// Disabled by default.
+            pub fn use_specific_virtual_function_receiver(mut self, doit: bool) -> Builder {
+                self.options.use_specific_virtual_function_receiver = doit;
+                self
+            }
+        },
+        as_args: "--use-specific-virtual-function-receiver",
+    },
+
+    /// Whether we should distinguish between C++'s 'char16_t' and 'u16'.
+    /// The C++ type `char16_t` is its own special type; it's not a typedef
+    /// of some other integer (this differs from C).
+    /// As standard, bindgen represents C++ `char16_t` as `u16`.
+    /// Rust does not have a `std::os::raw::c_char16_t` type, and thus
+    /// we can't use a built-in Rust type in the generated bindings (and
+    /// nor would it be appropriate as it's a C++-specific type.)
+    /// But for some uses of bindgen, especially when downstream
+    /// post-processing occurs, it's important to distinguish `char16_t`
+    /// from normal `uint16_t`. When this option is enabled, bindgen
+    /// generates a fake type called `bindgen_cchar16_t`. Downstream
+    /// code post-processors should arrange to replace this with a
+    /// real type.
+    use_distinct_char16_t: bool {
+        methods: {
+            /// If this is true, denote 'char16_t' as a separate type from 'u16'
+            /// Disabled by default.
+            pub fn use_distinct_char16_t(mut self, doit: bool) -> Builder {
+                self.options.use_distinct_char16_t = doit;
+                self
+            }
+        },
+        as_args: "--use-distinct-char16-t",
+    },
+    /// Whether we should output C++ overloaded operators. By itself,
+    /// this option is not sufficient to produce valid output, because
+    /// such operators will have names that are not acceptable Rust
+    /// names (for example `operator=`). If you use this option, you'll also
+    /// have to rename the resulting functions - for example by using
+    /// [`ParseCallbacks::generated_name_override`].
+    represent_cxx_operators: bool {
+        methods: {
+            /// If this is true, output existence of C++ overloaded operators.
+            /// At present, only operator= is noted.
+            /// Disabled by default.
+            pub fn represent_cxx_operators(mut self, doit: bool) -> Builder {
+                self.options.represent_cxx_operators = doit;
+                self
+            }
+        },
+        as_args: "--represent-cxx-operators",
+    },
+
     /// Types that have been blocklisted and should not appear anywhere in the generated code.
     blocklisted_types: RegexSet {
         methods: {
@@ -2171,4 +2229,58 @@ options! {
         },
         as_args: "--clang-macro-fallback-build-dir",
     }
+    /// Whether to always report C++ "deleted" functions.
+    generate_deleted_functions: bool {
+        methods: {
+            /// Set whether to generate C++ functions even marked "=deleted"
+            ///
+            /// Although not useful to call these functions, downstream code
+            /// generators may need to know whether they've been deleted in
+            /// order to determine the relocatability of a C++ type
+            /// (specifically by virtue of which constructors exist.)
+            pub fn generate_deleted_functions(mut self, doit: bool) -> Self {
+                self.options.generate_deleted_functions = doit;
+                self
+            }
+
+        },
+        as_args: "--generate-deleted-functions",
+    },
+    /// Whether to always report C++ "pure virtual" functions.
+    generate_pure_virtual_functions: bool {
+        methods: {
+            /// Set whether to generate C++ functions that are pure virtual.
+            ///
+            /// These functions can't be called, so the only reason
+            /// to generate them is if downstream postprocessors
+            /// need to know of their existence. This is necessary,
+            /// for instance, to determine whether a type itself is
+            /// pure virtual and thus can't be allocated.
+            /// Downstream code generators may choose to make code to
+            /// allow types to be allocated but need to avoid doing so
+            /// if the type contains pure virtual functions.
+            pub fn generate_pure_virtual_functions(mut self, doit: bool) -> Self {
+                self.options.generate_pure_virtual_functions = doit;
+                self
+            }
+
+        },
+        as_args: "--generate-pure-virtual-functions",
+    },
+    /// Whether to always report C++ "private" functions.
+    generate_private_functions: bool {
+        methods: {
+            /// Set whether to generate C++ functions that are private.
+            ///
+            /// These functions can't be called, so the only reason
+            /// to generate them is if downstream postprocessors
+            /// need to know of their existence.
+            pub fn generate_private_functions(mut self, doit: bool) -> Self {
+                self.options.generate_private_functions = doit;
+                self
+            }
+
+        },
+        as_args: "--generate-private-functions",
+    },
 }

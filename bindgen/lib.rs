@@ -86,7 +86,7 @@ pub const DEFAULT_ANON_FIELDS_PREFIX: &str = "__bindgen_anon_";
 const DEFAULT_NON_EXTERN_FNS_SUFFIX: &str = "__extern";
 
 fn file_is_cpp(name_file: &str) -> bool {
-    Path::new(name_file).extension().map_or(false, |ext| {
+    Path::new(name_file).extension().is_some_and(|ext| {
         ext.eq_ignore_ascii_case("hpp") ||
             ext.eq_ignore_ascii_case("hxx") ||
             ext.eq_ignore_ascii_case("hh") ||
@@ -575,7 +575,7 @@ impl BindgenOptions {
         self.parse_callbacks
             .iter()
             .filter_map(|cb| f(cb.as_ref()))
-            .last()
+            .next_back()
     }
 
     fn all_callbacks<T>(
@@ -684,29 +684,44 @@ pub(crate) const HOST_TARGET: &str =
 fn rust_to_clang_target(rust_target: &str) -> Box<str> {
     const TRIPLE_HYPHENS_MESSAGE: &str = "Target triple should contain hyphens";
 
-    let mut clang_target = rust_target.to_owned();
+    let mut triple: Vec<&str> = rust_target.split_terminator('-').collect();
 
-    if clang_target.starts_with("riscv32") {
-        let idx = clang_target.find('-').expect(TRIPLE_HYPHENS_MESSAGE);
+    assert!(!triple.is_empty(), "{}", TRIPLE_HYPHENS_MESSAGE);
+    triple.resize(4, "");
 
-        clang_target.replace_range(..idx, "riscv32");
-    } else if clang_target.starts_with("riscv64") {
-        let idx = clang_target.find('-').expect(TRIPLE_HYPHENS_MESSAGE);
-
-        clang_target.replace_range(..idx, "riscv64");
-    } else if clang_target.starts_with("aarch64-apple-") {
-        let idx = clang_target.find('-').expect(TRIPLE_HYPHENS_MESSAGE);
-
-        clang_target.replace_range(..idx, "arm64");
+    // RISC-V
+    if triple[0].starts_with("riscv32") {
+        triple[0] = "riscv32";
+    } else if triple[0].starts_with("riscv64") {
+        triple[0] = "riscv64";
     }
 
-    if clang_target.ends_with("-espidf") {
-        let idx = clang_target.rfind('-').expect(TRIPLE_HYPHENS_MESSAGE);
-
-        clang_target.replace_range((idx + 1).., "elf");
+    // Apple
+    if triple[1] == "apple" {
+        if triple[0] == "aarch64" {
+            triple[0] = "arm64";
+        }
+        if triple[3] == "sim" {
+            triple[3] = "simulator";
+        }
     }
 
-    clang_target.into()
+    // ESP-IDF
+    if triple[2] == "espidf" {
+        triple[2] = "elf";
+    }
+
+    triple
+        .iter()
+        .skip(1)
+        .fold(triple[0].to_string(), |triple, part| {
+            if part.is_empty() {
+                triple
+            } else {
+                triple + "-" + part
+            }
+        })
+        .into()
 }
 
 /// Returns the effective target, and whether it was explicitly specified on the
@@ -781,7 +796,7 @@ impl Bindings {
                 0,
                 format!("--target={effective_target}").into_boxed_str(),
             );
-        };
+        }
 
         fn detect_include_paths(options: &mut BindgenOptions) {
             if !options.detect_include_paths {
@@ -1194,7 +1209,7 @@ pub fn clang_version() -> ClangVersion {
                 };
             }
         }
-    };
+    }
     ClangVersion {
         parsed: None,
         full: raw_v.clone(),
@@ -1387,5 +1402,21 @@ fn test_rust_to_clang_target_espidf() {
     assert_eq!(
         rust_to_clang_target("xtensa-esp32-espidf").as_ref(),
         "xtensa-esp32-elf"
+    );
+}
+
+#[test]
+fn test_rust_to_clang_target_simulator() {
+    assert_eq!(
+        rust_to_clang_target("aarch64-apple-ios-sim").as_ref(),
+        "arm64-apple-ios-simulator"
+    );
+    assert_eq!(
+        rust_to_clang_target("aarch64-apple-tvos-sim").as_ref(),
+        "arm64-apple-tvos-simulator"
+    );
+    assert_eq!(
+        rust_to_clang_target("aarch64-apple-watchos-sim").as_ref(),
+        "arm64-apple-watchos-simulator"
     );
 }

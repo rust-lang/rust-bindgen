@@ -433,7 +433,7 @@ impl FunctionSig {
             spelling.starts_with("operator") &&
                 !clang::is_valid_identifier(spelling)
         };
-        if is_operator(&spelling) {
+        if is_operator(&spelling) && !ctx.options().represent_cxx_operators {
             return Err(ParseError::Continue);
         }
 
@@ -533,7 +533,10 @@ impl FunctionSig {
             let is_const = is_method && cursor.method_is_const();
             let is_virtual = is_method && cursor.method_is_virtual();
             let is_static = is_method && cursor.method_is_static();
-            if !is_static && !is_virtual {
+            if !is_static &&
+                (!is_virtual ||
+                    ctx.options().use_specific_virtual_function_receiver)
+            {
                 let parent = cursor.semantic_parent();
                 let class = Item::parse(parent, None, ctx)
                     .expect("Expected to parse the class");
@@ -731,8 +734,9 @@ impl ClangSubItemParser for Function {
         if visibility != CXVisibility_Default {
             return Err(ParseError::Continue);
         }
-
-        if cursor.access_specifier() == CX_CXXPrivate {
+        if cursor.access_specifier() == CX_CXXPrivate &&
+            !context.options().generate_private_functions
+        {
             return Err(ParseError::Continue);
         }
 
@@ -752,7 +756,9 @@ impl ClangSubItemParser for Function {
                 return Err(ParseError::Continue);
             }
 
-            if cursor.is_deleted_function() {
+            if cursor.is_deleted_function() &&
+                !context.options().generate_deleted_functions
+            {
                 return Err(ParseError::Continue);
             }
 
