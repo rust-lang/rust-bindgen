@@ -791,7 +791,6 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     item.id(),
                     ancestor_id
                 );
-
                 module.children_mut().insert(item.id());
                 return;
             }
