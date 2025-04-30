@@ -746,7 +746,7 @@ impl Type {
             (ty.template_args().is_some() && ty_kind != CXType_Typedef)
         {
             // This is a template instantiation.
-            match TemplateInstantiation::from_ty(ty, ctx) {
+            match TemplateInstantiation::from_ty(ty, parent_id, ctx) {
                 Some(inst) => TypeKind::TemplateInstantiation(inst),
                 None => TypeKind::Opaque,
             }
