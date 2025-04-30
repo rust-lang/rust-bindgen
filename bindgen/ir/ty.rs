@@ -1058,7 +1058,7 @@ impl Type {
                 CXType_Typedef => {
                     let inner = cursor.typedef_type().expect("Not valid Type?");
                     let inner_id =
-                        Item::from_ty_or_ref(inner, location, None, ctx);
+                        Item::from_ty_or_ref(inner, location, parent_id, ctx);
                     if inner_id == potential_id {
                         warn!(
                             "Generating opaque type instead of self-referential \
