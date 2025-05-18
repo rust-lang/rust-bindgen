@@ -7,7 +7,7 @@ be nowhere near as nice as using them in C++. You will have to manually call
 constructors, destructors, overloaded operators, etc yourself.
 
 When passing in header files, the file will automatically be treated as C++ if
-it ends in `.hpp`. If it doesn't, adding `-x c++` clang args can be used to
+it ends in `.hpp`. If it doesn't, adding `clang_args(["-x", "c++"])` can be used to
 force C++ mode. You probably also want to use `-std=c++14` or similar clang args
 as well.
 
