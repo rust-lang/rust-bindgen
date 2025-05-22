@@ -22,7 +22,7 @@ edition = "2021"
 # All dependency version management is centralized here
 [workspace.dependencies]
 annotate-snippets = "0.11.4"
-bindgen = { version = "0.71.1", path = "./bindgen", default-features = false }
+bindgen = { version = "0.72.0", path = "./bindgen", default-features = false }
 bitflags = "2.2.1"
 block = "0.1"
 cc = "1.0"
