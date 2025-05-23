@@ -52,8 +52,7 @@ pub trait ParseCallbacks: fmt::Debug {
     }
 
     /// Modify the contents of a macro
-    fn modify_macro(&self, _name: &str, _tokens: &mut Vec<Token>) {
-    }
+    fn modify_macro(&self, _name: &str, _tokens: &mut Vec<Token>) {}
 
     /// The integer kind an integer macro should have, given a name and the
     /// value of that macro, or `None` if you want the default to be chosen.
