@@ -480,7 +480,7 @@ struct BindgenCommand {
     /// Derive custom traits on a `struct`. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a coma-separated list of derive macros.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_derive)]
     with_derive_custom_struct: Vec<(Vec<String>, String)>,
-    /// Derive custom traits on an `enum. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a coma-separated list of derive macros.
+    /// Derive custom traits on an `enum`. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a coma-separated list of derive macros.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_derive)]
     with_derive_custom_enum: Vec<(Vec<String>, String)>,
     /// Derive custom traits on a `union`. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a coma-separated list of derive macros.
@@ -492,7 +492,7 @@ struct BindgenCommand {
     /// Add custom attributes on a `struct`. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_attribute)]
     with_attribute_custom_struct: Vec<(Vec<String>, String)>,
-    /// Add custom attributes on an `enum. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
+    /// Add custom attributes on an `enum`. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_attribute)]
     with_attribute_custom_enum: Vec<(Vec<String>, String)>,
     /// Add custom attributes on a `union`. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
