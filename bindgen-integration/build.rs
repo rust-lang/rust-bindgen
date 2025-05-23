@@ -44,9 +44,9 @@ impl ParseCallbacks for MacroCallback {
                 assert_eq!(value, b"string");
                 *self.seen_hellos.lock().unwrap() += 1;
             }
-            "TESTMACRO_STRING_EXPANDED"
-            | "TESTMACRO_STRING"
-            | "TESTMACRO_INTEGER" => {
+            "TESTMACRO_STRING_EXPANDED" |
+            "TESTMACRO_STRING" |
+            "TESTMACRO_INTEGER" => {
                 // The integer test macro is, actually, not expected to show up here at all -- but
                 // should produce an error if it does.
                 assert_eq!(
