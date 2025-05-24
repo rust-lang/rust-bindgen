@@ -345,3 +345,9 @@ fn test_wrap_static_fns() {
         extern_bindings::wrap_as_variadic_fn2_wrapped(1, 2);
     }
 }
+
+#[test]
+fn test_colon_define() {
+    let gold: u32 = (1u32 << 16) | 2;
+    assert_eq!(gold, bindings::TESTMACRO_COLON_VALUE);
+}
