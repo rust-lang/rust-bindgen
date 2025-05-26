@@ -5934,7 +5934,7 @@ pub(crate) mod utils {
         let mangled_name = mangled_name.as_bytes();
 
         let (mangling_prefix, expect_suffix) = match call_conv {
-            Some(ClangAbi::Known(Abi::C)) |
+            Some(ClangAbi::Known(Abi::C) | ClangAbi::Known(Abi::CUnwind)) |
             // None is the case for global variables
             None => {
                 (b'_', false)
