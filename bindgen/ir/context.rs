@@ -783,16 +783,21 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         assert_ne!(item.id(), self.root_module);
         assert!(self.resolve_item_fallible(item.id()).is_none());
 
-        if let Some(ref mut parent) = self.items[item.parent_id().0] {
-            if let Some(module) = parent.as_module_mut() {
+        let mut ancestor_id = item.parent_id();
+        while let Some(ref mut ancestor_item) = self.items[ancestor_id.0] {
+            if let Some(module) = ancestor_item.as_module_mut() {
                 debug!(
-                    "add_item_to_module: adding {:?} as child of parent module {:?}",
+                    "add_item_to_module: adding {:?} as child of ancestor module {:?}",
                     item.id(),
-                    item.parent_id()
+                    ancestor_id
                 );
-
                 module.children_mut().insert(item.id());
                 return;
+            }
+
+            ancestor_id = ancestor_item.parent_id();
+            if ancestor_id == ancestor_item.id() {
+                break;
             }
         }
 
