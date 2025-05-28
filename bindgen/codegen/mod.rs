@@ -2292,7 +2292,13 @@ impl CodeGenerator for CompInfo {
 
             if has_address {
                 let layout = Layout::new(1, 1);
-                let ty = helpers::blob(ctx, Layout::new(1, 1), false);
+                // Normally for opaque data we use helpers::blob,
+                // which may wrap it in __bindgen_marker_Opaque<T>.
+                // Downstream tools may then use this as a sign that
+                // the type is complex or can't be stack-allocated,
+                // etc. But in this case this one-byte field is harmless
+                // so we'll just represent it without that extra marker.
+                let ty = helpers::blob_inner(ctx, Layout::new(1, 1), false);
                 struct_layout.saw_field_with_layout(
                     "_address",
                     layout,
@@ -4414,7 +4420,7 @@ impl TryToRustTy for Type {
                 utils::build_path(item, ctx)
             }
             TypeKind::Opaque => self.try_to_opaque(ctx, item),
-            TypeKind::Pointer(inner) | TypeKind::Reference(inner) => {
+            TypeKind::Pointer(inner) | TypeKind::Reference(inner, _) => {
                 // Check that this type has the same size as the target's pointer type.
                 let size = self.get_layout(ctx, item).size;
                 if size != ctx.target_pointer_size() {
@@ -4447,7 +4453,23 @@ impl TryToRustTy for Type {
                 {
                     Ok(ty)
                 } else {
-                    Ok(ty.to_ptr(is_const))
+                    let ty_ptr = ty.to_ptr(is_const);
+                    Ok(if let syn::Type::Ptr(ty_ptr_inside) = &ty_ptr {
+                        // It always should be Type::Ptr, but just in case
+                        if let TypeKind::Reference(_, reference_kind) =
+                            self.kind()
+                        {
+                            helpers::reference(
+                                ty_ptr_inside.clone(),
+                                *reference_kind,
+                                ctx,
+                            )
+                        } else {
+                            ty_ptr
+                        }
+                    } else {
+                        ty_ptr
+                    })
                 }
             }
             TypeKind::TypeParam => {
