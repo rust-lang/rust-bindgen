@@ -609,6 +609,7 @@ impl CodeGenerator for Module {
                 .namespace_aware_canonical_path(ctx)
                 .join("::")
                 .into_boxed_str();
+
             if let Some(raw_lines) = ctx.options().module_lines.get(&path) {
                 for raw_line in raw_lines {
                     found_any = true;
@@ -617,6 +618,14 @@ impl CodeGenerator for Module {
                     );
                 }
             }
+            // For lines we add to all modules, don't modify `found_any`
+            // since we don't want to generate this module unless there's
+            // other stuff present.
+            result.extend(ctx.options().every_module_raw_lines.iter().map(
+                |raw_line| {
+                    proc_macro2::TokenStream::from_str(raw_line).unwrap()
+                },
+            ));
 
             codegen_self(result, &mut found_any);
         });
