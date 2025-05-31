@@ -525,7 +525,7 @@ where
             bitfields,
             &next_non_bitfield,
             parent_layout,
-            packed
+            packed,
         )?;
     }
 
@@ -609,7 +609,7 @@ where
         let bitfield_align = bitfield_layout.align;
         // bitfield offset of struct/union
         let bitfield_offset = bitfield.offset().unwrap_or_default();
-        
+
         if unit_size_in_bits == 0 {
             bitfields_bit_begin_off = bitfield_offset;
         }
@@ -661,7 +661,7 @@ where
             // alignment.
             if bitfields_bit_begin_off == 0 {
                 unit_align = cmp::max(unit_align, bitfield_width);
-            }else {
+            } else {
                 unit_align = 8;
             }
         }
@@ -681,15 +681,15 @@ where
         let data_size = align_to(unit_size_in_bits, bitfield_align * 8);
         unfilled_bits_in_unit = data_size - unit_size_in_bits;
     }
-    
+
     let final_bit_size = if let Some(next_field) = next_non_bitfield {
         next_field.offset().unwrap_or_default() - bitfields_bit_begin_off
-    }else if let Some(parent_layout_) = parent_layout {
+    } else if let Some(parent_layout_) = parent_layout {
         parent_layout_.size * 8 - bitfields_bit_begin_off
     } else {
         unit_size_in_bits
     };
-    
+
     if unit_size_in_bits != 0 {
         // Flush the last allocation unit and its bitfields.
         flush_allocation_unit(
@@ -742,7 +742,12 @@ impl CompFields {
         }
     }
 
-    fn compute_bitfield_units(&mut self, ctx: &BindgenContext, packed: bool, parent_layout: Option<&Layout>,) {
+    fn compute_bitfield_units(
+        &mut self,
+        ctx: &BindgenContext,
+        packed: bool,
+        parent_layout: Option<&Layout>,
+    ) {
         let raws = match *self {
             CompFields::Before(ref mut raws) => mem::take(raws),
             _ => {
@@ -750,7 +755,12 @@ impl CompFields {
             }
         };
 
-        let result = raw_fields_to_fields_and_bitfield_units(ctx, raws, packed, parent_layout);
+        let result = raw_fields_to_fields_and_bitfield_units(
+            ctx,
+            raws,
+            packed,
+            parent_layout,
+        );
 
         match result {
             Ok((fields, has_bitfield_units)) => {
@@ -1726,14 +1736,13 @@ impl CompInfo {
         layout: Option<&Layout>,
     ) {
         let packed = self.is_packed(ctx, layout);
-        let parent_layout = layout.map(|l| {
-            Layout {
-                size: l.size,
-                align: l.align,
-                packed,
-            }
+        let parent_layout = layout.map(|l| Layout {
+            size: l.size,
+            align: l.align,
+            packed,
         });
-        self.fields.compute_bitfield_units(ctx, packed, parent_layout.as_ref());
+        self.fields
+            .compute_bitfield_units(ctx, packed, parent_layout.as_ref());
     }
 
     /// Assign for each anonymous field a generated name.
