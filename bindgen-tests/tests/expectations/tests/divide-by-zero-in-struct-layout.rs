@@ -149,13 +149,13 @@ where
 #[derive(Debug, Default, Copy, Clone)]
 pub struct WithBitfield {
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
     pub a: ::std::os::raw::c_uint,
 }
 impl WithBitfield {
     #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
         __bindgen_bitfield_unit
     }
 }

@@ -92,7 +92,7 @@ where
 #[derive(Copy, Clone)]
 pub struct C {
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
     pub large_array: [::std::os::raw::c_int; 50usize],
 }
 #[test]
@@ -145,8 +145,8 @@ impl C {
         }
     }
     #[inline]
-    pub fn new_bitfield_1(a: bool, b: bool) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+    pub fn new_bitfield_1(a: bool, b: bool) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
         __bindgen_bitfield_unit
             .set(
                 0usize,

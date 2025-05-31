@@ -225,8 +225,7 @@ pub struct rte_eth_link {
     ///< ETH_SPEED_NUM_
     pub link_speed: u32,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub __bindgen_padding_0: [u8; 3usize],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
@@ -253,7 +252,7 @@ impl rte_eth_link {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 1usize],
+                    [u8; 4usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 1u8)
                     as u16,
             )
@@ -264,7 +263,7 @@ impl rte_eth_link {
         unsafe {
             let val: u16 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 1usize],
+                [u8; 4usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 0usize,
@@ -289,7 +288,7 @@ impl rte_eth_link {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 1usize],
+                    [u8; 4usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 1usize, 1u8)
                     as u16,
             )
@@ -300,7 +299,7 @@ impl rte_eth_link {
         unsafe {
             let val: u16 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 1usize],
+                [u8; 4usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 1usize,
@@ -325,7 +324,7 @@ impl rte_eth_link {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 1usize],
+                    [u8; 4usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 2usize, 1u8)
                     as u16,
             )
@@ -336,7 +335,7 @@ impl rte_eth_link {
         unsafe {
             let val: u16 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 1usize],
+                [u8; 4usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 2usize,
@@ -350,8 +349,8 @@ impl rte_eth_link {
         link_duplex: u16,
         link_autoneg: u16,
         link_status: u16,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
         __bindgen_bitfield_unit
             .set(
                 0usize,

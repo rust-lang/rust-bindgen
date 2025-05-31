@@ -154,7 +154,7 @@ pub struct V56AMDY {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub MADK: U8,
     pub MABR: U8,
-    pub _bitfield_align_2: [u16; 0],
+    pub _bitfield_align_2: [u8; 0],
     pub _bitfield_2: __BindgenBitfieldUnit<[u8; 3usize]>,
     pub _rB_: U8,
 }

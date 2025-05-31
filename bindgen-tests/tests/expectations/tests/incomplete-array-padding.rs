@@ -179,7 +179,7 @@ impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
 #[derive(Debug)]
 pub struct foo {
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
     pub b: __IncompleteArrayField<*mut ::std::os::raw::c_void>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
@@ -214,7 +214,7 @@ impl foo {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 1usize],
+                    [u8; 8usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 1u8) as u8,
             )
         }
@@ -224,7 +224,7 @@ impl foo {
         unsafe {
             let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 1usize],
+                [u8; 8usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 0usize,
@@ -236,8 +236,8 @@ impl foo {
     #[inline]
     pub fn new_bitfield_1(
         a: ::std::os::raw::c_char,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 8usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
         __bindgen_bitfield_unit
             .set(
                 0usize,
