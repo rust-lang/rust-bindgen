@@ -523,7 +523,7 @@ where
             &mut bitfield_unit_count,
             &mut fields,
             bitfields,
-            &next_non_bitfield,
+            next_non_bitfield,
             parent_layout,
             packed,
         )?;
@@ -544,7 +544,7 @@ fn bitfields_to_allocation_units<E, I>(
     bitfield_unit_count: &mut usize,
     fields: &mut E,
     raw_bitfields: I,
-    next_non_bitfield: &Option<&RawField>,
+    next_non_bitfield: Option<&RawField>,
     parent_layout: Option<&Layout>,
     packed: bool,
 ) -> Result<(), ()>
