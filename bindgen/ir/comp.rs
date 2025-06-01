@@ -683,7 +683,7 @@ where
     }
 
     let final_bit_size = if let Some(next_field) = next_non_bitfield {
-        next_field.offset().unwrap_or_default() - bitfields_bit_begin_off
+        next_field.offset().map(|off| off - bitfields_bit_begin_off).unwrap_or(unit_size_in_bits)
     } else if let Some(parent_layout_) = parent_layout {
         parent_layout_.size * 8 - bitfields_bit_begin_off
     } else {
