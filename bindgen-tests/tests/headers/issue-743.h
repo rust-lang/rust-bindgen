@@ -1,7 +1,6 @@
 
-#include <stdbool.h>
 struct S {
     void *p;
-    bool b;
+    _Bool b;
     unsigned u : 16;
 };

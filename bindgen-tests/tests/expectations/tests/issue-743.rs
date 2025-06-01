@@ -145,9 +145,6 @@ where
         }
     }
 }
-pub const __bool_true_false_are_defined: u32 = 1;
-pub const true_: u32 = 1;
-pub const false_: u32 = 0;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct S {
