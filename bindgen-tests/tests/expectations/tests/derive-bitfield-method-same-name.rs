@@ -95,8 +95,7 @@ where
 pub struct Foo {
     pub large: [::std::os::raw::c_int; 33usize],
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
-    pub __bindgen_padding_0: u16,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 #[test]
 fn bindgen_test_layout_Foo() {
@@ -173,8 +172,8 @@ impl Foo {
     #[inline]
     pub fn new_bitfield_1(
         type__bindgen_bitfield: ::std::os::raw::c_char,
-    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
         __bindgen_bitfield_unit
             .set(
                 0usize,
