@@ -10,7 +10,7 @@ ci = "github"
 # The installers to generate for each app
 installers = ["shell"]
 # Target platforms to build apps for (Rust target-triple syntax)
-targets = ["aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-unknown-linux-gnu"]
+targets = ["aarch64-apple-darwin", "aarch64-unknown-linux-gnu", "x86_64-apple-darwin", "x86_64-unknown-linux-gnu"]
 # Whether to consider the binaries in a package for distribution (defaults true)
 dist = false
 # Which actions to run on pull requests
@@ -21,5 +21,7 @@ install-updater = false
 install-path = "CARGO_HOME"
 
 [dist.github-custom-runners]
+global = "ubuntu-latest"
 aarch64-apple-darwin = "macos-14"
 x86_64-apple-darwin = "macos-13"
+aarch64-unknown-linux-gnu = "ubuntu-24.04-arm"
