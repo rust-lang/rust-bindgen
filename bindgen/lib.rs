@@ -980,7 +980,7 @@ impl Bindings {
     }
 
     /// Gets the rustfmt path to rustfmt the generated bindings.
-    fn rustfmt_path(&self) -> io::Result<Cow<PathBuf>> {
+    fn rustfmt_path(&self) -> io::Result<Cow<'_, PathBuf>> {
         debug_assert!(matches!(self.options.formatter, Formatter::Rustfmt));
         if let Some(ref p) = self.options.rustfmt_path {
             return Ok(Cow::Borrowed(p));
