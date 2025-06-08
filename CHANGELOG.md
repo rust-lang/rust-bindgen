@@ -221,11 +221,38 @@
 
 --------------------------------------------------------------------------------
 # Unreleased
+
 ## Added
+
+ * Report enums in ParseCallbacks.
+ * Refactor item_name method to use ItemInfo struct.
+ * Add callback to modify contents of macro
+ * Discovery callbacks for functions and methods.
+ * Options to generate uncallable C++ functions.
+ * Provide option to get real virtual fn receiver.
+
 ## Changed
+
+ * Generate bindings compatible with current rustc version by default.
+
 ## Removed
+
+ * Remove unused which-rustfmt feature
+ * Remove warning for opaque forward declarations
+
 ## Fixed
-## Security
+
+ * More sophisticated handling of the triple in rust_to_clang_target
+ * Rename *-apple-ios-sim to ...simulator
+ * Fix OpenCL vectors that use "ext_vector_type".
+ * Fix union layout when it contains 0 sized array.
+ * Avoid crashing on variadic unions without layout information.
+ * Distinguish char16_t.
+ * Fix bugs in --clang-macro-fallback
+ * Add missed unsafe in the raw_set_bit function
+ * Use link_name for dynamic library loading
+ * Add "gen" to list of rust keywords in 'rust_mangle'
+ * Use appropriate `rustfmt --format ...` param
 
 # v0.71.1 (2024-12-09)
 ## Fixed
