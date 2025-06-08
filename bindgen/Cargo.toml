@@ -47,8 +47,6 @@ default = ["logging", "prettyplease", "runtime"]
 logging = ["dep:log"]
 static = ["clang-sys/static"]
 runtime = ["clang-sys/runtime"]
-# This feature is no longer used for anything and should be removed in bindgen 0.70
-which-rustfmt = []
 experimental = ["dep:annotate-snippets"]
 
 ## The following features are for internal use and they shouldn't be used if
