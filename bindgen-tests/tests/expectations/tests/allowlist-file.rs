@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub const SOME_DEFUN: u32 = 123;
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z12SomeFunctionv"]
+    #[link_name = "_Z12SomeFunctionv"]
     pub fn SomeFunction();
 }
 unsafe extern "C" {
@@ -18,7 +18,7 @@ const _: () = {
     ["Alignment of someClass"][::std::mem::align_of::<someClass>() - 1usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN9someClass16somePublicMethodEi"]
+    #[link_name = "_ZN9someClass16somePublicMethodEi"]
     pub fn someClass_somePublicMethod(this: *mut someClass, foo: ::std::os::raw::c_int);
 }
 impl someClass {
@@ -31,7 +31,7 @@ unsafe extern "C" {
     pub fn ExternFunction();
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN3foo18NamespacedFunctionEv"]
+    #[link_name = "_ZN3foo18NamespacedFunctionEv"]
     pub fn foo_NamespacedFunction();
 }
 #[repr(C)]
