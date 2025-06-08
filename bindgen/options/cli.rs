@@ -444,6 +444,12 @@ struct BindgenCommand {
     /// Always be specific about the 'receiver' of a virtual function.
     #[arg(long)]
     use_specific_virtual_function_receiver: bool,
+    /// Use a newtype wrapper around opaque types.
+    #[arg(long)]
+    use_opaque_newtype_wrapper: bool,
+    /// Use a newtype wrapper around C++ references.
+    #[arg(long)]
+    use_reference_newtype_wrapper: bool,
     /// Use distinct char16_t
     #[arg(long)]
     use_distinct_char16_t: bool,
@@ -651,6 +657,8 @@ where
         c_naming,
         explicit_padding,
         use_specific_virtual_function_receiver,
+        use_opaque_newtype_wrapper,
+        use_reference_newtype_wrapper,
         use_distinct_char16_t,
         represent_cxx_operators,
         vtable_generation,
@@ -954,6 +962,8 @@ where
             c_naming,
             explicit_padding,
             use_specific_virtual_function_receiver,
+            use_opaque_newtype_wrapper,
+            use_reference_newtype_wrapper,
             use_distinct_char16_t,
             represent_cxx_operators,
             vtable_generation,

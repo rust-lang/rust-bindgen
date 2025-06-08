@@ -159,7 +159,7 @@ impl<'ctx> MonotoneFramework for HasVtableAnalysis<'ctx> {
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) |
             TypeKind::ResolvedTypeRef(t) |
-            TypeKind::Reference(t) => {
+            TypeKind::Reference(t, _) => {
                 trace!(
                     "    aliases and references forward to their inner type"
                 );
