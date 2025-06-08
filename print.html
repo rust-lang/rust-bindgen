@@ -1051,7 +1051,7 @@ you need to build an API to the C++ library, but using those types in Rust will
 be nowhere near as nice as using them in C++. You will have to manually call
 constructors, destructors, overloaded operators, etc yourself.</p>
 <p>When passing in header files, the file will automatically be treated as C++ if
-it ends in <code>.hpp</code>. If it doesn't, adding <code>-x c++</code> clang args can be used to
+it ends in <code>.hpp</code>. If it doesn't, adding <code>clang_args([&quot;-x&quot;, &quot;c++&quot;])</code> can be used to
 force C++ mode. You probably also want to use <code>-std=c++14</code> or similar clang args
 as well.</p>
 <p>You pretty much <strong>must</strong> use <a href="./allowlisting.html">allowlisting</a> when working
