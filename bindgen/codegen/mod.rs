@@ -2337,18 +2337,17 @@ impl CodeGenerator for CompInfo {
                 }
             }
         } else if is_union && !forward_decl {
-            // TODO(emilio): It'd be nice to unify this with the struct path
-            // above somehow.
-            let layout = layout.expect("Unable to get layout information?");
-            if struct_layout.requires_explicit_align(layout) {
-                explicit_align = Some(layout.align);
-            }
-
-            if !struct_layout.is_rust_union() {
-                let ty = helpers::blob(ctx, layout, false);
-                fields.push(quote! {
-                    pub bindgen_union_field: #ty ,
-                });
+            if let Some(layout) = layout {
+                // TODO(emilio): It'd be nice to unify this with the struct path above somehow.
+                if struct_layout.requires_explicit_align(layout) {
+                    explicit_align = Some(layout.align);
+                }
+                if !struct_layout.is_rust_union() {
+                    let ty = helpers::blob(ctx, layout, false);
+                    fields.push(quote! {
+                        pub bindgen_union_field: #ty ,
+                    });
+                }
             }
         }
 
