@@ -31,7 +31,6 @@ clang-sys = "1"
 clap = "4"
 clap_complete = "4"
 env_logger = "0.10.0"
-itertools = { version = ">=0.10,<0.14", default-features = false }
 libloading = "0.8"
 log = "0.4"
 objc = "0.2"
