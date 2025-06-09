@@ -95,7 +95,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
     steps:
       - uses: actions/checkout@v4
 
@@ -103,10 +103,16 @@ jobs:
         run: cd bindgen-tests/tests/expectations && cargo test
 
   test:
-    runs-on: ${{matrix.os}}
+    runs-on: ${{matrix.platform.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        platform:
+          - os: ubuntu-latest
+            libtinfo: libtinfo5_6.3-2ubuntu0.1_amd64.deb
+            ubuntu_repo: https://mirrors.kernel.org/ubuntu/pool/universe/n/ncurses/
+          - os: ubuntu-24.04-arm
+            libtinfo: libtinfo5_6.3-2ubuntu0.1_arm64.deb
+            ubuntu_repo: https://ports.ubuntu.com/ubuntu-ports/pool/universe/n/ncurses/
         llvm_version: ["9.0", "16.0"]
         release_build: [0, 1]
         no_default_features: [0, 1]
@@ -118,14 +124,18 @@ jobs:
         include:
           # Test with extra asserts + docs just with latest llvm versions to
           # prevent explosion
-          - os: ubuntu-latest
+          - platform:
+              os: ubuntu-latest
+              libtinfo: libtinfo5_6.3-2ubuntu0.1_amd64.deb
+              ubuntu_repo: https://mirrors.kernel.org/ubuntu/pool/universe/n/ncurses/
             llvm_version: "16.0"
             release_build: 0
             no_default_features: 0
             feature_extra_asserts: 1
 
           # Ensure stuff works on macos too
-          - os: macos-latest
+          - platform:
+              os: macos-latest
             llvm_version: "16.0"
             release_build: 0
             no_default_features: 0
@@ -138,22 +148,22 @@ jobs:
         with:
           toolchain: stable
       - name: Install libtinfo
-        if: matrix.os == 'ubuntu-latest'
+        if: startsWith(matrix.platform.os, 'ubuntu')
         run: |
-          wget https://mirrors.kernel.org/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
-          sudo dpkg -i libtinfo5_6.3-2ubuntu0.1_amd64.deb
+          wget ${{matrix.platform.ubuntu_repo}}${{matrix.platform.libtinfo}}
+          sudo dpkg -i ${{matrix.platform.libtinfo}}
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v2.0.5
         with:
           version: ${{matrix.llvm_version}}
       - name: Run all the tests
         env:
-          GITHUB_ACTIONS_OS: ${{matrix.os}}
+          GITHUB_ACTIONS_OS: ${{matrix.platform.os}}
           BINDGEN_RELEASE_BUILD: ${{matrix.release_build}}
           BINDGEN_FEATURE_RUNTIME: ${{matrix.feature_runtime}}
           BINDGEN_FEATURE_EXTRA_ASSERTS: ${{matrix.feature_extra_asserts}}
           BINDGEN_NO_DEFAULT_FEATURES: ${{matrix.no_default_features}}
-          BINDGEN_RUST_FOR_LINUX_TEST: ${{matrix.os == 'ubuntu-latest' && matrix.llvm_version == '16.0' && matrix.feature_extra_asserts == 0 && 1 || 0}}
+          BINDGEN_RUST_FOR_LINUX_TEST: ${{startsWith(matrix.platform.os, 'ubuntu') && matrix.llvm_version == '16.0' && matrix.feature_extra_asserts == 0 && 1 || 0}}
         run: ./ci/test.sh
 
   test-book:
