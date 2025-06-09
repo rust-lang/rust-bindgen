@@ -508,7 +508,7 @@ where
         if raw_fields.peek().is_none() {
             break;
         }
-        let mut bitfields = Vec::new(); // 改为Vec存储位域
+        let mut bitfields = Vec::new();
         while let Some(field) = raw_fields.peek() {
             if field.bitfield_width().is_some() {
                 bitfields.push(raw_fields.next().unwrap());
@@ -595,6 +595,7 @@ where
     let mut unit_size_in_bits = 0;
     let mut unit_align = 0;
     let mut bitfields_in_unit = vec![];
+    // Offset into the previous member, where the bitfields begin at
     let mut bitfields_bit_begin_off = 0;
 
     // TODO(emilio): Determine this from attributes or pragma ms_struct
@@ -658,11 +659,14 @@ where
             // NB: The `bitfield_width` here is completely, absolutely
             // intentional.  Alignment of the allocation unit is based on the
             // maximum bitfield width, not (directly) on the bitfields' types'
-            // alignment.
+            // alignment. this is only available in bitfields start of structure
             if bitfields_bit_begin_off == 0 {
                 unit_align = cmp::max(unit_align, bitfield_width);
             } else {
-                unit_align = 8;
+                // if bitfields is not start of structure, due to the presence
+                // of backward embedding, we can't use max alignment as the
+                // start of the bitfields: default set to u8
+                unit_align = u8::BITS as usize;
             }
         }
 
@@ -687,7 +691,8 @@ where
             .offset()
             .map_or(unit_size_in_bits, |off| off - bitfields_bit_begin_off)
     } else if let Some(parent_layout_) = parent_layout {
-        parent_layout_.size * 8 - bitfields_bit_begin_off
+        // if the bitfield is an end of structure, use bitfields start to the structure end
+        parent_layout_.size * (u8::BITS as usize) - bitfields_bit_begin_off
     } else {
         unit_size_in_bits
     };
