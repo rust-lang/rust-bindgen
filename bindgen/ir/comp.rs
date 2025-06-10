@@ -606,15 +606,14 @@ where
         let bitfield_width = bitfield.bitfield_width().unwrap() as usize;
         let bitfield_layout =
             ctx.resolve_type(bitfield.ty()).layout(ctx).ok_or(())?;
-        let bitfield_size = bitfield_layout.size;
         let bitfield_align = bitfield_layout.align;
         // bitfield offset of struct/union
-        let bitfield_offset = bitfield.offset().unwrap_or_default();
+        let bitfield_offset = bitfield.offset().unwrap();
 
         if unit_size_in_bits == 0 {
             bitfields_bit_begin_off = bitfield_offset;
         }
-        let mut offset = unit_size_in_bits;
+        
         if !packed {
             if is_ms_struct {
                 if unit_size_in_bits != 0 &&
@@ -636,17 +635,15 @@ where
 
                     // Now we're working on a fresh bitfield allocation unit, so reset
                     // the current unit size and alignment.
-                    offset = 0;
+                    // offset = 0;
                     unit_align = 0;
+                    bitfields_bit_begin_off = 0;
+                    // unit_size_in_bits = 0;
                 }
-            } else if offset != 0 &&
-                (bitfield_width == 0 ||
-                    (offset & (bitfield_align * 8 - 1)) + bitfield_width >
-                        bitfield_size * 8)
-            {
-                offset = align_to(offset, bitfield_align * 8);
             }
         }
+        // depended clang report field offset, manual calculates sometime not true 
+        let offset = bitfield_offset - bitfields_bit_begin_off;
 
         // According to the x86[-64] ABI spec: "Unnamed bit-fields’ types do not
         // affect the alignment of a structure or union". This makes sense: such
