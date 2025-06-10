@@ -1,4 +1,4 @@
-// bindgen-flags: -- --target=i586-unknown-linux
+// bindgen-flags: --no-layout-tests -- --target=i586-unknown-linux
 
 typedef unsigned long long uint64_t;
 
