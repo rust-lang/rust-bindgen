@@ -279,13 +279,13 @@ impl B {
     }
     #[inline]
     pub fn bar(&self) -> ::std::os::raw::c_uchar {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(31usize, 1u8) as u8) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
     }
     #[inline]
     pub fn set_bar(&mut self, val: ::std::os::raw::c_uchar) {
         unsafe {
             let val: u8 = ::std::mem::transmute(val);
-            self._bitfield_1.set(31usize, 1u8, val as u64)
+            self._bitfield_1.set(0usize, 1u8, val as u64)
         }
     }
     #[inline]
@@ -294,8 +294,7 @@ impl B {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
                     [u8; 4usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 31usize, 1u8)
-                    as u8,
+                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 1u8) as u8,
             )
         }
     }
@@ -307,7 +306,7 @@ impl B {
                 [u8; 4usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                31usize,
+                0usize,
                 1u8,
                 val as u64,
             )
@@ -330,7 +329,7 @@ impl B {
             );
         __bindgen_bitfield_unit
             .set(
-                31usize,
+                0usize,
                 1u8,
                 {
                     let bar: u8 = unsafe { ::std::mem::transmute(bar) };
