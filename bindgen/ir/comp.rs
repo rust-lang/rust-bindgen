@@ -613,7 +613,7 @@ where
         if unit_size_in_bits == 0 {
             bitfields_bit_begin_off = bitfield_offset;
         }
-        
+
         if !packed {
             if is_ms_struct {
                 if unit_size_in_bits != 0 &&
@@ -642,7 +642,7 @@ where
                 }
             }
         }
-        // depended clang report field offset, manual calculates sometime not true 
+        // depended clang report field offset, manual calculates sometime not true
         let offset = bitfield_offset - bitfields_bit_begin_off;
 
         // According to the x86[-64] ABI spec: "Unnamed bit-fields’ types do not
