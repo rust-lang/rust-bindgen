@@ -614,33 +614,30 @@ where
             bitfields_bit_begin_off = bitfield_offset;
         }
 
-        if !packed {
-            if is_ms_struct {
-                if unit_size_in_bits != 0 &&
-                    (bitfield_width == 0 ||
-                        bitfield_width > unfilled_bits_in_unit)
-                {
-                    // We've reached the end of this allocation unit, so flush it
-                    // and its bitfields.
-                    unit_size_in_bits =
-                        align_to(unit_size_in_bits, unit_align * 8);
-                    flush_allocation_unit(
-                        fields,
-                        bitfield_unit_count,
-                        unit_size_in_bits,
-                        unit_align,
-                        mem::take(&mut bitfields_in_unit),
-                        packed,
-                    );
+        if !packed
+            && is_ms_struct
+            && (unit_size_in_bits != 0
+                && (bitfield_width == 0
+                    || bitfield_width > unfilled_bits_in_unit))
+        {
+            // We've reached the end of this allocation unit, so flush it
+            // and its bitfields.
+            unit_size_in_bits = align_to(unit_size_in_bits, unit_align * 8);
+            flush_allocation_unit(
+                fields,
+                bitfield_unit_count,
+                unit_size_in_bits,
+                unit_align,
+                mem::take(&mut bitfields_in_unit),
+                packed,
+            );
 
-                    // Now we're working on a fresh bitfield allocation unit, so reset
-                    // the current unit size and alignment.
-                    // offset = 0;
-                    unit_align = 0;
-                    bitfields_bit_begin_off = 0;
-                    // unit_size_in_bits = 0;
-                }
-            }
+            // Now we're working on a fresh bitfield allocation unit, so reset
+            // the current unit size and alignment.
+            unit_align = 0;
+            bitfields_bit_begin_off = bitfield_offset;
+            // uncomment when support msvc 
+            // unit_size_in_bits = 0;
         }
         // depended clang report field offset, manual calculates sometime not true
         let offset = bitfield_offset - bitfields_bit_begin_off;
