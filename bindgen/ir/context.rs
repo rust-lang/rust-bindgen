@@ -724,7 +724,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             self.need_bitfield_allocation.push(id);
         }
 
-        let old_item = mem::replace(&mut self.items[id.0], Some(item));
+        let old_item = self.items[id.0].replace(item);
         assert!(
             old_item.is_none(),
             "should not have already associated an item with the given id"
@@ -827,7 +827,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.add_item_to_module(&item);
 
         let id = item.id();
-        let old_item = mem::replace(&mut self.items[id.0], Some(item));
+        let old_item = self.items[id.0].replace(item);
         assert!(
             old_item.is_none(),
             "should not have already associated an item with the given id"
@@ -987,7 +987,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         let result = f(self, &mut item);
 
-        let existing = mem::replace(&mut self.items[id.0], Some(item));
+        let existing = self.items[id.0].replace(item);
         assert!(existing.is_none());
 
         result
@@ -1434,7 +1434,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         debug_assert!(item.kind().is_type());
         self.add_item_to_module(&item);
         let id = item.id();
-        let old_item = mem::replace(&mut self.items[id.0], Some(item));
+        let old_item = self.items[id.0].replace(item);
         assert!(old_item.is_none(), "Inserted type twice?");
     }
 
