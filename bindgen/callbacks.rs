@@ -248,7 +248,7 @@ pub enum DiscoveredItem {
 
 /// Relevant information about a type to which new derive attributes will be added using
 /// [`ParseCallbacks::add_derives`].
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[non_exhaustive]
 pub struct DeriveInfo<'a> {
     /// The name of the type.
@@ -259,7 +259,7 @@ pub struct DeriveInfo<'a> {
 
 /// Relevant information about a type to which new attributes will be added using
 /// [`ParseCallbacks::add_attributes`].
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[non_exhaustive]
 pub struct AttributeInfo<'a> {
     /// The name of the type.
@@ -280,7 +280,7 @@ pub enum TypeKind {
 }
 
 /// A struct providing information about the item being passed to [`ParseCallbacks::generated_name_override`].
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[non_exhaustive]
 pub struct ItemInfo<'a> {
     /// The name of the item
@@ -290,7 +290,7 @@ pub struct ItemInfo<'a> {
 }
 
 /// An enum indicating the kind of item for an `ItemInfo`.
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[non_exhaustive]
 pub enum ItemKind {
     /// A module
@@ -305,7 +305,7 @@ pub enum ItemKind {
 
 /// Relevant information about a field for which visibility can be determined using
 /// [`ParseCallbacks::field_visibility`].
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[non_exhaustive]
 pub struct FieldInfo<'a> {
     /// The name of the type.
