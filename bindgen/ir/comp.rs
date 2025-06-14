@@ -481,6 +481,7 @@ fn raw_fields_to_fields_and_bitfield_units<I>(
     ctx: &BindgenContext,
     raw_fields: I,
     packed: bool,
+    parent_layout: Option<&Layout>,
 ) -> Result<(Vec<Field>, bool), ()>
 where
     I: IntoIterator<Item = RawField>,
@@ -504,20 +505,26 @@ where
         // Now gather all the consecutive bitfields. Only consecutive bitfields
         // may potentially share a bitfield allocation unit with each other in
         // the Itanium C++ ABI.
-        let mut bitfields = raw_fields
-            .by_ref()
-            .peeking_take_while(|f| f.bitfield_width().is_some())
-            .peekable();
-
-        if bitfields.peek().is_none() {
+        if raw_fields.peek().is_none() {
             break;
         }
+        let mut bitfields = Vec::new();
+        while let Some(field) = raw_fields.peek() {
+            if field.bitfield_width().is_some() {
+                bitfields.push(raw_fields.next().unwrap());
+            } else {
+                break;
+            }
+        }
+        let next_non_bitfield = raw_fields.peek();
 
         bitfields_to_allocation_units(
             ctx,
             &mut bitfield_unit_count,
             &mut fields,
             bitfields,
+            next_non_bitfield,
+            parent_layout,
             packed,
         )?;
     }
@@ -537,6 +544,8 @@ fn bitfields_to_allocation_units<E, I>(
     bitfield_unit_count: &mut usize,
     fields: &mut E,
     raw_bitfields: I,
+    next_non_bitfield: Option<&RawField>,
+    parent_layout: Option<&Layout>,
     packed: bool,
 ) -> Result<(), ()>
 where
@@ -586,6 +595,8 @@ where
     let mut unit_size_in_bits = 0;
     let mut unit_align = 0;
     let mut bitfields_in_unit = vec![];
+    // Offset into the previous member, where the bitfields begin at
+    let mut bitfields_bit_begin_off = 0;
 
     // TODO(emilio): Determine this from attributes or pragma ms_struct
     // directives. Also, perhaps we should check if the target is MSVC?
@@ -595,42 +606,41 @@ where
         let bitfield_width = bitfield.bitfield_width().unwrap() as usize;
         let bitfield_layout =
             ctx.resolve_type(bitfield.ty()).layout(ctx).ok_or(())?;
-        let bitfield_size = bitfield_layout.size;
         let bitfield_align = bitfield_layout.align;
+        // bitfield offset of struct/union
+        let bitfield_offset = bitfield.offset().unwrap();
 
-        let mut offset = unit_size_in_bits;
-        if !packed {
-            if is_ms_struct {
-                if unit_size_in_bits != 0 &&
-                    (bitfield_width == 0 ||
-                        bitfield_width > unfilled_bits_in_unit)
-                {
-                    // We've reached the end of this allocation unit, so flush it
-                    // and its bitfields.
-                    unit_size_in_bits =
-                        align_to(unit_size_in_bits, unit_align * 8);
-                    flush_allocation_unit(
-                        fields,
-                        bitfield_unit_count,
-                        unit_size_in_bits,
-                        unit_align,
-                        mem::take(&mut bitfields_in_unit),
-                        packed,
-                    );
-
-                    // Now we're working on a fresh bitfield allocation unit, so reset
-                    // the current unit size and alignment.
-                    offset = 0;
-                    unit_align = 0;
-                }
-            } else if offset != 0 &&
-                (bitfield_width == 0 ||
-                    (offset & (bitfield_align * 8 - 1)) + bitfield_width >
-                        bitfield_size * 8)
-            {
-                offset = align_to(offset, bitfield_align * 8);
-            }
+        if unit_size_in_bits == 0 {
+            bitfields_bit_begin_off = bitfield_offset;
         }
+
+        if !packed
+            && is_ms_struct
+            && (unit_size_in_bits != 0
+                && (bitfield_width == 0
+                    || bitfield_width > unfilled_bits_in_unit))
+        {
+            // We've reached the end of this allocation unit, so flush it
+            // and its bitfields.
+            unit_size_in_bits = align_to(unit_size_in_bits, unit_align * 8);
+            flush_allocation_unit(
+                fields,
+                bitfield_unit_count,
+                unit_size_in_bits,
+                unit_align,
+                mem::take(&mut bitfields_in_unit),
+                packed,
+            );
+
+            // Now we're working on a fresh bitfield allocation unit, so reset
+            // the current unit size and alignment.
+            unit_align = 0;
+            bitfields_bit_begin_off = bitfield_offset;
+            // uncomment when support msvc 
+            // unit_size_in_bits = 0;
+        }
+        // depended clang report field offset, manual calculates sometime not true
+        let offset = bitfield_offset - bitfields_bit_begin_off;
 
         // According to the x86[-64] ABI spec: "Unnamed bit-fields’ types do not
         // affect the alignment of a structure or union". This makes sense: such
@@ -643,8 +653,15 @@ where
             // NB: The `bitfield_width` here is completely, absolutely
             // intentional.  Alignment of the allocation unit is based on the
             // maximum bitfield width, not (directly) on the bitfields' types'
-            // alignment.
-            unit_align = cmp::max(unit_align, bitfield_width);
+            // alignment. this is only available in bitfields start of structure
+            if bitfields_bit_begin_off == 0 {
+                unit_align = cmp::max(unit_align, bitfield_width);
+            } else {
+                // if bitfields is not start of structure, due to the presence
+                // of backward embedding, we can't use max alignment as the
+                // start of the bitfields: default set to u8
+                unit_align = u8::BITS as usize;
+            }
         }
 
         // Always keep all bitfields around. While unnamed bitifields are used
@@ -663,12 +680,23 @@ where
         unfilled_bits_in_unit = data_size - unit_size_in_bits;
     }
 
+    let final_bit_size = if let Some(next_field) = next_non_bitfield {
+        next_field
+            .offset()
+            .map_or(unit_size_in_bits, |off| off - bitfields_bit_begin_off)
+    } else if let Some(parent_layout_) = parent_layout {
+        // if the bitfield is an end of structure, use bitfields start to the structure end
+        parent_layout_.size * (u8::BITS as usize) - bitfields_bit_begin_off
+    } else {
+        unit_size_in_bits
+    };
+
     if unit_size_in_bits != 0 {
         // Flush the last allocation unit and its bitfields.
         flush_allocation_unit(
             fields,
             bitfield_unit_count,
-            unit_size_in_bits,
+            final_bit_size,
             unit_align,
             bitfields_in_unit,
             packed,
@@ -715,7 +743,12 @@ impl CompFields {
         }
     }
 
-    fn compute_bitfield_units(&mut self, ctx: &BindgenContext, packed: bool) {
+    fn compute_bitfield_units(
+        &mut self,
+        ctx: &BindgenContext,
+        packed: bool,
+        parent_layout: Option<&Layout>,
+    ) {
         let raws = match *self {
             CompFields::Before(ref mut raws) => mem::take(raws),
             _ => {
@@ -723,7 +756,12 @@ impl CompFields {
             }
         };
 
-        let result = raw_fields_to_fields_and_bitfield_units(ctx, raws, packed);
+        let result = raw_fields_to_fields_and_bitfield_units(
+            ctx,
+            raws,
+            packed,
+            parent_layout,
+        );
 
         match result {
             Ok((fields, has_bitfield_units)) => {
@@ -1699,7 +1737,13 @@ impl CompInfo {
         layout: Option<&Layout>,
     ) {
         let packed = self.is_packed(ctx, layout);
-        self.fields.compute_bitfield_units(ctx, packed);
+        let parent_layout = layout.map(|l| Layout {
+            size: l.size,
+            align: l.align,
+            packed,
+        });
+        self.fields
+            .compute_bitfield_units(ctx, packed, parent_layout.as_ref());
     }
 
     /// Assign for each anonymous field a generated name.

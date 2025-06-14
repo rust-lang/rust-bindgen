@@ -824,7 +824,7 @@ pub union rte_mbuf__bindgen_ty_5 {
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     pub _bitfield_align_1: [u16; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 7usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
@@ -852,7 +852,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 7usize],
+                    [u8; 8usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 7u8)
                     as u64,
             )
@@ -863,7 +863,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             let val: u64 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 7usize],
+                [u8; 8usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 0usize,
@@ -888,7 +888,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 7usize],
+                    [u8; 8usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 7usize, 9u8)
                     as u64,
             )
@@ -899,7 +899,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             let val: u64 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 7usize],
+                [u8; 8usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 7usize,
@@ -924,7 +924,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 7usize],
+                    [u8; 8usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 16usize, 8u8)
                     as u64,
             )
@@ -935,7 +935,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             let val: u64 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 7usize],
+                [u8; 8usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 16usize,
@@ -960,7 +960,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 7usize],
+                    [u8; 8usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 24usize, 16u8)
                     as u64,
             )
@@ -971,7 +971,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             let val: u64 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 7usize],
+                [u8; 8usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 24usize,
@@ -996,7 +996,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 7usize],
+                    [u8; 8usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 40usize, 9u8)
                     as u64,
             )
@@ -1007,7 +1007,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             let val: u64 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 7usize],
+                [u8; 8usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 40usize,
@@ -1032,7 +1032,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 7usize],
+                    [u8; 8usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 49usize, 7u8)
                     as u64,
             )
@@ -1043,7 +1043,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         unsafe {
             let val: u64 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 7usize],
+                [u8; 8usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 49usize,
@@ -1060,8 +1060,8 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         tso_segsz: u64,
         outer_l3_len: u64,
         outer_l2_len: u64,
-    ) -> __BindgenBitfieldUnit<[u8; 7usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 7usize]> = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 8usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
         __bindgen_bitfield_unit
             .set(
                 0usize,

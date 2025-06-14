@@ -151,8 +151,7 @@ pub struct my_struct {
     pub a: ::std::os::raw::c_int,
     private_b: ::std::os::raw::c_int,
     _bitfield_align_1: [u8; 0],
-    _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    __bindgen_padding_0: [u8; 3usize],
+    _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
@@ -180,7 +179,7 @@ impl my_struct {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 1usize],
+                    [u8; 4usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 1u8)
                     as u32,
             )
@@ -191,7 +190,7 @@ impl my_struct {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 1usize],
+                [u8; 4usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 0usize,
@@ -216,7 +215,7 @@ impl my_struct {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 1usize],
+                    [u8; 4usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 1usize, 1u8)
                     as u32,
             )
@@ -227,7 +226,7 @@ impl my_struct {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 1usize],
+                [u8; 4usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 1usize,
@@ -240,8 +239,8 @@ impl my_struct {
     fn new_bitfield_1(
         c: ::std::os::raw::c_int,
         private_d: ::std::os::raw::c_int,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
         __bindgen_bitfield_unit
             .set(
                 0usize,

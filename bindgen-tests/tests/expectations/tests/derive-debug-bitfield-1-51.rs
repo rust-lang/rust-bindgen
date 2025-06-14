@@ -149,7 +149,7 @@ where
 #[derive(Debug, Copy, Clone)]
 pub struct C {
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
     pub large_array: [::std::os::raw::c_int; 50usize],
 }
 #[test]
@@ -190,7 +190,7 @@ impl C {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 1usize],
+                    [u8; 4usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 1u8) as u8,
             )
         }
@@ -200,7 +200,7 @@ impl C {
         unsafe {
             let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 1usize],
+                [u8; 4usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 0usize,
@@ -225,7 +225,7 @@ impl C {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 1usize],
+                    [u8; 4usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 1usize, 7u8) as u8,
             )
         }
@@ -235,7 +235,7 @@ impl C {
         unsafe {
             let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 1usize],
+                [u8; 4usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 1usize,
@@ -245,8 +245,8 @@ impl C {
         }
     }
     #[inline]
-    pub fn new_bitfield_1(a: bool, b: bool) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+    pub fn new_bitfield_1(a: bool, b: bool) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
         __bindgen_bitfield_unit
             .set(
                 0usize,

@@ -426,8 +426,7 @@ pub struct rte_eth_txmode {
     pub mq_mode: rte_eth_tx_mq_mode,
     pub pvid: u16,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub __bindgen_padding_0: u8,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
 }
 #[test]
 fn bindgen_test_layout_rte_eth_txmode() {
@@ -502,8 +501,8 @@ impl rte_eth_txmode {
         hw_vlan_reject_tagged: u8,
         hw_vlan_reject_untagged: u8,
         hw_vlan_insert_pvid: u8,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
         __bindgen_bitfield_unit
             .set(
                 0usize,

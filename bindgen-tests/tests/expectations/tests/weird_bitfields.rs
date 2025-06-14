@@ -156,7 +156,7 @@ pub enum nsStyleSVGOpacitySource {
 #[derive(Debug, Copy, Clone)]
 pub struct Weird {
     pub mStrokeDasharrayLength: ::std::os::raw::c_uint,
-    pub _bitfield_align_1: [u16; 0],
+    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
     pub mClipRule: ::std::os::raw::c_uchar,
     pub mColorInterpolation: ::std::os::raw::c_uchar,
@@ -170,8 +170,7 @@ pub struct Weird {
     pub mTextAnchor: ::std::os::raw::c_uchar,
     pub mTextRendering: ::std::os::raw::c_uchar,
     pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 2usize]>,
-    pub __bindgen_padding_0: [u8; 3usize],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 5usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
@@ -338,7 +337,7 @@ impl Weird {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 2usize],
+                    [u8; 5usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_2), 0usize, 3u8)
                     as u32,
             )
@@ -352,7 +351,7 @@ impl Weird {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 2usize],
+                [u8; 5usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_2),
                 0usize,
@@ -379,7 +378,7 @@ impl Weird {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 2usize],
+                    [u8; 5usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_2), 3usize, 3u8)
                     as u32,
             )
@@ -393,7 +392,7 @@ impl Weird {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 2usize],
+                [u8; 5usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_2),
                 3usize,
@@ -418,7 +417,7 @@ impl Weird {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 2usize],
+                    [u8; 5usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_2), 6usize, 1u8) as u8,
             )
         }
@@ -428,7 +427,7 @@ impl Weird {
         unsafe {
             let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 2usize],
+                [u8; 5usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_2),
                 6usize,
@@ -453,7 +452,7 @@ impl Weird {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 2usize],
+                    [u8; 5usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_2), 7usize, 1u8) as u8,
             )
         }
@@ -463,7 +462,7 @@ impl Weird {
         unsafe {
             let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 2usize],
+                [u8; 5usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_2),
                 7usize,
@@ -488,7 +487,7 @@ impl Weird {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 2usize],
+                    [u8; 5usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_2), 8usize, 1u8) as u8,
             )
         }
@@ -498,7 +497,7 @@ impl Weird {
         unsafe {
             let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 2usize],
+                [u8; 5usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_2),
                 8usize,
@@ -514,8 +513,8 @@ impl Weird {
         mStrokeDasharrayFromObject: bool,
         mStrokeDashoffsetFromObject: bool,
         mStrokeWidthFromObject: bool,
-    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 5usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 5usize]> = Default::default();
         __bindgen_bitfield_unit
             .set(
                 0usize,
