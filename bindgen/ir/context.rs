@@ -1228,7 +1228,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     fn assert_no_dangling_item_traversal(
         &self,
-    ) -> traversal::AssertNoDanglingItemsTraversal {
+    ) -> traversal::AssertNoDanglingItemsTraversal<'_> {
         assert!(self.in_codegen_phase());
         assert_eq!(self.current_module, self.root_module);
 

@@ -35,7 +35,7 @@ checksum = "ace50bade8e6234aa140d9a2f552bbee1db4d353f69b8217bc503490fc1a9f26"
 
 [[package]]
 name = "bindgen"
-version = "0.71.1"
+version = "0.72.0"
 dependencies = [
  "annotate-snippets",
  "bitflags 2.2.1",
@@ -56,7 +56,7 @@ dependencies = [
 
 [[package]]
 name = "bindgen-cli"
-version = "0.71.1"
+version = "0.72.0"
 dependencies = [
  "bindgen",
  "env_logger 0.10.0",

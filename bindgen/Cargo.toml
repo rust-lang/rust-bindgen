@@ -16,7 +16,7 @@ readme = "../README.md"
 repository = "https://github.com/rust-lang/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
 homepage = "https://rust-lang.github.io/rust-bindgen/"
-version = "0.71.1"
+version = "0.72.0"
 build = "build.rs"
 rust-version.workspace = true
 edition.workspace = true
@@ -47,8 +47,6 @@ default = ["logging", "prettyplease", "runtime"]
 logging = ["dep:log"]
 static = ["clang-sys/static"]
 runtime = ["clang-sys/runtime"]
-# This feature is no longer used for anything and should be removed in bindgen 0.70
-which-rustfmt = []
 experimental = ["dep:annotate-snippets"]
 
 ## The following features are for internal use and they shouldn't be used if

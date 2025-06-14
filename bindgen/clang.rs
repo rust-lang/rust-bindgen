@@ -945,7 +945,7 @@ impl Cursor {
     }
 
     /// Gets the tokens that correspond to that cursor.
-    pub(crate) fn tokens(&self) -> RawTokens {
+    pub(crate) fn tokens(&self) -> RawTokens<'_> {
         RawTokens::new(self)
     }
 
@@ -1006,7 +1006,7 @@ impl<'a> RawTokens<'a> {
     }
 
     /// Get an iterator over these tokens.
-    pub(crate) fn iter(&self) -> ClangTokenIterator {
+    pub(crate) fn iter(&self) -> ClangTokenIterator<'_> {
         ClangTokenIterator {
             tu: self.tu,
             raw: self.as_slice().iter(),
