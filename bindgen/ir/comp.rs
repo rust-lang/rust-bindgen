@@ -614,11 +614,11 @@ where
             bitfields_bit_begin_off = bitfield_offset;
         }
 
-        if !packed
-            && is_ms_struct
-            && (unit_size_in_bits != 0
-                && (bitfield_width == 0
-                    || bitfield_width > unfilled_bits_in_unit))
+        if !packed &&
+            is_ms_struct &&
+            (unit_size_in_bits != 0 &&
+                (bitfield_width == 0 ||
+                    bitfield_width > unfilled_bits_in_unit))
         {
             // We've reached the end of this allocation unit, so flush it
             // and its bitfields.
@@ -636,7 +636,7 @@ where
             // the current unit size and alignment.
             unit_align = 0;
             bitfields_bit_begin_off = bitfield_offset;
-            // uncomment when support msvc 
+            // uncomment when support msvc
             // unit_size_in_bits = 0;
         }
         // depended clang report field offset, manual calculates sometime not true
