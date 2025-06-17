@@ -243,7 +243,7 @@ impl Type {
     }
 
     /// Takes `name`, and returns a suitable identifier representation for it.
-    fn sanitize_name(name: &str) -> Cow<str> {
+    fn sanitize_name(name: &str) -> Cow<'_, str> {
         if clang::is_valid_identifier(name) {
             return Cow::Borrowed(name);
         }

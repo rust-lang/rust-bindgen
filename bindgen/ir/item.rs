@@ -17,6 +17,7 @@ use super::module::Module;
 use super::template::{AsTemplateParam, TemplateParameters};
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{Type, TypeKind};
+use crate::callbacks::ItemInfo;
 use crate::clang;
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 
@@ -922,8 +923,19 @@ impl Item {
         let name = names.join("_");
 
         let name = if opt.user_mangled == UserMangled::Yes {
+            let item_info = ItemInfo {
+                name: &name,
+                kind: match self.kind() {
+                    ItemKind::Module(..) => crate::callbacks::ItemKind::Module,
+                    ItemKind::Type(..) => crate::callbacks::ItemKind::Type,
+                    ItemKind::Function(..) => {
+                        crate::callbacks::ItemKind::Function
+                    }
+                    ItemKind::Var(..) => crate::callbacks::ItemKind::Var,
+                },
+            };
             ctx.options()
-                .last_callback(|callbacks| callbacks.item_name(&name))
+                .last_callback(|callbacks| callbacks.item_name(item_info))
                 .unwrap_or(name)
         } else {
             name

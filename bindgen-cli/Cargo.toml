@@ -13,7 +13,7 @@ readme = "../README.md"
 repository = "https://github.com/rust-lang/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
 homepage = "https://rust-lang.github.io/rust-bindgen/"
-version = "0.71.1"
+version = "0.72.0"
 rust-version.workspace = true
 edition.workspace = true
 

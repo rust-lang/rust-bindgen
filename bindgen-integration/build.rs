@@ -1,7 +1,8 @@
 extern crate bindgen;
 
 use bindgen::callbacks::{
-    DeriveInfo, IntKind, MacroParsingBehavior, ParseCallbacks,
+    DeriveInfo, IntKind, ItemInfo, MacroParsingBehavior, ParseCallbacks, Token,
+    TokenKind,
 };
 use bindgen::{Builder, EnumVariation, Formatter};
 use std::collections::HashSet;
@@ -103,16 +104,18 @@ impl ParseCallbacks for MacroCallback {
         }
     }
 
-    fn item_name(&self, original_item_name: &str) -> Option<String> {
-        if original_item_name.starts_with("my_prefixed_") {
+    fn item_name(&self, item_info: ItemInfo) -> Option<String> {
+        if item_info.name.starts_with("my_prefixed_") {
             Some(
-                original_item_name
+                item_info
+                    .name
                     .trim_start_matches("my_prefixed_")
                     .to_string(),
             )
-        } else if original_item_name.starts_with("MY_PREFIXED_") {
+        } else if item_info.name.starts_with("MY_PREFIXED_") {
             Some(
-                original_item_name
+                item_info
+                    .name
                     .trim_start_matches("MY_PREFIXED_")
                     .to_string(),
             )
@@ -143,6 +146,48 @@ impl ParseCallbacks for MacroCallback {
             vec!["#[cfg_attr(test, derive(PartialOrd))]".into()]
         } else {
             vec![]
+        }
+    }
+
+    fn modify_macro(&self, _name: &str, tokens: &mut Vec<Token>) {
+        // Handle macros dealing with bit positions of the format HI:LO
+        if tokens.len() == 4 && tokens[2].kind == TokenKind::Punctuation {
+            if let Ok(colon) = std::str::from_utf8(&tokens[2].raw) {
+                if colon != ":" {
+                    return;
+                }
+                let high = match std::str::from_utf8(&tokens[1].raw) {
+                    Ok(s) => {
+                        if let Ok(val) = s.parse::<u16>() {
+                            val
+                        } else {
+                            return;
+                        }
+                    }
+                    Err(_) => {
+                        return;
+                    }
+                };
+
+                let low = match std::str::from_utf8(&tokens[3].raw) {
+                    Ok(s) => {
+                        if let Ok(val) = s.parse::<u16>() {
+                            val
+                        } else {
+                            return;
+                        }
+                    }
+                    Err(_) => {
+                        return;
+                    }
+                };
+                let value: u32 = ((high as u32) << 16) | low as u32;
+                tokens[1] = Token::from((
+                    TokenKind::Literal,
+                    value.to_string().as_bytes(),
+                ));
+                tokens.truncate(2);
+            }
         }
     }
 }

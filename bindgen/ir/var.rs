@@ -427,7 +427,11 @@ fn parse_macro(
 ) -> Option<(Vec<u8>, cexpr::expr::EvalResult)> {
     use cexpr::expr;
 
-    let cexpr_tokens = cursor.cexpr_tokens();
+    let mut cexpr_tokens = cursor.cexpr_tokens();
+
+    for callbacks in &ctx.options().parse_callbacks {
+        callbacks.modify_macro(&cursor.spelling(), &mut cexpr_tokens);
+    }
 
     let parser = expr::IdentifierParser::new(ctx.parsed_macros());
 

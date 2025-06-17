@@ -48,6 +48,66 @@ impl RustTarget {
 
 impl Default for RustTarget {
     fn default() -> Self {
+        // Bindgen from build script: default to generating bindings compatible
+        // with the Rust version currently performing this build.
+        #[cfg(not(feature = "__cli"))]
+        {
+            use std::env;
+            use std::iter;
+            use std::process::Command;
+            use std::sync::OnceLock;
+
+            static CURRENT_RUST: OnceLock<Option<RustTarget>> = OnceLock::new();
+
+            if let Some(current_rust) = *CURRENT_RUST.get_or_init(|| {
+                let is_build_script =
+                    env::var_os("CARGO_CFG_TARGET_ARCH").is_some();
+                if !is_build_script {
+                    return None;
+                }
+
+                let rustc = env::var_os("RUSTC")?;
+                let rustc_wrapper = env::var_os("RUSTC_WRAPPER")
+                    .filter(|wrapper| !wrapper.is_empty());
+                let wrapped_rustc =
+                    rustc_wrapper.iter().chain(iter::once(&rustc));
+
+                let mut is_clippy_driver = false;
+                loop {
+                    let mut wrapped_rustc = wrapped_rustc.clone();
+                    let mut command =
+                        Command::new(wrapped_rustc.next().unwrap());
+                    command.args(wrapped_rustc);
+                    if is_clippy_driver {
+                        command.arg("--rustc");
+                    }
+                    command.arg("--version");
+
+                    let output = command.output().ok()?;
+                    let string = String::from_utf8(output.stdout).ok()?;
+
+                    // Version string like "rustc 1.100.0-beta.5 (f0e1d2c3b 2026-10-17)"
+                    let last_line = string.lines().last().unwrap_or(&string);
+                    let (program, rest) = last_line.trim().split_once(' ')?;
+                    if program != "rustc" {
+                        if program.starts_with("clippy") && !is_clippy_driver {
+                            is_clippy_driver = true;
+                            continue;
+                        }
+                        return None;
+                    }
+
+                    let number = rest.split([' ', '-', '+']).next()?;
+                    break RustTarget::from_str(number).ok();
+                }
+            }) {
+                return current_rust;
+            }
+        }
+
+        // Bindgen from CLI, or cannot determine compiler version: default to
+        // generating bindings compatible with the latest stable release of Rust
+        // that Bindgen knows about.
         LATEST_STABLE_RUST
     }
 }
