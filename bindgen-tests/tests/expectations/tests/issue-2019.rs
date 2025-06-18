@@ -11,7 +11,7 @@ const _: () = {
     ["Offset of field: A::a"][::std::mem::offset_of!(A, a) - 0usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN1A4makeEv"]
+    #[link_name = "_ZN1A4makeEv"]
     pub fn make() -> A;
 }
 impl A {
@@ -32,7 +32,7 @@ const _: () = {
     ["Offset of field: B::b"][::std::mem::offset_of!(B, b) - 0usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN1B4makeEv"]
+    #[link_name = "_ZN1B4makeEv"]
     pub fn make1() -> B;
 }
 impl B {

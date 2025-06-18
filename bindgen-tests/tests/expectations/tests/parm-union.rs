@@ -10,7 +10,7 @@ const _: () = {
     ["Alignment of Struct"][::std::mem::align_of::<Struct>() - 1usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN6Struct8FunctionER5Union"]
+    #[link_name = "_ZN6Struct8FunctionER5Union"]
     pub fn Struct_Function(this: *mut Struct, arg1: *mut Union);
 }
 impl Struct {

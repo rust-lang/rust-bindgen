@@ -33,6 +33,6 @@ impl Default for C {
     }
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN1C5matchEv"]
+    #[link_name = "_ZN1C5matchEv"]
     pub fn C_match(this: *mut ::std::os::raw::c_void);
 }
