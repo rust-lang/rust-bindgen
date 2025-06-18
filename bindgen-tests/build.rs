@@ -33,6 +33,8 @@ pub fn main() {
                 .replace(|c| !char::is_alphanumeric(c), "_")
                 .replace("__", "_")
                 .to_lowercase();
+            // We actually want the quotes and escape
+            #[allow(clippy::unnecessary_debug_formatting)]
             writeln!(dst, "test_header!(header_{func}, {:?});", entry.path())
                 .unwrap();
         }
