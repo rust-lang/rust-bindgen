@@ -41,9 +41,9 @@ fn error_diff_mismatch(
     filename: &Path,
 ) -> Result<(), Error> {
     println!("diff expected generated");
-    println!("--- expected: {filename:?}");
+    println!("--- expected: \"{}\"", filename.display());
     if let Some(header) = header {
-        println!("+++ generated from: {header:?}");
+        println!("+++ generated from: \"{}\"", header.display());
     }
 
     show_diff(expected, actual);

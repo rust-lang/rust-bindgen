@@ -33,8 +33,12 @@ pub fn main() {
                 .replace(|c| !char::is_alphanumeric(c), "_")
                 .replace("__", "_")
                 .to_lowercase();
-            writeln!(dst, "test_header!(header_{func}, {:?});", entry.path())
-                .unwrap();
+            writeln!(
+                dst,
+                "test_header!(header_{func}, \"{}\");",
+                entry.path().display()
+            )
+            .unwrap();
         }
     }
 
