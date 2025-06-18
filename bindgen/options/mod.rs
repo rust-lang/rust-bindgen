@@ -2283,4 +2283,20 @@ options! {
         },
         as_args: "--generate-private-functions",
     },
+    /// Whether to retain integer literal radices in generated Rust code.
+    keep_integer_radices: bool {
+        default: false,
+        methods: {
+            /// Set whether to retain number bases of C/C++ integer literals.
+            ///
+            /// Integer literals defined as binary `0b…`, octal `0…`, and hexadecimal `0x…` have the
+            /// equivalent notation in the generated Rust code, i.e., `0b…`, `0o…`, and `0x…`
+            /// respectively.
+            pub fn keep_integer_radices(mut self, doit: bool) -> Self {
+                self.options.keep_integer_radices = doit;
+                self
+            }
+        },
+        as_args: "--keep-integer-radices",
+    },
 }

@@ -1,4 +1,4 @@
-// bindgen-flags: --wrap-static-fns
+// bindgen-flags: --wrap-static-fns --keep-integer-radices
 // bindgen-parse-callbacks: wrap-as-variadic-fn
 
 // to avoid polluting the expectation tests we put the stdarg.h behind a conditional

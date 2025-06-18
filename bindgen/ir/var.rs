@@ -30,6 +30,108 @@ pub(crate) enum VarType {
     String(Vec<u8>),
 }
 
+/// Numeric literal's radix.
+#[derive(Debug)]
+pub(crate) enum LiteralRadix {
+    /// Binary (base 2).
+    Binary,
+    /// Octal (base 8).
+    Octal,
+    /// Decimal (base 10).
+    Decimal,
+    /// Hexadecimal (base 16).
+    Hexadecimal,
+}
+
+/// Possible integer literal suffixes, all cases `[Uu]?(L{0,2}|l{0,2})`, from
+/// longest to shortest in number of characters, and the empty case.
+#[rustfmt::skip] // hand-formatted for clarity
+const INTEGER_SUFFIXES: [&str; 15] = [
+    "ULL", "Ull", "uLL", "ull",
+    "UL", "Ul", "uL", "ul",
+    "LL", "ll",
+    "U", "u",
+    "L", "l",
+    "",
+];
+
+impl LiteralRadix {
+    /// Obtain the number base of a bytestring corresponding to an existing
+    /// integer literal definition.
+    ///
+    /// Returns `None` if unable to infer a base.
+    pub(crate) fn from_integer_literal_token(
+        tok: impl AsRef<[u8]>,
+    ) -> Option<Self> {
+        let tok = tok.as_ref();
+
+        // Strip integer suffix (e.g. ULL) if exists
+        let tok = INTEGER_SUFFIXES
+            .iter()
+            .find_map(|suffix| tok.strip_suffix::<[u8]>(suffix.as_ref()))
+            .expect("last suffix is empty bytestring");
+
+        if tok.is_empty() {
+            return None;
+        } else if tok.len() == 1 {
+            // Single digit numbers from 0 to 9 are designated decimal radix,
+            // although technically, in C standard, a single 0 is octal
+            return tok[0].is_ascii_digit().then_some(Self::Decimal);
+        }
+
+        match tok[0] {
+            b'0' => match tok[1] {
+                b'x' | b'X' => {
+                    if tok.len() < 3 {
+                        None // "0x" without actual value
+                    } else {
+                        if tok[2] == b'\'' {
+                            return None;
+                        }
+                        // hexadecimal value: 0-9, a-f, A-F
+                        tok[2..]
+                            .iter()
+                            .all(|chr| chr.is_ascii_hexdigit() || chr == &b'\'')
+                            .then_some(Self::Hexadecimal)
+                    }
+                }
+                b'b' | b'B' => {
+                    if tok.len() < 3 {
+                        None // "0b" without actual value
+                    } else {
+                        if tok[2] == b'\'' {
+                            return None;
+                        }
+                        // binary value: zeros and ones
+                        tok[2..]
+                            .iter()
+                            .all(|chr| {
+                                (b'0'..=b'1').contains(chr) || chr == &b'\''
+                            })
+                            .then_some(Self::Binary)
+                    }
+                }
+                b'0'..=b'7' => {
+                    // octal value: digits 0 to 7 (incl.)
+                    tok[2..]
+                        .iter()
+                        .all(|chr| (b'0'..=b'7').contains(chr) || chr == &b'\'')
+                        .then_some(Self::Octal)
+                }
+                _ => None,
+            },
+            b'1'..=b'9' => {
+                // decimal value: digits 0 to 9 (incl.)
+                tok[1..]
+                    .iter()
+                    .all(|chr| chr.is_ascii_digit() || chr == &b'\'')
+                    .then_some(Self::Decimal)
+            }
+            _ => None,
+        }
+    }
+}
+
 /// A `Var` is our intermediate representation of a variable.
 #[derive(Debug)]
 pub(crate) struct Var {
@@ -45,6 +147,8 @@ pub(crate) struct Var {
     val: Option<VarType>,
     /// Whether this variable is const.
     is_const: bool,
+    /// The radix of the variable, if integer.
+    radix: Option<LiteralRadix>,
 }
 
 impl Var {
@@ -56,6 +160,7 @@ impl Var {
         ty: TypeId,
         val: Option<VarType>,
         is_const: bool,
+        radix: Option<LiteralRadix>,
     ) -> Var {
         assert!(!name.is_empty());
         Var {
@@ -65,7 +170,13 @@ impl Var {
             ty,
             val,
             is_const,
+            radix,
         }
+    }
+
+    /// The radix of this integer variable, if any.
+    pub(crate) fn radix(&self) -> Option<&LiteralRadix> {
+        self.radix.as_ref()
     }
 
     /// Is this variable `const` qualified?
@@ -223,11 +334,13 @@ impl ClangSubItemParser for Var {
                 // enforce utf8 there, so we should have already panicked at
                 // this point.
                 let name = String::from_utf8(id).unwrap();
-                let (type_kind, val) = match value {
+                let (type_kind, val, radix) = match value {
                     EvalResult::Invalid => return Err(ParseError::Continue),
-                    EvalResult::Float(f) => {
-                        (TypeKind::Float(FloatKind::Double), VarType::Float(f))
-                    }
+                    EvalResult::Float(f) => (
+                        TypeKind::Float(FloatKind::Double),
+                        VarType::Float(f),
+                        None,
+                    ),
                     EvalResult::Char(c) => {
                         let c = match c {
                             CChar::Char(c) => {
@@ -237,7 +350,7 @@ impl ClangSubItemParser for Var {
                             CChar::Raw(c) => u8::try_from(c).unwrap(),
                         };
 
-                        (TypeKind::Int(IntKind::U8), VarType::Char(c))
+                        (TypeKind::Int(IntKind::U8), VarType::Char(c), None)
                     }
                     EvalResult::Str(val) => {
                         let char_ty = Item::builtin_type(
@@ -248,7 +361,7 @@ impl ClangSubItemParser for Var {
                         for callbacks in &ctx.options().parse_callbacks {
                             callbacks.str_macro(&name, &val);
                         }
-                        (TypeKind::Pointer(char_ty), VarType::String(val))
+                        (TypeKind::Pointer(char_ty), VarType::String(val), None)
                     }
                     EvalResult::Int(Wrapping(value)) => {
                         let kind = ctx
@@ -258,14 +371,20 @@ impl ClangSubItemParser for Var {
                                 default_macro_constant_type(ctx, value)
                             });
 
-                        (TypeKind::Int(kind), VarType::Int(value))
+                        let radix = if ctx.options().keep_integer_radices {
+                            cursor.get_literal_radix()
+                        } else {
+                            None
+                        };
+
+                        (TypeKind::Int(kind), VarType::Int(value), radix)
                     }
                 };
 
                 let ty = Item::builtin_type(type_kind, true, ctx);
 
                 Ok(ParseResult::New(
-                    Var::new(name, None, None, ty, Some(val), true),
+                    Var::new(name, None, None, ty, Some(val), true, radix),
                     Some(cursor),
                 ))
             }
@@ -334,39 +453,55 @@ impl ClangSubItemParser for Var {
                 // TODO: Strings, though the lookup is a bit more hard (we need
                 // to look at the canonical type of the pointee too, and check
                 // is char, u8, or i8 I guess).
-                let value = if is_integer {
+                let (value, radix) = if is_integer {
                     let TypeKind::Int(kind) = *canonical_ty.unwrap().kind()
                     else {
                         unreachable!()
                     };
 
                     let mut val = cursor.evaluate().and_then(|v| v.as_int());
+                    let radix = if ctx.options().keep_integer_radices {
+                        cursor.get_literal_radix_of_identifier(&name)
+                    } else {
+                        None
+                    };
+
                     if val.is_none() || !kind.signedness_matches(val.unwrap()) {
                         val = get_integer_literal_from_cursor(&cursor);
                     }
 
-                    val.map(|val| {
-                        if kind == IntKind::Bool {
-                            VarType::Bool(val != 0)
-                        } else {
-                            VarType::Int(val)
-                        }
-                    })
+                    (
+                        val.map(|val| {
+                            if kind == IntKind::Bool {
+                                VarType::Bool(val != 0)
+                            } else {
+                                VarType::Int(val)
+                            }
+                        }),
+                        radix,
+                    )
                 } else if is_float {
-                    cursor
-                        .evaluate()
-                        .and_then(|v| v.as_double())
-                        .map(VarType::Float)
+                    (
+                        cursor
+                            .evaluate()
+                            .and_then(|v| v.as_double())
+                            .map(VarType::Float),
+                        None,
+                    )
                 } else {
-                    cursor
-                        .evaluate()
-                        .and_then(|v| v.as_literal_string())
-                        .map(VarType::String)
+                    (
+                        cursor
+                            .evaluate()
+                            .and_then(|v| v.as_literal_string())
+                            .map(VarType::String),
+                        None,
+                    )
                 };
 
                 let mangling = cursor_mangling(ctx, &cursor);
-                let var =
-                    Var::new(name, mangling, link_name, ty, value, is_const);
+                let var = Var::new(
+                    name, mangling, link_name, ty, value, is_const, radix,
+                );
 
                 Ok(ParseResult::New(var, Some(cursor)))
             }
@@ -519,5 +654,94 @@ fn duplicated_macro_diagnostic(
             .add_slice(slice)
             .add_annotation("This macro had a duplicate.", Level::Note)
             .display();
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    impl PartialEq for LiteralRadix {
+        fn eq(&self, other: &Self) -> bool {
+            core::mem::discriminant(self) == core::mem::discriminant(other)
+        }
+    }
+
+    #[test]
+    fn parses_correct_radix_from_valid_raw_token() {
+        let raw_tok_radix_pairs: &[(&[u8], Option<LiteralRadix>)] = &[
+            (b"0", Some(LiteralRadix::Decimal)),
+            (b"1", Some(LiteralRadix::Decimal)),
+            (b"18446744073709551615", Some(LiteralRadix::Decimal)), // u64::MAX
+            (b"9223372036854775808", Some(LiteralRadix::Decimal)), // non-prefixed i64::MIN
+            (b"0b0", Some(LiteralRadix::Binary)),
+            (b"0b1", Some(LiteralRadix::Binary)),
+            (b"0B1", Some(LiteralRadix::Binary)),
+            (
+                b"0b10000000'00000000'00000000'00000000",
+                Some(LiteralRadix::Binary),
+            ),
+            (b"00", Some(LiteralRadix::Octal)),
+            (b"01", Some(LiteralRadix::Octal)),
+            (b"0x0", Some(LiteralRadix::Hexadecimal)),
+            (b"0x1", Some(LiteralRadix::Hexadecimal)),
+            (b"0X1", Some(LiteralRadix::Hexadecimal)),
+            (b"0ULL", Some(LiteralRadix::Decimal)),
+            (b"10UL", Some(LiteralRadix::Decimal)),
+            (b"100L", Some(LiteralRadix::Decimal)),
+            (b"0b0ULL", Some(LiteralRadix::Binary)),
+            (b"0b10UL", Some(LiteralRadix::Binary)),
+            (b"0b100L", Some(LiteralRadix::Binary)),
+            (b"00ULL", Some(LiteralRadix::Octal)),
+            (b"010UL", Some(LiteralRadix::Octal)),
+            (b"0100L", Some(LiteralRadix::Octal)),
+            (b"0x0ULL", Some(LiteralRadix::Hexadecimal)),
+            (b"0x10UL", Some(LiteralRadix::Hexadecimal)),
+            (b"0x100L", Some(LiteralRadix::Hexadecimal)),
+        ];
+
+        for (tok, radix) in raw_tok_radix_pairs {
+            assert_eq!(
+                LiteralRadix::from_integer_literal_token(tok),
+                *radix,
+                "tok = b\"{}\"",
+                std::str::from_utf8(tok).unwrap()
+            );
+        }
+    }
+
+    #[test]
+    fn parses_correct_radix_from_valid_str() {
+        assert_eq!(
+            LiteralRadix::from_integer_literal_token("0xf00d"),
+            Some(LiteralRadix::Hexadecimal),
+            "tok = \"0xf00d\""
+        );
+    }
+
+    #[test]
+    fn parses_none_radix_from_invalid_raw_token() {
+        let raw_toks: &[&[u8]] =
+            &[b"", b"0b", b"0b2", b"0x", b"A", b"f", b"0x'", b"0b'"];
+
+        for tok in raw_toks {
+            assert_eq!(
+                LiteralRadix::from_integer_literal_token(tok),
+                None,
+                "tok = b\"{}\"",
+                std::str::from_utf8(tok).unwrap()
+            );
+        }
+    }
+
+    #[test]
+    fn parses_none_radix_from_lone_integer_suffixes() {
+        for suffix in INTEGER_SUFFIXES {
+            assert_eq!(
+                LiteralRadix::from_integer_literal_token(suffix),
+                None,
+                "tok = \"{suffix}\""
+            );
+        }
     }
 }
