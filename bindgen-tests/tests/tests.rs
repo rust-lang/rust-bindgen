@@ -725,21 +725,35 @@ fn test_wrap_static_fns() {
     // This test is for testing diffs of the generated C source and header files
     // TODO: If another such feature is added, convert this test into a more generic
     //      test that looks at `tests/headers/generated` directory.
+
+    let wrap_static_fns_c_name =
+        if cfg!(all(target_arch = "aarch64", target_os = "linux")) {
+            "wrap_static_fns_aarch64_linux"
+        } else {
+            "wrap_static_fns"
+        };
+
     let expect_path = PathBuf::from("tests/expectations/tests/generated")
-        .join("wrap_static_fns");
+        .join(wrap_static_fns_c_name);
     println!("In path is ::: {}", expect_path.display());
 
     let generated_path =
         PathBuf::from(env::var("OUT_DIR").unwrap()).join("wrap_static_fns");
     println!("Out path is ::: {}", generated_path.display());
 
-    let _bindings = Builder::default()
+    #[allow(unused_mut)]
+    let mut builder = Builder::default()
         .header("tests/headers/wrap-static-fns.h")
         .wrap_static_fns(true)
         .wrap_static_fns_path(generated_path.display().to_string())
-        .parse_callbacks(Box::new(parse_callbacks::WrapAsVariadicFn))
-        .generate()
-        .expect("Failed to generate bindings");
+        .parse_callbacks(Box::new(parse_callbacks::WrapAsVariadicFn));
+
+    #[cfg(all(target_arch = "aarch64", target_os = "linux"))]
+    {
+        builder = builder.clang_arg("-DDISABLE_VA");
+    }
+
+    builder.generate().expect("Failed to generate bindings");
 
     let expected_c = fs::read_to_string(expect_path.with_extension("c"))
         .expect("Could not read generated wrap_static_fns.c");

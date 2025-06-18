@@ -288,7 +288,8 @@ fn setup_wrap_static_fns_test() {
         .expect("Path could not be converted to a str");
 
     // generate external bindings with the external .c and .h files
-    let bindings = Builder::default()
+    #[allow(unused_mut)]
+    let mut builder = Builder::default()
         .header(input_header_file_path_str)
         .parse_callbacks(Box::new(
             bindgen::CargoCallbacks::new().rerun_on_header_files(true),
@@ -298,9 +299,14 @@ fn setup_wrap_static_fns_test() {
         .wrap_static_fns_path(
             out_path.join("wrap_static_fns").display().to_string(),
         )
-        .clang_arg("-DUSE_VA_HEADER")
-        .generate()
-        .expect("Unable to generate bindings");
+        .clang_arg("-DUSE_VA_HEADER");
+
+    #[cfg(all(target_arch = "aarch64", target_os = "linux"))]
+    {
+        builder = builder.clang_arg("-DDISABLE_VA");
+    }
+
+    let bindings = builder.generate().expect("Unable to generate bindings");
 
     println!("cargo:rustc-link-lib=static=wrap_static_fns"); // tell cargo to link libextern
     println!("bindings generated: {bindings}");
@@ -309,14 +315,20 @@ fn setup_wrap_static_fns_test() {
     let lib_path = out_path.join("libwrap_static_fns.a");
 
     // build the external files to check if they work
-    let clang_output = std::process::Command::new("clang")
+    let mut command = std::process::Command::new("clang");
+    command
         .arg("-c")
         .arg("-o")
         .arg(&obj_path)
         .arg(out_path.join("wrap_static_fns.c"))
-        .arg("-DUSE_VA_HEADER")
-        .output()
-        .expect("`clang` command error");
+        .arg("-DUSE_VA_HEADER");
+
+    #[cfg(all(target_arch = "aarch64", target_os = "linux"))]
+    {
+        command.arg("-DDISABLE_VA");
+    }
+
+    let clang_output = command.output().expect("`clang` command error");
     if !clang_output.status.success() {
         panic!(
             "Could not compile object file:\n{}",
