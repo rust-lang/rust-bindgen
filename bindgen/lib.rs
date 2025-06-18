@@ -301,12 +301,11 @@ fn get_extra_clang_args(
     parse_callbacks: &[Rc<dyn callbacks::ParseCallbacks>],
 ) -> Vec<String> {
     // Add any extra arguments from the environment to the clang command line.
-    let extra_clang_args = match get_target_dependent_env_var(
+    let Some(extra_clang_args) = get_target_dependent_env_var(
         parse_callbacks,
         "BINDGEN_EXTRA_CLANG_ARGS",
-    ) {
-        None => return vec![],
-        Some(s) => s,
+    ) else {
+        return vec![];
     };
 
     // Try to parse it with shell quoting. If we fail, make it one single big argument.
@@ -841,12 +840,11 @@ impl Bindings {
                 "Trying to find clang with flags: {clang_args_for_clang_sys:?}"
             );
 
-            let clang = match clang_sys::support::Clang::find(
+            let Some(clang) = clang_sys::support::Clang::find(
                 None,
                 &clang_args_for_clang_sys,
-            ) {
-                None => return,
-                Some(clang) => clang,
+            ) else {
+                return;
             };
 
             debug!("Found clang: {clang:?}");
@@ -980,7 +978,7 @@ impl Bindings {
     }
 
     /// Gets the rustfmt path to rustfmt the generated bindings.
-    fn rustfmt_path(&self) -> io::Result<Cow<'_, PathBuf>> {
+    fn rustfmt_path(&self) -> io::Result<Cow<'_, Path>> {
         debug_assert!(matches!(self.options.formatter, Formatter::Rustfmt));
         if let Some(ref p) = self.options.rustfmt_path {
             return Ok(Cow::Borrowed(p));
