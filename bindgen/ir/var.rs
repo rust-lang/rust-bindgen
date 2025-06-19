@@ -30,6 +30,42 @@ pub(crate) enum VarType {
     String(Vec<u8>),
 }
 
+/// Integer literal's radix.
+#[derive(Debug)]
+pub(crate) enum LiteralRadix {
+    /// Binary (base 2).
+    Binary,
+    /// Octal (base 8).
+    Octal,
+    /// Decimal (base 10).
+    Decimal,
+    /// Hexadecimal (base 16).
+    Hexadecimal,
+}
+
+impl LiteralRadix {
+    /// Obtain the number base of a bytestring corresponding to an existing literal
+    /// definition.
+    ///
+    /// Returns `None` if unable to infer a base.
+    pub(crate) fn from_literal_token_raw(lit_tok_raw: &[u8]) -> Option<Self> {
+        if lit_tok_raw.len() > 1 {
+            match lit_tok_raw[0] {
+                b'0' => match lit_tok_raw[1] {
+                    b'x' | b'X' => Some(Self::Hexadecimal),
+                    b'b' | b'B' => Some(Self::Binary),
+                    b'0'..=b'7' => Some(Self::Octal),
+                    _ => None,
+                },
+                b'1'..=b'9' => Some(Self::Decimal),
+                _ => None,
+            }
+        } else {
+            Some(Self::Decimal)
+        }
+    }
+}
+
 /// A `Var` is our intermediate representation of a variable.
 #[derive(Debug)]
 pub(crate) struct Var {
@@ -45,6 +81,8 @@ pub(crate) struct Var {
     val: Option<VarType>,
     /// Whether this variable is const.
     is_const: bool,
+    /// The radix of the variable, if integer.
+    radix: Option<LiteralRadix>,
 }
 
 impl Var {
@@ -56,6 +94,7 @@ impl Var {
         ty: TypeId,
         val: Option<VarType>,
         is_const: bool,
+        radix: Option<LiteralRadix>,
     ) -> Var {
         assert!(!name.is_empty());
         Var {
@@ -65,7 +104,13 @@ impl Var {
             ty,
             val,
             is_const,
+            radix,
         }
+    }
+
+    /// The radix of this integer variable, if any.
+    pub(crate) fn radix(&self) -> Option<&LiteralRadix> {
+        self.radix.as_ref()
     }
 
     /// Is this variable `const` qualified?
@@ -223,11 +268,13 @@ impl ClangSubItemParser for Var {
                 // enforce utf8 there, so we should have already panicked at
                 // this point.
                 let name = String::from_utf8(id).unwrap();
-                let (type_kind, val) = match value {
+                let (type_kind, val, radix) = match value {
                     EvalResult::Invalid => return Err(ParseError::Continue),
-                    EvalResult::Float(f) => {
-                        (TypeKind::Float(FloatKind::Double), VarType::Float(f))
-                    }
+                    EvalResult::Float(f) => (
+                        TypeKind::Float(FloatKind::Double),
+                        VarType::Float(f),
+                        None,
+                    ),
                     EvalResult::Char(c) => {
                         let c = match c {
                             CChar::Char(c) => {
@@ -237,7 +284,7 @@ impl ClangSubItemParser for Var {
                             CChar::Raw(c) => u8::try_from(c).unwrap(),
                         };
 
-                        (TypeKind::Int(IntKind::U8), VarType::Char(c))
+                        (TypeKind::Int(IntKind::U8), VarType::Char(c), None)
                     }
                     EvalResult::Str(val) => {
                         let char_ty = Item::builtin_type(
@@ -248,7 +295,7 @@ impl ClangSubItemParser for Var {
                         for callbacks in &ctx.options().parse_callbacks {
                             callbacks.str_macro(&name, &val);
                         }
-                        (TypeKind::Pointer(char_ty), VarType::String(val))
+                        (TypeKind::Pointer(char_ty), VarType::String(val), None)
                     }
                     EvalResult::Int(Wrapping(value)) => {
                         let kind = ctx
@@ -258,14 +305,16 @@ impl ClangSubItemParser for Var {
                                 default_macro_constant_type(ctx, value)
                             });
 
-                        (TypeKind::Int(kind), VarType::Int(value))
+                        let radix = cursor.get_literal_radix();
+
+                        (TypeKind::Int(kind), VarType::Int(value), radix)
                     }
                 };
 
                 let ty = Item::builtin_type(type_kind, true, ctx);
 
                 Ok(ParseResult::New(
-                    Var::new(name, None, None, ty, Some(val), true),
+                    Var::new(name, None, None, ty, Some(val), true, radix),
                     Some(cursor),
                 ))
             }
@@ -334,39 +383,51 @@ impl ClangSubItemParser for Var {
                 // TODO: Strings, though the lookup is a bit more hard (we need
                 // to look at the canonical type of the pointee too, and check
                 // is char, u8, or i8 I guess).
-                let value = if is_integer {
+                let (value, radix) = if is_integer {
                     let TypeKind::Int(kind) = *canonical_ty.unwrap().kind()
                     else {
                         unreachable!()
                     };
 
                     let mut val = cursor.evaluate().and_then(|v| v.as_int());
+                    let radix = cursor.get_literal_radix();
+
                     if val.is_none() || !kind.signedness_matches(val.unwrap()) {
                         val = get_integer_literal_from_cursor(&cursor);
                     }
 
-                    val.map(|val| {
-                        if kind == IntKind::Bool {
-                            VarType::Bool(val != 0)
-                        } else {
-                            VarType::Int(val)
-                        }
-                    })
+                    (
+                        val.map(|val| {
+                            if kind == IntKind::Bool {
+                                VarType::Bool(val != 0)
+                            } else {
+                                VarType::Int(val)
+                            }
+                        }),
+                        radix,
+                    )
                 } else if is_float {
-                    cursor
-                        .evaluate()
-                        .and_then(|v| v.as_double())
-                        .map(VarType::Float)
+                    (
+                        cursor
+                            .evaluate()
+                            .and_then(|v| v.as_double())
+                            .map(VarType::Float),
+                        None,
+                    )
                 } else {
-                    cursor
-                        .evaluate()
-                        .and_then(|v| v.as_literal_string())
-                        .map(VarType::String)
+                    (
+                        cursor
+                            .evaluate()
+                            .and_then(|v| v.as_literal_string())
+                            .map(VarType::String),
+                        None,
+                    )
                 };
 
                 let mangling = cursor_mangling(ctx, &cursor);
-                let var =
-                    Var::new(name, mangling, link_name, ty, value, is_const);
+                let var = Var::new(
+                    name, mangling, link_name, ty, value, is_const, radix,
+                );
 
                 Ok(ParseResult::New(var, Some(cursor)))
             }

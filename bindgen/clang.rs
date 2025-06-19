@@ -5,6 +5,7 @@
 #![deny(clippy::missing_docs_in_private_items)]
 
 use crate::ir::context::BindgenContext;
+use crate::ir::var::LiteralRadix;
 use clang_sys::*;
 use std::cmp;
 
@@ -972,6 +973,20 @@ impl Cursor {
     /// Is this cursor's referent a namespace that is inline?
     pub(crate) fn is_inline_namespace(&self) -> bool {
         unsafe { clang_Cursor_isInlineNamespace(self.x) != 0 }
+    }
+
+    /// Obtain the number base (radix) of a literal definition corresponding to the cursor.
+    ///
+    /// Returns `None` if unable to infer a base.
+    pub(crate) fn get_literal_radix(&self) -> Option<LiteralRadix> {
+        self.cexpr_tokens()
+            .iter()
+            .filter(|cexpr_token| {
+                cexpr_token.kind == cexpr::token::Kind::Literal
+            })
+            .find_map(|lit_tok| {
+                LiteralRadix::from_literal_token_raw(&lit_tok.raw)
+            })
     }
 }
 
