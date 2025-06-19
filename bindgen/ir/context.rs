@@ -395,15 +395,15 @@ pub(crate) struct BindgenContext {
     /// Whether a bindgen float16 was generated
     generated_bindgen_float16: Cell<bool>,
 
-    /// The set of `ItemId`s that are allowlisted. This the very first thing
+    /// The set of [`ItemId`]s that are allowlisted. This the very first thing
     /// computed after parsing our IR, and before running any of our analyses.
     allowlisted: Option<ItemSet>,
 
-    /// Cache for calls to `ParseCallbacks::blocklisted_type_implements_trait`
+    /// Cache for calls to [`crate::callbacks::ParseCallbacks::blocklisted_type_implements_trait`]
     blocklisted_types_implement_traits:
         RefCell<HashMap<DeriveTrait, HashMap<ItemId, CanDerive>>>,
 
-    /// The set of `ItemId`s that are allowlisted for code generation _and_ that
+    /// The set of [`ItemId`]s that are allowlisted for code generation _and_ that
     /// we should generate accounting for the codegen options.
     ///
     /// It's computed right after computing the allowlisted items.
