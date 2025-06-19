@@ -149,9 +149,8 @@ impl<'ctx> MonotoneFramework for HasVtableAnalysis<'ctx> {
         trace!("constrain {id:?}");
 
         let item = self.ctx.resolve_item(id);
-        let ty = match item.as_type() {
-            None => return ConstrainResult::Same,
-            Some(ty) => ty,
+        let Some(ty) = item.as_type() else {
+            return ConstrainResult::Same;
         };
 
         // TODO #851: figure out a way to handle deriving from template type parameters.

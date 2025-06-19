@@ -93,9 +93,8 @@ impl<'ctx> MonotoneFramework for HasDestructorAnalysis<'ctx> {
         }
 
         let item = self.ctx.resolve_item(id);
-        let ty = match item.as_type() {
-            None => return ConstrainResult::Same,
-            Some(ty) => ty,
+        let Some(ty) = item.as_type() else {
+            return ConstrainResult::Same;
         };
 
         match *ty.kind() {

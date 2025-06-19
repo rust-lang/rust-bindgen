@@ -168,7 +168,7 @@ options! {
         as_args: "--use-specific-virtual-function-receiver",
     },
 
-    /// Whether we should distinguish between C++'s 'char16_t' and 'u16'.
+    /// Whether we should distinguish between C++'s `char16_t` and `u16`.
     /// The C++ type `char16_t` is its own special type; it's not a typedef
     /// of some other integer (this differs from C).
     /// As standard, bindgen represents C++ `char16_t` as `u16`.
@@ -183,7 +183,7 @@ options! {
     /// real type.
     use_distinct_char16_t: bool {
         methods: {
-            /// If this is true, denote 'char16_t' as a separate type from 'u16'
+            /// If this is true, denote `char16_t` as a separate type from `u16`.
             /// Disabled by default.
             pub fn use_distinct_char16_t(mut self, doit: bool) -> Builder {
                 self.options.use_distinct_char16_t = doit;
@@ -2101,7 +2101,7 @@ options! {
     /// Whether to generate wrappers for `static` functions.
     wrap_static_fns: bool {
         methods: {
-            /// Set whether to generate wrappers for `static`` functions.
+            /// Set whether to generate wrappers for `static` functions.
             ///
             /// Passing `true` to this method will generate a C source file with non-`static`
             /// functions that call the `static` functions found in the input headers and can be
