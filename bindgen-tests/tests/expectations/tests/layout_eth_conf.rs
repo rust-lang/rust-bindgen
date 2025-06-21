@@ -87,9 +87,9 @@ where
         }
     }
 }
-pub const ETH_MQ_RX_RSS_FLAG: u32 = 1;
-pub const ETH_MQ_RX_DCB_FLAG: u32 = 2;
-pub const ETH_MQ_RX_VMDQ_FLAG: u32 = 4;
+pub const ETH_MQ_RX_RSS_FLAG: u32 = 0x1;
+pub const ETH_MQ_RX_DCB_FLAG: u32 = 0x2;
+pub const ETH_MQ_RX_VMDQ_FLAG: u32 = 0x4;
 pub const ETH_VMDQ_MAX_VLAN_FILTERS: u32 = 64;
 pub const ETH_DCB_NUM_USER_PRIORITIES: u32 = 8;
 pub const ETH_VMDQ_DCB_NUM_QUEUES: u32 = 128;
