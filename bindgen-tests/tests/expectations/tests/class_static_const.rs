@@ -5,8 +5,8 @@ pub struct A {
     pub _address: u8,
 }
 pub const A_a: ::std::os::raw::c_int = 0;
-pub const A_b: i32 = 63;
-pub const A_c: u32 = 255;
+pub const A_b: i32 = 0o77;
+pub const A_c: u32 = 0xff;
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of A"][::std::mem::size_of::<A>() - 1usize];
