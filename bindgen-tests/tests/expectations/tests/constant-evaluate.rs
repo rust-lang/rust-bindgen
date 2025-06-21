@@ -8,7 +8,7 @@ pub enum _bindgen_ty_1 {
     bar = 8,
 }
 pub type EasyToOverflow = ::std::os::raw::c_ulonglong;
-pub const k: EasyToOverflow = 2147483648;
+pub const k: EasyToOverflow = 0x80000000;
 pub const k_expr: EasyToOverflow = 1152921504606846976;
 pub const wow: EasyToOverflow = 2147483648;
 pub const BAZ: ::std::os::raw::c_longlong = 24;
