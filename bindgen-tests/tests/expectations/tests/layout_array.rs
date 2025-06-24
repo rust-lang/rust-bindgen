@@ -4,7 +4,7 @@ pub const RTE_MEMPOOL_OPS_NAMESIZE: u32 = 32;
 pub const RTE_MEMPOOL_MAX_OPS_IDX: u32 = 16;
 pub const RTE_HEAP_NUM_FREELISTS: u32 = 13;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct rte_mempool {
     _unused: [u8; 0],
 }
