@@ -1,9 +1,12 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
+#[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
+#[repr(C, align(16))]
+pub struct __BindgenLongDouble([u8; 16]);
 #[repr(C)]
 #[repr(align(16))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct foo {
-    pub bar: u128,
+    pub bar: __BindgenLongDouble,
 }
 #[test]
 fn bindgen_test_layout_foo() {

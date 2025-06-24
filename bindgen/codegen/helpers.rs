@@ -243,14 +243,19 @@ pub(crate) mod ast_ty {
     pub(crate) fn float_kind_rust_type(
         ctx: &BindgenContext,
         fk: FloatKind,
-        layout: Option<Layout>,
+        mut layout: Option<Layout>,
+        n_parts: usize,
     ) -> syn::Type {
-        // TODO: we probably should take the type layout into account more
-        // often?
-        //
-        // Also, maybe this one shouldn't be the default?
-        match (fk, ctx.options().convert_floats) {
-            (FloatKind::Float16, _) => {
+        // Convert the layout of complex numbers to the layout of its parts.
+        let bits = match layout {
+            Some(Layout { ref mut size, .. }) => {
+                *size /= n_parts;
+                Some(*size * 8)
+            }
+            None => None,
+        };
+        match (fk, ctx.options().convert_floats, bits) {
+            (FloatKind::Float16, _, _) => {
                 // TODO: do f16 when rust lands it
                 ctx.generated_bindgen_float16();
                 if ctx.options().enable_cxx_namespaces {
@@ -259,29 +264,29 @@ pub(crate) mod ast_ty {
                     syn::parse_quote! { __BindgenFloat16 }
                 }
             }
-            (FloatKind::Float, true) => syn::parse_quote! { f32 },
-            (FloatKind::Double, true) => syn::parse_quote! { f64 },
-            (FloatKind::Float, false) => raw_type(ctx, "c_float"),
-            (FloatKind::Double, false) => raw_type(ctx, "c_double"),
-            (FloatKind::LongDouble, _) => {
-                if let Some(layout) = layout {
-                    match layout.size {
-                        4 => syn::parse_quote! { f32 },
-                        8 => syn::parse_quote! { f64 },
-                        // TODO(emilio): If rust ever gains f128 we should
-                        // use it here and below.
-                        _ => super::integer_type(layout)
-                            .unwrap_or(syn::parse_quote! { f64 }),
+            (_, true, Some(32)) => syn::parse_quote! { f32 },
+            (_, true, Some(64)) | (FloatKind::Double, true, None) => {
+                syn::parse_quote! { f64 }
+            }
+            (FloatKind::Float, ..) => raw_type(ctx, "c_float"),
+            (FloatKind::Double, ..) => raw_type(ctx, "c_double"),
+            (FloatKind::LongDouble, ..) => {
+                // TODO(emilio): If rust ever gains f80/f128 we should
+                // use it here and below.
+                ctx.generated_bindgen_long_double(
+                    layout.expect("unknown layout for long double"),
+                );
+                if ctx.options().enable_cxx_namespaces {
+                    syn::parse_quote! {
+                        root::__BindgenLongDouble
                     }
                 } else {
-                    debug_assert!(
-                        false,
-                        "How didn't we know the layout for a primitive type?"
-                    );
-                    syn::parse_quote! { f64 }
+                    syn::parse_quote! {
+                        __BindgenLongDouble
+                    }
                 }
             }
-            (FloatKind::Float128, _) => {
+            (FloatKind::Float128, ..) => {
                 if true {
                     syn::parse_quote! { u128 }
                 } else {

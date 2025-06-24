@@ -53,6 +53,8 @@ mod has_type_param_in_array;
 pub(crate) use self::has_type_param_in_array::HasTypeParameterInArray;
 mod has_float;
 pub(crate) use self::has_float::HasFloat;
+mod never_by_value;
+pub use self::never_by_value::NeverByValue;
 mod sizedness;
 pub(crate) use self::sizedness::{
     Sizedness, SizednessAnalysis, SizednessResult,

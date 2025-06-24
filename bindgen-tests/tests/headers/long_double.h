@@ -3,3 +3,5 @@
 struct foo {
   long double bar;
 };
+
+void take_ld(long double ld);
