@@ -21,6 +21,7 @@ use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
 use crate::clang::{self, ABIKind, Cursor};
 use crate::codegen::CodegenError;
+use crate::ir::item::ItemCanonicalName;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 
@@ -2406,6 +2407,18 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 // Only consider roots that are enabled for codegen.
                 .filter(|&(_, item)| item.is_enabled_for_codegen(self))
                 .filter(|&(_, item)| {
+                    let item_info = crate::callbacks::ItemInfo {
+                        name: &item.canonical_name(self),
+                        kind: item.callback_item_kind(),
+                    };
+
+                    if let Some(is_cb_allow) =
+                        self.options().cb_item_is_allowed(&item_info)
+                    {
+                        // Item is allowed or not with the parse callbacks.
+                        return is_cb_allow;
+                    }
+
                     // If nothing is explicitly allowlisted, then everything is fair
                     // game.
                     if self.options().allowlisted_types.is_empty() &&

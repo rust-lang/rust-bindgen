@@ -19,6 +19,16 @@ pub enum MacroParsingBehavior {
     Default,
 }
 
+/// Enum to indicate if the bindings for a given should be generated or blocked.
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum AllowOrBlockItem {
+    /// Generate the bindings for the given item.
+    Allow,
+
+    /// Block bindings for the given item.
+    Block,
+}
+
 /// A trait to allow configuring different kinds of types in different
 /// situations.
 pub trait ParseCallbacks: fmt::Debug {
@@ -204,6 +214,26 @@ pub trait ParseCallbacks: fmt::Debug {
         _item: DiscoveredItem,
         _source_location: Option<&SourceLocation>,
     ) {
+    }
+
+    /// Generate or block the bindings for the given item.
+    ///
+    /// This method takes precedences over the `allowlist_*` options.
+    ///
+    /// If at least one of the parse callbacks returns `Block`, the generation of the bindings
+    /// for the item is blocked.
+    ///
+    /// If all the parse callbacks that don't return `None` return `Allow`, the bindings
+    /// for the item are generated.
+    ///
+    /// If all the parse callbacks return `None` (the default implementation), the `allowlist_*`
+    /// options are used instead.
+    ///
+    fn allow_or_block_item(
+        &self,
+        _item: &ItemInfo,
+    ) -> Option<AllowOrBlockItem> {
+        None
     }
 
     // TODO add callback for ResolvedTypeRef

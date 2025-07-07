@@ -641,6 +641,20 @@ impl Item {
             return true;
         }
 
+        let path = self.path_for_allowlisting(ctx);
+        let name = path[1..].join("::");
+        let item_info = ItemInfo {
+            name: &name,
+            kind: self.callback_item_kind(),
+        };
+
+        if let Some(is_cb_blocked) =
+            ctx.options().cb_item_is_blocked(&item_info)
+        {
+            // The item is blocked or not with the parse callbacks.
+            return is_cb_blocked;
+        }
+
         if !ctx.options().blocklisted_files.is_empty() {
             if let Some(location) = &self.location {
                 let (file, _, _, _) = location.location();
@@ -652,8 +666,6 @@ impl Item {
             }
         }
 
-        let path = self.path_for_allowlisting(ctx);
-        let name = path[1..].join("::");
         ctx.options().blocklisted_items.matches(&name) ||
             match self.kind {
                 ItemKind::Type(..) => {
@@ -819,6 +831,16 @@ impl Item {
         }
     }
 
+    /// Get the callback item kind of this item.
+    pub(crate) fn callback_item_kind(&self) -> crate::callbacks::ItemKind {
+        match self.kind() {
+            ItemKind::Module(..) => crate::callbacks::ItemKind::Module,
+            ItemKind::Type(..) => crate::callbacks::ItemKind::Type,
+            ItemKind::Function(..) => crate::callbacks::ItemKind::Function,
+            ItemKind::Var(..) => crate::callbacks::ItemKind::Var,
+        }
+    }
+
     /// Get the canonical name without taking into account the replaces
     /// annotation.
     ///
@@ -926,14 +948,7 @@ impl Item {
         let name = if opt.user_mangled == UserMangled::Yes {
             let item_info = ItemInfo {
                 name: &name,
-                kind: match self.kind() {
-                    ItemKind::Module(..) => crate::callbacks::ItemKind::Module,
-                    ItemKind::Type(..) => crate::callbacks::ItemKind::Type,
-                    ItemKind::Function(..) => {
-                        crate::callbacks::ItemKind::Function
-                    }
-                    ItemKind::Var(..) => crate::callbacks::ItemKind::Var,
-                },
+                kind: self.callback_item_kind(),
             };
             ctx.options()
                 .last_callback(|callbacks| callbacks.item_name(item_info))
