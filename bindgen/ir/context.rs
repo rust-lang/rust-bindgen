@@ -21,6 +21,7 @@ use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
 use crate::clang::{self, ABIKind, Cursor};
 use crate::codegen::CodegenError;
+use crate::ir::item::ItemCanonicalName;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 
@@ -2518,6 +2519,14 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                             })
                         }
                     }
+                })
+                .filter(|&(_, item)| {
+                    let item_info = crate::callbacks::ItemInfo {
+                        name: &item.canonical_name(self),
+                        kind: item.callback_item_kind(),
+                    };
+                    self.options()
+                        .for_all_callbacks(|cb| cb.allow_item(item_info))
                 })
                 .map(|(id, _)| id)
                 .collect::<Vec<_>>();
