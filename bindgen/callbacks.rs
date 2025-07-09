@@ -171,6 +171,24 @@ pub trait ParseCallbacks: fmt::Debug {
     /// This will get called everytime an item (currently struct, union, and alias) is found with some information about it
     fn new_item_found(&self, _id: DiscoveredItemId, _item: DiscoveredItem) {}
 
+    /// Generate bindings for the given item.
+    ///
+    /// This method is called after processing the `allowlist_*` options.
+    ///
+    /// The default implementation is to allow the given item.
+    fn allow_item(&self, _item: ItemInfo) -> bool {
+        true
+    }
+
+    /// Block bindings for the given item.
+    ///
+    /// This method is called after processing the `blocklist_*` options.
+    ///
+    /// The default implementation is to not block the given item.
+    fn block_item(&self, _item: ItemInfo) -> bool {
+        false
+    }
+
     // TODO add callback for ResolvedTypeRef
 }
 

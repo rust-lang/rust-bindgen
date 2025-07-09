@@ -591,6 +591,20 @@ impl BindgenOptions {
         self.parse_callbacks.iter().for_each(|cb| f(cb.as_ref()));
     }
 
+    fn for_all_callbacks(
+        &self,
+        f: impl Fn(&dyn callbacks::ParseCallbacks) -> bool,
+    ) -> bool {
+        self.parse_callbacks.iter().all(|cb| f(cb.as_ref()))
+    }
+
+    fn for_any_callback(
+        &self,
+        f: impl Fn(&dyn callbacks::ParseCallbacks) -> bool,
+    ) -> bool {
+        self.parse_callbacks.iter().any(|cb| f(cb.as_ref()))
+    }
+
     fn process_comment(&self, comment: &str) -> String {
         let comment = comment::preprocess(comment);
         self.last_callback(|cb| cb.process_comment(&comment))

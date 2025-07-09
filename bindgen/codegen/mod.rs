@@ -22,7 +22,7 @@ use super::BindgenOptions;
 
 use crate::callbacks::{
     AttributeInfo, DeriveInfo, DiscoveredItem, DiscoveredItemId, FieldInfo,
-    TypeKind as DeriveTypeKind,
+    ItemInfo, ItemKind as CallbackItemKind, TypeKind as DeriveTypeKind,
 };
 use crate::codegen::error::Error;
 use crate::ir::analysis::{HasVtable, Sizedness};
@@ -4942,7 +4942,14 @@ fn objc_method_codegen(
     // Item::process_before_codegen; however, ObjC methods are not currently
     // made into function items.
     let name = format!("{rust_class_name}::{prefix}{}", method.rust_name());
-    if ctx.options().blocklisted_items.matches(name) {
+    let item_info = ItemInfo {
+        name: &name,
+        kind: CallbackItemKind::Function,
+    };
+    if ctx.options().blocklisted_items.matches(&name) ||
+        ctx.options()
+            .for_any_callback(|cb| cb.block_item(item_info))
+    {
         return;
     }
 
@@ -5259,6 +5266,7 @@ pub(crate) mod utils {
     use super::helpers::BITFIELD_UNIT;
     use super::serialize::CSerialize;
     use super::{error, CodegenError, CodegenResult, ToRustTyOrOpaque};
+    use crate::callbacks::{ItemInfo, ItemKind as CallbackItemKind};
     use crate::ir::context::BindgenContext;
     use crate::ir::context::TypeId;
     use crate::ir::function::{Abi, ClangAbi, FunctionSig};
@@ -5389,8 +5397,14 @@ pub(crate) mod utils {
         ctx: &BindgenContext,
         result: &mut Vec<proc_macro2::TokenStream>,
     ) {
+        let item_info = ItemInfo {
+            name: BITFIELD_UNIT,
+            kind: CallbackItemKind::Type,
+        };
         if ctx.options().blocklisted_items.matches(BITFIELD_UNIT) ||
-            ctx.options().blocklisted_types.matches(BITFIELD_UNIT)
+            ctx.options().blocklisted_types.matches(BITFIELD_UNIT) ||
+            ctx.options()
+                .for_any_callback(|cb| cb.block_item(item_info))
         {
             return;
         }
