@@ -12,7 +12,7 @@ use super::template::TemplateParameters;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 use crate::clang;
-use crate::codegen::struct_layout::{align_to, bytes_from_bits_pow2};
+use crate::codegen::struct_layout::align_to;
 use crate::ir::derive::CanDeriveCopy;
 use crate::parse::ParseError;
 use crate::HashMap;
@@ -560,18 +560,12 @@ where
         fields: &mut E,
         bitfield_unit_count: &mut usize,
         unit_size_in_bits: usize,
-        unit_align_in_bits: usize,
         bitfields: Vec<Bitfield>,
-        packed: bool,
     ) where
         E: Extend<Field>,
     {
         *bitfield_unit_count += 1;
-        let align = if packed {
-            1
-        } else {
-            bytes_from_bits_pow2(unit_align_in_bits)
-        };
+        let align = 1;
         let size = align_to(unit_size_in_bits, 8) / 8;
         let layout = Layout::new(size, align);
         fields.extend(Some(Field::Bitfields(BitfieldUnit {
@@ -581,70 +575,45 @@ where
         })));
     }
 
+    // The offset we're in inside the struct, if we know it (we might not know it in presence of
+    // templates).
+    let mut start_offset_in_struct = 0;
     let mut max_align = 0;
-    let mut unfilled_bits_in_unit = 0;
     let mut unit_size_in_bits = 0;
-    let mut unit_align = 0;
     let mut bitfields_in_unit = vec![];
 
-    // TODO(emilio): Determine this from attributes or pragma ms_struct
-    // directives. Also, perhaps we should check if the target is MSVC?
-    const is_ms_struct: bool = false;
-
+    // TODO(emilio): Deal with ms_struct bitfield layout for MSVC?
     for bitfield in raw_bitfields {
         let bitfield_width = bitfield.bitfield_width().unwrap() as usize;
         let bitfield_layout =
             ctx.resolve_type(bitfield.ty()).layout(ctx).ok_or(())?;
-        let bitfield_size = bitfield_layout.size;
         let bitfield_align = bitfield_layout.align;
+        let bitfield_size = bitfield_layout.size;
 
-        let mut offset = unit_size_in_bits;
-        if !packed {
-            if is_ms_struct {
-                if unit_size_in_bits != 0 &&
-                    (bitfield_width == 0 ||
-                        bitfield_width > unfilled_bits_in_unit)
-                {
-                    // We've reached the end of this allocation unit, so flush it
-                    // and its bitfields.
-                    unit_size_in_bits =
-                        align_to(unit_size_in_bits, unit_align * 8);
-                    flush_allocation_unit(
-                        fields,
-                        bitfield_unit_count,
-                        unit_size_in_bits,
-                        unit_align,
-                        mem::take(&mut bitfields_in_unit),
-                        packed,
-                    );
-
-                    // Now we're working on a fresh bitfield allocation unit, so reset
-                    // the current unit size and alignment.
-                    offset = 0;
-                    unit_align = 0;
-                }
-            } else if offset != 0 &&
-                (bitfield_width == 0 ||
-                    (offset & (bitfield_align * 8 - 1)) + bitfield_width >
-                        bitfield_size * 8)
-            {
-                offset = align_to(offset, bitfield_align * 8);
-            }
+        if unit_size_in_bits == 0 {
+            start_offset_in_struct = bitfield.offset().unwrap_or(0);
         }
 
-        // According to the x86[-64] ABI spec: "Unnamed bit-fields’ types do not
-        // affect the alignment of a structure or union". This makes sense: such
-        // bit-fields are only used for padding, and we can't perform an
-        // un-aligned read of something we can't read because we can't even name
-        // it.
+        let mut offset_in_struct =
+            bitfield.offset().unwrap_or(unit_size_in_bits);
+
+        // A zero-width field serves as alignment / padding.
+        if !packed &&
+            offset_in_struct != 0 &&
+            (bitfield_width == 0 ||
+                (offset_in_struct & (bitfield_align * 8 - 1)) +
+                    bitfield_width >
+                    bitfield_size * 8)
+        {
+            offset_in_struct = align_to(offset_in_struct, bitfield_align * 8);
+        }
+
+        // According to the x86[-64] ABI spec: "Unnamed bit-fields’ types do not affect the
+        // alignment of a structure or union". This makes sense: such bit-fields are only used for
+        // padding, and we can't perform an un-aligned read of something we can't read because we
+        // can't even name it.
         if bitfield.name().is_some() {
             max_align = cmp::max(max_align, bitfield_align);
-
-            // NB: The `bitfield_width` here is completely, absolutely
-            // intentional.  Alignment of the allocation unit is based on the
-            // maximum bitfield width, not (directly) on the bitfields' types'
-            // alignment.
-            unit_align = cmp::max(unit_align, bitfield_width);
         }
 
         // Always keep all bitfields around. While unnamed bitifields are used
@@ -652,15 +621,12 @@ where
         // bitfields over their types size cause weird allocation size behavior from clang.
         // Therefore, all bitfields needed to be kept around in order to check for this
         // and make the struct opaque in this case
-        bitfields_in_unit.push(Bitfield::new(offset, bitfield));
-
-        unit_size_in_bits = offset + bitfield_width;
-
-        // Compute what the physical unit's final size would be given what we
-        // have seen so far, and use that to compute how many bits are still
-        // available in the unit.
-        let data_size = align_to(unit_size_in_bits, bitfield_align * 8);
-        unfilled_bits_in_unit = data_size - unit_size_in_bits;
+        bitfields_in_unit.push(Bitfield::new(
+            offset_in_struct - start_offset_in_struct,
+            bitfield,
+        ));
+        unit_size_in_bits =
+            offset_in_struct - start_offset_in_struct + bitfield_width;
     }
 
     if unit_size_in_bits != 0 {
@@ -669,9 +635,7 @@ where
             fields,
             bitfield_unit_count,
             unit_size_in_bits,
-            unit_align,
             bitfields_in_unit,
-            packed,
         );
     }
 
@@ -1181,7 +1145,8 @@ impl CompInfo {
         }
     }
 
-    fn has_bitfields(&self) -> bool {
+    /// Returns whether we have any bitfield within the struct.
+    pub(crate) fn has_bitfields(&self) -> bool {
         match self.fields {
             CompFields::Error => false,
             CompFields::After {

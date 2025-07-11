@@ -94,7 +94,6 @@ where
 #[derive(Copy, Clone)]
 pub struct Foo {
     pub large: [::std::os::raw::c_int; 33usize],
-    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub __bindgen_padding_0: u16,
 }

@@ -149,7 +149,6 @@ where
 #[derive(Debug, Copy, Clone)]
 pub struct timex {
     pub tai: ::std::os::raw::c_int,
-    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 44usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
@@ -171,7 +170,6 @@ impl Default for timex {
 #[derive(Debug, Copy, Clone)]
 pub struct timex_named {
     pub tai: ::std::os::raw::c_int,
-    pub _bitfield_align_1: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 44usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]

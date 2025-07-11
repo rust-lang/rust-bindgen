@@ -159,10 +159,9 @@ const _: () = {
     ["Offset of field: PubPriv::y"][::std::mem::offset_of!(PubPriv, y) - 4usize];
 };
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct PrivateBitFields {
-    pub _bitfield_align_1: [u8; 0],
+    pub _bindgen_align: [u32; 0],
     _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }
@@ -274,10 +273,9 @@ impl PrivateBitFields {
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct PublicBitFields {
-    pub _bitfield_align_1: [u8; 0],
+    pub _bindgen_align: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }
@@ -387,10 +385,9 @@ impl PublicBitFields {
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct MixedBitFields {
-    pub _bitfield_align_1: [u8; 0],
+    pub _bindgen_align: [u32; 0],
     _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }
@@ -628,7 +625,6 @@ pub struct Override {
     /// <div rustbindgen private></div>
     b: ::std::os::raw::c_uint,
     private_c: ::std::os::raw::c_uint,
-    pub _bitfield_align_1: [u8; 0],
     _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub __bindgen_padding_0: u16,
 }

@@ -245,7 +245,7 @@ pub union jsval_layout {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct jsval_layout__bindgen_ty_1 {
-    pub _bitfield_align_1: [u64; 0],
+    pub _bindgen_align: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]

@@ -148,7 +148,6 @@ where
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct C {
-    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub large_array: [::std::os::raw::c_int; 50usize],
 }

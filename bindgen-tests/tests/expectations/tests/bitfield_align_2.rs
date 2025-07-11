@@ -157,7 +157,7 @@ pub enum MyEnum {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct TaggedPtr {
-    pub _bitfield_align_1: [u64; 0],
+    pub _bindgen_align: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]

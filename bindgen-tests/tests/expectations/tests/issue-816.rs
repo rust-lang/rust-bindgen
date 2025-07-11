@@ -146,10 +146,9 @@ where
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct capabilities {
-    pub _bitfield_align_1: [u8; 0],
+    pub _bindgen_align: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]

@@ -146,10 +146,9 @@ where
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union U4 {
-    pub _bitfield_align_1: [u8; 0],
+    pub _bindgen_align: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
@@ -223,8 +222,8 @@ impl U4 {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union B {
-    pub _bitfield_align_1: [u32; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
+    pub _bindgen_align: [u32; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
@@ -257,7 +256,7 @@ impl B {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 4usize],
+                    [u8; 1usize],
                 >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 31u8)
                     as u32,
             )
@@ -268,7 +267,7 @@ impl B {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 4usize],
+                [u8; 1usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 0usize,
@@ -279,13 +278,13 @@ impl B {
     }
     #[inline]
     pub fn bar(&self) -> ::std::os::raw::c_uchar {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(31usize, 1u8) as u8) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
     }
     #[inline]
     pub fn set_bar(&mut self, val: ::std::os::raw::c_uchar) {
         unsafe {
             let val: u8 = ::std::mem::transmute(val);
-            self._bitfield_1.set(31usize, 1u8, val as u64)
+            self._bitfield_1.set(0usize, 1u8, val as u64)
         }
     }
     #[inline]
@@ -293,9 +292,8 @@ impl B {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 4usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 31usize, 1u8)
-                    as u8,
+                    [u8; 1usize],
+                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 1u8) as u8,
             )
         }
     }
@@ -304,10 +302,10 @@ impl B {
         unsafe {
             let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 4usize],
+                [u8; 1usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
-                31usize,
+                0usize,
                 1u8,
                 val as u64,
             )
@@ -317,8 +315,8 @@ impl B {
     pub fn new_bitfield_1(
         foo: ::std::os::raw::c_uint,
         bar: ::std::os::raw::c_uchar,
-    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
         __bindgen_bitfield_unit
             .set(
                 0usize,
@@ -330,7 +328,7 @@ impl B {
             );
         __bindgen_bitfield_unit
             .set(
-                31usize,
+                0usize,
                 1u8,
                 {
                     let bar: u8 = unsafe { ::std::mem::transmute(bar) };

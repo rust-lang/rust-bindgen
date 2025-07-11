@@ -146,10 +146,9 @@ where
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct my_struct1 {
-    _bitfield_align_1: [u8; 0],
+    pub _bindgen_align: [u32; 0],
     _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     __bindgen_padding_0: [u8; 3usize],
 }
@@ -211,10 +210,9 @@ impl my_struct1 {
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct my_struct2 {
-    pub _bitfield_align_1: [u8; 0],
+    pub _bindgen_align: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }

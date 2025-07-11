@@ -154,7 +154,7 @@ pub union foo {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct foo__bindgen_ty_1 {
-    pub _bitfield_align_1: [u32; 0],
+    pub _bindgen_align: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]

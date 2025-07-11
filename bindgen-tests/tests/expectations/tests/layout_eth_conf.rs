@@ -151,7 +151,6 @@ pub struct rte_eth_rxmode {
     pub max_rx_pkt_len: u32,
     ///< hdr buf size (header_split enabled).
     pub split_hdr_size: u16,
-    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
 }
 #[test]
@@ -425,7 +424,6 @@ pub struct rte_eth_txmode {
     ///< TX multi-queues mode.
     pub mq_mode: rte_eth_tx_mq_mode,
     pub pvid: u16,
-    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: u8,
 }

@@ -6,7 +6,6 @@ use bitfields::*;
 #[derive(Debug, Default, Copy, Clone)]
 pub struct C {
     pub x: ::std::os::raw::c_uchar,
-    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub baz: ::std::os::raw::c_uint,
 }

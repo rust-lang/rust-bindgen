@@ -146,96 +146,80 @@ where
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
-pub struct Foo {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+#[derive(Debug, Copy, Clone)]
+pub struct S {
+    pub p: *mut ::std::os::raw::c_void,
+    pub b: bool,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
+    pub __bindgen_padding_0: [u8; 5usize],
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of Foo"][::std::mem::size_of::<Foo>() - 1usize];
-    ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 1usize];
+    ["Size of S"][::std::mem::size_of::<S>() - 16usize];
+    ["Alignment of S"][::std::mem::align_of::<S>() - 8usize];
+    ["Offset of field: S::p"][::std::mem::offset_of!(S, p) - 0usize];
+    ["Offset of field: S::b"][::std::mem::offset_of!(S, b) - 8usize];
 };
-unsafe extern "C" {
-    #[link_name = "\u{1}_ZN3Foo4typeEv"]
-    pub fn Foo_type(this: *mut Foo) -> ::std::os::raw::c_char;
+impl Default for S {
+    fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
 }
-unsafe extern "C" {
-    #[link_name = "\u{1}_ZN3Foo9set_type_Ec"]
-    pub fn Foo_set_type_(this: *mut Foo, c: ::std::os::raw::c_char);
-}
-unsafe extern "C" {
-    #[link_name = "\u{1}_ZN3Foo8set_typeEc"]
-    pub fn Foo_set_type(this: *mut Foo, c: ::std::os::raw::c_char);
-}
-impl Foo {
+impl S {
     #[inline]
-    pub fn type__bindgen_bitfield(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 3u8) as u8) }
+    pub fn u(&self) -> ::std::os::raw::c_uint {
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 16u8) as u32) }
     }
     #[inline]
-    pub fn set_type__bindgen_bitfield(&mut self, val: ::std::os::raw::c_char) {
+    pub fn set_u(&mut self, val: ::std::os::raw::c_uint) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
-            self._bitfield_1.set(0usize, 3u8, val as u64)
+            let val: u32 = ::std::mem::transmute(val);
+            self._bitfield_1.set(0usize, 16u8, val as u64)
         }
     }
     #[inline]
-    pub unsafe fn type__bindgen_bitfield_raw(
-        this: *const Self,
-    ) -> ::std::os::raw::c_char {
+    pub unsafe fn u_raw(this: *const Self) -> ::std::os::raw::c_uint {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 1usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 3u8) as u8,
+                    [u8; 2usize],
+                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 16u8)
+                    as u32,
             )
         }
     }
     #[inline]
-    pub unsafe fn set_type__bindgen_bitfield_raw(
-        this: *mut Self,
-        val: ::std::os::raw::c_char,
-    ) {
+    pub unsafe fn set_u_raw(this: *mut Self, val: ::std::os::raw::c_uint) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 1usize],
+                [u8; 2usize],
             >>::raw_set(
                 ::std::ptr::addr_of_mut!((*this)._bitfield_1),
                 0usize,
-                3u8,
+                16u8,
                 val as u64,
             )
         }
     }
     #[inline]
     pub fn new_bitfield_1(
-        type__bindgen_bitfield: ::std::os::raw::c_char,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        u: ::std::os::raw::c_uint,
+    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
         __bindgen_bitfield_unit
             .set(
                 0usize,
-                3u8,
+                16u8,
                 {
-                    let type__bindgen_bitfield: u8 = unsafe {
-                        ::std::mem::transmute(type__bindgen_bitfield)
-                    };
-                    type__bindgen_bitfield as u64
+                    let u: u32 = unsafe { ::std::mem::transmute(u) };
+                    u as u64
                 },
             );
         __bindgen_bitfield_unit
-    }
-    #[inline]
-    pub unsafe fn type_(&mut self) -> ::std::os::raw::c_char {
-        Foo_type(self)
-    }
-    #[inline]
-    pub unsafe fn set_type_(&mut self, c: ::std::os::raw::c_char) {
-        Foo_set_type_(self, c)
-    }
-    #[inline]
-    pub unsafe fn set_type(&mut self, c: ::std::os::raw::c_char) {
-        Foo_set_type(self, c)
     }
 }

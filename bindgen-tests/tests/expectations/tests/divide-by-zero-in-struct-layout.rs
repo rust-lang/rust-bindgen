@@ -148,7 +148,6 @@ where
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct WithBitfield {
-    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub a: ::std::os::raw::c_uint,
 }
@@ -162,7 +161,6 @@ impl WithBitfield {
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct WithBitfieldAndAttrPacked {
-    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub a: ::std::os::raw::c_uint,
 }
@@ -176,7 +174,6 @@ impl WithBitfieldAndAttrPacked {
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct WithBitfieldAndPacked {
-    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub a: ::std::os::raw::c_uint,
 }
