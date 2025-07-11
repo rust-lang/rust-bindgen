@@ -1770,22 +1770,6 @@ impl FieldCodegen<'_> for BitfieldUnit {
             }
         };
 
-        {
-            let align_field_name = format!("_bitfield_align_{}", self.nth());
-            let align_field_ident = ctx.rust_ident(align_field_name);
-            let align_ty = match self.layout().align {
-                n if n >= 8 => quote! { u64 },
-                4 => quote! { u32 },
-                2 => quote! { u16 },
-                _ => quote! { u8  },
-            };
-            let access_spec = access_specifier(visibility_kind);
-            let align_field = quote! {
-                #access_spec #align_field_ident: [#align_ty; 0],
-            };
-            fields.extend(Some(align_field));
-        }
-
         let unit_field_name = format!("_bitfield_{}", self.nth());
         let unit_field_ident = ctx.rust_ident(&unit_field_name);
 
@@ -2428,10 +2412,24 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::repr("C"));
         }
 
-        if true {
-            if let Some(explicit) = explicit_align {
-                // Ensure that the struct has the correct alignment even in
-                // presence of alignas.
+        // Ensure that the struct has the correct alignment even in presence of alignas and co.
+        if let Some(explicit) = explicit_align {
+            // If we need explicit alignment and can do it, we prefer to insert a dummy field at
+            // the beginning of the struct. This avoids hitting
+            // https://github.com/rust-lang/rust-bindgen/issues/2179
+            // Do it for bitfields only for now for backwards compat.
+            if self.has_bitfields() && explicit <= 8 {
+                let align_ty = match explicit {
+                    8 => quote! { u64 },
+                    4 => quote! { u32 },
+                    2 => quote! { u16 },
+                    _ => quote! { u8  },
+                };
+                let align_field = quote! {
+                    pub _bindgen_align: [#align_ty; 0],
+                };
+                fields.insert(0, align_field);
+            } else {
                 let explicit = helpers::ast_ty::int_expr(explicit as i64);
                 attributes.push(quote! {
                     #[repr(align(#explicit))]

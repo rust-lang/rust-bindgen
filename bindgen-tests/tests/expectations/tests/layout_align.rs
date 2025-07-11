@@ -219,12 +219,11 @@ impl Default for rte_kni_fifo {
     }
 }
 #[repr(C)]
-#[repr(align(8))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct rte_eth_link {
+    pub _bindgen_align: [u64; 0],
     ///< ETH_SPEED_NUM_
     pub link_speed: u32,
-    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }

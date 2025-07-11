@@ -178,7 +178,6 @@ impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
 #[repr(C)]
 #[derive(Debug)]
 pub struct foo {
-    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub b: __IncompleteArrayField<*mut ::std::os::raw::c_void>,
 }

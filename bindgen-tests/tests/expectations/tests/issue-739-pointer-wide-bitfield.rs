@@ -149,7 +149,7 @@ where
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Foo {
-    pub _bitfield_align_1: [u64; 0],
+    pub _bindgen_align: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]

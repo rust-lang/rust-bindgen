@@ -146,11 +146,10 @@ where
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct A {
+    pub _bindgen_align: [u32; 0],
     pub x: ::std::os::raw::c_uchar,
-    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub y: ::std::os::raw::c_uchar,
 }
@@ -632,7 +631,7 @@ impl A {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct B {
-    pub _bitfield_align_1: [u32; 0],
+    pub _bindgen_align: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
@@ -744,7 +743,6 @@ impl B {
 #[derive(Debug, Default, Copy, Clone)]
 pub struct C {
     pub x: ::std::os::raw::c_uchar,
-    pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub baz: ::std::os::raw::c_uint,
 }
@@ -856,10 +854,9 @@ impl C {
     }
 }
 #[repr(C)]
-#[repr(align(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Date1 {
-    pub _bitfield_align_1: [u8; 0],
+    pub _bindgen_align: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize]>,
     pub __bindgen_padding_0: u8,
 }
@@ -1061,10 +1058,9 @@ impl Date1 {
     }
 }
 #[repr(C)]
-#[repr(align(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Date2 {
-    pub _bitfield_align_1: [u8; 0],
+    pub _bindgen_align: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
@@ -1311,10 +1307,9 @@ impl Date2 {
     }
 }
 #[repr(C)]
-#[repr(align(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Date3 {
-    pub _bitfield_align_1: [u8; 0],
+    pub _bindgen_align: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize]>,
     pub byte: ::std::os::raw::c_uchar,
 }

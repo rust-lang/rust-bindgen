@@ -150,11 +150,10 @@ pub type U16 = ::std::os::raw::c_ushort;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct V56AMDY {
-    pub _bitfield_align_1: [u16; 0],
+    pub _bindgen_align: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub MADK: U8,
     pub MABR: U8,
-    pub _bitfield_align_2: [u16; 0],
     pub _bitfield_2: __BindgenBitfieldUnit<[u8; 3usize]>,
     pub _rB_: U8,
 }

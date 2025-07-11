@@ -45,23 +45,6 @@ pub(crate) fn align_to(size: usize, align: usize) -> usize {
     size + align - rem
 }
 
-/// Returns the lower power of two byte count that can hold at most n bits.
-pub(crate) fn bytes_from_bits_pow2(mut n: usize) -> usize {
-    if n == 0 {
-        return 0;
-    }
-
-    if n <= 8 {
-        return 1;
-    }
-
-    if !n.is_power_of_two() {
-        n = n.next_power_of_two();
-    }
-
-    n / 8
-}
-
 #[test]
 fn test_align_to() {
     assert_eq!(align_to(1, 1), 1);
@@ -69,20 +52,6 @@ fn test_align_to() {
     assert_eq!(align_to(1, 4), 4);
     assert_eq!(align_to(5, 1), 5);
     assert_eq!(align_to(17, 4), 20);
-}
-
-#[test]
-fn test_bytes_from_bits_pow2() {
-    assert_eq!(bytes_from_bits_pow2(0), 0);
-    for i in 1..9 {
-        assert_eq!(bytes_from_bits_pow2(i), 1);
-    }
-    for i in 9..17 {
-        assert_eq!(bytes_from_bits_pow2(i), 2);
-    }
-    for i in 17..33 {
-        assert_eq!(bytes_from_bits_pow2(i), 4);
-    }
 }
 
 impl<'a> StructLayoutTracker<'a> {

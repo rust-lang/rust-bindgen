@@ -156,7 +156,6 @@ pub enum nsStyleSVGOpacitySource {
 #[derive(Debug, Copy, Clone)]
 pub struct Weird {
     pub mStrokeDasharrayLength: ::std::os::raw::c_uint,
-    pub _bitfield_align_1: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
     pub mClipRule: ::std::os::raw::c_uchar,
     pub mColorInterpolation: ::std::os::raw::c_uchar,
@@ -169,7 +168,6 @@ pub struct Weird {
     pub mStrokeLinejoin: ::std::os::raw::c_uchar,
     pub mTextAnchor: ::std::os::raw::c_uchar,
     pub mTextRendering: ::std::os::raw::c_uchar,
-    pub _bitfield_align_2: [u8; 0],
     pub _bitfield_2: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub __bindgen_padding_0: [u8; 3usize],
 }

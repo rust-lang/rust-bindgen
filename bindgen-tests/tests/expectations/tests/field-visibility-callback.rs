@@ -150,7 +150,6 @@ where
 pub struct my_struct {
     pub a: ::std::os::raw::c_int,
     private_b: ::std::os::raw::c_int,
-    _bitfield_align_1: [u8; 0],
     _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     __bindgen_padding_0: [u8; 3usize],
 }

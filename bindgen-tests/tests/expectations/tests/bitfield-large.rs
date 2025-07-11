@@ -149,7 +149,6 @@ where
 #[repr(align(16))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct HasBigBitfield {
-    pub _bitfield_align_1: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
@@ -213,7 +212,6 @@ impl HasBigBitfield {
 #[repr(align(16))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct HasTwoBigBitfields {
-    pub _bitfield_align_1: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]

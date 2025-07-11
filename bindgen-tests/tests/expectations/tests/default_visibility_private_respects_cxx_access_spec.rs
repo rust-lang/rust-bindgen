@@ -154,7 +154,6 @@ pub struct Point {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Color {
-    _bitfield_align_1: [u8; 0],
     _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
 }
 impl Color {

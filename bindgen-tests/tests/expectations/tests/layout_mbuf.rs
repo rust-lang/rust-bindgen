@@ -259,10 +259,9 @@ pub union rte_mbuf__bindgen_ty_2 {
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_2__bindgen_ty_1,
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
-    pub _bitfield_align_1: [u8; 0],
+    pub _bindgen_align: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
@@ -820,11 +819,11 @@ pub union rte_mbuf__bindgen_ty_5 {
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_5__bindgen_ty_1,
 }
 #[repr(C)]
-#[repr(align(8))]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
-    pub _bitfield_align_1: [u16; 0],
+    pub _bindgen_align: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 7usize]>,
+    pub __bindgen_padding_0: u8,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
