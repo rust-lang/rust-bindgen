@@ -60,6 +60,8 @@ static inline int variadic(int x, ...) {
     return x;
 }
 
+#ifndef DISABLE_VA
+
 static inline void no_extra_argument(__builtin_va_list va) {}
 
 static inline int many_va_list(int i, __builtin_va_list va1, __builtin_va_list va2) {
@@ -83,4 +85,5 @@ static inline int wrap_as_variadic_fn1(int i, va_list va) {
 }
 
 static inline void wrap_as_variadic_fn2(int i, va_list va) {}
+#endif
 #endif
