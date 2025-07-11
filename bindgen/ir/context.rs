@@ -1755,8 +1755,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                         // Bypass all the validations in add_item explicitly.
                         debug!(
                             "instantiate_template: inserting nested \
-                             instantiation item: {:?}",
-                            sub_item
+                             instantiation item: {sub_item:?}"
                         );
                         self.add_item_to_module(&sub_item);
                         debug_assert_eq!(sub_id, sub_item.id());

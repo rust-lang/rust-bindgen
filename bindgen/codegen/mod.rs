@@ -494,8 +494,7 @@ impl Item {
         if self.is_blocklisted(ctx) || result.seen(self.id()) {
             debug!(
                 "<Item as CodeGenerator>::process_before_codegen: Ignoring hidden or seen: \
-                 self = {:?}",
-                self
+                 self = {self:?}"
             );
             return false;
         }
@@ -986,8 +985,7 @@ impl CodeGenerator for Type {
                     if inner_canon_type.is_invalid_type_param() {
                         warn!(
                             "Item contained invalid named type, skipping: \
-                             {:?}, {:?}",
-                            item, inner_item
+                             {item:?}, {inner_item:?}"
                         );
                         return;
                     }
@@ -1098,8 +1096,7 @@ impl CodeGenerator for Type {
                 {
                     warn!(
                         "Item contained invalid template \
-                         parameter: {:?}",
-                        item
+                         parameter: {item:?}"
                     );
                     return;
                 }

@@ -920,8 +920,7 @@ impl Type {
                                 let Ok(inner_type) = inner else {
                                     warn!(
                                         "Failed to parse template alias \
-                                             {:?}",
-                                        location
+                                             {location:?}"
                                     );
                                     return Err(ParseError::Continue);
                                 };
