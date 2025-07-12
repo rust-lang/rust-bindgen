@@ -139,6 +139,7 @@ pub(crate) mod ast_ty {
     use crate::ir::function::FunctionSig;
     use crate::ir::layout::Layout;
     use crate::ir::ty::{FloatKind, IntKind};
+    use crate::ir::var::LiteralRadix;
     use crate::RustTarget;
     use proc_macro2::TokenStream;
     use std::str::FromStr;
@@ -291,16 +292,47 @@ pub(crate) mod ast_ty {
         }
     }
 
-    pub(crate) fn int_expr(val: i64) -> TokenStream {
+    pub(crate) fn int_expr(
+        val: i64,
+        radix: Option<&LiteralRadix>,
+    ) -> TokenStream {
         // Don't use quote! { #val } because that adds the type suffix.
-        let val = proc_macro2::Literal::i64_unsuffixed(val);
-        quote!(#val)
+        let (val_abs, radix) = match radix {
+            None | Some(LiteralRadix::Decimal) => {
+                let val = proc_macro2::Literal::i64_unsuffixed(val);
+                return quote!(#val);
+            }
+            Some(radix) => (val.unsigned_abs(), radix),
+        };
+        let sign = if val.is_negative() { "-" } else { "" };
+        let val = match radix {
+            LiteralRadix::Binary => format!("{sign}0b{val_abs:b}"),
+            LiteralRadix::Octal => format!("{sign}0o{val_abs:o}"),
+            LiteralRadix::Hexadecimal => format!("{sign}0x{val_abs:x}"),
+            LiteralRadix::Decimal => unreachable!(), // see match above
+        };
+        TokenStream::from_str(val.as_str()).expect("val was constructed")
     }
 
-    pub(crate) fn uint_expr(val: u64) -> TokenStream {
+    pub(crate) fn uint_expr(
+        val: u64,
+        radix: Option<&LiteralRadix>,
+    ) -> TokenStream {
         // Don't use quote! { #val } because that adds the type suffix.
-        let val = proc_macro2::Literal::u64_unsuffixed(val);
-        quote!(#val)
+        let radix = match radix {
+            None | Some(LiteralRadix::Decimal) => {
+                let val = proc_macro2::Literal::u64_unsuffixed(val);
+                return quote!(#val);
+            }
+            Some(radix) => radix,
+        };
+        let val = match radix {
+            LiteralRadix::Binary => format!("0b{val:b}"),
+            LiteralRadix::Octal => format!("0o{val:o}"),
+            LiteralRadix::Hexadecimal => format!("0x{val:x}"),
+            LiteralRadix::Decimal => unreachable!(), // see match above
+        };
+        TokenStream::from_str(val.as_str()).expect("val was constructed")
     }
 
     pub(crate) fn cstr_expr(mut string: String) -> TokenStream {
