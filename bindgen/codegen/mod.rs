@@ -683,6 +683,12 @@ impl CodeGenerator for Var {
         let ty = var_ty.to_rust_ty_or_opaque(ctx, &());
 
         if let Some(val) = self.val() {
+            utils::call_discovered_item_callback(ctx, item, || {
+                DiscoveredItem::Constant {
+                    final_name: canonical_name.clone(),
+                }
+            });
+
             match *val {
                 VarType::Bool(val) => {
                     result.push(quote! {
@@ -778,6 +784,12 @@ impl CodeGenerator for Var {
                 }
             }
         } else {
+            utils::call_discovered_item_callback(ctx, item, || {
+                DiscoveredItem::Variable {
+                    final_name: canonical_name.clone(),
+                }
+            });
+
             let symbol: &str = self.link_name().unwrap_or_else(|| {
                 let link_name =
                     self.mangled_name().unwrap_or_else(|| self.name());
