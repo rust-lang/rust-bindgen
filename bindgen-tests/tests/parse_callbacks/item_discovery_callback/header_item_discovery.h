@@ -30,3 +30,11 @@ typedef enum NamedEnum AliasOfNamedEnum;
 // Functions
 
 void named_function();
+
+// Constants
+
+const int MOD = 998244353;
+
+// Variable
+
+const char* name;

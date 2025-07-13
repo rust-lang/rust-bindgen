@@ -180,6 +180,28 @@ fn test_item_discovery_callback_c() {
                 553,
             ),
         ),
+        (
+            DiscoveredItemId::new(30),
+            ItemExpectations::new(
+                DiscoveredItem::Constant {
+                    final_name: "MOD".to_string(),
+                },
+                36,
+                11,
+                596,
+            ),
+        ),
+        (
+            DiscoveredItemId::new(34),
+            ItemExpectations::new(
+                DiscoveredItem::Variable {
+                    final_name: "name".to_string(),
+                },
+                40,
+                13,
+                639,
+            ),
+        ),
     ]);
     test_item_discovery_callback(
         "/tests/parse_callbacks/item_discovery_callback/header_item_discovery.h", &expected);
@@ -279,6 +301,12 @@ fn compare_item_info(
         }
         DiscoveredItem::Method { .. } => {
             compare_method_info(&expected_item.item, &generated_item.0)
+        }
+        DiscoveredItem::Constant { .. } => {
+            compare_constant_info(&expected_item.item, &generated_item.0)
+        }
+        DiscoveredItem::Variable { .. } => {
+            compare_variable_info(&expected_item.item, &generated_item.0)
         }
     };
 
@@ -502,6 +530,54 @@ pub fn compare_method_info(
     if expected_parent != generated_parent {
         return false;
     }
+
+    if !compare_names(expected_final_name, generated_final_name) {
+        return false;
+    }
+    true
+}
+
+pub fn compare_constant_info(
+    expected_item: &DiscoveredItem,
+    generated_item: &DiscoveredItem,
+) -> bool {
+    let DiscoveredItem::Constant {
+        final_name: expected_final_name,
+    } = expected_item
+    else {
+        unreachable!()
+    };
+
+    let DiscoveredItem::Constant {
+        final_name: generated_final_name,
+    } = generated_item
+    else {
+        unreachable!()
+    };
+
+    if !compare_names(expected_final_name, generated_final_name) {
+        return false;
+    }
+    true
+}
+
+pub fn compare_variable_info(
+    expected_item: &DiscoveredItem,
+    generated_item: &DiscoveredItem,
+) -> bool {
+    let DiscoveredItem::Variable {
+        final_name: expected_final_name,
+    } = expected_item
+    else {
+        unreachable!()
+    };
+
+    let DiscoveredItem::Variable {
+        final_name: generated_final_name,
+    } = generated_item
+    else {
+        unreachable!()
+    };
 
     if !compare_names(expected_final_name, generated_final_name) {
         return false;
