@@ -301,6 +301,8 @@ fn setup_wrap_static_fns_test() {
         )
         .clang_arg("-DUSE_VA_HEADER");
 
+    // aarch64-linux has a bug, remove again when it is solved:
+    // https://github.com/rust-lang/rust-bindgen/issues/3234
     #[cfg(all(target_arch = "aarch64", target_os = "linux"))]
     {
         builder = builder.clang_arg("-DDISABLE_VA");
@@ -323,6 +325,8 @@ fn setup_wrap_static_fns_test() {
         .arg(out_path.join("wrap_static_fns.c"))
         .arg("-DUSE_VA_HEADER");
 
+    // aarch64-linux has a bug, remove again when it is solved:
+    // https://github.com/rust-lang/rust-bindgen/issues/3234
     #[cfg(all(target_arch = "aarch64", target_os = "linux"))]
     {
         command.arg("-DDISABLE_VA");

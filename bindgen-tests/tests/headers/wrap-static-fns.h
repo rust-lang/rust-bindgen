@@ -60,6 +60,8 @@ static inline int variadic(int x, ...) {
     return x;
 }
 
+// aarch64-linux has a bug, remove ifdef when it is solved:
+// https://github.com/rust-lang/rust-bindgen/issues/3234
 #ifndef DISABLE_VA
 
 static inline void no_extra_argument(__builtin_va_list va) {}
