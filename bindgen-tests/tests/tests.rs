@@ -726,6 +726,8 @@ fn test_wrap_static_fns() {
     // TODO: If another such feature is added, convert this test into a more generic
     //      test that looks at `tests/headers/generated` directory.
 
+    // aarch64-linux has a bug, remove custom source when it is solved:
+    // https://github.com/rust-lang/rust-bindgen/issues/3234
     let wrap_static_fns_c_name =
         if cfg!(all(target_arch = "aarch64", target_os = "linux")) {
             "wrap_static_fns_aarch64_linux"
@@ -748,6 +750,8 @@ fn test_wrap_static_fns() {
         .wrap_static_fns_path(generated_path.display().to_string())
         .parse_callbacks(Box::new(parse_callbacks::WrapAsVariadicFn));
 
+    // aarch64-linux has a bug, remove when it is solved:
+    // https://github.com/rust-lang/rust-bindgen/issues/3234
     #[cfg(all(target_arch = "aarch64", target_os = "linux"))]
     {
         builder = builder.clang_arg("-DDISABLE_VA");

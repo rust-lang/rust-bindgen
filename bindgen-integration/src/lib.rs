@@ -335,6 +335,8 @@ fn test_wrap_static_fns() {
             extern_bindings::takes_qualified(&(&5 as *const _) as *const _);
         assert_eq!(5, tq);
 
+        // aarch64-linux has a bug, enable again when it is solved:
+        // https://github.com/rust-lang/rust-bindgen/issues/3234
         #[cfg(not(all(target_arch = "aarch64", target_os = "linux")))]
         {
             let wv1 = extern_bindings::wrap_as_variadic_fn1_wrapped(0);
