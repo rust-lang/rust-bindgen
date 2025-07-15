@@ -104,7 +104,11 @@ impl Enum {
                 };
                 if let Some(val) = value {
                     let name = cursor.spelling();
-                    let radix = cursor.get_literal_radix();
+                    let radix = if ctx.options().keep_integer_radices {
+                        cursor.get_literal_radix()
+                    } else {
+                        None
+                    };
                     let annotations = Annotations::new(&cursor);
                     let custom_behavior = ctx
                         .options()
