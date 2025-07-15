@@ -1,4 +1,4 @@
-// bindgen-flags: -- -std=c++14
+// bindgen-flags: --keep-integer-radices -- -std=c++14
 // (C23 is not available in clang 9.0, but C++14 supports the same literals)
 
 // Binary integer literals (C23) - 0b10 is 2 in decimal

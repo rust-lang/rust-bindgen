@@ -370,7 +370,11 @@ impl ClangSubItemParser for Var {
                                 default_macro_constant_type(ctx, value)
                             });
 
-                        let radix = cursor.get_literal_radix();
+                        let radix = if ctx.options().keep_integer_radices {
+                            cursor.get_literal_radix()
+                        } else {
+                            None
+                        };
 
                         (TypeKind::Int(kind), VarType::Int(value), radix)
                     }
@@ -455,7 +459,11 @@ impl ClangSubItemParser for Var {
                     };
 
                     let mut val = cursor.evaluate().and_then(|v| v.as_int());
-                    let radix = cursor.get_literal_radix_of_identifier(&name);
+                    let radix = if ctx.options().keep_integer_radices {
+                        cursor.get_literal_radix_of_identifier(&name)
+                    } else {
+                        None
+                    };
 
                     if val.is_none() || !kind.signedness_matches(val.unwrap()) {
                         val = get_integer_literal_from_cursor(&cursor);

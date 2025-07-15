@@ -1,4 +1,4 @@
-// bindgen-flags: --rustified-enum ".*" -- -std=c++11 -Wno-narrowing
+// bindgen-flags: --rustified-enum ".*" --keep-integer-radices -- -std=c++11 -Wno-narrowing
 
 enum Foo {
     BAP_ARM = 0x93fcb9,
