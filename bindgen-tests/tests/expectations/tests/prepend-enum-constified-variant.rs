@@ -5,5 +5,5 @@ impl AVCodecID {
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum AVCodecID {
-    AV_CODEC_ID_FIRST_UNKNOWN = 98304,
+    AV_CODEC_ID_FIRST_UNKNOWN = 0x18000,
 }

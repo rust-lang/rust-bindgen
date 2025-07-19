@@ -525,6 +525,9 @@ struct BindgenCommand {
     /// be called.
     #[arg(long)]
     generate_private_functions: bool,
+    /// Whether to retain integer literal radices in generated Rust code.
+    #[arg(long)]
+    keep_integer_radices: bool,
     /// Whether to emit diagnostics or not.
     #[cfg(feature = "experimental")]
     #[arg(long, requires = "experimental")]
@@ -676,6 +679,7 @@ where
         generate_deleted_functions,
         generate_pure_virtual_functions,
         generate_private_functions,
+        keep_integer_radices,
         #[cfg(feature = "experimental")]
         emit_diagnostics,
         generate_shell_completions,
@@ -971,6 +975,7 @@ where
             generate_deleted_functions,
             generate_pure_virtual_functions,
             generate_private_functions,
+            keep_integer_radices,
         }
     );
 

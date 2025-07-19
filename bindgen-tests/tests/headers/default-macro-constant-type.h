@@ -1,3 +1,4 @@
+// bindgen-flags: --keep-integer-radices
 // Test default of --default-macro-constant-type
 // Negative values are i32 or i64; others are u32 or u64.
 
