@@ -40,7 +40,7 @@ unsafe extern "C" {
         arg: *const *const ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_int;
 }
-pub const foo_BAR: foo = 0;
+pub const foo_BAR: foo = 0x0;
 pub type foo = ::std::os::raw::c_uint;
 unsafe extern "C" {
     #[link_name = "takes_enum__extern"]

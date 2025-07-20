@@ -1,4 +1,4 @@
-// bindgen-flags: --rustified-enum ".*" -- -std=c++11 -fshort-enums
+// bindgen-flags: --rustified-enum ".*" --keep-integer-radices -- -std=c++11 -fshort-enums
 
 typedef enum {
     SOME_VALUE = 0x1,

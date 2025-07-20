@@ -6,6 +6,7 @@ use super::item::Item;
 use super::ty::{Type, TypeKind};
 use crate::clang;
 use crate::ir::annotations::Annotations;
+use crate::ir::var::LiteralRadix;
 use crate::parse::ParseError;
 use crate::regex_set::RegexSet;
 
@@ -103,6 +104,11 @@ impl Enum {
                 };
                 if let Some(val) = value {
                     let name = cursor.spelling();
+                    let radix = if ctx.options().keep_integer_radices {
+                        cursor.get_literal_radix()
+                    } else {
+                        None
+                    };
                     let annotations = Annotations::new(&cursor);
                     let custom_behavior = ctx
                         .options()
@@ -142,6 +148,7 @@ impl Enum {
                         comment,
                         val,
                         custom_behavior,
+                        radix,
                     ));
                 }
             }
@@ -254,6 +261,9 @@ pub(crate) struct EnumVariant {
 
     /// The custom behavior this variant may have, if any.
     custom_behavior: Option<EnumVariantCustomBehavior>,
+
+    /// The radix of the literal value of the variant.
+    radix: Option<LiteralRadix>,
 }
 
 /// A constant value assigned to an enumeration variant.
@@ -277,6 +287,7 @@ impl EnumVariant {
         comment: Option<String>,
         val: EnumVariantValue,
         custom_behavior: Option<EnumVariantCustomBehavior>,
+        radix: Option<LiteralRadix>,
     ) -> Self {
         EnumVariant {
             name,
@@ -284,6 +295,7 @@ impl EnumVariant {
             comment,
             val,
             custom_behavior,
+            radix,
         }
     }
 
@@ -300,6 +312,11 @@ impl EnumVariant {
     /// Get this variant's value.
     pub(crate) fn val(&self) -> EnumVariantValue {
         self.val
+    }
+
+    /// Get this variant's radix.
+    pub(crate) fn radix(&self) -> Option<&LiteralRadix> {
+        self.radix.as_ref()
     }
 
     /// Get this variant's documentation.
