@@ -17,7 +17,7 @@ pub mod root {
             ["Alignment of Value"][::std::mem::align_of::<Value>() - 1usize];
         };
         unsafe extern "C" {
-            #[link_name = "\u{1}_ZN2JS5Value1aE10JSWhyMagic"]
+            #[link_name = "_ZN2JS5Value1aE10JSWhyMagic"]
             pub fn Value_a(this: *mut root::JS::Value, arg1: root::JSWhyMagic);
         }
         impl Value {

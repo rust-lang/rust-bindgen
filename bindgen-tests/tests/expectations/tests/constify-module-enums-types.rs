@@ -115,7 +115,7 @@ impl Default for Bar {
     }
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z5func13fooPS_PS0_"]
+    #[link_name = "_Z5func13fooPS_PS0_"]
     pub fn func1(
         arg1: foo::Type,
         arg2: *mut foo::Type,
@@ -123,7 +123,7 @@ unsafe extern "C" {
     ) -> *mut foo::Type;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z5func23fooPS_PS0_"]
+    #[link_name = "_Z5func23fooPS_PS0_"]
     pub fn func2(
         arg1: foo_alias1,
         arg2: *mut foo_alias1,
@@ -146,10 +146,10 @@ impl<T> Default for Thing<T> {
     }
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z5func35ThingI3fooE"]
+    #[link_name = "_Z5func35ThingI3fooE"]
     pub fn func3(arg1: Thing<foo::Type>) -> foo::Type;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z5func45ThingIS_I3fooEE"]
+    #[link_name = "_Z5func45ThingIS_I3fooEE"]
     pub fn func4(arg1: Thing<Thing<foo::Type>>) -> foo::Type;
 }
