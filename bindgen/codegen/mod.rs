@@ -4665,13 +4665,19 @@ impl CodeGenerator for Function {
             }
         }
 
-        // Unfortunately this can't piggyback on the `attributes` list because
-        // the #[link(wasm_import_module)] needs to happen before the `extern
-        // "C"` block. It doesn't get picked up properly otherwise
-        let wasm_link_attribute =
-            ctx.options().wasm_import_module_name.as_ref().map(|name| {
-                quote! { #[link(wasm_import_module = #name)] }
+        let mut block_attributes = quote! {};
+        for attr in &ctx.options().extern_fn_block_attrs {
+            let parsed_attr = proc_macro2::TokenStream::from_str(attr).unwrap_or_else(
+                |err| {
+                    panic!(
+                        "Error parsing extern fn block attribute `{attr}`: {err}"
+                    )
+                },
+            );
+            block_attributes.extend(quote! {
+                #parsed_attr
             });
+        }
 
         let should_wrap = is_internal &&
             ctx.options().wrap_static_fns &&
@@ -4725,7 +4731,7 @@ impl CodeGenerator for Function {
             .then(|| quote!(unsafe));
 
         let tokens = quote! {
-            #wasm_link_attribute
+            #block_attributes
             #safety extern #abi {
                 #(#attributes)*
                 pub fn #ident ( #( #args ),* ) #ret;
