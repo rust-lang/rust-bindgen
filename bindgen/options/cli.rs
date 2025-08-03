@@ -349,6 +349,8 @@ struct BindgenCommand {
     /// Do not prepend the enum name to constant or newtype variants.
     #[arg(long)]
     no_prepend_enum_name: bool,
+    #[arg(long)]
+    hash_unnamed_enum: bool,
     /// Do not try to detect default include paths
     #[arg(long)]
     no_include_path_detection: bool,
@@ -646,6 +648,7 @@ where
         ignore_methods,
         no_convert_floats,
         no_prepend_enum_name,
+        hash_unnamed_enum,
         no_include_path_detection,
         fit_macro_constant_types,
         opaque_type,
@@ -935,6 +938,7 @@ where
             with_derive_ord => Builder::derive_ord,
             no_derive_default => |b, _| b.derive_default(false),
             no_prepend_enum_name => |b, _| b.prepend_enum_name(false),
+            hash_unnamed_enum => |b,_|b.hash_unnamed_enum(),
             no_include_path_detection => |b, _| b.detect_include_paths(false),
             fit_macro_constant_types => Builder::fit_macro_constants,
             time_phases,
