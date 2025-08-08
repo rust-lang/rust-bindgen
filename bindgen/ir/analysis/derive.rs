@@ -510,7 +510,7 @@ impl DeriveTrait {
     }
 
     fn can_derive_compound_forward_decl(self) -> bool {
-        matches!(self, DeriveTrait::Copy | DeriveTrait::Debug)
+        matches!(self, DeriveTrait::Debug)
     }
 
     fn can_derive_incomplete_array(self) -> bool {
