@@ -474,28 +474,28 @@ struct BindgenCommand {
     /// Use DSTs to represent structures with flexible array members.
     #[arg(long)]
     flexarray_dst: bool,
-    /// Derive custom traits on any kind of type. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a coma-separated list of derive macros.
+    /// Derive custom traits on any kind of type. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a comma-separated list of derive macros.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_derive)]
     with_derive_custom: Vec<(Vec<String>, String)>,
-    /// Derive custom traits on a `struct`. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a coma-separated list of derive macros.
+    /// Derive custom traits on a `struct`. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a comma-separated list of derive macros.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_derive)]
     with_derive_custom_struct: Vec<(Vec<String>, String)>,
-    /// Derive custom traits on an `enum`. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a coma-separated list of derive macros.
+    /// Derive custom traits on an `enum`. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a comma-separated list of derive macros.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_derive)]
     with_derive_custom_enum: Vec<(Vec<String>, String)>,
-    /// Derive custom traits on a `union`. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a coma-separated list of derive macros.
+    /// Derive custom traits on a `union`. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a comma-separated list of derive macros.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_derive)]
     with_derive_custom_union: Vec<(Vec<String>, String)>,
-    /// Add custom attributes on any kind of type. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
+    /// Add custom attributes on any kind of type. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a comma-separated list of attributes.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_attribute)]
     with_attribute_custom: Vec<(Vec<String>, String)>,
-    /// Add custom attributes on a `struct`. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
+    /// Add custom attributes on a `struct`. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a comma-separated list of attributes.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_attribute)]
     with_attribute_custom_struct: Vec<(Vec<String>, String)>,
-    /// Add custom attributes on an `enum`. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
+    /// Add custom attributes on an `enum`. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a comma-separated list of attributes.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_attribute)]
     with_attribute_custom_enum: Vec<(Vec<String>, String)>,
-    /// Add custom attributes on a `union`. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a coma-separated list of attributes.
+    /// Add custom attributes on a `union`. The CUSTOM value must be of the shape REGEX=ATTRIBUTE where ATTRIBUTE is a comma-separated list of attributes.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_attribute)]
     with_attribute_custom_union: Vec<(Vec<String>, String)>,
     /// Generate wrappers for `static` and `static inline` functions.
