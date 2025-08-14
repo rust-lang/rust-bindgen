@@ -237,6 +237,7 @@ fn setup_macro_test() {
         .enable_cxx_namespaces()
         .default_enum_style(EnumVariation::Rust {
             non_exhaustive: false,
+            repr_c: false,
         })
         .raw_line("pub use self::root::*;")
         .raw_line("extern { fn my_prefixed_function_to_remove(i: i32); }")
