@@ -26,3 +26,5 @@ trigger_files = [
     "**/*.cc",
     "**/*.hpp",
 ]
+
+[assign]
