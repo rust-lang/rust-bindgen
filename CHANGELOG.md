@@ -230,6 +230,7 @@
 ## Changed
 ## Removed
 ## Fixed
+- Typo in code for `--rustified-non-exhaustive-enums` (#3266)
 ## Security
 
 # 0.72.0 (2025-06-08)
@@ -277,8 +278,8 @@
 - Add support for custom attributes with the `--with-attribute-custom` flag (#2866)
 - Allow setting `--rust-target` to any Rust version supported by bindgen (#2993)
 - Use c-string literals if the `--generate-cstr` flag is used for Rust targets after 1.77 under the 2021 edition (#2996)
-- Add the `--rust-edition` flag which allows to select which Rust edition to target. (#3002, #3013) 
-- Use `unsafe extern` instead of `extern` in blocks for any Rust target after 1.82. (#3015) 
+- Add the `--rust-edition` flag which allows to select which Rust edition to target. (#3002, #3013)
+- Use `unsafe extern` instead of `extern` in blocks for any Rust target after 1.82. (#3015)
 ## Changed
 - The `--wrap-static-fns` related options no longer require the experimental feature or flag (#2928)
 - Use the `Display` implementation instead of the `Debug` one for `BindgenError` in `bindgen-cli` (#3005)
@@ -443,7 +444,7 @@ This version was skipped due to some problems on the release workflow.
 * The `--wrap-static-fns` option can now wrap `va_list` functions as variadic functions
   with the experimental `ParseCallbacks::wrap_as_variadic_fn` method.
 * Add target mappings for riscv32imc and riscv32imac.
-* Add the `ParseCallbacks::field_visibility` method to modify field visibility. 
+* Add the `ParseCallbacks::field_visibility` method to modify field visibility.
 
 ## Changed
 
@@ -467,7 +468,7 @@ This version was skipped due to some problems on the release workflow.
 * Compute visibility of bitfield unit based on actual field visibility: A
   bitfield unit field and its related functions now have their visibility
   determined based on the most private between the default visibility and the
-  actual visibility of the bitfields within the unit. 
+  actual visibility of the bitfields within the unit.
 
 ## Removed
 * Remove redundant Cargo features, which were all implicit:
@@ -523,7 +524,7 @@ This version was skipped due to some problems on the release workflow.
    types. (#2463)
  * The `Builder::rustfmt_bindings` methods and the `--no-rustfmt-bindings` flag
    are now deprecated in favor of the formatter API. (#2453)
-   
+
 ## Removed
  * The following deprecated flags were removed: `--use-msvc-mangling`,
    `--rustfmt-bindings` and `--size_t-is-usize`. (#2408)
