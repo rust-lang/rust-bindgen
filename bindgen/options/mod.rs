@@ -547,7 +547,7 @@ options! {
                 }
             }
         },
-        as_args: "--rustified-non-exhaustive-enums",
+        as_args: "--rustified-non-exhaustive-enum",
     },
     /// `enum`s marked as modules of constants.
     constified_enum_modules: RegexSet {
