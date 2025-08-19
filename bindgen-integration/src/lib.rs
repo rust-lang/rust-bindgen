@@ -1,7 +1,7 @@
 #![allow(warnings)]
 
 mod bindings {
-    include!(concat!(env!("OUT_DIR"), "/test.rs"));
+    include!(concat!(env!("OUT_DIR"), "/test/test.rs"));
 }
 
 mod extern_bindings {
