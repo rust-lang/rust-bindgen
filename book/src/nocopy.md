@@ -4,14 +4,17 @@
 basis. Sometimes, it might not understand that although adding `#[derive(Copy,
 Clone)]` to a translated type definition will compile, it still shouldn't do
 that for reasons it can't know. In these cases, the `nocopy` annotation can be
-used to prevent bindgen to autoderive the `Copy` and `Clone` traits for a type.
+used to prevent bindgen from automatically deriving the `Copy` and `Clone`
+traits for a type.
 
 ### Library
 
+* [`bindgen::Builder::derive_copy`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.derive_copy)
 * [`bindgen::Builder::no_copy`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.no_copy)
 
 ### Command Line
 
+* `--no-derive-copy`
 * `--no-copy <regex>`
 
 ### Annotations

@@ -47,18 +47,18 @@ creates linking errors.
 However, if you are compiling the C/C++ yourself (rather than using a system
 shared library, for example), then you can pass `-fkeep-inline-functions` or
 `-fno-inline-functions` to `gcc` or `clang`, and invoke `bindgen` with either
-the `bindgen::Builder::generate_inline_functions` method or the
-`--generate-inline-functions` flag.
+the [`bindgen::Builder::generate_inline_functions`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.generate_inline_functions)
+method or the `--generate-inline-functions` flag.
 
 Note that these functions and methods are usually marked inline for a reason:
 they tend to be hot. The above workaround makes them an out-of-line call, which
 might not provide acceptable performance.
 
 As an alternative, you can invoke `bindgen` with either the
-`bindgen::Builder::wrap_static_fns` method or the `--wrap-static-fns` flag.
-Which generates a C source file that can be compiled against the input headers
-to produce Rust headers for `static` and `static inline` functions. See [How to
-handle `static inline` functions](https://github.com/rust-lang/rust-bindgen/discussions/2405)
+[`bindgen::Builder::wrap_static_fns`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.wrap_static_fns)
+method or the `--wrap-static-fns` flag. That generates a C source file that can
+be compiled against the input headers to produce Rust bindings for `static` and
+`static inline` functions. See [How to handle `static inline` functions](https://github.com/rust-lang/rust-bindgen/discussions/2405)
 for further information.
 
 ### Does `bindgen` support the C++ Standard Template Library (STL)?
@@ -81,8 +81,8 @@ possible that bindgen will generate padding fields named `__bindgen_padding_N`.
 As these fields might be present when compiling for one architecture but not
 for an other, you should not initialize these fields manually when initializing
 the struct. Instead, use the `Default` trait. You can either enable this when
-constructing the `Builder` using the `derive_default` method, or you can
-implement this per struct using:
+constructing the `Builder` using the [`derive_default`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.derive_default)
+method, or you can implement this per struct using:
 
 ```rust,ignore
 impl Default for SRC_DATA {
@@ -107,7 +107,7 @@ be automatically initialized by `..Default::default()`.
 
 ### How to generate bindings for a custom target?
 
-To generate bindings for a custom target you only need to pass the `--target`
+To generate bindings for a custom target you only need to pass the [`--target`](https://clang.llvm.org/docs/ClangCommandLineReference.html#cmdoption-clang-target)
 argument to `libclang`. For example, if you want to generate bindings for the
 `armv7a-none-eabi` target using the command line, you need to invoke `bindgen`
 like so:

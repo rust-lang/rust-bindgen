@@ -15,7 +15,7 @@ pre-existing definition for the bitfield unit type.
 
 ## Bitfield examples
 
-For this discussion, we will use the following C type definitions and functions.
+For this discussion, we will use the following C type definitions and functions:
 ```c
 typedef struct {
     unsigned int a: 1;
@@ -76,7 +76,9 @@ StructWithBitfields: a:1, b:1, c:0
 
 To create a new bitfield in Rust, use the bitfield allocation unit constructor.
 
-Note: This requires the Builder's derive_default to be set to true, otherwise the necessary Default functions won't be generated.
+Note: This requires the `Builder`'s [`derive_default`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.derive_default)
+to be set to `true`. Otherwise the necessary `Default` functions won't be
+generated.
 
 ```rust,ignore
     let bfield = StructWithBitfields{
