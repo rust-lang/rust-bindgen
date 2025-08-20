@@ -3,14 +3,16 @@
 `bindgen` will attempt to derive the `Debug` traits on a best-effort
 basis. Sometimes, it might not understand that although adding `#[derive(Debug)]` to a translated type definition will compile, it still shouldn't do
 that for reasons it can't know. In these cases, the `nodebug` annotation can be
-used to prevent bindgen to autoderive the `Debug` traits for a type.
+used to prevent bindgen from automatically deriving the `Debug` trait for a type.
 
 ### Library
 
+* [`bindgen::Builder::derive_debug`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.derive_debug)
 * [`bindgen::Builder::no_debug`](https://docs.rs/bindgen/latest/bindgen/struct.Builder.html#method.no_debug)
 
 ### Command Line
 
+* `--no-derive-debug`
 * `--no-debug <regex>`
 
 ### Annotations

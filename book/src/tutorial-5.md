@@ -1,11 +1,11 @@
-# Write a Sanity Test
+# Write a Smoke Test
 
-Finally, to tie everything together, let's write a sanity test that round trips
+Finally, to tie everything together, let's write a smoke test that round trips
 some text through compression and decompression, and then asserts that it came
 back out the same as it went in. This is a little wordy using the raw FFI
 bindings, but hopefully we wouldn't usually ask people to do this, we'd provide
 a nice Rust-y API on top of the raw FFI bindings for them. However, since this
-is for testing the bindings directly, our sanity test will use the bindings
+is for testing the bindings directly, our smoke test will use the bindings
 directly.
 
 The test data I'm round tripping are some Futurama quotes I got off the internet
