@@ -420,6 +420,12 @@ struct BindgenCommand {
     /// The NAME to be used in a #[link(wasm_import_module = ...)] statement
     #[arg(long, value_name = "NAME")]
     wasm_import_module_name: Option<String>,
+    /// On Windows, link against NAME with kind `raw-dylib`.
+    #[arg(long, value_name = "NAME")]
+    windows_link_as_raw_dylib: Option<String>,
+    /// Do not append `.dll` suffix to the NAME provided to `--windows-link-as-raw-dylib`.
+    #[arg(long, requires = "windows_link_as_raw_dylib")]
+    windows_link_as_raw_dylib_verbatim: bool,
     /// Use dynamic loading mode with the given library NAME.
     #[arg(long, value_name = "NAME")]
     dynamic_loading: Option<String>,
@@ -643,6 +649,8 @@ where
         enable_function_attribute_detection,
         use_array_pointers_in_arguments,
         wasm_import_module_name,
+        windows_link_as_raw_dylib,
+        windows_link_as_raw_dylib_verbatim,
         dynamic_loading,
         dynamic_link_require_all,
         prefix_link_name,
@@ -1081,6 +1089,13 @@ where
     #[cfg(feature = "experimental")]
     if emit_diagnostics {
         builder = builder.emit_diagnostics();
+    }
+
+    if let Some(windows_link_as_raw_dylib) = windows_link_as_raw_dylib {
+        builder = builder.windows_link_as_raw_dylib(
+            windows_link_as_raw_dylib,
+            windows_link_as_raw_dylib_verbatim,
+        );
     }
 
     Ok((builder, output, verbose))
