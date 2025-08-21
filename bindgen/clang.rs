@@ -5,6 +5,7 @@
 #![deny(clippy::missing_docs_in_private_items)]
 
 use crate::ir::context::BindgenContext;
+use crate::ir::var::LiteralRadix;
 use clang_sys::*;
 use std::cmp;
 
@@ -972,6 +973,48 @@ impl Cursor {
     /// Is this cursor's referent a namespace that is inline?
     pub(crate) fn is_inline_namespace(&self) -> bool {
         unsafe { clang_Cursor_isInlineNamespace(self.x) != 0 }
+    }
+
+    /// Obtain the number base (radix) of an integer literal definition
+    /// corresponding to the cursor.
+    ///
+    /// Returns `None` if unable to infer a base.
+    pub(crate) fn get_literal_radix(&self) -> Option<LiteralRadix> {
+        self.tokens().iter().find_map(|token| {
+            if token.kind == CXToken_Literal {
+                LiteralRadix::from_integer_literal_token(token.spelling())
+            } else {
+                None
+            }
+        })
+    }
+
+    /// Obtain the number base (radix) of an integer literal definition
+    /// corresponding to the cursor, ensuring that the radix is from the literal
+    /// following a given identifier in the list of tokens.
+    ///
+    /// Returns `None` if unable to infer a base.
+    pub(crate) fn get_literal_radix_of_identifier(
+        &self,
+        identifier: &str,
+    ) -> Option<LiteralRadix> {
+        self.tokens()
+            .iter()
+            .scan(false, |identifier_found, token| {
+                if token.kind == CXToken_Identifier &&
+                    token.spelling() == identifier.as_bytes()
+                {
+                    *identifier_found = true;
+                }
+                Some((*identifier_found, token))
+            })
+            .find_map(|(identifier_found, token)| {
+                if identifier_found && token.kind == CXToken_Literal {
+                    LiteralRadix::from_integer_literal_token(token.spelling())
+                } else {
+                    None
+                }
+            })
     }
 }
 

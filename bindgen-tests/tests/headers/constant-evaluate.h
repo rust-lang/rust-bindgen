@@ -1,5 +1,5 @@
 // bindgen-unstable
-// bindgen-flags: --rustified-enum ".*"
+// bindgen-flags: --rustified-enum ".*" --keep-integer-radices
 
 enum {
   foo = 4,

@@ -139,6 +139,7 @@ pub(crate) mod ast_ty {
     use crate::ir::function::FunctionSig;
     use crate::ir::layout::Layout;
     use crate::ir::ty::{FloatKind, IntKind};
+    use crate::ir::var::LiteralRadix;
     use crate::RustTarget;
     use proc_macro2::TokenStream;
     use std::str::FromStr;
@@ -291,16 +292,50 @@ pub(crate) mod ast_ty {
         }
     }
 
-    pub(crate) fn int_expr(val: i64) -> TokenStream {
-        // Don't use quote! { #val } because that adds the type suffix.
-        let val = proc_macro2::Literal::i64_unsuffixed(val);
-        quote!(#val)
+    fn integer_with_radix(
+        val: u64,
+        is_negative: bool,
+        radix: &LiteralRadix,
+    ) -> TokenStream {
+        let sign = if is_negative { "-" } else { "" };
+        let val = match radix {
+            LiteralRadix::Binary => format!("{sign}0b{val:b}"),
+            LiteralRadix::Octal => format!("{sign}0o{val:o}"),
+            LiteralRadix::Hexadecimal => format!("{sign}0x{val:x}"),
+            LiteralRadix::Decimal => format!("{sign}{val}"),
+        };
+        TokenStream::from_str(val.as_str())
+            .expect("val was infallibly constructed")
     }
 
-    pub(crate) fn uint_expr(val: u64) -> TokenStream {
+    pub(crate) fn int_expr(
+        val: i64,
+        radix: Option<&LiteralRadix>,
+    ) -> TokenStream {
         // Don't use quote! { #val } because that adds the type suffix.
-        let val = proc_macro2::Literal::u64_unsuffixed(val);
-        quote!(#val)
+        match radix {
+            None | Some(LiteralRadix::Decimal) => {
+                let val = proc_macro2::Literal::i64_unsuffixed(val);
+                quote!(#val)
+            }
+            Some(radix) => {
+                integer_with_radix(val.unsigned_abs(), val.is_negative(), radix)
+            }
+        }
+    }
+
+    pub(crate) fn uint_expr(
+        val: u64,
+        radix: Option<&LiteralRadix>,
+    ) -> TokenStream {
+        // Don't use quote! { #val } because that adds the type suffix.
+        match radix {
+            None | Some(LiteralRadix::Decimal) => {
+                let val = proc_macro2::Literal::u64_unsuffixed(val);
+                quote!(#val)
+            }
+            Some(radix) => integer_with_radix(val, false, radix),
+        }
     }
 
     pub(crate) fn cstr_expr(mut string: String) -> TokenStream {
@@ -391,5 +426,183 @@ pub(crate) mod ast_ty {
                 quote! { #name }
             })
             .collect()
+    }
+
+    #[cfg(test)]
+    mod test {
+        use super::*;
+
+        #[test]
+        fn integer_with_radix_outputs_correct_tokens() {
+            use super::LiteralRadix as R;
+            struct Ar {
+                v: u64,
+                n: bool,
+                r: R,
+            }
+            let inputs_and_expected_results = &[
+                (Ar { v: 0b0, n: false, r: R::Binary }, quote! { 0b0 }),
+                (Ar { v: 0o0, n: false, r: R::Octal }, quote! { 0o0 }),
+                (Ar { v: 0, n: false, r: R::Decimal }, quote! { 0 }),
+                (Ar { v: 0x0, n: false, r: R::Hexadecimal }, quote! { 0x0 }),
+
+                (Ar { v: 0b1, n: false, r: R::Binary }, quote! { 0b1 }),
+                (Ar { v: 0o1, n: false, r: R::Octal }, quote! { 0o1 }),
+                (Ar { v: 1, n: false, r: R::Decimal }, quote! { 1 }),
+                (Ar { v: 0x1, n: false, r: R::Hexadecimal }, quote! { 0x1 }),
+
+                (Ar { v: 0b1, n: true, r: R::Binary }, quote! { -0b1 }),
+                (Ar { v: 0o1, n: true, r: R::Octal }, quote! { -0o1 }),
+                (Ar { v: 1, n: true, r: R::Decimal }, quote! { -1 }),
+                (Ar { v: 0x1, n: true, r: R::Hexadecimal }, quote! { -0x1 }),
+
+                (Ar { v: 0b1000000000000000000000000000000000000000000000000000000000000000, n: false, r: R::Binary }, quote! { 0b1000000000000000000000000000000000000000000000000000000000000000 }),
+                (Ar { v: 0o1000000000000000000000, n: false, r: R::Octal }, quote! { 0o1000000000000000000000 }),
+                (Ar { v: 9223372036854775808, n: false, r: R::Decimal }, quote! { 9223372036854775808 }),
+                (Ar { v: 0x8000000000000000, n: false, r: R::Hexadecimal }, quote! { 0x8000000000000000 }),
+
+                (Ar { v: 0b1000000000000000000000000000000000000000000000000000000000000000, n: true, r: R::Binary }, quote! { -0b1000000000000000000000000000000000000000000000000000000000000000 }),
+                (Ar { v: 0o1000000000000000000000, n: true, r: R::Octal }, quote! { -0o1000000000000000000000 }),
+                (Ar { v: 9223372036854775808, n: true, r: R::Decimal }, quote! { -9223372036854775808 }),
+                (Ar { v: 0x8000000000000000, n: true, r: R::Hexadecimal }, quote! { -0x8000000000000000 }),
+
+                (Ar { v: u64::MAX, n: false, r: R::Binary }, quote! { 0b1111111111111111111111111111111111111111111111111111111111111111 }),
+                (Ar { v: u64::MAX, n: false, r: R::Octal }, quote! { 0o1777777777777777777777 }),
+                (Ar { v: u64::MAX, n: false, r: R::Decimal }, quote! { 18446744073709551615 }),
+                (Ar { v: u64::MAX, n: false, r: R::Hexadecimal }, quote! { 0xffffffffffffffff }),
+            ];
+            for (i, e) in inputs_and_expected_results {
+                assert_eq!(
+                    integer_with_radix(i.v, i.n, &i.r).to_string(),
+                    e.to_string()
+                );
+            }
+        }
+
+        #[test]
+        fn int_expr_outputs_correct_tokens() {
+            use super::LiteralRadix as R;
+            let values_and_expected_results = &[
+                (
+                    0,
+                    (
+                        quote! { 0b0 },
+                        quote! { 0o0 },
+                        quote! { 0 },
+                        quote! { 0x0 },
+                    ),
+                ),
+                (
+                    1,
+                    (
+                        quote! { 0b1 },
+                        quote! { 0o1 },
+                        quote! { 1 },
+                        quote! { 0x1 },
+                    ),
+                ),
+                (
+                    -1,
+                    (
+                        quote! { -0b1 },
+                        quote! { -0o1 },
+                        quote! { -1 },
+                        quote! { -0x1 },
+                    ),
+                ),
+                (
+                    i64::MIN,
+                    (
+                        quote! { -0b1000000000000000000000000000000000000000000000000000000000000000 },
+                        quote! { -0o1000000000000000000000 },
+                        quote! { -9223372036854775808 },
+                        quote! { -0x8000000000000000 },
+                    ),
+                ),
+                (
+                    i64::MAX,
+                    (
+                        quote! { 0b111111111111111111111111111111111111111111111111111111111111111 },
+                        quote! { 0o777777777777777777777 },
+                        quote! { 9223372036854775807 },
+                        quote! { 0x7fffffffffffffff },
+                    ),
+                ),
+            ];
+
+            for (val, e) in values_and_expected_results {
+                assert_eq!(
+                    int_expr(*val, Some(&R::Binary)).to_string(),
+                    e.0.to_string()
+                );
+                assert_eq!(
+                    int_expr(*val, Some(&R::Octal)).to_string(),
+                    e.1.to_string()
+                );
+                assert_eq!(int_expr(*val, None).to_string(), e.2.to_string());
+                assert_eq!(
+                    int_expr(*val, Some(&R::Decimal)).to_string(),
+                    e.2.to_string()
+                );
+                assert_eq!(
+                    int_expr(*val, Some(&R::Hexadecimal)).to_string(),
+                    e.3.to_string()
+                );
+            }
+        }
+
+        #[test]
+        fn uint_expr_outputs_correct_tokens() {
+            use super::LiteralRadix as R;
+            let values_and_expected_results = &[
+                (
+                    0,
+                    (
+                        quote! { 0b0 },
+                        quote! { 0o0 },
+                        quote! { 0 },
+                        quote! { 0x0 },
+                    ),
+                ),
+                (
+                    1,
+                    (
+                        quote! { 0b1 },
+                        quote! { 0o1 },
+                        quote! { 1 },
+                        quote! { 0x1 },
+                    ),
+                ),
+                (
+                    u64::MAX,
+                    (
+                        quote! { 0b1111111111111111111111111111111111111111111111111111111111111111 },
+                        quote! { 0o1777777777777777777777 },
+                        quote! { 18446744073709551615 },
+                        quote! { 0xffffffffffffffff },
+                    ),
+                ),
+            ];
+
+            for (val, e) in values_and_expected_results {
+                assert_eq!(
+                    uint_expr(*val, Some(&R::Binary)).to_string(),
+                    e.0.to_string()
+                );
+                assert_eq!(
+                    uint_expr(*val, Some(&R::Octal)).to_string(),
+                    e.1.to_string()
+                );
+                assert_eq!(uint_expr(*val, None).to_string(), e.2.to_string());
+                assert_eq!(
+                    uint_expr(*val, Some(&R::Decimal)).to_string(),
+                    e.2.to_string()
+                );
+                assert_eq!(
+                    uint_expr(*val, Some(&R::Hexadecimal)).to_string(),
+                    e.3.to_string()
+                );
+            }
+        }
     }
 }

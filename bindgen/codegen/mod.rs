@@ -691,6 +691,7 @@ impl CodeGenerator for Var {
                     });
                 }
                 VarType::Int(val) => {
+                    let radix = self.radix();
                     let int_kind = var_ty
                         .into_resolver()
                         .through_type_aliases()
@@ -700,9 +701,9 @@ impl CodeGenerator for Var {
                         .as_integer()
                         .unwrap();
                     let val = if int_kind.is_signed() {
-                        helpers::ast_ty::int_expr(val)
+                        helpers::ast_ty::int_expr(val, radix)
                     } else {
-                        helpers::ast_ty::uint_expr(val as _)
+                        helpers::ast_ty::uint_expr(val as _, radix)
                     };
                     result.push(quote! {
                         #(#attrs)*
@@ -2430,7 +2431,7 @@ impl CodeGenerator for CompInfo {
                 };
                 fields.insert(0, align_field);
             } else {
-                let explicit = helpers::ast_ty::int_expr(explicit as i64);
+                let explicit = helpers::ast_ty::int_expr(explicit as i64, None);
                 attributes.push(quote! {
                     #[repr(align(#explicit))]
                 });
@@ -3368,11 +3369,15 @@ impl EnumBuilder {
         let is_rust_enum = self.is_rust_enum();
         let expr = match variant.val() {
             EnumVariantValue::Boolean(v) if is_rust_enum => {
-                helpers::ast_ty::uint_expr(u64::from(v))
+                helpers::ast_ty::uint_expr(u64::from(v), None)
             }
             EnumVariantValue::Boolean(v) => quote!(#v),
-            EnumVariantValue::Signed(v) => helpers::ast_ty::int_expr(v),
-            EnumVariantValue::Unsigned(v) => helpers::ast_ty::uint_expr(v),
+            EnumVariantValue::Signed(v) => {
+                helpers::ast_ty::int_expr(v, variant.radix())
+            }
+            EnumVariantValue::Unsigned(v) => {
+                helpers::ast_ty::uint_expr(v, variant.radix())
+            }
         };
 
         match self.kind {

@@ -2,9 +2,9 @@
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Foo {
-    BAP_ARM = 9698489,
-    BAP_X86 = 11960045,
-    BAP_X86_64 = 3128633167,
+    BAP_ARM = 0x93fcb9,
+    BAP_X86 = 0xb67eed,
+    BAP_X86_64 = 0xba7b274f,
 }
 #[repr(u16)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
