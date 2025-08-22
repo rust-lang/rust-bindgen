@@ -96,7 +96,7 @@ if [ "$BINDGEN_RUST_FOR_LINUX_TEST" == "1" ]; then
   # and each update should only contain this change.
   #
   # Both commit hashes and tags are supported.
-  LINUX_VERSION=v6.16-rc1
+  LINUX_VERSION=v6.17-rc2
 
   # Download Linux at a specific commit
   mkdir -p linux
