@@ -52,6 +52,12 @@ pub(crate) mod attributes {
         }
     }
 
+    pub(crate) fn repr_c() -> TokenStream {
+        quote! {
+            #[repr(C)]
+        }
+    }
+
     pub(crate) fn doc(comment: &str) -> TokenStream {
         if comment.is_empty() {
             quote!()
