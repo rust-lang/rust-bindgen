@@ -361,7 +361,7 @@ impl Bitfield {
             "`Bitfield::getter_name` called on anonymous field"
         );
         self.getter_name.as_ref().expect(
-            "`Bitfield::getter_name` should only be called after\
+            "`Bitfield::getter_name` should only be called after \
              assigning bitfield accessor names",
         )
     }
@@ -376,7 +376,7 @@ impl Bitfield {
             "`Bitfield::setter_name` called on anonymous field"
         );
         self.setter_name.as_ref().expect(
-            "`Bitfield::setter_name` should only be called\
+            "`Bitfield::setter_name` should only be called \
              after assigning bitfield accessor names",
         )
     }

@@ -978,17 +978,17 @@ impl Bindings {
     }
 
     /// Gets the rustfmt path to rustfmt the generated bindings.
-    fn rustfmt_path(&self) -> io::Result<Cow<'_, Path>> {
+    fn rustfmt_path(&self) -> Cow<'_, Path> {
         debug_assert!(matches!(self.options.formatter, Formatter::Rustfmt));
         if let Some(ref p) = self.options.rustfmt_path {
-            return Ok(Cow::Borrowed(p));
+            Cow::Borrowed(p)
+        } else if let Ok(rustfmt) = env::var("RUSTFMT") {
+            Cow::Owned(rustfmt.into())
+        } else {
+            // No rustfmt binary was specified, so assume that the binary is called
+            // "rustfmt" and that it is in the user's PATH.
+            Cow::Borrowed(Path::new("rustfmt"))
         }
-        if let Ok(rustfmt) = env::var("RUSTFMT") {
-            return Ok(Cow::Owned(rustfmt.into()));
-        }
-        // No rustfmt binary was specified, so assume that the binary is called
-        // "rustfmt" and that it is in the user's PATH.
-        Ok(Cow::Owned("rustfmt".into()))
     }
 
     /// Formats a token stream with the formatter set up in `BindgenOptions`.
@@ -1008,7 +1008,7 @@ impl Bindings {
             Formatter::Rustfmt => (),
         }
 
-        let rustfmt = self.rustfmt_path()?;
+        let rustfmt = self.rustfmt_path();
         let mut cmd = Command::new(&*rustfmt);
 
         cmd.stdin(Stdio::piped()).stdout(Stdio::piped());
