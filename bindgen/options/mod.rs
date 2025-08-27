@@ -447,7 +447,8 @@ options! {
             /// To set the style for individual `enum`s, use [`Builder::bitfield_enum`],
             /// [`Builder::newtype_enum`], [`Builder::newtype_global_enum`],
             /// [`Builder::rustified_enum`], [`Builder::rustified_non_exhaustive_enum`],
-            /// [`Builder::constified_enum_module`] or [`Builder::constified_enum`].
+            /// [`Builder::rustified_repr_c_enum`], [`Builder::constified_enum_module`],
+            /// or [`Builder::constified_enum`].
             pub fn default_enum_style(
                 mut self,
                 arg: EnumVariation,
@@ -548,6 +549,22 @@ options! {
             }
         },
         as_args: "--rustified-non-exhaustive-enum",
+    },
+    /// `enum`s marked as `repr(C)` Rust `enum`s.
+    rustified_repr_c_enums: RegexSet {
+        methods: {
+            regex_option! {
+                /// Mark the given `enum` as a `repr(C)` Rust `enum`.
+                ///
+                /// This is similar to the [`Builder::rustified_enum`] style, but the `enum` is
+                /// tagged with the `#[repr(C)]` attribute.
+                pub fn rustified_repr_c_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+                    self.options.rustified_repr_c_enums.insert(arg);
+                    self
+                }
+            }
+        },
+        as_args: "--rustified-repr-c-enum",
     },
     /// `enum`s marked as modules of constants.
     constified_enum_modules: RegexSet {
