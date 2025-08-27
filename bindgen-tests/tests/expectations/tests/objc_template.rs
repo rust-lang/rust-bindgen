@@ -3,6 +3,14 @@
 use objc::{self, msg_send, sel, sel_impl, class};
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
+#[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
+#[repr(C, align(8))]
+pub struct __BindgenOpaqueArray8<T>(pub T);
+impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray8<[T; N]> {
+    fn default() -> Self {
+        Self([<T as Default>::default(); N])
+    }
+}
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone)]
 pub struct Foo(pub id);
@@ -20,7 +28,7 @@ impl Foo {
 }
 impl<ObjectType: 'static> IFoo<ObjectType> for Foo {}
 pub trait IFoo<ObjectType: 'static>: Sized + std::ops::Deref {
-    unsafe fn get(&self) -> u64
+    unsafe fn get(&self) -> __BindgenOpaqueArray8<[u8; 8usize]>
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {
@@ -48,7 +56,10 @@ pub trait IFooMultiGeneric<
     KeyType: 'static,
     ObjectType: 'static,
 >: Sized + std::ops::Deref {
-    unsafe fn objectForKey_(&self, key: u64) -> u64
+    unsafe fn objectForKey_(
+        &self,
+        key: __BindgenOpaqueArray8<[u8; 8usize]>,
+    ) -> __BindgenOpaqueArray8<[u8; 8usize]>
     where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
     {

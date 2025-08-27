@@ -179,26 +179,11 @@ impl CannotDerive<'_> {
                 return CanDerive::No;
             }
 
-            let layout_can_derive =
-                ty.layout(self.ctx).map_or(CanDerive::Yes, |l| {
-                    l.opaque().array_size_within_derive_limit()
-                });
-
-            match layout_can_derive {
-                CanDerive::Yes => {
-                    trace!(
-                        "    we can trivially derive {} for the layout",
-                        self.derive_trait
-                    );
-                }
-                _ => {
-                    trace!(
-                        "    we cannot derive {} for the layout",
-                        self.derive_trait
-                    );
-                }
-            }
-            return layout_can_derive;
+            trace!(
+                "    we can trivially derive {} for the layout",
+                self.derive_trait
+            );
+            return CanDerive::Yes;
         }
 
         match *ty.kind() {
@@ -338,25 +323,11 @@ impl CannotDerive<'_> {
                             return CanDerive::No;
                         }
 
-                        let layout_can_derive =
-                            ty.layout(self.ctx).map_or(CanDerive::Yes, |l| {
-                                l.opaque().array_size_within_derive_limit()
-                            });
-                        match layout_can_derive {
-                            CanDerive::Yes => {
-                                trace!(
-                                    "    union layout can trivially derive {}",
-                                    self.derive_trait
-                                );
-                            }
-                            _ => {
-                                trace!(
-                                    "    union layout cannot derive {}",
-                                    self.derive_trait
-                                );
-                            }
-                        }
-                        return layout_can_derive;
+                        trace!(
+                            "    union layout can trivially derive {}",
+                            self.derive_trait
+                        );
+                        return CanDerive::Yes;
                     }
                 }
 

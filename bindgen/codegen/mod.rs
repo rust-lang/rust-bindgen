@@ -580,9 +580,7 @@ impl CodeGenerator for Module {
                 if ctx.need_bindgen_complex_type() {
                     utils::prepend_complex_type(&mut *result);
                 }
-                if ctx.need_opaque_array_type() {
-                    utils::prepend_opaque_array_type(&mut *result);
-                }
+                utils::prepend_opaque_array_types(ctx, &mut *result);
                 if result.saw_objc {
                     utils::prepend_objc_header(ctx, &mut *result);
                 }
@@ -2259,14 +2257,13 @@ impl CodeGenerator for CompInfo {
 
             if has_address {
                 let layout = Layout::new(1, 1);
-                let ty = helpers::blob(ctx, Layout::new(1, 1), false);
                 struct_layout.saw_field_with_layout(
                     "_address",
                     layout,
                     /* offset = */ Some(0),
                 );
                 fields.push(quote! {
-                    pub _address: #ty,
+                    pub _address: u8,
                 });
             }
         }
@@ -2275,7 +2272,6 @@ impl CodeGenerator for CompInfo {
             match layout {
                 Some(l) => {
                     explicit_align = Some(l.align);
-
                     let ty = helpers::blob(ctx, l, false);
                     fields.push(quote! {
                         pub _bindgen_opaque_blob: #ty ,
@@ -2312,7 +2308,7 @@ impl CodeGenerator for CompInfo {
                 if !struct_layout.is_rust_union() {
                     let ty = helpers::blob(ctx, layout, false);
                     fields.push(quote! {
-                        pub bindgen_union_field: #ty ,
+                        pub bindgen_union_field: #ty,
                     });
                 }
             }
@@ -5610,23 +5606,37 @@ pub(crate) mod utils {
         result.extend(old_items);
     }
 
-    pub(crate) fn prepend_opaque_array_type(
+    pub(crate) fn prepend_opaque_array_types(
+        ctx: &BindgenContext,
         result: &mut Vec<proc_macro2::TokenStream>,
     ) {
-        let ty = quote! {
-            /// If Bindgen could only determine the size and alignment of a
-            /// type, it is represented like this.
-            #[derive(PartialEq, Copy, Clone, Debug, Hash)]
-            #[repr(C)]
-            pub struct __BindgenOpaqueArray<T: Copy, const N: usize>(pub [T; N]);
-            impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<T, N> {
-                fn default() -> Self {
-                    Self([<T as Default>::default(); N])
+        let mut tys = vec![];
+        // If Bindgen could only determine the size and alignment of a type, it is represented like
+        // this.
+        for align in ctx.opaque_array_types_needed() {
+            let ident = if align == 1 {
+                format_ident!("__BindgenOpaqueArray")
+            } else {
+                format_ident!("__BindgenOpaqueArray{}", align)
+            };
+            let repr = if align <= 1 {
+                quote! { #[repr(C)] }
+            } else {
+                let explicit = super::helpers::ast_ty::int_expr(align as i64);
+                quote! { #[repr(C, align(#explicit))] }
+            };
+            tys.push(quote! {
+                #[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
+                #repr
+                pub struct #ident<T>(pub T);
+                impl<T: Copy + Default, const N: usize> Default for #ident<[T; N]> {
+                    fn default() -> Self {
+                        Self([<T as Default>::default(); N])
+                    }
                 }
-            }
-        };
-
-        result.insert(0, ty);
+            });
+        }
+        result.splice(0..0, tys);
     }
 
     pub(crate) fn build_path(

@@ -1,12 +1,10 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[allow(non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub mod root {
-    /// If Bindgen could only determine the size and alignment of a
-    /// type, it is represented like this.
-    #[derive(PartialEq, Copy, Clone, Debug, Hash)]
+    #[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
     #[repr(C)]
-    pub struct __BindgenOpaqueArray<T: Copy, const N: usize>(pub [T; N]);
-    impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<T, N> {
+    pub struct __BindgenOpaqueArray<T>(pub T);
+    impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<[T; N]> {
         fn default() -> Self {
             Self([<T as Default>::default(); N])
         }
@@ -19,7 +17,7 @@ pub mod root {
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct C {
-            pub a: root::__BindgenOpaqueArray<u8, 3usize>,
+            pub a: root::__BindgenOpaqueArray<[u8; 3usize]>,
         }
         #[allow(clippy::unnecessary_operation, clippy::identity_op)]
         const _: () = {

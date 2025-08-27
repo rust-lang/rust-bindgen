@@ -387,7 +387,7 @@ pub(crate) struct BindgenContext {
     options: BindgenOptions,
 
     /// Whether an opaque array was generated
-    generated_opaque_array: Cell<bool>,
+    generated_opaque_array: RefCell<HashSet<usize>>,
 
     /// Whether a bindgen complex was generated
     generated_bindgen_complex: Cell<bool>,
@@ -596,7 +596,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             options,
             generated_bindgen_complex: Cell::new(false),
             generated_bindgen_float16: Cell::new(false),
-            generated_opaque_array: Cell::new(false),
+            generated_opaque_array: Default::default(),
             allowlisted: None,
             blocklisted_types_implement_traits: Default::default(),
             codegen_items: None,
@@ -2588,13 +2588,20 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Call if an opaque array is generated
-    pub(crate) fn generated_opaque_array(&self) {
-        self.generated_opaque_array.set(true);
+    pub(crate) fn generated_opaque_array(&self, align: usize) {
+        self.generated_opaque_array.borrow_mut().insert(align);
     }
 
     /// Whether we need to generate the opaque array type
-    pub(crate) fn need_opaque_array_type(&self) -> bool {
-        self.generated_opaque_array.get()
+    pub(crate) fn opaque_array_types_needed(&self) -> Vec<usize> {
+        let mut alignments = self
+            .generated_opaque_array
+            .borrow()
+            .iter()
+            .copied()
+            .collect::<Vec<_>>();
+        alignments.sort_unstable();
+        alignments
     }
 
     /// Call if a bindgen complex is generated

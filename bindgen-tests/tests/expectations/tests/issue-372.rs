@@ -1,12 +1,10 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[allow(non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub mod root {
-    /// If Bindgen could only determine the size and alignment of a
-    /// type, it is represented like this.
-    #[derive(PartialEq, Copy, Clone, Debug, Hash)]
-    #[repr(C)]
-    pub struct __BindgenOpaqueArray<T: Copy, const N: usize>(pub [T; N]);
-    impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<T, N> {
+    #[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
+    #[repr(C, align(8))]
+    pub struct __BindgenOpaqueArray8<T>(pub T);
+    impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray8<[T; N]> {
         fn default() -> Self {
             Self([<T as Default>::default(); N])
         }
@@ -74,8 +72,9 @@ pub mod root {
         ai = 11,
     }
     #[repr(C)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct F {
-        pub w: root::__BindgenOpaqueArray<u64, 33usize>,
+        pub w: root::__BindgenOpaqueArray8<[u8; 264usize]>,
     }
     #[allow(clippy::unnecessary_operation, clippy::identity_op)]
     const _: () = {
@@ -83,13 +82,4 @@ pub mod root {
         ["Alignment of F"][::std::mem::align_of::<F>() - 8usize];
         ["Offset of field: F::w"][::std::mem::offset_of!(F, w) - 0usize];
     };
-    impl Default for F {
-        fn default() -> Self {
-            let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
-            unsafe {
-                ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
-                s.assume_init()
-            }
-        }
-    }
 }
