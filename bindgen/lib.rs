@@ -685,7 +685,7 @@ fn rust_to_clang_target(rust_target: &str) -> Box<str> {
 
     let mut triple: Vec<&str> = rust_target.split_terminator('-').collect();
 
-    assert!(!triple.is_empty(), "{}", TRIPLE_HYPHENS_MESSAGE);
+    assert!(!triple.is_empty(), "{TRIPLE_HYPHENS_MESSAGE}");
     triple.resize(4, "");
 
     // RISC-V

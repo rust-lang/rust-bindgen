@@ -5617,7 +5617,7 @@ pub(crate) mod utils {
             let ident = if align == 1 {
                 format_ident!("__BindgenOpaqueArray")
             } else {
-                format_ident!("__BindgenOpaqueArray{}", align)
+                format_ident!("__BindgenOpaqueArray{align}")
             };
             let repr = if align <= 1 {
                 quote! { #[repr(C)] }
