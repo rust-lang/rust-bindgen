@@ -1234,12 +1234,6 @@ impl CompInfo {
         );
 
         let mut cursor = ty.declaration();
-
-        // If there is a definition, that's what we want.
-        if let Some(def) = cursor.definition() {
-            cursor = def;
-        }
-
         let mut kind = Self::kind_from_cursor(&cursor);
         if kind.is_err() {
             if let Some(location) = location {
