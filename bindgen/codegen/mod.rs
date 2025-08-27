@@ -3749,7 +3749,7 @@ impl CodeGenerator for Enum {
 
         utils::call_discovered_item_callback(ctx, item, || {
             DiscoveredItem::Enum {
-                final_name: name.to_string(),
+                final_name: name.clone(),
             }
         });
 
@@ -4653,7 +4653,7 @@ impl CodeGenerator for Function {
         }
         utils::call_discovered_item_callback(ctx, item, || {
             DiscoveredItem::Function {
-                final_name: canonical_name.to_string(),
+                final_name: canonical_name.clone(),
             }
         });
 
