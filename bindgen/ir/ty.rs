@@ -6,7 +6,7 @@ use super::dot::DotAttributes;
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
 use super::item::{IsOpaque, Item};
-use super::layout::{Layout, Opaque};
+use super::layout::Layout;
 use super::objc::ObjCInterface;
 use super::template::{
     AsTemplateParam, TemplateInstantiation, TemplateParameters,
@@ -65,6 +65,17 @@ impl Type {
             kind,
             is_const,
         }
+    }
+
+    /// Construct an opaque item from a clang type.
+    pub(crate) fn new_opaque_from_clang_ty(
+        ty: &clang::Type,
+        ctx: &BindgenContext,
+    ) -> Self {
+        let layout = Layout::new(ty.size(ctx), ty.align(ctx));
+        let ty_kind = TypeKind::Opaque;
+        let is_const = ty.is_const();
+        Type::new(None, Some(layout), ty_kind, is_const)
     }
 
     /// Which kind of type is this?
@@ -737,7 +748,7 @@ impl Type {
                  opaque type instead."
             );
             return Ok(ParseResult::New(
-                Opaque::from_clang_ty(&canonical_ty, ctx),
+                Self::new_opaque_from_clang_ty(&canonical_ty, ctx),
                 None,
             ));
         }
@@ -868,7 +879,8 @@ impl Type {
                                          from class template or base \
                                          specifier, using opaque blob"
                                     );
-                                    let opaque = Opaque::from_clang_ty(ty, ctx);
+                                    let opaque =
+                                        Self::new_opaque_from_clang_ty(ty, ctx);
                                     return Ok(ParseResult::New(opaque, None));
                                 }
                             }

@@ -1,4 +1,12 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
+#[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
+#[repr(C, align(8))]
+pub struct __BindgenOpaqueArray8<T>(pub T);
+impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray8<[T; N]> {
+    fn default() -> Self {
+        Self([<T as Default>::default(); N])
+    }
+}
 #[repr(C)]
 #[derive(Default)]
 pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>, [T; 0]);
@@ -286,7 +294,7 @@ pub struct rte_ip_frag_tbl {
     pub last: *mut ip_frag_pkt,
     ///< LRU list for table entries.
     pub lru: ip_pkt_list,
-    pub __bindgen_padding_0: u64,
+    pub __bindgen_padding_0: __BindgenOpaqueArray8<[u8; 8usize]>,
     ///< statistics counters.
     pub stat: ip_frag_tbl_stat,
     ///< hash table.

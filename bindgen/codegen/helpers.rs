@@ -4,6 +4,7 @@ use proc_macro2::{Ident, Span};
 
 use crate::ir::context::BindgenContext;
 use crate::ir::layout::Layout;
+use crate::ir::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 
 pub(crate) mod attributes {
     use proc_macro2::{Ident, Span, TokenStream};
@@ -85,32 +86,33 @@ pub(crate) fn blob(
     layout: Layout,
     ffi_safe: bool,
 ) -> syn::Type {
-    let opaque = layout.opaque();
-
-    // FIXME(emilio, #412): We fall back to byte alignment, but there are
-    // some things that legitimately are more than 8-byte aligned.
-    //
-    // Eventually we should be able to `unwrap` here, but...
-    let ty = opaque.known_rust_type_for_array().unwrap_or_else(|| {
-        warn!("Found unknown alignment on code generation!");
-        syn::parse_quote! { u8 }
-    });
-
-    let data_len = opaque.array_size().unwrap_or(layout.size);
-
-    if data_len == 1 {
-        ty
-    } else if ffi_safe {
-        ctx.generated_opaque_array();
-        if ctx.options().enable_cxx_namespaces {
-            syn::parse_quote! { root::__BindgenOpaqueArray<#ty, #data_len> }
+    let align = layout.align.max(1);
+    // For alignments <= 4, it holds that the integer type of the same size aligns to that same
+    // size. For bigger alignments that's not guaranteed, e.g. on x86 u64 is aligned to 4 bytes.
+    if align <= 4 {
+        let ty = Layout::known_type_for_size(align).unwrap();
+        let len = layout.size / align;
+        return if len == 1 {
+            ty
+        } else if !ffi_safe && len <= RUST_DERIVE_IN_ARRAY_LIMIT {
+            syn::parse_quote! { [#ty; #len] }
         } else {
-            syn::parse_quote! { __BindgenOpaqueArray<#ty, #data_len> }
-        }
+            ctx.generated_opaque_array(1);
+            if ctx.options().enable_cxx_namespaces {
+                syn::parse_quote! { root::__BindgenOpaqueArray<[#ty; #len]> }
+            } else {
+                syn::parse_quote! { __BindgenOpaqueArray<[#ty; #len]> }
+            }
+        };
+    }
+
+    ctx.generated_opaque_array(align);
+    let ident = format_ident!("__BindgenOpaqueArray{}", align);
+    let size = layout.size;
+    if ctx.options().enable_cxx_namespaces {
+        syn::parse_quote! { root::#ident<[u8; #size]> }
     } else {
-        // This is not FFI safe as an argument; the struct above is
-        // preferable.
-        syn::parse_quote! { [ #ty ; #data_len ] }
+        syn::parse_quote! { #ident<[u8; #size]> }
     }
 }
 

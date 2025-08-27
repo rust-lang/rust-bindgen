@@ -12,7 +12,6 @@ use super::derive::{
 use super::dot::DotAttributes;
 use super::function::{Function, FunctionKind};
 use super::item_kind::ItemKind;
-use super::layout::Opaque;
 use super::module::Module;
 use super::template::{AsTemplateParam, TemplateParameters};
 use super::traversal::{EdgeKind, Trace, Tracer};
@@ -451,7 +450,7 @@ impl Item {
         ctx: &mut BindgenContext,
     ) -> TypeId {
         let location = ty.declaration().location();
-        let ty = Opaque::from_clang_ty(ty, ctx);
+        let ty = Type::new_opaque_from_clang_ty(ty, ctx);
         let kind = ItemKind::Type(ty);
         let parent = ctx.root_module().into();
         ctx.add_item(

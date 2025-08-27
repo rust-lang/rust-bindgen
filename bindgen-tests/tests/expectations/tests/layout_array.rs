@@ -1,4 +1,12 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
+#[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
+#[repr(C, align(8))]
+pub struct __BindgenOpaqueArray8<T>(pub T);
+impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray8<[T; N]> {
+    fn default() -> Self {
+        Self([<T as Default>::default(); N])
+    }
+}
 pub const RTE_CACHE_LINE_SIZE: u32 = 64;
 pub const RTE_MEMPOOL_OPS_NAMESIZE: u32 = 32;
 pub const RTE_MEMPOOL_MAX_OPS_IDX: u32 = 16;
@@ -125,7 +133,7 @@ pub struct rte_mempool_ops_table {
     pub sl: rte_spinlock_t,
     ///< Number of used ops structs in the table.
     pub num_ops: u32,
-    pub __bindgen_padding_0: [u64; 7usize],
+    pub __bindgen_padding_0: __BindgenOpaqueArray8<[u8; 56usize]>,
     /// Storage for all possible ops structs.
     pub ops: [rte_mempool_ops; 16usize],
 }

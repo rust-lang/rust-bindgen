@@ -1,29 +1,25 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
+#[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
+#[repr(C)]
+pub struct __BindgenOpaqueArray<T>(pub T);
+impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<[T; N]> {
+    fn default() -> Self {
+        Self([<T as Default>::default(); N])
+    }
+}
 #[repr(C)]
 #[repr(align(4))]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Opaque {
-    pub _bindgen_opaque_blob: [u32; 41usize],
+    pub _bindgen_opaque_blob: __BindgenOpaqueArray<[u32; 41usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of Opaque"][::std::mem::size_of::<Opaque>() - 164usize];
     ["Alignment of Opaque"][::std::mem::align_of::<Opaque>() - 4usize];
 };
-impl Default for Opaque {
-    fn default() -> Self {
-        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
-        unsafe {
-            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
-            s.assume_init()
-        }
-    }
-}
-impl ::std::fmt::Debug for Opaque {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        write!(f, "Opaque {{ opaque }}")
-    }
-}
 #[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct OpaqueUser {
     pub opaque: Opaque,
 }
@@ -35,17 +31,3 @@ const _: () = {
         "Offset of field: OpaqueUser::opaque",
     ][::std::mem::offset_of!(OpaqueUser, opaque) - 0usize];
 };
-impl Default for OpaqueUser {
-    fn default() -> Self {
-        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
-        unsafe {
-            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
-            s.assume_init()
-        }
-    }
-}
-impl ::std::fmt::Debug for OpaqueUser {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        write!(f, "OpaqueUser {{ opaque: {:?} }}", self.opaque)
-    }
-}
