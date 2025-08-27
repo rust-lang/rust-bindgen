@@ -1237,7 +1237,7 @@ impl CompInfo {
 
         // If there is a definition, that's what we want.
         if let Some(def) = cursor.definition() {
-            cursor = def
+            cursor = def;
         }
 
         let mut kind = Self::kind_from_cursor(&cursor);
