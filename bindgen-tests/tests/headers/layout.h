@@ -1,5 +1,3 @@
-// bindgen-flags: \-\-rust-target=1.33
-//
 // FIXME: https://github.com/rust-lang/rust-bindgen/issues/1498
 
 

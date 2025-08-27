@@ -1,7 +1,7 @@
 use crate::ir::comp::{BitfieldUnit, CompKind, Field, FieldData, FieldMethods};
 use crate::ir::context::BindgenContext;
 use crate::ir::item::{HasTypeParamInArray, IsOpaque, Item, ItemCanonicalName};
-use crate::ir::ty::{TypeKind, RUST_DERIVE_IN_ARRAY_LIMIT};
+use crate::ir::ty::TypeKind;
 use std::fmt::Write as _;
 
 pub(crate) fn gen_debug_impl(
@@ -173,32 +173,9 @@ impl<'a> ImplDebug<'a> for Item {
                 // Generics are not required to implement Debug
                 if self.has_type_param_in_array(ctx) {
                     Some((format!("{name}: Array with length {len}"), vec![]))
-                } else if len < RUST_DERIVE_IN_ARRAY_LIMIT ||
-                    ctx.options().rust_features().larger_arrays
-                {
+                } else {
                     // The simple case
                     debug_print(name, &quote! { #name_ident })
-                } else if ctx.options().use_core {
-                    // There is no String in core; reducing field visibility to avoid breaking
-                    // no_std setups.
-                    Some((format!("{name}: [...]"), vec![]))
-                } else {
-                    // Let's implement our own print function
-                    Some((
-                        format!("{name}: [{{}}]"),
-                        vec![quote! {{
-                            use std::fmt::Write as _;
-                            let mut output = String::new();
-                            let mut iter = self.#name_ident.iter();
-                            if let Some(value) = iter.next() {
-                                let _ = write!(output, "{value:?}");
-                                for value in iter {
-                                    let _ = write!(output, ", {value:?}");
-                                }
-                            }
-                            output
-                        }}],
-                    ))
                 }
             }
             TypeKind::Vector(_, len) => {

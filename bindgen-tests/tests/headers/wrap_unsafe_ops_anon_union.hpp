@@ -1,4 +1,4 @@
-// bindgen-flags: \-\-rust-target=1.33 --wrap-unsafe-ops --no-layout-tests
+// bindgen-flags: --wrap-unsafe-ops --no-layout-tests
 
 template<typename T>
 struct TErrorResult {

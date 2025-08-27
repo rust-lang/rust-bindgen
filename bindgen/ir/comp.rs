@@ -1782,7 +1782,11 @@ impl DotAttributes for CompInfo {
 impl IsOpaque for CompInfo {
     type Extra = Option<Layout>;
 
-    fn is_opaque(&self, ctx: &BindgenContext, layout: &Option<Layout>) -> bool {
+    fn is_opaque(
+        &self,
+        ctx: &BindgenContext,
+        _layout: &Option<Layout>,
+    ) -> bool {
         if self.has_non_type_template_params ||
             self.has_unevaluable_bit_field_width
         {
@@ -1811,23 +1815,6 @@ impl IsOpaque for CompInfo {
             }),
         }) {
             return true;
-        }
-
-        if !ctx.options().rust_features().repr_packed_n {
-            // If we don't have `#[repr(packed(N)]`, the best we can
-            // do is make this struct opaque.
-            //
-            // See https://github.com/rust-lang/rust-bindgen/issues/537 and
-            // https://github.com/rust-lang/rust/issues/33158
-            if self.is_packed(ctx, layout.as_ref()) &&
-                layout.is_some_and(|l| l.align > 1)
-            {
-                warn!("Found a type that is both packed and aligned to greater than \
-                       1; Rust before version 1.33 doesn't have `#[repr(packed(N))]`, so we \
-                       are treating it as opaque. You may wish to set bindgen's rust target \
-                       version to 1.33 or later to enable `#[repr(packed(N))]` support.");
-                return true;
-            }
         }
 
         false

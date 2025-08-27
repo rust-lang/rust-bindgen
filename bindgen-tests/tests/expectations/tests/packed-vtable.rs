@@ -6,25 +6,21 @@ pub struct PackedVtable__bindgen_vtable(::std::os::raw::c_void);
 pub struct PackedVtable {
     pub vtable_: *const PackedVtable__bindgen_vtable,
 }
-#[test]
-fn bindgen_test_layout_PackedVtable() {
-    assert_eq!(::std::mem::size_of::<PackedVtable>(), 8usize, "Size of PackedVtable");
-    assert_eq!(
-        ::std::mem::align_of::<PackedVtable>(),
-        1usize,
-        "Alignment of PackedVtable",
-    );
-}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of PackedVtable"][::std::mem::size_of::<PackedVtable>() - 8usize];
+    ["Alignment of PackedVtable"][::std::mem::align_of::<PackedVtable>() - 1usize];
+};
 impl Default for PackedVtable {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN12PackedVtableD1Ev"]
     pub fn PackedVtable_PackedVtable_destructor(this: *mut PackedVtable);
 }

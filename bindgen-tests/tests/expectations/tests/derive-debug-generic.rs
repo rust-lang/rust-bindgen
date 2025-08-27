@@ -1,5 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
+#[derive(Debug)]
 pub struct Generic<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub t: [T; 40usize],
@@ -11,10 +12,5 @@ impl<T> Default for Generic<T> {
             ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
             s.assume_init()
         }
-    }
-}
-impl<T> ::std::fmt::Debug for Generic<T> {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        write!(f, "Generic {{ t: Array with length 40 }}")
     }
 }

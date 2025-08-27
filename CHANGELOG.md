@@ -229,6 +229,7 @@
 ## Added
 ## Changed
 ## Removed
+- Removed support for generating code for rustc versions < 1.51.
 ## Fixed
 - Typo in code for `--rustified-non-exhaustive-enums` (#3266)
 ## Security

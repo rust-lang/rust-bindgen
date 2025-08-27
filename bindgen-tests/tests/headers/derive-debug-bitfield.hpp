@@ -1,4 +1,4 @@
-// bindgen-flags: --impl-debug --rust-target 1.40
+// bindgen-flags: --impl-debug
 
 class C {
   bool a: 1;

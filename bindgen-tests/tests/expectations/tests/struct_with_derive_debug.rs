@@ -4,39 +4,23 @@
 pub struct LittleArray {
     pub a: [::std::os::raw::c_int; 32usize],
 }
-#[test]
-fn bindgen_test_layout_LittleArray() {
-    const UNINIT: ::std::mem::MaybeUninit<LittleArray> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<LittleArray>(), 128usize, "Size of LittleArray");
-    assert_eq!(
-        ::std::mem::align_of::<LittleArray>(),
-        4usize,
-        "Alignment of LittleArray",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        "Offset of field: LittleArray::a",
-    );
-}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of LittleArray"][::std::mem::size_of::<LittleArray>() - 128usize];
+    ["Alignment of LittleArray"][::std::mem::align_of::<LittleArray>() - 4usize];
+    ["Offset of field: LittleArray::a"][::std::mem::offset_of!(LittleArray, a) - 0usize];
+};
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct BigArray {
     pub a: [::std::os::raw::c_int; 33usize],
 }
-#[test]
-fn bindgen_test_layout_BigArray() {
-    const UNINIT: ::std::mem::MaybeUninit<BigArray> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<BigArray>(), 132usize, "Size of BigArray");
-    assert_eq!(::std::mem::align_of::<BigArray>(), 4usize, "Alignment of BigArray");
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
-        "Offset of field: BigArray::a",
-    );
-}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of BigArray"][::std::mem::size_of::<BigArray>() - 132usize];
+    ["Alignment of BigArray"][::std::mem::align_of::<BigArray>() - 4usize];
+    ["Offset of field: BigArray::a"][::std::mem::offset_of!(BigArray, a) - 0usize];
+};
 impl Default for BigArray {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -51,47 +35,27 @@ impl Default for BigArray {
 pub struct WithLittleArray {
     pub a: LittleArray,
 }
-#[test]
-fn bindgen_test_layout_WithLittleArray() {
-    const UNINIT: ::std::mem::MaybeUninit<WithLittleArray> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<WithLittleArray>(),
-        128usize,
-        "Size of WithLittleArray",
-    );
-    assert_eq!(
-        ::std::mem::align_of::<WithLittleArray>(),
-        4usize,
-        "Alignment of WithLittleArray",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of WithLittleArray"][::std::mem::size_of::<WithLittleArray>() - 128usize];
+    ["Alignment of WithLittleArray"][::std::mem::align_of::<WithLittleArray>() - 4usize];
+    [
         "Offset of field: WithLittleArray::a",
-    );
-}
+    ][::std::mem::offset_of!(WithLittleArray, a) - 0usize];
+};
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct WithBigArray {
     pub a: BigArray,
 }
-#[test]
-fn bindgen_test_layout_WithBigArray() {
-    const UNINIT: ::std::mem::MaybeUninit<WithBigArray> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<WithBigArray>(), 132usize, "Size of WithBigArray");
-    assert_eq!(
-        ::std::mem::align_of::<WithBigArray>(),
-        4usize,
-        "Alignment of WithBigArray",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).a) as usize - ptr as usize },
-        0usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of WithBigArray"][::std::mem::size_of::<WithBigArray>() - 132usize];
+    ["Alignment of WithBigArray"][::std::mem::align_of::<WithBigArray>() - 4usize];
+    [
         "Offset of field: WithBigArray::a",
-    );
-}
+    ][::std::mem::offset_of!(WithBigArray, a) - 0usize];
+};
 impl Default for WithBigArray {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

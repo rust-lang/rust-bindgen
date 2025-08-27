@@ -726,7 +726,6 @@ impl CodeGenerator for Var {
                         } else {
                             None
                         };
-
                     if let Some(cstr) = cstr {
                         let cstr_ty = quote! { ::#prefix::ffi::CStr };
                         if rust_features.literal_cstr {
@@ -763,7 +762,7 @@ impl CodeGenerator for Var {
                     }
                 }
                 VarType::Float(f) => {
-                    if let Ok(expr) = helpers::ast_ty::float_expr(ctx, f) {
+                    if let Ok(expr) = helpers::ast_ty::float_expr(f) {
                         result.push(quote! {
                             #(#attrs)*
                             pub const #canonical_ident : #ty = #expr ;
@@ -1792,12 +1791,6 @@ impl FieldCodegen<'_> for BitfieldUnit {
                 continue;
             }
 
-            if layout.size > RUST_DERIVE_IN_ARRAY_LIMIT &&
-                !ctx.options().rust_features().larger_arrays
-            {
-                continue;
-            }
-
             let mut bitfield_representable_as_int = true;
             let mut bitfield_visibility = visibility_kind;
             bf.codegen(
@@ -2005,33 +1998,31 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 }
             }));
 
-            if ctx.options().rust_features.raw_ref_macros {
-                methods.extend(Some(quote! {
-                    #[inline]
-                    #access_spec unsafe fn #raw_getter_name(this: *const Self) -> #bitfield_ty {
-                        unsafe {
-                            ::#prefix::mem::transmute(<#unit_field_ty>::raw_get(
-                                (*::#prefix::ptr::addr_of!((*this).#unit_field_ident)).as_ref() as *const _,
-                                #offset,
-                                #width,
-                            ) as #bitfield_int_ty)
-                        }
+            methods.extend(Some(quote! {
+                #[inline]
+                #access_spec unsafe fn #raw_getter_name(this: *const Self) -> #bitfield_ty {
+                    unsafe {
+                        ::#prefix::mem::transmute(<#unit_field_ty>::raw_get(
+                            (*::#prefix::ptr::addr_of!((*this).#unit_field_ident)).as_ref() as *const _,
+                            #offset,
+                            #width,
+                        ) as #bitfield_int_ty)
                     }
+                }
 
-                    #[inline]
-                    #access_spec unsafe fn #raw_setter_name(this: *mut Self, val: #bitfield_ty) {
-                        unsafe {
-                            let val: #bitfield_int_ty = ::#prefix::mem::transmute(val);
-                            <#unit_field_ty>::raw_set(
-                                (*::#prefix::ptr::addr_of_mut!((*this).#unit_field_ident)).as_mut() as *mut _,
-                                #offset,
-                                #width,
-                                val as u64,
-                            )
-                        }
+                #[inline]
+                #access_spec unsafe fn #raw_setter_name(this: *mut Self, val: #bitfield_ty) {
+                    unsafe {
+                        let val: #bitfield_int_ty = ::#prefix::mem::transmute(val);
+                        <#unit_field_ty>::raw_set(
+                            (*::#prefix::ptr::addr_of_mut!((*this).#unit_field_ident)).as_mut() as *mut _,
+                            #offset,
+                            #width,
+                            val as u64,
+                        )
                     }
-                }));
-            }
+                }
+            }));
         } else {
             methods.extend(Some(quote! {
                 #[inline]
@@ -2057,8 +2048,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 }
             }));
 
-            if ctx.options().rust_features.raw_ref_macros {
-                methods.extend(Some(quote! {
+            methods.extend(Some(quote! {
                 #[inline]
                 #access_spec unsafe fn #raw_getter_name(this: *const Self) -> #bitfield_ty {
                     unsafe {
@@ -2083,7 +2073,6 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                     }
                 }
             }));
-            }
         }
     }
 }
@@ -2401,7 +2390,6 @@ impl CodeGenerator for CompInfo {
                 self.already_packed(ctx).unwrap_or(false))
         {
             let n = layout.map_or(1, |l| l.align);
-            assert!(ctx.options().rust_features().repr_packed_n || n == 1);
             let packed_repr = if n == 1 {
                 "packed".to_string()
             } else {
@@ -2761,21 +2749,11 @@ impl CodeGenerator for CompInfo {
 
         if needs_default_impl {
             let prefix = ctx.trait_prefix();
-            let body = if ctx.options().rust_features().maybe_uninit {
-                quote! {
-                    let mut s = ::#prefix::mem::MaybeUninit::<Self>::uninit();
-                    unsafe {
-                        ::#prefix::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
-                        s.assume_init()
-                    }
-                }
-            } else {
-                quote! {
-                    unsafe {
-                        let mut s: Self = ::#prefix::mem::uninitialized();
-                        ::#prefix::ptr::write_bytes(&mut s, 0, 1);
-                        s
-                    }
+            let body = quote! {
+                let mut s = ::#prefix::mem::MaybeUninit::<Self>::uninit();
+                unsafe {
+                    ::#prefix::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+                    s.assume_init()
                 }
             };
             // Note we use `ptr::write_bytes()` instead of `mem::zeroed()` because the latter does
@@ -3096,24 +3074,11 @@ impl Method {
         // variable called `__bindgen_tmp` we're going to create.
         if self.is_constructor() {
             let prefix = ctx.trait_prefix();
-            let tmp_variable_decl = if ctx
-                .options()
-                .rust_features()
-                .maybe_uninit
-            {
-                exprs[0] = quote! {
-                    __bindgen_tmp.as_mut_ptr()
-                };
-                quote! {
-                    let mut __bindgen_tmp = ::#prefix::mem::MaybeUninit::uninit()
-                }
-            } else {
-                exprs[0] = quote! {
-                    &mut __bindgen_tmp
-                };
-                quote! {
-                    let mut __bindgen_tmp = ::#prefix::mem::uninitialized()
-                }
+            exprs[0] = quote! {
+                __bindgen_tmp.as_mut_ptr()
+            };
+            let tmp_variable_decl = quote! {
+                let mut __bindgen_tmp = ::#prefix::mem::MaybeUninit::uninit()
             };
             stmts.push(tmp_variable_decl);
         } else if !self.is_static() {
@@ -3130,14 +3095,8 @@ impl Method {
         stmts.push(call);
 
         if self.is_constructor() {
-            stmts.push(if ctx.options().rust_features().maybe_uninit {
-                quote! {
+            stmts.push(quote! {
                     __bindgen_tmp.assume_init()
-                }
-            } else {
-                quote! {
-                    __bindgen_tmp
-                }
             });
         }
 
@@ -5373,12 +5332,7 @@ pub(crate) mod utils {
             return;
         }
 
-        let bitfield_unit_src = if ctx.options().rust_features().raw_ref_macros
-        {
-            include_str!("./bitfield_unit_raw_ref_macros.rs")
-        } else {
-            include_str!("./bitfield_unit.rs")
-        };
+        let bitfield_unit_src = include_str!("./bitfield_unit.rs");
         let bitfield_unit_src = if true {
             Cow::Borrowed(bitfield_unit_src)
         } else {

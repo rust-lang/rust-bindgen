@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq --impl-partialeq --rust-target 1.40
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq --impl-partialeq
 /**
  * We emit a `[u8; 63usize]` padding field for this struct, which cannot derive
  * Debug/Hash because 63 is over the hard coded limit.

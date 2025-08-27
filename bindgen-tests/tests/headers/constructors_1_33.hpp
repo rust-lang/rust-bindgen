@@ -1,5 +1,3 @@
-// bindgen-flags: --rust-target 1.33
-
 class TestOverload {
   // This one shouldn't be generated.
   TestOverload();
