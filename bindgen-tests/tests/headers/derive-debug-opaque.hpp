@@ -1,4 +1,4 @@
-// bindgen-flags: --opaque-type "Opaque" --impl-debug --rust-target 1.40
+// bindgen-flags: --opaque-type "Opaque" --impl-debug
 
 class Opaque {
   int i;

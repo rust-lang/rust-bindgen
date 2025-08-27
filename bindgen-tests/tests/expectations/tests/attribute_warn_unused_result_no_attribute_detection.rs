@@ -4,12 +4,12 @@
 pub struct Foo {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_Foo() {
-    assert_eq!(::std::mem::size_of::<Foo>(), 1usize, "Size of Foo");
-    assert_eq!(::std::mem::align_of::<Foo>(), 1usize, "Alignment of Foo");
-}
-extern "C" {
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of Foo"][::std::mem::size_of::<Foo>() - 1usize];
+    ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 1usize];
+};
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3Foo3fooEi"]
     pub fn Foo_foo(this: *mut Foo, arg1: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
 }
@@ -19,7 +19,7 @@ impl Foo {
         Foo_foo(self, arg1)
     }
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_Z3fooi"]
     pub fn foo(arg1: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
 }

@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-partialeq --impl-partialeq --rust-target 1.40
+// bindgen-flags: --with-derive-partialeq --impl-partialeq
 
 class C {
     bool a: 1;

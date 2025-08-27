@@ -19,85 +19,35 @@ pub struct RTCRay {
     pub primID: ::std::os::raw::c_uint,
     pub instID: ::std::os::raw::c_uint,
 }
-#[test]
-fn bindgen_test_layout_RTCRay() {
-    const UNINIT: ::std::mem::MaybeUninit<RTCRay> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<RTCRay>(), 96usize, "Size of RTCRay");
-    assert_eq!(::std::mem::align_of::<RTCRay>(), 16usize, "Alignment of RTCRay");
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).org) as usize - ptr as usize },
-        0usize,
-        "Offset of field: RTCRay::org",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).align0) as usize - ptr as usize },
-        12usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of RTCRay"][::std::mem::size_of::<RTCRay>() - 96usize];
+    ["Alignment of RTCRay"][::std::mem::align_of::<RTCRay>() - 16usize];
+    ["Offset of field: RTCRay::org"][::std::mem::offset_of!(RTCRay, org) - 0usize];
+    [
         "Offset of field: RTCRay::align0",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).dir) as usize - ptr as usize },
-        16usize,
-        "Offset of field: RTCRay::dir",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).align1) as usize - ptr as usize },
-        28usize,
+    ][::std::mem::offset_of!(RTCRay, align0) - 12usize];
+    ["Offset of field: RTCRay::dir"][::std::mem::offset_of!(RTCRay, dir) - 16usize];
+    [
         "Offset of field: RTCRay::align1",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).tnear) as usize - ptr as usize },
-        32usize,
-        "Offset of field: RTCRay::tnear",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).tfar) as usize - ptr as usize },
-        36usize,
-        "Offset of field: RTCRay::tfar",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).time) as usize - ptr as usize },
-        40usize,
-        "Offset of field: RTCRay::time",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mask) as usize - ptr as usize },
-        44usize,
-        "Offset of field: RTCRay::mask",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).Ng) as usize - ptr as usize },
-        48usize,
-        "Offset of field: RTCRay::Ng",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).align2) as usize - ptr as usize },
-        60usize,
+    ][::std::mem::offset_of!(RTCRay, align1) - 28usize];
+    ["Offset of field: RTCRay::tnear"][::std::mem::offset_of!(RTCRay, tnear) - 32usize];
+    ["Offset of field: RTCRay::tfar"][::std::mem::offset_of!(RTCRay, tfar) - 36usize];
+    ["Offset of field: RTCRay::time"][::std::mem::offset_of!(RTCRay, time) - 40usize];
+    ["Offset of field: RTCRay::mask"][::std::mem::offset_of!(RTCRay, mask) - 44usize];
+    ["Offset of field: RTCRay::Ng"][::std::mem::offset_of!(RTCRay, Ng) - 48usize];
+    [
         "Offset of field: RTCRay::align2",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).u) as usize - ptr as usize },
-        64usize,
-        "Offset of field: RTCRay::u",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).v) as usize - ptr as usize },
-        68usize,
-        "Offset of field: RTCRay::v",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).geomID) as usize - ptr as usize },
-        72usize,
+    ][::std::mem::offset_of!(RTCRay, align2) - 60usize];
+    ["Offset of field: RTCRay::u"][::std::mem::offset_of!(RTCRay, u) - 64usize];
+    ["Offset of field: RTCRay::v"][::std::mem::offset_of!(RTCRay, v) - 68usize];
+    [
         "Offset of field: RTCRay::geomID",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).primID) as usize - ptr as usize },
-        76usize,
+    ][::std::mem::offset_of!(RTCRay, geomID) - 72usize];
+    [
         "Offset of field: RTCRay::primID",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).instID) as usize - ptr as usize },
-        80usize,
+    ][::std::mem::offset_of!(RTCRay, primID) - 76usize];
+    [
         "Offset of field: RTCRay::instID",
-    );
-}
+    ][::std::mem::offset_of!(RTCRay, instID) - 80usize];
+};

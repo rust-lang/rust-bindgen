@@ -1,4 +1,4 @@
-// bindgen-flags: --raw-line '#![cfg(feature = "nightly")]' --rust-target 1.33
+// bindgen-flags: --raw-line '#![cfg(feature = "nightly")]'
 
 /// This should not be opaque; we can see the attributes and can pack the
 /// struct.

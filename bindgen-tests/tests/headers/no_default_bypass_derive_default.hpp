@@ -1,4 +1,4 @@
-// bindgen-flags: --no-default "NoDefault" --rust-target 1.40
+// bindgen-flags: --no-default "NoDefault"
 
 template<typename T>
 class Generic {

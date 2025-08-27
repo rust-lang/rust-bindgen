@@ -51,10 +51,10 @@ pub struct StylePoint<T> {
 }
 impl<T> Default for StylePoint<T> {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
@@ -84,10 +84,10 @@ pub struct StyleFoo_Foo_Body<T> {
 }
 impl<T> Default for StyleFoo_Foo_Body<T> {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
@@ -100,10 +100,10 @@ pub struct StyleFoo_Bar_Body<T> {
 }
 impl<T> Default for StyleFoo_Bar_Body<T> {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
@@ -116,10 +116,10 @@ pub struct StyleFoo_Baz_Body<T> {
 }
 impl<T> Default for StyleFoo_Baz_Body<T> {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
@@ -130,19 +130,19 @@ pub struct StyleFoo__bindgen_ty_1 {
 }
 impl Default for StyleFoo__bindgen_ty_1 {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
 impl<T> Default for StyleFoo<T> {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
@@ -167,10 +167,10 @@ pub struct StyleBar_StyleBar1_Body<T> {
 }
 impl<T> Default for StyleBar_StyleBar1_Body<T> {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
@@ -182,10 +182,10 @@ pub struct StyleBar_StyleBar2_Body<T> {
 }
 impl<T> Default for StyleBar_StyleBar2_Body<T> {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
@@ -197,10 +197,10 @@ pub struct StyleBar_StyleBar3_Body<T> {
 }
 impl<T> Default for StyleBar_StyleBar3_Body<T> {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
@@ -215,45 +215,37 @@ pub struct StyleBar__bindgen_ty_1<T> {
 }
 impl<T> Default for StyleBar__bindgen_ty_1<T> {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
 impl<T> Default for StyleBar<T> {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
-#[test]
-fn __bindgen_test_layout_StylePoint_open0_float_close0_instantiation() {
-    assert_eq!(
-        ::std::mem::size_of::<StylePoint<f32>>(),
-        8usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    [
         "Size of template specialization: StylePoint_open0_float_close0",
-    );
-    assert_eq!(
-        ::std::mem::align_of::<StylePoint<f32>>(),
-        4usize,
+    ][::std::mem::size_of::<StylePoint<f32>>() - 8usize];
+    [
         "Align of template specialization: StylePoint_open0_float_close0",
-    );
-}
-#[test]
-fn __bindgen_test_layout_StylePoint_open0_float_close0_instantiation_1() {
-    assert_eq!(
-        ::std::mem::size_of::<StylePoint<f32>>(),
-        8usize,
+    ][::std::mem::align_of::<StylePoint<f32>>() - 4usize];
+};
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    [
         "Size of template specialization: StylePoint_open0_float_close0",
-    );
-    assert_eq!(
-        ::std::mem::align_of::<StylePoint<f32>>(),
-        4usize,
+    ][::std::mem::size_of::<StylePoint<f32>>() - 8usize];
+    [
         "Align of template specialization: StylePoint_open0_float_close0",
-    );
-}
+    ][::std::mem::align_of::<StylePoint<f32>>() - 4usize];
+};

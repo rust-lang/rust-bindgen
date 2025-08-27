@@ -1,4 +1,4 @@
-// bindgen-flags: --no-layout-tests --rust-target=1.81
+// bindgen-flags: --no-layout-tests
 
 void cool_function(int i, char c);
 

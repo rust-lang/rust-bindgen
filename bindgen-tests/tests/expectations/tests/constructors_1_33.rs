@@ -4,16 +4,12 @@
 pub struct TestOverload {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_TestOverload() {
-    assert_eq!(::std::mem::size_of::<TestOverload>(), 1usize, "Size of TestOverload");
-    assert_eq!(
-        ::std::mem::align_of::<TestOverload>(),
-        1usize,
-        "Alignment of TestOverload",
-    );
-}
-extern "C" {
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of TestOverload"][::std::mem::size_of::<TestOverload>() - 1usize];
+    ["Alignment of TestOverload"][::std::mem::align_of::<TestOverload>() - 1usize];
+};
+unsafe extern "C" {
     /// Calling this should use `mem::unintialized()` and not `MaybeUninit()` as only rust 1.36 includes that.
     #[link_name = "\u{1}_ZN12TestOverloadC1Ei"]
     pub fn TestOverload_TestOverload(
@@ -21,7 +17,7 @@ extern "C" {
         arg1: ::std::os::raw::c_int,
     );
 }
-extern "C" {
+unsafe extern "C" {
     /// Calling this should use `mem::unintialized()` and not `MaybeUninit()` as only rust 1.36 includes that.
     #[link_name = "\u{1}_ZN12TestOverloadC1Ed"]
     pub fn TestOverload_TestOverload1(this: *mut TestOverload, arg1: f64);
@@ -29,15 +25,15 @@ extern "C" {
 impl TestOverload {
     #[inline]
     pub unsafe fn new(arg1: ::std::os::raw::c_int) -> Self {
-        let mut __bindgen_tmp = ::std::mem::uninitialized();
-        TestOverload_TestOverload(&mut __bindgen_tmp, arg1);
-        __bindgen_tmp
+        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+        TestOverload_TestOverload(__bindgen_tmp.as_mut_ptr(), arg1);
+        __bindgen_tmp.assume_init()
     }
     #[inline]
     pub unsafe fn new1(arg1: f64) -> Self {
-        let mut __bindgen_tmp = ::std::mem::uninitialized();
-        TestOverload_TestOverload1(&mut __bindgen_tmp, arg1);
-        __bindgen_tmp
+        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+        TestOverload_TestOverload1(__bindgen_tmp.as_mut_ptr(), arg1);
+        __bindgen_tmp.assume_init()
     }
 }
 #[repr(C)]
@@ -45,28 +41,22 @@ impl TestOverload {
 pub struct TestPublicNoArgs {
     pub _address: u8,
 }
-#[test]
-fn bindgen_test_layout_TestPublicNoArgs() {
-    assert_eq!(
-        ::std::mem::size_of::<TestPublicNoArgs>(),
-        1usize,
-        "Size of TestPublicNoArgs",
-    );
-    assert_eq!(
-        ::std::mem::align_of::<TestPublicNoArgs>(),
-        1usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of TestPublicNoArgs"][::std::mem::size_of::<TestPublicNoArgs>() - 1usize];
+    [
         "Alignment of TestPublicNoArgs",
-    );
-}
-extern "C" {
+    ][::std::mem::align_of::<TestPublicNoArgs>() - 1usize];
+};
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN16TestPublicNoArgsC1Ev"]
     pub fn TestPublicNoArgs_TestPublicNoArgs(this: *mut TestPublicNoArgs);
 }
 impl TestPublicNoArgs {
     #[inline]
     pub unsafe fn new() -> Self {
-        let mut __bindgen_tmp = ::std::mem::uninitialized();
-        TestPublicNoArgs_TestPublicNoArgs(&mut __bindgen_tmp);
-        __bindgen_tmp
+        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+        TestPublicNoArgs_TestPublicNoArgs(__bindgen_tmp.as_mut_ptr());
+        __bindgen_tmp.assume_init()
     }
 }

@@ -1,4 +1,4 @@
-// bindgen-flags: --impl-debug --use-core --raw-line "extern crate core;" --rust-target 1.40
+// bindgen-flags: --impl-debug --use-core --raw-line "extern crate core;"
 
 class C {
   bool a: 1;

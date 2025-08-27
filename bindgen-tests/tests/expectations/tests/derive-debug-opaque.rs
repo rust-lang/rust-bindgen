@@ -4,11 +4,11 @@
 pub struct Opaque {
     pub _bindgen_opaque_blob: [u32; 41usize],
 }
-#[test]
-fn bindgen_test_layout_Opaque() {
-    assert_eq!(::std::mem::size_of::<Opaque>(), 164usize, "Size of Opaque");
-    assert_eq!(::std::mem::align_of::<Opaque>(), 4usize, "Alignment of Opaque");
-}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of Opaque"][::std::mem::size_of::<Opaque>() - 164usize];
+    ["Alignment of Opaque"][::std::mem::align_of::<Opaque>() - 4usize];
+};
 impl Default for Opaque {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -27,18 +27,14 @@ impl ::std::fmt::Debug for Opaque {
 pub struct OpaqueUser {
     pub opaque: Opaque,
 }
-#[test]
-fn bindgen_test_layout_OpaqueUser() {
-    const UNINIT: ::std::mem::MaybeUninit<OpaqueUser> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<OpaqueUser>(), 164usize, "Size of OpaqueUser");
-    assert_eq!(::std::mem::align_of::<OpaqueUser>(), 4usize, "Alignment of OpaqueUser");
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).opaque) as usize - ptr as usize },
-        0usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of OpaqueUser"][::std::mem::size_of::<OpaqueUser>() - 164usize];
+    ["Alignment of OpaqueUser"][::std::mem::align_of::<OpaqueUser>() - 4usize];
+    [
         "Offset of field: OpaqueUser::opaque",
-    );
-}
+    ][::std::mem::offset_of!(OpaqueUser, opaque) - 0usize];
+};
 impl Default for OpaqueUser {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

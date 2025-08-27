@@ -26,19 +26,19 @@ pub union TErrorResult__bindgen_ty_1 {
 }
 impl Default for TErrorResult__bindgen_ty_1 {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
 impl Default for TErrorResult {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }
@@ -48,10 +48,10 @@ pub struct ErrorResult {
 }
 impl Default for ErrorResult {
     fn default() -> Self {
+        let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
         unsafe {
-            let mut s: Self = ::std::mem::uninitialized();
-            ::std::ptr::write_bytes(&mut s, 0, 1);
-            s
+            ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
         }
     }
 }

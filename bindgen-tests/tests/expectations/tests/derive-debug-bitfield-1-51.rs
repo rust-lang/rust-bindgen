@@ -151,18 +151,12 @@ pub struct C {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub large_array: [::std::os::raw::c_int; 50usize],
 }
-#[test]
-fn bindgen_test_layout_C() {
-    const UNINIT: ::std::mem::MaybeUninit<C> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<C>(), 204usize, "Size of C");
-    assert_eq!(::std::mem::align_of::<C>(), 4usize, "Alignment of C");
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize },
-        4usize,
-        "Offset of field: C::large_array",
-    );
-}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of C"][::std::mem::size_of::<C>() - 204usize];
+    ["Alignment of C"][::std::mem::align_of::<C>() - 4usize];
+    ["Offset of field: C::large_array"][::std::mem::offset_of!(C, large_array) - 4usize];
+};
 impl Default for C {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

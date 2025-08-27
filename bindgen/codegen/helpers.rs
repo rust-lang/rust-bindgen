@@ -100,7 +100,7 @@ pub(crate) fn blob(
 
     if data_len == 1 {
         ty
-    } else if ffi_safe && ctx.options().rust_features().min_const_generics {
+    } else if ffi_safe {
         ctx.generated_opaque_array();
         if ctx.options().enable_cxx_namespaces {
             syn::parse_quote! { root::__BindgenOpaqueArray<#ty, #data_len> }
@@ -139,7 +139,6 @@ pub(crate) mod ast_ty {
     use crate::ir::function::FunctionSig;
     use crate::ir::layout::Layout;
     use crate::ir::ty::{FloatKind, IntKind};
-    use crate::RustTarget;
     use proc_macro2::TokenStream;
     use std::str::FromStr;
 
@@ -311,60 +310,22 @@ pub(crate) mod ast_ty {
         }
     }
 
-    pub(crate) fn float_expr(
-        ctx: &BindgenContext,
-        f: f64,
-    ) -> Result<TokenStream, ()> {
+    pub(crate) fn float_expr(f: f64) -> Result<TokenStream, ()> {
         if f.is_finite() {
             let val = proc_macro2::Literal::f64_unsuffixed(f);
 
             return Ok(quote!(#val));
         }
 
-        let prefix = ctx.trait_prefix();
-        let rust_target = ctx.options().rust_target;
-
         if f.is_nan() {
-            // FIXME: This should be done behind a `RustFeature` instead
-            #[allow(deprecated)]
-            let tokens = if rust_target >= RustTarget::Stable_1_43 {
-                quote! {
-                    f64::NAN
-                }
-            } else {
-                quote! {
-                    ::#prefix::f64::NAN
-                }
-            };
-            return Ok(tokens);
+            return Ok(quote! { f64::NAN });
         }
 
         if f.is_infinite() {
             let tokens = if f.is_sign_positive() {
-                // FIXME: This should be done behind a `RustFeature` instead
-                #[allow(deprecated)]
-                if rust_target >= RustTarget::Stable_1_43 {
-                    quote! {
-                        f64::INFINITY
-                    }
-                } else {
-                    quote! {
-                        ::#prefix::f64::INFINITY
-                    }
-                }
+                quote! { f64::INFINITY }
             } else {
-                // FIXME: This should be done behind a `RustFeature` instead
-                #[allow(deprecated)]
-                // Negative infinity
-                if rust_target >= RustTarget::Stable_1_43 {
-                    quote! {
-                        f64::NEG_INFINITY
-                    }
-                } else {
-                    quote! {
-                        ::#prefix::f64::NEG_INFINITY
-                    }
-                }
+                quote! { f64::NEG_INFINITY }
             };
             return Ok(tokens);
         }

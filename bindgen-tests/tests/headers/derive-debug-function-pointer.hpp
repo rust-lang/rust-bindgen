@@ -1,4 +1,4 @@
-// bindgen-flags: --impl-debug --rust-target 1.40
+// bindgen-flags: --impl-debug
 
 class Nice {
   typedef void (*Function) (int data);

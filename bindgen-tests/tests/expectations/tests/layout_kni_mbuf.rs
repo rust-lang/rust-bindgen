@@ -3,7 +3,7 @@ pub const RTE_CACHE_LINE_MIN_SIZE: u32 = 64;
 pub const RTE_CACHE_LINE_SIZE: u32 = 64;
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct rte_kni_mbuf {
     pub buf_addr: *mut ::std::os::raw::c_void,
     pub buf_physaddr: u64,
@@ -26,87 +26,53 @@ pub struct rte_kni_mbuf {
     pub pool: *mut ::std::os::raw::c_void,
     pub next: *mut ::std::os::raw::c_void,
 }
-#[test]
-fn bindgen_test_layout_rte_kni_mbuf() {
-    const UNINIT: ::std::mem::MaybeUninit<rte_kni_mbuf> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<rte_kni_mbuf>(), 128usize, "Size of rte_kni_mbuf");
-    assert_eq!(
-        ::std::mem::align_of::<rte_kni_mbuf>(),
-        64usize,
-        "Alignment of rte_kni_mbuf",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).buf_addr) as usize - ptr as usize },
-        0usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of rte_kni_mbuf"][::std::mem::size_of::<rte_kni_mbuf>() - 128usize];
+    ["Alignment of rte_kni_mbuf"][::std::mem::align_of::<rte_kni_mbuf>() - 64usize];
+    [
         "Offset of field: rte_kni_mbuf::buf_addr",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).buf_physaddr) as usize - ptr as usize },
-        8usize,
+    ][::std::mem::offset_of!(rte_kni_mbuf, buf_addr) - 0usize];
+    [
         "Offset of field: rte_kni_mbuf::buf_physaddr",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).pad0) as usize - ptr as usize },
-        16usize,
+    ][::std::mem::offset_of!(rte_kni_mbuf, buf_physaddr) - 8usize];
+    [
         "Offset of field: rte_kni_mbuf::pad0",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).data_off) as usize - ptr as usize },
-        18usize,
+    ][::std::mem::offset_of!(rte_kni_mbuf, pad0) - 16usize];
+    [
         "Offset of field: rte_kni_mbuf::data_off",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).pad1) as usize - ptr as usize },
-        20usize,
+    ][::std::mem::offset_of!(rte_kni_mbuf, data_off) - 18usize];
+    [
         "Offset of field: rte_kni_mbuf::pad1",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).nb_segs) as usize - ptr as usize },
-        22usize,
+    ][::std::mem::offset_of!(rte_kni_mbuf, pad1) - 20usize];
+    [
         "Offset of field: rte_kni_mbuf::nb_segs",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).pad4) as usize - ptr as usize },
-        23usize,
+    ][::std::mem::offset_of!(rte_kni_mbuf, nb_segs) - 22usize];
+    [
         "Offset of field: rte_kni_mbuf::pad4",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).ol_flags) as usize - ptr as usize },
-        24usize,
+    ][::std::mem::offset_of!(rte_kni_mbuf, pad4) - 23usize];
+    [
         "Offset of field: rte_kni_mbuf::ol_flags",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).pad2) as usize - ptr as usize },
-        32usize,
+    ][::std::mem::offset_of!(rte_kni_mbuf, ol_flags) - 24usize];
+    [
         "Offset of field: rte_kni_mbuf::pad2",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).pkt_len) as usize - ptr as usize },
-        36usize,
+    ][::std::mem::offset_of!(rte_kni_mbuf, pad2) - 32usize];
+    [
         "Offset of field: rte_kni_mbuf::pkt_len",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).data_len) as usize - ptr as usize },
-        40usize,
+    ][::std::mem::offset_of!(rte_kni_mbuf, pkt_len) - 36usize];
+    [
         "Offset of field: rte_kni_mbuf::data_len",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).pad3) as usize - ptr as usize },
-        64usize,
+    ][::std::mem::offset_of!(rte_kni_mbuf, data_len) - 40usize];
+    [
         "Offset of field: rte_kni_mbuf::pad3",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).pool) as usize - ptr as usize },
-        72usize,
+    ][::std::mem::offset_of!(rte_kni_mbuf, pad3) - 64usize];
+    [
         "Offset of field: rte_kni_mbuf::pool",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).next) as usize - ptr as usize },
-        80usize,
+    ][::std::mem::offset_of!(rte_kni_mbuf, pool) - 72usize];
+    [
         "Offset of field: rte_kni_mbuf::next",
-    );
-}
+    ][::std::mem::offset_of!(rte_kni_mbuf, next) - 80usize];
+};
 impl Default for rte_kni_mbuf {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

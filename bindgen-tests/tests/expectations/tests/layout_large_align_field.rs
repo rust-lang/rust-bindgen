@@ -57,28 +57,14 @@ pub struct ip_frag {
     ///< fragment mbuf
     pub mb: *mut rte_mbuf,
 }
-#[test]
-fn bindgen_test_layout_ip_frag() {
-    const UNINIT: ::std::mem::MaybeUninit<ip_frag> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<ip_frag>(), 16usize, "Size of ip_frag");
-    assert_eq!(::std::mem::align_of::<ip_frag>(), 8usize, "Alignment of ip_frag");
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).ofs) as usize - ptr as usize },
-        0usize,
-        "Offset of field: ip_frag::ofs",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize },
-        2usize,
-        "Offset of field: ip_frag::len",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).mb) as usize - ptr as usize },
-        8usize,
-        "Offset of field: ip_frag::mb",
-    );
-}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ip_frag"][::std::mem::size_of::<ip_frag>() - 16usize];
+    ["Alignment of ip_frag"][::std::mem::align_of::<ip_frag>() - 8usize];
+    ["Offset of field: ip_frag::ofs"][::std::mem::offset_of!(ip_frag, ofs) - 0usize];
+    ["Offset of field: ip_frag::len"][::std::mem::offset_of!(ip_frag, len) - 2usize];
+    ["Offset of field: ip_frag::mb"][::std::mem::offset_of!(ip_frag, mb) - 8usize];
+};
 impl Default for ip_frag {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -99,37 +85,25 @@ pub struct ip_frag_key {
     ///< src/dst key length
     pub key_len: u32,
 }
-#[test]
-fn bindgen_test_layout_ip_frag_key() {
-    const UNINIT: ::std::mem::MaybeUninit<ip_frag_key> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<ip_frag_key>(), 40usize, "Size of ip_frag_key");
-    assert_eq!(
-        ::std::mem::align_of::<ip_frag_key>(),
-        8usize,
-        "Alignment of ip_frag_key",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).src_dst) as usize - ptr as usize },
-        0usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ip_frag_key"][::std::mem::size_of::<ip_frag_key>() - 40usize];
+    ["Alignment of ip_frag_key"][::std::mem::align_of::<ip_frag_key>() - 8usize];
+    [
         "Offset of field: ip_frag_key::src_dst",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).id) as usize - ptr as usize },
-        32usize,
+    ][::std::mem::offset_of!(ip_frag_key, src_dst) - 0usize];
+    [
         "Offset of field: ip_frag_key::id",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).key_len) as usize - ptr as usize },
-        36usize,
+    ][::std::mem::offset_of!(ip_frag_key, id) - 32usize];
+    [
         "Offset of field: ip_frag_key::key_len",
-    );
-}
+    ][::std::mem::offset_of!(ip_frag_key, key_len) - 36usize];
+};
 /** @internal Fragmented packet to reassemble.
  First two entries in the frags[] array are for the last and first fragments.*/
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct ip_frag_pkt {
     ///< LRU list
     pub lru: ip_frag_pkt__bindgen_ty_1,
@@ -152,31 +126,21 @@ pub struct ip_frag_pkt__bindgen_ty_1 {
     pub tqe_next: *mut ip_frag_pkt,
     pub tqe_prev: *mut *mut ip_frag_pkt,
 }
-#[test]
-fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
-    const UNINIT: ::std::mem::MaybeUninit<ip_frag_pkt__bindgen_ty_1> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ip_frag_pkt__bindgen_ty_1>(),
-        16usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    [
         "Size of ip_frag_pkt__bindgen_ty_1",
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ip_frag_pkt__bindgen_ty_1>(),
-        8usize,
+    ][::std::mem::size_of::<ip_frag_pkt__bindgen_ty_1>() - 16usize];
+    [
         "Alignment of ip_frag_pkt__bindgen_ty_1",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).tqe_next) as usize - ptr as usize },
-        0usize,
+    ][::std::mem::align_of::<ip_frag_pkt__bindgen_ty_1>() - 8usize];
+    [
         "Offset of field: ip_frag_pkt__bindgen_ty_1::tqe_next",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).tqe_prev) as usize - ptr as usize },
-        8usize,
+    ][::std::mem::offset_of!(ip_frag_pkt__bindgen_ty_1, tqe_next) - 0usize];
+    [
         "Offset of field: ip_frag_pkt__bindgen_ty_1::tqe_prev",
-    );
-}
+    ][::std::mem::offset_of!(ip_frag_pkt__bindgen_ty_1, tqe_prev) - 8usize];
+};
 impl Default for ip_frag_pkt__bindgen_ty_1 {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -186,52 +150,32 @@ impl Default for ip_frag_pkt__bindgen_ty_1 {
         }
     }
 }
-#[test]
-fn bindgen_test_layout_ip_frag_pkt() {
-    const UNINIT: ::std::mem::MaybeUninit<ip_frag_pkt> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<ip_frag_pkt>(), 192usize, "Size of ip_frag_pkt");
-    assert_eq!(
-        ::std::mem::align_of::<ip_frag_pkt>(),
-        64usize,
-        "Alignment of ip_frag_pkt",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).lru) as usize - ptr as usize },
-        0usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ip_frag_pkt"][::std::mem::size_of::<ip_frag_pkt>() - 192usize];
+    ["Alignment of ip_frag_pkt"][::std::mem::align_of::<ip_frag_pkt>() - 64usize];
+    [
         "Offset of field: ip_frag_pkt::lru",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).key) as usize - ptr as usize },
-        16usize,
+    ][::std::mem::offset_of!(ip_frag_pkt, lru) - 0usize];
+    [
         "Offset of field: ip_frag_pkt::key",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).start) as usize - ptr as usize },
-        56usize,
+    ][::std::mem::offset_of!(ip_frag_pkt, key) - 16usize];
+    [
         "Offset of field: ip_frag_pkt::start",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).total_size) as usize - ptr as usize },
-        64usize,
+    ][::std::mem::offset_of!(ip_frag_pkt, start) - 56usize];
+    [
         "Offset of field: ip_frag_pkt::total_size",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).frag_size) as usize - ptr as usize },
-        68usize,
+    ][::std::mem::offset_of!(ip_frag_pkt, total_size) - 64usize];
+    [
         "Offset of field: ip_frag_pkt::frag_size",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).last_idx) as usize - ptr as usize },
-        72usize,
+    ][::std::mem::offset_of!(ip_frag_pkt, frag_size) - 68usize];
+    [
         "Offset of field: ip_frag_pkt::last_idx",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).frags) as usize - ptr as usize },
-        80usize,
+    ][::std::mem::offset_of!(ip_frag_pkt, last_idx) - 72usize];
+    [
         "Offset of field: ip_frag_pkt::frags",
-    );
-}
+    ][::std::mem::offset_of!(ip_frag_pkt, frags) - 80usize];
+};
 impl Default for ip_frag_pkt {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -247,27 +191,17 @@ pub struct ip_pkt_list {
     pub tqh_first: *mut ip_frag_pkt,
     pub tqh_last: *mut *mut ip_frag_pkt,
 }
-#[test]
-fn bindgen_test_layout_ip_pkt_list() {
-    const UNINIT: ::std::mem::MaybeUninit<ip_pkt_list> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<ip_pkt_list>(), 16usize, "Size of ip_pkt_list");
-    assert_eq!(
-        ::std::mem::align_of::<ip_pkt_list>(),
-        8usize,
-        "Alignment of ip_pkt_list",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).tqh_first) as usize - ptr as usize },
-        0usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ip_pkt_list"][::std::mem::size_of::<ip_pkt_list>() - 16usize];
+    ["Alignment of ip_pkt_list"][::std::mem::align_of::<ip_pkt_list>() - 8usize];
+    [
         "Offset of field: ip_pkt_list::tqh_first",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).tqh_last) as usize - ptr as usize },
-        8usize,
+    ][::std::mem::offset_of!(ip_pkt_list, tqh_first) - 0usize];
+    [
         "Offset of field: ip_pkt_list::tqh_last",
-    );
-}
+    ][::std::mem::offset_of!(ip_pkt_list, tqh_last) - 8usize];
+};
 impl Default for ip_pkt_list {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -280,7 +214,7 @@ impl Default for ip_pkt_list {
 /// fragmentation table statistics
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct ip_frag_tbl_stat {
     ///< total # of find/insert attempts.
     pub find_num: u64,
@@ -295,51 +229,31 @@ pub struct ip_frag_tbl_stat {
     ///< # of 'no space' add failures.
     pub fail_nospace: u64,
 }
-#[test]
-fn bindgen_test_layout_ip_frag_tbl_stat() {
-    const UNINIT: ::std::mem::MaybeUninit<ip_frag_tbl_stat> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<ip_frag_tbl_stat>(),
-        64usize,
-        "Size of ip_frag_tbl_stat",
-    );
-    assert_eq!(
-        ::std::mem::align_of::<ip_frag_tbl_stat>(),
-        64usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ip_frag_tbl_stat"][::std::mem::size_of::<ip_frag_tbl_stat>() - 64usize];
+    [
         "Alignment of ip_frag_tbl_stat",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).find_num) as usize - ptr as usize },
-        0usize,
+    ][::std::mem::align_of::<ip_frag_tbl_stat>() - 64usize];
+    [
         "Offset of field: ip_frag_tbl_stat::find_num",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).add_num) as usize - ptr as usize },
-        8usize,
+    ][::std::mem::offset_of!(ip_frag_tbl_stat, find_num) - 0usize];
+    [
         "Offset of field: ip_frag_tbl_stat::add_num",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).del_num) as usize - ptr as usize },
-        16usize,
+    ][::std::mem::offset_of!(ip_frag_tbl_stat, add_num) - 8usize];
+    [
         "Offset of field: ip_frag_tbl_stat::del_num",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).reuse_num) as usize - ptr as usize },
-        24usize,
+    ][::std::mem::offset_of!(ip_frag_tbl_stat, del_num) - 16usize];
+    [
         "Offset of field: ip_frag_tbl_stat::reuse_num",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).fail_total) as usize - ptr as usize },
-        32usize,
+    ][::std::mem::offset_of!(ip_frag_tbl_stat, reuse_num) - 24usize];
+    [
         "Offset of field: ip_frag_tbl_stat::fail_total",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).fail_nospace) as usize - ptr as usize },
-        40usize,
+    ][::std::mem::offset_of!(ip_frag_tbl_stat, fail_total) - 32usize];
+    [
         "Offset of field: ip_frag_tbl_stat::fail_nospace",
-    );
-}
+    ][::std::mem::offset_of!(ip_frag_tbl_stat, fail_nospace) - 40usize];
+};
 impl Default for ip_frag_tbl_stat {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -352,6 +266,7 @@ impl Default for ip_frag_tbl_stat {
 /// fragmentation table
 #[repr(C)]
 #[repr(align(64))]
+#[derive(Debug)]
 pub struct rte_ip_frag_tbl {
     ///< ttl for table entries.
     pub max_cycles: u64,
@@ -377,76 +292,46 @@ pub struct rte_ip_frag_tbl {
     ///< hash table.
     pub pkt: __IncompleteArrayField<ip_frag_pkt>,
 }
-#[test]
-fn bindgen_test_layout_rte_ip_frag_tbl() {
-    const UNINIT: ::std::mem::MaybeUninit<rte_ip_frag_tbl> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<rte_ip_frag_tbl>(),
-        128usize,
-        "Size of rte_ip_frag_tbl",
-    );
-    assert_eq!(
-        ::std::mem::align_of::<rte_ip_frag_tbl>(),
-        64usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of rte_ip_frag_tbl"][::std::mem::size_of::<rte_ip_frag_tbl>() - 128usize];
+    [
         "Alignment of rte_ip_frag_tbl",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).max_cycles) as usize - ptr as usize },
-        0usize,
+    ][::std::mem::align_of::<rte_ip_frag_tbl>() - 64usize];
+    [
         "Offset of field: rte_ip_frag_tbl::max_cycles",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).entry_mask) as usize - ptr as usize },
-        8usize,
+    ][::std::mem::offset_of!(rte_ip_frag_tbl, max_cycles) - 0usize];
+    [
         "Offset of field: rte_ip_frag_tbl::entry_mask",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).max_entries) as usize - ptr as usize },
-        12usize,
+    ][::std::mem::offset_of!(rte_ip_frag_tbl, entry_mask) - 8usize];
+    [
         "Offset of field: rte_ip_frag_tbl::max_entries",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).use_entries) as usize - ptr as usize },
-        16usize,
+    ][::std::mem::offset_of!(rte_ip_frag_tbl, max_entries) - 12usize];
+    [
         "Offset of field: rte_ip_frag_tbl::use_entries",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).bucket_entries) as usize - ptr as usize },
-        20usize,
+    ][::std::mem::offset_of!(rte_ip_frag_tbl, use_entries) - 16usize];
+    [
         "Offset of field: rte_ip_frag_tbl::bucket_entries",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).nb_entries) as usize - ptr as usize },
-        24usize,
+    ][::std::mem::offset_of!(rte_ip_frag_tbl, bucket_entries) - 20usize];
+    [
         "Offset of field: rte_ip_frag_tbl::nb_entries",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).nb_buckets) as usize - ptr as usize },
-        28usize,
+    ][::std::mem::offset_of!(rte_ip_frag_tbl, nb_entries) - 24usize];
+    [
         "Offset of field: rte_ip_frag_tbl::nb_buckets",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).last) as usize - ptr as usize },
-        32usize,
+    ][::std::mem::offset_of!(rte_ip_frag_tbl, nb_buckets) - 28usize];
+    [
         "Offset of field: rte_ip_frag_tbl::last",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).lru) as usize - ptr as usize },
-        40usize,
+    ][::std::mem::offset_of!(rte_ip_frag_tbl, last) - 32usize];
+    [
         "Offset of field: rte_ip_frag_tbl::lru",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).stat) as usize - ptr as usize },
-        64usize,
+    ][::std::mem::offset_of!(rte_ip_frag_tbl, lru) - 40usize];
+    [
         "Offset of field: rte_ip_frag_tbl::stat",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).pkt) as usize - ptr as usize },
-        128usize,
+    ][::std::mem::offset_of!(rte_ip_frag_tbl, stat) - 64usize];
+    [
         "Offset of field: rte_ip_frag_tbl::pkt",
-    );
-}
+    ][::std::mem::offset_of!(rte_ip_frag_tbl, pkt) - 128usize];
+};
 impl Default for rte_ip_frag_tbl {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();

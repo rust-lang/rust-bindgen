@@ -46,7 +46,7 @@ pub type rte_mempool_get_count = ::std::option::Option<
 /// Structure defining mempool operations structure
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mempool_ops {
     ///< Name of mempool ops struct.
     pub name: [::std::os::raw::c_char; 32usize],
@@ -61,51 +61,31 @@ pub struct rte_mempool_ops {
     ///< Get qty of available objs.
     pub get_count: rte_mempool_get_count,
 }
-#[test]
-fn bindgen_test_layout_rte_mempool_ops() {
-    const UNINIT: ::std::mem::MaybeUninit<rte_mempool_ops> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<rte_mempool_ops>(),
-        128usize,
-        "Size of rte_mempool_ops",
-    );
-    assert_eq!(
-        ::std::mem::align_of::<rte_mempool_ops>(),
-        64usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of rte_mempool_ops"][::std::mem::size_of::<rte_mempool_ops>() - 128usize];
+    [
         "Alignment of rte_mempool_ops",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).name) as usize - ptr as usize },
-        0usize,
+    ][::std::mem::align_of::<rte_mempool_ops>() - 64usize];
+    [
         "Offset of field: rte_mempool_ops::name",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).alloc) as usize - ptr as usize },
-        32usize,
+    ][::std::mem::offset_of!(rte_mempool_ops, name) - 0usize];
+    [
         "Offset of field: rte_mempool_ops::alloc",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).free) as usize - ptr as usize },
-        40usize,
+    ][::std::mem::offset_of!(rte_mempool_ops, alloc) - 32usize];
+    [
         "Offset of field: rte_mempool_ops::free",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).enqueue) as usize - ptr as usize },
-        48usize,
+    ][::std::mem::offset_of!(rte_mempool_ops, free) - 40usize];
+    [
         "Offset of field: rte_mempool_ops::enqueue",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).dequeue) as usize - ptr as usize },
-        56usize,
+    ][::std::mem::offset_of!(rte_mempool_ops, enqueue) - 48usize];
+    [
         "Offset of field: rte_mempool_ops::dequeue",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).get_count) as usize - ptr as usize },
-        64usize,
+    ][::std::mem::offset_of!(rte_mempool_ops, dequeue) - 56usize];
+    [
         "Offset of field: rte_mempool_ops::get_count",
-    );
-}
+    ][::std::mem::offset_of!(rte_mempool_ops, get_count) - 64usize];
+};
 impl Default for rte_mempool_ops {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -115,13 +95,6 @@ impl Default for rte_mempool_ops {
         }
     }
 }
-impl ::std::cmp::PartialEq for rte_mempool_ops {
-    fn eq(&self, other: &rte_mempool_ops) -> bool {
-        self.name == other.name && self.alloc == other.alloc && self.free == other.free
-            && self.enqueue == other.enqueue && self.dequeue == other.dequeue
-            && self.get_count == other.get_count
-    }
-}
 /// The rte_spinlock_t type.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -129,26 +102,14 @@ pub struct rte_spinlock_t {
     ///< lock status 0 = unlocked, 1 = locked
     pub locked: ::std::os::raw::c_int,
 }
-#[test]
-fn bindgen_test_layout_rte_spinlock_t() {
-    const UNINIT: ::std::mem::MaybeUninit<rte_spinlock_t> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<rte_spinlock_t>(),
-        4usize,
-        "Size of rte_spinlock_t",
-    );
-    assert_eq!(
-        ::std::mem::align_of::<rte_spinlock_t>(),
-        4usize,
-        "Alignment of rte_spinlock_t",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).locked) as usize - ptr as usize },
-        0usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of rte_spinlock_t"][::std::mem::size_of::<rte_spinlock_t>() - 4usize];
+    ["Alignment of rte_spinlock_t"][::std::mem::align_of::<rte_spinlock_t>() - 4usize];
+    [
         "Offset of field: rte_spinlock_t::locked",
-    );
-}
+    ][::std::mem::offset_of!(rte_spinlock_t, locked) - 0usize];
+};
 /** Structure storing the table of registered ops structs, each of which contain
  the function pointers for the mempool ops functions.
  Each process has its own storage for this ops struct array so that
@@ -158,7 +119,7 @@ fn bindgen_test_layout_rte_spinlock_t() {
  This results in us simply having "ops_index" in the mempool struct.*/
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mempool_ops_table {
     ///< Spinlock for add/delete.
     pub sl: rte_spinlock_t,
@@ -168,36 +129,24 @@ pub struct rte_mempool_ops_table {
     /// Storage for all possible ops structs.
     pub ops: [rte_mempool_ops; 16usize],
 }
-#[test]
-fn bindgen_test_layout_rte_mempool_ops_table() {
-    const UNINIT: ::std::mem::MaybeUninit<rte_mempool_ops_table> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<rte_mempool_ops_table>(),
-        2112usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    [
         "Size of rte_mempool_ops_table",
-    );
-    assert_eq!(
-        ::std::mem::align_of::<rte_mempool_ops_table>(),
-        64usize,
+    ][::std::mem::size_of::<rte_mempool_ops_table>() - 2112usize];
+    [
         "Alignment of rte_mempool_ops_table",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).sl) as usize - ptr as usize },
-        0usize,
+    ][::std::mem::align_of::<rte_mempool_ops_table>() - 64usize];
+    [
         "Offset of field: rte_mempool_ops_table::sl",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).num_ops) as usize - ptr as usize },
-        4usize,
+    ][::std::mem::offset_of!(rte_mempool_ops_table, sl) - 0usize];
+    [
         "Offset of field: rte_mempool_ops_table::num_ops",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).ops) as usize - ptr as usize },
-        64usize,
+    ][::std::mem::offset_of!(rte_mempool_ops_table, num_ops) - 4usize];
+    [
         "Offset of field: rte_mempool_ops_table::ops",
-    );
-}
+    ][::std::mem::offset_of!(rte_mempool_ops_table, ops) - 64usize];
+};
 impl Default for rte_mempool_ops_table {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -210,7 +159,7 @@ impl Default for rte_mempool_ops_table {
 /// Structure to hold malloc heap
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct malloc_heap {
     pub lock: rte_spinlock_t,
     pub free_head: [malloc_heap__bindgen_ty_1; 13usize],
@@ -222,26 +171,18 @@ pub struct malloc_heap {
 pub struct malloc_heap__bindgen_ty_1 {
     pub lh_first: *mut malloc_elem,
 }
-#[test]
-fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
-    const UNINIT: ::std::mem::MaybeUninit<malloc_heap__bindgen_ty_1> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(
-        ::std::mem::size_of::<malloc_heap__bindgen_ty_1>(),
-        8usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    [
         "Size of malloc_heap__bindgen_ty_1",
-    );
-    assert_eq!(
-        ::std::mem::align_of::<malloc_heap__bindgen_ty_1>(),
-        8usize,
+    ][::std::mem::size_of::<malloc_heap__bindgen_ty_1>() - 8usize];
+    [
         "Alignment of malloc_heap__bindgen_ty_1",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).lh_first) as usize - ptr as usize },
-        0usize,
+    ][::std::mem::align_of::<malloc_heap__bindgen_ty_1>() - 8usize];
+    [
         "Offset of field: malloc_heap__bindgen_ty_1::lh_first",
-    );
-}
+    ][::std::mem::offset_of!(malloc_heap__bindgen_ty_1, lh_first) - 0usize];
+};
 impl Default for malloc_heap__bindgen_ty_1 {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -251,37 +192,23 @@ impl Default for malloc_heap__bindgen_ty_1 {
         }
     }
 }
-#[test]
-fn bindgen_test_layout_malloc_heap() {
-    const UNINIT: ::std::mem::MaybeUninit<malloc_heap> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<malloc_heap>(), 128usize, "Size of malloc_heap");
-    assert_eq!(
-        ::std::mem::align_of::<malloc_heap>(),
-        64usize,
-        "Alignment of malloc_heap",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).lock) as usize - ptr as usize },
-        0usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of malloc_heap"][::std::mem::size_of::<malloc_heap>() - 128usize];
+    ["Alignment of malloc_heap"][::std::mem::align_of::<malloc_heap>() - 64usize];
+    [
         "Offset of field: malloc_heap::lock",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).free_head) as usize - ptr as usize },
-        8usize,
+    ][::std::mem::offset_of!(malloc_heap, lock) - 0usize];
+    [
         "Offset of field: malloc_heap::free_head",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).alloc_count) as usize - ptr as usize },
-        112usize,
+    ][::std::mem::offset_of!(malloc_heap, free_head) - 8usize];
+    [
         "Offset of field: malloc_heap::alloc_count",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).total_size) as usize - ptr as usize },
-        120usize,
+    ][::std::mem::offset_of!(malloc_heap, alloc_count) - 112usize];
+    [
         "Offset of field: malloc_heap::total_size",
-    );
-}
+    ][::std::mem::offset_of!(malloc_heap, total_size) - 120usize];
+};
 impl Default for malloc_heap {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -289,13 +216,6 @@ impl Default for malloc_heap {
             ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
             s.assume_init()
         }
-    }
-}
-impl ::std::cmp::PartialEq for malloc_heap {
-    fn eq(&self, other: &malloc_heap) -> bool {
-        self.lock == other.lock && self.free_head == other.free_head
-            && self.alloc_count == other.alloc_count
-            && self.total_size == other.total_size
     }
 }
 #[repr(C)]

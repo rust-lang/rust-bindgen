@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct Nice {
     pub pointer: Nice_Function,
     pub large_array: [::std::os::raw::c_int; 34usize],
@@ -8,23 +8,15 @@ pub struct Nice {
 pub type Nice_Function = ::std::option::Option<
     unsafe extern "C" fn(data: ::std::os::raw::c_int),
 >;
-#[test]
-fn bindgen_test_layout_Nice() {
-    const UNINIT: ::std::mem::MaybeUninit<Nice> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<Nice>(), 144usize, "Size of Nice");
-    assert_eq!(::std::mem::align_of::<Nice>(), 8usize, "Alignment of Nice");
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).pointer) as usize - ptr as usize },
-        0usize,
-        "Offset of field: Nice::pointer",
-    );
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).large_array) as usize - ptr as usize },
-        8usize,
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of Nice"][::std::mem::size_of::<Nice>() - 144usize];
+    ["Alignment of Nice"][::std::mem::align_of::<Nice>() - 8usize];
+    ["Offset of field: Nice::pointer"][::std::mem::offset_of!(Nice, pointer) - 0usize];
+    [
         "Offset of field: Nice::large_array",
-    );
-}
+    ][::std::mem::offset_of!(Nice, large_array) - 8usize];
+};
 impl Default for Nice {
     fn default() -> Self {
         let mut s = ::std::mem::MaybeUninit::<Self>::uninit();
@@ -32,26 +24,5 @@ impl Default for Nice {
             ::std::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
             s.assume_init()
         }
-    }
-}
-impl ::std::fmt::Debug for Nice {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        write!(
-            f,
-            "Nice {{ pointer: {:?}, large_array: [{}] }}",
-            self.pointer,
-            {
-                use std::fmt::Write as _;
-                let mut output = String::new();
-                let mut iter = self.large_array.iter();
-                if let Some(value) = iter.next() {
-                    let _ = write!(output, "{value:?}");
-                    for value in iter {
-                        let _ = write!(output, ", {value:?}");
-                    }
-                }
-                output
-            },
-        )
     }
 }

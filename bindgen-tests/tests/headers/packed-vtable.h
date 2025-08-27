@@ -1,4 +1,4 @@
-// bindgen-flags: --raw-line '#![cfg(feature = "nightly")]' --rust-target 1.33 -- -x c++ -std=c++11
+// bindgen-flags: --raw-line '#![cfg(feature = "nightly")]' -- -x c++ -std=c++11
 
 #pragma pack(1)
 

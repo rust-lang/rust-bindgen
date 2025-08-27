@@ -32,6 +32,16 @@ where
         Self::extract_bit(byte, index)
     }
     #[inline]
+    pub unsafe fn raw_get_bit(this: *const Self, index: usize) -> bool {
+        debug_assert!(index / 8 < core::mem::size_of::<Storage>());
+        let byte_index = index / 8;
+        let byte = unsafe {
+            *(core::ptr::addr_of!((*this).storage) as *const u8)
+                .offset(byte_index as isize)
+        };
+        Self::extract_bit(byte, index)
+    }
+    #[inline]
     fn change_bit(byte: u8, index: usize, val: bool) -> u8 {
         let bit_index = if cfg!(target_endian = "big") {
             7 - (index % 8)
@@ -49,6 +59,16 @@ where
         *byte = Self::change_bit(*byte, index, val);
     }
     #[inline]
+    pub unsafe fn raw_set_bit(this: *mut Self, index: usize, val: bool) {
+        debug_assert!(index / 8 < core::mem::size_of::<Storage>());
+        let byte_index = index / 8;
+        let byte = unsafe {
+            (core::ptr::addr_of_mut!((*this).storage) as *mut u8)
+                .offset(byte_index as isize)
+        };
+        unsafe { *byte = Self::change_bit(*byte, index, val) };
+    }
+    #[inline]
     pub fn get(&self, bit_offset: usize, bit_width: u8) -> u64 {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
@@ -58,6 +78,26 @@ where
         let mut val = 0;
         for i in 0..(bit_width as usize) {
             if self.get_bit(i + bit_offset) {
+                let index = if cfg!(target_endian = "big") {
+                    bit_width as usize - 1 - i
+                } else {
+                    i
+                };
+                val |= 1 << index;
+            }
+        }
+        val
+    }
+    #[inline]
+    pub unsafe fn raw_get(this: *const Self, bit_offset: usize, bit_width: u8) -> u64 {
+        debug_assert!(bit_width <= 64);
+        debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <= core::mem::size_of::<Storage>(),
+        );
+        let mut val = 0;
+        for i in 0..(bit_width as usize) {
+            if unsafe { Self::raw_get_bit(this, i + bit_offset) } {
                 let index = if cfg!(target_endian = "big") {
                     bit_width as usize - 1 - i
                 } else {
@@ -86,38 +126,50 @@ where
             self.set_bit(index + bit_offset, val_bit_is_set);
         }
     }
+    #[inline]
+    pub unsafe fn raw_set(this: *mut Self, bit_offset: usize, bit_width: u8, val: u64) {
+        debug_assert!(bit_width <= 64);
+        debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <= core::mem::size_of::<Storage>(),
+        );
+        for i in 0..(bit_width as usize) {
+            let mask = 1 << i;
+            let val_bit_is_set = val & mask == mask;
+            let index = if cfg!(target_endian = "big") {
+                bit_width as usize - 1 - i
+            } else {
+                i
+            };
+            unsafe { Self::raw_set_bit(this, index + bit_offset, val_bit_is_set) };
+        }
+    }
 }
 /** Because this struct have array larger than 32 items
  and --with-derive-partialeq --impl-partialeq --impl-debug is provided,
  this struct should manually implement `Debug` and `PartialEq`.*/
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Foo {
     pub large: [::std::os::raw::c_int; 33usize],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub __bindgen_padding_0: u16,
 }
-#[test]
-fn bindgen_test_layout_Foo() {
-    const UNINIT: ::std::mem::MaybeUninit<Foo> = ::std::mem::MaybeUninit::uninit();
-    let ptr = UNINIT.as_ptr();
-    assert_eq!(::std::mem::size_of::<Foo>(), 136usize, "Size of Foo");
-    assert_eq!(::std::mem::align_of::<Foo>(), 4usize, "Alignment of Foo");
-    assert_eq!(
-        unsafe { ::std::ptr::addr_of!((*ptr).large) as usize - ptr as usize },
-        0usize,
-        "Offset of field: Foo::large",
-    );
-}
-extern "C" {
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of Foo"][::std::mem::size_of::<Foo>() - 136usize];
+    ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 4usize];
+    ["Offset of field: Foo::large"][::std::mem::offset_of!(Foo, large) - 0usize];
+};
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3Foo4typeEv"]
     pub fn Foo_type(this: *mut Foo) -> ::std::os::raw::c_char;
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3Foo9set_type_Ec"]
     pub fn Foo_set_type_(this: *mut Foo, c: ::std::os::raw::c_char);
 }
-extern "C" {
+unsafe extern "C" {
     #[link_name = "\u{1}_ZN3Foo8set_typeEc"]
     pub fn Foo_set_type(this: *mut Foo, c: ::std::os::raw::c_char);
 }
@@ -130,33 +182,6 @@ impl Default for Foo {
         }
     }
 }
-impl ::std::fmt::Debug for Foo {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        write!(
-            f,
-            "Foo {{ large: [{}], type_ : {:?},  }}",
-            {
-                use std::fmt::Write as _;
-                let mut output = String::new();
-                let mut iter = self.large.iter();
-                if let Some(value) = iter.next() {
-                    let _ = write!(output, "{value:?}");
-                    for value in iter {
-                        let _ = write!(output, ", {value:?}");
-                    }
-                }
-                output
-            },
-            self.type__bindgen_bitfield(),
-        )
-    }
-}
-impl ::std::cmp::PartialEq for Foo {
-    fn eq(&self, other: &Foo) -> bool {
-        &self.large[..] == &other.large[..]
-            && self.type__bindgen_bitfield() == other.type__bindgen_bitfield()
-    }
-}
 impl Foo {
     #[inline]
     pub fn type__bindgen_bitfield(&self) -> ::std::os::raw::c_char {
@@ -167,6 +192,35 @@ impl Foo {
         unsafe {
             let val: u8 = ::std::mem::transmute(val);
             self._bitfield_1.set(0usize, 3u8, val as u64)
+        }
+    }
+    #[inline]
+    pub unsafe fn type__bindgen_bitfield_raw(
+        this: *const Self,
+    ) -> ::std::os::raw::c_char {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 2usize],
+                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 3u8) as u8,
+            )
+        }
+    }
+    #[inline]
+    pub unsafe fn set_type__bindgen_bitfield_raw(
+        this: *mut Self,
+        val: ::std::os::raw::c_char,
+    ) {
+        unsafe {
+            let val: u8 = ::std::mem::transmute(val);
+            <__BindgenBitfieldUnit<
+                [u8; 2usize],
+            >>::raw_set(
+                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
+                0usize,
+                3u8,
+                val as u64,
+            )
         }
     }
     #[inline]
