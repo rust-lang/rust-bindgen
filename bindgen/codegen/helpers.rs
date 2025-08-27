@@ -107,7 +107,7 @@ pub(crate) fn blob(
     }
 
     ctx.generated_opaque_array(align);
-    let ident = format_ident!("__BindgenOpaqueArray{}", align);
+    let ident = format_ident!("__BindgenOpaqueArray{align}");
     let size = layout.size;
     if ctx.options().enable_cxx_namespaces {
         syn::parse_quote! { root::#ident<[u8; #size]> }

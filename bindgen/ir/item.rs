@@ -1701,8 +1701,7 @@ impl Item {
                 if let Err(ParseError::Recurse) = result {
                     warn!(
                         "Unknown type, assuming named template type: \
-                         id = {:?}; spelling = {}",
-                        id,
+                         id = {id:?}; spelling = {}",
                         ty.spelling()
                     );
                     Item::type_param(Some(id), location, ctx)
@@ -1732,13 +1731,10 @@ impl Item {
 
         debug!(
             "Item::type_param:\n\
-             \twith_id = {:?},\n\
-             \tty = {} {:?},\n\
-             \tlocation: {:?}",
-            with_id,
+             \twith_id = {with_id:?},\n\
+             \tty = {} {ty:?},\n\
+             \tlocation: {location:?}",
             ty.spelling(),
-            ty,
-            location
         );
 
         if ty.kind() != clang_sys::CXType_Unexposed {

@@ -183,9 +183,8 @@ fn compare_generated_header(
         }
         None => panic!(
             "missing test expectation file and/or '__testing_only_libclang_$VERSION' \
-             feature for header '{}'; looking for expectation file at '{:?}'",
+             feature for header '{}'; looking for expectation file at '{looked_at:?}'",
             header.display(),
-            looked_at,
         ),
     }
 

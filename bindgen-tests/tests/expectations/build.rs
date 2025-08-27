@@ -47,10 +47,9 @@ fn main() {
             test_string.push_str(&format!(
                 r###"
 #[path = "{}"]
-mod {};
+mod {module_name};
 "###,
                 path.display().to_string().replace('\\', "\\\\"),
-                module_name,
             ));
         }
     }
