@@ -4675,10 +4675,25 @@ impl CodeGenerator for Function {
         // Unfortunately this can't piggyback on the `attributes` list because
         // the #[link(wasm_import_module)] needs to happen before the `extern
         // "C"` block. It doesn't get picked up properly otherwise
-        let wasm_link_attribute =
-            ctx.options().wasm_import_module_name.as_ref().map(|name| {
-                quote! { #[link(wasm_import_module = #name)] }
+        let mut link_attribute = quote! {};
+        if let Some(ref wasm_name) = ctx.options().wasm_import_module_name {
+            link_attribute.extend(quote! {
+                #[link(wasm_import_module = #wasm_name)]
             });
+        }
+        if let (Some(ref windows_name), verbatim) =
+            ctx.options().windows_link_as_raw_dylib
+        {
+            if verbatim {
+                link_attribute.extend(quote! {
+                    #[cfg_attr(windows, link(name = #windows_name, kind = "raw-dylib", modifiers = "+verbatim"))]
+                });
+            } else {
+                link_attribute.extend(quote! {
+                    #[cfg_attr(windows, link(name = #windows_name, kind = "raw-dylib"))]
+                });
+            }
+        }
 
         let should_wrap = is_internal &&
             ctx.options().wrap_static_fns &&
@@ -4732,7 +4747,7 @@ impl CodeGenerator for Function {
             .then(|| quote!(unsafe));
 
         let tokens = quote! {
-            #wasm_link_attribute
+            #link_attribute
             #safety extern #abi {
                 #(#attributes)*
                 pub fn #ident ( #( #args ),* ) #ret;
