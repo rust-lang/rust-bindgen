@@ -6,6 +6,8 @@ pub type Foo = ::std::os::raw::c_uint;
 #[derive(Debug, Copy, Clone)]
 pub struct FooAlias(pub Foo);
 pub mod Bar {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_uint;
     pub const C: Type = 0;
     pub const D: Type = 1;

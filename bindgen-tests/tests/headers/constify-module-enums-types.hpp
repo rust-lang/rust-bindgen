@@ -1,5 +1,11 @@
 // bindgen-flags: --constified-enum-module ".*"
 
+using Uint = unsigned;
+enum ExplicitTypeAlias : Uint {
+  SOME_CONSTANT,
+  SOME_OTHER_CONSTANT,
+};
+
 typedef enum foo {
   THIS,
   SHOULD_BE,

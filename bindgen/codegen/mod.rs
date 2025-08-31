@@ -3562,6 +3562,9 @@ impl EnumBuilder {
                 quote! {
                     // todo: Probably some attributes, e.g. `cfg` should apply to the `mod`.
                     pub mod #module_name {
+                        #[allow(unused_imports)]
+                        use super::*;
+
                         #( #attrs )*
                         pub type #enum_ident = #enum_repr;
 

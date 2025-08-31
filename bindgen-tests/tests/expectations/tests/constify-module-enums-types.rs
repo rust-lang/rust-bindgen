@@ -1,5 +1,15 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
+pub type Uint = ::std::os::raw::c_uint;
+pub mod ExplicitTypeAlias {
+    #[allow(unused_imports)]
+    use super::*;
+    pub type Type = Uint;
+    pub const SOME_CONSTANT: Type = 0;
+    pub const SOME_OTHER_CONSTANT: Type = 1;
+}
 pub mod foo {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_uint;
     pub const THIS: Type = 0;
     pub const SHOULD_BE: Type = 1;
@@ -8,12 +18,16 @@ pub mod foo {
     pub const AND_ALSO_THIS: Type = 42;
 }
 pub mod anon_enum {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_uint;
     pub const Variant1: Type = 0;
     pub const Variant2: Type = 1;
     pub const Variant3: Type = 2;
 }
 pub mod ns1_foo {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_uint;
     pub const THIS: Type = 0;
     pub const SHOULD_BE: Type = 1;
@@ -21,6 +35,8 @@ pub mod ns1_foo {
     pub const ALSO_THIS: Type = 42;
 }
 pub mod ns2_Foo {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_int;
     pub const Variant1: Type = 0;
     pub const Variant2: Type = 1;
@@ -90,6 +106,8 @@ impl Default for Baz {
     }
 }
 pub mod one_Foo {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_int;
     pub const Variant1: Type = 0;
     pub const Variant2: Type = 1;

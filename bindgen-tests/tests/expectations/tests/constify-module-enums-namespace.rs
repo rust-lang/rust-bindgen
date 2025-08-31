@@ -10,6 +10,8 @@ pub mod root {
             #[allow(unused_imports)]
             use self::super::super::super::root;
             pub mod foo {
+                #[allow(unused_imports)]
+                use super::*;
                 pub type Type = ::std::os::raw::c_uint;
                 pub const THIS: Type = 0;
                 pub const SHOULD_BE: Type = 1;
