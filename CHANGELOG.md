@@ -230,6 +230,7 @@
 ## Changed
 ## Removed
 ## Fixed
+ * Fixed a bad interaction with upcoming clang 22 (#3278).
 ## Security
 
 # 0.72.0 (2025-06-08)
