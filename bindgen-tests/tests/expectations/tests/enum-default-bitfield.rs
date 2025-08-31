@@ -84,6 +84,8 @@ impl ::std::ops::BitAndAssign for Foo {
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Foo(pub ::std::os::raw::c_uint);
 pub mod Neg {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_int;
     pub const MinusOne: Type = -1;
     pub const One: Type = 1;

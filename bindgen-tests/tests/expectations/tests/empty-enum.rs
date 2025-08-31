@@ -6,6 +6,8 @@ pub enum EmptyRustified {
     __bindgen_cannot_repr_c_on_empty_enum = 0,
 }
 pub mod EmptyModule {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_uint;
 }
 #[repr(i8)]
@@ -15,6 +17,8 @@ pub enum EmptyClassRustified {
 }
 pub type EmptyClassConstified = ::std::os::raw::c_char;
 pub mod EmptyClassModule {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_char;
 }
 #[repr(i8)]
@@ -24,5 +28,7 @@ pub enum ForwardClassRustified {
 }
 pub type ForwardClassConstified = ::std::os::raw::c_char;
 pub mod ForwardClassModule {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_char;
 }

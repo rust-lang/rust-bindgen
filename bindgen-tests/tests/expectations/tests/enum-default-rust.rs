@@ -34,6 +34,8 @@ pub enum Foo {
     Qux = 1,
 }
 pub mod Neg {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_int;
     pub const MinusOne: Type = -1;
     pub const One: Type = 1;

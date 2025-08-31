@@ -5,6 +5,8 @@ pub struct foo {
     pub member: foo__bindgen_ty_1::Type,
 }
 pub mod foo__bindgen_ty_1 {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_uint;
     pub const FOO_A: Type = 0;
     pub const FOO_B: Type = 1;
@@ -25,22 +27,30 @@ impl Default for foo {
     }
 }
 pub mod Foo {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_uint;
     pub const Bar: Type = 0;
     pub const Qux: Type = 1;
 }
 pub mod Neg {
+    #[allow(unused_imports)]
+    use super::*;
     pub type Type = ::std::os::raw::c_int;
     pub const MinusOne: Type = -1;
     pub const One: Type = 1;
 }
 pub mod NoDebug {
+    #[allow(unused_imports)]
+    use super::*;
     /// <div rustbindgen nodebug></div>
     pub type Type = ::std::os::raw::c_uint;
     pub const NoDebug1: Type = 0;
     pub const NoDebug2: Type = 1;
 }
 pub mod Debug {
+    #[allow(unused_imports)]
+    use super::*;
     /// <div rustbindgen derive="Debug"></div>
     pub type Type = ::std::os::raw::c_uint;
     pub const Debug1: Type = 0;
