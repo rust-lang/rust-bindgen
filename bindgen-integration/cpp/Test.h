@@ -246,3 +246,16 @@ enum MyOrderedEnum {
 
 // Used to test custom derives on new-type alias. See `test_custom_derive`.
 typedef int TestDeriveOnAlias;
+
+// Used to test new-type alias constants. See `test_new_type_alias_const`.
+typedef int MyInt;
+const MyInt MY_INT = 5;
+
+typedef bool MyBool;
+const MyBool MY_BOOL = true;
+
+typedef float MyFloat;
+const MyFloat MY_FLOAT = 1.23f;
+
+typedef char MyChar;
+const MyChar MY_CHAR = 'a';

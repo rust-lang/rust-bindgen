@@ -1,6 +1,8 @@
 //! Bindgen's core intermediate representation type.
 
-use super::super::codegen::{EnumVariation, CONSTIFIED_ENUM_MODULE_REPR_NAME};
+use super::super::codegen::{
+    AliasVariation, EnumVariation, CONSTIFIED_ENUM_MODULE_REPR_NAME,
+};
 use super::analysis::{HasVtable, HasVtableResult, Sizedness, SizednessResult};
 use super::annotations::Annotations;
 use super::comp::{CompKind, MethodKind};
@@ -1102,6 +1104,20 @@ impl Item {
     /// Whether this is a `#[must_use]` type.
     pub(crate) fn must_use(&self, ctx: &BindgenContext) -> bool {
         self.annotations().must_use_type() || ctx.must_use_type_by_name(self)
+    }
+
+    /// Get the alias style for this item.
+    pub(crate) fn alias_style(&self, ctx: &BindgenContext) -> AliasVariation {
+        let name = self.canonical_name(ctx);
+        if ctx.options().type_alias.matches(&name) {
+            AliasVariation::TypeAlias
+        } else if ctx.options().new_type_alias.matches(&name) {
+            AliasVariation::NewType
+        } else if ctx.options().new_type_alias_deref.matches(&name) {
+            AliasVariation::NewTypeDeref
+        } else {
+            ctx.options().default_alias_style
+        }
     }
 }
 
