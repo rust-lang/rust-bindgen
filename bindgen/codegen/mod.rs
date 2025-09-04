@@ -681,13 +681,8 @@ impl CodeGenerator for Var {
         let ty = var_ty.to_rust_ty_or_opaque(ctx, &());
 
         if let Some(val) = self.val() {
-            match *val {
-                VarType::Bool(val) => {
-                    result.push(quote! {
-                        #(#attrs)*
-                        pub const #canonical_ident : #ty = #val ;
-                    });
-                }
+            let const_expr = match *val {
+                VarType::Bool(val) => Some(val.to_token_stream()),
                 VarType::Int(val) => {
                     let int_kind = var_ty
                         .into_resolver()
@@ -702,10 +697,7 @@ impl CodeGenerator for Var {
                     } else {
                         helpers::ast_ty::uint_expr(val as _)
                     };
-                    result.push(quote! {
-                        #(#attrs)*
-                        pub const #canonical_ident : #ty = #val ;
-                    });
+                    Some(val)
                 }
                 VarType::String(ref bytes) => {
                     let prefix = ctx.trait_prefix();
@@ -758,21 +750,24 @@ impl CodeGenerator for Var {
                             pub const #canonical_ident: &#(#lifetime )*#array_ty = #bytes ;
                         });
                     }
+                    None
                 }
-                VarType::Float(f) => {
-                    if let Ok(expr) = helpers::ast_ty::float_expr(f) {
-                        result.push(quote! {
-                            #(#attrs)*
-                            pub const #canonical_ident : #ty = #expr ;
-                        });
-                    }
+                VarType::Float(f) => helpers::ast_ty::float_expr(f).ok(),
+                VarType::Char(c) => Some(c.to_token_stream()),
+            };
+
+            if let Some(mut val) = const_expr {
+                let var_ty_item = ctx.resolve_item(var_ty);
+                if matches!(
+                    var_ty_item.alias_style(ctx),
+                    AliasVariation::NewType | AliasVariation::NewTypeDeref
+                ) {
+                    val = quote! { #ty(#val) };
                 }
-                VarType::Char(c) => {
-                    result.push(quote! {
-                        #(#attrs)*
-                        pub const #canonical_ident : #ty = #c ;
-                    });
-                }
+                result.push(quote! {
+                    #(#attrs)*
+                    pub const #canonical_ident : #ty = #val ;
+                });
             }
         } else {
             let symbol: &str = self.link_name().unwrap_or_else(|| {
@@ -1005,15 +1000,7 @@ impl CodeGenerator for Type {
                     quote! {}
                 };
 
-                let alias_style = if ctx.options().type_alias.matches(&name) {
-                    AliasVariation::TypeAlias
-                } else if ctx.options().new_type_alias.matches(&name) {
-                    AliasVariation::NewType
-                } else if ctx.options().new_type_alias_deref.matches(&name) {
-                    AliasVariation::NewTypeDeref
-                } else {
-                    ctx.options().default_alias_style
-                };
+                let alias_style = item.alias_style(ctx);
 
                 // We prefer using `pub use` over `pub type` because of:
                 // https://github.com/rust-lang/rust/issues/26264
