@@ -168,6 +168,9 @@ struct BindgenCommand {
     /// Mark any enum whose name matches REGEX as a non-exhaustive Rust enum.
     #[arg(long, value_name = "REGEX")]
     rustified_non_exhaustive_enum: Vec<String>,
+    /// Mark any enum whose name matches REGEX as a repr(C) Rust enum.
+    #[arg(long, value_name = "REGEX")]
+    rustified_repr_c_enum: Vec<String>,
     /// Mark any enum whose name matches REGEX as a series of constants.
     #[arg(long, value_name = "REGEX")]
     constified_enum: Vec<String>,
@@ -560,6 +563,7 @@ where
         newtype_global_enum,
         rustified_enum,
         rustified_non_exhaustive_enum,
+        rustified_repr_c_enum,
         constified_enum,
         constified_enum_module,
         default_macro_constant_type,
@@ -869,6 +873,7 @@ where
             newtype_global_enum,
             rustified_enum,
             rustified_non_exhaustive_enum,
+            rustified_repr_c_enum,
             constified_enum,
             constified_enum_module,
             default_macro_constant_type,
