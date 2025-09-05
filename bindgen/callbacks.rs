@@ -250,6 +250,18 @@ pub enum DiscoveredItem {
         /// Type to which this method belongs.
         parent: DiscoveredItemId,
     }, // modules, etc.
+
+    /// A constant.
+    Constant {
+        /// The final name of the generated binding
+        final_name: String,
+    },
+
+    /// A variable.
+    Variable {
+        /// The final name of the generated binding
+        final_name: String,
+    },
 }
 
 /// Relevant information about a type to which new derive attributes will be added using
