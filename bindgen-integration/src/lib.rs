@@ -355,3 +355,11 @@ fn test_colon_define() {
     let gold: u32 = (1u32 << 16) | 2;
     assert_eq!(gold, bindings::TESTMACRO_COLON_VALUE);
 }
+
+#[test]
+fn test_new_type_alias_const() {
+    assert_eq!(bindings::MY_INT.0, 5);
+    assert_eq!(bindings::MY_BOOL.0, true);
+    assert_eq!(bindings::MY_FLOAT.0, 1.23f32);
+    assert_eq!(bindings::MY_CHAR.0, b'a' as std::ffi::c_char);
+}
