@@ -4371,6 +4371,12 @@ impl TryToRustTy for Type {
                 if inner_ty.canonical_type(ctx).is_function() || is_objc_pointer
                 {
                     Ok(ty)
+                } else if ctx.options().generate_cxx_nonnull_references &&
+                    matches!(self.kind(), TypeKind::Reference(_))
+                {
+                    // It's UB to pass null values in place of C++ references
+                    let prefix = ctx.trait_prefix();
+                    Ok(syn::parse_quote! { ::#prefix::ptr::NonNull<#ty> })
                 } else {
                     Ok(ty.to_ptr(is_const))
                 }

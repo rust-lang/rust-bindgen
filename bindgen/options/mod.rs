@@ -1479,6 +1479,26 @@ options! {
         },
         as_args: |value, args| (!value).as_args(args, "--no-doc-comments"),
     },
+    /// Whether to generate [`NonNull`] pointers for C++ references.
+    ///
+    /// [`NonNull`]: core::ptr::NonNull
+    generate_cxx_nonnull_references: bool {
+        default: false,
+        methods: {
+            /// Generate `NonNull` pointers in place of raw pointers for C++
+            /// references.
+            ///
+            /// This option is disabled by default:
+            ///
+            /// Enabling it erases information about constness in generated
+            /// code, and `NonNull` is more cumbersome to use than raw pointers.
+            pub fn generate_cxx_nonnull_references(mut self, doit: bool) -> Self {
+                self.options.generate_cxx_nonnull_references = doit;
+                self
+            }
+        },
+        as_args: |value, args| value.as_args(args, "--nonnull-references"),
+    },
     /// Whether to generate inline functions.
     generate_inline_functions: bool {
         methods: {
