@@ -258,6 +258,9 @@ struct BindgenCommand {
     /// Use extern crate instead of use for objc.
     #[arg(long)]
     objc_extern_crate: bool,
+    /// Use `NonNull` in place of raw pointers for C++ references.
+    #[arg(long)]
+    nonnull_references: bool,
     /// Generate block signatures instead of void pointers.
     #[arg(long)]
     generate_block: bool,
@@ -590,6 +593,7 @@ where
         no_doc_comments,
         no_recursive_allowlist,
         objc_extern_crate,
+        nonnull_references,
         generate_block,
         generate_cstr,
         block_extern_crate,
@@ -921,6 +925,7 @@ where
             no_doc_comments => |b, _| b.generate_comments(false),
             no_recursive_allowlist => |b, _| b.allowlist_recursively(false),
             objc_extern_crate,
+            nonnull_references => |b, _| b.generate_cxx_nonnull_references(true),
             generate_block,
             generate_cstr,
             block_extern_crate,
