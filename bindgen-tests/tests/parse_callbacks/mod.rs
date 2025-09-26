@@ -1,3 +1,4 @@
+mod add_derives_callback;
 mod item_discovery_callback;
 
 use bindgen::callbacks::*;

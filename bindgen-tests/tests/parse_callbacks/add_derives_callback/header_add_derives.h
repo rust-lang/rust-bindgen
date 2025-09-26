@@ -1,0 +1,3 @@
+struct SimpleStruct {
+  int a;
+};
