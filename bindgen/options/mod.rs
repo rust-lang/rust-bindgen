@@ -541,6 +541,11 @@ options! {
                 ///
                 /// This is similar to the [`Builder::rustified_enum`] style, but the `enum` is
                 /// tagged with the `#[non_exhaustive]` attribute.
+                ///
+                /// **Use this with caution**, creating an instance of a Rust `enum` with an
+                /// invalid value will cause undefined behaviour, even if it's tagged with
+                /// `#[non_exhaustive]`. To avoid this, use the [`Builder::newtype_enum`] style
+                /// instead.
                 pub fn rustified_non_exhaustive_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
                     self.options.rustified_non_exhaustive_enums.insert(arg);
                     self
