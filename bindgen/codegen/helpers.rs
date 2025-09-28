@@ -320,14 +320,14 @@ pub(crate) mod ast_ty {
         }
 
         if f.is_nan() {
-            return Ok(quote! { f64::NAN });
+            return Ok(quote! { f64::NAN as _ });
         }
 
         if f.is_infinite() {
             let tokens = if f.is_sign_positive() {
-                quote! { f64::INFINITY }
+                quote! { f64::INFINITY as _ }
             } else {
-                quote! { f64::NEG_INFINITY }
+                quote! { f64::NEG_INFINITY as _ }
             };
             return Ok(tokens);
         }
