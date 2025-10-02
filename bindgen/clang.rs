@@ -2351,10 +2351,11 @@ impl EvalResult {
 
         if unsafe { clang_EvalResult_isUnsignedInt(self.x) } != 0 {
             let value = unsafe { clang_EvalResult_getAsUnsigned(self.x) };
-            if value > i64::MAX as c_ulonglong {
+            if value > u64::MAX as c_ulonglong {
                 return None;
             }
 
+            // Do a wrapping cast to i64. This will be losslessly cast back to u64 later.
             return Some(value as i64);
         }
 
