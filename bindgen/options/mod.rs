@@ -2308,4 +2308,17 @@ options! {
         },
         as_args: "--generate-private-functions",
     },
+    /// use hash name for unnamed enum
+    hash_unnamed_enum: bool {
+        default: false,
+        methods: {
+            /// Generate a hash-based name for unnamed enums,
+            /// using the hash of their variant names.
+            pub fn hash_unnamed_enum(mut self) -> Self {
+                self.options.hash_unnamed_enum = true;
+                self
+            }
+        },
+        as_args: "--hash-unnamed-enum",
+    }
 }
