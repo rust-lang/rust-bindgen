@@ -199,6 +199,24 @@ fn derives_of_item(
     derivable_traits
 }
 
+/// Appends the contents of the `custom_derives` iterator to the `derives` vector,
+/// ignoring duplicates and preserving order.
+fn append_custom_derives<'a, I>(derives: &mut Vec<&'a str>, custom_derives: I)
+where
+    I: Iterator<Item = &'a str>,
+{
+    // Use a HashSet to track already seen elements.
+    let mut seen: HashSet<&'a str> = Default::default();
+    seen.extend(derives.iter().copied());
+
+    // Add the custom derives to the derives vector, ignoring duplicates.
+    for custom_derive in custom_derives {
+        if seen.insert(custom_derive) {
+            derives.push(custom_derive);
+        }
+    }
+}
+
 impl From<DerivableTraits> for Vec<&'static str> {
     fn from(derivable_traits: DerivableTraits) -> Vec<&'static str> {
         [
@@ -1043,8 +1061,12 @@ impl CodeGenerator for Type {
                                 })
                             });
                         // In most cases this will be a no-op, since custom_derives will be empty.
-                        derives
-                            .extend(custom_derives.iter().map(|s| s.as_str()));
+                        if !custom_derives.is_empty() {
+                            append_custom_derives(
+                                &mut derives,
+                                custom_derives.iter().map(|s| s.as_str()),
+                            );
+                        }
                         attributes.push(attributes::derives(&derives));
 
                         let custom_attributes =
@@ -2475,7 +2497,12 @@ impl CodeGenerator for CompInfo {
             })
         });
         // In most cases this will be a no-op, since custom_derives will be empty.
-        derives.extend(custom_derives.iter().map(|s| s.as_str()));
+        if !custom_derives.is_empty() {
+            append_custom_derives(
+                &mut derives,
+                custom_derives.iter().map(|s| s.as_str()),
+            );
+        }
 
         if !derives.is_empty() {
             attributes.push(attributes::derives(&derives));
@@ -3678,7 +3705,12 @@ impl CodeGenerator for Enum {
                 })
             });
             // In most cases this will be a no-op, since custom_derives will be empty.
-            derives.extend(custom_derives.iter().map(|s| s.as_str()));
+            if !custom_derives.is_empty() {
+                append_custom_derives(
+                    &mut derives,
+                    custom_derives.iter().map(|s| s.as_str()),
+                );
+            }
 
             attrs.extend(
                 item.annotations()
