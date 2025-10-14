@@ -443,10 +443,7 @@ fn hidden_functions_builder() -> Builder {
 
 #[test]
 fn hidden_functions_are_skipped_by_default() {
-    let bindings = hidden_functions_builder()
-        .generate()
-        .unwrap()
-        .to_string();
+    let bindings = hidden_functions_builder().generate().unwrap().to_string();
 
     assert!(bindings.contains("pub fn visible_fn"));
     assert!(!bindings.contains("pub fn hidden_fn"));
@@ -454,10 +451,8 @@ fn hidden_functions_are_skipped_by_default() {
 
 #[test]
 fn hidden_functions_can_be_generated_when_enabled() {
-    let default_bindings = hidden_functions_builder()
-        .generate()
-        .unwrap()
-        .to_string();
+    let default_bindings =
+        hidden_functions_builder().generate().unwrap().to_string();
 
     let hidden_enabled = hidden_functions_builder()
         .generate_hidden_functions(true)
