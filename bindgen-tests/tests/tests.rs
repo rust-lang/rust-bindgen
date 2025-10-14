@@ -427,6 +427,54 @@ fn test_header_contents() {
     assert_eq!(expected, actual);
 }
 
+const HIDDEN_FUNCTIONS_HEADER: &str = r#"
+__attribute__((visibility("hidden"))) int hidden_fn(void);
+__attribute__((visibility("protected"))) int protected_fn(void);
+int visible_fn(void);
+"#;
+
+fn hidden_functions_builder() -> Builder {
+    builder()
+        .allowlist_function("visible_fn")
+        .allowlist_function("hidden_fn")
+        .allowlist_function("protected_fn")
+        .header_contents("hidden.h", HIDDEN_FUNCTIONS_HEADER)
+}
+
+#[test]
+fn hidden_functions_are_skipped_by_default() {
+    let bindings = hidden_functions_builder()
+        .generate()
+        .unwrap()
+        .to_string();
+
+    assert!(bindings.contains("pub fn visible_fn"));
+    assert!(!bindings.contains("pub fn hidden_fn"));
+}
+
+#[test]
+fn hidden_functions_can_be_generated_when_enabled() {
+    let default_bindings = hidden_functions_builder()
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let hidden_enabled = hidden_functions_builder()
+        .generate_hidden_functions(true)
+        .generate()
+        .unwrap()
+        .to_string();
+
+    assert!(hidden_enabled.contains("pub fn hidden_fn"));
+    assert!(!default_bindings.contains("pub fn hidden_fn"));
+
+    // Clang on Mach-O downgrades `protected` visibility to `default`,
+    // so the symbol might already be present without the new option.
+    if !default_bindings.contains("pub fn protected_fn") {
+        assert!(hidden_enabled.contains("pub fn protected_fn"));
+    }
+}
+
 #[test]
 fn test_multiple_header_calls_in_builder() {
     let actual = builder()
