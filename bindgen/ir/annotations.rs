@@ -102,7 +102,7 @@ pub(crate) struct Annotations {
     constify_enum_variant: bool,
     /// List of explicit derives for this type.
     derives: Vec<String>,
-    /// List of explicit attributes for this type.
+    /// List of explicit attributes for this type/field.
     attributes: Vec<String>,
 }
 

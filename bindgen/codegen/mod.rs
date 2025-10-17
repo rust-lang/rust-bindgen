@@ -1557,19 +1557,29 @@ impl FieldCodegen<'_> for FieldData {
         let accessor_kind =
             self.annotations().accessor_kind().unwrap_or(accessor_kind);
 
+        let attributes: Vec<proc_macro2::TokenStream> = self
+            .annotations()
+            .attributes()
+            .iter()
+            .map(|s| s.parse().unwrap())
+            .collect::<Vec<_>>();
+
         match visibility {
             FieldVisibilityKind::Private => {
                 field.append_all(quote! {
+                    #( #attributes )*
                     #field_ident : #ty ,
                 });
             }
             FieldVisibilityKind::PublicCrate => {
                 field.append_all(quote! {
+                    #( #attributes )*
                     pub(crate) #field_ident : #ty ,
                 });
             }
             FieldVisibilityKind::Public => {
                 field.append_all(quote! {
+                    #( #attributes )*
                     pub #field_ident : #ty ,
                 });
             }
