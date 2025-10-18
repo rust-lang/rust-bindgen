@@ -2329,4 +2329,16 @@ options! {
         },
         as_args: "--generate-private-functions",
     },
+    /// Whether to allow generating functions that are marked with hidden or protected visibility.
+    generate_hidden_functions: bool {
+        methods: {
+            /// Set whether to generate functions that are not externally visible according to clang.
+            pub fn generate_hidden_functions(mut self, doit: bool) -> Self {
+                self.options.generate_hidden_functions = doit;
+                self
+            }
+
+        },
+        as_args: "--generate-hidden-functions",
+    },
 }
