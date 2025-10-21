@@ -1515,8 +1515,20 @@ impl FieldCodegen<'_> for FieldData {
         } else if let Some(item) = field_ty.is_incomplete_array(ctx) {
             // Only FAM if its the last field
             if ctx.options().flexarray_dst && last_field {
+                // Check if parent struct is packed to determine if we need ManuallyDrop
+                let layout = parent_item.expect_type().layout(ctx);
+                let is_packed = parent.is_packed(ctx, layout.as_ref());
                 struct_layout.saw_flexible_array();
-                syn::parse_quote! { FAM }
+
+                // For packed structs, we need to wrap FAM in ManuallyDrop
+                // because Rust requires that DST fields in packed structs
+                // don't need Drop to be run.
+                if is_packed {
+                    let prefix = ctx.trait_prefix();
+                    syn::parse_quote! { ::#prefix::mem::ManuallyDrop<FAM> }
+                } else {
+                    syn::parse_quote! { FAM }
+                }
             } else {
                 result.saw_incomplete_array();
 
