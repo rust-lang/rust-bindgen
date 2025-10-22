@@ -137,6 +137,31 @@ fn parse_custom_attribute(
     Ok((attributes, regex.to_owned()))
 }
 
+fn parse_field_attr(
+    field_attr: &str,
+) -> Result<(String, String, String), Error> {
+    // Parse format: TYPE::FIELD=ATTR
+    // We need to split on the first '=' after finding the '::'
+    let (type_field, attr) = field_attr.split_once('=').ok_or_else(|| {
+        Error::raw(ErrorKind::InvalidValue, "Missing `=` in field-attr")
+    })?;
+
+    let (type_name, field_name) =
+        type_field.rsplit_once("::").ok_or_else(|| {
+            Error::raw(
+                ErrorKind::InvalidValue,
+                "Missing `::` in field-attr. Expected format: TYPE::FIELD=ATTR",
+            )
+        })?;
+
+    // Validate the attribute is valid Rust syntax
+    if let Err(err) = TokenStream::from_str(attr) {
+        return Err(Error::raw(ErrorKind::InvalidValue, err));
+    }
+
+    Ok((type_name.to_owned(), field_name.to_owned(), attr.to_owned()))
+}
+
 #[derive(Parser, Debug)]
 #[clap(
     about = "Generates Rust bindings from C/C++ headers.",
@@ -531,6 +556,9 @@ struct BindgenCommand {
     /// be called.
     #[arg(long)]
     generate_private_functions: bool,
+    /// Add a custom attribute to a field. The SPEC value must be of the shape TYPE::FIELD=ATTR.
+    #[arg(long, value_name = "SPEC", value_parser = parse_field_attr)]
+    field_attr: Vec<(String, String, String)>,
     /// Whether to emit diagnostics or not.
     #[cfg(feature = "experimental")]
     #[arg(long, requires = "experimental")]
@@ -684,6 +712,7 @@ where
         generate_deleted_functions,
         generate_pure_virtual_functions,
         generate_private_functions,
+        field_attr,
         #[cfg(feature = "experimental")]
         emit_diagnostics,
         generate_shell_completions,
@@ -981,6 +1010,7 @@ where
             generate_deleted_functions,
             generate_pure_virtual_functions,
             generate_private_functions,
+            field_attr => |b, (type_name, field_name, attr)| b.field_attribute(type_name, field_name, attr),
         }
     );
 

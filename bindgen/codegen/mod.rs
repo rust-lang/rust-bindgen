@@ -21,8 +21,8 @@ use self::struct_layout::StructLayoutTracker;
 use super::BindgenOptions;
 
 use crate::callbacks::{
-    AttributeInfo, DeriveInfo, DiscoveredItem, DiscoveredItemId, FieldInfo,
-    TypeKind as DeriveTypeKind,
+    AttributeInfo, DeriveInfo, DiscoveredItem, DiscoveredItemId,
+    FieldAttributeInfo, FieldInfo, TypeKind as DeriveTypeKind,
 };
 use crate::codegen::error::Error;
 use crate::ir::analysis::{HasVtable, Sizedness};
@@ -1138,8 +1138,56 @@ impl CodeGenerator for Type {
                             })
                             .unwrap_or(ctx.options().default_visibility);
                         let access_spec = access_specifier(visibility);
+
+                        // Collect field attributes from multiple sources for newtype tuple field
+                        let mut all_field_attributes = Vec::new();
+
+                        // 1. Get attributes from typedef annotations (if any)
+                        all_field_attributes.extend(
+                            item.annotations().attributes().iter().cloned(),
+                        );
+
+                        // 2. Get custom attributes from callbacks
+                        all_field_attributes.extend(
+                            ctx.options().all_callbacks(|cb| {
+                                cb.field_attributes(&FieldAttributeInfo {
+                                    type_name: &item.canonical_name(ctx),
+                                    type_kind: DeriveTypeKind::Struct,
+                                    field_name: "0",
+                                    field_type_name: inner_item
+                                        .expect_type()
+                                        .name(),
+                                })
+                            }),
+                        );
+
+                        // 3. Get attributes from CLI/Builder patterns
+                        let type_name = item.canonical_name(ctx);
+                        for (type_pat, field_pat, attr) in
+                            &ctx.options().field_attr_patterns
+                        {
+                            if type_pat.as_ref() == type_name &&
+                                field_pat.as_ref() == "0"
+                            {
+                                all_field_attributes.push(attr.to_string());
+                            }
+                        }
+
+                        // Build the field with attributes
+                        let mut field_tokens = quote! {};
+                        for attr in &all_field_attributes {
+                            let attr_tokens: proc_macro2::TokenStream =
+                                attr.parse().expect("Invalid field attribute");
+                            field_tokens.append_all(quote! {
+                                #[#attr_tokens]
+                            });
+                        }
+                        field_tokens.append_all(quote! {
+                            #access_spec #inner_rust_type
+                        });
+
                         quote! {
-                            (#access_spec #inner_rust_type) ;
+                            (#field_tokens) ;
                         }
                     }
                 });
@@ -1580,6 +1628,46 @@ impl FieldCodegen<'_> for FieldData {
         );
         let accessor_kind =
             self.annotations().accessor_kind().unwrap_or(accessor_kind);
+
+        // Collect field attributes from multiple sources
+        let mut all_field_attributes = Vec::new();
+
+        // 1. Get attributes from field annotations (/// <div rustbindgen attribute="..."></div>)
+        all_field_attributes
+            .extend(self.annotations().attributes().iter().cloned());
+
+        // 2. Get custom attributes from callbacks
+        all_field_attributes.extend(ctx.options().all_callbacks(|cb| {
+            cb.field_attributes(&FieldAttributeInfo {
+                type_name: &parent_item.canonical_name(ctx),
+                type_kind: if parent.is_union() {
+                    DeriveTypeKind::Union
+                } else {
+                    DeriveTypeKind::Struct
+                },
+                field_name,
+                field_type_name: field_ty.name(),
+            })
+        }));
+
+        // 3. Get attributes from CLI/Builder patterns
+        let type_name = parent_item.canonical_name(ctx);
+        for (type_pat, field_pat, attr) in &ctx.options().field_attr_patterns {
+            if type_pat.as_ref() == type_name &&
+                field_pat.as_ref() == field_name
+            {
+                all_field_attributes.push(attr.to_string());
+            }
+        }
+
+        // Apply all custom attributes to the field
+        for attr in &all_field_attributes {
+            let attr_tokens: proc_macro2::TokenStream =
+                attr.parse().expect("Invalid field attribute");
+            field.append_all(quote! {
+                #[#attr_tokens]
+            });
+        }
 
         match visibility {
             FieldVisibilityKind::Private => {
