@@ -790,6 +790,10 @@ impl CompFields {
     }
 
     /// Return the flex array member for the struct/class, if any.
+    ///
+    /// This method recursively checks if the last field is either:
+    /// 1. An incomplete array (direct FAM)
+    /// 2. A struct/union that itself has a FAM (nested FAM)
     fn flex_array_member(&self, ctx: &BindgenContext) -> Option<TypeId> {
         let fields = match self {
             CompFields::Before(_) => panic!("raw fields"),
@@ -799,10 +803,23 @@ impl CompFields {
 
         match fields.last()? {
             Field::Bitfields(..) => None,
-            Field::DataMember(FieldData { ty, .. }) => ctx
-                .resolve_type(*ty)
-                .is_incomplete_array(ctx)
-                .map(|item| item.expect_type_id(ctx)),
+            Field::DataMember(FieldData { ty, .. }) => {
+                let resolved_ty = ctx.resolve_type(*ty);
+
+                // Check if it's an incomplete array first
+                if let Some(item) = resolved_ty.is_incomplete_array(ctx) {
+                    return Some(item.expect_type_id(ctx));
+                }
+
+                // Check if it's a compound type with a FAM (need to resolve through type refs)
+                let canonical_ty = resolved_ty.canonical_type(ctx);
+                if let super::ty::TypeKind::Comp(ref comp) = canonical_ty.kind()
+                {
+                    return comp.flex_array_member(ctx);
+                }
+
+                None
+            }
         }
     }
 }
