@@ -1592,6 +1592,28 @@ impl FieldCodegen<'_> for FieldData {
                     syn::parse_quote! { __IncompleteArrayField<#inner> }
                 }
             }
+        } else if let TypeKind::Comp(ref comp) = field_ty.kind() {
+            // Nested FAM: the field is a struct that itself has a FAM
+            // Only treat as FAM if it's the last field
+            if ctx.options().flexarray_dst &&
+                last_field &&
+                comp.flex_array_member(ctx).is_some()
+            {
+                let layout = parent_item.expect_type().layout(ctx);
+                let is_packed = parent.is_packed(ctx, layout.as_ref());
+                struct_layout.saw_flexible_array();
+
+                // For nested FAMs, we need to parameterize the field type with FAM
+                // For packed structs, wrap in ManuallyDrop
+                if is_packed {
+                    let prefix = ctx.trait_prefix();
+                    syn::parse_quote! { ::#prefix::mem::ManuallyDrop<#ty<FAM>> }
+                } else {
+                    syn::parse_quote! { #ty<FAM> }
+                }
+            } else {
+                ty
+            }
         } else {
             ty
         };
