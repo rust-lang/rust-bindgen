@@ -730,7 +730,11 @@ impl ClangSubItemParser for Function {
 
         debug!("Function::parse({cursor:?}, {:?})", cursor.cur_type());
         let visibility = cursor.visibility();
-        if visibility != CXVisibility_Default {
+        let allow_hidden = context.options().generate_hidden_functions &&
+            (visibility == CXVisibility_Hidden ||
+                visibility == CXVisibility_Protected);
+
+        if visibility != CXVisibility_Default && !allow_hidden {
             return Err(ParseError::Continue);
         }
         if cursor.access_specifier() == CX_CXXPrivate &&
