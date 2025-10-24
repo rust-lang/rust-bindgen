@@ -212,6 +212,40 @@ fn append_custom_derives<'a>(
     }
 }
 
+/// Collects field attributes from multiple sources (annotations, callbacks, and CLI/Builder patterns).
+fn collect_field_attributes(
+    ctx: &BindgenContext,
+    annotations: &Annotations,
+    type_name: &str,
+    type_kind: DeriveTypeKind,
+    field_name: &str,
+    field_type_name: Option<&str>,
+) -> Vec<String> {
+    let mut all_field_attributes = Vec::new();
+
+    // 1. Get attributes from annotations
+    all_field_attributes.extend(annotations.attributes().iter().cloned());
+
+    // 2. Get custom attributes from callbacks
+    all_field_attributes.extend(ctx.options().all_callbacks(|cb| {
+        cb.field_attributes(&FieldAttributeInfo {
+            type_name,
+            type_kind,
+            field_name,
+            field_type_name,
+        })
+    }));
+
+    // 3. Get attributes from CLI/Builder patterns
+    for (type_pat, field_pat, attr) in &ctx.options().field_attr_patterns {
+        if type_pat.as_ref() == type_name && field_pat.as_ref() == field_name {
+            all_field_attributes.push(attr.to_string());
+        }
+    }
+
+    all_field_attributes
+}
+
 impl From<DerivableTraits> for Vec<&'static str> {
     fn from(derivable_traits: DerivableTraits) -> Vec<&'static str> {
         [
@@ -1139,39 +1173,16 @@ impl CodeGenerator for Type {
                             .unwrap_or(ctx.options().default_visibility);
                         let access_spec = access_specifier(visibility);
 
-                        // Collect field attributes from multiple sources for newtype tuple field
-                        let mut all_field_attributes = Vec::new();
-
-                        // 1. Get attributes from typedef annotations (if any)
-                        all_field_attributes.extend(
-                            item.annotations().attributes().iter().cloned(),
-                        );
-
-                        // 2. Get custom attributes from callbacks
-                        all_field_attributes.extend(
-                            ctx.options().all_callbacks(|cb| {
-                                cb.field_attributes(&FieldAttributeInfo {
-                                    type_name: &item.canonical_name(ctx),
-                                    type_kind: DeriveTypeKind::Struct,
-                                    field_name: "0",
-                                    field_type_name: inner_item
-                                        .expect_type()
-                                        .name(),
-                                })
-                            }),
-                        );
-
-                        // 3. Get attributes from CLI/Builder patterns
+                        // Collect field attributes for newtype tuple field
                         let type_name = item.canonical_name(ctx);
-                        for (type_pat, field_pat, attr) in
-                            &ctx.options().field_attr_patterns
-                        {
-                            if type_pat.as_ref() == type_name &&
-                                field_pat.as_ref() == "0"
-                            {
-                                all_field_attributes.push(attr.to_string());
-                            }
-                        }
+                        let all_field_attributes = collect_field_attributes(
+                            ctx,
+                            item.annotations(),
+                            &type_name,
+                            DeriveTypeKind::Struct,
+                            "0",
+                            inner_item.expect_type().name(),
+                        );
 
                         // Build the field with attributes
                         let mut field_tokens = quote! {};
@@ -1618,35 +1629,20 @@ impl FieldCodegen<'_> for FieldData {
             self.annotations().accessor_kind().unwrap_or(accessor_kind);
 
         // Collect field attributes from multiple sources
-        let mut all_field_attributes = Vec::new();
-
-        // 1. Get attributes from field annotations (/// <div rustbindgen attribute="..."></div>)
-        all_field_attributes
-            .extend(self.annotations().attributes().iter().cloned());
-
-        // 2. Get custom attributes from callbacks
-        all_field_attributes.extend(ctx.options().all_callbacks(|cb| {
-            cb.field_attributes(&FieldAttributeInfo {
-                type_name: &parent_item.canonical_name(ctx),
-                type_kind: if parent.is_union() {
-                    DeriveTypeKind::Union
-                } else {
-                    DeriveTypeKind::Struct
-                },
-                field_name,
-                field_type_name: field_ty.name(),
-            })
-        }));
-
-        // 3. Get attributes from CLI/Builder patterns
         let type_name = parent_item.canonical_name(ctx);
-        for (type_pat, field_pat, attr) in &ctx.options().field_attr_patterns {
-            if type_pat.as_ref() == type_name &&
-                field_pat.as_ref() == field_name
-            {
-                all_field_attributes.push(attr.to_string());
-            }
-        }
+        let type_kind = if parent.is_union() {
+            DeriveTypeKind::Union
+        } else {
+            DeriveTypeKind::Struct
+        };
+        let all_field_attributes = collect_field_attributes(
+            ctx,
+            self.annotations(),
+            &type_name,
+            type_kind,
+            field_name,
+            field_ty.name(),
+        );
 
         // Apply all custom attributes to the field
         for attr in &all_field_attributes {
