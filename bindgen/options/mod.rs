@@ -2329,4 +2329,51 @@ options! {
         },
         as_args: "--generate-private-functions",
     },
+    /// Field attribute patterns for adding custom attributes to struct/union fields.
+    field_attr_patterns: Vec<(Box<str>, Box<str>, Box<str>)> {
+        methods: {
+            /// Add a custom attribute to a specific field.
+            ///
+            /// # Arguments
+            ///
+            /// * `type_name` - The name of the struct or union containing the field
+            /// * `field_name` - The name of the field (use "0" for newtype tuple fields)
+            /// * `attribute` - The attribute to add (e.g., "serde(skip)")
+            ///
+            /// # Example
+            ///
+            /// ```ignore
+            /// bindgen::Builder::default()
+            ///     .header("input.h")
+            ///     .field_attribute("MyStruct", "data", r#"serde(rename = "myData")"#)
+            ///     .field_attribute("MyStruct", "secret", "serde(skip)")
+            ///     .generate()
+            ///     .unwrap();
+            /// ```
+            pub fn field_attribute<T, F, A>(
+                mut self,
+                type_name: T,
+                field_name: F,
+                attribute: A,
+            ) -> Self
+            where
+                T: Into<String>,
+                F: Into<String>,
+                A: Into<String>,
+            {
+                self.options.field_attr_patterns.push((
+                    type_name.into().into_boxed_str(),
+                    field_name.into().into_boxed_str(),
+                    attribute.into().into_boxed_str(),
+                ));
+                self
+            }
+        },
+        as_args: |patterns, args| {
+            for (type_pat, field_pat, attr) in patterns {
+                args.push("--field-attr".to_owned());
+                args.push(format!("{type_pat}::{field_pat}={attr}"));
+            }
+        },
+    },
 }
