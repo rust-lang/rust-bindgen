@@ -216,6 +216,7 @@ impl Enum {
         ) {
             EnumVariation::Rust {
                 non_exhaustive: false,
+                repr_c: false,
             }
         } else if self.is_matching_enum(
             ctx,
@@ -224,6 +225,16 @@ impl Enum {
         ) {
             EnumVariation::Rust {
                 non_exhaustive: true,
+                repr_c: false,
+            }
+        } else if self.is_matching_enum(
+            ctx,
+            &ctx.options().rustified_repr_c_enums,
+            item,
+        ) {
+            EnumVariation::Rust {
+                non_exhaustive: false,
+                repr_c: true,
             }
         } else if self.is_matching_enum(
             ctx,
