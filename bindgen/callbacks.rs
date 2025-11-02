@@ -99,7 +99,7 @@ pub trait ParseCallbacks: fmt::Debug {
         None
     }
 
-    /// This will be called on every header filename passed to (`Builder::header`)[`crate::Builder::header`].
+    /// This will be called on every header filename passed to [`Builder::header`][crate::Builder::header].
     fn header_file(&self, _filename: &str) {}
 
     /// This will be called on every file inclusion, with the full path of the included file.
