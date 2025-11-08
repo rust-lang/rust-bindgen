@@ -993,13 +993,6 @@ impl CodeGenerator for Type {
                             layout.size,
                             ctx.target_pointer_size(),
                             );
-                        assert_eq!(
-                            layout.align,
-                            ctx.target_pointer_size(),
-                            "Target platform requires `--no-size_t-is-usize`. The alignment of `{spelling}` ({}) does not match the target pointer size ({})",
-                            layout.align,
-                            ctx.target_pointer_size(),
-                        );
                     }
                     return;
                 }
