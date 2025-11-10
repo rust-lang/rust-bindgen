@@ -106,6 +106,7 @@ impl DynamicItems {
                     path: P
                 ) -> Result<Self, ::libloading::Error>
                 where P: AsRef<::std::ffi::OsStr> {
+                    let path = path.as_ref();
                     let library = #library_new?;
                     #from_library
                 }

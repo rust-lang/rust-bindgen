@@ -23,6 +23,7 @@ impl TestLib {
     where
         P: AsRef<::std::ffi::OsStr>,
     {
+        let path = path.as_ref();
         let library = unsafe { ::libloading::Library::new(path) }?;
         unsafe { Self::from_library(library) }
     }
