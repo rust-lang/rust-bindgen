@@ -19,25 +19,11 @@ mod tests {
         }
     }
 
-    struct WriteAdapter<'a>(&'a mut Vec<u8>);
-
-    impl std::io::Write for WriteAdapter<'_> {
-        fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-            self.0.extend_from_slice(buf);
-            Ok(buf.len())
-        }
-        fn flush(&mut self) -> std::io::Result<()> {
-            Ok(())
-        }
-    }
-
     fn write_bindings_to_string(bindings: &Bindings) -> String {
         let mut output = Vec::<u8>::new();
-        bindings
-            .write(Box::new(WriteAdapter(&mut output)))
-            .unwrap_or_else(|e| {
-                panic!("Failed to write generated bindings: {e}")
-            });
+        bindings.write(&mut output).unwrap_or_else(|e| {
+            panic!("Failed to write generated bindings: {e}")
+        });
         String::from_utf8(output).unwrap_or_else(|e| {
             panic!("Failed to convert generated bindings to string: {e}")
         })

@@ -29,7 +29,7 @@ pub fn main() {
     env_logger::init();
 
     match builder_from_flags(env::args()) {
-        Ok((builder, output, verbose)) => {
+        Ok((builder, mut output, verbose)) => {
             #[cfg(feature = "logging")]
             clang_version_check();
 
@@ -50,7 +50,7 @@ pub fn main() {
 
             let _ = std::panic::take_hook();
 
-            bindings.write(output).expect("Unable to write output");
+            bindings.write(&mut output).expect("Unable to write output");
         }
         Err(error) => {
             eprintln!("{error}");
