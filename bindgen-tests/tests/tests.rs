@@ -564,6 +564,12 @@ fn test_mixed_header_and_header_contents() {
 }
 
 #[test]
+#[should_panic(expected = "No headers provided")]
+fn test_no_header_provided() {
+    let _ = builder().generate();
+}
+
+#[test]
 fn test_macro_fallback_non_system_dir() {
     let actual = builder()
         .header(concat!(
