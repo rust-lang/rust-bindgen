@@ -2527,7 +2527,7 @@ impl CodeGenerator for CompInfo {
             let mut derivable_traits = DerivableTraits::empty();
             if !item.annotations().disallow_debug() {
                 derivable_traits |= DerivableTraits::DEBUG;
-            };
+            }
             derivable_traits
         } else {
             derives_of_item(item, ctx, packed)
