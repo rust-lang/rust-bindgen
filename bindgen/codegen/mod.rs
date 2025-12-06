@@ -1786,9 +1786,7 @@ impl Bitfield {
         let prefix = ctx.trait_prefix();
 
         ctor_impl.append_all(quote! {
-            __bindgen_bitfield_unit.set(
-                #offset,
-                #width,
+            __bindgen_bitfield_unit.set_const::<#offset, #width>(
                 {
                     let #param_name: #bitfield_int_ty = unsafe {
                         ::#prefix::mem::transmute(#param_name)
@@ -2149,7 +2147,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 #access_spec fn #getter_name(&self) -> #bitfield_ty {
                     unsafe {
                         ::#prefix::mem::transmute(
-                            self.#unit_field_ident.get(#offset, #width)
+                            self.#unit_field_ident.get_const::<#offset, #width>()
                                 as #bitfield_int_ty
                         )
                     }
@@ -2159,9 +2157,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 #access_spec fn #setter_name(&mut self, val: #bitfield_ty) {
                     unsafe {
                         let val: #bitfield_int_ty = ::#prefix::mem::transmute(val);
-                        self.#unit_field_ident.set(
-                            #offset,
-                            #width,
+                        self.#unit_field_ident.set_const::<#offset, #width>(
                             val as u64
                         )
                     }
@@ -2172,10 +2168,8 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 #[inline]
                 #access_spec unsafe fn #raw_getter_name(this: *const Self) -> #bitfield_ty {
                     unsafe {
-                        ::#prefix::mem::transmute(<#unit_field_ty>::raw_get(
+                        ::#prefix::mem::transmute(<#unit_field_ty>::raw_get_const::<#offset, #width>(
                             ::#prefix::ptr::addr_of!((*this).#unit_field_ident),
-                            #offset,
-                            #width,
                         ) as #bitfield_int_ty)
                     }
                 }
@@ -2184,10 +2178,8 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 #access_spec unsafe fn #raw_setter_name(this: *mut Self, val: #bitfield_ty) {
                     unsafe {
                         let val: #bitfield_int_ty = ::#prefix::mem::transmute(val);
-                        <#unit_field_ty>::raw_set(
+                        <#unit_field_ty>::raw_set_const::<#offset, #width>(
                             ::#prefix::ptr::addr_of_mut!((*this).#unit_field_ident),
-                            #offset,
-                            #width,
                             val as u64,
                         )
                     }
