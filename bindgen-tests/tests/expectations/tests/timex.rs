@@ -217,6 +217,277 @@ where
         }
     }
 }
+/// Const-generic methods for efficient bitfield access when offset and width
+/// are known at compile time.
+impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
+    /// Get a field using const generics for compile-time optimization.
+    /// Uses native word size operations when the field fits in usize.
+    #[inline]
+    pub const fn get_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(&self) -> u64 {
+        debug_assert!(BIT_WIDTH <= 64);
+        debug_assert!(BIT_OFFSET / 8 < N);
+        debug_assert!((BIT_OFFSET + (BIT_WIDTH as usize)) / 8 <= N);
+        if BIT_WIDTH == 0 {
+            return 0;
+        }
+        let start_byte = BIT_OFFSET / 8;
+        let bit_shift = BIT_OFFSET % 8;
+        let bytes_needed = (BIT_WIDTH as usize + bit_shift + 7) / 8;
+        if BIT_WIDTH as usize + bit_shift <= usize::BITS as usize {
+            let mut val = 0usize;
+            if cfg!(target_endian = "big") {
+                let mut i = 0;
+                while i < bytes_needed {
+                    val
+                        |= (self.storage[start_byte + i].reverse_bits() as usize)
+                            << (i * 8);
+                    i += 1;
+                }
+            } else {
+                let mut i = 0;
+                while i < bytes_needed {
+                    val |= (self.storage[start_byte + i] as usize) << (i * 8);
+                    i += 1;
+                }
+            }
+            val >>= bit_shift;
+            val &= (1usize << BIT_WIDTH) - 1;
+            if cfg!(target_endian = "big") {
+                val = val.reverse_bits() >> (usize::BITS as usize - BIT_WIDTH as usize);
+            }
+            val as u64
+        } else {
+            let mut val = 0u64;
+            if cfg!(target_endian = "big") {
+                let mut i = 0;
+                while i < bytes_needed {
+                    val
+                        |= (self.storage[start_byte + i].reverse_bits() as u64)
+                            << (i * 8);
+                    i += 1;
+                }
+            } else {
+                let mut i = 0;
+                while i < bytes_needed {
+                    val |= (self.storage[start_byte + i] as u64) << (i * 8);
+                    i += 1;
+                }
+            }
+            val >>= bit_shift;
+            if BIT_WIDTH < 64 {
+                val &= (1u64 << BIT_WIDTH) - 1;
+            }
+            if cfg!(target_endian = "big") {
+                val = val.reverse_bits() >> (64 - BIT_WIDTH as usize);
+            }
+            val
+        }
+    }
+    /// Set a field using const generics for compile-time optimization.
+    /// Uses native word size operations when the field fits in usize.
+    #[inline]
+    pub fn set_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(&mut self, val: u64) {
+        debug_assert!(BIT_WIDTH <= 64);
+        debug_assert!(BIT_OFFSET / 8 < N);
+        debug_assert!((BIT_OFFSET + (BIT_WIDTH as usize)) / 8 <= N);
+        if BIT_WIDTH == 0 {
+            return;
+        }
+        let start_byte = BIT_OFFSET / 8;
+        let bit_shift = BIT_OFFSET % 8;
+        let bytes_needed = (BIT_WIDTH as usize + bit_shift + 7) / 8;
+        if BIT_WIDTH as usize + bit_shift <= usize::BITS as usize {
+            let mut val = val as usize;
+            val &= (1usize << BIT_WIDTH) - 1;
+            if cfg!(target_endian = "big") {
+                val = val.reverse_bits() >> (usize::BITS as usize - BIT_WIDTH as usize);
+            }
+            val <<= bit_shift;
+            let field_mask = ((1usize << BIT_WIDTH) - 1) << bit_shift;
+            let mut i = 0;
+            while i < bytes_needed {
+                let byte_val = (val >> (i * 8)) as u8;
+                let byte_mask = (field_mask >> (i * 8)) as u8;
+                if cfg!(target_endian = "big") {
+                    let byte = self.storage[start_byte + i].reverse_bits();
+                    let new_byte = (byte & !byte_mask) | (byte_val & byte_mask);
+                    self.storage[start_byte + i] = new_byte.reverse_bits();
+                } else {
+                    self.storage[start_byte + i] = (self.storage[start_byte + i]
+                        & !byte_mask) | (byte_val & byte_mask);
+                }
+                i += 1;
+            }
+        } else {
+            let mut val = val;
+            if BIT_WIDTH < 64 {
+                val &= (1u64 << BIT_WIDTH) - 1;
+            }
+            if cfg!(target_endian = "big") {
+                val = val.reverse_bits() >> (64 - BIT_WIDTH as usize);
+            }
+            val <<= bit_shift;
+            let field_mask = if BIT_WIDTH as usize + bit_shift >= 64 {
+                !0u64 << bit_shift
+            } else {
+                ((1u64 << BIT_WIDTH) - 1) << bit_shift
+            };
+            let mut i = 0;
+            while i < bytes_needed {
+                let byte_val = (val >> (i * 8)) as u8;
+                let byte_mask = (field_mask >> (i * 8)) as u8;
+                if cfg!(target_endian = "big") {
+                    let byte = self.storage[start_byte + i].reverse_bits();
+                    let new_byte = (byte & !byte_mask) | (byte_val & byte_mask);
+                    self.storage[start_byte + i] = new_byte.reverse_bits();
+                } else {
+                    self.storage[start_byte + i] = (self.storage[start_byte + i]
+                        & !byte_mask) | (byte_val & byte_mask);
+                }
+                i += 1;
+            }
+        }
+    }
+    /// Raw pointer get using const generics for compile-time optimization.
+    /// Uses native word size operations when the field fits in usize.
+    #[inline]
+    pub const unsafe fn raw_get_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(
+        this: *const Self,
+    ) -> u64 {
+        debug_assert!(BIT_WIDTH <= 64);
+        debug_assert!(BIT_OFFSET / 8 < N);
+        debug_assert!((BIT_OFFSET + (BIT_WIDTH as usize)) / 8 <= N);
+        if BIT_WIDTH == 0 {
+            return 0;
+        }
+        let start_byte = BIT_OFFSET / 8;
+        let bit_shift = BIT_OFFSET % 8;
+        let bytes_needed = (BIT_WIDTH as usize + bit_shift + 7) / 8;
+        let storage_ptr = unsafe { core::ptr::addr_of!((*this).storage) as *const u8 };
+        if BIT_WIDTH as usize + bit_shift <= usize::BITS as usize {
+            let mut val = 0usize;
+            if cfg!(target_endian = "big") {
+                let mut i = 0;
+                while i < bytes_needed {
+                    let byte = unsafe { *storage_ptr.add(start_byte + i) };
+                    val |= (byte.reverse_bits() as usize) << (i * 8);
+                    i += 1;
+                }
+            } else {
+                let mut i = 0;
+                while i < bytes_needed {
+                    let byte = unsafe { *storage_ptr.add(start_byte + i) };
+                    val |= (byte as usize) << (i * 8);
+                    i += 1;
+                }
+            }
+            val >>= bit_shift;
+            val &= (1usize << BIT_WIDTH) - 1;
+            if cfg!(target_endian = "big") {
+                val = val.reverse_bits() >> (usize::BITS as usize - BIT_WIDTH as usize);
+            }
+            val as u64
+        } else {
+            let mut val = 0u64;
+            if cfg!(target_endian = "big") {
+                let mut i = 0;
+                while i < bytes_needed {
+                    let byte = unsafe { *storage_ptr.add(start_byte + i) };
+                    val |= (byte.reverse_bits() as u64) << (i * 8);
+                    i += 1;
+                }
+            } else {
+                let mut i = 0;
+                while i < bytes_needed {
+                    let byte = unsafe { *storage_ptr.add(start_byte + i) };
+                    val |= (byte as u64) << (i * 8);
+                    i += 1;
+                }
+            }
+            val >>= bit_shift;
+            if BIT_WIDTH < 64 {
+                val &= (1u64 << BIT_WIDTH) - 1;
+            }
+            if cfg!(target_endian = "big") {
+                val = val.reverse_bits() >> (64 - BIT_WIDTH as usize);
+            }
+            val
+        }
+    }
+    /// Raw pointer set using const generics for compile-time optimization.
+    /// Uses native word size operations when the field fits in usize.
+    #[inline]
+    pub unsafe fn raw_set_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(
+        this: *mut Self,
+        val: u64,
+    ) {
+        debug_assert!(BIT_WIDTH <= 64);
+        debug_assert!(BIT_OFFSET / 8 < N);
+        debug_assert!((BIT_OFFSET + (BIT_WIDTH as usize)) / 8 <= N);
+        if BIT_WIDTH == 0 {
+            return;
+        }
+        let start_byte = BIT_OFFSET / 8;
+        let bit_shift = BIT_OFFSET % 8;
+        let bytes_needed = (BIT_WIDTH as usize + bit_shift + 7) / 8;
+        let storage_ptr = this.cast::<[u8; N]>().cast::<u8>();
+        if BIT_WIDTH as usize + bit_shift <= usize::BITS as usize {
+            let mut val = val as usize;
+            val &= (1usize << BIT_WIDTH) - 1;
+            if cfg!(target_endian = "big") {
+                val = val.reverse_bits() >> (usize::BITS as usize - BIT_WIDTH as usize);
+            }
+            val <<= bit_shift;
+            let field_mask = ((1usize << BIT_WIDTH) - 1) << bit_shift;
+            let mut i = 0;
+            while i < bytes_needed {
+                let byte_val = (val >> (i * 8)) as u8;
+                let byte_mask = (field_mask >> (i * 8)) as u8;
+                let byte_ptr = unsafe { storage_ptr.add(start_byte + i) };
+                if cfg!(target_endian = "big") {
+                    let byte = unsafe { (*byte_ptr).reverse_bits() };
+                    let new_byte = (byte & !byte_mask) | (byte_val & byte_mask);
+                    unsafe { *byte_ptr = new_byte.reverse_bits() };
+                } else {
+                    unsafe {
+                        *byte_ptr = (*byte_ptr & !byte_mask) | (byte_val & byte_mask)
+                    };
+                }
+                i += 1;
+            }
+        } else {
+            let mut val = val;
+            if BIT_WIDTH < 64 {
+                val &= (1u64 << BIT_WIDTH) - 1;
+            }
+            if cfg!(target_endian = "big") {
+                val = val.reverse_bits() >> (64 - BIT_WIDTH as usize);
+            }
+            val <<= bit_shift;
+            let field_mask = if BIT_WIDTH as usize + bit_shift >= 64 {
+                !0u64 << bit_shift
+            } else {
+                ((1u64 << BIT_WIDTH) - 1) << bit_shift
+            };
+            let mut i = 0;
+            while i < bytes_needed {
+                let byte_val = (val >> (i * 8)) as u8;
+                let byte_mask = (field_mask >> (i * 8)) as u8;
+                let byte_ptr = unsafe { storage_ptr.add(start_byte + i) };
+                if cfg!(target_endian = "big") {
+                    let byte = unsafe { (*byte_ptr).reverse_bits() };
+                    let new_byte = (byte & !byte_mask) | (byte_val & byte_mask);
+                    unsafe { *byte_ptr = new_byte.reverse_bits() };
+                } else {
+                    unsafe {
+                        *byte_ptr = (*byte_ptr & !byte_mask) | (byte_val & byte_mask)
+                    };
+                }
+                i += 1;
+            }
+        }
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct timex {
@@ -264,13 +535,15 @@ impl Default for timex_named {
 impl timex_named {
     #[inline]
     pub fn a(&self) -> ::std::os::raw::c_int {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 32u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 32u8>() as u32)
+        }
     }
     #[inline]
     pub fn set_a(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
-            self._bitfield_1.set(0usize, 32u8, val as u64)
+            self._bitfield_1.set_const::<0usize, 32u8>(val as u64)
         }
     }
     #[inline]
@@ -279,8 +552,10 @@ impl timex_named {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
                     [u8; 44usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 0usize, 32u8)
-                    as u32,
+                >>::raw_get_const::<
+                    0usize,
+                    32u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
             )
         }
     }
@@ -290,23 +565,23 @@ impl timex_named {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
+            >>::raw_set_const::<
                 0usize,
                 32u8,
-                val as u64,
-            )
+            >(::std::ptr::addr_of_mut!((*this)._bitfield_1), val as u64)
         }
     }
     #[inline]
     pub fn b(&self) -> ::std::os::raw::c_int {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(32usize, 32u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get_const::<32usize, 32u8>() as u32)
+        }
     }
     #[inline]
     pub fn set_b(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
-            self._bitfield_1.set(32usize, 32u8, val as u64)
+            self._bitfield_1.set_const::<32usize, 32u8>(val as u64)
         }
     }
     #[inline]
@@ -315,8 +590,10 @@ impl timex_named {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
                     [u8; 44usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 32usize, 32u8)
-                    as u32,
+                >>::raw_get_const::<
+                    32usize,
+                    32u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
             )
         }
     }
@@ -326,23 +603,23 @@ impl timex_named {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
+            >>::raw_set_const::<
                 32usize,
                 32u8,
-                val as u64,
-            )
+            >(::std::ptr::addr_of_mut!((*this)._bitfield_1), val as u64)
         }
     }
     #[inline]
     pub fn c(&self) -> ::std::os::raw::c_int {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(64usize, 32u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get_const::<64usize, 32u8>() as u32)
+        }
     }
     #[inline]
     pub fn set_c(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
-            self._bitfield_1.set(64usize, 32u8, val as u64)
+            self._bitfield_1.set_const::<64usize, 32u8>(val as u64)
         }
     }
     #[inline]
@@ -351,8 +628,10 @@ impl timex_named {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
                     [u8; 44usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 64usize, 32u8)
-                    as u32,
+                >>::raw_get_const::<
+                    64usize,
+                    32u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
             )
         }
     }
@@ -362,23 +641,23 @@ impl timex_named {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
+            >>::raw_set_const::<
                 64usize,
                 32u8,
-                val as u64,
-            )
+            >(::std::ptr::addr_of_mut!((*this)._bitfield_1), val as u64)
         }
     }
     #[inline]
     pub fn d(&self) -> ::std::os::raw::c_int {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(96usize, 32u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get_const::<96usize, 32u8>() as u32)
+        }
     }
     #[inline]
     pub fn set_d(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
-            self._bitfield_1.set(96usize, 32u8, val as u64)
+            self._bitfield_1.set_const::<96usize, 32u8>(val as u64)
         }
     }
     #[inline]
@@ -387,8 +666,10 @@ impl timex_named {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
                     [u8; 44usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 96usize, 32u8)
-                    as u32,
+                >>::raw_get_const::<
+                    96usize,
+                    32u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
             )
         }
     }
@@ -398,23 +679,23 @@ impl timex_named {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
+            >>::raw_set_const::<
                 96usize,
                 32u8,
-                val as u64,
-            )
+            >(::std::ptr::addr_of_mut!((*this)._bitfield_1), val as u64)
         }
     }
     #[inline]
     pub fn e(&self) -> ::std::os::raw::c_int {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(128usize, 32u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get_const::<128usize, 32u8>() as u32)
+        }
     }
     #[inline]
     pub fn set_e(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
-            self._bitfield_1.set(128usize, 32u8, val as u64)
+            self._bitfield_1.set_const::<128usize, 32u8>(val as u64)
         }
     }
     #[inline]
@@ -423,8 +704,10 @@ impl timex_named {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
                     [u8; 44usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 128usize, 32u8)
-                    as u32,
+                >>::raw_get_const::<
+                    128usize,
+                    32u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
             )
         }
     }
@@ -434,23 +717,23 @@ impl timex_named {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
+            >>::raw_set_const::<
                 128usize,
                 32u8,
-                val as u64,
-            )
+            >(::std::ptr::addr_of_mut!((*this)._bitfield_1), val as u64)
         }
     }
     #[inline]
     pub fn f(&self) -> ::std::os::raw::c_int {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(160usize, 32u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get_const::<160usize, 32u8>() as u32)
+        }
     }
     #[inline]
     pub fn set_f(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
-            self._bitfield_1.set(160usize, 32u8, val as u64)
+            self._bitfield_1.set_const::<160usize, 32u8>(val as u64)
         }
     }
     #[inline]
@@ -459,8 +742,10 @@ impl timex_named {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
                     [u8; 44usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 160usize, 32u8)
-                    as u32,
+                >>::raw_get_const::<
+                    160usize,
+                    32u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
             )
         }
     }
@@ -470,23 +755,23 @@ impl timex_named {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
+            >>::raw_set_const::<
                 160usize,
                 32u8,
-                val as u64,
-            )
+            >(::std::ptr::addr_of_mut!((*this)._bitfield_1), val as u64)
         }
     }
     #[inline]
     pub fn g(&self) -> ::std::os::raw::c_int {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(192usize, 32u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get_const::<192usize, 32u8>() as u32)
+        }
     }
     #[inline]
     pub fn set_g(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
-            self._bitfield_1.set(192usize, 32u8, val as u64)
+            self._bitfield_1.set_const::<192usize, 32u8>(val as u64)
         }
     }
     #[inline]
@@ -495,8 +780,10 @@ impl timex_named {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
                     [u8; 44usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 192usize, 32u8)
-                    as u32,
+                >>::raw_get_const::<
+                    192usize,
+                    32u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
             )
         }
     }
@@ -506,23 +793,23 @@ impl timex_named {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
+            >>::raw_set_const::<
                 192usize,
                 32u8,
-                val as u64,
-            )
+            >(::std::ptr::addr_of_mut!((*this)._bitfield_1), val as u64)
         }
     }
     #[inline]
     pub fn h(&self) -> ::std::os::raw::c_int {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(224usize, 32u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get_const::<224usize, 32u8>() as u32)
+        }
     }
     #[inline]
     pub fn set_h(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
-            self._bitfield_1.set(224usize, 32u8, val as u64)
+            self._bitfield_1.set_const::<224usize, 32u8>(val as u64)
         }
     }
     #[inline]
@@ -531,8 +818,10 @@ impl timex_named {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
                     [u8; 44usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 224usize, 32u8)
-                    as u32,
+                >>::raw_get_const::<
+                    224usize,
+                    32u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
             )
         }
     }
@@ -542,23 +831,23 @@ impl timex_named {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
+            >>::raw_set_const::<
                 224usize,
                 32u8,
-                val as u64,
-            )
+            >(::std::ptr::addr_of_mut!((*this)._bitfield_1), val as u64)
         }
     }
     #[inline]
     pub fn i(&self) -> ::std::os::raw::c_int {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(256usize, 32u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get_const::<256usize, 32u8>() as u32)
+        }
     }
     #[inline]
     pub fn set_i(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
-            self._bitfield_1.set(256usize, 32u8, val as u64)
+            self._bitfield_1.set_const::<256usize, 32u8>(val as u64)
         }
     }
     #[inline]
@@ -567,8 +856,10 @@ impl timex_named {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
                     [u8; 44usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 256usize, 32u8)
-                    as u32,
+                >>::raw_get_const::<
+                    256usize,
+                    32u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
             )
         }
     }
@@ -578,23 +869,23 @@ impl timex_named {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
+            >>::raw_set_const::<
                 256usize,
                 32u8,
-                val as u64,
-            )
+            >(::std::ptr::addr_of_mut!((*this)._bitfield_1), val as u64)
         }
     }
     #[inline]
     pub fn j(&self) -> ::std::os::raw::c_int {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(288usize, 32u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get_const::<288usize, 32u8>() as u32)
+        }
     }
     #[inline]
     pub fn set_j(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
-            self._bitfield_1.set(288usize, 32u8, val as u64)
+            self._bitfield_1.set_const::<288usize, 32u8>(val as u64)
         }
     }
     #[inline]
@@ -603,8 +894,10 @@ impl timex_named {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
                     [u8; 44usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 288usize, 32u8)
-                    as u32,
+                >>::raw_get_const::<
+                    288usize,
+                    32u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
             )
         }
     }
@@ -614,23 +907,23 @@ impl timex_named {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
+            >>::raw_set_const::<
                 288usize,
                 32u8,
-                val as u64,
-            )
+            >(::std::ptr::addr_of_mut!((*this)._bitfield_1), val as u64)
         }
     }
     #[inline]
     pub fn k(&self) -> ::std::os::raw::c_int {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(320usize, 32u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get_const::<320usize, 32u8>() as u32)
+        }
     }
     #[inline]
     pub fn set_k(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
-            self._bitfield_1.set(320usize, 32u8, val as u64)
+            self._bitfield_1.set_const::<320usize, 32u8>(val as u64)
         }
     }
     #[inline]
@@ -639,8 +932,10 @@ impl timex_named {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
                     [u8; 44usize],
-                >>::raw_get(::std::ptr::addr_of!((*this)._bitfield_1), 320usize, 32u8)
-                    as u32,
+                >>::raw_get_const::<
+                    320usize,
+                    32u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
             )
         }
     }
@@ -650,12 +945,10 @@ impl timex_named {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
-            >>::raw_set(
-                ::std::ptr::addr_of_mut!((*this)._bitfield_1),
+            >>::raw_set_const::<
                 320usize,
                 32u8,
-                val as u64,
-            )
+            >(::std::ptr::addr_of_mut!((*this)._bitfield_1), val as u64)
         }
     }
 }
