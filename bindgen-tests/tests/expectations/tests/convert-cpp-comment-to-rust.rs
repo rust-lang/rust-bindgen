@@ -2,7 +2,7 @@
 pub type mbedtls_mpi_uint = ::std::os::raw::c_uint;
 /// \brief          MPI structure
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct mbedtls_mpi {
     ///<  integer sign
     pub s: ::std::os::raw::c_int,

@@ -1,5 +1,5 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-#[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 #[repr(C)]
 pub struct __BindgenOpaqueArray<T>(pub T);
 impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<[T; N]> {
@@ -8,14 +8,14 @@ impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<[T; N]>
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct OpaqueTemplate {
     pub _address: u8,
 }
 /** This should not end up deriving Debug/Hash because its `mBlah` field cannot derive
  Debug/Hash because the instantiation's definition cannot derive Debug/Hash.*/
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct ContainsOpaqueTemplate {
     pub mBlah: __BindgenOpaqueArray<[u32; 101usize]>,
     pub mBaz: ::std::os::raw::c_int,
@@ -38,7 +38,7 @@ const _: () = {
 /** This should not end up deriving Debug/Hash either, for similar reasons, although
  we're exercising base member edges now.*/
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct InheritsOpaqueTemplate {
     pub _base: __BindgenOpaqueArray<[u8; 401usize]>,
     pub wow: *mut ::std::os::raw::c_char,

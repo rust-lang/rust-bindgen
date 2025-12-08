@@ -1,12 +1,12 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 /// A struct containing a struct containing a float that cannot derive Hash/Eq/Ord but can derive PartialEq/PartialOrd
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, PartialOrd, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
 pub struct foo {
     pub bar: foo__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, PartialOrd, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
 pub struct foo__bindgen_ty_1 {
     pub a: f32,
     pub b: f32,

@@ -79,13 +79,16 @@ pub(crate) mod attributes {
 /// The `ffi_safe` argument should be true if this is a type that the user might
 /// reasonably use, e.g. not struct padding, where the `__BindgenOpaqueArray` is
 /// just noise.
+///
+/// Returns a tuple of (type, optional opaque array alignment used).
+/// The alignment is Some(align) if an opaque array was used, None otherwise.
 /// TODO: Should this be `MaybeUninit`, since padding bytes are effectively
 /// uninitialized?
 pub(crate) fn blob(
     ctx: &BindgenContext,
     layout: Layout,
     ffi_safe: bool,
-) -> syn::Type {
+) -> (syn::Type, Option<usize>) {
     let align = layout.align.max(1);
     // For alignments <= 4, it holds that the integer type of the same size aligns to that same
     // size. For bigger alignments that's not guaranteed, e.g. on x86 u64 is aligned to 4 bytes.
@@ -93,27 +96,29 @@ pub(crate) fn blob(
         let ty = Layout::known_type_for_size(align).unwrap();
         let len = layout.size / align;
         return if len == 1 {
-            ty
+            (ty, None)
         } else if !ffi_safe && len <= RUST_DERIVE_IN_ARRAY_LIMIT {
-            syn::parse_quote! { [#ty; #len] }
+            (syn::parse_quote! { [#ty; #len] }, None)
         } else {
             ctx.generated_opaque_array(1);
-            if ctx.options().enable_cxx_namespaces {
+            let ty = if ctx.options().enable_cxx_namespaces {
                 syn::parse_quote! { root::__BindgenOpaqueArray<[#ty; #len]> }
             } else {
                 syn::parse_quote! { __BindgenOpaqueArray<[#ty; #len]> }
-            }
+            };
+            (ty, Some(1))
         };
     }
 
     ctx.generated_opaque_array(align);
     let ident = format_ident!("__BindgenOpaqueArray{align}");
     let size = layout.size;
-    if ctx.options().enable_cxx_namespaces {
+    let ty = if ctx.options().enable_cxx_namespaces {
         syn::parse_quote! { root::#ident<[u8; #size]> }
     } else {
         syn::parse_quote! { #ident<[u8; #size]> }
-    }
+    };
+    (ty, Some(align))
 }
 
 /// Integer type of the same size as the given `Layout`.

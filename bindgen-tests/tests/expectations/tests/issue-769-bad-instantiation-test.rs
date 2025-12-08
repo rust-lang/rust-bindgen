@@ -4,7 +4,7 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[derive(Debug, Copy, Clone)]
+    #[derive(Clone, Copy, Debug)]
     pub struct Rooted<T> {
         pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
         pub member: T,

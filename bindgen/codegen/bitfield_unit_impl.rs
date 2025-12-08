@@ -1,9 +1,10 @@
-#[repr(C)]
-#[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct __BindgenBitfieldUnit<Storage> {
-    storage: Storage,
-}
+// Implementation for __BindgenBitfieldUnit.
+// The struct definition is generated in mod.rs::prepend_bitfield_unit_type()
+// with #[repr(C)] and custom derives based on the types using it.
 
+// Allow unused qualifications because this file is included via include!() macro
+// in both test and production code, and we need the full paths to be explicit.
+#[allow(unused_qualifications)]
 impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
@@ -11,6 +12,7 @@ impl<Storage> __BindgenBitfieldUnit<Storage> {
     }
 }
 
+#[allow(unused_qualifications)]
 impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
@@ -39,13 +41,14 @@ where
     }
 
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_get_bit(this: *const Self, index: usize) -> bool {
         debug_assert!(index / 8 < core::mem::size_of::<Storage>());
 
         let byte_index = index / 8;
         let byte = unsafe {
-            *(core::ptr::addr_of!((*this).storage) as *const u8)
-                .offset(byte_index as isize)
+            *core::ptr::addr_of!((*this).storage).cast::<u8>()
+                .add(byte_index)
         };
 
         Self::extract_bit(byte, index)
@@ -78,13 +81,14 @@ where
     }
 
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_set_bit(this: *mut Self, index: usize, val: bool) {
         debug_assert!(index / 8 < core::mem::size_of::<Storage>());
 
         let byte_index = index / 8;
         let byte = unsafe {
-            (core::ptr::addr_of_mut!((*this).storage) as *mut u8)
-                .offset(byte_index as isize)
+            core::ptr::addr_of_mut!((*this).storage).cast::<u8>()
+                .add(byte_index)
         };
 
         unsafe { *byte = Self::change_bit(*byte, index, val) };
@@ -116,6 +120,7 @@ where
     }
 
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_get(
         this: *const Self,
         bit_offset: usize,
@@ -166,6 +171,7 @@ where
     }
 
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_set(
         this: *mut Self,
         bit_offset: usize,
@@ -188,7 +194,7 @@ where
                 i
             };
             unsafe {
-                Self::raw_set_bit(this, index + bit_offset, val_bit_is_set)
+                Self::raw_set_bit(this, index + bit_offset, val_bit_is_set);
             };
         }
     }

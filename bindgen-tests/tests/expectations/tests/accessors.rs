@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct SomeAccessors {
     pub mNoAccessor: ::std::os::raw::c_int,
     /// <div rustbindgen accessor></div>
@@ -51,7 +51,7 @@ impl SomeAccessors {
 }
 /// <div rustbindgen accessor></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct AllAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     pub mAlsoBothAccessors: ::std::os::raw::c_int,
@@ -87,7 +87,7 @@ impl AllAccessors {
 }
 /// <div rustbindgen accessor="unsafe"></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct AllUnsafeAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     pub mAlsoBothAccessors: ::std::os::raw::c_int,
@@ -125,7 +125,7 @@ impl AllUnsafeAccessors {
 }
 /// <div rustbindgen accessor></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ContradictAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     /// <div rustbindgen accessor="false"></div>
@@ -180,7 +180,7 @@ impl ContradictAccessors {
 }
 /// <div rustbindgen accessor replaces="Replaced"></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Replaced {
     pub mAccessor: ::std::os::raw::c_int,
 }
@@ -204,7 +204,7 @@ impl Replaced {
 }
 /// <div rustbindgen accessor></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Wrapper {
     pub mReplaced: Replaced,
 }

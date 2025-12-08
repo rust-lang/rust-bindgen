@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct Foo<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub m_member: T,
@@ -17,7 +17,7 @@ impl<T> Default for Foo<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct B<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub m_member: T,
@@ -41,7 +41,7 @@ pub struct mozilla_Foo {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct C {
     pub mB: B<::std::os::raw::c_uint>,
     pub mBConstPtr: B<*const ::std::os::raw::c_int>,
@@ -101,13 +101,13 @@ impl Default for C {
     }
 }
 #[repr(C)]
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct D {
     pub m_foo: D_MyFoo,
 }
 pub type D_MyFoo = Foo<::std::os::raw::c_int>;
 #[repr(C)]
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct D_U<Z> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<Z>>,
     pub m_nested_foo: D_MyFoo,
@@ -132,7 +132,7 @@ impl Default for D {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct Rooted<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub prev: *mut T,
@@ -149,7 +149,7 @@ impl<T> Default for Rooted<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct RootedContainer {
     pub root: Rooted<*mut ::std::os::raw::c_void>,
 }
@@ -172,7 +172,7 @@ impl Default for RootedContainer {
 }
 pub type WithDtorIntFwd = WithDtor<::std::os::raw::c_int>;
 #[repr(C)]
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct WithDtor<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub member: T,
@@ -187,7 +187,7 @@ impl<T> Default for WithDtor<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct PODButContainsDtor {
     pub member: WithDtorIntFwd,
 }
@@ -212,12 +212,12 @@ impl Default for PODButContainsDtor {
 }
 /// <div rustbindgen opaque>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Opaque {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct POD {
     pub opaque_member: u32,
 }
@@ -231,7 +231,7 @@ const _: () = {
 };
 /// <div rustbindgen replaces="NestedReplaced"></div>
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct NestedReplaced<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub buff: *mut T,
@@ -246,7 +246,7 @@ impl<T> Default for NestedReplaced<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct NestedBase<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub buff: *mut T,
@@ -261,7 +261,7 @@ impl<T> Default for NestedBase<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct NestedContainer<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub c: T,
@@ -278,7 +278,7 @@ impl<T> Default for NestedContainer<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct Incomplete<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub d: T,
@@ -293,7 +293,7 @@ impl<T> Default for Incomplete<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Untemplated {
     pub _address: u8,
 }
@@ -303,7 +303,7 @@ const _: () = {
     ["Alignment of Untemplated"][::std::mem::align_of::<Untemplated>() - 1usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Templated {
     pub m_untemplated: Untemplated,
 }
@@ -312,7 +312,7 @@ pub struct Templated {
 
  <div rustbindgen replaces="ReplacedWithoutDestructor"></div>*/
 #[repr(C)]
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct ReplacedWithoutDestructor<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub buff: *mut T,
@@ -327,7 +327,7 @@ impl<T> Default for ReplacedWithoutDestructor<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct ShouldNotBeCopiable<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub m_member: ReplacedWithoutDestructor<T>,
@@ -342,7 +342,7 @@ impl<T> Default for ShouldNotBeCopiable<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct ShouldNotBeCopiableAsWell<U> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
     pub m_member: ReplacedWithoutDestructorFwd<U>,
@@ -361,7 +361,7 @@ impl<U> Default for ShouldNotBeCopiableAsWell<U> {
 
  <div rustbindgen replaces="ReplacedWithoutDestructorFwd"></div>*/
 #[repr(C)]
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct ReplacedWithoutDestructorFwd<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub buff: *mut T,

@@ -308,7 +308,7 @@ impl<T> Default for flexarray_template<T, [T; 0]> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct flexarray_ref {
     pub things: *mut flexarray,
 }

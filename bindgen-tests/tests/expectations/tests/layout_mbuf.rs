@@ -1,15 +1,17 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
 }
+#[allow(unused_qualifications)]
 impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
         Self { storage }
     }
 }
+#[allow(unused_qualifications)]
 impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
@@ -32,12 +34,12 @@ where
         Self::extract_bit(byte, index)
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_get_bit(this: *const Self, index: usize) -> bool {
         debug_assert!(index / 8 < core::mem::size_of::<Storage>());
         let byte_index = index / 8;
         let byte = unsafe {
-            *(core::ptr::addr_of!((*this).storage) as *const u8)
-                .offset(byte_index as isize)
+            *core::ptr::addr_of!((*this).storage).cast::<u8>().add(byte_index)
         };
         Self::extract_bit(byte, index)
     }
@@ -59,12 +61,12 @@ where
         *byte = Self::change_bit(*byte, index, val);
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_set_bit(this: *mut Self, index: usize, val: bool) {
         debug_assert!(index / 8 < core::mem::size_of::<Storage>());
         let byte_index = index / 8;
         let byte = unsafe {
-            (core::ptr::addr_of_mut!((*this).storage) as *mut u8)
-                .offset(byte_index as isize)
+            core::ptr::addr_of_mut!((*this).storage).cast::<u8>().add(byte_index)
         };
         unsafe { *byte = Self::change_bit(*byte, index, val) };
     }
@@ -89,6 +91,7 @@ where
         val
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_get(this: *const Self, bit_offset: usize, bit_width: u8) -> u64 {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
@@ -127,6 +130,7 @@ where
         }
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_set(this: *mut Self, bit_offset: usize, bit_width: u8, val: u64) {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
@@ -141,7 +145,9 @@ where
             } else {
                 i
             };
-            unsafe { Self::raw_set_bit(this, index + bit_offset, val_bit_is_set) };
+            unsafe {
+                Self::raw_set_bit(this, index + bit_offset, val_bit_is_set);
+            };
         }
     }
 }
@@ -153,7 +159,7 @@ pub type MARKER8 = [u8; 0usize];
 pub type MARKER64 = [u64; 0usize];
 /// The atomic counter structure.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct rte_atomic16_t {
     ///< An internal counter value.
     pub cnt: i16,
@@ -220,7 +226,7 @@ pub struct rte_mbuf {
  or non-atomic) is controlled by the CONFIG_RTE_MBUF_REFCNT_ATOMIC
  config option.*/
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union rte_mbuf__bindgen_ty_1 {
     ///< Atomically accessed refcnt
     pub refcnt_atomic: rte_atomic16_t,
@@ -252,14 +258,14 @@ impl Default for rte_mbuf__bindgen_ty_1 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union rte_mbuf__bindgen_ty_2 {
     ///< L2/L3/L4 and tunnel information.
     pub packet_type: u32,
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_2__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     pub _bindgen_align: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
@@ -536,7 +542,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         inner_l3_type: u32,
         inner_l4_type: u32,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+        let mut __bindgen_bitfield_unit = __BindgenBitfieldUnit::new([0u8; 4usize]);
         __bindgen_bitfield_unit
             .set(
                 0usize,
@@ -631,7 +637,7 @@ impl Default for rte_mbuf__bindgen_ty_2 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union rte_mbuf__bindgen_ty_3 {
     ///< RSS hash result if RSS enabled
     pub rss: u32,
@@ -643,19 +649,19 @@ pub union rte_mbuf__bindgen_ty_3 {
     pub usr: u32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1,
     pub hi: u32,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1,
     pub lo: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
     pub hash: u16,
     pub id: u16,
@@ -729,7 +735,7 @@ impl Default for rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_2 {
     pub lo: u32,
     pub hi: u32,
@@ -780,7 +786,7 @@ impl Default for rte_mbuf__bindgen_ty_3 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union rte_mbuf__bindgen_ty_4 {
     ///< Can be used for external metadata
     pub userdata: *mut ::std::os::raw::c_void,
@@ -812,14 +818,14 @@ impl Default for rte_mbuf__bindgen_ty_4 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union rte_mbuf__bindgen_ty_5 {
     ///< combined for easy fetch
     pub tx_offload: u64,
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_5__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     pub _bindgen_align: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 7usize]>,
@@ -1060,7 +1066,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         outer_l3_len: u64,
         outer_l2_len: u64,
     ) -> __BindgenBitfieldUnit<[u8; 7usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 7usize]> = Default::default();
+        let mut __bindgen_bitfield_unit = __BindgenBitfieldUnit::new([0u8; 7usize]);
         __bindgen_bitfield_unit
             .set(
                 0usize,
@@ -1222,7 +1228,7 @@ impl Default for rte_mbuf {
 }
 ///< Pool from which mbuf was allocated.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct rte_mempool {
     pub _address: u8,
 }

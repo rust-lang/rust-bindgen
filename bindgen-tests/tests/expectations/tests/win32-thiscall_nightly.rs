@@ -2,7 +2,7 @@
 #![cfg(feature = "nightly")]
 #![feature(abi_thiscall)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Foo {
     pub _address: u8,
 }

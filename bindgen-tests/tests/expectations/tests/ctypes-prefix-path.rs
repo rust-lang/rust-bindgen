@@ -7,7 +7,7 @@ mod libc {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct foo {
     pub a: libc::foo::c_int,
     pub b: libc::foo::c_int,

@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union WithBigArray {
     pub a: ::std::os::raw::c_int,
     pub b: [::std::os::raw::c_int; 33usize],
@@ -26,7 +26,7 @@ impl Default for WithBigArray {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union WithBigArray2 {
     pub a: ::std::os::raw::c_int,
     pub b: [::std::os::raw::c_char; 33usize],
@@ -52,7 +52,7 @@ impl Default for WithBigArray2 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union WithBigMember {
     pub a: ::std::os::raw::c_int,
     pub b: WithBigArray,

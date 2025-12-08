@@ -1,5 +1,4 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-#[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
 #[repr(C)]
 pub struct __BindgenOpaqueArray<T>(pub T);
 impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<[T; N]> {
@@ -8,24 +7,24 @@ impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<[T; N]>
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct nsBaseHashtableET {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct nsTHashtable {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct nsBaseHashtable {
     pub _address: u8,
 }
 pub type nsBaseHashtable_KeyType = __BindgenOpaqueArray<[u8; 0usize]>;
 pub type nsBaseHashtable_EntryType = nsBaseHashtableET;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct nsBaseHashtable_LookupResult {
     pub mEntry: *mut nsBaseHashtable_EntryType,
     pub mTable: *mut nsBaseHashtable,

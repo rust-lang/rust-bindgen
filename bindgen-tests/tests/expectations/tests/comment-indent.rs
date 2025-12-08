@@ -7,7 +7,7 @@ pub mod root {
 
  This class is really really interesting, look!*/
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct Foo {
         pub _address: u8,
     }
@@ -15,7 +15,7 @@ pub mod root {
 
  This class is not so interesting, but worth a bit of docs too!*/
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct Foo_Bar {
         pub _address: u8,
     }
@@ -35,7 +35,7 @@ pub mod root {
         /** I'm in a namespace, and thus I may be on a rust module, most of the time.
  My documentation is pretty extensive, I guess.*/
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct Baz {
             /** This member is plain awesome, just amazing.
 
@@ -58,7 +58,7 @@ pub mod root {
  a rust module, except when the relevant option is specified. Also, this
  comment shouldn't be misaligned.*/
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct InInlineNS {
             pub _address: u8,
         }
@@ -68,7 +68,7 @@ pub mod root {
             ["Alignment of InInlineNS"][::std::mem::align_of::<InInlineNS>() - 1usize];
         };
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct Bazz {
             pub _address: u8,
         }

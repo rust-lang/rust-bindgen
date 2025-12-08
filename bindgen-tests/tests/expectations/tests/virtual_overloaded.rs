@@ -5,7 +5,7 @@ pub struct C__bindgen_vtable {
     pub C_do_thing1: unsafe extern "C" fn(this: *mut C, arg1: ::std::os::raw::c_int),
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct C {
     pub vtable_: *const C__bindgen_vtable,
 }

@@ -18,7 +18,7 @@ pub enum _bindgen_ty_1 {
 }
 /// @internal fragmented mbuf
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct ip_frag {
     ///< offset into the packet
     pub ofs: u16,
@@ -46,7 +46,7 @@ impl Default for ip_frag {
 }
 /// @internal <src addr, dst_addr, id> to uniquely indetify fragmented datagram.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct ip_frag_key {
     ///< src address, first 8 bytes used for IPv4
     pub src_dst: [u64; 4usize],
@@ -73,7 +73,7 @@ const _: () = {
  First two entries in the frags[] array are for the last and first fragments.*/
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct ip_frag_pkt {
     ///< LRU list
     pub lru: ip_frag_pkt__bindgen_ty_1,
@@ -91,7 +91,7 @@ pub struct ip_frag_pkt {
     pub frags: [ip_frag; 4usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct ip_frag_pkt__bindgen_ty_1 {
     pub tqe_next: *mut ip_frag_pkt,
     pub tqe_prev: *mut *mut ip_frag_pkt,
@@ -157,7 +157,7 @@ impl Default for ip_frag_pkt {
 }
 ///< fragment mbuf
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct rte_mbuf {
     pub _address: u8,
 }

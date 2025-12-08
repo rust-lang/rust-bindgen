@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Foo {
     pub _address: u8,
 }
@@ -18,7 +18,7 @@ const _: () = {
     ][::std::mem::align_of::<Foo>() - 1usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Baz {
     pub _address: u8,
 }
@@ -37,7 +37,7 @@ const _: () = {
     ][::std::mem::align_of::<Foo>() - 1usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Bar {
     pub _address: u8,
 }
@@ -47,7 +47,7 @@ const _: () = {
     ["Alignment of Bar"][::std::mem::align_of::<Bar>() - 1usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Boo {
     pub _address: u8,
 }

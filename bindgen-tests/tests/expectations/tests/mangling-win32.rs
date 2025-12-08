@@ -4,7 +4,7 @@ unsafe extern "C" {
     pub fn foo();
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Foo {
     pub _address: u8,
 }

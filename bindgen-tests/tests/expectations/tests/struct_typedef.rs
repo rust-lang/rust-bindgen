@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct typedef_named_struct {
     pub has_name: bool,
 }
@@ -17,7 +17,7 @@ const _: () = {
     ][::std::mem::offset_of!(typedef_named_struct, has_name) - 0usize];
 };
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct _bindgen_ty_1 {
     pub no_name: *mut ::std::os::raw::c_void,
 }

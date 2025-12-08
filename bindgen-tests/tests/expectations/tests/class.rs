@@ -30,7 +30,7 @@ impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct C {
     pub a: ::std::os::raw::c_int,
     pub big_array: [::std::os::raw::c_char; 33usize],
@@ -236,7 +236,7 @@ const _: () = {
     ) - 4usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct WithDtor {
     pub b: ::std::os::raw::c_int,
 }
@@ -277,7 +277,7 @@ impl Default for IncompleteArrayNonCopiable {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union Union {
     pub d: f32,
     pub i: ::std::os::raw::c_int,
@@ -299,7 +299,7 @@ impl Default for Union {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub struct WithUnion {
     pub data: Union,
 }
@@ -321,7 +321,7 @@ impl Default for WithUnion {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct RealAbstractionWithTonsOfMethods {
     pub _address: u8,
 }

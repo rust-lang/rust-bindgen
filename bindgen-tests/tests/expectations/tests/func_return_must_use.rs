@@ -5,7 +5,7 @@ unsafe extern "C" {
     pub fn return_int() -> MustUseInt;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 #[must_use]
 pub struct MustUseStruct {
     pub a: ::std::os::raw::c_int,
@@ -33,7 +33,7 @@ unsafe extern "C" {
 }
 /// <div rustbindgen mustusetype></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 #[must_use]
 pub struct AnnotatedStruct {
     pub a: ::std::os::raw::c_int,
@@ -51,7 +51,7 @@ unsafe extern "C" {
     pub fn return_annotated_struct() -> AnnotatedStruct;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct PlainStruct {
     pub a: ::std::os::raw::c_int,
 }

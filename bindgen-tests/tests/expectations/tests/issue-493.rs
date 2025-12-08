@@ -43,7 +43,7 @@ impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
 }
 impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct basic_string {
     pub _address: u8,
 }
@@ -51,7 +51,7 @@ pub type basic_string_size_type = ::std::os::raw::c_ulonglong;
 pub type basic_string_value_type = ::std::os::raw::c_char;
 pub type basic_string_pointer = *mut basic_string_value_type;
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct basic_string___long {
     pub __cap_: basic_string_size_type,
     pub __size_: basic_string_size_type,
@@ -123,7 +123,7 @@ pub enum basic_string__bindgen_ty_2 {
     __n_words = 0,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct basic_string___raw {
     pub __words: *mut basic_string_size_type,
 }

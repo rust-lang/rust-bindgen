@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct S {
     pub large_array: [::std::os::raw::c_char; 33usize],
 }
@@ -20,7 +20,7 @@ impl Default for S {
     }
 }
 #[repr(C)]
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct ST<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub large_array: [T; 33usize],

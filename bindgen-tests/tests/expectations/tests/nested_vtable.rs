@@ -6,7 +6,7 @@ pub struct nsISupports__bindgen_vtable {
     ) -> *mut nsISupports,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct nsISupports {
     pub vtable_: *const nsISupports__bindgen_vtable,
 }
@@ -31,7 +31,7 @@ unsafe extern "C" {
     ) -> *mut nsISupports;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct nsIRunnable {
     pub _base: nsISupports,
 }
@@ -50,7 +50,7 @@ impl Default for nsIRunnable {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Runnable {
     pub _base: nsIRunnable,
 }

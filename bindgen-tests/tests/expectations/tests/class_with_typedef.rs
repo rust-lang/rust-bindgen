@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub type AnotherInt = ::std::os::raw::c_int;
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct C {
     pub c: C_MyInt,
     pub ptr: *mut C_MyInt,
@@ -65,7 +65,7 @@ impl C {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct D {
     pub _base: C,
     pub ptr: *mut C_MyInt,

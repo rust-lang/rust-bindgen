@@ -43,7 +43,7 @@ impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
 }
 impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Foo {
     pub bar: __BindgenUnionField<::std::os::raw::c_int>,
     pub baz: __BindgenUnionField<::std::os::raw::c_uint>,

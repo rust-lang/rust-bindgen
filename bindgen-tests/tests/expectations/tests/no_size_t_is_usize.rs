@@ -2,7 +2,7 @@
 pub type size_t = ::std::os::raw::c_ulong;
 pub type ssize_t = ::std::os::raw::c_long;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct A {
     pub len: size_t,
     pub offset: ssize_t,

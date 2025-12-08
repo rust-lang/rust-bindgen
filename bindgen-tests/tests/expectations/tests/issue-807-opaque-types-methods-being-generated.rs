@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Pupper {
     pub _address: u8,
 }
@@ -10,7 +10,7 @@ const _: () = {
     ["Alignment of Pupper"][::std::mem::align_of::<Pupper>() - 1usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Doggo {
     pub _address: u8,
 }
@@ -20,7 +20,7 @@ const _: () = {
     ["Alignment of Doggo"][::std::mem::align_of::<Doggo>() - 1usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct SuchWow {
     pub _address: u8,
 }
@@ -31,7 +31,7 @@ const _: () = {
 };
 #[repr(C)]
 #[repr(align(1))]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Opaque {
     pub _bindgen_opaque_blob: u8,
 }
@@ -65,7 +65,7 @@ unsafe extern "C" {
     pub static mut Opaque_MAJESTIC_AF: Doggo;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Allowlisted {
     pub some_member: Opaque,
 }

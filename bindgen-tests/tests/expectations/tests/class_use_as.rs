@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 /// <div rustbindgen="true" replaces="whatever"></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct whatever {
     pub replacement: ::std::os::raw::c_int,
 }
@@ -14,7 +14,7 @@ const _: () = {
     ][::std::mem::offset_of!(whatever, replacement) - 0usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct container {
     pub c: whatever,
 }

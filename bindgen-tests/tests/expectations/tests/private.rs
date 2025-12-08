@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct HasPrivate {
     pub mNotPrivate: ::std::os::raw::c_int,
     /// <div rustbindgen private></div>
@@ -19,7 +19,7 @@ const _: () = {
 };
 /// <div rustbindgen private></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct VeryPrivate {
     mIsPrivate: ::std::os::raw::c_int,
     mIsAlsoPrivate: ::std::os::raw::c_int,
@@ -37,7 +37,7 @@ const _: () = {
 };
 /// <div rustbindgen private></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ContradictPrivate {
     /// <div rustbindgen private="false"></div>
     pub mNotPrivate: ::std::os::raw::c_int,

@@ -4,7 +4,7 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct Point {
         pub x: ::std::os::raw::c_int,
     }
@@ -18,7 +18,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct Point {
             pub x: ::std::os::raw::c_int,
         }

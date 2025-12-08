@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct foo {
     pub inner: ::std::os::raw::c_char,
 }
@@ -12,7 +12,7 @@ const _: () = {
 };
 pub type foo_ptr = *const foo;
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct bar {
     pub inner: ::std::os::raw::c_char,
 }
@@ -30,7 +30,7 @@ pub struct baz {
 }
 pub type baz_ptr = *mut baz;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union cat {
     pub standard_issue: ::std::os::raw::c_int,
 }

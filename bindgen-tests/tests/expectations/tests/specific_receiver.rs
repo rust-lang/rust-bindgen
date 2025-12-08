@@ -4,7 +4,7 @@ pub struct Fish__bindgen_vtable {
     pub Fish_swim: unsafe extern "C" fn(this: *mut Fish),
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Fish {
     pub vtable_: *const Fish__bindgen_vtable,
 }

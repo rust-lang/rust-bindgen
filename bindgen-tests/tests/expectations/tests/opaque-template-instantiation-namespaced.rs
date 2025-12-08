@@ -7,7 +7,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+        #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
         pub struct Template<T> {
             pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
             pub member: T,
@@ -22,7 +22,7 @@ pub mod root {
             }
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+        #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
         pub struct Foo {
             pub c: ::std::os::raw::c_char,
         }
@@ -33,7 +33,7 @@ pub mod root {
             ["Offset of field: Foo::c"][::std::mem::offset_of!(Foo, c) - 0usize];
         };
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+        #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
         pub struct Bar {
             pub i: ::std::os::raw::c_int,
         }
@@ -44,7 +44,7 @@ pub mod root {
             ["Offset of field: Bar::i"][::std::mem::offset_of!(Bar, i) - 0usize];
         };
         #[repr(C)]
-        #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+        #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
         pub struct ContainsInstantiation {
             pub not_opaque: root::zoidberg::Template<root::zoidberg::Foo>,
         }
@@ -70,7 +70,7 @@ pub mod root {
             }
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+        #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
         pub struct ContainsOpaqueInstantiation {
             pub opaque: u32,
         }

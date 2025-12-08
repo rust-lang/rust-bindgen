@@ -14,7 +14,7 @@ pub mod root {
         pub type Ty = ::std::os::raw::c_longlong;
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct Bar {
         pub baz: root::foo::bar::Ty,
     }

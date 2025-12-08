@@ -8,7 +8,7 @@ pub enum _bindgen_ty_1 {
     FOO_BAZ = 1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Foo {
     pub _address: u8,
 }

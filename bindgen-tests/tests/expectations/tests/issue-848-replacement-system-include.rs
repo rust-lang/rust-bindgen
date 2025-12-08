@@ -6,7 +6,7 @@
 
  <div rustbindgen replaces="nsTArray"></div>*/
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct nsTArray<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub m: *mut T,

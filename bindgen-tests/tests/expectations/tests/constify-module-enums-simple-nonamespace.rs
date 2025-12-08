@@ -7,7 +7,7 @@ pub mod one_Foo {
     pub const Variant2: Type = 1;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Bar {
     pub baz1: one_Foo::Type,
     pub baz2: *mut one_Foo::Type,

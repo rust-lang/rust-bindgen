@@ -305,6 +305,19 @@ enum TypeKey {
     Declaration(Cursor),
 }
 
+/// Identifies which bindgen-generated wrapper type we're tracking derives for
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub(crate) enum WrapperType {
+    /// The `__BindgenBitfieldUnit` wrapper type
+    BitfieldUnit,
+    /// The `__BindgenComplex` wrapper type
+    Complex,
+    /// The `__BindgenFloat16` wrapper type
+    Float16,
+    /// The `__BindgenOpaqueArray` wrapper type (with specific alignment)
+    OpaqueArray(usize),
+}
+
 /// A context used during parsing and generation of structs.
 #[derive(Debug)]
 pub(crate) struct BindgenContext {
@@ -386,8 +399,8 @@ pub(crate) struct BindgenContext {
     /// The options given by the user via cli or other medium.
     options: BindgenOptions,
 
-    /// Whether an opaque array was generated
-    generated_opaque_array: RefCell<HashSet<usize>>,
+    /// Derives accumulated for bindgen wrapper types (bitfield unit, complex, float16, opaque arrays)
+    wrapper_derives: RefCell<HashMap<WrapperType, BTreeSet<String>>>,
 
     /// Whether a bindgen complex was generated
     generated_bindgen_complex: Cell<bool>,
@@ -596,7 +609,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             options,
             generated_bindgen_complex: Cell::new(false),
             generated_bindgen_float16: Cell::new(false),
-            generated_opaque_array: Default::default(),
+            wrapper_derives: RefCell::new(HashMap::default()),
             allowlisted: None,
             blocklisted_types_implement_traits: Default::default(),
             codegen_items: None,
@@ -2589,24 +2602,64 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Call if an opaque array is generated
     pub(crate) fn generated_opaque_array(&self, align: usize) {
-        self.generated_opaque_array.borrow_mut().insert(align);
+        self.wrapper_derives
+            .borrow_mut()
+            .entry(WrapperType::OpaqueArray(align))
+            .or_default();
     }
 
-    /// Whether we need to generate the opaque array type
-    pub(crate) fn opaque_array_types_needed(&self) -> Vec<usize> {
-        let mut alignments = self
-            .generated_opaque_array
+    /// Register custom derives for an opaque array alignment
+    pub(crate) fn register_opaque_array_derives(
+        &self,
+        align: usize,
+        derives: &[&str],
+    ) {
+        self.register_wrapper_derives(WrapperType::OpaqueArray(align), derives);
+    }
+
+    /// Get all opaque array alignments and their associated custom derives
+    pub(crate) fn opaque_array_types_needed(
+        &self,
+    ) -> Vec<(usize, Vec<String>)> {
+        let mut result: Vec<(usize, Vec<String>)> = self
+            .wrapper_derives
             .borrow()
             .iter()
-            .copied()
-            .collect::<Vec<_>>();
-        alignments.sort_unstable();
-        alignments
+            .filter_map(|(wrapper, derives)| {
+                if let WrapperType::OpaqueArray(align) = wrapper {
+                    Some((*align, derives.iter().cloned().collect()))
+                } else {
+                    None
+                }
+            })
+            .collect();
+        result.sort_by_key(|(align, _)| *align);
+        result
     }
 
     /// Call if a bindgen complex is generated
     pub(crate) fn generated_bindgen_complex(&self) {
         self.generated_bindgen_complex.set(true);
+    }
+
+    /// Register derives for a wrapper type
+    pub(crate) fn register_wrapper_derives(
+        &self,
+        wrapper: WrapperType,
+        derives: &[&str],
+    ) {
+        let mut map = self.wrapper_derives.borrow_mut();
+        let derive_set = map.entry(wrapper).or_default();
+        derive_set.extend(derives.iter().copied().map(str::to_string));
+    }
+
+    /// Get all derives needed for a wrapper type
+    pub(crate) fn wrapper_derives(&self, wrapper: WrapperType) -> Vec<String> {
+        self.wrapper_derives
+            .borrow()
+            .get(&wrapper)
+            .map(|set| set.iter().cloned().collect())
+            .unwrap_or_default()
     }
 
     /// Whether we need to generate the bindgen complex type

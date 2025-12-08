@@ -2,7 +2,7 @@
 #![cfg(not(target_os = "windows"))]
 extern crate core;
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct foo {
     pub a: ::core::ffi::c_int,
     pub b: ::core::ffi::c_int,
@@ -26,7 +26,7 @@ impl Default for foo {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union _bindgen_ty_1 {
     pub bar: ::core::ffi::c_int,
     pub baz: ::core::ffi::c_long,

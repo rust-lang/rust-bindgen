@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct struct_a {
     pub a: ::std::os::raw::c_int,
 }
@@ -12,7 +12,7 @@ const _: () = {
 };
 pub type a = *const struct_a;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union union_b {
     pub a: ::std::os::raw::c_int,
     pub b: ::std::os::raw::c_int,

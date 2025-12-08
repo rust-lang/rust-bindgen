@@ -2,7 +2,7 @@
 /** This should not be opaque; we can see the attributes and can pack the
  struct.*/
 #[repr(C, packed)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct AlignedToOne {
     pub i: ::std::os::raw::c_int,
 }
@@ -17,7 +17,7 @@ const _: () = {
 /** This should be opaque because although we can see the attributes, Rust before
  1.33 doesn't have `#[repr(packed(N))]`.*/
 #[repr(C, packed(2))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct AlignedToTwo {
     pub i: ::std::os::raw::c_int,
 }
@@ -33,7 +33,7 @@ const _: () = {
  `#pragma pack(1)`, we can detect that alignment is 1 and add
  `#[repr(packed)]` to the struct ourselves.*/
 #[repr(C, packed)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct PackedToOne {
     pub x: ::std::os::raw::c_int,
     pub y: ::std::os::raw::c_int,
@@ -49,7 +49,7 @@ const _: () = {
  `#pragma pack(2)`, we can't do anything about it because Rust before 1.33
  doesn't have `#[repr(packed(N))]`. Therefore, we must make it opaque.*/
 #[repr(C, packed(2))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct PackedToTwo {
     pub x: ::std::os::raw::c_int,
     pub y: ::std::os::raw::c_int,

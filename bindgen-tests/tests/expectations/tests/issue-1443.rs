@@ -5,7 +5,7 @@ pub struct Foo {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Bar {
     pub f: *const Foo,
     pub m: ::std::os::raw::c_uint,
@@ -27,7 +27,7 @@ impl Default for Bar {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Baz {
     pub f: *mut Foo,
     pub m: ::std::os::raw::c_uint,
@@ -49,7 +49,7 @@ impl Default for Baz {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Tar {
     pub f: *const Foo,
     pub m: ::std::os::raw::c_uint,
@@ -71,7 +71,7 @@ impl Default for Tar {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Taz {
     pub f: *mut Foo,
     pub m: ::std::os::raw::c_uint,

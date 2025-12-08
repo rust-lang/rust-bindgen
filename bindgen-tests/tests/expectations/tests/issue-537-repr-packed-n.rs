@@ -3,7 +3,7 @@
 /** This should not be opaque; we can see the attributes and can pack the
  struct.*/
 #[repr(C, packed)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct AlignedToOne {
     pub i: ::std::os::raw::c_int,
 }
@@ -17,7 +17,7 @@ const _: () = {
 };
 /// This should be packed because Rust 1.33 has `#[repr(packed(N))]`.
 #[repr(C, packed(2))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct AlignedToTwo {
     pub i: ::std::os::raw::c_int,
 }
@@ -33,7 +33,7 @@ const _: () = {
  `#pragma pack(1)`, we can detect that alignment is 1 and add
  `#[repr(packed)]` to the struct ourselves.*/
 #[repr(C, packed)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct PackedToOne {
     pub x: ::std::os::raw::c_int,
     pub y: ::std::os::raw::c_int,
@@ -47,7 +47,7 @@ const _: () = {
 };
 /// This should be packed because Rust 1.33 has `#[repr(packed(N))]`.
 #[repr(C, packed(2))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct PackedToTwo {
     pub x: ::std::os::raw::c_int,
     pub y: ::std::os::raw::c_int,

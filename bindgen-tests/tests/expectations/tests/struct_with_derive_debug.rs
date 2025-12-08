@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct LittleArray {
     pub a: [::std::os::raw::c_int; 32usize],
 }
@@ -11,7 +11,7 @@ const _: () = {
     ["Offset of field: LittleArray::a"][::std::mem::offset_of!(LittleArray, a) - 0usize];
 };
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct BigArray {
     pub a: [::std::os::raw::c_int; 33usize],
 }
@@ -31,7 +31,7 @@ impl Default for BigArray {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct WithLittleArray {
     pub a: LittleArray,
 }
@@ -44,7 +44,7 @@ const _: () = {
     ][::std::mem::offset_of!(WithLittleArray, a) - 0usize];
 };
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct WithBigArray {
     pub a: BigArray,
 }

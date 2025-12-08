@@ -1,12 +1,12 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 /// <div rustbindgen replaces="nsTArray"></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct nsTArray {
     pub y: ::std::os::raw::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Test {
     pub a: nsTArray,
 }

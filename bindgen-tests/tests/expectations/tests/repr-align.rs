@@ -2,7 +2,7 @@
 #![cfg(feature = "nightly")]
 #[repr(C)]
 #[repr(align(8))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct a {
     pub b: ::std::os::raw::c_int,
     pub c: ::std::os::raw::c_int,
@@ -16,7 +16,7 @@ const _: () = {
 };
 #[repr(C)]
 #[repr(align(8))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct b {
     pub b: ::std::os::raw::c_int,
     pub c: ::std::os::raw::c_int,

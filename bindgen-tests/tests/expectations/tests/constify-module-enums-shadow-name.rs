@@ -9,7 +9,7 @@ pub mod foo {
     pub const Type__: Type = 3;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct bar {
     pub member: foo::Type,
 }

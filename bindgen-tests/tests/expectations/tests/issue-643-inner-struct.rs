@@ -38,7 +38,7 @@ pub struct rte_ring {
     pub ring: __IncompleteArrayField<*mut ::std::os::raw::c_void>,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct rte_ring_prod {
     pub watermark: ::std::os::raw::c_uint,
 }
@@ -51,7 +51,7 @@ const _: () = {
     ][::std::mem::offset_of!(rte_ring_prod, watermark) - 0usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct rte_ring_cons {
     pub sc_dequeue: ::std::os::raw::c_uint,
 }
@@ -88,7 +88,7 @@ impl Default for rte_ring {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct rte_memzone {
     pub _address: u8,
 }

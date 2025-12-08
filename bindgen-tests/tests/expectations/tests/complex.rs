@@ -1,12 +1,12 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-#[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 #[repr(C)]
 pub struct __BindgenComplex<T> {
     pub re: T,
     pub im: T,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct TestDouble {
     pub mMember: __BindgenComplex<f64>,
 }
@@ -19,7 +19,7 @@ const _: () = {
     ][::std::mem::offset_of!(TestDouble, mMember) - 0usize];
 };
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct TestDoublePtr {
     pub mMember: *mut __BindgenComplex<f64>,
 }
@@ -41,7 +41,7 @@ impl Default for TestDoublePtr {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct TestFloat {
     pub mMember: __BindgenComplex<f32>,
 }
@@ -54,7 +54,7 @@ const _: () = {
     ][::std::mem::offset_of!(TestFloat, mMember) - 0usize];
 };
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct TestFloatPtr {
     pub mMember: *mut __BindgenComplex<f32>,
 }

@@ -4,7 +4,7 @@ unsafe extern "C" {
     pub fn foo(fmt: *const ::std::os::raw::c_char, ...);
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Bar {
     pub _address: u8,
 }

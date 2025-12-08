@@ -22,7 +22,7 @@ pub mod root {
             #[allow(unused_imports)]
             use self::super::super::super::root;
             #[repr(C)]
-            #[derive(Debug, Copy, Clone)]
+            #[derive(Clone, Copy, Debug)]
             pub struct bar {
                 pub this_should_work: root::ns1::ns2::foo::Type,
             }

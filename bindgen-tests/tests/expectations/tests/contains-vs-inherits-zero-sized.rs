@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 /// This should get an `_address` byte.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Empty {
     pub _address: u8,
 }
@@ -13,7 +13,7 @@ const _: () = {
 /** This should not get an `_address` byte, so `sizeof(Inherits)` should be
  `1`.*/
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Inherits {
     pub b: bool,
 }
@@ -26,7 +26,7 @@ const _: () = {
 /** This should not get an `_address` byte, but contains `Empty` which *does* get
  one, so `sizeof(Contains)` should be `1 + 1`.*/
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Contains {
     pub empty: Empty,
     pub b: bool,

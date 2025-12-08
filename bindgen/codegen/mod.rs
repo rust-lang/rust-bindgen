@@ -8,9 +8,6 @@ mod postprocessing;
 mod serialize;
 pub(crate) mod struct_layout;
 
-#[cfg(test)]
-#[allow(warnings)]
-pub(crate) mod bitfield_unit;
 #[cfg(all(test, target_endian = "little"))]
 mod bitfield_unit_tests;
 
@@ -33,7 +30,7 @@ use crate::ir::comp::{
     Bitfield, BitfieldUnit, CompInfo, CompKind, Field, FieldData, FieldMethods,
     Method, MethodKind,
 };
-use crate::ir::context::{BindgenContext, ItemId};
+use crate::ir::context::{BindgenContext, ItemId, WrapperType};
 use crate::ir::derive::{
     CanDerive, CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveEq,
     CanDeriveHash, CanDeriveOrd, CanDerivePartialEq, CanDerivePartialOrd,
@@ -52,7 +49,7 @@ use crate::ir::objc::{ObjCInterface, ObjCMethod};
 use crate::ir::template::{
     AsTemplateParam, TemplateInstantiation, TemplateParameters,
 };
-use crate::ir::ty::{Type, TypeKind};
+use crate::ir::ty::{FloatKind, Type, TypeKind};
 use crate::ir::var::Var;
 
 use proc_macro2::{Ident, Span};
@@ -61,7 +58,7 @@ use quote::{ToTokens, TokenStreamExt};
 use crate::{Entry, HashMap, HashSet};
 use std::borrow::Cow;
 use std::cell::Cell;
-use std::collections::VecDeque;
+use std::collections::{BTreeSet, VecDeque};
 use std::ffi::CStr;
 use std::fmt::{self, Write};
 use std::ops;
@@ -622,10 +619,10 @@ impl CodeGenerator for Module {
                     utils::prepend_incomplete_array_types(ctx, &mut *result);
                 }
                 if ctx.need_bindgen_float16_type() {
-                    utils::prepend_float16_type(&mut *result);
+                    utils::prepend_float16_type(ctx, &mut *result);
                 }
                 if ctx.need_bindgen_complex_type() {
-                    utils::prepend_complex_type(&mut *result);
+                    utils::prepend_complex_type(ctx, &mut *result);
                 }
                 utils::prepend_opaque_array_types(ctx, &mut *result);
                 if result.saw_objc {
@@ -1961,10 +1958,16 @@ impl FieldCodegen<'_> for BitfieldUnit {
         fields.extend(Some(field));
 
         if generate_ctor {
+            let size = layout.size;
+            let bitfield_unit_name = if ctx.options().enable_cxx_namespaces {
+                quote! { root::__BindgenBitfieldUnit }
+            } else {
+                quote! { __BindgenBitfieldUnit }
+            };
             methods.extend(Some(quote! {
                 #[inline]
                 #access_spec fn #ctor_name ( #( #ctor_params ),* ) -> #unit_field_ty {
-                    let mut __bindgen_bitfield_unit: #unit_field_ty = Default::default();
+                    let mut __bindgen_bitfield_unit = #bitfield_unit_name::new([0u8; #size]);
                     #ctor_impl
                     __bindgen_bitfield_unit
                 }
@@ -2237,6 +2240,7 @@ impl CodeGenerator for CompInfo {
         // the parent too.
         let is_opaque = item.is_opaque(ctx, &());
         let mut fields = vec![];
+        let mut opaque_array_alignments = vec![]; // Track opaque arrays used in this struct
         let visibility = item
             .annotations()
             .visibility_kind()
@@ -2394,7 +2398,10 @@ impl CodeGenerator for CompInfo {
             match layout {
                 Some(l) => {
                     explicit_align = Some(l.align);
-                    let ty = helpers::blob(ctx, l, false);
+                    let (ty, opaque_align) = helpers::blob(ctx, l, false);
+                    if let Some(align) = opaque_align {
+                        opaque_array_alignments.push(align);
+                    }
                     fields.push(quote! {
                         pub _bindgen_opaque_blob: #ty ,
                     });
@@ -2428,7 +2435,10 @@ impl CodeGenerator for CompInfo {
                     explicit_align = Some(layout.align);
                 }
                 if !struct_layout.is_rust_union() {
-                    let ty = helpers::blob(ctx, layout, false);
+                    let (ty, opaque_align) = helpers::blob(ctx, layout, false);
+                    if let Some(align) = opaque_align {
+                        opaque_array_alignments.push(align);
+                    }
                     fields.push(quote! {
                         pub bindgen_union_field: #ty,
                     });
@@ -2583,8 +2593,81 @@ impl CodeGenerator for CompInfo {
                     CanDerive::Manually;
         }
 
-        let mut derives: Vec<_> = derivable_traits.into();
+        let mut derives = BTreeSet::new();
+        let derivable: Vec<&'static str> = derivable_traits.into();
+        derives.extend(derivable);
         derives.extend(item.annotations().derives().iter().map(String::as_str));
+        let mut derives: Vec<_> = derives.into_iter().collect();
+
+        // Register ALL derives for wrapper types used by this struct
+        let mut uses_bitfield = false;
+        let mut uses_float16 = false;
+        let mut uses_complex = false;
+        let mut field_opaque_array_alignments = vec![];
+
+        for field in self.fields() {
+            match field {
+                Field::Bitfields(_) => {
+                    uses_bitfield = true;
+                }
+                Field::DataMember(data) => {
+                    let field_ty = ctx.resolve_type(data.ty());
+                    let canonical_ty = field_ty.canonical_type(ctx);
+
+                    match *canonical_ty.kind() {
+                        TypeKind::Float(FloatKind::Float16) => {
+                            uses_float16 = true;
+                        }
+                        TypeKind::Complex(_) => {
+                            uses_complex = true;
+                        }
+                        _ => {}
+                    }
+
+                    // Check if this field type uses an opaque array.
+                    // This can happen either when the type is explicitly opaque,
+                    // or when try_to_rust_ty fails and falls back to an opaque blob.
+                    let field_item = ctx.resolve_item(data.ty());
+                    let uses_opaque_array = if field_item.is_opaque(ctx, &()) {
+                        // Explicitly opaque - will definitely use opaque array
+                        true
+                    } else {
+                        // Not explicitly opaque, but check if try_to_rust_ty would fail
+                        // and cause a fallback to opaque array
+                        field_ty.try_to_rust_ty(ctx, field_item).is_err()
+                    };
+
+                    if uses_opaque_array {
+                        if let Some(layout) = field_ty.layout(ctx) {
+                            let (_ty, opaque_align) =
+                                helpers::blob(ctx, layout, true);
+                            if let Some(align) = opaque_align {
+                                field_opaque_array_alignments.push(align);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Collect all opaque array alignments from padding, blobs, unions, and fields
+        let mut all_opaque_alignments =
+            struct_layout.opaque_array_alignments().to_vec();
+        all_opaque_alignments.extend(opaque_array_alignments);
+        all_opaque_alignments.extend(field_opaque_array_alignments);
+        for &align in &all_opaque_alignments {
+            ctx.register_opaque_array_derives(align, &derives);
+        }
+
+        if uses_bitfield {
+            ctx.register_wrapper_derives(WrapperType::BitfieldUnit, &derives);
+        }
+        if uses_float16 {
+            ctx.register_wrapper_derives(WrapperType::Float16, &derives);
+        }
+        if uses_complex {
+            ctx.register_wrapper_derives(WrapperType::Complex, &derives);
+        }
 
         let is_rust_union = is_union && struct_layout.is_rust_union();
 
@@ -4195,7 +4278,7 @@ pub(crate) trait TryToOpaque {
         extra: &Self::Extra,
     ) -> error::Result<syn::Type> {
         self.try_get_layout(ctx, extra)
-            .map(|layout| helpers::blob(ctx, layout, true))
+            .map(|layout| helpers::blob(ctx, layout, true).0)
     }
 }
 
@@ -4221,7 +4304,7 @@ pub(crate) trait ToOpaque: TryToOpaque {
         extra: &Self::Extra,
     ) -> syn::Type {
         let layout = self.get_layout(ctx, extra);
-        helpers::blob(ctx, layout, true)
+        helpers::blob(ctx, layout, true).0
     }
 }
 
@@ -4272,7 +4355,7 @@ where
     ) -> error::Result<syn::Type> {
         self.try_to_rust_ty(ctx, extra).or_else(|_| {
             if let Ok(layout) = self.try_get_layout(ctx, extra) {
-                Ok(helpers::blob(ctx, layout, true))
+                Ok(helpers::blob(ctx, layout, true).0)
             } else {
                 Err(Error::NoLayoutForOpaqueBlob)
             }
@@ -5334,13 +5417,11 @@ pub(crate) mod utils {
     use super::serialize::CSerialize;
     use super::{error, CodegenError, CodegenResult, ToRustTyOrOpaque};
     use crate::callbacks::DiscoveredItemId;
-    use crate::ir::context::BindgenContext;
-    use crate::ir::context::TypeId;
+    use crate::ir::context::{BindgenContext, TypeId, WrapperType};
     use crate::ir::function::{Abi, ClangAbi, FunctionSig};
     use crate::ir::item::{Item, ItemCanonicalPath};
     use crate::ir::ty::TypeKind;
     use crate::{args_are_cpp, file_is_cpp};
-    use std::borrow::Cow;
     use std::io::Write;
     use std::mem;
     use std::path::PathBuf;
@@ -5470,17 +5551,35 @@ pub(crate) mod utils {
             return;
         }
 
-        let bitfield_unit_src = include_str!("./bitfield_unit.rs");
-        let bitfield_unit_src = if true {
-            Cow::Borrowed(bitfield_unit_src)
+        let derives = ctx.wrapper_derives(WrapperType::BitfieldUnit);
+        let derive_attr = if derives.is_empty() {
+            quote! {}
         } else {
-            Cow::Owned(bitfield_unit_src.replace("const fn ", "fn "))
+            let derive_paths: Vec<syn::Path> = derives
+                .iter()
+                .map(|d| syn::parse_str(d).expect("Invalid derive path"))
+                .collect();
+            quote! { #[derive(#(#derive_paths),*)] }
         };
-        let bitfield_unit_type =
-            proc_macro2::TokenStream::from_str(&bitfield_unit_src).unwrap();
-        let bitfield_unit_type = quote!(#bitfield_unit_type);
 
-        let items = vec![bitfield_unit_type];
+        // Include the bitfield unit implementation.
+        // The struct definition is generated here with custom derives,
+        // and the impl blocks are included from bitfield_unit_impl.rs.
+        let bitfield_unit_impl_src = include_str!("./bitfield_unit_impl.rs");
+        let bitfield_unit_impl =
+            proc_macro2::TokenStream::from_str(bitfield_unit_impl_src).unwrap();
+
+        let bitfield_unit = quote! {
+            #[repr(C)]
+            #derive_attr
+            pub struct __BindgenBitfieldUnit<Storage> {
+                storage: Storage,
+            }
+
+            #bitfield_unit_impl
+        };
+
+        let items = vec![bitfield_unit];
         let old_items = mem::replace(result, items);
         result.extend(old_items);
     }
@@ -5718,10 +5817,22 @@ pub(crate) mod utils {
     }
 
     pub(crate) fn prepend_float16_type(
+        ctx: &BindgenContext,
         result: &mut Vec<proc_macro2::TokenStream>,
     ) {
+        let derives = ctx.wrapper_derives(WrapperType::Float16);
+        let derive_attr = if derives.is_empty() {
+            quote! {}
+        } else {
+            let derive_paths: Vec<syn::Path> = derives
+                .iter()
+                .map(|d| syn::parse_str(d).expect("Invalid derive path"))
+                .collect();
+            quote! { #[derive(#(#derive_paths),*)] }
+        };
+
         let float16_type = quote! {
-            #[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
+            #derive_attr
             #[repr(transparent)]
             pub struct __BindgenFloat16(pub u16);
         };
@@ -5732,10 +5843,22 @@ pub(crate) mod utils {
     }
 
     pub(crate) fn prepend_complex_type(
+        ctx: &BindgenContext,
         result: &mut Vec<proc_macro2::TokenStream>,
     ) {
+        let derives = ctx.wrapper_derives(WrapperType::Complex);
+        let derive_attr = if derives.is_empty() {
+            quote! {}
+        } else {
+            let derive_paths: Vec<syn::Path> = derives
+                .iter()
+                .map(|d| syn::parse_str(d).expect("Invalid derive path"))
+                .collect();
+            quote! { #[derive(#(#derive_paths),*)] }
+        };
+
         let complex_type = quote! {
-            #[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
+            #derive_attr
             #[repr(C)]
             pub struct __BindgenComplex<T> {
                 pub re: T,
@@ -5755,7 +5878,7 @@ pub(crate) mod utils {
         let mut tys = vec![];
         // If Bindgen could only determine the size and alignment of a type, it is represented like
         // this.
-        for align in ctx.opaque_array_types_needed() {
+        for (align, custom_derives) in ctx.opaque_array_types_needed() {
             let ident = if align == 1 {
                 format_ident!("__BindgenOpaqueArray")
             } else {
@@ -5767,8 +5890,29 @@ pub(crate) mod utils {
                 let explicit = super::helpers::ast_ty::int_expr(align as i64);
                 quote! { #[repr(C, align(#explicit))] }
             };
+
+            // Filter out "Default" since we have a custom impl for it
+            let derives: Vec<String> = custom_derives
+                .into_iter()
+                .filter(|d| d != "Default")
+                .collect();
+
+            let derive_attr = if derives.is_empty() {
+                quote! {}
+            } else {
+                let derive_paths: Vec<syn::Path> = derives
+                    .iter()
+                    .map(|d| {
+                        syn::parse_str(d).unwrap_or_else(|e| {
+                            panic!("Invalid derive path '{d}': {e}")
+                        })
+                    })
+                    .collect();
+                quote! { #[derive(#(#derive_paths),*)] }
+            };
+
             tys.push(quote! {
-                #[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
+                #derive_attr
                 #repr
                 pub struct #ident<T>(pub T);
                 impl<T: Copy + Default, const N: usize> Default for #ident<[T; N]> {

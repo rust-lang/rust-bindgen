@@ -1,29 +1,29 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct foo {
     pub b1: bar1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct bar1 {
     pub x1: ::std::os::raw::c_int,
     pub b2: bar1__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct bar1__bindgen_ty_1 {
     pub x2: ::std::os::raw::c_int,
     pub b3: bar1__bindgen_ty_1__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct bar1__bindgen_ty_1__bindgen_ty_1 {
     pub x3: ::std::os::raw::c_int,
     pub b4: bar4,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct bar4 {
     pub x4: ::std::os::raw::c_int,
 }
@@ -77,17 +77,17 @@ const _: () = {
     ["Offset of field: foo::b1"][::std::mem::offset_of!(foo, b1) - 0usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct _bindgen_ty_1 {
     pub anon2: _bindgen_ty_1__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct _bindgen_ty_1__bindgen_ty_1 {
     pub b: baz,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct baz {
     pub x: ::std::os::raw::c_int,
 }

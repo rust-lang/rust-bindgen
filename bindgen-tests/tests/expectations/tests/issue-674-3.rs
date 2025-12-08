@@ -4,13 +4,13 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct nsRefPtrHashtable {
         pub _address: u8,
     }
     pub type nsRefPtrHashtable_UserDataType<PtrType> = *mut PtrType;
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct a {
         pub b: u8,
     }
@@ -21,7 +21,7 @@ pub mod root {
         ["Offset of field: a::b"][::std::mem::offset_of!(a, b) - 0usize];
     };
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct nsCSSValue {
         pub c: root::a,
     }

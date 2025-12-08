@@ -1,5 +1,5 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-#[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 #[repr(C, align(8))]
 pub struct __BindgenOpaqueArray8<T>(pub T);
 impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray8<[T; N]> {
@@ -54,7 +54,7 @@ pub type rte_mempool_get_count = ::std::option::Option<
 /// Structure defining mempool operations structure
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct rte_mempool_ops {
     ///< Name of mempool ops struct.
     pub name: [::std::os::raw::c_char; 32usize],
@@ -105,7 +105,7 @@ impl Default for rte_mempool_ops {
 }
 /// The rte_spinlock_t type.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct rte_spinlock_t {
     ///< lock status 0 = unlocked, 1 = locked
     pub locked: ::std::os::raw::c_int,
@@ -127,7 +127,7 @@ const _: () = {
  This results in us simply having "ops_index" in the mempool struct.*/
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct rte_mempool_ops_table {
     ///< Spinlock for add/delete.
     pub sl: rte_spinlock_t,
@@ -167,7 +167,7 @@ impl Default for rte_mempool_ops_table {
 /// Structure to hold malloc heap
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct malloc_heap {
     pub lock: rte_spinlock_t,
     pub free_head: [malloc_heap__bindgen_ty_1; 13usize],
@@ -175,7 +175,7 @@ pub struct malloc_heap {
     pub total_size: usize,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct malloc_heap__bindgen_ty_1 {
     pub lh_first: *mut malloc_elem,
 }
@@ -227,7 +227,7 @@ impl Default for malloc_heap {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct malloc_elem {
     pub _address: u8,
 }

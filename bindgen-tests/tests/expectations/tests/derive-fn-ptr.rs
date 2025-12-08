@@ -20,7 +20,7 @@ pub type my_fun_t = ::std::option::Option<
     ),
 >;
 #[repr(C)]
-#[derive(Default, Copy, Clone)]
+#[derive(Clone, Copy, Default)]
 pub struct Foo {
     pub callback: my_fun_t,
 }
@@ -47,7 +47,7 @@ pub type my_fun2_t = ::std::option::Option<
     ),
 >;
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Bar {
     pub callback: my_fun2_t,
 }

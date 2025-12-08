@@ -5,7 +5,7 @@ mod libc {
     pub enum c_void {}
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct foo {
     pub a: libc::c_int,
     pub b: libc::c_int,

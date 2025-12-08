@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 /// Pointers can derive Hash/PartialOrd/Ord/PartialEq/Eq
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct ConstPtrMutObj {
     pub bar: *mut ::std::os::raw::c_int,
 }
@@ -23,7 +23,7 @@ impl Default for ConstPtrMutObj {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MutPtrMutObj {
     pub bar: *mut ::std::os::raw::c_int,
 }
@@ -45,7 +45,7 @@ impl Default for MutPtrMutObj {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MutPtrConstObj {
     pub bar: *const ::std::os::raw::c_int,
 }
@@ -67,7 +67,7 @@ impl Default for MutPtrConstObj {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct ConstPtrConstObj {
     pub bar: *const ::std::os::raw::c_int,
 }

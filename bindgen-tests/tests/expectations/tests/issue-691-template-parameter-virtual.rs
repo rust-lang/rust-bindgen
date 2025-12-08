@@ -2,7 +2,7 @@
 #[repr(C)]
 pub struct VirtualMethods__bindgen_vtable {}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct VirtualMethods {
     pub vtable_: *const VirtualMethods__bindgen_vtable,
 }
@@ -21,12 +21,12 @@ impl Default for VirtualMethods {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Set {
     pub bar: ::std::os::raw::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ServoElementSnapshotTable {
     pub _base: Set,
 }

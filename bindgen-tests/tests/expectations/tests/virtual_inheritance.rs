@@ -1,13 +1,13 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct A {
     pub foo: ::std::os::raw::c_int,
 }
 #[repr(C)]
 pub struct B__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct B {
     pub vtable_: *const B__bindgen_vtable,
     pub bar: ::std::os::raw::c_int,
@@ -24,7 +24,7 @@ impl Default for B {
 #[repr(C)]
 pub struct C__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct C {
     pub vtable_: *const C__bindgen_vtable,
     pub baz: ::std::os::raw::c_int,
@@ -39,7 +39,7 @@ impl Default for C {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct D {
     pub _base: C,
     pub _base_1: B,

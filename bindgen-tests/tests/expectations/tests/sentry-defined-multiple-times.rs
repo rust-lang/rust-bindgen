@@ -7,17 +7,17 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct Wrapper {
             pub _address: u8,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct Wrapper_sentry {
             pub i_am_wrapper_sentry: ::std::os::raw::c_int,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct sentry {
             pub i_am_plain_sentry: bool,
         }
@@ -30,7 +30,7 @@ pub mod root {
             ][::std::mem::offset_of!(sentry, i_am_plain_sentry) - 0usize];
         };
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct NotTemplateWrapper {
             pub _address: u8,
         }
@@ -44,7 +44,7 @@ pub mod root {
             ][::std::mem::align_of::<NotTemplateWrapper>() - 1usize];
         };
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct NotTemplateWrapper_sentry {
             pub i_am_not_template_wrapper_sentry: ::std::os::raw::c_char,
         }
@@ -63,12 +63,12 @@ pub mod root {
             ) - 0usize];
         };
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct InlineNotTemplateWrapper {
             pub _address: u8,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct InlineNotTemplateWrapper_sentry {
             pub i_am_inline_not_template_wrapper_sentry: bool,
         }
@@ -96,22 +96,22 @@ pub mod root {
             ][::std::mem::align_of::<InlineNotTemplateWrapper>() - 1usize];
         };
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct InlineTemplateWrapper {
             pub _address: u8,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct InlineTemplateWrapper_sentry {
             pub i_am_inline_template_wrapper_sentry: ::std::os::raw::c_int,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct OuterDoubleWrapper {
             pub _address: u8,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct OuterDoubleWrapper_InnerDoubleWrapper {
             pub _address: u8,
         }
@@ -134,7 +134,7 @@ pub mod root {
             ][::std::mem::align_of::<OuterDoubleWrapper>() - 1usize];
         };
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct OuterDoubleWrapper_InnerDoubleWrapper_sentry {
             pub i_am_double_wrapper_sentry: ::std::os::raw::c_int,
         }
@@ -155,17 +155,17 @@ pub mod root {
             ) - 0usize];
         };
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct OuterDoubleInlineWrapper {
             pub _address: u8,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct OuterDoubleInlineWrapper_InnerDoubleInlineWrapper {
             pub _address: u8,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry {
             pub i_am_double_wrapper_inline_sentry: ::std::os::raw::c_int,
         }
@@ -210,17 +210,17 @@ pub mod root {
         };
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct OutsideNamespaceWrapper {
         pub _address: u8,
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct OutsideNamespaceWrapper_sentry {
         pub i_am_outside_namespace_wrapper_sentry: ::std::os::raw::c_int,
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct sentry {
         pub i_am_outside_namespace_sentry: ::std::os::raw::c_int,
     }

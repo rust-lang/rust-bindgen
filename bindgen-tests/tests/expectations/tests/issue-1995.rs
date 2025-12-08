@@ -7,7 +7,7 @@ pub const FOO: ::std::os::raw::c_int = 1;
 
  And expected to be found in generated bindings code too.*/
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Bar {
     pub baz: ::std::os::raw::c_int,
 }

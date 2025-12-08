@@ -16,7 +16,7 @@ pub mod root {
         }
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct C {
         pub _address: u8,
     }

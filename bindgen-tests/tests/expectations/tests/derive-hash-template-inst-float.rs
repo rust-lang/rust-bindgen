@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 /// Template definition that doesn't contain float can derive Hash/PartialOrd/Ord/PartialEq/Eq
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct foo<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub data: T,
@@ -17,7 +17,7 @@ impl<T> Default for foo<T> {
 }
 /// Can derive Hash/PartialOrd/Ord/PartialEq/Eq when instantiated with int
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct IntStr {
     pub a: foo<::std::os::raw::c_int>,
 }
@@ -38,7 +38,7 @@ impl Default for IntStr {
 }
 /// Cannot derive Hash/Eq/Ord when instantiated with float but can derive PartialEq/PartialOrd
 #[repr(C)]
-#[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
 pub struct FloatStr {
     pub a: foo<f32>,
 }

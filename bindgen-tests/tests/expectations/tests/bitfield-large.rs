@@ -1,15 +1,17 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
 }
+#[allow(unused_qualifications)]
 impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
         Self { storage }
     }
 }
+#[allow(unused_qualifications)]
 impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
@@ -32,12 +34,12 @@ where
         Self::extract_bit(byte, index)
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_get_bit(this: *const Self, index: usize) -> bool {
         debug_assert!(index / 8 < core::mem::size_of::<Storage>());
         let byte_index = index / 8;
         let byte = unsafe {
-            *(core::ptr::addr_of!((*this).storage) as *const u8)
-                .offset(byte_index as isize)
+            *core::ptr::addr_of!((*this).storage).cast::<u8>().add(byte_index)
         };
         Self::extract_bit(byte, index)
     }
@@ -59,12 +61,12 @@ where
         *byte = Self::change_bit(*byte, index, val);
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_set_bit(this: *mut Self, index: usize, val: bool) {
         debug_assert!(index / 8 < core::mem::size_of::<Storage>());
         let byte_index = index / 8;
         let byte = unsafe {
-            (core::ptr::addr_of_mut!((*this).storage) as *mut u8)
-                .offset(byte_index as isize)
+            core::ptr::addr_of_mut!((*this).storage).cast::<u8>().add(byte_index)
         };
         unsafe { *byte = Self::change_bit(*byte, index, val) };
     }
@@ -89,6 +91,7 @@ where
         val
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_get(this: *const Self, bit_offset: usize, bit_width: u8) -> u64 {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
@@ -127,6 +130,7 @@ where
         }
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_set(this: *mut Self, bit_offset: usize, bit_width: u8, val: u64) {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
@@ -141,13 +145,15 @@ where
             } else {
                 i
             };
-            unsafe { Self::raw_set_bit(this, index + bit_offset, val_bit_is_set) };
+            unsafe {
+                Self::raw_set_bit(this, index + bit_offset, val_bit_is_set);
+            };
         }
     }
 }
 #[repr(C)]
 #[repr(align(16))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct HasBigBitfield {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
 }
@@ -195,7 +201,7 @@ impl HasBigBitfield {
     }
     #[inline]
     pub fn new_bitfield_1(x: i128) -> __BindgenBitfieldUnit<[u8; 16usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = Default::default();
+        let mut __bindgen_bitfield_unit = __BindgenBitfieldUnit::new([0u8; 16usize]);
         __bindgen_bitfield_unit
             .set(
                 0usize,
@@ -210,7 +216,7 @@ impl HasBigBitfield {
 }
 #[repr(C)]
 #[repr(align(16))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct HasTwoBigBitfields {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
 }
@@ -298,7 +304,7 @@ impl HasTwoBigBitfields {
     }
     #[inline]
     pub fn new_bitfield_1(x: i128, y: i128) -> __BindgenBitfieldUnit<[u8; 16usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = Default::default();
+        let mut __bindgen_bitfield_unit = __BindgenBitfieldUnit::new([0u8; 16usize]);
         __bindgen_bitfield_unit
             .set(
                 0usize,

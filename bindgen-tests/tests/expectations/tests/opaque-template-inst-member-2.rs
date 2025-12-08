@@ -2,13 +2,13 @@
 /** This is like `opaque-template-inst-member.hpp` except exercising the cases
  where we are OK to derive Debug/Hash/PartialEq.*/
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct OpaqueTemplate {
     pub _address: u8,
 }
 /// Should derive Debug/Hash/PartialEq.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct ContainsOpaqueTemplate {
     pub mBlah: u32,
     pub mBaz: ::std::os::raw::c_int,
@@ -30,7 +30,7 @@ const _: () = {
 };
 /// Should also derive Debug/Hash/PartialEq.
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct InheritsOpaqueTemplate {
     pub _base: u8,
     pub wow: *mut ::std::os::raw::c_char,

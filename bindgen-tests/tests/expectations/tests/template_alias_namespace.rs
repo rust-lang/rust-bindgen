@@ -12,7 +12,7 @@ pub mod root {
             pub type Wrapped<T> = T;
         }
         #[repr(C)]
-        #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+        #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
         pub struct Rooted<T> {
             pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
             pub ptr: root::JS::detail::Wrapped<T>,

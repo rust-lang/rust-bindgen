@@ -29,6 +29,7 @@ pub(crate) struct StructLayoutTracker<'a> {
     last_field_was_bitfield: bool,
     visibility: FieldVisibilityKind,
     last_field_was_flexible_array: bool,
+    opaque_array_alignments: Vec<usize>,
 }
 
 /// Returns a size aligned to a given value.
@@ -81,6 +82,7 @@ impl<'a> StructLayoutTracker<'a> {
             max_field_align: 0,
             last_field_was_bitfield: false,
             last_field_was_flexible_array: false,
+            opaque_array_alignments: Vec::new(),
         }
     }
 
@@ -90,6 +92,11 @@ impl<'a> StructLayoutTracker<'a> {
 
     pub(crate) fn is_rust_union(&self) -> bool {
         self.is_rust_union
+    }
+
+    /// Get all opaque array alignments used in this struct's padding
+    pub(crate) fn opaque_array_alignments(&self) -> &[usize] {
+        &self.opaque_array_alignments
     }
 
     pub(crate) fn saw_flexible_array(&mut self) {
@@ -367,10 +374,15 @@ impl<'a> StructLayoutTracker<'a> {
     }
 
     fn padding_field(&mut self, layout: Layout) -> proc_macro2::TokenStream {
-        let ty = helpers::blob(self.ctx, layout, false);
+        let (ty, opaque_align) = helpers::blob(self.ctx, layout, false);
         let padding_count = self.padding_count;
 
         self.padding_count += 1;
+
+        // Track if this padding uses an opaque array
+        if let Some(align) = opaque_align {
+            self.opaque_array_alignments.push(align);
+        }
 
         let padding_field_name = Ident::new(
             &format!("__bindgen_padding_{padding_count}"),

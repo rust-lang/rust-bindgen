@@ -10,7 +10,7 @@ pub mod foo {
 pub use self::foo::Type as foo_alias1;
 pub use self::foo_alias1 as foo_alias2;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct bar {
     pub this_should_work: foo::Type,
 }

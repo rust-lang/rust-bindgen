@@ -1,11 +1,11 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct A {
     pub member_a: ::std::os::raw::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct A_B {
     pub member_b: ::std::os::raw::c_int,
 }
@@ -16,7 +16,7 @@ const _: () = {
     ["Offset of field: A_B::member_b"][::std::mem::offset_of!(A_B, member_b) - 0usize];
 };
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct A_D<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub foo: T,
@@ -37,7 +37,7 @@ const _: () = {
     ["Offset of field: A::member_a"][::std::mem::offset_of!(A, member_a) - 0usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct A_C {
     pub baz: ::std::os::raw::c_int,
 }
@@ -63,7 +63,7 @@ unsafe extern "C" {
     pub static mut baz: A_D<::std::os::raw::c_int>;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct D {
     pub member: A_B,
 }
@@ -74,13 +74,13 @@ const _: () = {
     ["Offset of field: D::member"][::std::mem::offset_of!(D, member) - 0usize];
 };
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct Templated<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub member: T,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct Templated_Templated_inner<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub member_ptr: *mut T,

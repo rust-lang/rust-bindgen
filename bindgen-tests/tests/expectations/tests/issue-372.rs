@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[allow(non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub mod root {
-    #[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
+    #[derive(Clone, Copy, Debug)]
     #[repr(C, align(8))]
     pub struct __BindgenOpaqueArray8<T>(pub T);
     impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray8<[T; N]> {
@@ -12,7 +12,7 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[derive(Debug, Copy, Clone)]
+    #[derive(Clone, Copy, Debug)]
     pub struct i {
         pub j: *mut root::i,
         pub k: *mut root::i,
@@ -36,7 +36,7 @@ pub mod root {
         }
     }
     #[repr(C)]
-    #[derive(Debug, Copy, Clone)]
+    #[derive(Clone, Copy, Debug)]
     pub struct d {
         pub m: root::i,
     }
@@ -72,7 +72,7 @@ pub mod root {
         ai = 11,
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct F {
         pub w: root::__BindgenOpaqueArray8<[u8; 264usize]>,
     }

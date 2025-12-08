@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 /// A struct containing an array of floats that cannot derive Hash/Eq/Ord but can derive PartialEq/PartialOrd
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, PartialOrd, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
 pub struct foo {
     pub bar: [f32; 3usize],
 }

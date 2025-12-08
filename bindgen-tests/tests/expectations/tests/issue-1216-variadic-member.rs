@@ -3,7 +3,7 @@ unsafe extern "C" {
     pub fn f(a: ::std::os::raw::c_int, ...);
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Foo {
     pub f: ::std::option::Option<
         unsafe extern "C" fn(
