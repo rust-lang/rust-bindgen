@@ -927,17 +927,17 @@ impl Bindings {
 
     /// Write these bindings as source text to a file.
     pub fn write_to_file<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
-        let mut file = OpenOptions::new()
+        let file = OpenOptions::new()
             .write(true)
             .truncate(true)
             .create(true)
             .open(path.as_ref())?;
-        self.write(&mut file)?;
+        self.write(file)?;
         Ok(())
     }
 
     /// Write these bindings as source text to the given `Write`able.
-    pub fn write(&self, writer: &mut dyn Write) -> io::Result<()> {
+    pub fn write(&self, mut writer: impl Write) -> io::Result<()> {
         const NL: &str = if cfg!(windows) { "\r\n" } else { "\n" };
 
         if !self.options.disable_header_comment {
