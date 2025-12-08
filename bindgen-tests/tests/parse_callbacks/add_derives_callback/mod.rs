@@ -20,7 +20,7 @@ mod tests {
     }
 
     fn write_bindings_to_string(bindings: &Bindings) -> String {
-        let mut output = Vec::<u8>::new();
+        let mut output = vec![];
         bindings.write(&mut output).unwrap_or_else(|e| {
             panic!("Failed to write generated bindings: {e}")
         });
