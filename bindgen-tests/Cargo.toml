@@ -13,6 +13,8 @@ owo-colors.workspace = true
 prettyplease = { workspace = true, features = ["verbatim"] }
 proc-macro2.workspace = true
 regex.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 shlex.workspace = true
 similar = { workspace = true, features = ["inline"] }
 syn.workspace = true

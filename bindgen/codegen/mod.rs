@@ -5297,6 +5297,16 @@ pub(crate) fn codegen(
             }
         }
 
+        if let Some(path) = context.options().emit_symbol_list.as_ref() {
+            match utils::write_symbol_list(context, path) {
+                Ok(()) => info!(
+                    "Your symbol list was generated successfully into: {}",
+                    path.display()
+                ),
+                Err(e) => warn!("{e}"),
+            }
+        }
+
         if let Some(spec) = context.options().depfile.as_ref() {
             match spec.write(context.deps()) {
                 Ok(()) => info!(
@@ -5400,6 +5410,93 @@ pub(crate) mod utils {
         }
 
         std::fs::write(source_path, code)?;
+
+        Ok(())
+    }
+
+    /// Write a list of generated symbols to a JSON file.
+    ///
+    /// The output format is:
+    /// ```json
+    /// {
+    ///   "types": ["type_name", ...],
+    ///   "functions": ["func_name", ...],
+    ///   "vars": ["var_name", ...]
+    /// }
+    /// ```
+    ///
+    /// The names use the same format as blocklist matching, so downstream crates
+    /// can directly use these names with `blocklist_type`, `blocklist_function`,
+    /// or `blocklist_var`.
+    ///
+    /// Only user-defined symbols (those with a source location) are included.
+    /// Built-in types like `int`, `void`, etc. are excluded.
+    pub(super) fn write_symbol_list(
+        context: &BindgenContext,
+        path: &std::path::Path,
+    ) -> std::io::Result<()> {
+        use serde::Serialize;
+        use std::fs::File;
+        use std::io::BufWriter;
+
+        #[derive(Serialize)]
+        struct SymbolList {
+            types: Vec<String>,
+            functions: Vec<String>,
+            vars: Vec<String>,
+        }
+
+        // Create parent directories if they don't exist
+        if let Some(dir) = path.parent() {
+            if !dir.as_os_str().is_empty() && !dir.exists() {
+                std::fs::create_dir_all(dir)?;
+            }
+        }
+
+        let file = File::create(path)?;
+        let writer = BufWriter::new(file);
+
+        let codegen_items = context.codegen_items();
+
+        let mut symbols = SymbolList {
+            types: Vec::new(),
+            functions: Vec::new(),
+            vars: Vec::new(),
+        };
+
+        for (id, item) in context.items() {
+            // Skip items that won't be generated
+            if !codegen_items.contains(&id) {
+                continue;
+            }
+
+            // Skip items without a source location (built-in types)
+            if item.location().is_none() {
+                continue;
+            }
+
+            // Use the same name format as blocklist matching
+            let path = item.path_for_allowlisting(context);
+            let name = path[1..].join("::");
+
+            // Categorize by item type
+            match item.kind() {
+                crate::ir::item_kind::ItemKind::Module(_) => {
+                    // Skip modules - they're organizational, not symbols
+                }
+                crate::ir::item_kind::ItemKind::Type(_) => {
+                    symbols.types.push(name);
+                }
+                crate::ir::item_kind::ItemKind::Function(_) => {
+                    symbols.functions.push(name);
+                }
+                crate::ir::item_kind::ItemKind::Var(_) => {
+                    symbols.vars.push(name);
+                }
+            }
+        }
+
+        serde_json::to_writer_pretty(writer, &symbols)?;
 
         Ok(())
     }
