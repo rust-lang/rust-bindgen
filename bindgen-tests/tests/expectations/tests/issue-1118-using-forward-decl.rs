@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub type c = nsTArray;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct nsTArray_base {
     pub d: *mut ::std::os::raw::c_int,
 }
@@ -23,7 +23,7 @@ impl Default for nsTArray_base {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct nsTArray {
     pub _base: nsTArray_base,
 }
@@ -37,7 +37,7 @@ impl Default for nsTArray {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct nsIContent {
     pub foo: nsTArray,
 }

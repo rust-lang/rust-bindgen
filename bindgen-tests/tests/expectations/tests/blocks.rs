@@ -22,7 +22,7 @@ unsafe extern "C" {
     pub fn foo_ptr(arg1: *mut *mut ::std::os::raw::c_void) -> bool;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct contains_block_pointers {
     pub val: *mut ::std::os::raw::c_void,
     pub ptr_val: *mut *mut ::std::os::raw::c_void,

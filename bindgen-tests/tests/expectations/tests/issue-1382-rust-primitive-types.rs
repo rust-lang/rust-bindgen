@@ -8,7 +8,7 @@ pub type u32_ = u32;
 pub type i64_ = i64;
 pub type u64_ = u64;
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Foo {
     pub i8_: ::std::os::raw::c_int,
     pub u8_: ::std::os::raw::c_int,

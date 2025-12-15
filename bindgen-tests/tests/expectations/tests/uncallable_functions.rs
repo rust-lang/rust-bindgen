@@ -4,7 +4,7 @@ pub struct Test__bindgen_vtable {
     pub Test_a: unsafe extern "C" fn(this: *mut Test),
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Test {
     pub vtable_: *const Test__bindgen_vtable,
 }

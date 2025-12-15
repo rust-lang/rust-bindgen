@@ -1,15 +1,17 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
 }
+#[allow(unused_qualifications)]
 impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
         Self { storage }
     }
 }
+#[allow(unused_qualifications)]
 impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
@@ -32,12 +34,12 @@ where
         Self::extract_bit(byte, index)
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_get_bit(this: *const Self, index: usize) -> bool {
         debug_assert!(index / 8 < core::mem::size_of::<Storage>());
         let byte_index = index / 8;
         let byte = unsafe {
-            *(core::ptr::addr_of!((*this).storage) as *const u8)
-                .offset(byte_index as isize)
+            *core::ptr::addr_of!((*this).storage).cast::<u8>().add(byte_index)
         };
         Self::extract_bit(byte, index)
     }
@@ -59,12 +61,12 @@ where
         *byte = Self::change_bit(*byte, index, val);
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_set_bit(this: *mut Self, index: usize, val: bool) {
         debug_assert!(index / 8 < core::mem::size_of::<Storage>());
         let byte_index = index / 8;
         let byte = unsafe {
-            (core::ptr::addr_of_mut!((*this).storage) as *mut u8)
-                .offset(byte_index as isize)
+            core::ptr::addr_of_mut!((*this).storage).cast::<u8>().add(byte_index)
         };
         unsafe { *byte = Self::change_bit(*byte, index, val) };
     }
@@ -89,6 +91,7 @@ where
         val
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_get(this: *const Self, bit_offset: usize, bit_width: u8) -> u64 {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
@@ -127,6 +130,7 @@ where
         }
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_set(this: *mut Self, bit_offset: usize, bit_width: u8, val: u64) {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
@@ -141,12 +145,14 @@ where
             } else {
                 i
             };
-            unsafe { Self::raw_set_bit(this, index + bit_offset, val_bit_is_set) };
+            unsafe {
+                Self::raw_set_bit(this, index + bit_offset, val_bit_is_set);
+            };
         }
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct A {
     pub _bindgen_align: [u32; 0],
     pub x: ::std::os::raw::c_uchar,
@@ -534,7 +540,7 @@ impl A {
         b9: ::std::os::raw::c_uint,
         b10: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
+        let mut __bindgen_bitfield_unit = __BindgenBitfieldUnit::new([0u8; 2usize]);
         __bindgen_bitfield_unit
             .set(
                 0usize,
@@ -629,7 +635,7 @@ impl A {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct B {
     pub _bindgen_align: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
@@ -717,7 +723,7 @@ impl B {
         foo: ::std::os::raw::c_uint,
         bar: ::std::os::raw::c_uchar,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+        let mut __bindgen_bitfield_unit = __BindgenBitfieldUnit::new([0u8; 4usize]);
         __bindgen_bitfield_unit
             .set(
                 0usize,
@@ -740,7 +746,7 @@ impl B {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct C {
     pub x: ::std::os::raw::c_uchar,
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
@@ -831,7 +837,7 @@ impl C {
         b1: ::std::os::raw::c_uint,
         b2: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        let mut __bindgen_bitfield_unit = __BindgenBitfieldUnit::new([0u8; 1usize]);
         __bindgen_bitfield_unit
             .set(
                 0usize,
@@ -854,7 +860,7 @@ impl C {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Date1 {
     pub _bindgen_align: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize]>,
@@ -1017,7 +1023,7 @@ impl Date1 {
         nMonth: ::std::os::raw::c_ushort,
         nYear: ::std::os::raw::c_ushort,
     ) -> __BindgenBitfieldUnit<[u8; 3usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> = Default::default();
+        let mut __bindgen_bitfield_unit = __BindgenBitfieldUnit::new([0u8; 3usize]);
         __bindgen_bitfield_unit
             .set(
                 0usize,
@@ -1058,7 +1064,7 @@ impl Date1 {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Date2 {
     pub _bindgen_align: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
@@ -1257,7 +1263,7 @@ impl Date2 {
         nYear: ::std::os::raw::c_ushort,
         byte: ::std::os::raw::c_uchar,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+        let mut __bindgen_bitfield_unit = __BindgenBitfieldUnit::new([0u8; 4usize]);
         __bindgen_bitfield_unit
             .set(
                 0usize,
@@ -1307,7 +1313,7 @@ impl Date2 {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Date3 {
     pub _bindgen_align: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize]>,
@@ -1471,7 +1477,7 @@ impl Date3 {
         nMonth: ::std::os::raw::c_ushort,
         nYear: ::std::os::raw::c_ushort,
     ) -> __BindgenBitfieldUnit<[u8; 3usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> = Default::default();
+        let mut __bindgen_bitfield_unit = __BindgenBitfieldUnit::new([0u8; 3usize]);
         __bindgen_bitfield_unit
             .set(
                 0usize,

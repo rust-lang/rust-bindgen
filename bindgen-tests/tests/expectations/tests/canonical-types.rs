@@ -1,11 +1,11 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ClassA {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ClassA_ClassAInner<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub x: *mut T,
@@ -20,17 +20,17 @@ impl<T> Default for ClassA_ClassAInner<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ClassB {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ClassC {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ClassC_ClassCInnerB {
     pub cache: *mut ClassC_ClassCInnerA,
 }
@@ -44,7 +44,7 @@ impl Default for ClassC_ClassCInnerB {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ClassC_ClassCInnerA {
     pub member: *mut ClassC_ClassCInnerB,
 }
@@ -58,7 +58,7 @@ impl Default for ClassC_ClassCInnerA {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ClassC_ClassCInnerCRTP {
     pub _address: u8,
 }
@@ -72,7 +72,7 @@ impl Default for ClassC_ClassCInnerCRTP {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ClassD {
     pub _address: u8,
 }
@@ -100,7 +100,7 @@ const _: () = {
     ][::std::mem::align_of::<ClassB>() - 1usize];
 };
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ClassCInnerCRTP {
     pub _address: u8,
 }
@@ -128,7 +128,7 @@ const _: () = {
     ][::std::mem::align_of::<ClassB>() - 1usize];
 };
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ClassAInner {
     pub x: *mut ClassCInnerA,
 }
@@ -148,7 +148,7 @@ impl Default for ClassAInner {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ClassCInnerA {
     pub member: *mut ClassCInnerB,
 }
@@ -170,7 +170,7 @@ impl Default for ClassCInnerA {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ClassCInnerB {
     pub cache: *mut ClassCInnerA,
 }

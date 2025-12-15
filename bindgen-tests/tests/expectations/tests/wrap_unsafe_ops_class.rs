@@ -30,7 +30,7 @@ impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct C {
     pub a: ::std::os::raw::c_int,
     pub big_array: [::std::os::raw::c_char; 33usize],
@@ -133,7 +133,7 @@ impl Default for IncompleteArrayNonCopiable {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union Union {
     pub d: f32,
     pub i: ::std::os::raw::c_int,
@@ -148,7 +148,7 @@ impl Default for Union {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub struct WithUnion {
     pub data: Union,
 }
@@ -162,7 +162,7 @@ impl Default for WithUnion {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct RealAbstractionWithTonsOfMethods {
     pub _address: u8,
 }

@@ -3,13 +3,13 @@
 pub mod root {
     pub type number = ::std::os::raw::c_int;
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct Point {
         pub x: root::number,
         pub y: root::number,
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct Angle {
         pub a: root::number,
         pub b: root::number,
@@ -32,13 +32,13 @@ pub mod root {
     pub mod ns {
         pub type number = ::std::os::raw::c_int;
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct Point {
             pub x: root::ns::number,
             pub y: root::ns::number,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct Angle {
             pub a: root::ns::number,
             pub b: root::ns::number,

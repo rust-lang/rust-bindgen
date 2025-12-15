@@ -3,7 +3,7 @@
 pub struct BaseWithVtable__bindgen_vtable {}
 /// This should have an explicit vtable.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct BaseWithVtable<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub vtable_: *const BaseWithVtable__bindgen_vtable,
@@ -20,7 +20,7 @@ impl<T> Default for BaseWithVtable<T> {
 }
 /// This should not have an explicit vtable.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct DerivedWithNoVirtualMethods {
     pub _base: BaseWithVtable<*mut ::std::os::raw::c_char>,
 }
@@ -44,7 +44,7 @@ impl Default for DerivedWithNoVirtualMethods {
 }
 /// This should not have an explicit vtable.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct DerivedWithVirtualMethods {
     pub _base: BaseWithVtable<*mut ::std::os::raw::c_char>,
 }
@@ -68,7 +68,7 @@ impl Default for DerivedWithVirtualMethods {
 }
 /// This should not have any vtable.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct BaseWithoutVtable<U> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
     pub u: U,
@@ -86,7 +86,7 @@ impl<U> Default for BaseWithoutVtable<U> {
 pub struct DerivedWithVtable__bindgen_vtable(::std::os::raw::c_void);
 /// This should have an explicit vtable.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct DerivedWithVtable {
     pub vtable_: *const DerivedWithVtable__bindgen_vtable,
     pub _base: BaseWithoutVtable<*mut ::std::os::raw::c_char>,
@@ -109,7 +109,7 @@ impl Default for DerivedWithVtable {
 }
 /// This should not have any vtable.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct DerivedWithoutVtable {
     pub _base: BaseWithoutVtable<*mut ::std::os::raw::c_char>,
 }

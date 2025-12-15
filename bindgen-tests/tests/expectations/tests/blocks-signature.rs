@@ -23,7 +23,7 @@ unsafe extern "C" {
     pub fn foo_ptr(arg1: *mut _bindgen_ty_id_56) -> bool;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct contains_block_pointers {
     pub val: contains_block_pointers__bindgen_ty_id_61,
     pub ptr_val: *mut _bindgen_ty_id_68,

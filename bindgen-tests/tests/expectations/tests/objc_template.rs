@@ -3,7 +3,6 @@
 use objc::{self, msg_send, sel, sel_impl, class};
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
-#[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
 #[repr(C, align(8))]
 pub struct __BindgenOpaqueArray8<T>(pub T);
 impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray8<[T; N]> {

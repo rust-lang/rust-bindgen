@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct pad_me {
     pub first: u8,
     pub __bindgen_padding_0: [u8; 3usize],
@@ -17,7 +17,7 @@ const _: () = {
     ["Offset of field: pad_me::third"][::std::mem::offset_of!(pad_me, third) - 8usize];
 };
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union dont_pad_me {
     pub first: u8,
     pub second: u32,

@@ -1,5 +1,5 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-#[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
+#[derive(Clone, Copy, Debug)]
 #[repr(C)]
 pub struct __BindgenOpaqueArray<T>(pub T);
 impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<[T; N]> {
@@ -9,7 +9,7 @@ impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<[T; N]>
 }
 #[repr(C)]
 #[repr(align(4))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Opaque {
     pub _bindgen_opaque_blob: __BindgenOpaqueArray<[u32; 41usize]>,
 }
@@ -19,7 +19,7 @@ const _: () = {
     ["Alignment of Opaque"][::std::mem::align_of::<Opaque>() - 4usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct OpaqueUser {
     pub opaque: Opaque,
 }

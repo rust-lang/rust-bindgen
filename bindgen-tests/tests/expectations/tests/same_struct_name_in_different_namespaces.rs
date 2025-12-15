@@ -5,7 +5,7 @@ pub struct JS_Zone {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct JS_shadow_Zone {
     pub x: ::std::os::raw::c_int,
     pub y: ::std::os::raw::c_int,

@@ -8,7 +8,7 @@ unsafe extern "C" {
     pub static mut someVar: ::std::os::raw::c_int;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct someClass {
     pub _address: u8,
 }
@@ -35,7 +35,7 @@ unsafe extern "C" {
     pub fn foo_NamespacedFunction();
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct StructWithAllowlistedDefinition {
     pub other: *mut StructWithAllowlistedFwdDecl,
 }
@@ -61,7 +61,7 @@ impl Default for StructWithAllowlistedDefinition {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct StructWithAllowlistedFwdDecl {
     pub b: ::std::os::raw::c_int,
 }
@@ -78,7 +78,7 @@ const _: () = {
     ][::std::mem::offset_of!(StructWithAllowlistedFwdDecl, b) - 0usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct AllowlistMe {
     pub foo: ::std::os::raw::c_int,
 }

@@ -1,12 +1,12 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union pixel {
     pub rgba: ::std::os::raw::c_uint,
     pub __bindgen_anon_1: pixel__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct pixel__bindgen_ty_1 {
     pub r: ::std::os::raw::c_uchar,
     pub g: ::std::os::raw::c_uchar,

@@ -4,7 +4,7 @@ pub struct Base__bindgen_vtable {
     pub Base_AsDerived: unsafe extern "C" fn(this: *mut Base) -> *mut Derived,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Base {
     pub vtable_: *const Base__bindgen_vtable,
 }
@@ -27,7 +27,7 @@ unsafe extern "C" {
     pub fn Base_AsDerived(this: *mut ::std::os::raw::c_void) -> *mut Derived;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Derived {
     pub _base: Base,
 }

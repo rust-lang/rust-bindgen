@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #![cfg(not(test))]
 #[repr(C)]
-#[derive(Default, Copy, Clone)]
+#[derive(Clone, Copy, Default)]
 pub struct JNINativeInterface_ {
     pub GetVersion: ::std::option::Option<
         unsafe extern "stdcall" fn(

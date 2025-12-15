@@ -3,7 +3,7 @@
 mod bitfields;
 use bitfields::*;
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct C {
     pub x: ::std::os::raw::c_uchar,
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
@@ -94,7 +94,7 @@ impl C {
         b1: ::std::os::raw::c_uint,
         b2: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        let mut __bindgen_bitfield_unit = __BindgenBitfieldUnit::new([0u8; 1usize]);
         __bindgen_bitfield_unit
             .set(
                 0usize,

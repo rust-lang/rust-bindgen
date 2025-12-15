@@ -2,7 +2,7 @@
 #[repr(C)]
 pub struct A__bindgen_vtable {}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct A {
     pub vtable_: *const A__bindgen_vtable,
     pub member: ::std::os::raw::c_int,
@@ -25,7 +25,7 @@ impl Default for A {
 #[repr(C)]
 pub struct B__bindgen_vtable {}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct B {
     pub vtable_: *const B__bindgen_vtable,
     pub member2: *mut ::std::os::raw::c_void,
@@ -46,7 +46,7 @@ impl Default for B {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct C {
     pub _base: A,
     pub _base_1: B,

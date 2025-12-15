@@ -7,7 +7,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct Bar {
             pub foo: ::std::os::raw::c_int,
             pub baz: bool,
@@ -24,7 +24,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Copy, Clone)]
+        #[derive(Clone, Copy, Debug)]
         pub struct Foo {
             pub ptr: *mut root::foo::Bar,
         }

@@ -3,7 +3,7 @@
  Debug/Hash because 63 is over the hard coded limit.*/
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct NoDebug {
     pub c: ::std::os::raw::c_char,
 }
@@ -28,7 +28,7 @@ impl Default for NoDebug {
  codegen.*/
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct ShouldDeriveDebugButDoesNot {
     pub c: [::std::os::raw::c_char; 32usize],
     pub d: ::std::os::raw::c_char,

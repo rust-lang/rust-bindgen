@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 /// <div rustbindgen deriveDebug></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Point {
     /// <div rustbindgen attribute="cfg(test)"></div>
     #[cfg(test)]
@@ -19,7 +19,7 @@ const _: () = {
 };
 /// <div rustbindgen deriveDebug></div>
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union Data {
     /// <div rustbindgen attribute="allow(dead_code)"></div>
     #[allow(dead_code)]

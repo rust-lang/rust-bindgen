@@ -4,7 +4,7 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct nsSize {
         pub width: ::std::os::raw::c_int,
         pub height: ::std::os::raw::c_int,

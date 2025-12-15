@@ -3,7 +3,7 @@ unsafe extern "C" {
     pub fn fun() -> u64;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Struct {
     pub field: u64,
 }

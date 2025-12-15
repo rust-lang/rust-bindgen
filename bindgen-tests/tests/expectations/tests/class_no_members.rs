@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct whatever {
     pub _address: u8,
 }
@@ -10,7 +10,7 @@ const _: () = {
     ["Alignment of whatever"][::std::mem::align_of::<whatever>() - 1usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct whatever_child {
     pub _address: u8,
 }
@@ -20,7 +20,7 @@ const _: () = {
     ["Alignment of whatever_child"][::std::mem::align_of::<whatever_child>() - 1usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct whatever_child_with_member {
     pub m_member: ::std::os::raw::c_int,
 }

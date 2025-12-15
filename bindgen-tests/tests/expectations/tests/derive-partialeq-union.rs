@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 /// Deriving PartialEq for rust unions is not supported.
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union ShouldNotDerivePartialEq {
     pub a: ::std::os::raw::c_char,
     pub b: ::std::os::raw::c_int,

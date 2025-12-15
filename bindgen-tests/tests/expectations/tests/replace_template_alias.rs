@@ -4,7 +4,7 @@
  <div rustbindgen replaces="JS::detail::MaybeWrapped" />*/
 pub type JS_detail_MaybeWrapped<T> = T;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct JS_Rooted<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub ptr: JS_detail_MaybeWrapped<T>,

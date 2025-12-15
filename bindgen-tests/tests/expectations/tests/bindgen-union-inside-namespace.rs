@@ -7,7 +7,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Copy, Clone)]
+        #[derive(Clone, Copy)]
         pub union Bar {
             pub foo: ::std::os::raw::c_int,
             pub bar: ::std::os::raw::c_int,

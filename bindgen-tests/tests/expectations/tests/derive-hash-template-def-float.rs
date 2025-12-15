@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 /// Template definition containing a float, which cannot derive Hash/Eq/Ord but can derive PartialEq/PartialOrd.
 #[repr(C)]
-#[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
 pub struct foo<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub data: T,

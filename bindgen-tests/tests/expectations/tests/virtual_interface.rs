@@ -8,7 +8,7 @@ pub struct PureVirtualIFace__bindgen_vtable {
     ),
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct PureVirtualIFace {
     pub vtable_: *const PureVirtualIFace__bindgen_vtable,
 }
@@ -33,7 +33,7 @@ pub struct AnotherInterface__bindgen_vtable {
     pub AnotherInterface_Baz: unsafe extern "C" fn(this: *mut AnotherInterface),
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct AnotherInterface {
     pub vtable_: *const AnotherInterface__bindgen_vtable,
 }
@@ -54,7 +54,7 @@ impl Default for AnotherInterface {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Implementation {
     pub _base: PureVirtualIFace,
 }
@@ -73,7 +73,7 @@ impl Default for Implementation {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct DoubleImpl {
     pub _base: PureVirtualIFace,
     pub _base_1: AnotherInterface,

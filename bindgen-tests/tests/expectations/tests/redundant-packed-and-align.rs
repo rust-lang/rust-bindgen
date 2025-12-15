@@ -1,15 +1,17 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 #[repr(C)]
-#[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct __BindgenBitfieldUnit<Storage> {
     storage: Storage,
 }
+#[allow(unused_qualifications)]
 impl<Storage> __BindgenBitfieldUnit<Storage> {
     #[inline]
     pub const fn new(storage: Storage) -> Self {
         Self { storage }
     }
 }
+#[allow(unused_qualifications)]
 impl<Storage> __BindgenBitfieldUnit<Storage>
 where
     Storage: AsRef<[u8]> + AsMut<[u8]>,
@@ -32,12 +34,12 @@ where
         Self::extract_bit(byte, index)
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_get_bit(this: *const Self, index: usize) -> bool {
         debug_assert!(index / 8 < core::mem::size_of::<Storage>());
         let byte_index = index / 8;
         let byte = unsafe {
-            *(core::ptr::addr_of!((*this).storage) as *const u8)
-                .offset(byte_index as isize)
+            *core::ptr::addr_of!((*this).storage).cast::<u8>().add(byte_index)
         };
         Self::extract_bit(byte, index)
     }
@@ -59,12 +61,12 @@ where
         *byte = Self::change_bit(*byte, index, val);
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_set_bit(this: *mut Self, index: usize, val: bool) {
         debug_assert!(index / 8 < core::mem::size_of::<Storage>());
         let byte_index = index / 8;
         let byte = unsafe {
-            (core::ptr::addr_of_mut!((*this).storage) as *mut u8)
-                .offset(byte_index as isize)
+            core::ptr::addr_of_mut!((*this).storage).cast::<u8>().add(byte_index)
         };
         unsafe { *byte = Self::change_bit(*byte, index, val) };
     }
@@ -89,6 +91,7 @@ where
         val
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_get(this: *const Self, bit_offset: usize, bit_width: u8) -> u64 {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
@@ -127,6 +130,7 @@ where
         }
     }
     #[inline]
+    #[allow(dead_code)]
     pub unsafe fn raw_set(this: *mut Self, bit_offset: usize, bit_width: u8, val: u64) {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
@@ -141,13 +145,15 @@ where
             } else {
                 i
             };
-            unsafe { Self::raw_set_bit(this, index + bit_offset, val_bit_is_set) };
+            unsafe {
+                Self::raw_set_bit(this, index + bit_offset, val_bit_is_set);
+            };
         }
     }
 }
 #[repr(C)]
 #[repr(align(8))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct redundant_packed {
     pub a: u32,
     pub b: u32,
@@ -166,7 +172,7 @@ const _: () = {
     ][::std::mem::offset_of!(redundant_packed, b) - 4usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct redundant_packed_bitfield {
     pub _bindgen_align: [u64; 0],
     pub a: [u8; 3usize],
@@ -261,7 +267,7 @@ impl redundant_packed_bitfield {
     }
     #[inline]
     pub fn new_bitfield_1(b0: u8, b1: u8) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        let mut __bindgen_bitfield_unit = __BindgenBitfieldUnit::new([0u8; 1usize]);
         __bindgen_bitfield_unit
             .set(
                 0usize,
@@ -285,7 +291,7 @@ impl redundant_packed_bitfield {
 }
 #[repr(C)]
 #[repr(align(16))]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub union redundant_packed_union {
     pub a: u64,
     pub b: u32,
@@ -316,7 +322,7 @@ impl Default for redundant_packed_union {
 }
 #[repr(C)]
 #[repr(align(2))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct inner {
     pub a: u8,
 }
@@ -328,7 +334,7 @@ const _: () = {
 };
 #[repr(C)]
 #[repr(align(8))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct outer_redundant_packed {
     pub a: [inner; 2usize],
     pub b: u32,
@@ -350,7 +356,7 @@ const _: () = {
 };
 #[repr(C)]
 #[repr(align(4))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct redundant_pragma_packed {
     pub a: u8,
     pub b: u16,

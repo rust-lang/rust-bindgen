@@ -2,7 +2,7 @@
 #[derive(Clone, Copy, Debug)]
 pub struct RefPtr<T>(T);
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct nsMainThreadPtrHolder<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub a: T,

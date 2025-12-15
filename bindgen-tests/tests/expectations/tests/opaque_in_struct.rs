@@ -2,7 +2,7 @@
 /// <div rustbindgen opaque>
 #[repr(C)]
 #[repr(align(4))]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct opaque {
     pub _bindgen_opaque_blob: u32,
 }
@@ -12,7 +12,7 @@ const _: () = {
     ["Alignment of opaque"][::std::mem::align_of::<opaque>() - 4usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct container {
     pub contained: opaque,
 }

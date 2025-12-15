@@ -5,7 +5,7 @@ pub enum baz {
     __bindgen_cannot_repr_c_on_empty_enum = 0,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Foo {
     pub bar: ::std::option::Option<
         unsafe extern "C" fn(x: ::std::os::raw::c_int, y: ::std::os::raw::c_int) -> baz,

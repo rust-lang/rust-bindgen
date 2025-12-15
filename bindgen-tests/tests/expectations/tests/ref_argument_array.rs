@@ -8,7 +8,7 @@ pub struct nsID__bindgen_vtable {
     ),
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct nsID {
     pub vtable_: *const nsID__bindgen_vtable,
 }

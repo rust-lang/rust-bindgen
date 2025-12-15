@@ -229,7 +229,15 @@ impl Annotations {
                             attr.value.split("::").map(Into::into).collect(),
                         );
                     }
-                    "derive" => self.derives.push(attr.value),
+                    "derive" => {
+                        // Split comma-separated derives into individual entries
+                        for derive in attr.value.split(',') {
+                            let derive = derive.trim();
+                            if !derive.is_empty() {
+                                self.derives.push(derive.to_string());
+                            }
+                        }
+                    }
                     "attribute" => self.attributes.push(attr.value),
                     "private" => {
                         self.visibility_kind = if attr.value == "false" {

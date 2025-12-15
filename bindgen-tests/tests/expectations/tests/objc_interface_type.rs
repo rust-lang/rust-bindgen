@@ -21,7 +21,7 @@ impl Foo {
 impl IFoo for Foo {}
 pub trait IFoo: Sized + std::ops::Deref {}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct FooStruct {
     pub foo: Foo,
 }

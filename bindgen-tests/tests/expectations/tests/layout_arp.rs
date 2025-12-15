@@ -17,7 +17,7 @@ pub const ARP_OP_INVREPLY: u32 = 9;
  administrator and does not contain OUIs.
  See http://standards.ieee.org/regauth/groupmac/tutorial.html*/
 #[repr(C, packed)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ether_addr {
     ///< Addr bytes in tx order
     pub addr_bytes: [u8; 6usize],
@@ -32,7 +32,7 @@ const _: () = {
 };
 /// ARP header IPv4 payload.
 #[repr(C, packed)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct arp_ipv4 {
     ///< sender hardware address
     pub arp_sha: ether_addr,
@@ -62,7 +62,7 @@ const _: () = {
 };
 /// ARP header.
 #[repr(C, packed)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct arp_hdr {
     pub arp_hrd: u16,
     pub arp_pro: u16,

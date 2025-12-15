@@ -1,5 +1,5 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-#[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
+#[derive(Debug)]
 #[repr(C, align(8))]
 pub struct __BindgenOpaqueArray8<T>(pub T);
 impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray8<[T; N]> {
@@ -56,7 +56,7 @@ pub enum _bindgen_ty_1 {
 }
 /// @internal fragmented mbuf
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ip_frag {
     ///< offset into the packet
     pub ofs: u16,
@@ -84,7 +84,7 @@ impl Default for ip_frag {
 }
 /// @internal <src addr, dst_addr, id> to uniquely indetify fragmented datagram.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ip_frag_key {
     ///< src address, first 8 bytes used for IPv4
     pub src_dst: [u64; 4usize],
@@ -111,7 +111,7 @@ const _: () = {
  First two entries in the frags[] array are for the last and first fragments.*/
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ip_frag_pkt {
     ///< LRU list
     pub lru: ip_frag_pkt__bindgen_ty_1,
@@ -129,7 +129,7 @@ pub struct ip_frag_pkt {
     pub frags: [ip_frag; 4usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ip_frag_pkt__bindgen_ty_1 {
     pub tqe_next: *mut ip_frag_pkt,
     pub tqe_prev: *mut *mut ip_frag_pkt,
@@ -194,7 +194,7 @@ impl Default for ip_frag_pkt {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ip_pkt_list {
     pub tqh_first: *mut ip_frag_pkt,
     pub tqh_last: *mut *mut ip_frag_pkt,
@@ -222,7 +222,7 @@ impl Default for ip_pkt_list {
 /// fragmentation table statistics
 #[repr(C)]
 #[repr(align(64))]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct ip_frag_tbl_stat {
     ///< total # of find/insert attempts.
     pub find_num: u64,
@@ -351,7 +351,7 @@ impl Default for rte_ip_frag_tbl {
 }
 ///< fragment mbuf
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct rte_mbuf {
     pub _address: u8,
 }

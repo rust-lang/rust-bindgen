@@ -7,14 +7,14 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Clone, Copy, Debug, Default)]
         pub struct Rooted {
             pub _address: u8,
         }
         pub type Rooted_ElementType<T> = T;
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct c {
         pub b: u8,
     }
@@ -25,7 +25,7 @@ pub mod root {
         ["Offset of field: c::b"][::std::mem::offset_of!(c, b) - 0usize];
     };
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct B {
         pub a: root::c,
     }
@@ -36,7 +36,7 @@ pub mod root {
         ["Offset of field: B::a"][::std::mem::offset_of!(B, a) - 0usize];
     };
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Clone, Copy, Debug, Default)]
     pub struct StaticRefPtr {
         pub _address: u8,
     }

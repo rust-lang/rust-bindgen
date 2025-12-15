@@ -21,7 +21,15 @@
 //! +------------------------------------------------------------+
 //! ```
 
-use super::bitfield_unit::__BindgenBitfieldUnit;
+// For testing purposes, define __BindgenBitfieldUnit with standard derives.
+// In production code, this is generated in prepend_bitfield_unit_type() with custom derives.
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct __BindgenBitfieldUnit<Storage> {
+    storage: Storage,
+}
+
+include!("bitfield_unit_impl.rs");
 
 #[test]
 fn bitfield_unit_get_bit() {

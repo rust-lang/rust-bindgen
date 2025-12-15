@@ -7,7 +7,7 @@ unsafe extern "C" {
     pub fn bar(x: number) -> ::std::os::raw::c_int;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Point {
     pub x: number,
     pub y: number,
@@ -20,7 +20,7 @@ const _: () = {
     ["Offset of field: Point::y"][::std::mem::offset_of!(Point, y) - 4usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Angle {
     pub a: number,
     pub b: number,

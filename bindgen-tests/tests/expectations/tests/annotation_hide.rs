@@ -2,7 +2,7 @@
 /// <div rustbindgen opaque></div>
 #[repr(C)]
 #[repr(align(4))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct D {
     pub _bindgen_opaque_blob: u32,
 }
@@ -12,7 +12,7 @@ const _: () = {
     ["Alignment of D"][::std::mem::align_of::<D>() - 4usize];
 };
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct NotAnnotated {
     pub f: ::std::os::raw::c_int,
 }

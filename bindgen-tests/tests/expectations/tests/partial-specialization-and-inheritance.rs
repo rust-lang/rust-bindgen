@@ -1,5 +1,4 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-#[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
 #[repr(C)]
 pub struct __BindgenOpaqueArray<T>(pub T);
 impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<[T; N]> {
@@ -8,17 +7,17 @@ impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<[T; N]>
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Base {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Derived {
     pub b: bool,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Usage {
     pub _address: u8,
 }

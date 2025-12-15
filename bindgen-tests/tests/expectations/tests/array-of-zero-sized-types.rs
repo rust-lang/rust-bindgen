@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 /// This should get an `_address` byte.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Empty {
     pub _address: u8,
 }
@@ -13,7 +13,7 @@ const _: () = {
 /** This should not get an `_address` byte, since each `Empty` gets one, meaning
  that this object is addressable.*/
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct HasArrayOfEmpty {
     pub empties: [Empty; 10usize],
 }

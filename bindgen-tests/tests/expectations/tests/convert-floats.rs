@@ -1,12 +1,12 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-#[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
+#[derive(Clone, Copy, Debug)]
 #[repr(C)]
 pub struct __BindgenComplex<T> {
     pub re: T,
     pub im: T,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct foo {
     pub bar: ::std::os::raw::c_float,
     pub baz: ::std::os::raw::c_float,

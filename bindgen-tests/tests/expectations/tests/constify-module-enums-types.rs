@@ -48,7 +48,7 @@ pub use self::anon_enum::Type as anon_enum_alias1;
 pub use self::anon_enum_alias1 as anon_enum_alias2;
 pub use self::anon_enum_alias2 as anon_enum_alias3;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct bar {
     pub member1: foo::Type,
     pub member2: foo_alias1,
@@ -86,7 +86,7 @@ impl Default for bar {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Baz {
     pub member1: ns2_Foo::Type,
 }
@@ -113,7 +113,7 @@ pub mod one_Foo {
     pub const Variant2: Type = 1;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Bar {
     pub baz: *mut one_Foo::Type,
 }
@@ -149,7 +149,7 @@ unsafe extern "C" {
     ) -> *mut foo_alias1;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct Thing<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub thing: T,

@@ -1,12 +1,12 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-#[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 #[repr(transparent)]
 pub struct __BindgenFloat16(pub u16);
 unsafe extern "C" {
     pub static mut global: __BindgenFloat16;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Test__Float16 {
     pub f: __BindgenFloat16,
 }
@@ -19,7 +19,7 @@ const _: () = {
     ][::std::mem::offset_of!(Test__Float16, f) - 0usize];
 };
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct Test__Float16Ref {
     pub f: *mut __BindgenFloat16,
 }

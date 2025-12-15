@@ -8,7 +8,7 @@ pub struct std_basic_string<CharT> {
     pub __bindgen_anon_1: std_basic_string__bindgen_ty_1<CharT>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct std_basic_string_Alloc_hider {
     pub storage: *mut ::std::os::raw::c_void,
 }
