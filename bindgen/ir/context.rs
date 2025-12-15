@@ -353,7 +353,7 @@ pub(crate) struct BindgenContext {
     /// hard errors while parsing duplicated macros, as well to allow macro
     /// expression parsing.
     ///
-    /// This needs to be an `std::HashMap` because the `cexpr` API requires it.
+    /// This needs to be an `std::HashMap` because the [`cexpr`] API requires it.
     parsed_macros: StdHashMap<Vec<u8>, cexpr::expr::EvalResult>,
 
     /// A map with all include locations.
@@ -2131,6 +2131,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Get the currently parsed macros.
+    /// This map only contains macros accepted by [`cexpr`]
     pub(crate) fn parsed_macros(
         &self,
     ) -> &StdHashMap<Vec<u8>, cexpr::expr::EvalResult> {
