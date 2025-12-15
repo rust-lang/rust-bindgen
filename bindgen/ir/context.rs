@@ -2055,10 +2055,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             let mut header_names_to_compile = Vec::new();
             let mut header_paths = Vec::new();
             let mut header_includes = Vec::new();
-            let single_header = self.options().input_headers.last().cloned()?;
-            for input_header in &self.options.input_headers
-                [..self.options.input_headers.len() - 1]
-            {
+            let [input_headers @ .., single_header] =
+                &self.options().input_headers[..]
+            else {
+                return None;
+            };
+            for input_header in input_headers {
                 let path = Path::new(input_header.as_ref());
                 if let Some(header_path) = path.parent() {
                     if header_path == Path::new("") {
@@ -2095,7 +2097,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             }
             let mut tu = clang::TranslationUnit::parse(
                 &index,
-                &single_header,
+                single_header,
                 &c_args,
                 &[],
                 clang_sys::CXTranslationUnit_ForSerialization,
