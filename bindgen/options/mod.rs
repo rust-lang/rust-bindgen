@@ -1109,6 +1109,21 @@ options! {
         },
         as_args: "--ctypes-prefix",
     },
+    /// Use C platform-specific types for generated macro constants.
+    macro_const_use_ctypes: bool {
+        methods: {
+            /// Use C platform-specific types for generated macro constants.
+            ///
+            /// This implies `clang_macro_fallback` and takes precedence over
+            /// `default_macro_constant_type`.
+            pub fn macro_const_use_ctypes(mut self) -> Builder {
+                self.options.macro_const_use_ctypes = true;
+                self.options.clang_macro_fallback = true;
+                self
+            }
+        },
+        as_args: "--macro-const-use-ctypes",
+    }
     /// The prefix for anonymous fields.
     anon_fields_prefix: String {
         default: DEFAULT_ANON_FIELDS_PREFIX.into(),
