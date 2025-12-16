@@ -1619,11 +1619,8 @@ impl FieldCodegen<'_> for FieldData {
         };
 
         let mut field = quote! {};
-        if ctx.options().generate_comments {
-            if let Some(raw_comment) = self.comment() {
-                let comment = ctx.options().process_comment(raw_comment);
-                field = attributes::doc(&comment);
-            }
+        if let Some(comment) = self.doc_comment(ctx) {
+            field = attributes::doc(&comment);
         }
 
         let field_name = self
@@ -3925,14 +3922,11 @@ impl CodeGenerator for Enum {
                 continue;
             }
 
-            let mut variant_doc = quote! {};
-            if ctx.options().generate_comments {
-                if let Some(raw_comment) = variant.comment() {
-                    let processed_comment =
-                        ctx.options().process_comment(raw_comment);
-                    variant_doc = attributes::doc(&processed_comment);
-                }
-            }
+            let variant_doc = if let Some(comment) = variant.doc_comment(ctx) {
+                attributes::doc(&comment)
+            } else {
+                quote! {}
+            };
 
             match seen_values.entry(variant.val()) {
                 Entry::Occupied(ref entry) => {

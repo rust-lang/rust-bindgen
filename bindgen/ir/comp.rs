@@ -142,6 +142,7 @@ pub(crate) trait FieldMethods {
     fn ty(&self) -> TypeId;
 
     /// Get the comment for this field.
+    #[allow(dead_code)] // Used by trait implementations in Field wrapper types
     fn comment(&self) -> Option<&str>;
 
     /// If this is a bitfield, how many bits does it need?
@@ -899,6 +900,20 @@ impl FieldMethods for FieldData {
 
     fn offset(&self) -> Option<usize> {
         self.offset
+    }
+}
+
+impl FieldData {
+    /// Get this field's documentation comment, if it has any, already preprocessed
+    /// and with the right indentation. Returns `None` if comment generation is disabled.
+    pub(crate) fn doc_comment(&self, ctx: &BindgenContext) -> Option<String> {
+        if !ctx.options().generate_comments {
+            return None;
+        }
+
+        self.comment
+            .as_ref()
+            .map(|comment| ctx.options().process_comment(comment))
     }
 }
 
