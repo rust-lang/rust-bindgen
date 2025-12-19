@@ -463,7 +463,7 @@ impl Builder {
 
 impl BindgenOptions {
     fn build(&mut self) {
-        const REGEX_SETS_LEN: usize = 29;
+        const REGEX_SETS_LEN: usize = 30;
 
         let regex_sets: [_; REGEX_SETS_LEN] = [
             &mut self.blocklisted_types,
@@ -484,6 +484,7 @@ impl BindgenOptions {
             &mut self.newtype_global_enums,
             &mut self.rustified_enums,
             &mut self.rustified_non_exhaustive_enums,
+            &mut self.rustified_repr_c_enums,
             &mut self.type_alias,
             &mut self.new_type_alias,
             &mut self.new_type_alias_deref,
@@ -519,6 +520,7 @@ impl BindgenOptions {
                     "--newtype-global-enum",
                     "--rustified-enum",
                     "--rustified-enum-non-exhaustive",
+                    "--rustified-enum-repr-c",
                     "--constified-enum-module",
                     "--constified-enum",
                     "--type-alias",
