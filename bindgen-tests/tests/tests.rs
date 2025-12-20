@@ -1,4 +1,5 @@
-use bindgen::{clang_version, Builder};
+use bindgen::callbacks::{ItemInfo, ItemKind, ParseCallbacks};
+use bindgen::{clang_version, Builder, Formatter};
 use owo_colors::{OwoColorize, Style};
 use similar::{ChangeTag, TextDiff};
 use std::env;
@@ -423,6 +424,58 @@ fn test_header_contents() {
 ",
     )
     .unwrap();
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn test_declare_safe() {
+    // prettyplease does not retain non-doc comments: https://github.com/dtolnay/prettyplease/issues/50
+
+    #[derive(Debug)]
+    struct DeclareSafe;
+
+    impl ParseCallbacks for DeclareSafe {
+        fn declare_safe(&self, item_info: ItemInfo<'_>) -> Option<String> {
+            match item_info.kind {
+                ItemKind::Function => {
+                    if item_info.name == "my_safe_func" {
+                        return Some("safe to call".to_owned());
+                    }
+                }
+                ItemKind::Var => {
+                    if item_info.name == "my_safe_var" {
+                        return Some("safe to access".to_owned());
+                    }
+                }
+                _ => todo!(),
+            }
+            None
+        }
+    }
+
+    let actual = builder()
+        .disable_header_comment()
+        .header_contents(
+            "safe.h",
+            "const int my_safe_var[3] = {1,2,3};\
+                     int my_safe_func();",
+        )
+        .formatter(Formatter::Rustfmt)
+        .parse_callbacks(Box::new(DeclareSafe))
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let expected = r#"unsafe extern "C" {
+    /* Safety : "safe to access" */
+    pub safe static my_safe_var: [::std::os::raw::c_int; 3usize];
+}
+unsafe extern "C" {
+    /* Safety : "safe to call" */
+    pub safe fn my_safe_func() -> ::std::os::raw::c_int;
+}
+"#;
 
     assert_eq!(expected, actual);
 }
