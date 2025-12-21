@@ -518,7 +518,7 @@ impl V56AMDY {
     #[inline]
     pub fn set_MADZ(&mut self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<0usize, 10u8>(val as u64)
         }
     }
@@ -538,7 +538,7 @@ impl V56AMDY {
     #[inline]
     pub unsafe fn set_MADZ_raw(this: *mut Self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -556,7 +556,7 @@ impl V56AMDY {
     #[inline]
     pub fn set_MAI0(&mut self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<10usize, 2u8>(val as u64)
         }
     }
@@ -576,7 +576,7 @@ impl V56AMDY {
     #[inline]
     pub unsafe fn set_MAI0_raw(this: *mut Self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -594,7 +594,7 @@ impl V56AMDY {
     #[inline]
     pub fn set_MAI1(&mut self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<12usize, 2u8>(val as u64)
         }
     }
@@ -614,7 +614,7 @@ impl V56AMDY {
     #[inline]
     pub unsafe fn set_MAI1_raw(this: *mut Self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -632,7 +632,7 @@ impl V56AMDY {
     #[inline]
     pub fn set_MAI2(&mut self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<14usize, 2u8>(val as u64)
         }
     }
@@ -652,7 +652,7 @@ impl V56AMDY {
     #[inline]
     pub unsafe fn set_MAI2_raw(this: *mut Self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -674,7 +674,7 @@ impl V56AMDY {
                 0usize,
                 10u8,
             >({
-                let MADZ: u16 = unsafe { ::std::mem::transmute(MADZ) };
+                let MADZ: u16 = MADZ as _;
                 MADZ as u64
             });
         __bindgen_bitfield_unit
@@ -682,7 +682,7 @@ impl V56AMDY {
                 10usize,
                 2u8,
             >({
-                let MAI0: u16 = unsafe { ::std::mem::transmute(MAI0) };
+                let MAI0: u16 = MAI0 as _;
                 MAI0 as u64
             });
         __bindgen_bitfield_unit
@@ -690,7 +690,7 @@ impl V56AMDY {
                 12usize,
                 2u8,
             >({
-                let MAI1: u16 = unsafe { ::std::mem::transmute(MAI1) };
+                let MAI1: u16 = MAI1 as _;
                 MAI1 as u64
             });
         __bindgen_bitfield_unit
@@ -698,7 +698,7 @@ impl V56AMDY {
                 14usize,
                 2u8,
             >({
-                let MAI2: u16 = unsafe { ::std::mem::transmute(MAI2) };
+                let MAI2: u16 = MAI2 as _;
                 MAI2 as u64
             });
         __bindgen_bitfield_unit
@@ -712,7 +712,7 @@ impl V56AMDY {
     #[inline]
     pub fn set_MATH(&mut self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_2.set_const::<0usize, 10u8>(val as u64)
         }
     }
@@ -732,7 +732,7 @@ impl V56AMDY {
     #[inline]
     pub unsafe fn set_MATH_raw(this: *mut Self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 3usize],
             >>::raw_set_const::<
@@ -750,7 +750,7 @@ impl V56AMDY {
     #[inline]
     pub fn set_MATE(&mut self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_2.set_const::<10usize, 4u8>(val as u64)
         }
     }
@@ -770,7 +770,7 @@ impl V56AMDY {
     #[inline]
     pub unsafe fn set_MATE_raw(this: *mut Self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 3usize],
             >>::raw_set_const::<
@@ -788,7 +788,7 @@ impl V56AMDY {
     #[inline]
     pub fn set_MATW(&mut self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_2.set_const::<14usize, 2u8>(val as u64)
         }
     }
@@ -808,7 +808,7 @@ impl V56AMDY {
     #[inline]
     pub unsafe fn set_MATW_raw(this: *mut Self, val: U16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 3usize],
             >>::raw_set_const::<
@@ -826,7 +826,7 @@ impl V56AMDY {
     #[inline]
     pub fn set_MASW(&mut self, val: U8) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             self._bitfield_2.set_const::<16usize, 4u8>(val as u64)
         }
     }
@@ -846,7 +846,7 @@ impl V56AMDY {
     #[inline]
     pub unsafe fn set_MASW_raw(this: *mut Self, val: U8) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 3usize],
             >>::raw_set_const::<
@@ -864,7 +864,7 @@ impl V56AMDY {
     #[inline]
     pub fn set_MABW(&mut self, val: U8) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             self._bitfield_2.set_const::<20usize, 3u8>(val as u64)
         }
     }
@@ -884,7 +884,7 @@ impl V56AMDY {
     #[inline]
     pub unsafe fn set_MABW_raw(this: *mut Self, val: U8) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 3usize],
             >>::raw_set_const::<
@@ -902,7 +902,7 @@ impl V56AMDY {
     #[inline]
     pub fn set_MAXN(&mut self, val: U8) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             self._bitfield_2.set_const::<23usize, 1u8>(val as u64)
         }
     }
@@ -922,7 +922,7 @@ impl V56AMDY {
     #[inline]
     pub unsafe fn set_MAXN_raw(this: *mut Self, val: U8) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 3usize],
             >>::raw_set_const::<
@@ -946,7 +946,7 @@ impl V56AMDY {
                 0usize,
                 10u8,
             >({
-                let MATH: u16 = unsafe { ::std::mem::transmute(MATH) };
+                let MATH: u16 = MATH as _;
                 MATH as u64
             });
         __bindgen_bitfield_unit
@@ -954,7 +954,7 @@ impl V56AMDY {
                 10usize,
                 4u8,
             >({
-                let MATE: u16 = unsafe { ::std::mem::transmute(MATE) };
+                let MATE: u16 = MATE as _;
                 MATE as u64
             });
         __bindgen_bitfield_unit
@@ -962,7 +962,7 @@ impl V56AMDY {
                 14usize,
                 2u8,
             >({
-                let MATW: u16 = unsafe { ::std::mem::transmute(MATW) };
+                let MATW: u16 = MATW as _;
                 MATW as u64
             });
         __bindgen_bitfield_unit
@@ -970,7 +970,7 @@ impl V56AMDY {
                 16usize,
                 4u8,
             >({
-                let MASW: u8 = unsafe { ::std::mem::transmute(MASW) };
+                let MASW: u8 = MASW as _;
                 MASW as u64
             });
         __bindgen_bitfield_unit
@@ -978,7 +978,7 @@ impl V56AMDY {
                 20usize,
                 3u8,
             >({
-                let MABW: u8 = unsafe { ::std::mem::transmute(MABW) };
+                let MABW: u8 = MABW as _;
                 MABW as u64
             });
         __bindgen_bitfield_unit
@@ -986,7 +986,7 @@ impl V56AMDY {
                 23usize,
                 1u8,
             >({
-                let MAXN: u8 = unsafe { ::std::mem::transmute(MAXN) };
+                let MAXN: u8 = MAXN as _;
                 MAXN as u64
             });
         __bindgen_bitfield_unit

@@ -517,7 +517,7 @@ impl foo__bindgen_ty_1 {
     #[inline]
     pub fn set_b(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<0usize, 7u8>(val as u64)
         }
     }
@@ -537,7 +537,7 @@ impl foo__bindgen_ty_1 {
     #[inline]
     pub unsafe fn set_b_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -555,7 +555,7 @@ impl foo__bindgen_ty_1 {
     #[inline]
     pub fn set_c(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<7usize, 25u8>(val as u64)
         }
     }
@@ -575,7 +575,7 @@ impl foo__bindgen_ty_1 {
     #[inline]
     pub unsafe fn set_c_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -595,7 +595,7 @@ impl foo__bindgen_ty_1 {
                 0usize,
                 7u8,
             >({
-                let b: u32 = unsafe { ::std::mem::transmute(b) };
+                let b: u32 = b as _;
                 b as u64
             });
         __bindgen_bitfield_unit
@@ -603,7 +603,7 @@ impl foo__bindgen_ty_1 {
                 7usize,
                 25u8,
             >({
-                let c: u32 = unsafe { ::std::mem::transmute(c) };
+                let c: u32 = c as _;
                 c as u64
             });
         __bindgen_bitfield_unit

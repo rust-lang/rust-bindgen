@@ -522,7 +522,7 @@ impl S {
     #[inline]
     pub fn set_u(&mut self, val: ::std::os::raw::c_uint) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<0usize, 16u8>(val as u64)
         }
     }
@@ -542,7 +542,7 @@ impl S {
     #[inline]
     pub unsafe fn set_u_raw(this: *mut Self, val: ::std::os::raw::c_uint) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -561,7 +561,7 @@ impl S {
                 0usize,
                 16u8,
             >({
-                let u: u32 = unsafe { ::std::mem::transmute(u) };
+                let u: u32 = u as _;
                 u as u64
             });
         __bindgen_bitfield_unit
