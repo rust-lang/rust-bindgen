@@ -513,7 +513,7 @@ impl mach_msg_type_descriptor_t {
     #[inline]
     pub fn set_pad3(&mut self, val: ::std::os::raw::c_uint) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<0usize, 24u8>(val as u64)
         }
     }
@@ -533,7 +533,7 @@ impl mach_msg_type_descriptor_t {
     #[inline]
     pub unsafe fn set_pad3_raw(this: *mut Self, val: ::std::os::raw::c_uint) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -551,7 +551,7 @@ impl mach_msg_type_descriptor_t {
     #[inline]
     pub fn set_type(&mut self, val: ::std::os::raw::c_uint) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<24usize, 8u8>(val as u64)
         }
     }
@@ -571,7 +571,7 @@ impl mach_msg_type_descriptor_t {
     #[inline]
     pub unsafe fn set_type_raw(this: *mut Self, val: ::std::os::raw::c_uint) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -591,7 +591,7 @@ impl mach_msg_type_descriptor_t {
                 0usize,
                 24u8,
             >({
-                let pad3: u32 = unsafe { ::std::mem::transmute(pad3) };
+                let pad3: u32 = pad3 as _;
                 pad3 as u64
             });
         __bindgen_bitfield_unit
@@ -599,7 +599,7 @@ impl mach_msg_type_descriptor_t {
                 24usize,
                 8u8,
             >({
-                let type_: u32 = unsafe { ::std::mem::transmute(type_) };
+                let type_: u32 = type_ as _;
                 type_ as u64
             });
         __bindgen_bitfield_unit

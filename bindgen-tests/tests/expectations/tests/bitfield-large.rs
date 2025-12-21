@@ -509,7 +509,7 @@ impl HasBigBitfield {
     #[inline]
     pub fn set_x(&mut self, val: i128) {
         unsafe {
-            let val: u128 = ::std::mem::transmute(val);
+            let val: u128 = val as _;
             self._bitfield_1.set_const::<0usize, 128u8>(val as u64)
         }
     }
@@ -529,7 +529,7 @@ impl HasBigBitfield {
     #[inline]
     pub unsafe fn set_x_raw(this: *mut Self, val: i128) {
         unsafe {
-            let val: u128 = ::std::mem::transmute(val);
+            let val: u128 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 16usize],
             >>::raw_set_const::<
@@ -546,7 +546,7 @@ impl HasBigBitfield {
                 0usize,
                 128u8,
             >({
-                let x: u128 = unsafe { ::std::mem::transmute(x) };
+                let x: u128 = x as _;
                 x as u64
             });
         __bindgen_bitfield_unit
@@ -577,7 +577,7 @@ impl HasTwoBigBitfields {
     #[inline]
     pub fn set_x(&mut self, val: i128) {
         unsafe {
-            let val: u128 = ::std::mem::transmute(val);
+            let val: u128 = val as _;
             self._bitfield_1.set_const::<0usize, 80u8>(val as u64)
         }
     }
@@ -597,7 +597,7 @@ impl HasTwoBigBitfields {
     #[inline]
     pub unsafe fn set_x_raw(this: *mut Self, val: i128) {
         unsafe {
-            let val: u128 = ::std::mem::transmute(val);
+            let val: u128 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 16usize],
             >>::raw_set_const::<
@@ -615,7 +615,7 @@ impl HasTwoBigBitfields {
     #[inline]
     pub fn set_y(&mut self, val: i128) {
         unsafe {
-            let val: u128 = ::std::mem::transmute(val);
+            let val: u128 = val as _;
             self._bitfield_1.set_const::<80usize, 48u8>(val as u64)
         }
     }
@@ -635,7 +635,7 @@ impl HasTwoBigBitfields {
     #[inline]
     pub unsafe fn set_y_raw(this: *mut Self, val: i128) {
         unsafe {
-            let val: u128 = ::std::mem::transmute(val);
+            let val: u128 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 16usize],
             >>::raw_set_const::<
@@ -652,7 +652,7 @@ impl HasTwoBigBitfields {
                 0usize,
                 80u8,
             >({
-                let x: u128 = unsafe { ::std::mem::transmute(x) };
+                let x: u128 = x as _;
                 x as u64
             });
         __bindgen_bitfield_unit
@@ -660,7 +660,7 @@ impl HasTwoBigBitfields {
                 80usize,
                 48u8,
             >({
-                let y: u128 = unsafe { ::std::mem::transmute(y) };
+                let y: u128 = y as _;
                 y as u64
             });
         __bindgen_bitfield_unit

@@ -508,7 +508,7 @@ impl Struct {
     #[inline]
     pub fn set_a(&mut self, val: ::std::os::raw::c_uchar) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
         }
     }
@@ -528,7 +528,7 @@ impl Struct {
     #[inline]
     pub unsafe fn set_a_raw(this: *mut Self, val: ::std::os::raw::c_uchar) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -546,7 +546,7 @@ impl Struct {
     #[inline]
     pub fn set_b(&mut self, val: ::std::os::raw::c_uchar) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             self._bitfield_1.set_const::<1usize, 1u8>(val as u64)
         }
     }
@@ -566,7 +566,7 @@ impl Struct {
     #[inline]
     pub unsafe fn set_b_raw(this: *mut Self, val: ::std::os::raw::c_uchar) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -584,7 +584,7 @@ impl Struct {
     #[inline]
     pub fn set_c(&mut self, val: ::std::os::raw::c_uchar) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             self._bitfield_1.set_const::<2usize, 6u8>(val as u64)
         }
     }
@@ -604,7 +604,7 @@ impl Struct {
     #[inline]
     pub unsafe fn set_c_raw(this: *mut Self, val: ::std::os::raw::c_uchar) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -622,7 +622,7 @@ impl Struct {
     #[inline]
     pub fn set_d(&mut self, val: ::std::os::raw::c_ushort) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<8usize, 16u8>(val as u64)
         }
     }
@@ -642,7 +642,7 @@ impl Struct {
     #[inline]
     pub unsafe fn set_d_raw(this: *mut Self, val: ::std::os::raw::c_ushort) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -660,7 +660,7 @@ impl Struct {
     #[inline]
     pub fn set_e(&mut self, val: ::std::os::raw::c_uchar) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             self._bitfield_1.set_const::<24usize, 8u8>(val as u64)
         }
     }
@@ -680,7 +680,7 @@ impl Struct {
     #[inline]
     pub unsafe fn set_e_raw(this: *mut Self, val: ::std::os::raw::c_uchar) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -703,7 +703,7 @@ impl Struct {
                 0usize,
                 1u8,
             >({
-                let a: u8 = unsafe { ::std::mem::transmute(a) };
+                let a: u8 = a as _;
                 a as u64
             });
         __bindgen_bitfield_unit
@@ -711,7 +711,7 @@ impl Struct {
                 1usize,
                 1u8,
             >({
-                let b: u8 = unsafe { ::std::mem::transmute(b) };
+                let b: u8 = b as _;
                 b as u64
             });
         __bindgen_bitfield_unit
@@ -719,7 +719,7 @@ impl Struct {
                 2usize,
                 6u8,
             >({
-                let c: u8 = unsafe { ::std::mem::transmute(c) };
+                let c: u8 = c as _;
                 c as u64
             });
         __bindgen_bitfield_unit
@@ -727,7 +727,7 @@ impl Struct {
                 8usize,
                 16u8,
             >({
-                let d: u16 = unsafe { ::std::mem::transmute(d) };
+                let d: u16 = d as _;
                 d as u64
             });
         __bindgen_bitfield_unit
@@ -735,7 +735,7 @@ impl Struct {
                 24usize,
                 8u8,
             >({
-                let e: u8 = unsafe { ::std::mem::transmute(e) };
+                let e: u8 = e as _;
                 e as u64
             });
         __bindgen_bitfield_unit
@@ -762,7 +762,7 @@ impl Inner {
     #[inline]
     pub fn set_a(&mut self, val: ::std::os::raw::c_ushort) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<0usize, 16u8>(val as u64)
         }
     }
@@ -782,7 +782,7 @@ impl Inner {
     #[inline]
     pub unsafe fn set_a_raw(this: *mut Self, val: ::std::os::raw::c_ushort) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -800,7 +800,7 @@ impl Inner {
     #[inline]
     pub fn set_b(&mut self, val: ::std::os::raw::c_ushort) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<16usize, 16u8>(val as u64)
         }
     }
@@ -820,7 +820,7 @@ impl Inner {
     #[inline]
     pub unsafe fn set_b_raw(this: *mut Self, val: ::std::os::raw::c_ushort) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -840,7 +840,7 @@ impl Inner {
                 0usize,
                 16u8,
             >({
-                let a: u16 = unsafe { ::std::mem::transmute(a) };
+                let a: u16 = a as _;
                 a as u64
             });
         __bindgen_bitfield_unit
@@ -848,7 +848,7 @@ impl Inner {
                 16usize,
                 16u8,
             >({
-                let b: u16 = unsafe { ::std::mem::transmute(b) };
+                let b: u16 = b as _;
                 b as u64
             });
         __bindgen_bitfield_unit
