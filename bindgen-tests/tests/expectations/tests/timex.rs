@@ -542,7 +542,7 @@ impl timex_named {
     #[inline]
     pub fn set_a(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<0usize, 32u8>(val as u64)
         }
     }
@@ -562,7 +562,7 @@ impl timex_named {
     #[inline]
     pub unsafe fn set_a_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
             >>::raw_set_const::<
@@ -580,7 +580,7 @@ impl timex_named {
     #[inline]
     pub fn set_b(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<32usize, 32u8>(val as u64)
         }
     }
@@ -600,7 +600,7 @@ impl timex_named {
     #[inline]
     pub unsafe fn set_b_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
             >>::raw_set_const::<
@@ -618,7 +618,7 @@ impl timex_named {
     #[inline]
     pub fn set_c(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<64usize, 32u8>(val as u64)
         }
     }
@@ -638,7 +638,7 @@ impl timex_named {
     #[inline]
     pub unsafe fn set_c_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
             >>::raw_set_const::<
@@ -656,7 +656,7 @@ impl timex_named {
     #[inline]
     pub fn set_d(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<96usize, 32u8>(val as u64)
         }
     }
@@ -676,7 +676,7 @@ impl timex_named {
     #[inline]
     pub unsafe fn set_d_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
             >>::raw_set_const::<
@@ -694,7 +694,7 @@ impl timex_named {
     #[inline]
     pub fn set_e(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<128usize, 32u8>(val as u64)
         }
     }
@@ -714,7 +714,7 @@ impl timex_named {
     #[inline]
     pub unsafe fn set_e_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
             >>::raw_set_const::<
@@ -732,7 +732,7 @@ impl timex_named {
     #[inline]
     pub fn set_f(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<160usize, 32u8>(val as u64)
         }
     }
@@ -752,7 +752,7 @@ impl timex_named {
     #[inline]
     pub unsafe fn set_f_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
             >>::raw_set_const::<
@@ -770,7 +770,7 @@ impl timex_named {
     #[inline]
     pub fn set_g(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<192usize, 32u8>(val as u64)
         }
     }
@@ -790,7 +790,7 @@ impl timex_named {
     #[inline]
     pub unsafe fn set_g_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
             >>::raw_set_const::<
@@ -808,7 +808,7 @@ impl timex_named {
     #[inline]
     pub fn set_h(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<224usize, 32u8>(val as u64)
         }
     }
@@ -828,7 +828,7 @@ impl timex_named {
     #[inline]
     pub unsafe fn set_h_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
             >>::raw_set_const::<
@@ -846,7 +846,7 @@ impl timex_named {
     #[inline]
     pub fn set_i(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<256usize, 32u8>(val as u64)
         }
     }
@@ -866,7 +866,7 @@ impl timex_named {
     #[inline]
     pub unsafe fn set_i_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
             >>::raw_set_const::<
@@ -884,7 +884,7 @@ impl timex_named {
     #[inline]
     pub fn set_j(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<288usize, 32u8>(val as u64)
         }
     }
@@ -904,7 +904,7 @@ impl timex_named {
     #[inline]
     pub unsafe fn set_j_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
             >>::raw_set_const::<
@@ -922,7 +922,7 @@ impl timex_named {
     #[inline]
     pub fn set_k(&mut self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             self._bitfield_1.set_const::<320usize, 32u8>(val as u64)
         }
     }
@@ -942,7 +942,7 @@ impl timex_named {
     #[inline]
     pub unsafe fn set_k_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = ::std::mem::transmute(val);
+            let val: u32 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 44usize],
             >>::raw_set_const::<

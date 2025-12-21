@@ -587,7 +587,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub fn set_header_split(&mut self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
         }
     }
@@ -607,7 +607,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub unsafe fn set_header_split_raw(this: *mut Self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -625,7 +625,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub fn set_hw_ip_checksum(&mut self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<1usize, 1u8>(val as u64)
         }
     }
@@ -645,7 +645,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub unsafe fn set_hw_ip_checksum_raw(this: *mut Self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -663,7 +663,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub fn set_hw_vlan_filter(&mut self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<2usize, 1u8>(val as u64)
         }
     }
@@ -683,7 +683,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub unsafe fn set_hw_vlan_filter_raw(this: *mut Self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -701,7 +701,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub fn set_hw_vlan_strip(&mut self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<3usize, 1u8>(val as u64)
         }
     }
@@ -721,7 +721,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub unsafe fn set_hw_vlan_strip_raw(this: *mut Self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -739,7 +739,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub fn set_hw_vlan_extend(&mut self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<4usize, 1u8>(val as u64)
         }
     }
@@ -759,7 +759,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub unsafe fn set_hw_vlan_extend_raw(this: *mut Self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -777,7 +777,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub fn set_jumbo_frame(&mut self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<5usize, 1u8>(val as u64)
         }
     }
@@ -797,7 +797,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub unsafe fn set_jumbo_frame_raw(this: *mut Self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -815,7 +815,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub fn set_hw_strip_crc(&mut self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<6usize, 1u8>(val as u64)
         }
     }
@@ -835,7 +835,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub unsafe fn set_hw_strip_crc_raw(this: *mut Self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -853,7 +853,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub fn set_enable_scatter(&mut self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<7usize, 1u8>(val as u64)
         }
     }
@@ -873,7 +873,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub unsafe fn set_enable_scatter_raw(this: *mut Self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -891,7 +891,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub fn set_enable_lro(&mut self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             self._bitfield_1.set_const::<8usize, 1u8>(val as u64)
         }
     }
@@ -911,7 +911,7 @@ impl rte_eth_rxmode {
     #[inline]
     pub unsafe fn set_enable_lro_raw(this: *mut Self, val: u16) {
         unsafe {
-            let val: u16 = ::std::mem::transmute(val);
+            let val: u16 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -938,7 +938,7 @@ impl rte_eth_rxmode {
                 0usize,
                 1u8,
             >({
-                let header_split: u16 = unsafe { ::std::mem::transmute(header_split) };
+                let header_split: u16 = header_split as _;
                 header_split as u64
             });
         __bindgen_bitfield_unit
@@ -946,9 +946,7 @@ impl rte_eth_rxmode {
                 1usize,
                 1u8,
             >({
-                let hw_ip_checksum: u16 = unsafe {
-                    ::std::mem::transmute(hw_ip_checksum)
-                };
+                let hw_ip_checksum: u16 = hw_ip_checksum as _;
                 hw_ip_checksum as u64
             });
         __bindgen_bitfield_unit
@@ -956,9 +954,7 @@ impl rte_eth_rxmode {
                 2usize,
                 1u8,
             >({
-                let hw_vlan_filter: u16 = unsafe {
-                    ::std::mem::transmute(hw_vlan_filter)
-                };
+                let hw_vlan_filter: u16 = hw_vlan_filter as _;
                 hw_vlan_filter as u64
             });
         __bindgen_bitfield_unit
@@ -966,7 +962,7 @@ impl rte_eth_rxmode {
                 3usize,
                 1u8,
             >({
-                let hw_vlan_strip: u16 = unsafe { ::std::mem::transmute(hw_vlan_strip) };
+                let hw_vlan_strip: u16 = hw_vlan_strip as _;
                 hw_vlan_strip as u64
             });
         __bindgen_bitfield_unit
@@ -974,9 +970,7 @@ impl rte_eth_rxmode {
                 4usize,
                 1u8,
             >({
-                let hw_vlan_extend: u16 = unsafe {
-                    ::std::mem::transmute(hw_vlan_extend)
-                };
+                let hw_vlan_extend: u16 = hw_vlan_extend as _;
                 hw_vlan_extend as u64
             });
         __bindgen_bitfield_unit
@@ -984,7 +978,7 @@ impl rte_eth_rxmode {
                 5usize,
                 1u8,
             >({
-                let jumbo_frame: u16 = unsafe { ::std::mem::transmute(jumbo_frame) };
+                let jumbo_frame: u16 = jumbo_frame as _;
                 jumbo_frame as u64
             });
         __bindgen_bitfield_unit
@@ -992,7 +986,7 @@ impl rte_eth_rxmode {
                 6usize,
                 1u8,
             >({
-                let hw_strip_crc: u16 = unsafe { ::std::mem::transmute(hw_strip_crc) };
+                let hw_strip_crc: u16 = hw_strip_crc as _;
                 hw_strip_crc as u64
             });
         __bindgen_bitfield_unit
@@ -1000,9 +994,7 @@ impl rte_eth_rxmode {
                 7usize,
                 1u8,
             >({
-                let enable_scatter: u16 = unsafe {
-                    ::std::mem::transmute(enable_scatter)
-                };
+                let enable_scatter: u16 = enable_scatter as _;
                 enable_scatter as u64
             });
         __bindgen_bitfield_unit
@@ -1010,7 +1002,7 @@ impl rte_eth_rxmode {
                 8usize,
                 1u8,
             >({
-                let enable_lro: u16 = unsafe { ::std::mem::transmute(enable_lro) };
+                let enable_lro: u16 = enable_lro as _;
                 enable_lro as u64
             });
         __bindgen_bitfield_unit
@@ -1070,7 +1062,7 @@ impl rte_eth_txmode {
     #[inline]
     pub fn set_hw_vlan_reject_tagged(&mut self, val: u8) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
         }
     }
@@ -1090,7 +1082,7 @@ impl rte_eth_txmode {
     #[inline]
     pub unsafe fn set_hw_vlan_reject_tagged_raw(this: *mut Self, val: u8) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -1108,7 +1100,7 @@ impl rte_eth_txmode {
     #[inline]
     pub fn set_hw_vlan_reject_untagged(&mut self, val: u8) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             self._bitfield_1.set_const::<1usize, 1u8>(val as u64)
         }
     }
@@ -1128,7 +1120,7 @@ impl rte_eth_txmode {
     #[inline]
     pub unsafe fn set_hw_vlan_reject_untagged_raw(this: *mut Self, val: u8) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -1146,7 +1138,7 @@ impl rte_eth_txmode {
     #[inline]
     pub fn set_hw_vlan_insert_pvid(&mut self, val: u8) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             self._bitfield_1.set_const::<2usize, 1u8>(val as u64)
         }
     }
@@ -1166,7 +1158,7 @@ impl rte_eth_txmode {
     #[inline]
     pub unsafe fn set_hw_vlan_insert_pvid_raw(this: *mut Self, val: u8) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -1187,9 +1179,7 @@ impl rte_eth_txmode {
                 0usize,
                 1u8,
             >({
-                let hw_vlan_reject_tagged: u8 = unsafe {
-                    ::std::mem::transmute(hw_vlan_reject_tagged)
-                };
+                let hw_vlan_reject_tagged: u8 = hw_vlan_reject_tagged as _;
                 hw_vlan_reject_tagged as u64
             });
         __bindgen_bitfield_unit
@@ -1197,9 +1187,7 @@ impl rte_eth_txmode {
                 1usize,
                 1u8,
             >({
-                let hw_vlan_reject_untagged: u8 = unsafe {
-                    ::std::mem::transmute(hw_vlan_reject_untagged)
-                };
+                let hw_vlan_reject_untagged: u8 = hw_vlan_reject_untagged as _;
                 hw_vlan_reject_untagged as u64
             });
         __bindgen_bitfield_unit
@@ -1207,9 +1195,7 @@ impl rte_eth_txmode {
                 2usize,
                 1u8,
             >({
-                let hw_vlan_insert_pvid: u8 = unsafe {
-                    ::std::mem::transmute(hw_vlan_insert_pvid)
-                };
+                let hw_vlan_insert_pvid: u8 = hw_vlan_insert_pvid as _;
                 hw_vlan_insert_pvid as u64
             });
         __bindgen_bitfield_unit

@@ -514,7 +514,7 @@ impl<T> foo<T> {
     #[inline]
     pub fn set_b(&mut self, val: bool) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             self._bitfield_1.set_const::<0usize, 8u8>(val as u64)
         }
     }
@@ -534,7 +534,7 @@ impl<T> foo<T> {
     #[inline]
     pub unsafe fn set_b_raw(this: *mut Self, val: bool) {
         unsafe {
-            let val: u8 = ::std::mem::transmute(val);
+            let val: u8 = val as _;
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -551,7 +551,7 @@ impl<T> foo<T> {
                 0usize,
                 8u8,
             >({
-                let b: u8 = unsafe { ::std::mem::transmute(b) };
+                let b: u8 = b as _;
                 b as u64
             });
         __bindgen_bitfield_unit
