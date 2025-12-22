@@ -4,7 +4,7 @@
 # 
 # We make an exception for stdarg.h which is used for
 # the wrapped va_list feature. stdarg.h is available since C89
-# therefor not having this header is a sign of a bigger issue.
+# therefore not having this header is a sign of a bigger issue.
 
 set -eu
 cd "$(dirname "$0")/.."

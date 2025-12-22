@@ -81,7 +81,7 @@ wildcard_imports = "allow"
 trivially_copy_pass_by_ref = "allow"
 unused_self = "allow"
 
-# Theese seem to be ok to ignore for now
+# These seem to be ok to ignore for now
 enum_glob_use = "allow"
 too_many_lines = "allow"
 
