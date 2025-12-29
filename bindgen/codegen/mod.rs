@@ -5527,14 +5527,6 @@ pub(crate) mod utils {
     ) {
         let prefix = ctx.trait_prefix();
 
-        // If the target supports `const fn`, declare eligible functions
-        // as `const fn` else just `fn`.
-        let const_fn = if true {
-            quote! { const fn }
-        } else {
-            quote! { fn }
-        };
-
         // TODO(emilio): The fmt::Debug impl could be way nicer with
         // std::intrinsics::type_name, but...
         let union_field_decl = quote! {
@@ -5542,23 +5534,22 @@ pub(crate) mod utils {
             pub struct __BindgenUnionField<T>(::#prefix::marker::PhantomData<T>);
         };
 
-        let transmute =
-            ctx.wrap_unsafe_ops(quote!(::#prefix::mem::transmute(self)));
+        let transmute = quote!(unsafe { ::#prefix::mem::transmute(self) });
 
         let union_field_impl = quote! {
             impl<T> __BindgenUnionField<T> {
                 #[inline]
-                pub #const_fn new() -> Self {
+                pub const fn new() -> Self {
                     __BindgenUnionField(::#prefix::marker::PhantomData)
                 }
 
                 #[inline]
-                pub unsafe fn as_ref(&self) -> &T {
+                pub const unsafe fn as_ref(&self) -> &T {
                     #transmute
                 }
 
                 #[inline]
-                pub unsafe fn as_mut(&mut self) -> &mut T {
+                pub const unsafe fn as_mut(&mut self) -> &mut T {
                     #transmute
                 }
             }

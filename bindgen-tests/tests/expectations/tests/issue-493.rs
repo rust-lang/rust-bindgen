@@ -7,12 +7,12 @@ impl<T> __BindgenUnionField<T> {
         __BindgenUnionField(::std::marker::PhantomData)
     }
     #[inline]
-    pub unsafe fn as_ref(&self) -> &T {
-        ::std::mem::transmute(self)
+    pub const unsafe fn as_ref(&self) -> &T {
+        unsafe { ::std::mem::transmute(self) }
     }
     #[inline]
-    pub unsafe fn as_mut(&mut self) -> &mut T {
-        ::std::mem::transmute(self)
+    pub const unsafe fn as_mut(&mut self) -> &mut T {
+        unsafe { ::std::mem::transmute(self) }
     }
 }
 impl<T> ::std::default::Default for __BindgenUnionField<T> {
