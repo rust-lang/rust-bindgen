@@ -11,7 +11,7 @@ set -o pipefail
 set_llvm_env() {
   export LLVM_CONFIG_PATH=${LLVM_PATH}/bin/llvm-config
   echo "LLVM_CONFIG_PATH=$LLVM_CONFIG_PATH"
-  
+
   export LIBCLANG_PATH=${LLVM_PATH}/lib/
   echo "LIBCLANG_PATH=$LIBCLANG_PATH"
 
@@ -20,9 +20,12 @@ set_llvm_env() {
 }
 
 assert_no_diff() {
-  git add -u
-  git diff @
-  git diff-index --quiet HEAD
+  (
+    unset DYLD_LIBRARY_PATH
+    git add -u
+    git diff @
+    git diff-index --quiet HEAD
+  )
 }
 
 get_cargo_args() {
