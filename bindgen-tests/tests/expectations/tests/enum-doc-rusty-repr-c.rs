@@ -19,3 +19,20 @@ pub enum B {
  Very interesting documentation, definitely.*/
     VAR_F = 5,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of B"][::std::mem::size_of::<B>() - 4usize];
+    ["Alignment of B"][::std::mem::align_of::<B>() - 4usize];
+};
+#[repr(C)]
+/// An enum with a value larger than the platform's `c_int`
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum BigEnum {
+    /// A value that is too large to fit in a 32-bit integer
+    BIG_ENUM_BIG = 4294967296,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of BigEnum"][::std::mem::size_of::<BigEnum>() - 8usize];
+    ["Alignment of BigEnum"][::std::mem::align_of::<BigEnum>() - 8usize];
+};
