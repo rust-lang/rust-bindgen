@@ -927,6 +927,10 @@ impl Bindings {
 
     /// Write these bindings as source text to a file.
     pub fn write_to_file<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
+        if let Some(parent_dir) = path.as_ref().parent() {
+            std::fs::create_dir_all(parent_dir)?;
+        }
+
         let file = OpenOptions::new()
             .write(true)
             .truncate(true)
