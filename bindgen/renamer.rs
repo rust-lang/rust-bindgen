@@ -4,7 +4,7 @@ pub use convert_case::Case;
 use convert_case::Casing as _;
 pub use regex::Regex;
 
-use crate::callbacks::{EnumVariantValue, ParseCallbacks};
+use crate::callbacks::{EnumVariantValue, ItemInfo, ParseCallbacks};
 
 /// Define the rules how a C identifier should be renamed.
 #[derive(Debug, Default)]
@@ -35,7 +35,7 @@ impl IdentRenamer {
             }
         }
         if let Some(new_val) = self.renames.get(val.as_str()) {
-            new_val.to_string()
+            new_val.clone()
         } else if let Some(case) = self.case {
             val.to_case(case)
         } else {
@@ -260,26 +260,26 @@ impl ParseCallbacks for Renamer {
             })
     }
 
-    fn item_name(&self, item_name: &str) -> Option<String> {
+    fn item_name(&self, info: ItemInfo<'_>) -> Option<String> {
         self.item_renames
-            .get(item_name)
+            .get(info.name)
             .map(ToString::to_string)
             .or_else(|| {
                 self.item_renames_ext
                     .iter()
                     .filter_map(|(re, rn)| {
-                        if re.is_match(item_name) {
+                        if re.is_match(info.name) {
                             Some(rn)
                         } else {
                             None
                         }
                     })
-                    .map(|rn| rn.apply(item_name))
+                    .map(|rn| rn.apply(info.name))
                     .next()
             })
             .or_else(|| {
                 if self.debug {
-                    println!("cargo::warning=Unrecognized item {item_name}");
+                    println!("cargo::warning=Unrecognized item {}", info.name);
                 }
                 None
             })
