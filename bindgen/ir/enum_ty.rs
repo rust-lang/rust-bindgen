@@ -235,6 +235,19 @@ impl Enum {
             ctx.options().default_enum_style
         }
     }
+    /// generate hash from enum variants
+    pub(crate) fn variants_name_hash(&self) -> u64 {
+        use std::collections::hash_map::DefaultHasher;
+        use std::hash::{Hash, Hasher};
+
+        let mut hasher = DefaultHasher::new();
+
+        for variant in self.variants() {
+            variant.name().hash(&mut hasher);
+        }
+
+        hasher.finish()
+    }
 }
 
 /// A single enum variant, to be contained only in an enum.
