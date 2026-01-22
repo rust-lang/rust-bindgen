@@ -266,6 +266,11 @@ impl<'a> StructLayoutTracker<'a> {
             return None;
         }
 
+        // If the last field was a bitfield, it will already have been padded.
+        if self.last_field_was_bitfield {
+            return None;
+        }
+
         // Padding doesn't make sense for rust unions.
         if self.is_rust_union {
             return None;
