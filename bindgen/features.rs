@@ -127,8 +127,10 @@ enum Version {
     Nightly,
 }
 
+/// The reason why a given rust target is not supported.
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub enum InvalidRustTarget {
+    /// The rust target is not supported by bindgen (is too old).
     TooEarly,
 }
 
@@ -187,6 +189,7 @@ macro_rules! define_rust_editions {
     }
 }
 
+/// This error is returned when a rust edition is unknown.
 #[derive(Debug)]
 pub struct InvalidRustEdition(String);
 
