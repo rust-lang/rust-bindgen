@@ -160,6 +160,32 @@ impl ParseCallbacks for OperatorRename {
     }
 }
 
+#[derive(Debug)]
+struct AllowItem;
+
+impl ParseCallbacks for AllowItem {
+    fn allow_or_block_item(&self, item: &ItemInfo) -> Option<AllowOrBlockItem> {
+        if item.name.starts_with("allowed_") {
+            Some(AllowOrBlockItem::Allow)
+        } else {
+            None
+        }
+    }
+}
+
+#[derive(Debug)]
+struct BlockItem;
+
+impl ParseCallbacks for BlockItem {
+    fn allow_or_block_item(&self, item: &ItemInfo) -> Option<AllowOrBlockItem> {
+        if item.name.starts_with("blocked_") {
+            Some(AllowOrBlockItem::Block)
+        } else {
+            None
+        }
+    }
+}
+
 pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
     match cb {
         "enum-variant-rename" => Box::new(EnumVariantRename),
@@ -169,6 +195,8 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
         "wrap-as-variadic-fn" => Box::new(WrapAsVariadicFn),
         "type-visibility" => Box::new(TypeVisibility),
         "operator-rename" => Box::new(OperatorRename),
+        "allow-item" => Box::new(AllowItem),
+        "block-item" => Box::new(BlockItem),
         call_back => {
             if let Some(prefix) =
                 call_back.strip_prefix("remove-function-prefix-")
