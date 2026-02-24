@@ -65,7 +65,10 @@ impl Enum {
             return Err(ParseError::Continue);
         }
 
-        let declaration = ty.declaration().canonical();
+        // Use the enum decl instead of the canonical destination. The
+        // cursor location of the first declaration may be the forward
+        // declaration.
+        let declaration = ty.declaration();
         let repr = declaration
             .enum_type()
             .and_then(|et| Item::from_ty(&et, declaration, None, ctx).ok());
