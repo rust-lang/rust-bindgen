@@ -20,12 +20,12 @@ const _: () = {
     ["Size of Null"][::std::mem::size_of::<Null>() - 1usize];
     ["Alignment of Null"][::std::mem::align_of::<Null>() - 1usize];
 };
-/** This type is an opaque union. Unions can't derive anything interesting like
- Debug or Default, even if their layout can, because it would require knowing
- which variant is in use. Opaque unions still end up as a `union` in the Rust
- bindings, but they just have one variant. Even so, can't derive. We should
- probably emit an opaque struct for opaque unions... but until then, we have
- this test to make sure that opaque unions don't derive and still compile.*/
+/// This type is an opaque union. Unions can't derive anything interesting like
+/// Debug or Default, even if their layout can, because it would require knowing
+/// which variant is in use. Opaque unions still end up as a `union` in the Rust
+/// bindings, but they just have one variant. Even so, can't derive. We should
+/// probably emit an opaque struct for opaque unions... but until then, we have
+/// this test to make sure that opaque unions don't derive and still compile.
 #[repr(C)]
 #[repr(align(4))]
 #[derive(Copy, Clone)]

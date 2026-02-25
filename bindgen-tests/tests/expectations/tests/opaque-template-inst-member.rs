@@ -12,8 +12,8 @@ impl<T: Copy + Default, const N: usize> Default for __BindgenOpaqueArray<[T; N]>
 pub struct OpaqueTemplate {
     pub _address: u8,
 }
-/** This should not end up deriving Debug/Hash because its `mBlah` field cannot derive
- Debug/Hash because the instantiation's definition cannot derive Debug/Hash.*/
+/// This should not end up deriving Debug/Hash because its `mBlah` field cannot derive
+/// Debug/Hash because the instantiation's definition cannot derive Debug/Hash.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct ContainsOpaqueTemplate {
@@ -35,8 +35,8 @@ const _: () = {
         "Offset of field: ContainsOpaqueTemplate::mBaz",
     ][::std::mem::offset_of!(ContainsOpaqueTemplate, mBaz) - 404usize];
 };
-/** This should not end up deriving Debug/Hash either, for similar reasons, although
- we're exercising base member edges now.*/
+/// This should not end up deriving Debug/Hash either, for similar reasons, although
+/// we're exercising base member edges now.
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct InheritsOpaqueTemplate {

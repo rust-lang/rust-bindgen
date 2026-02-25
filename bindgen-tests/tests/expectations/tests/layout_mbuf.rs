@@ -550,18 +550,18 @@ pub struct rte_mbuf {
     ///< Next segment of scattered packet.
     pub next: *mut rte_mbuf,
     pub __bindgen_anon_4: rte_mbuf__bindgen_ty_5,
-    /** Size of the application private data. In case of an indirect
- mbuf, it stores the direct mbuf private data size.*/
+    /// Size of the application private data. In case of an indirect
+    /// mbuf, it stores the direct mbuf private data size.
     pub priv_size: u16,
     /// Timesync flags for use with IEEE1588.
     pub timesync: u16,
 }
-/** 16-bit Reference counter.
- It should only be accessed using the following functions:
- rte_mbuf_refcnt_update(), rte_mbuf_refcnt_read(), and
- rte_mbuf_refcnt_set(). The functionality of these functions (atomic,
- or non-atomic) is controlled by the CONFIG_RTE_MBUF_REFCNT_ATOMIC
- config option.*/
+/// 16-bit Reference counter.
+/// It should only be accessed using the following functions:
+/// rte_mbuf_refcnt_update(), rte_mbuf_refcnt_read(), and
+/// rte_mbuf_refcnt_set(). The functionality of these functions (atomic,
+/// or non-atomic) is controlled by the CONFIG_RTE_MBUF_REFCNT_ATOMIC
+/// config option.
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_1 {

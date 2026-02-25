@@ -13,9 +13,9 @@ pub enum B {
     VAR_D = 3,
     ///< Document field with following exclamation
     VAR_E = 4,
-    /** Document field with preceding star, with a loong long multiline
- comment.
-
- Very interesting documentation, definitely.*/
+    /// Document field with preceding star, with a loong long multiline
+    /// comment.
+    ///
+    /// Very interesting documentation, definitely.
     VAR_F = 5,
 }
