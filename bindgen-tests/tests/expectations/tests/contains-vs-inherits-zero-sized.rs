@@ -10,8 +10,8 @@ const _: () = {
     ["Size of Empty"][::std::mem::size_of::<Empty>() - 1usize];
     ["Alignment of Empty"][::std::mem::align_of::<Empty>() - 1usize];
 };
-/** This should not get an `_address` byte, so `sizeof(Inherits)` should be
- `1`.*/
+/// This should not get an `_address` byte, so `sizeof(Inherits)` should be
+/// `1`.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Inherits {
@@ -23,8 +23,8 @@ const _: () = {
     ["Alignment of Inherits"][::std::mem::align_of::<Inherits>() - 1usize];
     ["Offset of field: Inherits::b"][::std::mem::offset_of!(Inherits, b) - 0usize];
 };
-/** This should not get an `_address` byte, but contains `Empty` which *does* get
- one, so `sizeof(Contains)` should be `1 + 1`.*/
+/// This should not get an `_address` byte, but contains `Empty` which *does* get
+/// one, so `sizeof(Contains)` should be `1 + 1`.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Contains {
