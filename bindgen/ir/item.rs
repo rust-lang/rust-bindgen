@@ -516,6 +516,13 @@ impl Item {
             .map(|comment| ctx.options().process_comment(comment))
     }
 
+    /// Set this item's raw comment if it does not already have one.
+    pub(crate) fn set_comment_if_none(&mut self, comment: String) {
+        if self.comment.is_none() {
+            self.comment = Some(comment);
+        }
+    }
+
     /// What kind of item is this?
     pub(crate) fn kind(&self) -> &ItemKind {
         &self.kind
