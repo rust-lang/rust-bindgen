@@ -3237,6 +3237,8 @@ pub enum EnumVariation {
     Rust {
         /// Indicates whether the generated struct should be `#[non_exhaustive]`
         non_exhaustive: bool,
+        /// Indicates whether the generated struct should be `#[repr(C)]`
+        repr_c: bool,
     },
     /// The code for this enum will use a newtype
     NewType {
@@ -3268,11 +3270,14 @@ impl fmt::Display for EnumVariation {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
             Self::Rust {
-                non_exhaustive: false,
-            } => "rust",
-            Self::Rust {
-                non_exhaustive: true,
-            } => "rust_non_exhaustive",
+                non_exhaustive,
+                repr_c,
+            } => match (*non_exhaustive, *repr_c) {
+                (false, false) => "rust",
+                (false, true) => "rust_repr_c",
+                (true, false) => "rust_non_exhaustive",
+                (true, true) => "rust_non_exhaustive_repr_c",
+            },
             Self::NewType {
                 is_bitfield: true, ..
             } => "bitfield",
@@ -3301,9 +3306,19 @@ impl FromStr for EnumVariation {
         match s {
             "rust" => Ok(EnumVariation::Rust {
                 non_exhaustive: false,
+                repr_c: false,
+            }),
+            "rust_repr_c" => Ok(EnumVariation::Rust {
+                non_exhaustive: false,
+                repr_c: true,
             }),
             "rust_non_exhaustive" => Ok(EnumVariation::Rust {
                 non_exhaustive: true,
+                repr_c: false,
+            }),
+            "rust_non_exhaustive_repr_c" => Ok(EnumVariation::Rust {
+                non_exhaustive: true,
+                repr_c: true,
             }),
             "bitfield" => Ok(EnumVariation::NewType {
                 is_bitfield: true,
@@ -3350,6 +3365,7 @@ struct EnumBuilder {
 enum EnumBuilderKind {
     Rust {
         non_exhaustive: bool,
+        repr_c: bool,
     },
     NewType {
         is_bitfield: bool,
@@ -3395,9 +3411,13 @@ impl EnumBuilder {
                 is_anonymous: enum_is_anonymous,
             },
 
-            EnumVariation::Rust { non_exhaustive } => {
-                EnumBuilderKind::Rust { non_exhaustive }
-            }
+            EnumVariation::Rust {
+                non_exhaustive,
+                repr_c,
+            } => EnumBuilderKind::Rust {
+                non_exhaustive,
+                repr_c,
+            },
 
             EnumVariation::Consts => EnumBuilderKind::Consts {
                 needs_typedef: !has_typedef,
@@ -3608,14 +3628,23 @@ impl EnumBuilder {
 
         // 2. Generate the enum representation
         match self.kind {
-            EnumBuilderKind::Rust { non_exhaustive } => {
+            EnumBuilderKind::Rust {
+                non_exhaustive,
+                repr_c,
+            } => {
                 let non_exhaustive_opt =
                     non_exhaustive.then(attributes::non_exhaustive);
+
+                let repr = if repr_c {
+                    attributes::repr_c()
+                } else {
+                    quote! { #[repr(#enum_repr)] }
+                };
 
                 quote! {
                     // Note: repr is on top of attrs to keep the test expectations diff small.
                     // a future commit could move it further down.
-                    #[repr(#enum_repr)]
+                    #repr
                     #non_exhaustive_opt
                     #( #attrs )*
                     pub enum #enum_ident {
@@ -4018,6 +4047,49 @@ impl CodeGenerator for Enum {
 
         let item = builder.build(ctx, &enum_rust_ty);
         result.push(item);
+
+        if ctx.options().layout_tests &&
+            matches!(variation, EnumVariation::Rust { repr_c: true, .. })
+        {
+            if let Some(layout) = layout {
+                let compile_time = ctx.options().rust_features().offset_of;
+                let fn_name = if compile_time {
+                    None
+                } else {
+                    let fn_name = format!("bindgen_test_layout_{ident}");
+                    Some(ctx.rust_ident_raw(fn_name))
+                };
+                let prefix = ctx.trait_prefix();
+                let size_of_expr = quote! {
+                    ::#prefix::mem::size_of::<#ident>()
+                };
+                let align_of_expr = quote! {
+                    ::#prefix::mem::align_of::<#ident>()
+                };
+                let size = layout.size;
+                let align = layout.align;
+                let size_of_err = format!("Size of {ident}");
+                let align_of_err = format!("Alignment of {ident}");
+
+                if compile_time {
+                    result.push(quote! {
+                        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
+                        const _: () = {
+                            [#size_of_err][#size_of_expr - #size];
+                            [#align_of_err][#align_of_expr - #align];
+                        };
+                    });
+                } else {
+                    result.push(quote! {
+                        #[test]
+                        fn #fn_name() {
+                            assert_eq!(#size_of_expr, #size, #size_of_err);
+                            assert_eq!(#align_of_expr, #align, #align_of_err);
+                        }
+                    });
+                }
+            }
+        }
     }
 }
 

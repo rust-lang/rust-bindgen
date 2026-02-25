@@ -227,6 +227,7 @@
 --------------------------------------------------------------------------------
 # Unreleased
 ## Added
+ * Add option in CLI to use rustified repr-C enums (--rustified-repr-c-enum, #3265).
 ## Changed
 ## Removed
 - Removed support for generating code for rustc versions < 1.51.
