@@ -505,6 +505,10 @@ struct BindgenCommand {
     /// Use DSTs to represent structures with flexible array members.
     #[arg(long)]
     flexarray_dst: bool,
+    /// Resolve the true type of macro definition as constant and use
+    /// corresponding C types.
+    #[arg(long)]
+    macro_const_use_ctypes: bool,
     /// Derive custom traits on any kind of type. The CUSTOM value must be of the shape REGEX=DERIVE where DERIVE is a comma-separated list of derive macros.
     #[arg(long, value_name = "CUSTOM", value_parser = parse_custom_derive)]
     with_derive_custom: Vec<(Vec<String>, String)>,
@@ -697,6 +701,7 @@ where
         clang_macro_fallback,
         clang_macro_fallback_build_dir,
         flexarray_dst,
+        macro_const_use_ctypes,
         with_derive_custom,
         with_derive_custom_struct,
         with_derive_custom_enum,
@@ -1003,6 +1008,7 @@ where
             clang_macro_fallback => |b, _| b.clang_macro_fallback(),
             clang_macro_fallback_build_dir,
             flexarray_dst,
+            macro_const_use_ctypes => |b, _| b.macro_const_use_ctypes(),
             wrap_static_fns,
             wrap_static_fns_path,
             wrap_static_fns_suffix,

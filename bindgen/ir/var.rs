@@ -177,8 +177,6 @@ impl ClangSubItemParser for Var {
         cursor: clang::Cursor,
         ctx: &mut BindgenContext,
     ) -> Result<ParseResult<Self>, ParseError> {
-        use cexpr::expr::EvalResult;
-        use cexpr::literal::CChar;
         use clang_sys::*;
         match cursor.kind() {
             CXCursor_MacroDefinition => {
@@ -210,7 +208,9 @@ impl ClangSubItemParser for Var {
                 // NB: It's important to "note" the macro even if the result is
                 // not an integer, otherwise we might loose other kind of
                 // derived macros.
-                ctx.note_parsed_macro(id.clone(), value.clone());
+                if let ClangOrCexprMacroEval::Cexpr(value) = &value {
+                    ctx.note_parsed_macro(id.clone(), value.clone());
+                }
 
                 if previously_defined {
                     let name = String::from_utf8(id).unwrap();
@@ -223,23 +223,55 @@ impl ClangSubItemParser for Var {
                 // enforce utf8 there, so we should have already panicked at
                 // this point.
                 let name = String::from_utf8(id).unwrap();
+                let value = match value {
+                    ClangOrCexprMacroEval::Cexpr(eval_result) => {
+                        eval_result.into()
+                    }
+                    ClangOrCexprMacroEval::Clang(eval_result) => eval_result,
+                };
                 let (type_kind, val) = match value {
-                    EvalResult::Invalid => return Err(ParseError::Continue),
-                    EvalResult::Float(f) => {
-                        (TypeKind::Float(FloatKind::Double), VarType::Float(f))
+                    MacroEvalResult::Invalid => {
+                        return Err(ParseError::Continue)
                     }
-                    EvalResult::Char(c) => {
-                        let c = match c {
-                            CChar::Char(c) => {
-                                assert_eq!(c.len_utf8(), 1);
-                                c as u8
-                            }
-                            CChar::Raw(c) => u8::try_from(c).unwrap(),
-                        };
-
-                        (TypeKind::Int(IntKind::U8), VarType::Char(c))
+                    MacroEvalResult::Float(float_lit, float_type) => {
+                        (TypeKind::Float(float_type), VarType::Float(float_lit))
                     }
-                    EvalResult::Str(val) => {
+                    MacroEvalResult::Char(MacroCharValue::SChar(char)) => (
+                        TypeKind::Int(IntKind::Char { is_signed: true }),
+                        VarType::Int(char.into()),
+                    ),
+                    MacroEvalResult::Char(MacroCharValue::UChar(char)) => (
+                        TypeKind::Int(IntKind::Char { is_signed: true }),
+                        VarType::Int(char.into()),
+                    ),
+                    MacroEvalResult::Char(MacroCharValue::WChar(char)) => {
+                        (TypeKind::Int(IntKind::WChar), VarType::Int(char))
+                    }
+                    MacroEvalResult::Char(MacroCharValue::Char16(char)) => (
+                        TypeKind::Int(IntKind::Char16),
+                        VarType::Int(char.into()),
+                    ),
+                    MacroEvalResult::Char(MacroCharValue::Char32(char)) => {
+                        (TypeKind::Int(IntKind::U32), VarType::Int(char.into()))
+                    }
+                    MacroEvalResult::Char(MacroCharValue::Raw(char)) => {
+                        let char = u8::try_from(char)
+                            .map_err(|_| ParseError::Continue)?;
+                        (TypeKind::Int(IntKind::U8), VarType::Char(char))
+                    }
+                    MacroEvalResult::Char(MacroCharValue::RustChar(char)) => {
+                        if char.len_utf8() != 1 {
+                            return Err(ParseError::Continue);
+                        }
+                        (
+                            TypeKind::Int(IntKind::U8),
+                            VarType::Char(
+                                char.try_into()
+                                    .map_err(|_| ParseError::Continue)?,
+                            ),
+                        )
+                    }
+                    MacroEvalResult::Str(val) => {
                         let char_ty = Item::builtin_type(
                             TypeKind::Int(IntKind::U8),
                             true,
@@ -250,13 +282,27 @@ impl ClangSubItemParser for Var {
                         }
                         (TypeKind::Pointer(char_ty), VarType::String(val))
                     }
-                    EvalResult::Int(Wrapping(value)) => {
-                        let kind = ctx
+                    MacroEvalResult::Int(value, int_type) => {
+                        let kind = if let Some(kind) = ctx
                             .options()
                             .last_callback(|c| c.int_macro(&name, value))
-                            .unwrap_or_else(|| {
-                                default_macro_constant_type(ctx, value)
-                            });
+                        {
+                            kind
+                        } else {
+                            match int_type {
+                                MacroIntType::Fit => {
+                                    default_macro_constant_type(ctx, value)
+                                }
+                                MacroIntType::Short => IntKind::Short,
+                                MacroIntType::UShort => IntKind::UShort,
+                                MacroIntType::Int => IntKind::Int,
+                                MacroIntType::UInt => IntKind::UInt,
+                                MacroIntType::Long => IntKind::Long,
+                                MacroIntType::LongLong => IntKind::LongLong,
+                                MacroIntType::ULong => IntKind::ULong,
+                                MacroIntType::ULongLong => IntKind::ULongLong,
+                            }
+                        };
 
                         (TypeKind::Int(kind), VarType::Int(value))
                     }
@@ -378,6 +424,64 @@ impl ClangSubItemParser for Var {
     }
 }
 
+/// Integer type for a macro expansion.
+#[derive(Clone, Copy, Debug)]
+pub(crate) enum MacroIntType {
+    /// This instructs the type lowering to use the smallest integer type that
+    /// holds the value.
+    Fit,
+    /// This type should be lowered into `c_short` or equivalent.
+    Short,
+    /// This type should be lowered into `c_ushort` or equivalent.
+    UShort,
+    /// This type should be lowered into `c_int` or equivalent.
+    Int,
+    /// This type should be lowered into `c_uint` or equivalent.
+    UInt,
+    /// This type should be lowered into `c_long` or equivalent.
+    Long,
+    /// This type should be lowered into `c_ulong` or equivalent.
+    ULong,
+    /// This type should be lowered into `c_longlong` or equivalent.
+    LongLong,
+    /// This type should be lowered into `c_ulonglong` or equivalent.
+    ULongLong,
+}
+
+/// Character value with precise typing.
+#[derive(Clone, Copy, Debug)]
+pub(crate) enum MacroCharValue {
+    /// Arbitrary value reported as a character
+    Raw(u64),
+    /// At least 16bit unsigned integer
+    Char16(u16),
+    /// At least 32bit unsigned integer
+    Char32(u32),
+    /// At least 8bit unsigned integer
+    UChar(u8),
+    /// At least 8bit signed integer
+    SChar(i8),
+    /// At least 16bit, maybe signed or unsigned, integer
+    WChar(i64),
+    /// Known Rust-style character
+    RustChar(char),
+}
+
+/// Macro evaluation results with precise typing.
+#[derive(Clone, Debug)]
+pub(crate) enum MacroEvalResult {
+    /// An integer literal expression
+    Int(i64, MacroIntType),
+    /// A string literal expression
+    Str(Vec<u8>),
+    /// A floating point literal expression
+    Float(f64, FloatKind),
+    /// A character value literal expression
+    Char(MacroCharValue),
+    /// No value: macro evaluation failed
+    Invalid,
+}
+
 /// This function uses a [`FallbackTranslationUnit`][clang::FallbackTranslationUnit] to parse each
 /// macro that cannot be parsed by the normal bindgen process for `#define`s.
 ///
@@ -390,7 +494,9 @@ impl ClangSubItemParser for Var {
 fn parse_macro_clang_fallback(
     ctx: &mut BindgenContext,
     cursor: &clang::Cursor,
-) -> Option<(Vec<u8>, cexpr::expr::EvalResult)> {
+) -> Option<(Vec<u8>, MacroEvalResult)> {
+    use clang_sys::*;
+
     if !ctx.options().clang_macro_fallback {
         return None;
     }
@@ -410,21 +516,128 @@ fn parse_macro_clang_fallback(
     let macro_stmt = all_stmts.first()?;
     // Children should all be expressions from the compound statement
     let paren_exprs = macro_stmt.collect_children();
-    // First child in all_exprs is the expression utilizing the given macro to be evaluated
-    // Should  be ParenExpr
+    // First child in all_exprs is the expression utilizing the given macro to
+    // be evaluated, which hould be ParenExpr
     let paren = paren_exprs.first()?;
-
+    let result = paren.evaluate()?;
+    let value_type = result.value_type().canonical_type();
+    if !value_type.is_valid() {
+        return None;
+    }
+    let name = cursor.spelling().into_bytes();
     Some((
-        cursor.spelling().into_bytes(),
-        cexpr::expr::EvalResult::Int(Wrapping(paren.evaluate()?.as_int()?)),
+        name,
+        if let Some(int_lit) = result.as_int() {
+            match value_type.kind() {
+                // Integers
+                CXType_Int => MacroEvalResult::Int(int_lit, MacroIntType::Int),
+                CXType_UInt => {
+                    MacroEvalResult::Int(int_lit, MacroIntType::UInt)
+                }
+                CXType_Short => {
+                    MacroEvalResult::Int(int_lit, MacroIntType::Short)
+                }
+                CXType_UShort => {
+                    MacroEvalResult::Int(int_lit, MacroIntType::UShort)
+                }
+                CXType_Long => {
+                    MacroEvalResult::Int(int_lit, MacroIntType::Long)
+                }
+                CXType_ULong => {
+                    MacroEvalResult::Int(int_lit, MacroIntType::ULong)
+                }
+                CXType_LongLong => {
+                    MacroEvalResult::Int(int_lit, MacroIntType::LongLong)
+                }
+                CXType_ULongLong => {
+                    MacroEvalResult::Int(int_lit, MacroIntType::ULongLong)
+                }
+                // Chars
+                CXType_Char16 => MacroEvalResult::Char(MacroCharValue::Char16(
+                    int_lit.try_into().ok()?,
+                )),
+                CXType_Char32 => MacroEvalResult::Char(MacroCharValue::Char32(
+                    int_lit.try_into().ok()?,
+                )),
+                CXType_Char_S | CXType_SChar => MacroEvalResult::Char(
+                    MacroCharValue::SChar(int_lit.try_into().ok()?),
+                ),
+                CXType_Char_U | CXType_UChar => MacroEvalResult::Char(
+                    MacroCharValue::UChar(int_lit.try_into().ok()?),
+                ),
+                CXType_WChar => {
+                    MacroEvalResult::Char(MacroCharValue::WChar(int_lit))
+                }
+                _ => {
+                    warn!(
+                        "Clang recognised an integeral literal for {} but
+                        Bindgen does not support it yet.",
+                        cursor.spelling(),
+                    );
+                    return None;
+                }
+            }
+        } else if let Some(str_lit) = result.as_str_literal() {
+            MacroEvalResult::Str(str_lit)
+        } else if let Some(float_lit) = result.as_double() {
+            MacroEvalResult::Float(
+                float_lit,
+                match value_type.kind() {
+                    CXType_Float => FloatKind::Float,
+                    CXType_BFloat16 | CXType_Float16 => FloatKind::Float16,
+                    CXType_Double => FloatKind::Double,
+                    CXType_LongDouble => FloatKind::LongDouble,
+                    CXType_Float128 => FloatKind::Float128,
+                    _ => {
+                        warn!(
+                            "Clang recognised a floating point literal for {} but
+                            Bindgen does not support it yet.",
+                            cursor.spelling(),
+                        );
+                        return None;
+                    }
+                },
+            )
+        } else {
+            return None;
+        },
     ))
+}
+
+impl From<cexpr::expr::EvalResult> for MacroEvalResult {
+    fn from(value: cexpr::expr::EvalResult) -> Self {
+        match value {
+            cexpr::expr::EvalResult::Int(wrapping) => {
+                MacroEvalResult::Int(wrapping.0, MacroIntType::Fit)
+            }
+            cexpr::expr::EvalResult::Float(float_lit) => {
+                MacroEvalResult::Float(float_lit, FloatKind::Double)
+            }
+            cexpr::expr::EvalResult::Char(cexpr::literal::CChar::Char(
+                char,
+            )) => MacroEvalResult::Char(MacroCharValue::RustChar(char)),
+            cexpr::expr::EvalResult::Char(cexpr::literal::CChar::Raw(char)) => {
+                MacroEvalResult::Char(MacroCharValue::Raw(char))
+            }
+            cexpr::expr::EvalResult::Str(str_lit) => {
+                MacroEvalResult::Str(str_lit)
+            }
+            cexpr::expr::EvalResult::Invalid => MacroEvalResult::Invalid,
+        }
+    }
+}
+
+#[derive(Debug)]
+enum ClangOrCexprMacroEval {
+    Cexpr(cexpr::expr::EvalResult),
+    Clang(MacroEvalResult),
 }
 
 /// Try and parse a macro using all the macros parsed until now.
 fn parse_macro(
     ctx: &mut BindgenContext,
     cursor: &clang::Cursor,
-) -> Option<(Vec<u8>, cexpr::expr::EvalResult)> {
+) -> Option<(Vec<u8>, ClangOrCexprMacroEval)> {
     use cexpr::expr;
 
     let mut cexpr_tokens = cursor.cexpr_tokens();
@@ -433,11 +646,22 @@ fn parse_macro(
         callbacks.modify_macro(&cursor.spelling(), &mut cexpr_tokens);
     }
 
+    let clang_fallback = |ctx| {
+        parse_macro_clang_fallback(ctx, cursor)
+            .map(|(name, result)| (name, ClangOrCexprMacroEval::Clang(result)))
+    };
+
+    if ctx.options().macro_const_use_ctypes {
+        return clang_fallback(ctx);
+    }
+
     let parser = expr::IdentifierParser::new(ctx.parsed_macros());
 
     match parser.macro_definition(&cexpr_tokens) {
-        Ok((_, (id, val))) => Some((id.into(), val)),
-        _ => parse_macro_clang_fallback(ctx, cursor),
+        Ok((_, (id, val))) => {
+            Some((id.into(), ClangOrCexprMacroEval::Cexpr(val)))
+        }
+        _ => clang_fallback(ctx),
     }
 }
 
