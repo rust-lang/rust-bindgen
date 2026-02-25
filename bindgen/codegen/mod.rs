@@ -2478,12 +2478,7 @@ impl CodeGenerator for CompInfo {
         let mut needs_debug_impl = false;
         let mut needs_partialeq_impl = false;
         let needs_flexarray_impl = flex_array_generic.is_some();
-        let type_id = item.id().expect_type_id(ctx);
-
-        if let Some(comment) = item
-            .comment(ctx)
-            .or_else(|| Self::get_typedef_fallback_comment(ctx, &type_id))
-        {
+        if let Some(comment) = item.comment(ctx) {
             attributes.push(attributes::doc(&comment));
         }
 
@@ -3069,48 +3064,6 @@ impl CompInfo {
                 #from_ptr_sized
             }
         }
-    }
-
-    /// Use a fallback comment from a type alias to this type if necessary
-    ///
-    /// The documentation for a type could get lost in the following circumstances:
-    ///
-    /// - We have a type and a type alias with the same canonical path
-    /// - The Documentation is only associated with the type alias
-    ///
-    /// In this case bindgen will not generate the type alias and the documentation would be lost.
-    /// To avoid this, we check here if there is any type alias to this type, which has
-    /// the same canonical path and return the comment as a fallback, if our type does
-    /// not have documentation.
-    fn get_typedef_fallback_comment(
-        ctx: &BindgenContext,
-        type_id: &crate::ir::context::TypeId,
-    ) -> Option<String> {
-        if !ctx.options().generate_comments {
-            return None;
-        }
-        let type_alias_comment = ctx
-            .items()
-            .filter(|(_id, alias)| {
-                let Some(this_ty) = alias.as_type() else {
-                    return false;
-                };
-                let TypeKind::Alias(alias_to) = this_ty.kind() else {
-                    return false;
-                };
-                //
-                match ctx.resolve_type(*alias_to).kind() {
-                    TypeKind::ResolvedTypeRef(resolved_typeid) => {
-                        resolved_typeid == type_id &&
-                            alias.canonical_path(ctx) ==
-                                type_id.canonical_path(ctx)
-                    }
-                    _ => false,
-                }
-            })
-            .filter_map(|(_id, item)| item.comment(ctx));
-        let alias_comment: Vec<String> = type_alias_comment.collect();
-        alias_comment.get(0).cloned()
     }
 }
 
