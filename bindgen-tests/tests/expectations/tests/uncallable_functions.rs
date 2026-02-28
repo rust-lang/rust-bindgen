@@ -14,11 +14,11 @@ const _: () = {
     ["Alignment of Test"][::std::mem::align_of::<Test>() - 8usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN4Test1bEv"]
+    #[link_name = "_ZN4Test1bEv"]
     pub fn Test_b(this: *mut Test);
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN4Test1cEv"]
+    #[link_name = "_ZN4Test1cEv"]
     pub fn Test_c(this: *mut Test);
 }
 impl Default for Test {
@@ -41,6 +41,6 @@ impl Test {
     }
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN4Test1aEv"]
+    #[link_name = "_ZN4Test1aEv"]
     pub fn Test_a(this: *mut ::std::os::raw::c_void);
 }

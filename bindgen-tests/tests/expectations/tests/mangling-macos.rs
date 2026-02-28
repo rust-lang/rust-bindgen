@@ -8,7 +8,7 @@ pub struct Foo {
     pub _address: u8,
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}__ZN3Foo4sBarE"]
+    #[link_name = "__ZN3Foo4sBarE"]
     pub static mut Foo_sBar: bool;
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]

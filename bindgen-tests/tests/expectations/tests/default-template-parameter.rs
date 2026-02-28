@@ -26,6 +26,6 @@ const _: () = {
     ][::std::mem::align_of::<Foo<bool, ::std::os::raw::c_int>>() - 4usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZL3bar"]
+    #[link_name = "_ZL3bar"]
     pub static mut bar: Foo<bool, ::std::os::raw::c_int>;
 }

@@ -839,7 +839,16 @@ impl CodeGenerator for Var {
                 ) {
                     canonical_name.as_str()
                 } else {
-                    attrs.push(attributes::link_name::<false>(link_name));
+                    if utils::names_will_be_identical_after_mangling(
+                        self.mangled_name().unwrap(),
+                        link_name,
+                        None,
+                    ) {
+                        // If the symbol name doesn't need mangling, don't tell LLVM to not mangle it.
+                        attrs.push(attributes::link_name::<true>(link_name));
+                    } else {
+                        attrs.push(attributes::link_name::<false>(link_name));
+                    }
                     link_name
                 }
             });
@@ -4780,7 +4789,16 @@ impl CodeGenerator for Function {
 
         if let Some(link_name) = link_name_attr {
             if !is_dynamic_function {
-                attributes.push(attributes::link_name::<false>(link_name));
+                if utils::names_will_be_identical_after_mangling(
+                    self.mangled_name().unwrap(),
+                    link_name,
+                    Some(abi),
+                ) {
+                    // If the symbol name doesn't need mangling, don't tell LLVM to not mangle it.
+                    attributes.push(attributes::link_name::<true>(link_name));
+                } else {
+                    attributes.push(attributes::link_name::<false>(link_name));
+                }
             }
         }
 
@@ -5976,6 +5994,10 @@ pub(crate) mod utils {
         mangled_name: &str,
         call_conv: Option<ClangAbi>,
     ) -> bool {
+        if mangled_name.contains('@') || mangled_name.contains('?') {
+            return false;
+        }
+
         // If the mangled name and the canonical name are the same then no
         // mangling can have happened between the two versions.
         if canonical_name == mangled_name {
