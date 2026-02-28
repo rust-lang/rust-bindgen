@@ -774,3 +774,129 @@ fn test_wrap_static_fns() {
         .unwrap();
     }
 }
+
+/// Test the emit-symbol-list feature end-to-end, matching the use case from issue #3326:
+/// - foo-sys generates bindings and emits a symbol list
+/// - bar-sys (which depends on foo) uses that symbol list to blocklist foo's symbols
+#[test]
+fn test_emit_symbol_list() {
+    use bindgen::Builder;
+
+    let foo_header = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/headers/emit-symbol-list-foo.h"
+    );
+    let bar_header = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/headers/emit-symbol-list-bar.h"
+    );
+    let expected_foo_rust = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/expectations/tests/emit-symbol-list-foo.rs"
+    );
+    let expected_foo_symbols = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/expectations/tests/emit-symbol-list-foo.symbols"
+    );
+    let expected_bar_rust = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/expectations/tests/emit-symbol-list-bar.rs"
+    );
+
+    let observed_symbols = tempfile::NamedTempFile::new().unwrap();
+
+    // Step 1: Generate bindings for foo and emit symbol list
+    let foo_bindings = Builder::default()
+        .header(foo_header)
+        .clang_arg("--target=x86_64-unknown-linux")
+        .emit_symbol_list(observed_symbols.path())
+        .generate()
+        .expect("Failed to generate foo bindings");
+
+    // Check foo's generated Rust bindings
+    let observed_foo_rust = format_code(foo_bindings.to_string()).unwrap();
+    let expected_foo_rust_content =
+        fs::read_to_string(expected_foo_rust).unwrap();
+    let expected_foo_rust_formatted =
+        format_code(&expected_foo_rust_content).unwrap();
+
+    if observed_foo_rust != expected_foo_rust_formatted {
+        error_diff_mismatch(
+            &observed_foo_rust,
+            &expected_foo_rust_formatted,
+            Some(Path::new(foo_header)),
+            Path::new(expected_foo_rust),
+        )
+        .unwrap();
+    }
+
+    // Check foo's symbol list output
+    let observed_symbols_content =
+        fs::read_to_string(observed_symbols.path()).unwrap();
+    let expected_symbols_content =
+        fs::read_to_string(expected_foo_symbols).unwrap();
+
+    if observed_symbols_content != expected_symbols_content {
+        error_diff_mismatch(
+            &observed_symbols_content,
+            &expected_symbols_content,
+            Some(Path::new(foo_header)),
+            Path::new(expected_foo_symbols),
+        )
+        .unwrap();
+    }
+
+    // Step 2: Generate bindings for bar, using foo's symbol list as blocklist
+    // Include foo's bindings so bar can reference the blocklisted types.
+    //
+    // Note: In real usage, you'd typically `use foo_sys::*;` from a separate
+    // crate/module rather than `include` --- we use `include` here because
+    // expectation files are linted independently.
+    let mut bar_builder = Builder::default()
+        .header(bar_header)
+        .clang_arg("--target=x86_64-unknown-linux")
+        .clang_arg(concat!("-I", env!("CARGO_MANIFEST_DIR"), "/tests/headers"))
+        .raw_line("include!(\"emit-symbol-list-foo.rs\");");
+
+    // Parse the JSON symbol list and add blocklist entries
+    #[derive(serde::Deserialize)]
+    struct SymbolList {
+        types: Vec<String>,
+        functions: Vec<String>,
+        vars: Vec<String>,
+    }
+
+    let symbols: SymbolList =
+        serde_json::from_str(&observed_symbols_content).unwrap();
+
+    for name in &symbols.types {
+        bar_builder = bar_builder.blocklist_type(format!("^{name}$"));
+    }
+    for name in &symbols.functions {
+        bar_builder = bar_builder.blocklist_function(format!("^{name}$"));
+    }
+    for name in &symbols.vars {
+        bar_builder = bar_builder.blocklist_var(format!("^{name}$"));
+    }
+
+    let bar_bindings = bar_builder
+        .generate()
+        .expect("Failed to generate bar bindings");
+
+    // Check bar's generated Rust bindings (should NOT contain foo's symbols)
+    let observed_bar_rust = format_code(bar_bindings.to_string()).unwrap();
+    let expected_bar_rust_content =
+        fs::read_to_string(expected_bar_rust).unwrap();
+    let expected_bar_rust_formatted =
+        format_code(&expected_bar_rust_content).unwrap();
+
+    if observed_bar_rust != expected_bar_rust_formatted {
+        error_diff_mismatch(
+            &observed_bar_rust,
+            &expected_bar_rust_formatted,
+            Some(Path::new(bar_header)),
+            Path::new(expected_bar_rust),
+        )
+        .unwrap();
+    }
+}

@@ -1,0 +1,11 @@
+type my_int_t
+type int
+type my_struct
+type int
+type float
+type _bindgen_ty_id_9
+type int
+type void
+function my_function
+type int
+var my_global_var
