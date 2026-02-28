@@ -757,7 +757,7 @@ impl Type {
             (ty.template_args().is_some() && ty_kind != CXType_Typedef)
         {
             // This is a template instantiation.
-            match TemplateInstantiation::from_ty(ty, ctx) {
+            match TemplateInstantiation::from_ty(ty, parent_id, ctx) {
                 Some(inst) => TypeKind::TemplateInstantiation(inst),
                 None => TypeKind::Opaque,
             }
@@ -1069,7 +1069,7 @@ impl Type {
                 CXType_Typedef => {
                     let inner = cursor.typedef_type().expect("Not valid Type?");
                     let inner_id =
-                        Item::from_ty_or_ref(inner, location, None, ctx);
+                        Item::from_ty_or_ref(inner, location, parent_id, ctx);
                     if inner_id == potential_id {
                         warn!(
                             "Generating opaque type instead of self-referential \
