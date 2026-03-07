@@ -1801,7 +1801,9 @@ impl CompInfo {
             return (false, false);
         }
 
-        if layout.is_some_and(|l| l.size == 0) {
+        if layout.is_some_and(|l| l.size == 0) &&
+            union_style != NonCopyUnionStyle::ManuallyDrop
+        {
             return (false, false);
         }
 
