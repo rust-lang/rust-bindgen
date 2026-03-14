@@ -1302,8 +1302,8 @@ options! {
         methods: {},
         as_args: ignore,
     },
-    /// Tuples of unsaved file contents of the form (name, contents).
-    input_header_contents: Vec<(Box<str>, Box<str>)> {
+    /// Tuples of unsaved file contents of the form (absolute name, contents, original name).
+    input_header_contents: Vec<(Box<str>, Box<str>, Box<str>)> {
         methods: {
             /// Add `contents` as an input C/C++ header named `name`.
             ///
@@ -1320,7 +1320,7 @@ options! {
                     .into();
                 self.options
                     .input_header_contents
-                    .push((absolute_path, contents.into()));
+                    .push((absolute_path, contents.into(), name.into()));
                 self
             }
         },

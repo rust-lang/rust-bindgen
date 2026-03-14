@@ -2042,24 +2042,76 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         &mut self,
     ) -> Option<&mut clang::FallbackTranslationUnit> {
         if self.fallback_tu.is_none() {
-            let file = format!(
-                "{}/.macro_eval.c",
+            let build_dir: String =
                 match self.options().clang_macro_fallback_build_dir {
-                    Some(ref path) => path.as_os_str().to_str()?,
-                    None => ".",
-                }
-            );
+                    Some(ref path) => path.as_os_str().to_str()?.to_owned(),
+                    None => ".".to_owned(),
+                };
+            let file = format!("{build_dir}/.macro_eval.c");
 
             let index = clang::Index::new(false, false);
+
+            // Materialize input_header_contents to disk for the fallback
+            // translation unit. header_contents() provides virtual files
+            // that only exist as unsaved buffers in the main TU — the
+            // fallback TU needs real files on disk for PCH compilation.
+            // The files must remain on disk while the PCH is in use
+            // (clang validates source file existence when loading a PCH).
+            //
+            // Both input_headers and input_header_contents are included
+            // so the PCH captures macro definitions from all sources.
+            let materialized_paths: Vec<String> = self
+                .options()
+                .input_header_contents
+                .iter()
+                .filter_map(|(_, contents, original_name)| {
+                    // Sanitize the user-provided name so it always
+                    // resolves under build_dir:
+                    //  - Root/prefix components are dropped (absolute
+                    //    paths can't bypass build_dir via Path::join).
+                    //  - ".." is resolved against the accumulated path
+                    //    but clamped to empty (can't escape build_dir).
+                    //  - "." is skipped.
+                    // This preserves directory structure for collision
+                    // avoidance (e.g. "a.h" vs "dir/a.h") while
+                    // preventing any path from escaping build_dir.
+                    use std::path::Component;
+                    let mut parts: Vec<&std::ffi::OsStr> = Vec::new();
+                    for c in Path::new(original_name.as_ref()).components() {
+                        match c {
+                            Component::Normal(s) => parts.push(s),
+                            Component::ParentDir => {
+                                parts.pop();
+                            }
+                            _ => {}
+                        }
+                    }
+                    let relative: std::path::PathBuf = parts.iter().collect();
+                    let disk_path = Path::new(&build_dir).join(&relative);
+                    if let Some(parent) = disk_path.parent() {
+                        std::fs::create_dir_all(parent).ok()?;
+                    }
+                    std::fs::write(&disk_path, contents.as_ref()).ok()?;
+                    Some(disk_path.to_str()?.to_owned())
+                })
+                .collect();
+
+            let effective_headers: Vec<Box<str>> = self
+                .options()
+                .input_headers
+                .iter()
+                .cloned()
+                .chain(materialized_paths.iter().map(|p| p.clone().into()))
+                .collect();
+
+            let [input_headers @ .., single_header] = &effective_headers[..]
+            else {
+                return None;
+            };
 
             let mut header_names_to_compile = Vec::new();
             let mut header_paths = Vec::new();
             let mut header_includes = Vec::new();
-            let [input_headers @ .., single_header] =
-                &self.options().input_headers[..]
-            else {
-                return None;
-            };
             for input_header in input_headers {
                 let path = Path::new(input_header.as_ref());
                 if let Some(header_path) = path.parent() {
@@ -2071,17 +2123,15 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 } else {
                     header_paths.push(".");
                 }
+                // Use full path for -include to avoid basename
+                // collisions between headers in different directories.
+                header_includes.push(input_header.as_ref().to_string());
                 let header_name = path.file_name()?.to_str()?;
-                header_includes.push(header_name.to_string());
                 header_names_to_compile
                     .push(header_name.split(".h").next()?.to_string());
             }
             let pch = format!(
-                "{}/{}",
-                match self.options().clang_macro_fallback_build_dir {
-                    Some(ref path) => path.as_os_str().to_str()?,
-                    None => ".",
-                },
+                "{build_dir}/{}",
                 header_names_to_compile.join("-") + "-precompile.h.pch"
             );
 
@@ -2118,8 +2168,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     c_args.push(arg.clone());
                 }
             }
-            self.fallback_tu =
-                Some(clang::FallbackTranslationUnit::new(file, pch, &c_args)?);
+            self.fallback_tu = Some(clang::FallbackTranslationUnit::new(
+                file,
+                pch,
+                &c_args,
+                materialized_paths,
+            )?);
         }
 
         self.fallback_tu.as_mut()
