@@ -73,6 +73,23 @@ pub trait ParseCallbacks: fmt::Debug {
     /// the expansion of the macro as a sequence of tokens.
     fn func_macro(&self, _name: &str, _value: &[&[u8]]) {}
 
+    /// The Rust type that a translated function-like macro's value parameters
+    /// and return type should have, or `None` to use the inferred default.
+    ///
+    /// This is only called when `--translate-function-macros` is enabled.
+    /// The `inferred_type` parameter contains the type that would be used
+    /// by default (e.g., "u32" if all referenced constants are `u32`, or
+    /// "i64" as a fallback).
+    ///
+    /// Return a Rust type string like `"u32"`, `"i64"`, `"u16"`, etc.
+    fn func_macro_type(
+        &self,
+        _name: &str,
+        _inferred_type: &str,
+    ) -> Option<String> {
+        None
+    }
+
     /// This function should return whether, given an enum variant
     /// name, and value, this enum variant will forcibly be a constant.
     fn enum_variant_behavior(

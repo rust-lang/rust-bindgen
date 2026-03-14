@@ -356,6 +356,13 @@ pub(crate) struct BindgenContext {
     /// This needs to be an `std::HashMap` because the `cexpr` API requires it.
     parsed_macros: StdHashMap<Vec<u8>, cexpr::expr::EvalResult>,
 
+    /// Raw function-like macro definitions collected during parse, awaiting
+    /// translation in the post-parse fixpoint pass.
+    raw_function_macros: Vec<super::func_macro::RawFunctionMacro>,
+
+    /// Function-like macros translated to Rust `const fn` declarations.
+    function_macros: Vec<super::func_macro::FunctionMacro>,
+
     /// A map with all include locations.
     ///
     /// This is needed so that items are created in the order they are defined in.
@@ -587,6 +594,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             semantic_parents: Default::default(),
             currently_parsed_types: vec![],
             parsed_macros: Default::default(),
+            raw_function_macros: Default::default(),
+            function_macros: Default::default(),
             replacements: Default::default(),
             collected_typerefs: false,
             in_codegen: false,
@@ -1178,6 +1187,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     where
         F: FnOnce(&Self) -> Result<Out, CodegenError>,
     {
+        // Translate function-like macros before entering codegen phase,
+        // since translation needs access to parsed_macros.
+        if self.options.translate_function_macros {
+            self.translate_function_macros();
+        }
+
         self.in_codegen = true;
 
         self.resolve_typerefs();
@@ -2145,6 +2160,155 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         value: cexpr::expr::EvalResult,
     ) {
         self.parsed_macros.insert(id, value);
+    }
+
+    /// Add a raw function-like macro definition for deferred translation.
+    /// If a macro with the same name already exists, it is replaced — this
+    /// handles `#undef` / `#define` redefinitions correctly (the last
+    /// definition wins, matching the preprocessor's semantics).
+    pub(crate) fn add_raw_function_macro(
+        &mut self,
+        raw: super::func_macro::RawFunctionMacro,
+    ) {
+        if let Some(existing) = self
+            .raw_function_macros
+            .iter_mut()
+            .find(|existing| existing.name == raw.name)
+        {
+            *existing = raw;
+        } else {
+            self.raw_function_macros.push(raw);
+        }
+    }
+
+    /// Translate raw function-like macros in a fixpoint pass.
+    ///
+    /// Runs repeated waves until no more progress. Each wave attempts to
+    /// translate all unresolved macros using the current set of already-
+    /// translated macros as context. Forward references between macros
+    /// are resolved naturally: wave 1 translates leaf macros, wave 2
+    /// translates macros that call them, etc.
+    fn translate_function_macros(&mut self) {
+        use super::func_macro::{
+            FunctionMacro, PriorFunctionMacro, SkipReason,
+        };
+        use super::var::build_constant_type_map;
+
+        let constant_types = build_constant_type_map(self);
+
+        // Build a set of non-const variable names. These are extern
+        // variables that become `static mut` in Rust and can't be
+        // referenced from `const fn`.
+        let non_const_vars: std::collections::HashSet<String> = self
+            .items()
+            .filter_map(|(_, item)| {
+                item.kind().as_var().and_then(|var| {
+                    if var.is_const() {
+                        None
+                    } else {
+                        Some(var.name().to_owned())
+                    }
+                })
+            })
+            .collect();
+
+        let mut pending = mem::take(&mut self.raw_function_macros);
+        let mut wave = 0;
+
+        loop {
+            wave += 1;
+            let mut progress = false;
+            let mut still_pending = Vec::new();
+
+            let priors: Vec<PriorFunctionMacro> = self
+                .function_macros
+                .iter()
+                .map(|fm| PriorFunctionMacro {
+                    name: fm.name.clone(),
+                    all_param_names: fm.all_param_names.clone(),
+                    type_param_names: fm.type_params.clone(),
+                    value_param_count: fm.params.len(),
+                })
+                .collect();
+
+            for raw in pending {
+                match FunctionMacro::parse(
+                    &raw.tokens,
+                    &constant_types,
+                    None,
+                    &priors,
+                    &non_const_vars,
+                    self.target_pointer_size(),
+                ) {
+                    Ok(mut fm) => {
+                        fm.source_file = raw.source_file;
+                        // Apply callback override.
+                        if let Some(override_type) =
+                            self.options.last_callback(|c| {
+                                c.func_macro_type(&fm.name, &fm.value_type)
+                            })
+                        {
+                            match FunctionMacro::parse(
+                                &raw.tokens,
+                                &constant_types,
+                                Some(&override_type),
+                                &priors,
+                                &non_const_vars,
+                                self.target_pointer_size(),
+                            ) {
+                                Ok(mut overridden) => {
+                                    overridden.source_file = fm.source_file;
+                                    self.function_macros.push(overridden);
+                                }
+                                Err(reason) => {
+                                    warn!(
+                                        "Skipping function-like macro `{}` \
+                                         (type override to `{}`): {}",
+                                        fm.name, override_type, reason,
+                                    );
+                                }
+                            }
+                        } else {
+                            self.function_macros.push(fm);
+                        }
+                        progress = true;
+                    }
+                    Err(SkipReason::UnknownCallee(_)) => {
+                        // Unknown callee (forward reference). Keep for
+                        // next wave — the callee may be translated then.
+                        still_pending.push(raw);
+                    }
+                    Err(reason) => {
+                        warn!(
+                            "Skipping function-like macro `{}`: {}",
+                            raw.name, reason,
+                        );
+                    }
+                }
+            }
+
+            pending = still_pending;
+
+            if !progress || pending.is_empty() {
+                break;
+            }
+        }
+
+        // Anything still pending after fixpoint is genuinely unresolvable.
+        for raw in &pending {
+            warn!(
+                "Skipping function-like macro `{}`: \
+                 unresolved after {} wave(s)",
+                raw.name, wave,
+            );
+        }
+    }
+
+    /// Get all translated function-like macros.
+    pub(crate) fn function_macros(
+        &self,
+    ) -> &[super::func_macro::FunctionMacro] {
+        &self.function_macros
     }
 
     /// Are we in the codegen phase?
