@@ -825,6 +825,52 @@ fn test_macro_fallback_header_contents_parent_dir_escape() {
 }
 
 #[test]
+fn test_macro_fallback_cross_target() {
+    // Subprocess-style test: setting TARGET as an env var in a parallel
+    // test is not robust, so we re-invoke the test binary as a child
+    // process with TARGET set to a non-host triple. The child runs the
+    // actual assertion; the parent just checks the exit status.
+    //
+    // __SIZEOF_POINTER__ is a clang builtin that equals the target's
+    // pointer width. On armv7 it's 4; on x86_64 it's 8. If the
+    // implicit --target isn't propagated to fallback_clang_args, the
+    // fallback TU evaluates with the host pointer size instead.
+    if env::var("__BINDGEN_CROSS_TARGET_INNER").is_ok() {
+        let tmpdir = tempfile::tempdir().unwrap();
+        let actual = builder()
+            .disable_header_comment()
+            .header_contents("test.h", "#define PTR_BYTES __SIZEOF_POINTER__\n")
+            .clang_macro_fallback()
+            .clang_macro_fallback_build_dir(tmpdir.path())
+            .generate()
+            .unwrap()
+            .to_string();
+        assert!(
+            actual.contains("pub const PTR_BYTES: u32 = 4;"),
+            "Expected 4-byte pointers for armv7 target, got:\n{actual}"
+        );
+        return;
+    }
+
+    let exe = env::current_exe().unwrap();
+    let output = std::process::Command::new(&exe)
+        .arg("test_macro_fallback_cross_target")
+        .arg("--exact")
+        .arg("--test-threads=1")
+        .env("TARGET", "armv7-unknown-linux-gnueabihf")
+        .env("__BINDGEN_CROSS_TARGET_INNER", "1")
+        .output()
+        .unwrap();
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        output.status.success(),
+        "Cross-target fallback test failed.\nstdout:\n{stdout}\nstderr:\n{stderr}"
+    );
+}
+
+#[test]
 // Doesn't support executing sh file on Windows.
 // We may want to implement it in Rust so that we support all systems.
 #[cfg(not(target_os = "windows"))]

@@ -787,10 +787,10 @@ impl Bindings {
         // opening libclang.so, it has to be the same architecture and thus the
         // check is fine.
         if !explicit_target && !is_host_build {
-            options.clang_args.insert(
-                0,
-                format!("--target={effective_target}").into_boxed_str(),
-            );
+            let target_arg =
+                format!("--target={effective_target}").into_boxed_str();
+            options.clang_args.insert(0, target_arg.clone());
+            options.fallback_clang_args.insert(0, target_arg);
         }
 
         fn detect_include_paths(options: &mut BindgenOptions) {
