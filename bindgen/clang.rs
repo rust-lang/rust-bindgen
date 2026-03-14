@@ -1915,6 +1915,9 @@ impl Drop for TranslationUnit {
 pub(crate) struct FallbackTranslationUnit {
     file_path: String,
     pch_path: String,
+    /// Header files materialized from `header_contents()` that must remain on
+    /// disk while the PCH is in use (clang validates source file existence).
+    materialized_headers: Vec<String>,
     idx: Box<Index>,
     tu: TranslationUnit,
 }
@@ -1931,6 +1934,7 @@ impl FallbackTranslationUnit {
         file: String,
         pch_path: String,
         c_args: &[Box<str>],
+        materialized_headers: Vec<String>,
     ) -> Option<Self> {
         // Create empty file
         OpenOptions::new()
@@ -1951,6 +1955,7 @@ impl FallbackTranslationUnit {
         Some(FallbackTranslationUnit {
             file_path: file,
             pch_path,
+            materialized_headers,
             tu: f_translation_unit,
             idx: f_index,
         })
@@ -1989,6 +1994,9 @@ impl Drop for FallbackTranslationUnit {
     fn drop(&mut self) {
         let _ = std::fs::remove_file(&self.file_path);
         let _ = std::fs::remove_file(&self.pch_path);
+        for path in &self.materialized_headers {
+            let _ = std::fs::remove_file(path);
+        }
     }
 }
 

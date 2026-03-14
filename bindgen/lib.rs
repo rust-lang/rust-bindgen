@@ -361,13 +361,14 @@ impl Builder {
                 .flat_map(|header| ["-include".into(), header.clone()]),
         );
 
-        let input_unsaved_files =
-            std::mem::take(&mut self.options.input_header_contents)
-                .into_iter()
-                .map(|(name, contents)| {
-                    clang::UnsavedFile::new(name.as_ref(), contents.as_ref())
-                })
-                .collect::<Vec<_>>();
+        let input_unsaved_files = self
+            .options
+            .input_header_contents
+            .iter()
+            .map(|(name, contents, _)| {
+                clang::UnsavedFile::new(name.as_ref(), contents.as_ref())
+            })
+            .collect::<Vec<_>>();
 
         Bindings::generate(self.options, &input_unsaved_files)
     }
@@ -404,7 +405,7 @@ impl Builder {
 
         // For each input header content, add a prefix line of `#line 0 "$name"`
         // followed by the contents.
-        for (name, contents) in &self.options.input_header_contents {
+        for (name, contents, _) in &self.options.input_header_contents {
             is_cpp |= file_is_cpp(name);
 
             wrapper_contents.push_str("#line 0 \"");

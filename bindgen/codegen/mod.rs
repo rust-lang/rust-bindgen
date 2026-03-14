@@ -5364,7 +5364,8 @@ pub(crate) mod utils {
         }
 
         if !context.options().input_header_contents.is_empty() {
-            for (name, contents) in &context.options().input_header_contents {
+            for (name, contents, _) in &context.options().input_header_contents
+            {
                 writeln!(code, "// {name}\n{contents}")?;
             }
 

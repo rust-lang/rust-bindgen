@@ -618,6 +618,213 @@ fn test_macro_fallback_non_system_dir() {
 }
 
 #[test]
+fn test_macro_fallback_header_contents() {
+    let tmpdir = tempfile::tempdir().unwrap();
+    let actual = builder()
+        .disable_header_comment()
+        .header_contents(
+            "test.h",
+            "#define UINT32_C(c) c ## U\n\
+             #define SIMPLE 42\n\
+             #define COMPOUND UINT32_C(69)\n",
+        )
+        .clang_macro_fallback()
+        .clang_macro_fallback_build_dir(tmpdir.path())
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let actual = format_code(actual).unwrap();
+
+    let expected = format_code(
+        "pub const SIMPLE: u32 = 42;\npub const COMPOUND: u32 = 69;\n",
+    )
+    .unwrap();
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn test_macro_fallback_multiple_header_contents() {
+    let tmpdir = tempfile::tempdir().unwrap();
+    let actual = builder()
+        .disable_header_comment()
+        .header_contents("defs.h", "#define UINT32_C(c) c ## U\n")
+        .header_contents(
+            "test.h",
+            "#include \"defs.h\"\n\
+             #define MY_CONST UINT32_C(28)\n",
+        )
+        .clang_macro_fallback()
+        .clang_macro_fallback_build_dir(tmpdir.path())
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let actual = format_code(actual).unwrap();
+
+    // UINT32_C is a function-like macro, should not appear as a constant.
+    // MY_CONST should be evaluated by the fallback.
+    assert!(
+        actual.contains("pub const MY_CONST: u32 = 28;"),
+        "Expected MY_CONST constant in output:\n{actual}"
+    );
+}
+
+#[test]
+fn test_macro_fallback_mixed_header_and_header_contents() {
+    let tmpdir = tempfile::tempdir().unwrap();
+    let actual = builder()
+        .disable_header_comment()
+        .header(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/headers/issue-753.h"
+        ))
+        .header_contents(
+            "extra.h",
+            "#define UINT32_C(c) c ## U\n\
+             #define EXTRA_CONST UINT32_C(99)\n",
+        )
+        .clang_macro_fallback()
+        .clang_macro_fallback_build_dir(tmpdir.path())
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let actual = format_code(actual).unwrap();
+
+    // Constants from the real header (issue-753.h defines UINT32_C and uses it)
+    assert!(
+        actual.contains("pub const CONST: u32 = 5;"),
+        "Expected CONST from real header in output:\n{actual}"
+    );
+    // Constants from the virtual header via fallback
+    assert!(
+        actual.contains("pub const EXTRA_CONST: u32 = 99;"),
+        "Expected EXTRA_CONST from header_contents in output:\n{actual}"
+    );
+}
+
+#[test]
+fn test_macro_fallback_header_contents_duplicate_basename() {
+    let tmpdir = tempfile::tempdir().unwrap();
+    let actual = builder()
+        .disable_header_comment()
+        .header_contents(
+            "defs.h",
+            "#define UINT32_C(c) c ## U\n\
+             #define FROM_ROOT UINT32_C(11)\n",
+        )
+        .header_contents(
+            "sub/defs.h",
+            "#define UINT32_C(c) c ## U\n\
+             #define FROM_SUB UINT32_C(22)\n",
+        )
+        .clang_macro_fallback()
+        .clang_macro_fallback_build_dir(tmpdir.path())
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let actual = format_code(actual).unwrap();
+
+    assert!(
+        actual.contains("pub const FROM_ROOT: u32 = 11;"),
+        "Expected FROM_ROOT in output:\n{actual}"
+    );
+    assert!(
+        actual.contains("pub const FROM_SUB: u32 = 22;"),
+        "Expected FROM_SUB in output:\n{actual}"
+    );
+}
+
+#[test]
+fn test_macro_fallback_header_contents_absolute_name() {
+    // Absolute names must not escape the build dir — they should be
+    // materialized safely under it, and the original file must not be
+    // clobbered or deleted.
+    let tmpdir = tempfile::tempdir().unwrap();
+    let victim = tmpdir.path().join("victim.h");
+    fs::write(&victim, "// original content\n").unwrap();
+
+    let abs_name = victim.to_str().unwrap();
+    let build_dir = tmpdir.path().join("fallback_build");
+    fs::create_dir_all(&build_dir).unwrap();
+
+    let actual = builder()
+        .disable_header_comment()
+        .header_contents(
+            abs_name,
+            "#define UINT32_C(c) c ## U\n\
+             #define ABS_CONST UINT32_C(55)\n",
+        )
+        .clang_macro_fallback()
+        .clang_macro_fallback_build_dir(&build_dir)
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    // The fallback-only constant should be evaluated.
+    assert!(
+        actual.contains("pub const ABS_CONST: u32 = 55;"),
+        "Expected ABS_CONST in output:\n{actual}"
+    );
+
+    // The original file must not have been deleted by FallbackTU drop.
+    assert!(
+        victim.exists(),
+        "Original file at {abs_name} was deleted by fallback cleanup"
+    );
+    assert_eq!(
+        fs::read_to_string(&victim).unwrap(),
+        "// original content\n",
+        "Original file at {abs_name} was overwritten by materialization"
+    );
+}
+
+#[test]
+fn test_macro_fallback_header_contents_parent_dir_escape() {
+    // Names with ".." must not escape the build dir or delete files
+    // outside it during FallbackTranslationUnit cleanup.
+    let tmpdir = tempfile::tempdir().unwrap();
+    let victim = tmpdir.path().join("victim.h");
+    fs::write(&victim, "// must survive\n").unwrap();
+
+    let build_dir = tmpdir.path().join("build");
+    fs::create_dir_all(&build_dir).unwrap();
+
+    let actual = builder()
+        .disable_header_comment()
+        .header_contents(
+            "../victim.h",
+            "#define UINT32_C(c) c ## U\n\
+             #define ESCAPE_CONST UINT32_C(77)\n",
+        )
+        .clang_macro_fallback()
+        .clang_macro_fallback_build_dir(&build_dir)
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    assert!(
+        actual.contains("pub const ESCAPE_CONST: u32 = 77;"),
+        "Expected ESCAPE_CONST in output:\n{actual}"
+    );
+
+    // The file outside build_dir must not have been clobbered.
+    assert!(
+        victim.exists(),
+        "File outside build dir was deleted by fallback cleanup"
+    );
+    assert_eq!(fs::read_to_string(&victim).unwrap(), "// must survive\n",);
+}
+
+#[test]
 // Doesn't support executing sh file on Windows.
 // We may want to implement it in Rust so that we support all systems.
 #[cfg(not(target_os = "windows"))]
