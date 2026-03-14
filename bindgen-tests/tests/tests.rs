@@ -617,8 +617,19 @@ fn test_macro_fallback_non_system_dir() {
     }
 }
 
+/// clang 9's `clang_Cursor_Evaluate` returns `CXEval_UnExposed` instead
+/// of `CXEval_Int` for macro-expanded expressions loaded through a PCH
+/// built from materialized `header_contents()` files, so fallback
+/// constant evaluation produces no results in that specific path.
+fn clang9_fallback_header_contents_works() -> bool {
+    !matches!(clang_version().parsed, Some((9, _)))
+}
+
 #[test]
 fn test_macro_fallback_header_contents() {
+    if !clang9_fallback_header_contents_works() {
+        return;
+    }
     let tmpdir = tempfile::tempdir().unwrap();
     let actual = builder()
         .disable_header_comment()
@@ -647,6 +658,9 @@ fn test_macro_fallback_header_contents() {
 
 #[test]
 fn test_macro_fallback_multiple_header_contents() {
+    if !clang9_fallback_header_contents_works() {
+        return;
+    }
     let tmpdir = tempfile::tempdir().unwrap();
     let actual = builder()
         .disable_header_comment()
@@ -675,6 +689,9 @@ fn test_macro_fallback_multiple_header_contents() {
 
 #[test]
 fn test_macro_fallback_mixed_header_and_header_contents() {
+    if !clang9_fallback_header_contents_works() {
+        return;
+    }
     let tmpdir = tempfile::tempdir().unwrap();
     let actual = builder()
         .disable_header_comment()
@@ -709,6 +726,9 @@ fn test_macro_fallback_mixed_header_and_header_contents() {
 
 #[test]
 fn test_macro_fallback_header_contents_duplicate_basename() {
+    if !clang9_fallback_header_contents_works() {
+        return;
+    }
     let tmpdir = tempfile::tempdir().unwrap();
     let actual = builder()
         .disable_header_comment()
@@ -768,11 +788,13 @@ fn test_macro_fallback_header_contents_absolute_name() {
         .unwrap()
         .to_string();
 
-    // The fallback-only constant should be evaluated.
-    assert!(
-        actual.contains("pub const ABS_CONST: u32 = 55;"),
-        "Expected ABS_CONST in output:\n{actual}"
-    );
+    // The fallback-only constant should be evaluated (not on clang 9).
+    if clang9_fallback_header_contents_works() {
+        assert!(
+            actual.contains("pub const ABS_CONST: u32 = 55;"),
+            "Expected ABS_CONST in output:\n{actual}"
+        );
+    }
 
     // The original file must not have been deleted by FallbackTU drop.
     assert!(
@@ -811,10 +833,12 @@ fn test_macro_fallback_header_contents_parent_dir_escape() {
         .unwrap()
         .to_string();
 
-    assert!(
-        actual.contains("pub const ESCAPE_CONST: u32 = 77;"),
-        "Expected ESCAPE_CONST in output:\n{actual}"
-    );
+    if clang9_fallback_header_contents_works() {
+        assert!(
+            actual.contains("pub const ESCAPE_CONST: u32 = 77;"),
+            "Expected ESCAPE_CONST in output:\n{actual}"
+        );
+    }
 
     // The file outside build_dir must not have been clobbered.
     assert!(
@@ -826,6 +850,9 @@ fn test_macro_fallback_header_contents_parent_dir_escape() {
 
 #[test]
 fn test_macro_fallback_cross_target() {
+    if !clang9_fallback_header_contents_works() {
+        return;
+    }
     // Subprocess-style test: setting TARGET as an env var in a parallel
     // test is not robust, so we re-invoke the test binary as a child
     // process with TARGET set to a non-host triple. The child runs the
