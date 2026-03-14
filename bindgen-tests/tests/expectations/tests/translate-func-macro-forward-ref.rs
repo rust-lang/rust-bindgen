@@ -1,0 +1,9 @@
+#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
+#[allow(non_snake_case, unused_parens)]
+pub const fn B(x: i64) -> i64 {
+    ((x) + 1)
+}
+#[allow(non_snake_case, unused_parens)]
+pub const fn A(x: i64) -> i64 {
+    B(x)
+}
