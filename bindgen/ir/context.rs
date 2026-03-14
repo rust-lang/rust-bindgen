@@ -11,7 +11,6 @@ use super::derive::{
     CanDerive, CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveEq,
     CanDeriveHash, CanDeriveOrd, CanDerivePartialEq, CanDerivePartialOrd,
 };
-use super::function::Function;
 use super::int::IntKind;
 use super::item::{IsOpaque, Item, ItemAncestors, ItemSet};
 use super::item_kind::ItemKind;
@@ -1454,14 +1453,6 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// item is not a `Type`.
     pub(crate) fn resolve_type(&self, type_id: TypeId) -> &Type {
         self.resolve_item(type_id).kind().expect_type()
-    }
-
-    /// Resolve a function with the given ID.
-    ///
-    /// Panics if there is no item for the given `FunctionId` or if the resolved
-    /// item is not a `Function`.
-    pub(crate) fn resolve_func(&self, func_id: FunctionId) -> &Function {
-        self.resolve_item(func_id).kind().expect_function()
     }
 
     /// Resolve the given `ItemId` as a type, or `None` if there is no item with

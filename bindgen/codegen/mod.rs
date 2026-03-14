@@ -2783,7 +2783,26 @@ impl CodeGenerator for CompInfo {
                 }
             }
 
-            let mut method_names = Default::default();
+            // Seed method_names with bitfield accessor names so C++
+            // methods, constructors, and destructors that collide with
+            // them get renamed instead of producing duplicates.
+            let mut method_names: HashSet<String> = self
+                .fields()
+                .iter()
+                .filter_map(|f| match f {
+                    Field::Bitfields(ref bu) => Some(bu.bitfields().iter()),
+                    Field::DataMember(_) => None,
+                })
+                .flatten()
+                .filter(|bf| bf.name().is_some())
+                .flat_map(|bf| {
+                    let g = bf.getter_name().to_owned();
+                    let s = bf.setter_name().to_owned();
+                    let gr = format!("{g}_raw");
+                    let sr = format!("{s}_raw");
+                    [g, s, gr, sr]
+                })
+                .collect();
             let discovered_id = DiscoveredItemId::new(item.id().as_usize());
             if ctx.options().codegen_config.methods() {
                 for method in self.methods() {
@@ -3125,6 +3144,12 @@ impl Method {
         if signature.is_variadic() {
             return;
         }
+
+        // Mangle the name before dedup so we compare the actual Rust
+        // identifier (e.g. C++ `type` → Rust `type_`) against
+        // method_names, which contains bitfield accessor names that
+        // are already in their Rust-mangled form.
+        name = ctx.rust_mangle(&name).to_string();
 
         if method_names.contains(&name) {
             let mut count = 1;
