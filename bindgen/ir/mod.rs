@@ -12,6 +12,7 @@ pub(crate) mod context;
 pub(crate) mod derive;
 pub(crate) mod dot;
 pub(crate) mod enum_ty;
+pub(crate) mod func_macro;
 pub(crate) mod function;
 pub(crate) mod int;
 pub(crate) mod item;
