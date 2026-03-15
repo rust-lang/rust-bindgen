@@ -512,21 +512,14 @@ fn translate_expr(
     ctx: &TranslateCtx,
 ) -> Result<TokenStream, SkipReason> {
     if let Some((q_pos, c_pos)) = find_ternary(tokens) {
-        let cond_tokens = &tokens[..q_pos];
-        let cond = translate_expr(cond_tokens, ctx)?;
+        let cond = translate_expr(&tokens[..q_pos], ctx)?;
         let then_ = translate_expr(&tokens[q_pos + 1..c_pos], ctx)?;
         let else_ = translate_expr(&tokens[c_pos + 1..], ctx)?;
 
-        // A condition is directly bool only if it has a comparison
-        // AND no logical ops. Logical ops are translated with `as vt`,
-        // making the result integer-typed even if sub-expressions are
-        // comparisons (e.g., `(x) > 0 && (x) < 10` → `(bool && bool) as i64`).
-        let cond_is_raw_bool = has_top_level_comparison(cond_tokens) &&
-            find_top_level_logical_op(cond_tokens).is_none();
-
-        return if cond_is_raw_bool {
-            Ok(quote! { if #cond { #then_ } else { #else_ } })
-        } else if matches!(ctx.value_type, "f64" | "f32") {
+        // Condition is always converted to bool via != 0.
+        // Comparisons already return integer via `as vt` below,
+        // so the != 0 check is redundant but harmless in that case.
+        return if matches!(ctx.value_type, "f64" | "f32") {
             Ok(quote! { if (#cond) != 0.0 { #then_ } else { #else_ } })
         } else {
             Ok(quote! { if ((#cond) as i64) != 0 { #then_ } else { #else_ } })
@@ -534,27 +527,20 @@ fn translate_expr(
     }
 
     // Logical operators: split on || (lowest precedence) or &&.
-    // Each operand is wrapped with != 0 if it doesn't already produce
-    // bool, and the result is cast back to the value type (C's && and
-    // || return 0 or 1 as int).
+    // Each operand is wrapped with != 0 to convert to bool, and
+    // the result is cast back to the value type (C's && and ||
+    // return 0 or 1 as int).
     if let Some((op_pos, is_or)) = find_top_level_logical_op(tokens) {
-        let left_tokens = &tokens[..op_pos];
-        let right_tokens = &tokens[op_pos + 1..];
-
-        let left = translate_expr(left_tokens, ctx)?;
-        let right = translate_expr(right_tokens, ctx)?;
+        let left = translate_expr(&tokens[..op_pos], ctx)?;
+        let right = translate_expr(&tokens[op_pos + 1..], ctx)?;
 
         let is_float = matches!(ctx.value_type, "f64" | "f32");
-        let left_bool = if expr_tokens_are_boolean(left_tokens) {
-            left
-        } else if is_float {
+        let left_bool = if is_float {
             quote! { ((#left) != 0.0) }
         } else {
             quote! { (((#left) as i64) != 0) }
         };
-        let right_bool = if expr_tokens_are_boolean(right_tokens) {
-            right
-        } else if is_float {
+        let right_bool = if is_float {
             quote! { ((#right) != 0.0) }
         } else {
             quote! { (((#right) as i64) != 0) }
@@ -571,6 +557,18 @@ fn translate_expr(
             Ok(quote! { ((#left_bool || #right_bool) #cast) })
         } else {
             Ok(quote! { ((#left_bool && #right_bool) #cast) })
+        };
+    }
+
+    // Bare comparisons produce `bool` in Rust but `int` (0 or 1) in C.
+    // Cast to the value type so the result can be used in arithmetic.
+    if expr_tokens_are_boolean(tokens) {
+        let body = translate_tokens(tokens, ctx)?;
+        let vt = ctx.vt();
+        return if matches!(ctx.value_type, "f64" | "f32") {
+            Ok(quote! { (#body) as i64 as #vt })
+        } else {
+            Ok(quote! { (#body) as #vt })
         };
     }
 
@@ -682,7 +680,8 @@ fn find_top_level_logical_op(tokens: &[OwnedToken]) -> Option<(usize, bool)> {
 /// `((bool && bool) as i64)`).
 fn expr_tokens_are_boolean(tokens: &[OwnedToken]) -> bool {
     has_top_level_comparison(tokens) &&
-        find_top_level_logical_op(tokens).is_none()
+        find_top_level_logical_op(tokens).is_none() &&
+        find_ternary(tokens).is_none()
 }
 
 // ---------------------------------------------------------------------------

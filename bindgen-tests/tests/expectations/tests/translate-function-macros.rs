@@ -18,11 +18,11 @@ pub const fn COMPLEMENT(x: i64) -> i64 {
 }
 #[allow(non_snake_case, unused_parens)]
 pub const fn MAX(a: i64, b: i64) -> i64 {
-    (if (a) > (b) { (a) } else { (b) })
+    (if ((((a) > (b)) as i64) as i64) != 0 { (a) } else { (b) })
 }
 #[allow(non_snake_case, unused_parens)]
 pub const fn ABS(x: i64) -> i64 {
-    (if (x) >= 0 { (x) } else { -(x) })
+    (if ((((x) >= 0) as i64) as i64) != 0 { (x) } else { -(x) })
 }
 #[allow(non_snake_case, unused_parens)]
 pub const fn TO_UNSIGNED(x: i64) -> i64 {

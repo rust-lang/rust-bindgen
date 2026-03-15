@@ -14,7 +14,7 @@ pub const fn NEGX(x: i64) -> i64 {
 }
 #[allow(non_snake_case, unused_parens)]
 pub const fn POS(x: f64) -> f64 {
-    (if (x) > (0 as f64) { 1.0 } else { 0.0 })
+    (if (((x) > (0 as f64)) as i64 as f64) != 0.0 { 1.0 } else { 0.0 })
 }
 #[allow(non_snake_case, unused_parens)]
 pub const fn MIX(x: u32) -> u32 {
