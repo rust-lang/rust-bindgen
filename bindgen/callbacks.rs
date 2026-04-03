@@ -187,6 +187,11 @@ pub trait ParseCallbacks: fmt::Debug {
         None
     }
 
+    /// Allows to rename a struct or union field, replacing `_info.field_name`.
+    fn field_name(&self, _info: FieldInfo<'_>) -> Option<String> {
+        None
+    }
+
     /// Process a function name that as exactly one `va_list` argument
     /// to be wrapped as a variadic function with the wrapped static function
     /// feature.
