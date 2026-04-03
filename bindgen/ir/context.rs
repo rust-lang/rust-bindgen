@@ -21,6 +21,7 @@ use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
 use crate::clang::{self, ABIKind, Cursor};
 use crate::codegen::CodegenError;
+use crate::ir::item::ItemCanonicalName;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 
@@ -1014,8 +1015,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Assign a new generated name for each anonymous field.
-    fn deanonymize_fields(&mut self) {
-        let _t = self.timer("deanonymize_fields");
+    fn assign_field_names(&mut self) {
+        let _t = self.timer("assign_field_names");
 
         let comp_item_ids: Vec<ItemId> = self
             .items()
@@ -1028,13 +1029,15 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             .collect();
 
         for id in comp_item_ids {
+            let canonical_type_name =
+                self.resolve_item(id).canonical_name(self);
             self.with_loaned_item(id, |ctx, item| {
                 item.kind_mut()
                     .as_type_mut()
                     .unwrap()
                     .as_comp_mut()
                     .unwrap()
-                    .deanonymize_fields(ctx);
+                    .assign_field_names(ctx, &canonical_type_name);
             });
         }
     }
@@ -1184,7 +1187,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.compute_bitfield_units();
         self.process_replacements();
 
-        self.deanonymize_fields();
+        self.assign_field_names();
 
         self.assert_no_dangling_references();
 

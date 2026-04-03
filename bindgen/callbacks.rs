@@ -187,6 +187,11 @@ pub trait ParseCallbacks: fmt::Debug {
         None
     }
 
+    /// Allows to rename a struct or union field, replacing `_info.field_name`.
+    fn field_name(&self, _info: FieldInfo<'_>) -> Option<String> {
+        None
+    }
+
     /// Process a function name that as exactly one `va_list` argument
     /// to be wrapped as a variadic function with the wrapped static function
     /// feature.
@@ -350,8 +355,8 @@ pub enum ItemKind {
     Var,
 }
 
-/// Relevant information about a field for which visibility can be determined using
-/// [`ParseCallbacks::field_visibility`].
+/// Relevant information about a field for which visibility and name can be overridden using
+/// [`ParseCallbacks::field_visibility`] and [`ParseCallbacks::field_name`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[non_exhaustive]
 pub struct FieldInfo<'a> {

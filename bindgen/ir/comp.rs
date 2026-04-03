@@ -11,6 +11,7 @@ use super::layout::Layout;
 use super::template::TemplateParameters;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
+use crate::callbacks::FieldInfo;
 use crate::clang;
 use crate::codegen::struct_layout::align_to;
 use crate::ir::derive::CanDeriveCopy;
@@ -703,7 +704,12 @@ impl CompFields {
         }
     }
 
-    fn deanonymize_fields(&mut self, ctx: &BindgenContext, methods: &[Method]) {
+    fn assign_field_names(
+        &mut self,
+        ctx: &BindgenContext,
+        canonical_type_name: &str,
+        methods: &[Method],
+    ) {
         let fields = match *self {
             CompFields::After { ref mut fields, .. } => fields,
             // Nothing to do here.
@@ -712,6 +718,46 @@ impl CompFields {
                 panic!("Not yet computed bitfield units.");
             }
         };
+
+        for field in fields.iter_mut() {
+            match field {
+                Field::DataMember(FieldData { name, ty, .. }) => {
+                    if let Some(original_name) = name.as_deref() {
+                        let maybe_rename = ctx.options().last_callback(|cb| {
+                            cb.field_name(FieldInfo {
+                                type_name: canonical_type_name,
+                                field_name: original_name,
+                                field_type_name: ctx.resolve_type(*ty).name(),
+                            })
+                        });
+
+                        if let Some(new_name) = maybe_rename {
+                            *name = Some(new_name);
+                        }
+                    }
+                }
+                Field::Bitfields(BitfieldUnit { bitfields, .. }) => {
+                    for bitfield in bitfields.iter_mut() {
+                        if let Some(original_name) = bitfield.name() {
+                            let maybe_rename =
+                                ctx.options().last_callback(|cb| {
+                                    cb.field_name(FieldInfo {
+                                        type_name: canonical_type_name,
+                                        field_name: original_name,
+                                        field_type_name: ctx
+                                            .resolve_type(bitfield.ty())
+                                            .name(),
+                                    })
+                                });
+
+                            if let Some(new_name) = maybe_rename {
+                                bitfield.data.name = Some(new_name);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         fn has_method(
             methods: &[Method],
@@ -1700,8 +1746,13 @@ impl CompInfo {
     }
 
     /// Assign for each anonymous field a generated name.
-    pub(crate) fn deanonymize_fields(&mut self, ctx: &BindgenContext) {
-        self.fields.deanonymize_fields(ctx, &self.methods);
+    pub(crate) fn assign_field_names(
+        &mut self,
+        ctx: &BindgenContext,
+        canonical_type_name: &str,
+    ) {
+        self.fields
+            .assign_field_names(ctx, canonical_type_name, &self.methods);
     }
 
     /// Returns whether the current union can be represented as a Rust `union`
