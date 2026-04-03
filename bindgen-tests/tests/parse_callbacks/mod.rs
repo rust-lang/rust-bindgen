@@ -74,6 +74,27 @@ impl ParseCallbacks for EnumVariantRename {
 }
 
 #[derive(Debug)]
+struct StructFieldRename;
+
+impl ParseCallbacks for StructFieldRename {
+    fn field_name(&self, info: FieldInfo<'_>) -> Option<String> {
+        if info.type_name == "RenameMe" {
+            if info.field_type_name == Some("char") {
+                return Some(format!("char_{}", info.field_name));
+            }
+            match info.field_name {
+                "renamed_member" => Some("rust_friendly".into()),
+                "bitfield_uGlyName" => Some("bitfield_less_ugly_name".into()),
+                "bitfieldWorse_name" => Some("bitfield_better_name".into()),
+                _ => None,
+            }
+        } else {
+            None
+        }
+    }
+}
+
+#[derive(Debug)]
 struct BlocklistedTypeImplementsTrait;
 
 impl ParseCallbacks for BlocklistedTypeImplementsTrait {
@@ -163,6 +184,7 @@ impl ParseCallbacks for OperatorRename {
 pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
     match cb {
         "enum-variant-rename" => Box::new(EnumVariantRename),
+        "struct-field-rename" => Box::new(StructFieldRename),
         "blocklisted-type-implements-trait" => {
             Box::new(BlocklistedTypeImplementsTrait)
         }
