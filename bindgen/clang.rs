@@ -389,6 +389,54 @@ impl Cursor {
         unsafe { clang_getCursorExtent(self.x) }
     }
 
+    /// Returns `true` if the start of `other`'s source range falls within
+    /// `self`'s source range.
+    ///
+    /// This is useful for detecting child cursors that clang exposes
+    /// underneath a parent but whose source location is actually outside the
+    /// parent's body (e.g. anonymous types declared inside an attribute
+    /// expression on the parent).
+    pub(crate) fn extent_contains(&self, other: &Cursor) -> bool {
+        unsafe {
+            let parent_range = clang_getCursorExtent(self.x);
+            let parent_start = clang_getRangeStart(parent_range);
+            let parent_end = clang_getRangeEnd(parent_range);
+            let child_start =
+                clang_getRangeStart(clang_getCursorExtent(other.x));
+
+            let mut parent_file = mem::zeroed::<CXFile>();
+            let mut child_file = mem::zeroed::<CXFile>();
+            let mut parent_start_off: c_uint = 0;
+            let mut parent_end_off: c_uint = 0;
+            let mut child_start_off: c_uint = 0;
+            clang_getFileLocation(
+                parent_start,
+                &mut parent_file,
+                ptr::null_mut(),
+                ptr::null_mut(),
+                &mut parent_start_off,
+            );
+            clang_getFileLocation(
+                parent_end,
+                ptr::null_mut(),
+                ptr::null_mut(),
+                ptr::null_mut(),
+                &mut parent_end_off,
+            );
+            clang_getFileLocation(
+                child_start,
+                &mut child_file,
+                ptr::null_mut(),
+                ptr::null_mut(),
+                &mut child_start_off,
+            );
+
+            parent_file == child_file &&
+                child_start_off >= parent_start_off &&
+                child_start_off < parent_end_off
+        }
+    }
+
     /// Get the raw declaration comment for this referent, if one exists.
     pub(crate) fn raw_comment(&self) -> Option<String> {
         let s = unsafe {

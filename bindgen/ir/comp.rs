@@ -1431,7 +1431,21 @@ impl CompInfo {
 
                         // A declaration of an union or a struct without name
                         // could also be an unnamed field, unfortunately.
-                        if cur.is_anonymous() && cur.kind() != CXCursor_EnumDecl
+                        //
+                        // However, anonymous types declared *outside* the
+                        // parent struct's body — for example an anonymous
+                        // struct that appears inside an `__alignof__`
+                        // expression on the parent's
+                        // `__attribute__((aligned(...)))` — are exposed by
+                        // clang as child cursors of the parent struct, even
+                        // though they are not real members. Skip those by
+                        // checking that the child's source range is inside
+                        // the parent's source range; otherwise we would
+                        // append a phantom field and corrupt the parent's
+                        // layout (#3295).
+                        if cur.is_anonymous() &&
+                            cur.kind() != CXCursor_EnumDecl &&
+                            cursor.extent_contains(&cur)
                         {
                             let ty = cur.cur_type();
                             let public = cur.public_accessible();
