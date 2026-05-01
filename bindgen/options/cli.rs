@@ -448,9 +448,9 @@ struct BindgenCommand {
     /// The NAME to be used in a #[link(wasm_import_module = ...)] statement
     #[arg(long, value_name = "NAME")]
     wasm_import_module_name: Option<String>,
-    /// Attributes to apply to the extern function block.
+    /// Attributes to apply to extern blocks.
     #[arg(long, value_name = "ATTRS")]
-    extern_fn_block_attrs: Vec<String>,
+    extern_block_attrs: Vec<String>,
     /// Use dynamic loading mode with the given library NAME.
     #[arg(long, value_name = "NAME")]
     dynamic_loading: Option<String>,
@@ -678,7 +678,7 @@ where
         enable_function_attribute_detection,
         use_array_pointers_in_arguments,
         wasm_import_module_name,
-        extern_fn_block_attrs,
+        extern_block_attrs,
         dynamic_loading,
         dynamic_link_require_all,
         prefix_link_name,
@@ -940,7 +940,7 @@ where
             time_phases,
             use_array_pointers_in_arguments => Builder::array_pointers_in_arguments,
             wasm_import_module_name,
-            extern_fn_block_attrs => Builder::extern_fn_block_attrs,
+            extern_block_attrs => Builder::extern_block_attrs,
             ctypes_prefix,
             anon_fields_prefix,
             generate => Builder::with_codegen_config,
