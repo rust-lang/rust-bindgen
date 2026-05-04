@@ -45,7 +45,7 @@ where
         let byte_index = index / 8;
         let byte = unsafe {
             *(core::ptr::addr_of!((*this).storage) as *const u8)
-                .offset(byte_index as isize)
+                .add(byte_index)
         };
 
         Self::extract_bit(byte, index)
@@ -84,7 +84,7 @@ where
         let byte_index = index / 8;
         let byte = unsafe {
             (core::ptr::addr_of_mut!((*this).storage) as *mut u8)
-                .offset(byte_index as isize)
+                .add(byte_index)
         };
 
         unsafe { *byte = Self::change_bit(*byte, index, val) };
