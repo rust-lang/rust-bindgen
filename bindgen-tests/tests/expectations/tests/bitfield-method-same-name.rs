@@ -512,22 +512,20 @@ unsafe extern "C" {
 }
 impl Foo {
     #[inline]
-    pub fn type__bindgen_bitfield(&self) -> ::std::os::raw::c_char {
+    pub fn type_(&self) -> ::std::os::raw::c_char {
         unsafe {
             ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 3u8>() as u8)
         }
     }
     #[inline]
-    pub fn set_type__bindgen_bitfield(&mut self, val: ::std::os::raw::c_char) {
+    pub fn set_type_(&mut self, val: ::std::os::raw::c_char) {
         unsafe {
             let val: u8 = val as _;
             self._bitfield_1.set_const::<0usize, 3u8>(val as u64)
         }
     }
     #[inline]
-    pub unsafe fn type__bindgen_bitfield_raw(
-        this: *const Self,
-    ) -> ::std::os::raw::c_char {
+    pub unsafe fn type__raw(this: *const Self) -> ::std::os::raw::c_char {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
@@ -540,10 +538,7 @@ impl Foo {
         }
     }
     #[inline]
-    pub unsafe fn set_type__bindgen_bitfield_raw(
-        this: *mut Self,
-        val: ::std::os::raw::c_char,
-    ) {
+    pub unsafe fn set_type__raw(this: *mut Self, val: ::std::os::raw::c_char) {
         unsafe {
             let val: u8 = val as _;
             <__BindgenBitfieldUnit<
@@ -556,7 +551,7 @@ impl Foo {
     }
     #[inline]
     pub fn new_bitfield_1(
-        type__bindgen_bitfield: ::std::os::raw::c_char,
+        type_: ::std::os::raw::c_char,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
         __bindgen_bitfield_unit
@@ -564,17 +559,17 @@ impl Foo {
                 0usize,
                 3u8,
             >({
-                let type__bindgen_bitfield: u8 = type__bindgen_bitfield as _;
-                type__bindgen_bitfield as u64
+                let type_: u8 = type_ as _;
+                type_ as u64
             });
         __bindgen_bitfield_unit
     }
     #[inline]
-    pub unsafe fn type_(&mut self) -> ::std::os::raw::c_char {
+    pub unsafe fn type_1(&mut self) -> ::std::os::raw::c_char {
         Foo_type(self)
     }
     #[inline]
-    pub unsafe fn set_type_(&mut self, c: ::std::os::raw::c_char) {
+    pub unsafe fn set_type_1(&mut self, c: ::std::os::raw::c_char) {
         Foo_set_type_(self, c)
     }
     #[inline]

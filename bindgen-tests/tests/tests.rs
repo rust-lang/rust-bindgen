@@ -564,6 +564,131 @@ fn test_mixed_header_and_header_contents() {
 }
 
 #[test]
+fn test_bitfield_accessor_name_conflict_torture() {
+    // This deliberately mixes first-order accessor collisions, repeated
+    // suffix chains, raw-name collisions, reversed declaration order,
+    // and C++ methods whose names only collide after suffixing.
+    let header = r"
+struct BasicPair {
+    char set_x : 1;
+    char x : 1;
+};
+
+struct GetterSetterChain {
+    char x : 1;
+    char set_x : 1;
+    char set_x_bindgen_bitfield : 1;
+};
+
+struct RawGetterSetterChain {
+    char x : 1;
+    char set_x_raw : 1;
+    char set_x_raw_bindgen_bitfield : 1;
+};
+
+struct ReverseGetterSetterChain {
+    char set_x_bindgen_bitfield : 1;
+    char set_x : 1;
+    char x : 1;
+};
+
+struct ReverseRawGetterSetterChain {
+    char set_x_raw_bindgen_bitfield : 1;
+    char set_x_raw : 1;
+    char x : 1;
+};
+
+struct MethodAfterAccessorCollision {
+    char x : 1;
+    char set_x : 1;
+    void set_x_bindgen_bitfield();
+    void set_set_x_bindgen_bitfield(char c);
+};
+
+struct MethodAfterRawCollision {
+    char x : 1;
+    char set_x_raw : 1;
+    void set_x_raw_bindgen_bitfield();
+    void set_set_x_raw_bindgen_bitfield(char c);
+};
+
+struct MethodCollisionChain {
+    char type_ : 1;
+    char set_type : 1;
+    char set_type_bindgen_bitfield : 1;
+    char type();
+    void set_type_(char c);
+    void set_set_type_bindgen_bitfield(char c);
+};
+
+struct OverloadedMethodConflict {
+    char foo1 : 1;
+    char bar : 1;
+    void foo();
+    void foo(int);
+};
+
+struct DtorConflict {
+    char destruct : 1;
+    ~DtorConflict();
+};
+
+struct DtorShiftConflict {
+    char destruct1 : 1;
+    void destruct();
+    ~DtorShiftConflict();
+};
+
+struct CtorConflict {
+    char new_ : 1;
+    CtorConflict();
+    CtorConflict(int);
+};
+
+struct CtorShiftConflict {
+    char new1 : 1;
+    CtorShiftConflict();
+    CtorShiftConflict(int);
+};
+";
+
+    let bindings = builder()
+        .disable_header_comment()
+        .header_contents("bitfield_accessor_name_conflict_torture.hpp", header)
+        .clang_arg("-xc++")
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let tmpdir = tempfile::tempdir().unwrap();
+    let source = tmpdir.path().join("bindings.rs");
+    let output = tmpdir.path().join("libbindings.rlib");
+    fs::write(&source, &bindings).unwrap();
+
+    let rustc = env::var_os("RUSTC")
+        .unwrap_or_else(|| std::ffi::OsString::from("rustc"));
+    // Duplicate accessors still parse as Rust, so compile the generated
+    // bindings instead of only formatting/parsing them.
+    let compile = std::process::Command::new(rustc)
+        .arg("--crate-type=lib")
+        .arg("--edition=2021")
+        .arg(&source)
+        .arg("-o")
+        .arg(&output)
+        .output()
+        .unwrap();
+
+    assert!(
+        compile.status.success(),
+        "Generated bindings did not compile.\nstdout:\n{}\nstderr:\n{}\nbindings:\n{}",
+        String::from_utf8_lossy(&compile.stdout),
+        String::from_utf8_lossy(&compile.stderr),
+        bindings,
+    );
+}
+
+#[test]
 fn test_macro_fallback_non_system_dir() {
     let actual = builder()
         .header(concat!(

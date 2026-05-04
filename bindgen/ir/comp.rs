@@ -15,8 +15,8 @@ use crate::clang;
 use crate::codegen::struct_layout::align_to;
 use crate::ir::derive::CanDeriveCopy;
 use crate::parse::ParseError;
-use crate::HashMap;
 use crate::NonCopyUnionStyle;
+use crate::{HashMap, HashSet};
 use std::cmp;
 use std::io;
 use std::mem;
@@ -703,7 +703,7 @@ impl CompFields {
         }
     }
 
-    fn deanonymize_fields(&mut self, ctx: &BindgenContext, methods: &[Method]) {
+    fn deanonymize_fields(&mut self, ctx: &BindgenContext) {
         let fields = match *self {
             CompFields::After { ref mut fields, .. } => fields,
             // Nothing to do here.
@@ -713,50 +713,68 @@ impl CompFields {
             }
         };
 
-        fn has_method(
-            methods: &[Method],
-            ctx: &BindgenContext,
-            name: &str,
-        ) -> bool {
-            methods.iter().any(|method| {
-                let method_name = ctx.resolve_func(method.signature()).name();
-                method_name == name || ctx.rust_mangle(method_name) == name
-            })
-        }
-
         struct AccessorNamesPair {
             getter: String,
             setter: String,
         }
 
-        let mut accessor_names: HashMap<String, AccessorNamesPair> = fields
+        // Build accessor names for each bitfield, resolving
+        // inter-bitfield collisions. Method/constructor/destructor
+        // collisions are handled in codegen by seeding method_names
+        // with bitfield accessor names before emitting C++ methods.
+        //
+        // Names are suffixed with `_bindgen_bitfield` repeatedly until
+        // unique, handling chains like `x` / `set_x` /
+        // `set_x_bindgen_bitfield`.
+        let mut accessor_names: HashMap<String, AccessorNamesPair> =
+            Default::default();
+        let mut used_names: HashSet<String> = Default::default();
+
+        let bitfield_names: Vec<String> = fields
             .iter()
             .flat_map(|field| match *field {
                 Field::Bitfields(ref bu) => &*bu.bitfields,
                 Field::DataMember(_) => &[],
             })
             .filter_map(|bitfield| bitfield.name())
-            .map(|bitfield_name| {
-                let bitfield_name = bitfield_name.to_string();
-                let getter = {
-                    let mut getter =
-                        ctx.rust_mangle(&bitfield_name).to_string();
-                    if has_method(methods, ctx, &getter) {
-                        getter.push_str("_bindgen_bitfield");
-                    }
-                    getter
-                };
-                let setter = {
-                    let setter = format!("set_{bitfield_name}");
-                    let mut setter = ctx.rust_mangle(&setter).to_string();
-                    if has_method(methods, ctx, &setter) {
-                        setter.push_str("_bindgen_bitfield");
-                    }
-                    setter
-                };
-                (bitfield_name, AccessorNamesPair { getter, setter })
-            })
+            .map(|n| n.to_string())
             .collect();
+
+        for bitfield_name in &bitfield_names {
+            let mut getter = ctx.rust_mangle(bitfield_name).to_string();
+            let mut setter = {
+                let s = format!("set_{bitfield_name}");
+                ctx.rust_mangle(&s).to_string()
+            };
+
+            // Resolve collisions against previously assigned bitfield
+            // accessor names. Check all four variants (getter, setter,
+            // and their _raw forms) and keep suffixing until unique.
+            loop {
+                let all_unique = [
+                    &getter,
+                    &setter,
+                    &format!("{getter}_raw"),
+                    &format!("{setter}_raw"),
+                ]
+                .iter()
+                .all(|n| !used_names.contains(n.as_str()));
+                if all_unique {
+                    break;
+                }
+                getter.push_str("_bindgen_bitfield");
+                setter.push_str("_bindgen_bitfield");
+            }
+
+            used_names.insert(getter.clone());
+            used_names.insert(setter.clone());
+            used_names.insert(format!("{getter}_raw"));
+            used_names.insert(format!("{setter}_raw"));
+            accessor_names.insert(
+                bitfield_name.clone(),
+                AccessorNamesPair { getter, setter },
+            );
+        }
 
         let mut anon_field_counter = 0;
         for field in fields.iter_mut() {
@@ -1701,7 +1719,7 @@ impl CompInfo {
 
     /// Assign for each anonymous field a generated name.
     pub(crate) fn deanonymize_fields(&mut self, ctx: &BindgenContext) {
-        self.fields.deanonymize_fields(ctx, &self.methods);
+        self.fields.deanonymize_fields(ctx);
     }
 
     /// Returns whether the current union can be represented as a Rust `union`
