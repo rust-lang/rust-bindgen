@@ -45,7 +45,7 @@ rustc-hash = "2.1.0"
 shlex = "1"
 similar = "2.2.1"
 syn = "2.0"
-tempfile = "3"
+tempfile = "3.27.0"
 
 [workspace.lints.rust]
 unused_qualifications = "warn"
