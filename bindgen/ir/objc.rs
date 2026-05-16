@@ -134,13 +134,13 @@ impl ObjCInterface {
 
         cursor.visit(|c| {
             match c.kind() {
-                CXCursor_ObjCClassRef => {
-                    if cursor.kind() == CXCursor_ObjCCategoryDecl {
-                        // We are actually a category extension, and we found the reference
-                        // to the original interface, so name this interface appropriately
-                        interface.name = c.spelling();
-                        interface.category = Some(cursor.spelling());
-                    }
+                CXCursor_ObjCClassRef
+                    if cursor.kind() == CXCursor_ObjCCategoryDecl =>
+                {
+                    // We are actually a category extension, and we found the reference
+                    // to the original interface, so name this interface appropriately
+                    interface.name = c.spelling();
+                    interface.category = Some(cursor.spelling());
                 }
                 CXCursor_ObjCProtocolRef => {
                     // Gather protocols this interface conforms to
