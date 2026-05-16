@@ -346,7 +346,9 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
             }
 
             val >>= bit_shift;
-            val &= (1usize << BIT_WIDTH) - 1;
+            if (BIT_WIDTH as u32) < usize::BITS {
+                val &= (1usize << BIT_WIDTH) - 1;
+            }
 
             if cfg!(target_endian = "big") {
                 val = val.reverse_bits() >>
@@ -409,7 +411,9 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
         // The compiler eliminates the unused branch since BIT_WIDTH is const.
         if BIT_WIDTH as usize + bit_shift <= usize::BITS as usize {
             let mut val = val as usize;
-            val &= (1usize << BIT_WIDTH) - 1;
+            if (BIT_WIDTH as u32) < usize::BITS {
+                val &= (1usize << BIT_WIDTH) - 1;
+            }
 
             if cfg!(target_endian = "big") {
                 val = val.reverse_bits() >>
@@ -418,7 +422,12 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
 
             val <<= bit_shift;
 
-            let field_mask = ((1usize << BIT_WIDTH) - 1) << bit_shift;
+            let field_mask =
+                if BIT_WIDTH as usize + bit_shift >= usize::BITS as usize {
+                    !0usize << bit_shift
+                } else {
+                    ((1usize << BIT_WIDTH) - 1) << bit_shift
+                };
 
             let mut i = 0;
             while i < bytes_needed {
@@ -519,7 +528,9 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
             }
 
             val >>= bit_shift;
-            val &= (1usize << BIT_WIDTH) - 1;
+            if (BIT_WIDTH as u32) < usize::BITS {
+                val &= (1usize << BIT_WIDTH) - 1;
+            }
 
             if cfg!(target_endian = "big") {
                 val = val.reverse_bits() >>
@@ -588,7 +599,9 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
         // Use usize for fields that fit, u64 only when necessary.
         if BIT_WIDTH as usize + bit_shift <= usize::BITS as usize {
             let mut val = val as usize;
-            val &= (1usize << BIT_WIDTH) - 1;
+            if (BIT_WIDTH as u32) < usize::BITS {
+                val &= (1usize << BIT_WIDTH) - 1;
+            }
 
             if cfg!(target_endian = "big") {
                 val = val.reverse_bits() >>
@@ -597,7 +610,12 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
 
             val <<= bit_shift;
 
-            let field_mask = ((1usize << BIT_WIDTH) - 1) << bit_shift;
+            let field_mask =
+                if BIT_WIDTH as usize + bit_shift >= usize::BITS as usize {
+                    !0usize << bit_shift
+                } else {
+                    ((1usize << BIT_WIDTH) - 1) << bit_shift
+                };
 
             let mut i = 0;
             while i < bytes_needed {
