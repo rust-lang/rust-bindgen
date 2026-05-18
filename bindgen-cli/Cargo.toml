@@ -32,6 +32,7 @@ shlex.workspace = true
 default = ["logging", "runtime"]
 logging = ["bindgen/logging", "dep:env_logger", "dep:log"]
 static = ["bindgen/static"]
+libcpp = ["bindgen/libcpp"]
 runtime = ["bindgen/runtime"]
 prettyplease = ["bindgen/prettyplease"]
 
