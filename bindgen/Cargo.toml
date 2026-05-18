@@ -46,6 +46,7 @@ syn = { workspace = true, features = ["full", "extra-traits", "visit-mut"] }
 default = ["logging", "prettyplease", "runtime"]
 logging = ["dep:log"]
 static = ["clang-sys/static"]
+libcpp = ["clang-sys/libcpp"]
 runtime = ["clang-sys/runtime"]
 experimental = ["dep:annotate-snippets"]
 
