@@ -1,0 +1,19 @@
+{
+  "types": [
+    "foo_int_t",
+    "int",
+    "foo_struct",
+    "int",
+    "float",
+    "_bindgen_ty_id_9",
+    "int",
+    "void",
+    "int"
+  ],
+  "functions": [
+    "foo_function"
+  ],
+  "vars": [
+    "foo_global_var"
+  ]
+}

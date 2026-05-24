@@ -319,6 +319,9 @@ struct BindgenCommand {
     /// Dump a graphviz dot file to PATH.
     #[arg(long, value_name = "PATH")]
     emit_ir_graphviz: Option<String>,
+    /// Emit a list of generated symbols to PATH.
+    #[arg(long, value_name = "PATH")]
+    emit_symbol_list: Option<PathBuf>,
     /// Enable support for C++ namespaces.
     #[arg(long)]
     enable_cxx_namespaces: bool,
@@ -636,6 +639,7 @@ where
         emit_clang_ast,
         emit_ir,
         emit_ir_graphviz,
+        emit_symbol_list,
         enable_cxx_namespaces,
         disable_name_namespacing,
         disable_nested_struct_naming,
@@ -947,6 +951,7 @@ where
             emit_clang_ast => |b, _| b.emit_clang_ast(),
             emit_ir => |b, _| b.emit_ir(),
             emit_ir_graphviz,
+            emit_symbol_list,
             enable_cxx_namespaces => |b, _| b.enable_cxx_namespaces(),
             enable_function_attribute_detection => |b, _| b.enable_function_attribute_detection(),
             disable_name_namespacing => |b, _| b.disable_name_namespacing(),
