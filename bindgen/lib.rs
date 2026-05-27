@@ -1169,6 +1169,7 @@ fn parse(context: &mut BindgenContext) -> Result<(), BindgenError> {
         context.root_module(),
         "How did this happen?"
     );
+    ir::var::finish_pending_pointer_macros(context);
     Ok(())
 }
 

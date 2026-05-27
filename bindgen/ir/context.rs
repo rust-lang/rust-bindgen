@@ -19,6 +19,7 @@ use super::module::{Module, ModuleKind};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
+use super::var::PendingPointerMacro;
 use crate::clang::{self, ABIKind, Cursor};
 use crate::codegen::CodegenError;
 use crate::ir::item::ItemCanonicalName;
@@ -350,12 +351,17 @@ pub(crate) struct BindgenContext {
     /// potentially break that assumption.
     currently_parsed_types: Vec<PartialType>,
 
-    /// A map with all the already parsed macro names. This is done to avoid
-    /// hard errors while parsing duplicated macros, as well to allow macro
-    /// expression parsing.
+    /// Parsed macro names whose current value cannot be provided to `cexpr`.
+    non_cexpr_macros: HashSet<Vec<u8>>,
+
+    /// Values from parsed macros that `cexpr` can use while parsing derived
+    /// macro expressions.
     ///
     /// This needs to be an `std::HashMap` because the `cexpr` API requires it.
     parsed_macros: StdHashMap<Vec<u8>, cexpr::expr::EvalResult>,
+
+    /// Pointer-valued macros whose type is materialized after macro parsing.
+    pending_pointer_macros: Vec<PendingPointerMacro>,
 
     /// A map with all include locations.
     ///
@@ -587,7 +593,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             current_module: root_module_id,
             semantic_parents: Default::default(),
             currently_parsed_types: vec![],
+            non_cexpr_macros: Default::default(),
             parsed_macros: Default::default(),
+            pending_pointer_macros: vec![],
             replacements: Default::default(),
             collected_typerefs: false,
             in_codegen: false,
@@ -2130,7 +2138,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Have we parsed the macro named `macro_name` already?
     pub(crate) fn parsed_macro(&self, macro_name: &[u8]) -> bool {
-        self.parsed_macros.contains_key(macro_name)
+        self.parsed_macros.contains_key(macro_name) ||
+            self.non_cexpr_macros.contains(macro_name)
     }
 
     /// Get the currently parsed macros.
@@ -2141,13 +2150,34 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         &self.parsed_macros
     }
 
-    /// Mark the macro named `macro_name` as parsed.
+    /// Mark a macro as parsed and update any value usable by `cexpr`.
     pub(crate) fn note_parsed_macro(
         &mut self,
         id: Vec<u8>,
-        value: cexpr::expr::EvalResult,
+        value: Option<cexpr::expr::EvalResult>,
     ) {
-        self.parsed_macros.insert(id, value);
+        if let Some(value) = value {
+            self.non_cexpr_macros.remove(&id);
+            self.parsed_macros.insert(id, value);
+        } else {
+            self.parsed_macros.remove(&id);
+            self.non_cexpr_macros.insert(id);
+        }
+    }
+
+    /// Defer materialization of a pointer-valued macro until parsing finishes.
+    pub(crate) fn note_pending_pointer_macro(
+        &mut self,
+        pointer_macro: PendingPointerMacro,
+    ) {
+        self.pending_pointer_macros.push(pointer_macro);
+    }
+
+    /// Take all pointer-valued macros waiting for final materialization.
+    pub(crate) fn take_pending_pointer_macros(
+        &mut self,
+    ) -> Vec<PendingPointerMacro> {
+        mem::take(&mut self.pending_pointer_macros)
     }
 
     /// Are we in the codegen phase?
