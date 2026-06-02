@@ -42,7 +42,7 @@ quickcheck = "1.0"
 quote = { version = "1", default-features = false }
 regex = { version = "1.5.3", default-features = false }
 rustc-hash = "2.1.0"
-shlex = "1"
+shlex = "2"
 similar = "2.2.1"
 syn = "2.0"
 tempfile = "3.27.0"
