@@ -586,6 +586,38 @@ impl BindgenOptions {
         self.parse_callbacks.iter().for_each(|cb| f(cb.as_ref()));
     }
 
+    fn cb_item_is_allowed(
+        &self,
+        item_info: &callbacks::ItemInfo,
+    ) -> Option<bool> {
+        let mut res = None;
+
+        for cb in &self.parse_callbacks {
+            if let Some(allow_or_block) = cb.allow_or_block_item(item_info) {
+                match allow_or_block {
+                    callbacks::AllowOrBlockItem::Allow => {
+                        // Continue to check if some other callbacks returns `Block`.
+                        res = Some(true);
+                    }
+                    callbacks::AllowOrBlockItem::Block => {
+                        // Return `false` immediately to block the bindings generation.
+                        return Some(false);
+                    }
+                }
+            }
+        }
+
+        res
+    }
+
+    fn cb_item_is_blocked(
+        &self,
+        item_info: &callbacks::ItemInfo,
+    ) -> Option<bool> {
+        self.cb_item_is_allowed(item_info)
+            .map(|is_allowed| !is_allowed)
+    }
+
     fn process_comment(&self, comment: &str) -> String {
         let comment = comment::preprocess(comment);
         self.last_callback(|cb| cb.process_comment(&comment))
