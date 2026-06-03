@@ -2,4 +2,6 @@
 #[allow(dead_code)]
 unsafe extern "C" {
     pub fn test_function();
+    pub static mut test_var: ::std::os::raw::c_int;
+    pub static test_const_var: ::std::os::raw::c_int;
 }

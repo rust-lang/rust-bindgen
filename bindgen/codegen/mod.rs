@@ -844,6 +844,20 @@ impl CodeGenerator for Var {
                 }
             });
 
+            let mut block_attributes = quote! {};
+            for attr in &ctx.options().extern_block_attrs {
+                let parsed_attr = proc_macro2::TokenStream::from_str(attr).unwrap_or_else(
+                    |err| {
+                        panic!(
+                            "Error parsing extern static block attribute `{attr}`: {err}"
+                        )
+                    },
+                );
+                block_attributes.extend(quote! {
+                    #parsed_attr
+                });
+            }
+
             let maybe_mut = if self.is_const() {
                 quote! {}
             } else {
@@ -857,6 +871,7 @@ impl CodeGenerator for Var {
                 .then(|| quote!(unsafe));
 
             let tokens = quote!(
+                #block_attributes
                 #safety extern "C" {
                     #(#attrs)*
                     pub static #maybe_mut #canonical_ident: #ty;
@@ -4785,7 +4800,7 @@ impl CodeGenerator for Function {
         }
 
         let mut block_attributes = quote! {};
-        for attr in &ctx.options().extern_fn_block_attrs {
+        for attr in &ctx.options().extern_block_attrs {
             let parsed_attr = proc_macro2::TokenStream::from_str(attr).unwrap_or_else(
                 |err| {
                     panic!(
