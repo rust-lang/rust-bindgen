@@ -282,7 +282,25 @@ impl Type {
                 .sanitized_name(ctx)
                 .map(|name| format!("{prefix}_{name}").into())
         } else {
-            self.name().map(Self::sanitize_name)
+            match self.name() {
+                Some(name) => Some(Self::sanitize_name(name)),
+                None => match self.kind() {
+                    TypeKind::Enum(inner) => {
+                        if ctx.options().hash_unnamed_enum {
+                            Some(
+                                format!(
+                                    "bindgen_enum_{:x}",
+                                    inner.variants_name_hash()
+                                )
+                                .into(),
+                            )
+                        } else {
+                            None
+                        }
+                    }
+                    _ => None,
+                },
+            }
         }
     }
 
