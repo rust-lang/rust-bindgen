@@ -336,6 +336,11 @@ impl Builder {
                 .map(String::into_boxed_str),
         );
 
+        assert!(
+            !self.options.input_headers.is_empty() ||
+                !self.options.input_header_contents.is_empty(),
+            "No headers provided"
+        );
         for header in &self.options.input_headers {
             self.options
                 .for_each_callback(|cb| cb.header_file(header.as_ref()));
