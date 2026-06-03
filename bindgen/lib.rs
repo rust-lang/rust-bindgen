@@ -463,7 +463,7 @@ impl Builder {
 
 impl BindgenOptions {
     fn build(&mut self) {
-        const REGEX_SETS_LEN: usize = 29;
+        const REGEX_SETS_LEN: usize = 30;
 
         let regex_sets: [_; REGEX_SETS_LEN] = [
             &mut self.blocklisted_types,
@@ -478,6 +478,7 @@ impl BindgenOptions {
             &mut self.allowlisted_files,
             &mut self.allowlisted_items,
             &mut self.bitfield_enums,
+            &mut self.bitfield_global_enums,
             &mut self.constified_enums,
             &mut self.constified_enum_modules,
             &mut self.newtype_enums,
@@ -515,6 +516,7 @@ impl BindgenOptions {
                     "--allowlist-file",
                     "--allowlist-item",
                     "--bitfield-enum",
+                    "--bitfield-global-enum",
                     "--newtype-enum",
                     "--newtype-global-enum",
                     "--rustified-enum",

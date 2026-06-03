@@ -227,6 +227,7 @@
 --------------------------------------------------------------------------------
 # Unreleased
 ## Added
+- Added `--bitfield-global-enum` for parity with `--newtype-global-enum`
 ## Changed
 ## Removed
 - Removed support for generating code for rustc versions < 1.51.
