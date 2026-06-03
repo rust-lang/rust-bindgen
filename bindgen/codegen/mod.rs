@@ -5299,6 +5299,95 @@ pub(crate) fn codegen(
             result.push(dynamic_items_tokens);
         }
 
+        // Emit translated function-like macros as `const fn` items.
+        // These originate from `#define`s, so they follow var semantics
+        // for filtering: gated on `--generate vars`, filtered by
+        // `--blocklist-var`/`--blocklist-item`, and allowed by
+        // `--allowlist-var`/`--allowlist-item`/`--allowlist-file`.
+        // `--allowlist-type` and `--allowlist-function` do NOT activate
+        // the allowlist gate for function macros — they are orthogonal
+        // (function macros are macro-derived, not C type/function
+        // declarations).
+        if context.options().codegen_config.vars() {
+        let has_any_allowlist =
+            !context.options().allowlisted_vars.is_empty() ||
+            !context.options().allowlisted_items.is_empty() ||
+            !context.options().allowlisted_files.is_empty();
+        for fm in context.function_macros() {
+            if context.options().blocklisted_items.matches(&fm.name)
+                || context.options().blocklisted_vars.matches(&fm.name)
+            {
+                continue;
+            }
+            if has_any_allowlist {
+                // Check var/item allowlists by name.
+                let name_allowed =
+                    context.options().allowlisted_vars.matches(&fm.name)
+                        || context
+                            .options()
+                            .allowlisted_items
+                            .matches(&fm.name);
+                // Check file allowlist by source location.
+                let file_allowed = fm.source_file.as_ref().is_some_and(
+                    |f| context.options().allowlisted_files.matches(f),
+                );
+                if !name_allowed && !file_allowed {
+                    continue;
+                }
+            }
+            let name = if crate::ir::func_macro::RUST_KEYWORDS
+                .contains(&fm.name.as_str())
+            {
+                Ident::new_raw(&fm.name, Span::call_site())
+            } else {
+                Ident::new(&fm.name, Span::call_site())
+            };
+            let vt: proc_macro2::TokenStream =
+                fm.value_type.parse().unwrap_or_else(|_| quote! { i64 });
+            let value_params: Vec<proc_macro2::TokenStream> = fm
+                .params
+                .iter()
+                .map(|p| {
+                    let ident = if let Some(raw) = p.strip_prefix("r#") {
+                        Ident::new_raw(raw, Span::call_site())
+                    } else {
+                        Ident::new(p, Span::call_site())
+                    };
+                    quote! { #ident : #vt }
+                })
+                .collect();
+            let type_params: Vec<proc_macro2::TokenStream> = fm
+                .type_params
+                .iter()
+                .map(|p| {
+                    let ident = if let Some(raw) = p.strip_prefix("r#") {
+                        Ident::new_raw(raw, Span::call_site())
+                    } else {
+                        Ident::new(p, Span::call_site())
+                    };
+                    quote! { #ident }
+                })
+                .collect();
+            let body = &fm.body;
+
+            if type_params.is_empty() {
+                result.push(quote! {
+                    #[allow(non_snake_case, unused_parens)]
+                    pub const fn #name ( #( #value_params ),* ) -> #vt {
+                        #body
+                    }
+                });
+            } else {
+                result.push(quote! {
+                    #[allow(non_snake_case, non_camel_case_types, unused_parens)]
+                    pub const fn #name < #( #type_params ),* > ( #( #value_params ),* ) -> #vt {
+                        #body
+                    }
+                });
+            }
+        }
+        } // codegen_config.vars()
+
         utils::serialize_items(&result, context)?;
 
         Ok(postprocessing::postprocessing(

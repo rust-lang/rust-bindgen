@@ -2242,6 +2242,24 @@ options! {
         },
         as_args: "--emit-diagnostics",
     },
+    /// Whether to translate function-like C macros to Rust `const fn` declarations.
+    translate_function_macros: bool {
+        methods: {
+            /// Translate function-like C preprocessor macros into Rust `const fn` declarations.
+            ///
+            /// For example, `#define ADD(x, y) ((x) + (y))` becomes
+            /// `pub const fn ADD(x: i64, y: i64) -> i64 { ((x) + (y)) }`.
+            ///
+            /// Supports arithmetic, casts, `sizeof`, ternary, logical operators,
+            /// and cross-macro calls. Variadic macros, statement macros, and other
+            /// untranslatable constructs are silently skipped.
+            pub fn translate_function_macros(mut self) -> Self {
+                self.options.translate_function_macros = true;
+                self
+            }
+        },
+        as_args: "--translate-function-macros",
+    }
     /// Whether to use Clang evaluation on temporary files as a fallback for macros that fail to
     /// parse.
     clang_macro_fallback: bool {

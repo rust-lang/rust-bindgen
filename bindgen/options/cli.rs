@@ -496,6 +496,9 @@ struct BindgenCommand {
     /// Wrap unsafe operations in unsafe blocks.
     #[arg(long)]
     wrap_unsafe_ops: bool,
+    /// Translate function-like C macros to Rust const fn declarations.
+    #[arg(long)]
+    translate_function_macros: bool,
     /// Enable fallback for clang macro parsing.
     #[arg(long)]
     clang_macro_fallback: bool,
@@ -694,6 +697,7 @@ where
         merge_extern_blocks,
         override_abi,
         wrap_unsafe_ops,
+        translate_function_macros,
         clang_macro_fallback,
         clang_macro_fallback_build_dir,
         flexarray_dst,
@@ -1000,6 +1004,7 @@ where
             merge_extern_blocks,
             override_abi => |b, (abi, regex)| b.override_abi(abi, regex),
             wrap_unsafe_ops,
+            translate_function_macros => |b, _| b.translate_function_macros(),
             clang_macro_fallback => |b, _| b.clang_macro_fallback(),
             clang_macro_fallback_build_dir,
             flexarray_dst,
