@@ -2329,7 +2329,8 @@ impl EvalResult {
         })
     }
 
-    fn kind(&self) -> CXEvalResultKind {
+    /// Return the kind of the evaluation result.
+    pub(crate) fn kind(&self) -> CXEvalResultKind {
         unsafe { clang_EvalResult_getKind(self.x) }
     }
 
@@ -2368,6 +2369,30 @@ impl EvalResult {
         }
         #[allow(clippy::unnecessary_cast)]
         Some(value as i64)
+    }
+
+    /// Try to resolve the result into a string literal.
+    /// This returns `None` if the result is not immediately a string literal.
+    pub(crate) fn as_str_literal(&self) -> Option<Vec<u8>> {
+        if !matches!(
+            self.kind(),
+            CXEval_StrLiteral | CXEval_CFStr | CXEval_ObjCStrLiteral,
+        ) {
+            return None;
+        }
+        // Safety: we are only copying the content, not assuming a borrow.
+        // TODO(@dingxiangfei2009): LLVM Libclang does not return the true size
+        // of a string literal, which could be truncated due to a null character
+        // '\0' in the middle.
+        // Tracking issue: https://github.com/llvm/llvm-project/issues/69749
+        let value =
+            unsafe { CStr::from_ptr(clang_EvalResult_getAsStr(self.x)) };
+        Some(value.to_bytes().into())
+    }
+
+    /// Return the type of the value.
+    pub(crate) fn value_type(&self) -> Type {
+        self.ty
     }
 
     /// Evaluates the expression as a literal string, that may or may not be

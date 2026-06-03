@@ -269,6 +269,16 @@ fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
 
     let source = fs::File::open(header)?;
     let reader = BufReader::new(source);
+    let basename = header.file_name().unwrap();
+    let per_test_folder = format!(
+        "./{}",
+        basename
+            .to_str()
+            .unwrap()
+            .replace('_', "__")
+            .replace('.', "_")
+    );
+    fs::create_dir_all(&per_test_folder)?;
 
     // Scoop up bindgen-flags from test header
     let mut flags = Vec::with_capacity(2);
@@ -334,6 +344,8 @@ fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
         "#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]",
         "--raw-line",
         "",
+        "--clang-macro-fallback-build-dir",
+        &per_test_folder,
     ];
 
     let args = prepend.iter().map(ToString::to_string).chain(flags);
