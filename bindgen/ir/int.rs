@@ -121,3 +121,89 @@ impl IntKind {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::IntKind;
+
+    #[test]
+    fn signedness() {
+        let cases: &[(IntKind, bool)] = &[
+            (IntKind::Bool, false),
+            (IntKind::SChar, true),
+            (IntKind::UChar, false),
+            (IntKind::WChar, false),
+            (IntKind::Char { is_signed: true }, true),
+            (IntKind::Char { is_signed: false }, false),
+            (IntKind::Short, true),
+            (IntKind::UShort, false),
+            (IntKind::Int, true),
+            (IntKind::UInt, false),
+            (IntKind::Long, true),
+            (IntKind::ULong, false),
+            (IntKind::LongLong, true),
+            (IntKind::ULongLong, false),
+            (IntKind::I8, true),
+            (IntKind::U8, false),
+            (IntKind::I16, true),
+            (IntKind::U16, false),
+            (IntKind::Char16, false),
+            (IntKind::I32, true),
+            (IntKind::U32, false),
+            (IntKind::I64, true),
+            (IntKind::U64, false),
+            (IntKind::I128, true),
+            (IntKind::U128, false),
+            (IntKind::Custom { name: "x", is_signed: true }, true),
+            (IntKind::Custom { name: "x", is_signed: false }, false),
+        ];
+
+        for &(kind, expected) in cases {
+            assert_eq!(
+                kind.is_signed(),
+                expected,
+                "unexpected signedness for {kind:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn known_size() {
+        let cases: &[(IntKind, Option<usize>)] = &[
+            (IntKind::Bool, Some(1)),
+            (IntKind::SChar, Some(1)),
+            (IntKind::UChar, Some(1)),
+            (IntKind::Char { is_signed: true }, Some(1)),
+            (IntKind::Char { is_signed: false }, Some(1)),
+            (IntKind::I8, Some(1)),
+            (IntKind::U8, Some(1)),
+            (IntKind::I16, Some(2)),
+            (IntKind::U16, Some(2)),
+            (IntKind::Char16, Some(2)),
+            (IntKind::I32, Some(4)),
+            (IntKind::U32, Some(4)),
+            (IntKind::I64, Some(8)),
+            (IntKind::U64, Some(8)),
+            (IntKind::I128, Some(16)),
+            (IntKind::U128, Some(16)),
+            (IntKind::WChar, None),
+            (IntKind::Short, None),
+            (IntKind::UShort, None),
+            (IntKind::Int, None),
+            (IntKind::UInt, None),
+            (IntKind::Long, None),
+            (IntKind::ULong, None),
+            (IntKind::LongLong, None),
+            (IntKind::ULongLong, None),
+            (IntKind::Custom { name: "x", is_signed: true }, None),
+        ];
+
+        for &(kind, expected) in cases {
+            assert_eq!(
+                kind.known_size(),
+                expected,
+                "unexpected known_size for {kind:?}"
+            );
+        }
+    }
+}
