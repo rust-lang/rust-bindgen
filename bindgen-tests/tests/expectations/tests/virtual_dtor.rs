@@ -21,6 +21,6 @@ impl Default for nsSlots {
     }
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN7nsSlotsD1Ev"]
+    #[link_name = "_ZN7nsSlotsD1Ev"]
     pub fn nsSlots_nsSlots_destructor(this: *mut nsSlots);
 }

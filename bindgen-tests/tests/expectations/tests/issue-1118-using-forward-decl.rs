@@ -59,7 +59,7 @@ impl Default for nsIContent {
     }
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z35Gecko_GetAnonymousContentForElementv"]
+    #[link_name = "_Z35Gecko_GetAnonymousContentForElementv"]
     pub fn Gecko_GetAnonymousContentForElement() -> *mut nsTArray;
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
