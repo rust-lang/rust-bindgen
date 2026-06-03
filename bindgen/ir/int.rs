@@ -78,6 +78,12 @@ pub enum IntKind {
     /// A `uint128_t`.
     U128,
 
+    /// A pointer-sized signed integer.
+    Isize,
+
+    /// A pointer-sized unsigned integer.
+    Usize,
+
     /// A custom integer type, used to allow custom macro types depending on
     /// range.
     Custom {
@@ -97,10 +103,10 @@ impl IntKind {
             // to know whether it is or not right now (unlike char, there's no
             // WChar_S / WChar_U).
             Bool | UChar | UShort | UInt | ULong | ULongLong | U8 | U16 |
-            Char16 | WChar | U32 | U64 | U128 => false,
+            Char16 | WChar | U32 | U64 | U128 | Usize => false,
 
             SChar | Short | Int | Long | LongLong | I8 | I16 | I32 | I64 |
-            I128 => true,
+            I128 | Isize => true,
 
             Char { is_signed } | Custom { is_signed, .. } => is_signed,
         }
