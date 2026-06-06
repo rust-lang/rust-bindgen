@@ -618,6 +618,52 @@ fn test_macro_fallback_non_system_dir() {
 }
 
 #[test]
+fn test_macro_fallback_cross_target() {
+    if let Some((9, _)) = clang_version().parsed {
+        return;
+    }
+
+    // Setting TARGET in a parallel test is not robust, so run the actual
+    // assertion in a child process with a non-host target.
+    if env::var("__BINDGEN_CROSS_TARGET_INNER").is_ok() {
+        let tmpdir = tempfile::tempdir().unwrap();
+        let header = tmpdir.path().join("test.h");
+        fs::write(&header, "#define PTR_BYTES __SIZEOF_POINTER__\n").unwrap();
+
+        let actual = builder()
+            .disable_header_comment()
+            .header(header.to_str().unwrap())
+            .clang_macro_fallback()
+            .clang_macro_fallback_build_dir(tmpdir.path())
+            .generate()
+            .unwrap()
+            .to_string();
+
+        assert!(
+            actual.contains("pub const PTR_BYTES: u32 = 4;"),
+            "Expected 4-byte pointers for armv7 target, got:\n{actual}"
+        );
+        return;
+    }
+
+    let output = std::process::Command::new(env::current_exe().unwrap())
+        .arg("test_macro_fallback_cross_target")
+        .arg("--exact")
+        .arg("--test-threads=1")
+        .env("TARGET", "armv7-unknown-linux-gnueabihf")
+        .env("__BINDGEN_CROSS_TARGET_INNER", "1")
+        .output()
+        .unwrap();
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        output.status.success(),
+        "Cross-target fallback test failed.\nstdout:\n{stdout}\nstderr:\n{stderr}"
+    );
+}
+
+#[test]
 // Doesn't support executing sh file on Windows.
 // We may want to implement it in Rust so that we support all systems.
 #[cfg(not(target_os = "windows"))]
