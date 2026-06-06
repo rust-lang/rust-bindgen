@@ -14,8 +14,13 @@ use std::fs::OpenOptions;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong, c_ulonglong};
+use std::path::Path;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::OnceLock;
 use std::{mem, ptr, slice};
+
+/// Counter used to create collision-free macro fallback scratch directories.
+static NEXT_FALLBACK_ARTIFACT_DIR: AtomicUsize = AtomicUsize::new(0);
 
 /// Type representing a clang attribute.
 ///
@@ -1911,12 +1916,61 @@ impl Drop for TranslationUnit {
     }
 }
 
-/// Translation unit used for macro fallback parsing
-pub(crate) struct FallbackTranslationUnit {
+/// Scratch files used by macro fallback parsing.
+pub(crate) struct FallbackArtifacts {
     file_path: String,
     pch_path: String,
+    dir_path: String,
+}
+
+impl FallbackArtifacts {
+    /// Create a private artifact directory under `build_dir`.
+    pub(crate) fn new(build_dir: &str) -> Option<Self> {
+        let process_id = std::process::id();
+        let dir = loop {
+            let dir_index =
+                NEXT_FALLBACK_ARTIFACT_DIR.fetch_add(1, Ordering::Relaxed);
+            let path = Path::new(build_dir)
+                .join(format!(".macro_eval_{process_id}_{dir_index}"));
+            match std::fs::create_dir(&path) {
+                Ok(()) => break path,
+                Err(error)
+                    if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+                Err(_) => return None,
+            }
+        };
+        let dir_path = dir.to_str()?.to_owned();
+        Some(FallbackArtifacts {
+            file_path: format!("{dir_path}/.macro_eval.c"),
+            pch_path: format!("{dir_path}/.macro_eval-precompile.h.pch"),
+            dir_path,
+        })
+    }
+
+    /// Path to the C file used for fallback macro parsing.
+    pub(crate) fn file_path(&self) -> &str {
+        &self.file_path
+    }
+
+    /// Path to the precompiled header used for fallback macro parsing.
+    pub(crate) fn pch_path(&self) -> &str {
+        &self.pch_path
+    }
+}
+
+impl Drop for FallbackArtifacts {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_file(&self.file_path);
+        let _ = std::fs::remove_file(&self.pch_path);
+        let _ = std::fs::remove_dir(&self.dir_path);
+    }
+}
+
+/// Translation unit used for macro fallback parsing.
+pub(crate) struct FallbackTranslationUnit {
     idx: Box<Index>,
     tu: TranslationUnit,
+    artifacts: FallbackArtifacts,
 }
 
 impl fmt::Debug for FallbackTranslationUnit {
@@ -1928,8 +1982,7 @@ impl fmt::Debug for FallbackTranslationUnit {
 impl FallbackTranslationUnit {
     /// Create a new fallback translation unit
     pub(crate) fn new(
-        file: String,
-        pch_path: String,
+        artifacts: FallbackArtifacts,
         c_args: &[Box<str>],
     ) -> Option<Self> {
         // Create empty file
@@ -1937,22 +1990,21 @@ impl FallbackTranslationUnit {
             .write(true)
             .create(true)
             .truncate(true)
-            .open(&file)
+            .open(artifacts.file_path())
             .ok()?;
 
         let f_index = Box::new(Index::new(true, false));
         let f_translation_unit = TranslationUnit::parse(
             &f_index,
-            &file,
+            artifacts.file_path(),
             c_args,
             &[],
             CXTranslationUnit_None,
         )?;
         Some(FallbackTranslationUnit {
-            file_path: file,
-            pch_path,
             tu: f_translation_unit,
             idx: f_index,
+            artifacts,
         })
     }
 
@@ -1966,7 +2018,10 @@ impl FallbackTranslationUnit {
         &mut self,
         unsaved_contents: &str,
     ) -> Result<(), CXErrorCode> {
-        let unsaved = &[UnsavedFile::new(&self.file_path, unsaved_contents)];
+        let unsaved = &[UnsavedFile::new(
+            self.artifacts.file_path(),
+            unsaved_contents,
+        )];
         let mut c_unsaved: Vec<CXUnsavedFile> =
             unsaved.iter().map(|f| f.x).collect();
         let ret = unsafe {
@@ -1982,13 +2037,6 @@ impl FallbackTranslationUnit {
         } else {
             Ok(())
         }
-    }
-}
-
-impl Drop for FallbackTranslationUnit {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_file(&self.file_path);
-        let _ = std::fs::remove_file(&self.pch_path);
     }
 }
 
