@@ -1068,6 +1068,39 @@ impl Type {
                 }
                 CXType_Typedef => {
                     let inner = cursor.typedef_type().expect("Not valid Type?");
+
+                    // Some compiler builtins (Objective-C's `id`, `SEL`,
+                    // `Class`) can also be redeclared via a same-named
+                    // typedef aliasing their underlying representation (see
+                    // e.g. objc/objc.h's `#if !OBJC_TYPES_DEFINED` block,
+                    // meant to avoid clashing when the builtins aren't
+                    // already provided by the compiler). Depending on
+                    // libclang's version, asking such a typedef for its
+                    // underlying type can report the *same* declaration
+                    // (identical USR) back instead of desugaring to the
+                    // written-out type. Treating that as an ordinary
+                    // `Alias` would make this type indirectly reference
+                    // itself once bindgen's deferred `resolve_typerefs`
+                    // finishes resolving the "already resolved" builtin
+                    // lookup, looping forever when e.g. computing its
+                    // canonical type. Detect the same-USR case up front and
+                    // resolve directly as the inner kind instead of
+                    // aliasing to it, exactly as we would if `ty` itself had
+                    // reported that kind.
+                    let same_underlying_decl = matches!(
+                        (cursor.usr(), inner.declaration().usr()),
+                        (Some(outer), Some(inner)) if outer == inner
+                    );
+                    if same_underlying_decl {
+                        return Self::from_clang_ty(
+                            potential_id,
+                            &inner,
+                            location,
+                            parent_id,
+                            ctx,
+                        );
+                    }
+
                     let inner_id =
                         Item::from_ty_or_ref(inner, location, None, ctx);
                     if inner_id == potential_id {
