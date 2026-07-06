@@ -108,11 +108,9 @@ jobs:
       matrix:
         platform:
           - os: ubuntu-latest
-            libtinfo: libtinfo5_6.3-2ubuntu0.1_amd64.deb
-            ubuntu_repo: https://mirrors.kernel.org/ubuntu/pool/universe/n/ncurses/
+            libtinfo: libtinfo5_6.3+20220423-2ubuntu0.1_amd64.deb
           - os: ubuntu-24.04-arm
-            libtinfo: libtinfo5_6.3-2ubuntu0.1_arm64.deb
-            ubuntu_repo: https://ports.ubuntu.com/ubuntu-ports/pool/universe/n/ncurses/
+            libtinfo: libtinfo5_6.3+20220423-2ubuntu0.1_arm64.deb
         llvm_version: ["9.0", "16.0"]
         release_build: [0, 1]
         no_default_features: [0, 1]
@@ -126,8 +124,7 @@ jobs:
           # prevent explosion
           - platform:
               os: ubuntu-latest
-              libtinfo: libtinfo5_6.3-2ubuntu0.1_amd64.deb
-              ubuntu_repo: https://mirrors.kernel.org/ubuntu/pool/universe/n/ncurses/
+              libtinfo: libtinfo5_6.3+20220423-2ubuntu0.1_amd64.deb
             llvm_version: "16.0"
             release_build: 0
             no_default_features: 0
@@ -150,7 +147,7 @@ jobs:
       - name: Install libtinfo
         if: startsWith(matrix.platform.os, 'ubuntu')
         run: |
-          wget ${{matrix.platform.ubuntu_repo}}${{matrix.platform.libtinfo}}
+          wget https://old-releases.ubuntu.com/ubuntu/pool/universe/n/ncurses/${{matrix.platform.libtinfo}}
           sudo dpkg -i ${{matrix.platform.libtinfo}}
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v2.0.5
