@@ -2045,26 +2045,55 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         &mut self,
     ) -> Option<&mut clang::FallbackTranslationUnit> {
         if self.fallback_tu.is_none() {
-            let file = format!(
-                "{}/.macro_eval.c",
-                match self.options().clang_macro_fallback_build_dir {
-                    Some(ref path) => path.as_os_str().to_str()?,
-                    None => ".",
-                }
-            );
+            let build_dir = match self.options().clang_macro_fallback_build_dir
+            {
+                Some(ref path) => path.as_os_str().to_str()?.to_owned(),
+                None => ".".to_owned(),
+            };
+            let artifacts = clang::FallbackArtifacts::new(&build_dir)?;
 
             let index = clang::Index::new(false, false);
 
-            let mut header_names_to_compile = Vec::new();
+            let input_unsaved_files = self
+                .options()
+                .input_header_contents
+                .iter()
+                .map(|(name, contents)| {
+                    clang::UnsavedFile::new(name.as_ref(), contents.as_ref())
+                })
+                .collect::<Vec<_>>();
+
+            let mut effective_headers = Vec::new();
+            if self.options().input_headers.is_empty() {
+                if let Some(((single_header, _), input_headers)) =
+                    self.options().input_header_contents.split_first()
+                {
+                    effective_headers.extend(
+                        input_headers.iter().map(|(path, _)| path.as_ref()),
+                    );
+                    effective_headers.push(single_header.as_ref());
+                }
+            } else {
+                let (single_header, input_headers) =
+                    self.options().input_headers.split_last()?;
+                effective_headers
+                    .extend(input_headers.iter().map(|path| path.as_ref()));
+                effective_headers.extend(
+                    self.options()
+                        .input_header_contents
+                        .iter()
+                        .map(|(path, _)| path.as_ref()),
+                );
+                effective_headers.push(single_header.as_ref());
+            }
+
             let mut header_paths = Vec::new();
-            let mut header_includes = Vec::new();
-            let [input_headers @ .., single_header] =
-                &self.options().input_headers[..]
+            let [input_headers @ .., single_header] = &effective_headers[..]
             else {
                 return None;
             };
             for input_header in input_headers {
-                let path = Path::new(input_header.as_ref());
+                let path = Path::new(*input_header);
                 if let Some(header_path) = path.parent() {
                     if header_path == Path::new("") {
                         header_paths.push(".");
@@ -2074,19 +2103,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 } else {
                     header_paths.push(".");
                 }
-                let header_name = path.file_name()?.to_str()?;
-                header_includes.push(header_name.to_string());
-                header_names_to_compile
-                    .push(header_name.split(".h").next()?.to_string());
             }
-            let pch = format!(
-                "{}/{}",
-                match self.options().clang_macro_fallback_build_dir {
-                    Some(ref path) => path.as_os_str().to_str()?,
-                    None => ".",
-                },
-                header_names_to_compile.join("-") + "-precompile.h.pch"
-            );
 
             let mut c_args = self.options.fallback_clang_args.clone();
             c_args.push("-x".to_string().into_boxed_str());
@@ -2094,22 +2111,22 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             for header_path in header_paths {
                 c_args.push(format!("-I{header_path}").into_boxed_str());
             }
-            for header_include in header_includes {
+            for header_include in input_headers {
                 c_args.push("-include".to_string().into_boxed_str());
-                c_args.push(header_include.into_boxed_str());
+                c_args.push((*header_include).into());
             }
             let mut tu = clang::TranslationUnit::parse(
                 &index,
                 single_header,
                 &c_args,
-                &[],
+                &input_unsaved_files,
                 clang_sys::CXTranslationUnit_ForSerialization,
             )?;
-            tu.save(&pch).ok()?;
+            tu.save(artifacts.pch_path()).ok()?;
 
             let mut c_args = vec![
                 "-include-pch".to_string().into_boxed_str(),
-                pch.clone().into_boxed_str(),
+                artifacts.pch_path().to_string().into_boxed_str(),
             ];
             let mut skip_next = false;
             for arg in &self.options.fallback_clang_args {
@@ -2121,8 +2138,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     c_args.push(arg.clone());
                 }
             }
-            self.fallback_tu =
-                Some(clang::FallbackTranslationUnit::new(file, pch, &c_args)?);
+            let fallback_tu =
+                clang::FallbackTranslationUnit::new(artifacts, &c_args)?;
+            self.fallback_tu = Some(fallback_tu);
         }
 
         self.fallback_tu.as_mut()

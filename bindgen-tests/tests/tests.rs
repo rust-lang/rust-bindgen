@@ -618,6 +618,186 @@ fn test_macro_fallback_non_system_dir() {
 }
 
 #[test]
+fn test_macro_fallback_header_contents() {
+    if let Some((9, _)) = clang_version().parsed {
+        return;
+    }
+
+    let tmpdir = tempfile::tempdir().unwrap();
+    let actual = builder()
+        .disable_header_comment()
+        .header_contents(
+            "test.h",
+            "#define UINT32_C(c) c ## U\n\
+             #define SIMPLE 42\n\
+             #define COMPOUND UINT32_C(69)\n",
+        )
+        .clang_macro_fallback()
+        .clang_macro_fallback_build_dir(tmpdir.path())
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let actual = format_code(actual).unwrap();
+    let expected = format_code(
+        "pub const SIMPLE: u32 = 42;\npub const COMPOUND: u32 = 69;\n",
+    )
+    .unwrap();
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn test_macro_fallback_header_contents_preserves_build_dir_files() {
+    if let Some((9, _)) = clang_version().parsed {
+        return;
+    }
+
+    let tmpdir = tempfile::tempdir().unwrap();
+    let victim = tmpdir.path().join(".macro_eval_header_0.h");
+    fs::write(&victim, "must survive\n").unwrap();
+
+    let actual = builder()
+        .disable_header_comment()
+        .header_contents(
+            "test.h",
+            "#define UINT32_C(c) c ## U\n\
+             #define COMPOUND UINT32_C(69)\n",
+        )
+        .clang_macro_fallback()
+        .clang_macro_fallback_build_dir(tmpdir.path())
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let actual = format_code(actual).unwrap();
+    let expected = format_code("pub const COMPOUND: u32 = 69;\n").unwrap();
+
+    assert_eq!(expected, actual);
+    assert_eq!("must survive\n", fs::read_to_string(victim).unwrap());
+}
+
+#[test]
+fn test_macro_fallback_header_contents_preserves_primary_header_order() {
+    if let Some((9, _)) = clang_version().parsed {
+        return;
+    }
+
+    let tmpdir = tempfile::tempdir().unwrap();
+    let header = tmpdir.path().join("primary.h");
+    fs::write(
+        &header,
+        "#undef ORDER_VALUE\n#define ORDER_VALUE UINT32_C(1)\n",
+    )
+    .unwrap();
+
+    let actual = builder()
+        .disable_header_comment()
+        .header(header.to_str().unwrap())
+        .header_contents(
+            "override.h",
+            "#define UINT32_C(c) c ## U\n\
+             #undef ORDER_VALUE\n\
+             #define ORDER_VALUE UINT32_C(2)\n",
+        )
+        .clang_macro_fallback()
+        .clang_macro_fallback_build_dir(tmpdir.path())
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let actual = format_code(actual).unwrap();
+    let expected = format_code("pub const ORDER_VALUE: u32 = 1;\n").unwrap();
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn test_macro_fallback_header_contents_preserves_include_identity() {
+    if let Some((9, _)) = clang_version().parsed {
+        return;
+    }
+
+    let tmpdir = tempfile::tempdir().unwrap();
+    let header = tmpdir.path().join("primary.h");
+    fs::write(
+        &header,
+        "#undef BINDGEN_VIRTUAL_FUNC_3353\n\
+         #include \"bindgen_virtual_dependency_3353.h\"\n\
+         #define FROM_INCLUDE BINDGEN_VIRTUAL_FUNC_3353(7)\n",
+    )
+    .unwrap();
+    let virtual_dir = tmpdir.path().join("virtual");
+    fs::create_dir(&virtual_dir).unwrap();
+    let virtual_header = virtual_dir.join("bindgen_virtual_dependency_3353.h");
+
+    let actual = builder()
+        .disable_header_comment()
+        .header(header.to_str().unwrap())
+        .header_contents(
+            virtual_header.to_str().unwrap(),
+            "#define BINDGEN_VIRTUAL_FUNC_3353(c) c ## U\n",
+        )
+        .clang_macro_fallback()
+        .clang_macro_fallback_build_dir(tmpdir.path())
+        .clang_arg(format!("-I{}", virtual_dir.display()))
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let actual = format_code(actual).unwrap();
+    let expected = format_code("pub const FROM_INCLUDE: u32 = 7;\n").unwrap();
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn test_macro_fallback_header_contents_preserves_full_include_identity() {
+    if let Some((9, _)) = clang_version().parsed {
+        return;
+    }
+
+    let tmpdir = tempfile::tempdir().unwrap();
+    let header = tmpdir.path().join("primary.h");
+    fs::write(&header, "#define FROM_COMMON COMMON_MACRO(9)\n").unwrap();
+
+    let virtual_dir = tmpdir.path().join("virtual");
+    let a_dir = virtual_dir.join("a");
+    let b_dir = virtual_dir.join("b");
+    fs::create_dir_all(&a_dir).unwrap();
+    fs::create_dir_all(&b_dir).unwrap();
+    let a_header = a_dir.join("common.h");
+    let b_header = b_dir.join("common.h");
+
+    let actual = builder()
+        .disable_header_comment()
+        .header(header.to_str().unwrap())
+        .header_contents(
+            a_header.to_str().unwrap(),
+            "#define COMMON_MACRO(c) 0\n",
+        )
+        .header_contents(
+            b_header.to_str().unwrap(),
+            "#undef COMMON_MACRO\n#define COMMON_MACRO(c) c ## U\n",
+        )
+        .clang_macro_fallback()
+        .clang_macro_fallback_build_dir(tmpdir.path())
+        .clang_arg("--target=x86_64-unknown-linux")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let actual = format_code(actual).unwrap();
+    let expected = format_code("pub const FROM_COMMON: u32 = 9;\n").unwrap();
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
 // Doesn't support executing sh file on Windows.
 // We may want to implement it in Rust so that we support all systems.
 #[cfg(not(target_os = "windows"))]
