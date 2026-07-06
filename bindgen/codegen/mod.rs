@@ -2047,6 +2047,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
 
         let bitfield_ty_item = ctx.resolve_item(self.ty());
         let bitfield_ty = bitfield_ty_item.expect_type();
+        let bitfield_ty_kind = bitfield_ty.canonical_type(ctx).kind();
         let bitfield_ty_ident = bitfield_ty.name();
 
         let bitfield_ty_layout = bitfield_ty
@@ -2132,36 +2133,61 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 }
             }));
         } else {
+            let is_rust_union =
+                parent.is_union() && struct_layout.is_rust_union();
+
+            let get = quote! { self.#unit_field_ident.get_const::<#offset, #width>() as #bitfield_int_ty };
+            let raw_get = quote! {
+                <#unit_field_ty>::raw_get_const::<#offset, #width>(
+                    ::#prefix::ptr::addr_of!((*this).#unit_field_ident),
+                ) as #bitfield_int_ty
+            };
+
+            let (getter_inner, raw_getter_inner) = match bitfield_ty_kind {
+                TypeKind::Int(IntKind::Bool) => {
+                    (quote! { #get != 0 }, quote! { #raw_get != 0 })
+                }
+                TypeKind::Enum(..) => (
+                    quote! { ::#prefix::mem::transmute(#get) },
+                    quote! { ::#prefix::mem::transmute(#raw_get) },
+                ),
+                _ => (quote! { #get as _ }, quote! { #raw_get as _ }),
+            };
+
+            let getter_body = if is_rust_union ||
+                matches!(bitfield_ty_kind, TypeKind::Enum(..))
+            {
+                quote! { unsafe { #getter_inner } }
+            } else {
+                getter_inner
+            };
+
+            let setter_inner = quote! {
+                let val: #bitfield_int_ty = val as _;
+                self.#unit_field_ident.set_const::<#offset, #width>(val as u64)
+            };
+            let setter_body = if is_rust_union {
+                quote! { unsafe { #setter_inner } }
+            } else {
+                setter_inner
+            };
+
             methods.extend(Some(quote! {
                 #[inline]
                 #access_spec fn #getter_name(&self) -> #bitfield_ty {
-                    unsafe {
-                        ::#prefix::mem::transmute(
-                            self.#unit_field_ident.get_const::<#offset, #width>()
-                                as #bitfield_int_ty
-                        )
-                    }
+                    #getter_body
                 }
 
                 #[inline]
                 #access_spec fn #setter_name(&mut self, val: #bitfield_ty) {
-                    unsafe {
-                        let val: #bitfield_int_ty = val as _;
-                        self.#unit_field_ident.set_const::<#offset, #width>(
-                            val as u64
-                        )
-                    }
+                    #setter_body
                 }
             }));
 
             methods.extend(Some(quote! {
                 #[inline]
                 #access_spec unsafe fn #raw_getter_name(this: *const Self) -> #bitfield_ty {
-                    unsafe {
-                        ::#prefix::mem::transmute(<#unit_field_ty>::raw_get_const::<#offset, #width>(
-                            ::#prefix::ptr::addr_of!((*this).#unit_field_ident),
-                        ) as #bitfield_int_ty)
-                    }
+                    unsafe { #raw_getter_inner }
                 }
 
                 #[inline]
