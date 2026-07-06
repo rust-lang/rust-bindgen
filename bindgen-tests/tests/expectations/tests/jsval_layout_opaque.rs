@@ -630,28 +630,20 @@ impl Default for jsval_layout__bindgen_ty_1 {
 impl jsval_layout__bindgen_ty_1 {
     #[inline]
     pub fn payload47(&self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 47u8>() as u64)
-        }
+        self._bitfield_1.get_const::<0usize, 47u8>() as u64 as _
     }
     #[inline]
     pub fn set_payload47(&mut self, val: u64) {
-        unsafe {
-            let val: u64 = val as _;
-            self._bitfield_1.set_const::<0usize, 47u8>(val as u64)
-        }
+        let val: u64 = val as _;
+        self._bitfield_1.set_const::<0usize, 47u8>(val as u64)
     }
     #[inline]
     pub unsafe fn payload47_raw(this: *const Self) -> u64 {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 8usize],
-                >>::raw_get_const::<
-                    0usize,
-                    47u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u64,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 8usize],
+            >>::raw_get_const::<0usize, 47u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u64 as _
         }
     }
     #[inline]
@@ -674,10 +666,8 @@ impl jsval_layout__bindgen_ty_1 {
     }
     #[inline]
     pub fn set_tag(&mut self, val: JSValueTag) {
-        unsafe {
-            let val: u32 = val as _;
-            self._bitfield_1.set_const::<47usize, 17u8>(val as u64)
-        }
+        let val: u32 = val as _;
+        self._bitfield_1.set_const::<47usize, 17u8>(val as u64)
     }
     #[inline]
     pub unsafe fn tag_raw(this: *const Self) -> JSValueTag {

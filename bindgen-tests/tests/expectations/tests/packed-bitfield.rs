@@ -519,28 +519,20 @@ const _: () = {
 impl Date {
     #[inline]
     pub fn day(&self) -> ::std::os::raw::c_uchar {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 5u8>() as u8)
-        }
+        self._bitfield_1.get_const::<0usize, 5u8>() as u8 as _
     }
     #[inline]
     pub fn set_day(&mut self, val: ::std::os::raw::c_uchar) {
-        unsafe {
-            let val: u8 = val as _;
-            self._bitfield_1.set_const::<0usize, 5u8>(val as u64)
-        }
+        let val: u8 = val as _;
+        self._bitfield_1.set_const::<0usize, 5u8>(val as u64)
     }
     #[inline]
     pub unsafe fn day_raw(this: *const Self) -> ::std::os::raw::c_uchar {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 3usize],
-                >>::raw_get_const::<
-                    0usize,
-                    5u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u8,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 3usize],
+            >>::raw_get_const::<0usize, 5u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u8 as _
         }
     }
     #[inline]
@@ -557,28 +549,20 @@ impl Date {
     }
     #[inline]
     pub fn month(&self) -> ::std::os::raw::c_uchar {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<5usize, 4u8>() as u8)
-        }
+        self._bitfield_1.get_const::<5usize, 4u8>() as u8 as _
     }
     #[inline]
     pub fn set_month(&mut self, val: ::std::os::raw::c_uchar) {
-        unsafe {
-            let val: u8 = val as _;
-            self._bitfield_1.set_const::<5usize, 4u8>(val as u64)
-        }
+        let val: u8 = val as _;
+        self._bitfield_1.set_const::<5usize, 4u8>(val as u64)
     }
     #[inline]
     pub unsafe fn month_raw(this: *const Self) -> ::std::os::raw::c_uchar {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 3usize],
-                >>::raw_get_const::<
-                    5usize,
-                    4u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u8,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 3usize],
+            >>::raw_get_const::<5usize, 4u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u8 as _
         }
     }
     #[inline]
@@ -595,28 +579,20 @@ impl Date {
     }
     #[inline]
     pub fn year(&self) -> ::std::os::raw::c_short {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<9usize, 15u8>() as u16)
-        }
+        self._bitfield_1.get_const::<9usize, 15u8>() as u16 as _
     }
     #[inline]
     pub fn set_year(&mut self, val: ::std::os::raw::c_short) {
-        unsafe {
-            let val: u16 = val as _;
-            self._bitfield_1.set_const::<9usize, 15u8>(val as u64)
-        }
+        let val: u16 = val as _;
+        self._bitfield_1.set_const::<9usize, 15u8>(val as u64)
     }
     #[inline]
     pub unsafe fn year_raw(this: *const Self) -> ::std::os::raw::c_short {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 3usize],
-                >>::raw_get_const::<
-                    9usize,
-                    15u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 3usize],
+            >>::raw_get_const::<9usize, 15u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u16 as _
         }
     }
     #[inline]

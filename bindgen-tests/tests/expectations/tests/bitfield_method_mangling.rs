@@ -524,28 +524,20 @@ const _: () = {
 impl mach_msg_type_descriptor_t {
     #[inline]
     pub fn pad3(&self) -> ::std::os::raw::c_uint {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 24u8>() as u32)
-        }
+        self._bitfield_1.get_const::<0usize, 24u8>() as u32 as _
     }
     #[inline]
     pub fn set_pad3(&mut self, val: ::std::os::raw::c_uint) {
-        unsafe {
-            let val: u32 = val as _;
-            self._bitfield_1.set_const::<0usize, 24u8>(val as u64)
-        }
+        let val: u32 = val as _;
+        self._bitfield_1.set_const::<0usize, 24u8>(val as u64)
     }
     #[inline]
     pub unsafe fn pad3_raw(this: *const Self) -> ::std::os::raw::c_uint {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 4usize],
-                >>::raw_get_const::<
-                    0usize,
-                    24u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 4usize],
+            >>::raw_get_const::<0usize, 24u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u32 as _
         }
     }
     #[inline]
@@ -562,28 +554,20 @@ impl mach_msg_type_descriptor_t {
     }
     #[inline]
     pub fn type_(&self) -> ::std::os::raw::c_uint {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<24usize, 8u8>() as u32)
-        }
+        self._bitfield_1.get_const::<24usize, 8u8>() as u32 as _
     }
     #[inline]
     pub fn set_type(&mut self, val: ::std::os::raw::c_uint) {
-        unsafe {
-            let val: u32 = val as _;
-            self._bitfield_1.set_const::<24usize, 8u8>(val as u64)
-        }
+        let val: u32 = val as _;
+        self._bitfield_1.set_const::<24usize, 8u8>(val as u64)
     }
     #[inline]
     pub unsafe fn type__raw(this: *const Self) -> ::std::os::raw::c_uint {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 4usize],
-                >>::raw_get_const::<
-                    24usize,
-                    8u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 4usize],
+            >>::raw_get_const::<24usize, 8u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u32 as _
         }
     }
     #[inline]

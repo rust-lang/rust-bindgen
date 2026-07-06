@@ -598,28 +598,20 @@ impl Default for rte_eth_rxmode {
 impl rte_eth_rxmode {
     #[inline]
     pub fn header_split(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 1u8>() as u16)
-        }
+        self._bitfield_1.get_const::<0usize, 1u8>() as u16 as _
     }
     #[inline]
     pub fn set_header_split(&mut self, val: u16) {
-        unsafe {
-            let val: u16 = val as _;
-            self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
-        }
+        let val: u16 = val as _;
+        self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
     }
     #[inline]
     pub unsafe fn header_split_raw(this: *const Self) -> u16 {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 2usize],
-                >>::raw_get_const::<
-                    0usize,
-                    1u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 2usize],
+            >>::raw_get_const::<0usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u16 as _
         }
     }
     #[inline]
@@ -636,28 +628,20 @@ impl rte_eth_rxmode {
     }
     #[inline]
     pub fn hw_ip_checksum(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<1usize, 1u8>() as u16)
-        }
+        self._bitfield_1.get_const::<1usize, 1u8>() as u16 as _
     }
     #[inline]
     pub fn set_hw_ip_checksum(&mut self, val: u16) {
-        unsafe {
-            let val: u16 = val as _;
-            self._bitfield_1.set_const::<1usize, 1u8>(val as u64)
-        }
+        let val: u16 = val as _;
+        self._bitfield_1.set_const::<1usize, 1u8>(val as u64)
     }
     #[inline]
     pub unsafe fn hw_ip_checksum_raw(this: *const Self) -> u16 {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 2usize],
-                >>::raw_get_const::<
-                    1usize,
-                    1u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 2usize],
+            >>::raw_get_const::<1usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u16 as _
         }
     }
     #[inline]
@@ -674,28 +658,20 @@ impl rte_eth_rxmode {
     }
     #[inline]
     pub fn hw_vlan_filter(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<2usize, 1u8>() as u16)
-        }
+        self._bitfield_1.get_const::<2usize, 1u8>() as u16 as _
     }
     #[inline]
     pub fn set_hw_vlan_filter(&mut self, val: u16) {
-        unsafe {
-            let val: u16 = val as _;
-            self._bitfield_1.set_const::<2usize, 1u8>(val as u64)
-        }
+        let val: u16 = val as _;
+        self._bitfield_1.set_const::<2usize, 1u8>(val as u64)
     }
     #[inline]
     pub unsafe fn hw_vlan_filter_raw(this: *const Self) -> u16 {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 2usize],
-                >>::raw_get_const::<
-                    2usize,
-                    1u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 2usize],
+            >>::raw_get_const::<2usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u16 as _
         }
     }
     #[inline]
@@ -712,28 +688,20 @@ impl rte_eth_rxmode {
     }
     #[inline]
     pub fn hw_vlan_strip(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<3usize, 1u8>() as u16)
-        }
+        self._bitfield_1.get_const::<3usize, 1u8>() as u16 as _
     }
     #[inline]
     pub fn set_hw_vlan_strip(&mut self, val: u16) {
-        unsafe {
-            let val: u16 = val as _;
-            self._bitfield_1.set_const::<3usize, 1u8>(val as u64)
-        }
+        let val: u16 = val as _;
+        self._bitfield_1.set_const::<3usize, 1u8>(val as u64)
     }
     #[inline]
     pub unsafe fn hw_vlan_strip_raw(this: *const Self) -> u16 {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 2usize],
-                >>::raw_get_const::<
-                    3usize,
-                    1u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 2usize],
+            >>::raw_get_const::<3usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u16 as _
         }
     }
     #[inline]
@@ -750,28 +718,20 @@ impl rte_eth_rxmode {
     }
     #[inline]
     pub fn hw_vlan_extend(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<4usize, 1u8>() as u16)
-        }
+        self._bitfield_1.get_const::<4usize, 1u8>() as u16 as _
     }
     #[inline]
     pub fn set_hw_vlan_extend(&mut self, val: u16) {
-        unsafe {
-            let val: u16 = val as _;
-            self._bitfield_1.set_const::<4usize, 1u8>(val as u64)
-        }
+        let val: u16 = val as _;
+        self._bitfield_1.set_const::<4usize, 1u8>(val as u64)
     }
     #[inline]
     pub unsafe fn hw_vlan_extend_raw(this: *const Self) -> u16 {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 2usize],
-                >>::raw_get_const::<
-                    4usize,
-                    1u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 2usize],
+            >>::raw_get_const::<4usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u16 as _
         }
     }
     #[inline]
@@ -788,28 +748,20 @@ impl rte_eth_rxmode {
     }
     #[inline]
     pub fn jumbo_frame(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<5usize, 1u8>() as u16)
-        }
+        self._bitfield_1.get_const::<5usize, 1u8>() as u16 as _
     }
     #[inline]
     pub fn set_jumbo_frame(&mut self, val: u16) {
-        unsafe {
-            let val: u16 = val as _;
-            self._bitfield_1.set_const::<5usize, 1u8>(val as u64)
-        }
+        let val: u16 = val as _;
+        self._bitfield_1.set_const::<5usize, 1u8>(val as u64)
     }
     #[inline]
     pub unsafe fn jumbo_frame_raw(this: *const Self) -> u16 {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 2usize],
-                >>::raw_get_const::<
-                    5usize,
-                    1u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 2usize],
+            >>::raw_get_const::<5usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u16 as _
         }
     }
     #[inline]
@@ -826,28 +778,20 @@ impl rte_eth_rxmode {
     }
     #[inline]
     pub fn hw_strip_crc(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<6usize, 1u8>() as u16)
-        }
+        self._bitfield_1.get_const::<6usize, 1u8>() as u16 as _
     }
     #[inline]
     pub fn set_hw_strip_crc(&mut self, val: u16) {
-        unsafe {
-            let val: u16 = val as _;
-            self._bitfield_1.set_const::<6usize, 1u8>(val as u64)
-        }
+        let val: u16 = val as _;
+        self._bitfield_1.set_const::<6usize, 1u8>(val as u64)
     }
     #[inline]
     pub unsafe fn hw_strip_crc_raw(this: *const Self) -> u16 {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 2usize],
-                >>::raw_get_const::<
-                    6usize,
-                    1u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 2usize],
+            >>::raw_get_const::<6usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u16 as _
         }
     }
     #[inline]
@@ -864,28 +808,20 @@ impl rte_eth_rxmode {
     }
     #[inline]
     pub fn enable_scatter(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<7usize, 1u8>() as u16)
-        }
+        self._bitfield_1.get_const::<7usize, 1u8>() as u16 as _
     }
     #[inline]
     pub fn set_enable_scatter(&mut self, val: u16) {
-        unsafe {
-            let val: u16 = val as _;
-            self._bitfield_1.set_const::<7usize, 1u8>(val as u64)
-        }
+        let val: u16 = val as _;
+        self._bitfield_1.set_const::<7usize, 1u8>(val as u64)
     }
     #[inline]
     pub unsafe fn enable_scatter_raw(this: *const Self) -> u16 {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 2usize],
-                >>::raw_get_const::<
-                    7usize,
-                    1u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 2usize],
+            >>::raw_get_const::<7usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u16 as _
         }
     }
     #[inline]
@@ -902,28 +838,20 @@ impl rte_eth_rxmode {
     }
     #[inline]
     pub fn enable_lro(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<8usize, 1u8>() as u16)
-        }
+        self._bitfield_1.get_const::<8usize, 1u8>() as u16 as _
     }
     #[inline]
     pub fn set_enable_lro(&mut self, val: u16) {
-        unsafe {
-            let val: u16 = val as _;
-            self._bitfield_1.set_const::<8usize, 1u8>(val as u64)
-        }
+        let val: u16 = val as _;
+        self._bitfield_1.set_const::<8usize, 1u8>(val as u64)
     }
     #[inline]
     pub unsafe fn enable_lro_raw(this: *const Self) -> u16 {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 2usize],
-                >>::raw_get_const::<
-                    8usize,
-                    1u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 2usize],
+            >>::raw_get_const::<8usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u16 as _
         }
     }
     #[inline]
@@ -1073,28 +1001,20 @@ impl Default for rte_eth_txmode {
 impl rte_eth_txmode {
     #[inline]
     pub fn hw_vlan_reject_tagged(&self) -> u8 {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 1u8>() as u8)
-        }
+        self._bitfield_1.get_const::<0usize, 1u8>() as u8 as _
     }
     #[inline]
     pub fn set_hw_vlan_reject_tagged(&mut self, val: u8) {
-        unsafe {
-            let val: u8 = val as _;
-            self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
-        }
+        let val: u8 = val as _;
+        self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
     }
     #[inline]
     pub unsafe fn hw_vlan_reject_tagged_raw(this: *const Self) -> u8 {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 1usize],
-                >>::raw_get_const::<
-                    0usize,
-                    1u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u8,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 1usize],
+            >>::raw_get_const::<0usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u8 as _
         }
     }
     #[inline]
@@ -1111,28 +1031,20 @@ impl rte_eth_txmode {
     }
     #[inline]
     pub fn hw_vlan_reject_untagged(&self) -> u8 {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<1usize, 1u8>() as u8)
-        }
+        self._bitfield_1.get_const::<1usize, 1u8>() as u8 as _
     }
     #[inline]
     pub fn set_hw_vlan_reject_untagged(&mut self, val: u8) {
-        unsafe {
-            let val: u8 = val as _;
-            self._bitfield_1.set_const::<1usize, 1u8>(val as u64)
-        }
+        let val: u8 = val as _;
+        self._bitfield_1.set_const::<1usize, 1u8>(val as u64)
     }
     #[inline]
     pub unsafe fn hw_vlan_reject_untagged_raw(this: *const Self) -> u8 {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 1usize],
-                >>::raw_get_const::<
-                    1usize,
-                    1u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u8,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 1usize],
+            >>::raw_get_const::<1usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u8 as _
         }
     }
     #[inline]
@@ -1149,28 +1061,20 @@ impl rte_eth_txmode {
     }
     #[inline]
     pub fn hw_vlan_insert_pvid(&self) -> u8 {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<2usize, 1u8>() as u8)
-        }
+        self._bitfield_1.get_const::<2usize, 1u8>() as u8 as _
     }
     #[inline]
     pub fn set_hw_vlan_insert_pvid(&mut self, val: u8) {
-        unsafe {
-            let val: u8 = val as _;
-            self._bitfield_1.set_const::<2usize, 1u8>(val as u64)
-        }
+        let val: u8 = val as _;
+        self._bitfield_1.set_const::<2usize, 1u8>(val as u64)
     }
     #[inline]
     pub unsafe fn hw_vlan_insert_pvid_raw(this: *const Self) -> u8 {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 1usize],
-                >>::raw_get_const::<
-                    2usize,
-                    1u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u8,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 1usize],
+            >>::raw_get_const::<2usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u8 as _
         }
     }
     #[inline]

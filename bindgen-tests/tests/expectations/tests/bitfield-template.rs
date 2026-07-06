@@ -525,28 +525,20 @@ impl<T> Default for foo<T> {
 impl<T> foo<T> {
     #[inline]
     pub fn b(&self) -> bool {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 8u8>() as u8)
-        }
+        self._bitfield_1.get_const::<0usize, 8u8>() as u8 != 0
     }
     #[inline]
     pub fn set_b(&mut self, val: bool) {
-        unsafe {
-            let val: u8 = val as _;
-            self._bitfield_1.set_const::<0usize, 8u8>(val as u64)
-        }
+        let val: u8 = val as _;
+        self._bitfield_1.set_const::<0usize, 8u8>(val as u64)
     }
     #[inline]
     pub unsafe fn b_raw(this: *const Self) -> bool {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 1usize],
-                >>::raw_get_const::<
-                    0usize,
-                    8u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u8,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 1usize],
+            >>::raw_get_const::<0usize, 8u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u8 != 0
         }
     }
     #[inline]

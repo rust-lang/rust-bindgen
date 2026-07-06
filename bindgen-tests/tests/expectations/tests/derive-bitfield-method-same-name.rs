@@ -546,30 +546,22 @@ impl Default for Foo {
 impl Foo {
     #[inline]
     pub fn type__bindgen_bitfield(&self) -> ::std::os::raw::c_char {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 3u8>() as u8)
-        }
+        self._bitfield_1.get_const::<0usize, 3u8>() as u8 as _
     }
     #[inline]
     pub fn set_type__bindgen_bitfield(&mut self, val: ::std::os::raw::c_char) {
-        unsafe {
-            let val: u8 = val as _;
-            self._bitfield_1.set_const::<0usize, 3u8>(val as u64)
-        }
+        let val: u8 = val as _;
+        self._bitfield_1.set_const::<0usize, 3u8>(val as u64)
     }
     #[inline]
     pub unsafe fn type__bindgen_bitfield_raw(
         this: *const Self,
     ) -> ::std::os::raw::c_char {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 2usize],
-                >>::raw_get_const::<
-                    0usize,
-                    3u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u8,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 2usize],
+            >>::raw_get_const::<0usize, 3u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u8 as _
         }
     }
     #[inline]

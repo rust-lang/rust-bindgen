@@ -537,28 +537,20 @@ impl Default for A {
 impl A {
     #[inline]
     pub fn firmness(&self) -> ::std::os::raw::c_uchar {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 4u8>() as u8)
-        }
+        self._bitfield_1.get_const::<0usize, 4u8>() as u8 as _
     }
     #[inline]
     pub fn set_firmness(&mut self, val: ::std::os::raw::c_uchar) {
-        unsafe {
-            let val: u8 = val as _;
-            self._bitfield_1.set_const::<0usize, 4u8>(val as u64)
-        }
+        let val: u8 = val as _;
+        self._bitfield_1.set_const::<0usize, 4u8>(val as u64)
     }
     #[inline]
     pub unsafe fn firmness_raw(this: *const Self) -> ::std::os::raw::c_uchar {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 3usize],
-                >>::raw_get_const::<
-                    0usize,
-                    4u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u8,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 3usize],
+            >>::raw_get_const::<0usize, 4u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u8 as _
         }
     }
     #[inline]
@@ -575,28 +567,20 @@ impl A {
     }
     #[inline]
     pub fn color(&self) -> ::std::os::raw::c_uchar {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<4usize, 4u8>() as u8)
-        }
+        self._bitfield_1.get_const::<4usize, 4u8>() as u8 as _
     }
     #[inline]
     pub fn set_color(&mut self, val: ::std::os::raw::c_uchar) {
-        unsafe {
-            let val: u8 = val as _;
-            self._bitfield_1.set_const::<4usize, 4u8>(val as u64)
-        }
+        let val: u8 = val as _;
+        self._bitfield_1.set_const::<4usize, 4u8>(val as u64)
     }
     #[inline]
     pub unsafe fn color_raw(this: *const Self) -> ::std::os::raw::c_uchar {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 3usize],
-                >>::raw_get_const::<
-                    4usize,
-                    4u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u8,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 3usize],
+            >>::raw_get_const::<4usize, 4u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u8 as _
         }
     }
     #[inline]
@@ -613,28 +597,20 @@ impl A {
     }
     #[inline]
     pub fn weedsBonus(&self) -> ::std::os::raw::c_ushort {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<8usize, 3u8>() as u16)
-        }
+        self._bitfield_1.get_const::<8usize, 3u8>() as u16 as _
     }
     #[inline]
     pub fn set_weedsBonus(&mut self, val: ::std::os::raw::c_ushort) {
-        unsafe {
-            let val: u16 = val as _;
-            self._bitfield_1.set_const::<8usize, 3u8>(val as u64)
-        }
+        let val: u16 = val as _;
+        self._bitfield_1.set_const::<8usize, 3u8>(val as u64)
     }
     #[inline]
     pub unsafe fn weedsBonus_raw(this: *const Self) -> ::std::os::raw::c_ushort {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 3usize],
-                >>::raw_get_const::<
-                    8usize,
-                    3u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 3usize],
+            >>::raw_get_const::<8usize, 3u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u16 as _
         }
     }
     #[inline]
@@ -651,28 +627,20 @@ impl A {
     }
     #[inline]
     pub fn pestsBonus(&self) -> ::std::os::raw::c_ushort {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<11usize, 3u8>() as u16)
-        }
+        self._bitfield_1.get_const::<11usize, 3u8>() as u16 as _
     }
     #[inline]
     pub fn set_pestsBonus(&mut self, val: ::std::os::raw::c_ushort) {
-        unsafe {
-            let val: u16 = val as _;
-            self._bitfield_1.set_const::<11usize, 3u8>(val as u64)
-        }
+        let val: u16 = val as _;
+        self._bitfield_1.set_const::<11usize, 3u8>(val as u64)
     }
     #[inline]
     pub unsafe fn pestsBonus_raw(this: *const Self) -> ::std::os::raw::c_ushort {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 3usize],
-                >>::raw_get_const::<
-                    11usize,
-                    3u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 3usize],
+            >>::raw_get_const::<11usize, 3u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u16 as _
         }
     }
     #[inline]
@@ -689,28 +657,20 @@ impl A {
     }
     #[inline]
     pub fn size(&self) -> ::std::os::raw::c_ushort {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<14usize, 10u8>() as u16)
-        }
+        self._bitfield_1.get_const::<14usize, 10u8>() as u16 as _
     }
     #[inline]
     pub fn set_size(&mut self, val: ::std::os::raw::c_ushort) {
-        unsafe {
-            let val: u16 = val as _;
-            self._bitfield_1.set_const::<14usize, 10u8>(val as u64)
-        }
+        let val: u16 = val as _;
+        self._bitfield_1.set_const::<14usize, 10u8>(val as u64)
     }
     #[inline]
     pub unsafe fn size_raw(this: *const Self) -> ::std::os::raw::c_ushort {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 3usize],
-                >>::raw_get_const::<
-                    14usize,
-                    10u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 3usize],
+            >>::raw_get_const::<14usize, 10u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u16 as _
         }
     }
     #[inline]
@@ -778,28 +738,20 @@ impl A {
     }
     #[inline]
     pub fn minYield(&self) -> ::std::os::raw::c_uchar {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_2.get_const::<0usize, 4u8>() as u8)
-        }
+        self._bitfield_2.get_const::<0usize, 4u8>() as u8 as _
     }
     #[inline]
     pub fn set_minYield(&mut self, val: ::std::os::raw::c_uchar) {
-        unsafe {
-            let val: u8 = val as _;
-            self._bitfield_2.set_const::<0usize, 4u8>(val as u64)
-        }
+        let val: u8 = val as _;
+        self._bitfield_2.set_const::<0usize, 4u8>(val as u64)
     }
     #[inline]
     pub unsafe fn minYield_raw(this: *const Self) -> ::std::os::raw::c_uchar {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 1usize],
-                >>::raw_get_const::<
-                    0usize,
-                    4u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_2)) as u8,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 1usize],
+            >>::raw_get_const::<0usize, 4u8>(::std::ptr::addr_of!((*this)._bitfield_2))
+                as u8 as _
         }
     }
     #[inline]
@@ -816,28 +768,20 @@ impl A {
     }
     #[inline]
     pub fn waterBonus(&self) -> ::std::os::raw::c_uchar {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_2.get_const::<4usize, 4u8>() as u8)
-        }
+        self._bitfield_2.get_const::<4usize, 4u8>() as u8 as _
     }
     #[inline]
     pub fn set_waterBonus(&mut self, val: ::std::os::raw::c_uchar) {
-        unsafe {
-            let val: u8 = val as _;
-            self._bitfield_2.set_const::<4usize, 4u8>(val as u64)
-        }
+        let val: u8 = val as _;
+        self._bitfield_2.set_const::<4usize, 4u8>(val as u64)
     }
     #[inline]
     pub unsafe fn waterBonus_raw(this: *const Self) -> ::std::os::raw::c_uchar {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 1usize],
-                >>::raw_get_const::<
-                    4usize,
-                    4u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_2)) as u8,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 1usize],
+            >>::raw_get_const::<4usize, 4u8>(::std::ptr::addr_of!((*this)._bitfield_2))
+                as u8 as _
         }
     }
     #[inline]

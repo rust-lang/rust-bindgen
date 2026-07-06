@@ -533,28 +533,20 @@ impl Default for C {
 impl C {
     #[inline]
     pub fn a(&self) -> bool {
-        unsafe {
-            ::core::mem::transmute(self._bitfield_1.get_const::<0usize, 1u8>() as u8)
-        }
+        self._bitfield_1.get_const::<0usize, 1u8>() as u8 != 0
     }
     #[inline]
     pub fn set_a(&mut self, val: bool) {
-        unsafe {
-            let val: u8 = val as _;
-            self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
-        }
+        let val: u8 = val as _;
+        self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
     }
     #[inline]
     pub unsafe fn a_raw(this: *const Self) -> bool {
         unsafe {
-            ::core::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 1usize],
-                >>::raw_get_const::<
-                    0usize,
-                    1u8,
-                >(::core::ptr::addr_of!((*this)._bitfield_1)) as u8,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 1usize],
+            >>::raw_get_const::<0usize, 1u8>(::core::ptr::addr_of!((*this)._bitfield_1))
+                as u8 != 0
         }
     }
     #[inline]
@@ -571,28 +563,20 @@ impl C {
     }
     #[inline]
     pub fn b(&self) -> bool {
-        unsafe {
-            ::core::mem::transmute(self._bitfield_1.get_const::<1usize, 7u8>() as u8)
-        }
+        self._bitfield_1.get_const::<1usize, 7u8>() as u8 != 0
     }
     #[inline]
     pub fn set_b(&mut self, val: bool) {
-        unsafe {
-            let val: u8 = val as _;
-            self._bitfield_1.set_const::<1usize, 7u8>(val as u64)
-        }
+        let val: u8 = val as _;
+        self._bitfield_1.set_const::<1usize, 7u8>(val as u64)
     }
     #[inline]
     pub unsafe fn b_raw(this: *const Self) -> bool {
         unsafe {
-            ::core::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 1usize],
-                >>::raw_get_const::<
-                    1usize,
-                    7u8,
-                >(::core::ptr::addr_of!((*this)._bitfield_1)) as u8,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 1usize],
+            >>::raw_get_const::<1usize, 7u8>(::core::ptr::addr_of!((*this)._bitfield_1))
+                as u8 != 0
         }
     }
     #[inline]

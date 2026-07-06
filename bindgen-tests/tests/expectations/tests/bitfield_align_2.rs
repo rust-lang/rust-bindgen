@@ -544,10 +544,8 @@ impl TaggedPtr {
     }
     #[inline]
     pub fn set_tag(&mut self, val: MyEnum) {
-        unsafe {
-            let val: u32 = val as _;
-            self._bitfield_1.set_const::<0usize, 2u8>(val as u64)
-        }
+        let val: u32 = val as _;
+        self._bitfield_1.set_const::<0usize, 2u8>(val as u64)
     }
     #[inline]
     pub unsafe fn tag_raw(this: *const Self) -> MyEnum {
@@ -576,28 +574,20 @@ impl TaggedPtr {
     }
     #[inline]
     pub fn ptr(&self) -> ::std::os::raw::c_long {
-        unsafe {
-            ::std::mem::transmute(self._bitfield_1.get_const::<2usize, 62u8>() as u64)
-        }
+        self._bitfield_1.get_const::<2usize, 62u8>() as u64 as _
     }
     #[inline]
     pub fn set_ptr(&mut self, val: ::std::os::raw::c_long) {
-        unsafe {
-            let val: u64 = val as _;
-            self._bitfield_1.set_const::<2usize, 62u8>(val as u64)
-        }
+        let val: u64 = val as _;
+        self._bitfield_1.set_const::<2usize, 62u8>(val as u64)
     }
     #[inline]
     pub unsafe fn ptr_raw(this: *const Self) -> ::std::os::raw::c_long {
         unsafe {
-            ::std::mem::transmute(
-                <__BindgenBitfieldUnit<
-                    [u8; 8usize],
-                >>::raw_get_const::<
-                    2usize,
-                    62u8,
-                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u64,
-            )
+            <__BindgenBitfieldUnit<
+                [u8; 8usize],
+            >>::raw_get_const::<2usize, 62u8>(::std::ptr::addr_of!((*this)._bitfield_1))
+                as u64 as _
         }
     }
     #[inline]
