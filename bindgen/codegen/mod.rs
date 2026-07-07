@@ -810,11 +810,19 @@ impl CodeGenerator for Var {
             };
 
             if let Some(mut val) = const_expr {
-                let var_ty_item = ctx.resolve_item(var_ty);
-                if matches!(
-                    var_ty_item.alias_style(ctx),
-                    AliasVariation::NewType | AliasVariation::NewTypeDeref
-                ) {
+                let var_ty_item =
+                    var_ty.into_resolver().through_type_refs().resolve(ctx);
+
+                let is_alias = var_ty_item
+                    .as_type()
+                    .is_some_and(|ty| matches!(ty.kind(), TypeKind::Alias(..)));
+
+                if is_alias &&
+                    matches!(
+                        var_ty_item.alias_style(ctx),
+                        AliasVariation::NewType | AliasVariation::NewTypeDeref
+                    )
+                {
                     val = quote! { #ty(#val) };
                 }
                 result.push(quote! {
