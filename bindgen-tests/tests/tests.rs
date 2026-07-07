@@ -564,6 +564,24 @@ fn test_mixed_header_and_header_contents() {
 }
 
 #[test]
+fn test_no_header_provided() {
+    use bindgen::BindgenError;
+
+    let result = builder().generate();
+    assert_eq!(result.err(), Some(BindgenError::NoHeadersProvided));
+
+    let empty_header =
+        tempfile::Builder::new().suffix(".h").tempfile().unwrap();
+    let result = builder()
+        .header(empty_header.path().to_str().unwrap())
+        .generate();
+    assert!(result.is_ok(), "Expected success, got: {:?}", result.err());
+
+    let result = builder().header_contents("test.h", "").generate();
+    assert!(result.is_ok(), "Expected success, got: {:?}", result.err());
+}
+
+#[test]
 fn test_macro_fallback_non_system_dir() {
     let actual = builder()
         .header(concat!(
