@@ -8,7 +8,8 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 
-const LIBCLANG_VERSION_DIRS: &[&str] = &["libclang-9"];
+// TODO: Add libclang version specific dirs here when needed again.
+const LIBCLANG_VERSION_DIRS: &[&str] = &[];
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");

@@ -141,19 +141,19 @@ fn compare_generated_header(
     {
         let mut expectation = expectation.clone();
 
-        if cfg!(feature = "__testing_only_libclang_16") {
+        if cfg!(feature = "__testing_only_libclang_20") {
+            expectation.push("libclang-20");
+        } else if cfg!(feature = "__testing_only_libclang_16") {
             expectation.push("libclang-16");
-        } else if cfg!(feature = "__testing_only_libclang_9") {
-            expectation.push("libclang-9");
         } else {
             match clang_version().parsed {
-                None => expectation.push("libclang-16"),
+                None => expectation.push("libclang-20"),
                 Some(version) => {
                     let (maj, min) = version;
-                    let version_str = if maj >= 16 {
+                    let version_str = if maj >= 20 {
+                        "20".to_owned()
+                    } else if maj >= 16 {
                         "16".to_owned()
-                    } else if maj >= 9 {
-                        "9".to_owned()
                     } else {
                         format!("{maj}.{min}")
                     };
@@ -600,29 +600,14 @@ fn test_macro_fallback_non_system_dir() {
 
     let actual = format_code(actual).unwrap();
 
-    let (expected_filename, expected) = if let Some((9, _)) =
-        clang_version().parsed
-    {
-        let expected_filename = concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/expectations/tests/libclang-9/macro_fallback_non_system_dir.rs",
-        );
-        let expected = include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/expectations/tests/libclang-9/macro_fallback_non_system_dir.rs",
-        ));
-        (expected_filename, expected)
-    } else {
-        let expected_filename = concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/expectations/tests/test_macro_fallback_non_system_dir.rs",
-        );
-        let expected = include_str!(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/tests/expectations/tests/test_macro_fallback_non_system_dir.rs",
-        ));
-        (expected_filename, expected)
-    };
+    let expected_filename = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/expectations/tests/test_macro_fallback_non_system_dir.rs",
+    );
+    let expected = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/expectations/tests/test_macro_fallback_non_system_dir.rs",
+    ));
     let expected = format_code(expected).unwrap();
     if expected != actual {
         error_diff_mismatch(

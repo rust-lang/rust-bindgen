@@ -111,7 +111,7 @@ jobs:
             libtinfo: libtinfo5_6.3+20220423-2ubuntu0.1_amd64.deb
           - os: ubuntu-24.04-arm
             libtinfo: libtinfo5_6.3+20220423-2ubuntu0.1_arm64.deb
-        llvm_version: ["9.0", "16.0"]
+        llvm_version: ["16.0", "20.1"]
         release_build: [0, 1]
         no_default_features: [0, 1]
         # FIXME: There are no pre-built static libclang libraries, so the
@@ -125,7 +125,7 @@ jobs:
           - platform:
               os: ubuntu-latest
               libtinfo: libtinfo5_6.3+20220423-2ubuntu0.1_amd64.deb
-            llvm_version: "16.0"
+            llvm_version: "20.1"
             release_build: 0
             no_default_features: 0
             feature_extra_asserts: 1
@@ -133,7 +133,7 @@ jobs:
           # Ensure stuff works on macos too
           - platform:
               os: macos-latest
-            llvm_version: "16.0"
+            llvm_version: "20.1"
             release_build: 0
             no_default_features: 0
             feature_extra_asserts: 0
@@ -150,7 +150,7 @@ jobs:
           wget https://old-releases.ubuntu.com/ubuntu/pool/universe/n/ncurses/${{matrix.platform.libtinfo}}
           sudo dpkg -i ${{matrix.platform.libtinfo}}
       - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v2.0.5
+        uses: KyleMayes/install-llvm-action@v2.0.9
         with:
           version: ${{matrix.llvm_version}}
       - name: Run all the tests
@@ -160,7 +160,7 @@ jobs:
           BINDGEN_FEATURE_RUNTIME: ${{matrix.feature_runtime}}
           BINDGEN_FEATURE_EXTRA_ASSERTS: ${{matrix.feature_extra_asserts}}
           BINDGEN_NO_DEFAULT_FEATURES: ${{matrix.no_default_features}}
-          BINDGEN_RUST_FOR_LINUX_TEST: ${{startsWith(matrix.platform.os, 'ubuntu') && matrix.llvm_version == '16.0' && matrix.feature_extra_asserts == 0 && 1 || 0}}
+          BINDGEN_RUST_FOR_LINUX_TEST: ${{startsWith(matrix.platform.os, 'ubuntu') && matrix.llvm_version == '20.1' && matrix.feature_extra_asserts == 0 && 1 || 0}}
         run: ./ci/test.sh
 
   test-book:

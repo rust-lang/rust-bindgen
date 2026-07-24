@@ -91,7 +91,7 @@ latest version of `libclang`. In that case, you may want to either uninstall oth
 versions of llvm, or specify the path of the desired `libclang` explicitly:
 
 ```sh
-export LIBCLANG_PATH=path/to/clang-9.0/lib
+export LIBCLANG_PATH=path/to/clang-16.0/lib
 ```
 
 ## Testing
@@ -209,8 +209,8 @@ can add multiple test expectations, one for each supported `libclang`
 version. Instead of having a single `bindgen-tests/tests/expectations/tests/my_test.rs` file,
 add each of:
 
+- `bindgen-tests/tests/expectations/tests/libclang-20/my_test.rs`
 - `bindgen-tests/tests/expectations/tests/libclang-16/my_test.rs`
-- `bindgen-tests/tests/expectations/tests/libclang-9/my_test.rs`
 
 If you need to update the test expectations for a test file that generates
 different bindings for different `libclang` versions, you *don't* need to have

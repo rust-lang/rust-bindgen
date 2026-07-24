@@ -56,8 +56,8 @@ experimental = ["dep:annotate-snippets"]
 __cli = ["dep:clap", "dep:clap_complete"]
 # Features used for CI testing
 __testing_only_extra_assertions = []
-__testing_only_libclang_9 = []
 __testing_only_libclang_16 = []
+__testing_only_libclang_20 = []
 
 [package.metadata.docs.rs]
 features = ["experimental"]

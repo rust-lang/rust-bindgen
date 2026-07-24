@@ -14,10 +14,6 @@
     debug_assertions,
     feature = "__testing_only_extra_assertions",
 )))]
-#[cfg(any(
-    feature = "__testing_only_libclang_9",
-    feature = "__testing_only_libclang_16"
-))]
 fn sanity_check_can_generate_stylo_bindings() {
     use std::time::Instant;
 

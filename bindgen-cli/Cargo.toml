@@ -40,8 +40,8 @@ prettyplease = ["bindgen/prettyplease"]
 ## you're not hacking on bindgen
 # Features used for CI testing 
 __testing_only_extra_assertions = ["bindgen/__testing_only_extra_assertions"]
-__testing_only_libclang_9 = ["bindgen/__testing_only_libclang_9"]
 __testing_only_libclang_16 = ["bindgen/__testing_only_libclang_16"]
+__testing_only_libclang_20 = ["bindgen/__testing_only_libclang_20"]
 
 [package.metadata.release]
 release = true
