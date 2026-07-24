@@ -1463,6 +1463,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     ///
     /// Panics if there is no item for the given `FunctionId` or if the resolved
     /// item is not a `Function`.
+    #[allow(dead_code)]
     pub(crate) fn resolve_func(&self, func_id: FunctionId) -> &Function {
         self.resolve_item(func_id).kind().expect_function()
     }
@@ -1474,6 +1475,18 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     pub(crate) fn safe_resolve_type(&self, type_id: TypeId) -> Option<&Type> {
         self.resolve_item_fallible(type_id)
             .map(|t| t.kind().expect_type())
+    }
+
+    /// Resolve the given `ItemId` as a function, or `None` if there is no item
+    /// with the given ID.
+    ///
+    /// Panics if the ID resolves to an item that is not a function.
+    pub(crate) fn resolve_func_fallible(
+        &self,
+        func_id: FunctionId,
+    ) -> Option<&Function> {
+        self.resolve_item_fallible(func_id)
+            .map(|t| t.kind().expect_function())
     }
 
     /// Resolve the given `ItemId` into an `Item`, or `None` if no such item
