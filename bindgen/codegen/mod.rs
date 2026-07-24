@@ -261,7 +261,7 @@ impl From<DerivableTraits> for Vec<&'static str> {
         ]
         .iter()
         .filter_map(|&(flag, derive)| {
-            Some(derive).filter(|_| derivable_traits.contains(flag))
+            derivable_traits.contains(flag).then_some(derive)
         })
         .collect()
     }

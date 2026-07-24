@@ -390,13 +390,9 @@ fn args_from_ty_and_cursor(
         .zip(type_args.map(Some).chain(std::iter::repeat(None)))
         .take_while(|(cur, ty)| cur.is_some() || ty.is_some())
         .map(|(arg_cur, arg_ty)| {
-            let name = arg_cur.map(|a| a.spelling()).and_then(|name| {
-                if name.is_empty() {
-                    None
-                } else {
-                    Some(name)
-                }
-            });
+            let name = arg_cur
+                .map(|a| a.spelling())
+                .filter(|name| !name.is_empty());
 
             let cursor = arg_cur.unwrap_or(*cursor);
             let ty = arg_ty.unwrap_or_else(|| cursor.cur_type());
