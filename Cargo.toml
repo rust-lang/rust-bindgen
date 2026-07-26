@@ -16,7 +16,7 @@ default-members = [
 
 [workspace.package]
 # If you change this, also update README.md
-rust-version = "1.70.0"
+rust-version = "1.71.0"
 edition = "2021"
 
 # All dependency version management is centralized here
