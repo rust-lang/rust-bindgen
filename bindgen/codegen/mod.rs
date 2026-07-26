@@ -3759,7 +3759,7 @@ impl CodeGenerator for Enum {
         let variation = self.computed_enum_variation(ctx, item);
 
         let repr_translated;
-        let repr = match self.repr().map(|repr| ctx.resolve_type(repr)) {
+        let mut repr = match self.repr().map(|repr| ctx.resolve_type(repr)) {
             Some(repr)
                 if !ctx.options().translate_enum_integer_types &&
                     !variation.is_rust() =>
@@ -3904,6 +3904,18 @@ impl CodeGenerator for Enum {
                 pub const #constant_name : #enum_rust_ty =
                     #enum_canonical_name :: #referenced_name ;
             });
+        }
+
+        let repr_from_callback;
+        if !ctx.options().parse_callbacks.is_empty() {
+            if let Some(callback_type) = ctx
+                .options()
+                .last_callback(|cb| cb.enum_type_override(&name))
+            {
+                repr_from_callback =
+                    Type::new(None, None, TypeKind::Int(callback_type), false);
+                repr = &repr_from_callback;
+            }
         }
 
         let repr = repr.to_rust_ty_or_opaque(ctx, item);
