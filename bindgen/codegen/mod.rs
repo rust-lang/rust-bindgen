@@ -1076,6 +1076,7 @@ impl CodeGenerator for Type {
                 };
 
                 let alias_style = item.alias_style(ctx);
+                let mut needs_debug_impl = false;
 
                 // We prefer using `pub use` over `pub type` because of:
                 // https://github.com/rust-lang/rust/issues/26264
@@ -1107,6 +1108,12 @@ impl CodeGenerator for Type {
                         let packed = false; // Types can't be packed in Rust.
                         let derivable_traits =
                             derives_of_item(item, ctx, packed);
+                        if !derivable_traits.contains(DerivableTraits::DEBUG) {
+                            needs_debug_impl = ctx.options().derive_debug &&
+                                ctx.options().impl_debug &&
+                                !ctx.no_debug_by_name(item) &&
+                                !item.annotations().disallow_debug();
+                        }
                         let mut derives: Vec<_> = derivable_traits.into();
                         // The custom derives callback may return a list of derive attributes;
                         // add them to the end of the list.
@@ -1233,6 +1240,17 @@ impl CodeGenerator for Type {
                             #[inline]
                             fn deref_mut(&mut self) -> &mut Self::Target {
                                 &mut self.0
+                            }
+                        }
+                    });
+                }
+
+                if needs_debug_impl {
+                    let prefix = ctx.trait_prefix();
+                    tokens.append_all(quote! {
+                        impl ::#prefix::fmt::Debug for #rust_name {
+                            fn fmt(&self, f: &mut ::#prefix::fmt::Formatter<'_>) -> ::#prefix::fmt::Result {
+                                f.debug_tuple(stringify!(#rust_name)).field(&self.0).finish()
                             }
                         }
                     });
