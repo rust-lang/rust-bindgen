@@ -1,7 +1,5 @@
 //! Compound types (unions and structs) in our intermediate representation.
 
-use itertools::Itertools;
-
 use super::analysis::Sizedness;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, FunctionId, ItemId, TypeId, VarId};
@@ -496,22 +494,27 @@ where
         // resulting fields. We introduce a scope here so that we can use
         // `raw_fields` again after the `by_ref` iterator adaptor is dropped.
         {
-            let non_bitfields = raw_fields
-                .by_ref()
-                .peeking_take_while(|f| f.bitfield_width().is_none())
-                .map(|f| Field::DataMember(f.0));
-            fields.extend(non_bitfields);
+            let raw_fields = raw_fields.by_ref();
+            while let Some(raw_field) =
+                raw_fields.next_if(|f| f.bitfield_width().is_none())
+            {
+                fields.push(Field::DataMember(raw_field.0));
+            }
         }
+
+        let mut bitfields = vec![];
 
         // Now gather all the consecutive bitfields. Only consecutive bitfields
         // may potentially share a bitfield allocation unit with each other in
         // the Itanium C++ ABI.
-        let mut bitfields = raw_fields
-            .by_ref()
-            .peeking_take_while(|f| f.bitfield_width().is_some())
-            .peekable();
+        let raw_fields = raw_fields.by_ref();
+        while let Some(raw_field) =
+            raw_fields.next_if(|f| f.bitfield_width().is_some())
+        {
+            bitfields.push(raw_field);
+        }
 
-        if bitfields.peek().is_none() {
+        if bitfields.is_empty() {
             break;
         }
 
