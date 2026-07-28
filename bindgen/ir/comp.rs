@@ -491,15 +491,11 @@ where
 
     loop {
         // While we have plain old data members, just keep adding them to our
-        // resulting fields. We introduce a scope here so that we can use
-        // `raw_fields` again after the `by_ref` iterator adaptor is dropped.
+        // resulting fields.
+        while let Some(raw_field) =
+            raw_fields.next_if(|f| f.bitfield_width().is_none())
         {
-            let raw_fields = raw_fields.by_ref();
-            while let Some(raw_field) =
-                raw_fields.next_if(|f| f.bitfield_width().is_none())
-            {
-                fields.push(Field::DataMember(raw_field.0));
-            }
+            fields.push(Field::DataMember(raw_field.0));
         }
 
         let mut bitfields = vec![];
@@ -507,7 +503,6 @@ where
         // Now gather all the consecutive bitfields. Only consecutive bitfields
         // may potentially share a bitfield allocation unit with each other in
         // the Itanium C++ ABI.
-        let raw_fields = raw_fields.by_ref();
         while let Some(raw_field) =
             raw_fields.next_if(|f| f.bitfield_width().is_some())
         {
