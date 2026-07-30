@@ -1163,6 +1163,12 @@ impl CompInfo {
             return None;
         }
 
+        // Uninstantiated template unions do not have layout in C++ and can cause
+        // infinite layout recursion if fields reference the union template.
+        if self.kind == CompKind::Union && !self.template_params.is_empty() {
+            return None;
+        }
+
         let mut max_size = 0;
         // Don't allow align(0)
         let mut max_align = 1;
@@ -1793,12 +1799,60 @@ impl CompInfo {
             ctx.options().default_non_copy_union_style
         };
 
-        let all_can_copy = self.fields().iter().all(|f| match *f {
-            Field::DataMember(ref field_data) => {
-                field_data.ty().can_derive_copy(ctx)
+        let field_can_copy = |field_data: &FieldData| -> bool {
+            let ty = field_data.ty();
+            if !ty.can_derive_copy(ctx) {
+                return false;
             }
+            if ctx.in_codegen_phase() &&
+                ctx.uses_any_template_parameters(ty.into())
+            {
+                return false;
+            }
+            true
+        };
+
+        let all_can_copy = self.fields().iter().all(|f| match *f {
+            Field::DataMember(ref field_data) => field_can_copy(field_data),
             Field::Bitfields(_) => true,
         });
+
+        let has_generic_params = self.fields().iter().any(|f| match *f {
+            Field::DataMember(ref field_data) => {
+                ctx.in_codegen_phase() &&
+                    ctx.uses_any_template_parameters(field_data.ty().into())
+            }
+            Field::Bitfields(_) => false,
+        });
+
+        let has_by_value_recursive_field =
+            self.fields().iter().any(|f| match *f {
+                Field::DataMember(ref field_data) => {
+                    let mut ty = ctx.safe_resolve_type(field_data.ty());
+                    while let Some(t) = ty {
+                        if t.name().is_some_and(|n| name.ends_with(n)) {
+                            return true;
+                        }
+                        match *t.kind() {
+                            super::ty::TypeKind::ResolvedTypeRef(inner) |
+                            super::ty::TypeKind::Alias(inner) => {
+                                ty = ctx.safe_resolve_type(inner);
+                            }
+                            _ => return false,
+                        }
+                    }
+                    false
+                }
+                Field::Bitfields(_) => false,
+            });
+
+        // If the union has generic template parameters and does not contain a recursive
+        // template field by value (which would produce E0072 in Rust), emit as a native
+        // Rust union with ManuallyDrop<T> fields ((true, false)) so the Rust compiler
+        // computes the correct size and alignment upon instantiation.
+        if has_generic_params && !has_by_value_recursive_field {
+            return (true, false);
+        }
 
         if !all_can_copy && union_style == NonCopyUnionStyle::BindgenWrapper {
             return (false, false);

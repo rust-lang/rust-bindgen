@@ -350,6 +350,13 @@ pub(crate) struct BindgenContext {
     /// potentially break that assumption.
     currently_parsed_types: Vec<PartialType>,
 
+    /// A stack of items currently loaned out by `with_loaned_item`.
+    ///
+    /// This allows us to distinguish between:
+    /// 1) An existing item that is currently being traversed recursively.
+    /// 2) An unknown or invalid item ID (which should panic).
+    currently_loaned_items: Vec<ItemId>,
+
     /// A map with all the already parsed macro names. This is done to avoid
     /// hard errors while parsing duplicated macros, as well to allow macro
     /// expression parsing.
@@ -587,6 +594,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             current_module: root_module_id,
             semantic_parents: Default::default(),
             currently_parsed_types: vec![],
+            currently_loaned_items: vec![],
             parsed_macros: Default::default(),
             replacements: Default::default(),
             collected_typerefs: false,
@@ -985,8 +993,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         F: (FnOnce(&BindgenContext, &mut Item) -> T),
     {
         let mut item = self.items[id.0].take().unwrap();
+        self.currently_loaned_items.push(id);
 
         let result = f(self, &mut item);
+
+        let popped = self.currently_loaned_items.pop();
+        debug_assert_eq!(popped, Some(id));
 
         let existing = self.items[id.0].replace(item);
         assert!(existing.is_none());
@@ -1467,13 +1479,38 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.resolve_item(func_id).kind().expect_function()
     }
 
-    /// Resolve the given `ItemId` as a type, or `None` if there is no item with
-    /// the given ID.
+    /// Returns `true` if `id` is currently loaned out by `with_loaned_item`.
+    pub(crate) fn is_currently_loaned_item<Id: Into<ItemId>>(
+        &self,
+        id: Id,
+    ) -> bool {
+        self.currently_loaned_items.contains(&id.into())
+    }
+
+    /// Resolve the given `ItemId` as a type.
     ///
-    /// Panics if the ID resolves to an item that is not a type.
+    /// Returns `Some(&Type)` if the item resolves to a type.
+    /// Returns `None` if the item is currently loaned out by `with_loaned_item`
+    /// (indicating an intentional recursive reference).
+    ///
+    /// Panics if bindgen has no awareness of the given type ID during codegen.
     pub(crate) fn safe_resolve_type(&self, type_id: TypeId) -> Option<&Type> {
-        self.resolve_item_fallible(type_id)
-            .map(|t| t.kind().expect_type())
+        let id: ItemId = type_id.into();
+        match self.items.get(id.0) {
+            Some(Some(item)) => item.kind().as_type(),
+            // When an item slot is `None` because it is currently loaned out by
+            // `with_loaned_item`, intentionally return `None` to signal recursion.
+            Some(None) if self.is_currently_loaned_item(id) => None,
+            _ => {
+                // During AST parsing and template resolution (`!self.in_codegen_phase()`),
+                // forward-declared items or template references may not yet be populated
+                // in `self.items`, so returning `None` is expected. During codegen,
+                // however, all valid IR items must be present in `self.items`.
+                assert!(!self.in_codegen_phase(), "Not an item: {type_id:?}");
+
+                None
+            }
+        }
     }
 
     /// Resolve the given `ItemId` into an `Item`, or `None` if no such item
@@ -1627,8 +1664,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         ty: &clang::Type,
         location: Cursor,
     ) -> Option<TypeId> {
-        let num_expected_args =
-            self.resolve_type(template).num_self_template_params(self);
+        let num_expected_args = self
+            .safe_resolve_type(template)
+            .map_or(0, |t| t.num_self_template_params(self));
         if num_expected_args == 0 {
             warn!(
                 "Tried to instantiate a template for which we could not \

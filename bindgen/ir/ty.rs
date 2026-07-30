@@ -209,9 +209,9 @@ impl Type {
                     None
                 }
             }
-            TypeKind::ResolvedTypeRef(inner) => {
-                ctx.resolve_type(inner).is_incomplete_array(ctx)
-            }
+            TypeKind::ResolvedTypeRef(inner) => ctx
+                .safe_resolve_type(inner)
+                .and_then(|t| t.is_incomplete_array(ctx)),
             _ => None,
         }
     }
@@ -223,7 +223,7 @@ impl Type {
                 TypeKind::Comp(ref ci) => ci.layout(ctx),
                 TypeKind::Array(inner, 0) => Some(Layout::new(
                     0,
-                    ctx.resolve_type(inner).layout(ctx)?.align,
+                    ctx.safe_resolve_type(inner)?.layout(ctx)?.align,
                 )),
                 // FIXME(emilio): This is a hack for anonymous union templates.
                 // Use the actual pointer size!
@@ -232,7 +232,7 @@ impl Type {
                     ctx.target_pointer_size(),
                 )),
                 TypeKind::ResolvedTypeRef(inner) => {
-                    ctx.resolve_type(inner).layout(ctx)
+                    ctx.safe_resolve_type(inner)?.layout(ctx)
                 }
                 _ => None,
             }
@@ -327,10 +327,10 @@ impl Type {
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
             TypeKind::TemplateAlias(inner, _) => {
-                ctx.resolve_type(inner).safe_canonical_type(ctx)
+                ctx.safe_resolve_type(inner)?.safe_canonical_type(ctx)
             }
             TypeKind::TemplateInstantiation(ref inst) => ctx
-                .resolve_type(inst.template_definition())
+                .safe_resolve_type(inst.template_definition())?
                 .safe_canonical_type(ctx),
 
             TypeKind::UnresolvedTypeRef(..) => None,
