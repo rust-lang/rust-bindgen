@@ -15,7 +15,7 @@ jobs:
   rustfmt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install nightly
         uses: dtolnay/rust-toolchain@master
@@ -29,7 +29,7 @@ jobs:
   clippy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Run clippy
         run: cargo clippy --all-targets --workspace --exclude bindgen-integration --exclude tests_expectations -- -D warnings
@@ -37,7 +37,7 @@ jobs:
   msrv:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Read crate metadata
         id: metadata
@@ -64,7 +64,7 @@ jobs:
     env:
       RUSTFLAGS: -D warnings
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check without default features
         run: cargo check -p bindgen --no-default-features --features=runtime 
@@ -74,7 +74,7 @@ jobs:
     env:
       RUSTDOCFLAGS: -D warnings
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Generate documentation for `bindgen`
         run: cargo doc --document-private-items --no-deps -p bindgen 
@@ -85,7 +85,7 @@ jobs:
   quickchecking:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # TODO: Actually run quickchecks once `bindgen` is reliable enough.
       - name: Build quickcheck tests
@@ -97,7 +97,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Test expectations
         run: cd bindgen-tests/tests/expectations && cargo test
@@ -138,7 +138,7 @@ jobs:
             no_default_features: 0
             feature_extra_asserts: 0
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install stable
         uses: dtolnay/rust-toolchain@master
@@ -166,7 +166,7 @@ jobs:
   test-book:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # NOTE(emilio): Change deploy-book as well if you change this.
       - name: Test book
@@ -179,7 +179,7 @@ jobs:
   test-no-headers:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Test `--help`
         run: cargo run -- --help
