@@ -1,12 +1,6 @@
 lints.workspace = true
 
 [package]
-authors = [
-    "Jyun-Yan You <jyyou.tw@gmail.com>",
-    "Emilio Cobos Álvarez <emilio@crisal.io>",
-    "Nick Fitzgerald <fitzgen@gmail.com>",
-    "The Servo project developers",
-]
 description = "Automatically generates Rust FFI bindings to C and C++ libraries."
 keywords = ["bindings", "ffi", "code-generation"]
 categories = ["external-ffi-bindings", "development-tools::ffi"]

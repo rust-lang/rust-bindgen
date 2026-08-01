@@ -4,7 +4,6 @@ lints.workspace = true
 name = "bindgen-integration"
 description = "A package to test various bindgen features"
 version = "0.1.0"
-authors = ["Emilio Cobos Álvarez <emilio@crisal.io>"]
 publish = false
 build = "build.rs"
 rust-version.workspace = true

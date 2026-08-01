@@ -1,9 +1,6 @@
 lints.workspace = true
 
 [package]
-authors = [
-    "The rust-bindgen project contributors",
-]
 description = "Automatically generates Rust FFI bindings to C and C++ libraries."
 keywords = ["bindings", "ffi", "code-generation"]
 categories = ["external-ffi-bindings", "development-tools::ffi"]
