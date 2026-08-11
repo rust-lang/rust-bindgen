@@ -57,6 +57,7 @@ __cli = ["dep:clap", "dep:clap_complete"]
 __testing_only_extra_assertions = []
 __testing_only_libclang_16 = []
 __testing_only_libclang_20 = []
+__testing_only_libclang_22 = []
 
 [package.metadata.docs.rs]
 features = ["experimental"]

@@ -141,16 +141,20 @@ fn compare_generated_header(
     {
         let mut expectation = expectation.clone();
 
-        if cfg!(feature = "__testing_only_libclang_20") {
+        if cfg!(feature = "__testing_only_libclang_22") {
+            expectation.push("libclang-22");
+        } else if cfg!(feature = "__testing_only_libclang_20") {
             expectation.push("libclang-20");
         } else if cfg!(feature = "__testing_only_libclang_16") {
             expectation.push("libclang-16");
         } else {
             match clang_version().parsed {
-                None => expectation.push("libclang-20"),
+                None => expectation.push("libclang-22"),
                 Some(version) => {
                     let (maj, min) = version;
-                    let version_str = if maj >= 20 {
+                    let version_str = if maj >= 22 {
+                        "22".to_owned()
+                    } else if maj >= 20 {
                         "20".to_owned()
                     } else if maj >= 16 {
                         "16".to_owned()
