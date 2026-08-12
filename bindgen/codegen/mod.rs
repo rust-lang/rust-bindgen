@@ -2573,7 +2573,16 @@ impl CodeGenerator for CompInfo {
             // the beginning of the struct. This avoids hitting
             // https://github.com/rust-lang/rust-bindgen/issues/2179
             // Do it for bitfields only for now for backwards compat.
-            if self.has_bitfields() && explicit <= 8 {
+            //
+            // (Note that, if the target's primitive type alignment is *not* sufficiently
+            // aligned, as in the case of u64 on a 32-bit system, we should not insert the dummy
+            // field, hence checking that `explicit` is less-than-or-equal-to the target primitive
+            // type's alignemnt.)
+            let target_primitive_align = Layout::for_size(ctx, explicit).align;
+            if self.has_bitfields() &&
+                explicit <= 8 &&
+                target_primitive_align >= explicit
+            {
                 let align_ty = match explicit {
                     8 => quote! { u64 },
                     4 => quote! { u32 },
