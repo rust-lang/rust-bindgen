@@ -91,8 +91,7 @@ impl<'a> Diagnostic<'a> {
             // every line. This should be fine as our diagnostics already have a colorful title.
             // FIXME (pvdrz): Could it be that this doesn't work in other languages?
             let hide_warning = "\r        \r";
-            let string = dl.to_string();
-            for line in string.lines() {
+            for line in dl.lines() {
                 println!("cargo:warning={hide_warning}{line}");
             }
         } else {

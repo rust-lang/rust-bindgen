@@ -103,6 +103,6 @@ pub fn test_bindgen(
 
     QuickCheck::new()
         .tests(tests)
-        .gen(Gen::new(generate_range))
+        .rng(Gen::new(generate_range))
         .quickcheck(bindgen_prop as fn(fuzzers::HeaderC) -> TestResult);
 }
