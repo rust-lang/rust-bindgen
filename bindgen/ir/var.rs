@@ -515,9 +515,9 @@ fn duplicated_macro_diagnostic(
         slice.with_source(source);
 
         Diagnostic::default()
-            .with_title("Duplicated macro definition.", Level::Warning)
+            .with_title("Duplicated macro definition.", Level::WARNING)
             .add_slice(slice)
-            .add_annotation("This macro had a duplicate.", Level::Note)
+            .add_annotation("This macro had a duplicate.", Level::NOTE)
             .display();
     }
 }

@@ -21,29 +21,29 @@ edition = "2021"
 
 # All dependency version management is centralized here
 [workspace.dependencies]
-annotate-snippets = "0.11.4"
+annotate-snippets = "0.12.16"
 bindgen = { version = "0.72.0", path = "./bindgen", default-features = false }
-bitflags = "2.2.1"
-block = "0.1"
-cc = "1.0"
-cexpr = "0.6"
-clang-sys = "1"
-clap = "4"
-clap_complete = "4"
-env_logger = "0.10.0"
-libloading = "0.8"
-log = "0.4"
-objc = "0.2"
-owo-colors = "4.1.0"
-prettyplease = "0.3"
-proc-macro2 = "1.0.80"
-quickcheck = "1.0"
-quote = { version = "1", default-features = false }
-regex = { version = "1.5.3", default-features = false }
-rustc-hash = "2.1.0"
-shlex = "2"
-similar = "2.2.1"
-syn = "3.0"
+bitflags = "2.13.1"
+block = "0.1.6"
+cc = "1.4.2"
+cexpr = "0.6.0"
+clang-sys = "1.9.1"
+clap = "4.6.6"
+clap_complete = "4.6.9"
+env_logger = "0.11.11"
+libloading = "0.9.0"
+log = "0.4.33"
+objc = "0.2.7"
+owo-colors = "4.3.0"
+prettyplease = "0.3.0"
+proc-macro2 = "1.0.107"
+quickcheck = "1.1.0"
+quote = { version = "1.0.47", default-features = false }
+regex = { version = "1.13.1", default-features = false }
+rustc-hash = "2.1.3"
+shlex = "2.0.1"
+similar = "3.1.2"
+syn = "3.0.3"
 tempfile = "3.27.0"
 
 [workspace.lints.rust]

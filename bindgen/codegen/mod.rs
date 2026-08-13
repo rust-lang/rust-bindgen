@@ -4981,18 +4981,18 @@ fn unsupported_abi_diagnostic(
                 "Skipping {}function `{fn_name}` because the {error}",
                 if variadic { "variadic " } else { "" },
             ),
-            Level::Warning,
+            Level::WARNING,
         )
         .add_annotation(
             "No code will be generated for this function.",
-            Level::Warning,
+            Level::WARNING,
         )
         .add_annotation(
             format!(
                 "The configured Rust version is {}.",
                 ctx.options().rust_target
             ),
-            Level::Note,
+            Level::NOTE,
         );
 
         if let Some(loc) = location {
@@ -5028,9 +5028,9 @@ fn variadic_fn_diagnostic(
 
         let mut diag = Diagnostic::default();
 
-        diag.with_title(format!("Cannot generate wrapper for the static function `{fn_name}`."), Level::Warning)
-            .add_annotation("The `--wrap-static-fns` feature does not support variadic functions.", Level::Note)
-            .add_annotation("No code will be generated for this function.", Level::Note);
+        diag.with_title(format!("Cannot generate wrapper for the static function `{fn_name}`."), Level::WARNING)
+            .add_annotation("The `--wrap-static-fns` feature does not support variadic functions.", Level::NOTE)
+            .add_annotation("No code will be generated for this function.", Level::NOTE);
 
         if let Some(loc) = _location {
             let (file, line, col, _) = loc.location();

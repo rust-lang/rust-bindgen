@@ -3107,11 +3107,11 @@ fn unused_regex_diagnostic(item: &str, name: &str, _ctx: &BindgenContext) {
         Diagnostic::default()
             .with_title(
                 format!("Unused regular expression: `{item}`."),
-                Level::Warning,
+                Level::WARNING,
             )
             .add_annotation(
                 format!("This regular expression was passed to `{name}`."),
-                Level::Note,
+                Level::NOTE,
             )
             .display();
     }

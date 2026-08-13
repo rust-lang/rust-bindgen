@@ -164,9 +164,9 @@ fn invalid_regex_warning(
                     let error = "error: ";
                     if line.starts_with(error) {
                         let (_, msg) = line.split_at(error.len());
-                        diagnostic.add_annotation(msg.to_owned(), Level::Error);
+                        diagnostic.add_annotation(msg.to_owned(), Level::ERROR);
                     } else {
-                        diagnostic.add_annotation(line.to_owned(), Level::Info);
+                        diagnostic.add_annotation(line.to_owned(), Level::INFO);
                     }
                 }
                 let mut slice = Slice::default();
@@ -175,25 +175,25 @@ fn invalid_regex_warning(
 
                 diagnostic.with_title(
                     "Error while parsing a regular expression.",
-                    Level::Warning,
+                    Level::WARNING,
                 );
             } else {
-                diagnostic.with_title(string, Level::Warning);
+                diagnostic.with_title(string, Level::WARNING);
             }
         }
         err => {
             let err = err.to_string();
-            diagnostic.with_title(err, Level::Warning);
+            diagnostic.with_title(err, Level::WARNING);
         }
     }
 
     diagnostic.add_annotation(
         format!("This regular expression was passed via `{name}`."),
-        Level::Note,
+        Level::NOTE,
     );
 
     if set.items.iter().any(|item| item.as_ref() == "*") {
-        diagnostic.add_annotation("Wildcard patterns \"*\" are no longer considered valid. Use \".*\" instead.", Level::Help);
+        diagnostic.add_annotation("Wildcard patterns \"*\" are no longer considered valid. Use \".*\" instead.", Level::HELP);
     }
     diagnostic.display();
 }

@@ -1091,10 +1091,10 @@ fn rustfmt_non_fatal_error_diagnostic(msg: &str, _options: &BindgenOptions) {
         use crate::diagnostics::{Diagnostic, Level};
 
         Diagnostic::default()
-            .with_title(msg, Level::Warning)
+            .with_title(msg, Level::WARNING)
             .add_annotation(
                 "The bindings will be generated but not formatted.",
-                Level::Note,
+                Level::NOTE,
             )
             .display();
     }
