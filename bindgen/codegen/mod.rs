@@ -1036,6 +1036,9 @@ impl CodeGenerator for Type {
                         .with_implicit_template_params(ctx, inner_item)
                 };
 
+                let inner_canon_type =
+                    inner_item.expect_type().canonical_type(ctx);
+
                 {
                     // FIXME(emilio): This is a workaround to avoid generating
                     // incorrect type aliases because of types that we haven't
@@ -1047,8 +1050,6 @@ impl CodeGenerator for Type {
                     // with invalid template parameters, and at least this way
                     // they can be replaced, instead of generating plain invalid
                     // code.
-                    let inner_canon_type =
-                        inner_item.expect_type().canonical_type(ctx);
                     if inner_canon_type.is_invalid_type_param() {
                         warn!(
                             "Item contained invalid named type, skipping: \
@@ -1112,7 +1113,8 @@ impl CodeGenerator for Type {
                             needs_debug_impl = ctx.options().derive_debug &&
                                 ctx.options().impl_debug &&
                                 !ctx.no_debug_by_name(item) &&
-                                !item.annotations().disallow_debug();
+                                !item.annotations().disallow_debug() &&
+                                !inner_canon_type.is_void();
                         }
                         let mut derives: Vec<_> = derivable_traits.into();
                         // The custom derives callback may return a list of derive attributes;
@@ -1126,7 +1128,9 @@ impl CodeGenerator for Type {
                             });
                         // In most cases this will be a no-op, since custom_derives will be empty.
                         append_custom_derives(&mut derives, &custom_derives);
-                        attributes.push(attributes::derives(&derives));
+                        if !derives.is_empty() {
+                            attributes.push(attributes::derives(&derives));
+                        }
 
                         let custom_attributes =
                             ctx.options().all_callbacks(|cb| {
