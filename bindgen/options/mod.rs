@@ -313,6 +313,24 @@ options! {
         },
         as_args: "--opaque-type",
     },
+    /// Whether to emit opaque type aliases as `c_void` instead of a sized byte blob.
+    opaque_type_alias_as_c_void: bool {
+        methods: {
+            /// Set whether opaque type aliases should be emitted as `c_void` instead of a
+            /// sized byte blob (e.g. `[u64; 11usize]`).
+            ///
+            /// This is useful for types that are only ever handled behind a pointer (e.g.
+            /// `WINDOW` in curses), where communicating "this can't be read from or written to
+            /// directly" is more valuable than preserving the type's size and alignment.
+            ///
+            /// This option is disabled by default.
+            pub fn opaque_type_alias_as_c_void(mut self, doit: bool) -> Self {
+                self.options.opaque_type_alias_as_c_void = doit;
+                self
+            }
+        },
+        as_args: "--opaque-type-alias-as-c-void",
+    },
     /// The explicit `rustfmt` path.
     rustfmt_path: Option<PathBuf> {
         methods: {
