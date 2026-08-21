@@ -74,8 +74,8 @@ impl Enum {
             .and_then(|et| Item::from_ty(&et, declaration, None, ctx).ok());
         let mut variants = vec![];
 
-        let variant_ty =
-            repr.and_then(|r| ctx.resolve_type(r).safe_canonical_type(ctx));
+        let variant_ty = repr
+            .and_then(|r| ctx.safe_resolve_type(r)?.safe_canonical_type(ctx));
         let is_bool = variant_ty.is_some_and(Type::is_bool);
 
         // Assume signedness since the default type by the C standard is an int.
