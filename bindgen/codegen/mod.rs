@@ -2423,7 +2423,7 @@ impl CodeGenerator for CompInfo {
                 // couldn't determine the layout of the blob.
                 layout.is_none()
             } else {
-                layout.map_or(true, |l| l.size != 0)
+                layout.is_none_or(|l| l.size != 0)
             };
 
             if has_address {

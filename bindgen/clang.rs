@@ -989,7 +989,9 @@ impl<'a> RawTokens<'a> {
         let mut token_count = 0;
         let range = cursor.extent();
         let tu = unsafe { clang_Cursor_getTranslationUnit(cursor.x) };
-        unsafe { clang_tokenize(tu, range, &mut tokens, &mut token_count) };
+        unsafe {
+            clang_tokenize(tu, range, &raw mut tokens, &raw mut token_count);
+        }
         Self {
             cursor,
             tu,
@@ -1619,7 +1621,11 @@ impl SourceLocation {
             let mut col = 0;
             let mut off = 0;
             clang_getFileLocation(
-                self.x, &mut file, &mut line, &mut col, &mut off,
+                self.x,
+                &raw mut file,
+                &raw mut line,
+                &raw mut col,
+                &raw mut off,
             );
             (File { x: file }, line as usize, col as usize, off as usize)
         }

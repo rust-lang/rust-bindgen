@@ -4,7 +4,7 @@ use similar::{ChangeTag, TextDiff};
 use std::env;
 use std::fmt;
 use std::fs;
-use std::io::{BufRead, BufReader, Error, ErrorKind, Read, Write};
+use std::io::{BufRead, BufReader, Error, Read, Write};
 use std::path::{Path, PathBuf};
 
 use bindgen::builder_from_flags;
@@ -70,7 +70,7 @@ fn error_diff_mismatch(
             .output()?;
     }
 
-    Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation or with BINDGEN_TESTS_DIFFTOOL=meld to do this manually."))
+    Err(Error::other("Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation or with BINDGEN_TESTS_DIFFTOOL=meld to do this manually."))
 }
 
 struct Line(Option<usize>);
@@ -125,7 +125,7 @@ fn compare_generated_header(
     check_roundtrip: bool,
 ) -> Result<(), Error> {
     let file_name = header.file_name().ok_or_else(|| {
-        Error::new(ErrorKind::Other, "compare_generated_header expects a file")
+        Error::other("compare_generated_header expects a file")
     })?;
 
     let mut expectation = PathBuf::from(header);
@@ -193,19 +193,13 @@ fn compare_generated_header(
     // We skip the generate() error here so we get a full diff below
     let actual = match builder.generate() {
         Ok(bindings) => format_code(bindings.to_string()).map_err(|err| {
-            Error::new(
-                ErrorKind::Other,
-                format!("Cannot parse the generated bindings: {err}"),
-            )
+            Error::other(format!("Cannot parse the generated bindings: {err}"))
         })?,
         Err(_) => "/* error generating bindings */\n".into(),
     };
 
     if actual.is_empty() {
-        return Err(Error::new(
-            ErrorKind::Other,
-            "Something's gone really wrong!",
-        ));
+        return Err(Error::other("Something's gone really wrong!"));
     }
     if actual != expected {
         return error_diff_mismatch(
@@ -220,7 +214,7 @@ fn compare_generated_header(
         if let Err(e) =
             compare_generated_header(header, roundtrip_builder, false)
         {
-            return Err(Error::new(ErrorKind::Other, format!("Checking CLI flags roundtrip errored! You probably need to fix Builder::command_line_flags. {e}")));
+            return Err(Error::other(format!("Checking CLI flags roundtrip errored! You probably need to fix Builder::command_line_flags. {e}")));
         }
     }
 
@@ -315,9 +309,9 @@ fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
     // - add header filename as 1st element
     // - prepend raw lines so they're in the right order for expected output
     // - append the test header's bindgen flags
-    let header_str = header.to_str().ok_or_else(|| {
-        Error::new(ErrorKind::Other, "Invalid header file name")
-    })?;
+    let header_str = header
+        .to_str()
+        .ok_or_else(|| Error::other("Invalid header file name"))?;
 
     let prepend = [
         "bindgen",

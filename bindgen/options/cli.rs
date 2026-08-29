@@ -745,7 +745,7 @@ where
     }
 
     if header.is_none() {
-        return Err(io::Error::new(io::ErrorKind::Other, "Header not found"));
+        return Err(io::Error::other("Header not found"));
     }
 
     let mut builder = builder();
@@ -797,7 +797,7 @@ where
         }
 
         fn add_derives(&self, info: &DeriveInfo<'_>) -> Vec<String> {
-            if self.kind.map_or(true, |kind| kind == info.kind) &&
+            if self.kind.is_none_or(|kind| kind == info.kind) &&
                 self.regex_set.matches(info.name)
             {
                 return self.derives.clone();
@@ -837,7 +837,7 @@ where
         }
 
         fn add_attributes(&self, info: &AttributeInfo<'_>) -> Vec<String> {
-            if self.kind.map_or(true, |kind| kind == info.kind) &&
+            if self.kind.is_none_or(|kind| kind == info.kind) &&
                 self.regex_set.matches(info.name)
             {
                 return self.attributes.clone();

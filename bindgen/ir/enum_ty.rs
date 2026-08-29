@@ -79,7 +79,7 @@ impl Enum {
         let is_bool = variant_ty.is_some_and(Type::is_bool);
 
         // Assume signedness since the default type by the C standard is an int.
-        let is_signed = variant_ty.map_or(true, |ty| match *ty.kind() {
+        let is_signed = variant_ty.is_none_or(|ty| match *ty.kind() {
             TypeKind::Int(ref int_kind) => int_kind.is_signed(),
             ref other => {
                 panic!("Since when enums can be non-integers? {other:?}")

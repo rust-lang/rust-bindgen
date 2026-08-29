@@ -386,13 +386,8 @@ impl Builder {
     /// issues. The resulting file will be named something like `__bindgen.i` or
     /// `__bindgen.ii`
     pub fn dump_preprocessed_input(&self) -> io::Result<()> {
-        let clang =
-            clang_sys::support::Clang::find(None, &[]).ok_or_else(|| {
-                io::Error::new(
-                    io::ErrorKind::Other,
-                    "Cannot find clang executable",
-                )
-            })?;
+        let clang = clang_sys::support::Clang::find(None, &[])
+            .ok_or_else(|| io::Error::other("Cannot find clang executable"))?;
 
         // The contents of a wrapper file that includes all the input header
         // files.
@@ -461,10 +456,7 @@ impl Builder {
         if child.wait()?.success() {
             Ok(())
         } else {
-            Err(io::Error::new(
-                io::ErrorKind::Other,
-                "clang exited with non-zero status",
-            ))
+            Err(io::Error::other("clang exited with non-zero status"))
         }
     }
 }
@@ -1062,10 +1054,9 @@ impl Bindings {
         match String::from_utf8(output) {
             Ok(bindings) => match status.code() {
                 Some(0) => Ok(bindings),
-                Some(2) => Err(io::Error::new(
-                    io::ErrorKind::Other,
-                    "Rustfmt parsing errors.".to_string(),
-                )),
+                Some(2) => {
+                    Err(io::Error::other("Rustfmt parsing errors.".to_string()))
+                }
                 Some(3) => {
                     rustfmt_non_fatal_error_diagnostic(
                         "Rustfmt could not format some lines",
@@ -1073,10 +1064,9 @@ impl Bindings {
                     );
                     Ok(bindings)
                 }
-                _ => Err(io::Error::new(
-                    io::ErrorKind::Other,
-                    "Internal rustfmt error".to_string(),
-                )),
+                _ => {
+                    Err(io::Error::other("Internal rustfmt error".to_string()))
+                }
             },
             _ => Ok(source),
         }

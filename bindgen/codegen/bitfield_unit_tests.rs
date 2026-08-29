@@ -342,15 +342,15 @@ fn bitfield_unit_raw_const_methods() {
     // Test raw_get_const
     unsafe {
         assert_eq!(
-            __BindgenBitfieldUnit::raw_get_const::<0, 8>(&unit),
+            __BindgenBitfieldUnit::raw_get_const::<0, 8>(&raw const unit),
             unit.get(0, 8)
         );
         assert_eq!(
-            __BindgenBitfieldUnit::raw_get_const::<4, 8>(&unit),
+            __BindgenBitfieldUnit::raw_get_const::<4, 8>(&raw const unit),
             unit.get(4, 8)
         );
         assert_eq!(
-            __BindgenBitfieldUnit::raw_get_const::<0, 16>(&unit),
+            __BindgenBitfieldUnit::raw_get_const::<0, 16>(&raw const unit),
             unit.get(0, 16)
         );
     }
@@ -360,7 +360,10 @@ fn bitfield_unit_raw_const_methods() {
     let mut unit_runtime = __BindgenBitfieldUnit::<[u8; 2]>::new([0; 2]);
 
     unsafe {
-        __BindgenBitfieldUnit::raw_set_const::<3, 5>(&mut unit_const, 0b11111);
+        __BindgenBitfieldUnit::raw_set_const::<3, 5>(
+            &raw mut unit_const,
+            0b11111,
+        );
     }
     unit_runtime.set(3, 5, 0b11111);
 
@@ -385,7 +388,7 @@ fn bitfield_unit_const_full_word_width() {
 
     unsafe {
         assert_eq!(
-            __BindgenBitfieldUnit::raw_get_const::<0, 64>(&unit),
+            __BindgenBitfieldUnit::raw_get_const::<0, 64>(&raw const unit),
             unit.get(0, 64),
         );
     }
@@ -400,7 +403,7 @@ fn bitfield_unit_const_full_word_width() {
 
     let mut unit_raw = __BindgenBitfieldUnit::<[u8; 8]>::new([0; 8]);
     unsafe {
-        __BindgenBitfieldUnit::raw_set_const::<0, 64>(&mut unit_raw, value);
+        __BindgenBitfieldUnit::raw_set_const::<0, 64>(&raw mut unit_raw, value);
     }
     assert_eq!(unit_raw.get(0, 64), value);
 
@@ -427,7 +430,7 @@ fn bitfield_unit_const_full_word_width() {
         __BindgenBitfieldUnit::<[u8; 9]>::new([0xAA; 9]);
     unsafe {
         __BindgenBitfieldUnit::raw_set_const::<1, 63>(
-            &mut unit_shifted_raw,
+            &raw mut unit_shifted_raw,
             value & ((1u64 << 63) - 1),
         );
     }
