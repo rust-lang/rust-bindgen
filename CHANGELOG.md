@@ -228,6 +228,8 @@
 # Unreleased
 ## Added
 ## Changed
+- Workspace dependencies have been updated (annotate-snippets 0.12, clap 4.6,
+  env_logger 0.11, quickcheck 1.1, similar 3, ...), new msrv is 1.85.
 ## Removed
 - Removed support for generating code for rustc versions < 1.51.
 ## Fixed
