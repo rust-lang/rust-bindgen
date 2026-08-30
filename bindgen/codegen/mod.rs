@@ -3405,7 +3405,8 @@ impl FromStr for EnumVariation {
                 std::io::ErrorKind::InvalidInput,
                 concat!(
                     "Got an invalid EnumVariation. Accepted values ",
-                    "are 'rust', 'rust_non_exhaustive', 'bitfield', 'consts',",
+                    "are 'rust', 'rust_repr_c', 'rust_non_exhaustive', ",
+                    "'rust_non_exhaustive_repr_c', 'bitfield', 'consts', ",
                     "'moduleconsts', 'newtype' and 'newtype_global'."
                 ),
             )),
@@ -4115,10 +4116,25 @@ impl CodeGenerator for Enum {
         let item = builder.build(ctx, &enum_rust_ty);
         result.push(item);
 
-        if ctx.options().layout_tests &&
-            matches!(variation, EnumVariation::Rust { repr_c: true, .. })
-        {
+        if matches!(variation, EnumVariation::Rust { repr_c: true, .. }) {
             if let Some(layout) = layout {
+                // rustc sizes a fieldless `#[repr(C)]` enum like the target's
+                // default C enum type, i.e. `c_int` on all supported targets.
+                if layout.size != 4 || layout.align != 4 {
+                    warn!(
+                        "enum `{ident}` has size {} and alignment {}, but \
+                         `#[repr(C)]` enums are usually 4 bytes; it and any \
+                         type containing it may get an incompatible layout \
+                         (e.g. due to -fshort-enums or an explicit underlying \
+                         type)",
+                        layout.size, layout.align
+                    );
+                }
+
+                if !ctx.options().layout_tests {
+                    return;
+                }
+
                 let compile_time = ctx.options().rust_features().offset_of;
                 let fn_name = if compile_time {
                     None
