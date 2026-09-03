@@ -7,63 +7,65 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
+- [0.72.1 (2025-08-31)](#0721-2025-08-31)
+  - [Fixed](#fixed-1)
 - [0.72.0 (2025-06-08)](#0720-2025-06-08)
   - [Added](#added-1)
   - [Changed](#changed-1)
   - [Removed](#removed-1)
-  - [Fixed](#fixed-1)
-- [v0.71.1 (2024-12-09)](#v0711-2024-12-09)
   - [Fixed](#fixed-2)
+- [v0.71.1 (2024-12-09)](#v0711-2024-12-09)
+  - [Fixed](#fixed-3)
 - [0.71.0 (2024-12-06)](#0710-2024-12-06)
   - [Added](#added-2)
   - [Changed](#changed-2)
   - [Removed](#removed-2)
-  - [Fixed](#fixed-3)
+  - [Fixed](#fixed-4)
 - [0.70.1 (2024-08-20)](#0701-2024-08-20)
   - [Added](#added-3)
   - [Changed](#changed-3)
   - [Removed](#removed-3)
-  - [Fixed](#fixed-4)
+  - [Fixed](#fixed-5)
   - [Security](#security-1)
 - [0.70.0 (2024-08-16)](#0700-2024-08-16)
   - [Added](#added-4)
   - [Changed](#changed-4)
   - [Removed](#removed-4)
-  - [Fixed](#fixed-5)
+  - [Fixed](#fixed-6)
   - [Security](#security-2)
 - [0.69.4 (2024-02-04)](#0694-2024-02-04)
   - [Added](#added-5)
   - [Changed](#changed-5)
   - [Removed](#removed-5)
-  - [Fixed](#fixed-6)
+  - [Fixed](#fixed-7)
   - [Security](#security-3)
 - [0.69.3 (2024-02-04)](#0693-2024-02-04)
   - [Added](#added-6)
   - [Changed](#changed-6)
   - [Removed](#removed-6)
-  - [Fixed](#fixed-7)
+  - [Fixed](#fixed-8)
   - [Security](#security-4)
 - [0.69.2 (2024-01-13)](#0692-2024-01-13)
   - [Added](#added-7)
   - [Changed](#changed-7)
   - [Removed](#removed-7)
-  - [Fixed](#fixed-8)
+  - [Fixed](#fixed-9)
   - [Security](#security-5)
 - [0.69.1 (2023-11-02)](#0691-2023-11-02)
-  - [Fixed](#fixed-9)
+  - [Fixed](#fixed-10)
 - [0.69.0 (2023-11-01)](#0690-2023-11-01)
   - [Added](#added-8)
   - [Changed](#changed-8)
   - [Removed](#removed-8)
-  - [Fixed](#fixed-10)
+  - [Fixed](#fixed-11)
   - [Security](#security-6)
 - [0.68.1](#0681)
-  - [Fixed](#fixed-11)
+  - [Fixed](#fixed-12)
 - [0.68.0](#0680)
   - [Added](#added-9)
   - [Changed](#changed-9)
   - [Removed](#removed-9)
-  - [Fixed](#fixed-12)
+  - [Fixed](#fixed-13)
 - [0.67.0](#0670)
 - [0.66.1](#0661)
   - [Removed](#removed-10)
@@ -72,7 +74,7 @@
   - [Changed](#changed-10)
   - [Removed](#removed-11)
 - [0.65.1](#0651)
-  - [Fixed](#fixed-13)
+  - [Fixed](#fixed-14)
 - [0.65.0](#0650)
   - [Added](#added-11)
   - [Changed](#changed-11)
@@ -87,60 +89,60 @@
 - [0.62.0](#0620)
   - [Added](#added-14)
   - [Changed](#changed-14)
-  - [Fixed](#fixed-14)
+  - [Fixed](#fixed-15)
 - [0.61.0](#0610)
   - [Added](#added-15)
   - [Changed](#changed-15)
-  - [Fixed](#fixed-15)
-- [0.60.1](#0601)
   - [Fixed](#fixed-16)
+- [0.60.1](#0601)
+  - [Fixed](#fixed-17)
 - [0.60.0](#0600)
   - [Added](#added-16)
-  - [Fixed](#fixed-17)
+  - [Fixed](#fixed-18)
   - [Changed](#changed-16)
   - [Removed](#removed-14)
 - [0.59.2](#0592)
 - [0.59.1](#0591)
-  - [Fixed](#fixed-18)
+  - [Fixed](#fixed-19)
 - [0.59.0](#0590)
   - [Added](#added-17)
-  - [Fixed](#fixed-19)
+  - [Fixed](#fixed-20)
   - [Changed](#changed-17)
 - [0.58.1](#0581)
   - [Added](#added-18)
 - [0.58.0](#0580)
   - [Added](#added-19)
-  - [Fixed](#fixed-20)
+  - [Fixed](#fixed-21)
   - [Changed](#changed-18)
   - [Deprecated](#deprecated)
   - [Removed](#removed-15)
-  - [Fixed](#fixed-21)
+  - [Fixed](#fixed-22)
   - [Security](#security-7)
 - [0.57.0](#0570)
   - [Added](#added-20)
-  - [Fixed](#fixed-22)
+  - [Fixed](#fixed-23)
 - [0.56.0](#0560)
   - [Added](#added-21)
   - [Changed](#changed-19)
-  - [Fixed](#fixed-23)
-- [0.55.1](#0551)
   - [Fixed](#fixed-24)
+- [0.55.1](#0551)
+  - [Fixed](#fixed-25)
 - [0.55.0](#0550)
   - [Removed](#removed-16)
   - [Added](#added-22)
   - [Changed](#changed-20)
-  - [Fixed](#fixed-25)
+  - [Fixed](#fixed-26)
 - [0.54.1](#0541)
   - [Added](#added-23)
   - [Changed](#changed-21)
-  - [Fixed](#fixed-26)
+  - [Fixed](#fixed-27)
 - [0.54.0](#0540)
   - [Added](#added-24)
   - [Changed](#changed-22)
-  - [Fixed](#fixed-27)
+  - [Fixed](#fixed-28)
 - [0.53.3](#0533)
   - [Added](#added-25)
-  - [Fixed](#fixed-28)
+  - [Fixed](#fixed-29)
 - [0.53.2](#0532)
   - [Changed](#changed-23)
 - [0.53.1](#0531)
@@ -148,16 +150,16 @@
 - [0.53.0](#0530)
   - [Added](#added-27)
   - [Changed](#changed-24)
-  - [Fixed](#fixed-29)
+  - [Fixed](#fixed-30)
 - [0.52.0](#0520)
   - [Added](#added-28)
   - [Changed](#changed-25)
-  - [Fixed](#fixed-30)
-- [0.51.1](#0511)
   - [Fixed](#fixed-31)
+- [0.51.1](#0511)
+  - [Fixed](#fixed-32)
   - [Changed](#changed-26)
 - [0.51.0](#0510)
-  - [Fixed](#fixed-32)
+  - [Fixed](#fixed-33)
   - [Changed](#changed-27)
   - [Added](#added-29)
 - [0.50.0](#0500)
@@ -167,72 +169,130 @@
 - [0.49.2](#0492)
   - [Changed](#changed-28)
 - [0.49.1](#0491)
-  - [Fixed](#fixed-33)
+  - [Fixed](#fixed-34)
   - [Changed](#changed-29)
 - [0.49.0](#0490)
   - [Added](#added-32)
-  - [Fixed](#fixed-34)
+  - [Fixed](#fixed-35)
   - [Changed](#changed-30)
 - [0.48.1](#0481)
-  - [Fixed](#fixed-35)
+  - [Fixed](#fixed-36)
 - [0.48.0](#0480)
   - [Changed](#changed-31)
-  - [Fixed](#fixed-36)
+  - [Fixed](#fixed-37)
 - [0.47.4](#0474)
   - [Added](#added-33)
 - [0.47.3](#0473)
   - [Changed](#changed-32)
 - [0.47.2](#0472)
-  - [Fixed](#fixed-37)
+  - [Fixed](#fixed-38)
 - [0.47.1](#0471)
   - [Changed](#changed-33)
-  - [Fixed](#fixed-38)
+  - [Fixed](#fixed-39)
 - [0.47.0](#0470)
   - [Changed](#changed-34)
-  - [Fixed](#fixed-39)
+  - [Fixed](#fixed-40)
 - [0.33.1 .. 0.46.0](#0331--0460)
   - [Added](#added-34)
   - [Removed](#removed-17)
   - [Changed](#changed-35)
-  - [Fixed](#fixed-40)
-- [0.33.1](#0331)
   - [Fixed](#fixed-41)
+- [0.33.1](#0331)
+  - [Fixed](#fixed-42)
 - [0.33.0](#0330)
 - [0.32.2](#0322)
-  - [Fixed](#fixed-42)
-- [0.32.1](#0321)
   - [Fixed](#fixed-43)
+- [0.32.1](#0321)
+  - [Fixed](#fixed-44)
 - [0.32.0](#0320)
   - [Added](#added-35)
   - [Changed](#changed-36)
-  - [Fixed](#fixed-44)
+  - [Fixed](#fixed-45)
 - [0.31.0](#0310)
   - [Added](#added-36)
   - [Changed](#changed-37)
   - [Deprecated](#deprecated-1)
   - [Removed](#removed-18)
-  - [Fixed](#fixed-45)
+  - [Fixed](#fixed-46)
 - [0.30.0](#0300)
   - [Added](#added-37)
   - [Changed](#changed-38)
   - [Deprecated](#deprecated-2)
-  - [Fixed](#fixed-46)
+  - [Fixed](#fixed-47)
 - [0.29.0](#0290)
   - [Added](#added-38)
   - [Changed](#changed-39)
-  - [Fixed](#fixed-47)
+  - [Fixed](#fixed-48)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 --------------------------------------------------------------------------------
 # Unreleased
 ## Added
+- Add `Debug`, `Clone` and `Eq` traits to `ParseCallbacks` info types (#3233).
+- Include the source location in discovery `ParseCallbacks` (#3244).
+- Report constants and variables in `ParseCallbacks::new_item_found` (#3249).
+- Allow adding custom attributes to `extern` function blocks (#3257).
+- Support new-type-alias constants (#3288, #3390).
+- Support nested flexible array members (#3306).
+- Add support for custom per-field attributes (#3307).
+- Add const-generic bitfield accessors for compile-time optimization (#3325,
+  #3374).
+- Allow renaming struct and union fields (#3358).
+- Add a `libcpp` feature to link `libclang` against `libc++` (#3375).
+- Prebuilt binaries for aarch64 Linux (#3217).
 ## Changed
+- Guarantee opaque type layout across all architectures (#3280).
+- Use `NonNull` for C++ references (#3292).
+- `Bindings::write` now takes `impl Write` instead of `Box<dyn Write>`
+  (#3324).
+- Optimize bitfield unit get/set with byte-wise operations (#3325).
+- Emit `const` `__BindgenUnionField` accessors and comply with Rust 2024
+  `unsafe_op_in_unsafe_fn` (#3337).
+- Generate a doc comment pointing at the aliased type when a type alias is
+  hidden (#3122).
+- dyngen: convert the library path to `OsStr` before opening it (#3315).
+- Return a `NoHeadersProvided` error instead of generating empty bindings
+  when no input headers are provided (#3391).
+- Bump the MSRV to 1.71 (#3401).
+- Bump `syn` to v3 (#3401) and `shlex` to v2 (#3380).
 ## Removed
 - Removed support for generating code for rustc versions < 1.51.
+- Removed the dependency on `itertools`.
 ## Fixed
 - Typo in code for `--rustified-non-exhaustive-enums` (#3266)
+- Apply the same mangling rule to `C` and `C-unwind` function types (#3156).
+- Fix alignment of bitfields in some edge cases (#3247).
+- Fix typedefs inside constified modules (#3284).
+- Fix generation of `f32` `NAN`, `INFINITY` and `NEG_INFINITY` constants
+  (#3300).
+- Allow constant expressions that don't fit in `i64` (#3301).
+- Deduplicate derive traits added by the `add_derives` callback (#3296).
+- Fix packed structs with flexible array members (#3305).
+- Remove incorrect `size_t_is_usize` check (#3313).
+- Prevent default derives for forward-declared types (#3110).
+- Handle rustc version strings like `1.71.1-beta` and `1.71.1-nightly`
+  (#3329).
+- Centralize comment generation checks so comment options are respected
+  everywhere (#445, #3330).
+- Fix unnecessary transmute and unsafe warnings in bitfield codegen (#3335,
+  #3388).
+- Do not use the canonical declaration for enum type building (#3346).
+- Allow zero-sized unions to be defined (#3348).
+- Consolidate the `extern` block for functions and statics so shared symbols
+  are only declared once (#3367, #3371).
+- Propagate the implicit target to the macro fallback (#3382).
+- Avoid an IR cycle for compiler-builtin ObjC typedefs shadowing themselves
+  (#3387).
+- Generate a `Debug` impl for new-type alias wrappers when the inner type
+  only has a manual impl (#3411).
 ## Security
+
+# 0.72.1 (2025-08-31)
+
+## Fixed
+
+ * Fixed a bad interaction with upcoming clang 22 (#3278).
 
 # 0.72.0 (2025-06-08)
 
