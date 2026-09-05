@@ -236,6 +236,7 @@
 # Unreleased
 ## Added
 ## Changed
+- Widened acceptable prettyplease / syn dependency versions (#3447).
 ## Removed
 ## Fixed
 ## Security

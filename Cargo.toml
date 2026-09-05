@@ -35,7 +35,7 @@ libloading = "0.8"
 log = "0.4"
 objc = "0.2"
 owo-colors = "4.1.0"
-prettyplease = "0.3"
+prettyplease = ">=0.2.7, <0.4"
 proc-macro2 = "1.0.80"
 quickcheck = "1.0"
 quote = { version = "1", default-features = false }
@@ -43,7 +43,7 @@ regex = { version = "1.5.3", default-features = false }
 rustc-hash = "2.1.0"
 shlex = "2"
 similar = "2.2.1"
-syn = "3.0"
+syn = ">=2, <4"
 tempfile = "3.27.0"
 
 [workspace.lints.rust]
