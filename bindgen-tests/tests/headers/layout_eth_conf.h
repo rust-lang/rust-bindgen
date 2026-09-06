@@ -4,7 +4,7 @@ typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 typedef unsigned long long uint64_t;
 
-/**
+/*
  *  Simple flags are used for rte_eth_conf.rxmode.mq_mode.
  */
 #define ETH_MQ_RX_RSS_FLAG  0x1
@@ -12,10 +12,10 @@ typedef unsigned long long uint64_t;
 #define ETH_MQ_RX_VMDQ_FLAG 0x4
 
 /* Definitions used for VMDQ and DCB functionality */
-#define ETH_VMDQ_MAX_VLAN_FILTERS   64 /**< Maximum nb. of VMDQ vlan filters. */
-#define ETH_DCB_NUM_USER_PRIORITIES 8  /**< Maximum nb. of DCB priorities. */
-#define ETH_VMDQ_DCB_NUM_QUEUES     128 /**< Maximum nb. of VMDQ DCB queues. */
-#define ETH_DCB_NUM_QUEUES          128 /**< Maximum nb. of DCB queues. */
+#define ETH_VMDQ_MAX_VLAN_FILTERS   64 /* Maximum nb. of VMDQ vlan filters. */
+#define ETH_DCB_NUM_USER_PRIORITIES 8  /* Maximum nb. of DCB priorities. */
+#define ETH_VMDQ_DCB_NUM_QUEUES     128 /* Maximum nb. of VMDQ DCB queues. */
+#define ETH_DCB_NUM_QUEUES          128 /* Maximum nb. of DCB queues. */
 
 /**
  *  A set of values to identify what method is to be used to route
@@ -281,8 +281,8 @@ enum rte_eth_payload_type {
 	RTE_ETH_PAYLOAD_MAX = 8,
 };
 
-#define RTE_ETH_FDIR_MAX_FLEXLEN 16  /**< Max length of flexbytes. */
-#define RTE_ETH_INSET_SIZE_MAX   128 /**< Max length of input set. */
+#define RTE_ETH_FDIR_MAX_FLEXLEN 16  /* Max length of flexbytes. */
+#define RTE_ETH_INSET_SIZE_MAX   128 /* Max length of input set. */
 
 /**
  * A structure used to select bytes extracted from the protocol layers to
@@ -338,9 +338,9 @@ struct rte_eth_fdir_flex_mask {
 #define RTE_ETH_FLOW_IPV6_UDP_EX        17
 #define RTE_ETH_FLOW_PORT               18
 	/**< Consider device port number as a flow differentiator */
-#define RTE_ETH_FLOW_VXLAN              19 /**< VXLAN protocol based flow */
-#define RTE_ETH_FLOW_GENEVE             20 /**< GENEVE protocol based flow */
-#define RTE_ETH_FLOW_NVGRE              21 /**< NVGRE protocol based flow */
+#define RTE_ETH_FLOW_VXLAN              19 /* VXLAN protocol based flow */
+#define RTE_ETH_FLOW_GENEVE             20 /* GENEVE protocol based flow */
+#define RTE_ETH_FLOW_NVGRE              21 /* NVGRE protocol based flow */
 #define RTE_ETH_FLOW_MAX                22
 
 /**

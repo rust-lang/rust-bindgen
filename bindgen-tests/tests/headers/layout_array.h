@@ -18,7 +18,7 @@ typedef long long size_t;
  */
 #define __rte_cache_aligned __rte_aligned(RTE_CACHE_LINE_SIZE)
 
-#define RTE_MEMPOOL_OPS_NAMESIZE 32 /**< Max length of ops struct name. */
+#define RTE_MEMPOOL_OPS_NAMESIZE 32 /* Max length of ops struct name. */
 
 /**
  * Prototype for implementation specific data provisioning function.
@@ -63,7 +63,7 @@ struct rte_mempool_ops {
 	rte_mempool_get_count get_count; /**< Get qty of available objs. */
 } __rte_cache_aligned;
 
-#define RTE_MEMPOOL_MAX_OPS_IDX 16  /**< Max registered ops structs */
+#define RTE_MEMPOOL_MAX_OPS_IDX 16  /* Max registered ops structs */
 
 /**
  * The rte_spinlock_t type.
