@@ -551,27 +551,39 @@ const _: () = {
 };
 impl redundant_packed_bitfield {
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn b0(&self) -> u8 {
-        self._bitfield_1.get_const::<0usize, 1u8>() as u8 as _
-    }
-    #[inline]
-    pub fn set_b0(&mut self, val: u8) {
-        let val: u8 = val as _;
-        self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn b0_raw(this: *const Self) -> u8 {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 1usize],
-            >>::raw_get_const::<0usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u8 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 1u8>() as u8)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_b0(&mut self, val: u8) {
+        unsafe {
+            let val: u8 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn b0_raw(this: *const Self) -> u8 {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 1usize],
+                >>::raw_get_const::<
+                    0usize,
+                    1u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u8,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_b0_raw(this: *mut Self, val: u8) {
         unsafe {
-            let val: u8 = val as _;
+            let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -581,27 +593,39 @@ impl redundant_packed_bitfield {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn b1(&self) -> u8 {
-        self._bitfield_1.get_const::<1usize, 1u8>() as u8 as _
-    }
-    #[inline]
-    pub fn set_b1(&mut self, val: u8) {
-        let val: u8 = val as _;
-        self._bitfield_1.set_const::<1usize, 1u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn b1_raw(this: *const Self) -> u8 {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 1usize],
-            >>::raw_get_const::<1usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u8 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<1usize, 1u8>() as u8)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_b1(&mut self, val: u8) {
+        unsafe {
+            let val: u8 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<1usize, 1u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn b1_raw(this: *const Self) -> u8 {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 1usize],
+                >>::raw_get_const::<
+                    1usize,
+                    1u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u8,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_b1_raw(this: *mut Self, val: u8) {
         unsafe {
-            let val: u8 = val as _;
+            let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -611,6 +635,7 @@ impl redundant_packed_bitfield {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn new_bitfield_1(b0: u8, b1: u8) -> __BindgenBitfieldUnit<[u8; 1usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
         __bindgen_bitfield_unit
@@ -618,7 +643,7 @@ impl redundant_packed_bitfield {
                 0usize,
                 1u8,
             >({
-                let b0: u8 = b0 as _;
+                let b0: u8 = unsafe { ::std::mem::transmute(b0) };
                 b0 as u64
             });
         __bindgen_bitfield_unit
@@ -626,7 +651,7 @@ impl redundant_packed_bitfield {
                 1usize,
                 1u8,
             >({
-                let b1: u8 = b1 as _;
+                let b1: u8 = unsafe { ::std::mem::transmute(b1) };
                 b1 as u64
             });
         __bindgen_bitfield_unit

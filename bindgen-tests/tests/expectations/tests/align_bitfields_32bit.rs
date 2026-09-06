@@ -515,27 +515,39 @@ pub struct StructWithBitfieldAndDouble {
 }
 impl StructWithBitfieldAndDouble {
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn bitfield(&self) -> ::std::os::raw::c_uint {
-        self._bitfield_1.get_const::<0usize, 32u8>() as u32 as _
-    }
-    #[inline]
-    pub fn set_bitfield(&mut self, val: ::std::os::raw::c_uint) {
-        let val: u32 = val as _;
-        self._bitfield_1.set_const::<0usize, 32u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn bitfield_raw(this: *const Self) -> ::std::os::raw::c_uint {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 4usize],
-            >>::raw_get_const::<0usize, 32u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u32 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 32u8>() as u32)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_bitfield(&mut self, val: ::std::os::raw::c_uint) {
+        unsafe {
+            let val: u32 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<0usize, 32u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn bitfield_raw(this: *const Self) -> ::std::os::raw::c_uint {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 4usize],
+                >>::raw_get_const::<
+                    0usize,
+                    32u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_bitfield_raw(this: *mut Self, val: ::std::os::raw::c_uint) {
         unsafe {
-            let val: u32 = val as _;
+            let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -545,6 +557,7 @@ impl StructWithBitfieldAndDouble {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn new_bitfield_1(
         bitfield: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
@@ -554,7 +567,7 @@ impl StructWithBitfieldAndDouble {
                 0usize,
                 32u8,
             >({
-                let bitfield: u32 = bitfield as _;
+                let bitfield: u32 = unsafe { ::std::mem::transmute(bitfield) };
                 bitfield as u64
             });
         __bindgen_bitfield_unit
