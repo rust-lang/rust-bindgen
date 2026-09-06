@@ -5,7 +5,7 @@ use super::helpers;
 use crate::ir::comp::CompInfo;
 use crate::ir::context::BindgenContext;
 use crate::ir::layout::Layout;
-use crate::ir::ty::{Type, TypeKind};
+use crate::ir::ty::Type;
 use crate::FieldVisibilityKind;
 use proc_macro2::{Ident, Span};
 use std::cmp;
@@ -142,27 +142,7 @@ impl<'a> StructLayoutTracker<'a> {
         field_ty: &Type,
         field_offset: Option<usize>,
     ) -> Option<proc_macro2::TokenStream> {
-        let mut field_layout = field_ty.layout(self.ctx)?;
-
-        if let TypeKind::Array(inner, len) =
-            *field_ty.canonical_type(self.ctx).kind()
-        {
-            // FIXME(emilio): As an _ultra_ hack, we correct the layout returned
-            // by arrays of structs that have a bigger alignment than what we
-            // can support.
-            //
-            // This means that the structs in the array are super-unsafe to
-            // access, since they won't be properly aligned, but there's not too
-            // much we can do about it.
-            if let Some(layout) = self.ctx.resolve_type(inner).layout(self.ctx)
-            {
-                if layout.align > MAX_GUARANTEED_ALIGN {
-                    field_layout.size =
-                        align_to(layout.size, layout.align) * len;
-                    field_layout.align = MAX_GUARANTEED_ALIGN;
-                }
-            }
-        }
+        let field_layout = field_ty.layout(self.ctx)?;
         self.saw_field_with_layout(field_name, field_layout, field_offset)
     }
 
