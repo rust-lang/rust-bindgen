@@ -221,12 +221,7 @@ impl<'a> StructLayoutTracker<'a> {
                 field_offset.unwrap_or(0) / 8,
             );
 
-            let padding_align = if force_padding {
-                1
-            } else {
-                cmp::min(field_layout.align, MAX_GUARANTEED_ALIGN)
-            };
-
+            let padding_align = 1;
             if need_padding && padding_bytes != 0 {
                 Some(Layout::new(padding_bytes, padding_align))
             } else {
