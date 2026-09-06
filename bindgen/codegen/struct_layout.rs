@@ -310,8 +310,6 @@ impl<'a> StructLayoutTracker<'a> {
             return None;
         }
 
-        let repr_align = true;
-
         // We always pad to get to the correct size if the struct is one of
         // those we can't align properly.
         //
@@ -320,8 +318,7 @@ impl<'a> StructLayoutTracker<'a> {
         // other fields.
         if padding_bytes >= layout.align ||
             (self.last_field_was_bitfield &&
-                padding_bytes >= self.latest_field_layout.unwrap().align) ||
-            (!repr_align && layout.align > MAX_GUARANTEED_ALIGN)
+                padding_bytes >= self.latest_field_layout.unwrap().align)
         {
             let layout = if self.is_packed {
                 Layout::new(padding_bytes, 1)
@@ -343,13 +340,11 @@ impl<'a> StructLayoutTracker<'a> {
     }
 
     pub(crate) fn requires_explicit_align(&self, layout: Layout) -> bool {
-        let repr_align = true;
-
         // Always force explicit repr(align) for stuff more than 16-byte aligned
         // to work-around https://github.com/rust-lang/rust/issues/54341.
         //
         // Worst-case this just generates redundant alignment attributes.
-        if repr_align && self.max_field_align >= 16 {
+        if self.max_field_align >= 16 {
             return true;
         }
 
@@ -357,9 +352,7 @@ impl<'a> StructLayoutTracker<'a> {
             return false;
         }
 
-        // We can only generate up-to a 8-bytes of alignment unless we support
-        // repr(align).
-        repr_align || layout.align <= MAX_GUARANTEED_ALIGN
+        true
     }
 
     fn padding_bytes(&self, layout: Layout) -> usize {
