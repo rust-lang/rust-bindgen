@@ -218,6 +218,15 @@ impl Type {
 
     /// What is the layout of this type?
     pub(crate) fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
+        if let TypeKind::Alias(inner) | TypeKind::ResolvedTypeRef(inner) =
+            self.kind
+        {
+            // HACK(emilio): Rust can't represent over-aligned typedefs, so prefer the inner type's
+            // layout if available, to get struct layout correct at least...
+            if let Some(l) = ctx.resolve_type(inner).layout(ctx) {
+                return Some(l);
+            }
+        }
         self.layout.or_else(|| {
             match self.kind {
                 TypeKind::Comp(ref ci) => ci.layout(ctx),
