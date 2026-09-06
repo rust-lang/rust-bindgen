@@ -598,27 +598,39 @@ const _: () = {
 };
 impl rte_eth_link {
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn link_duplex(&self) -> u16 {
-        self._bitfield_1.get_const::<0usize, 1u8>() as u16 as _
-    }
-    #[inline]
-    pub fn set_link_duplex(&mut self, val: u16) {
-        let val: u16 = val as _;
-        self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn link_duplex_raw(this: *const Self) -> u16 {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 1usize],
-            >>::raw_get_const::<0usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u16 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 1u8>() as u16)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_link_duplex(&mut self, val: u16) {
+        unsafe {
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn link_duplex_raw(this: *const Self) -> u16 {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 1usize],
+                >>::raw_get_const::<
+                    0usize,
+                    1u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_link_duplex_raw(this: *mut Self, val: u16) {
         unsafe {
-            let val: u16 = val as _;
+            let val: u16 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -628,27 +640,39 @@ impl rte_eth_link {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn link_autoneg(&self) -> u16 {
-        self._bitfield_1.get_const::<1usize, 1u8>() as u16 as _
-    }
-    #[inline]
-    pub fn set_link_autoneg(&mut self, val: u16) {
-        let val: u16 = val as _;
-        self._bitfield_1.set_const::<1usize, 1u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn link_autoneg_raw(this: *const Self) -> u16 {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 1usize],
-            >>::raw_get_const::<1usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u16 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<1usize, 1u8>() as u16)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_link_autoneg(&mut self, val: u16) {
+        unsafe {
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<1usize, 1u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn link_autoneg_raw(this: *const Self) -> u16 {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 1usize],
+                >>::raw_get_const::<
+                    1usize,
+                    1u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_link_autoneg_raw(this: *mut Self, val: u16) {
         unsafe {
-            let val: u16 = val as _;
+            let val: u16 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -658,27 +682,39 @@ impl rte_eth_link {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn link_status(&self) -> u16 {
-        self._bitfield_1.get_const::<2usize, 1u8>() as u16 as _
-    }
-    #[inline]
-    pub fn set_link_status(&mut self, val: u16) {
-        let val: u16 = val as _;
-        self._bitfield_1.set_const::<2usize, 1u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn link_status_raw(this: *const Self) -> u16 {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 1usize],
-            >>::raw_get_const::<2usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u16 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<2usize, 1u8>() as u16)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_link_status(&mut self, val: u16) {
+        unsafe {
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<2usize, 1u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn link_status_raw(this: *const Self) -> u16 {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 1usize],
+                >>::raw_get_const::<
+                    2usize,
+                    1u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u16,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_link_status_raw(this: *mut Self, val: u16) {
         unsafe {
-            let val: u16 = val as _;
+            let val: u16 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -688,6 +724,7 @@ impl rte_eth_link {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn new_bitfield_1(
         link_duplex: u16,
         link_autoneg: u16,
@@ -699,7 +736,7 @@ impl rte_eth_link {
                 0usize,
                 1u8,
             >({
-                let link_duplex: u16 = link_duplex as _;
+                let link_duplex: u16 = unsafe { ::std::mem::transmute(link_duplex) };
                 link_duplex as u64
             });
         __bindgen_bitfield_unit
@@ -707,7 +744,7 @@ impl rte_eth_link {
                 1usize,
                 1u8,
             >({
-                let link_autoneg: u16 = link_autoneg as _;
+                let link_autoneg: u16 = unsafe { ::std::mem::transmute(link_autoneg) };
                 link_autoneg as u64
             });
         __bindgen_bitfield_unit
@@ -715,7 +752,7 @@ impl rte_eth_link {
                 2usize,
                 1u8,
             >({
-                let link_status: u16 = link_status as _;
+                let link_status: u16 = unsafe { ::std::mem::transmute(link_status) };
                 link_status as u64
             });
         __bindgen_bitfield_unit

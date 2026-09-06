@@ -584,27 +584,39 @@ impl Default for Weird {
 }
 impl Weird {
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn bitTest(&self) -> ::std::os::raw::c_uint {
-        self._bitfield_1.get_const::<0usize, 16u8>() as u32 as _
-    }
-    #[inline]
-    pub fn set_bitTest(&mut self, val: ::std::os::raw::c_uint) {
-        let val: u32 = val as _;
-        self._bitfield_1.set_const::<0usize, 16u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn bitTest_raw(this: *const Self) -> ::std::os::raw::c_uint {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 4usize],
-            >>::raw_get_const::<0usize, 16u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u32 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 16u8>() as u32)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_bitTest(&mut self, val: ::std::os::raw::c_uint) {
+        unsafe {
+            let val: u32 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<0usize, 16u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn bitTest_raw(this: *const Self) -> ::std::os::raw::c_uint {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 4usize],
+                >>::raw_get_const::<
+                    0usize,
+                    16u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_bitTest_raw(this: *mut Self, val: ::std::os::raw::c_uint) {
         unsafe {
-            let val: u32 = val as _;
+            let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -614,27 +626,39 @@ impl Weird {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn bitTest2(&self) -> ::std::os::raw::c_uint {
-        self._bitfield_1.get_const::<16usize, 15u8>() as u32 as _
-    }
-    #[inline]
-    pub fn set_bitTest2(&mut self, val: ::std::os::raw::c_uint) {
-        let val: u32 = val as _;
-        self._bitfield_1.set_const::<16usize, 15u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn bitTest2_raw(this: *const Self) -> ::std::os::raw::c_uint {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 4usize],
-            >>::raw_get_const::<16usize, 15u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u32 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<16usize, 15u8>() as u32)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_bitTest2(&mut self, val: ::std::os::raw::c_uint) {
+        unsafe {
+            let val: u32 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<16usize, 15u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn bitTest2_raw(this: *const Self) -> ::std::os::raw::c_uint {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 4usize],
+                >>::raw_get_const::<
+                    16usize,
+                    15u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_bitTest2_raw(this: *mut Self, val: ::std::os::raw::c_uint) {
         unsafe {
-            let val: u32 = val as _;
+            let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 4usize],
             >>::raw_set_const::<
@@ -644,6 +668,7 @@ impl Weird {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn new_bitfield_1(
         bitTest: ::std::os::raw::c_uint,
         bitTest2: ::std::os::raw::c_uint,
@@ -654,7 +679,7 @@ impl Weird {
                 0usize,
                 16u8,
             >({
-                let bitTest: u32 = bitTest as _;
+                let bitTest: u32 = unsafe { ::std::mem::transmute(bitTest) };
                 bitTest as u64
             });
         __bindgen_bitfield_unit
@@ -662,23 +687,28 @@ impl Weird {
                 16usize,
                 15u8,
             >({
-                let bitTest2: u32 = bitTest2 as _;
+                let bitTest2: u32 = unsafe { ::std::mem::transmute(bitTest2) };
                 bitTest2 as u64
             });
         __bindgen_bitfield_unit
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn mFillOpacitySource(&self) -> nsStyleSVGOpacitySource {
         unsafe {
             ::std::mem::transmute(self._bitfield_2.get_const::<0usize, 3u8>() as u32)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn set_mFillOpacitySource(&mut self, val: nsStyleSVGOpacitySource) {
-        let val: u32 = val as _;
-        self._bitfield_2.set_const::<0usize, 3u8>(val as u64)
+        unsafe {
+            let val: u32 = ::std::mem::transmute(val);
+            self._bitfield_2.set_const::<0usize, 3u8>(val as u64)
+        }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn mFillOpacitySource_raw(this: *const Self) -> nsStyleSVGOpacitySource {
         unsafe {
             ::std::mem::transmute(
@@ -692,12 +722,13 @@ impl Weird {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_mFillOpacitySource_raw(
         this: *mut Self,
         val: nsStyleSVGOpacitySource,
     ) {
         unsafe {
-            let val: u32 = val as _;
+            let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -707,17 +738,22 @@ impl Weird {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn mStrokeOpacitySource(&self) -> nsStyleSVGOpacitySource {
         unsafe {
             ::std::mem::transmute(self._bitfield_2.get_const::<3usize, 3u8>() as u32)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn set_mStrokeOpacitySource(&mut self, val: nsStyleSVGOpacitySource) {
-        let val: u32 = val as _;
-        self._bitfield_2.set_const::<3usize, 3u8>(val as u64)
+        unsafe {
+            let val: u32 = ::std::mem::transmute(val);
+            self._bitfield_2.set_const::<3usize, 3u8>(val as u64)
+        }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn mStrokeOpacitySource_raw(
         this: *const Self,
     ) -> nsStyleSVGOpacitySource {
@@ -733,12 +769,13 @@ impl Weird {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_mStrokeOpacitySource_raw(
         this: *mut Self,
         val: nsStyleSVGOpacitySource,
     ) {
         unsafe {
-            let val: u32 = val as _;
+            let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -748,27 +785,39 @@ impl Weird {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn mStrokeDasharrayFromObject(&self) -> bool {
-        self._bitfield_2.get_const::<6usize, 1u8>() as u8 != 0
-    }
-    #[inline]
-    pub fn set_mStrokeDasharrayFromObject(&mut self, val: bool) {
-        let val: u8 = val as _;
-        self._bitfield_2.set_const::<6usize, 1u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn mStrokeDasharrayFromObject_raw(this: *const Self) -> bool {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 2usize],
-            >>::raw_get_const::<6usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_2))
-                as u8 != 0
+            ::std::mem::transmute(self._bitfield_2.get_const::<6usize, 1u8>() as u8)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_mStrokeDasharrayFromObject(&mut self, val: bool) {
+        unsafe {
+            let val: u8 = ::std::mem::transmute(val);
+            self._bitfield_2.set_const::<6usize, 1u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn mStrokeDasharrayFromObject_raw(this: *const Self) -> bool {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 2usize],
+                >>::raw_get_const::<
+                    6usize,
+                    1u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_2)) as u8,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_mStrokeDasharrayFromObject_raw(this: *mut Self, val: bool) {
         unsafe {
-            let val: u8 = val as _;
+            let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -778,27 +827,39 @@ impl Weird {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn mStrokeDashoffsetFromObject(&self) -> bool {
-        self._bitfield_2.get_const::<7usize, 1u8>() as u8 != 0
-    }
-    #[inline]
-    pub fn set_mStrokeDashoffsetFromObject(&mut self, val: bool) {
-        let val: u8 = val as _;
-        self._bitfield_2.set_const::<7usize, 1u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn mStrokeDashoffsetFromObject_raw(this: *const Self) -> bool {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 2usize],
-            >>::raw_get_const::<7usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_2))
-                as u8 != 0
+            ::std::mem::transmute(self._bitfield_2.get_const::<7usize, 1u8>() as u8)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_mStrokeDashoffsetFromObject(&mut self, val: bool) {
+        unsafe {
+            let val: u8 = ::std::mem::transmute(val);
+            self._bitfield_2.set_const::<7usize, 1u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn mStrokeDashoffsetFromObject_raw(this: *const Self) -> bool {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 2usize],
+                >>::raw_get_const::<
+                    7usize,
+                    1u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_2)) as u8,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_mStrokeDashoffsetFromObject_raw(this: *mut Self, val: bool) {
         unsafe {
-            let val: u8 = val as _;
+            let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -808,27 +869,39 @@ impl Weird {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn mStrokeWidthFromObject(&self) -> bool {
-        self._bitfield_2.get_const::<8usize, 1u8>() as u8 != 0
-    }
-    #[inline]
-    pub fn set_mStrokeWidthFromObject(&mut self, val: bool) {
-        let val: u8 = val as _;
-        self._bitfield_2.set_const::<8usize, 1u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn mStrokeWidthFromObject_raw(this: *const Self) -> bool {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 2usize],
-            >>::raw_get_const::<8usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_2))
-                as u8 != 0
+            ::std::mem::transmute(self._bitfield_2.get_const::<8usize, 1u8>() as u8)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_mStrokeWidthFromObject(&mut self, val: bool) {
+        unsafe {
+            let val: u8 = ::std::mem::transmute(val);
+            self._bitfield_2.set_const::<8usize, 1u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn mStrokeWidthFromObject_raw(this: *const Self) -> bool {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 2usize],
+                >>::raw_get_const::<
+                    8usize,
+                    1u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_2)) as u8,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_mStrokeWidthFromObject_raw(this: *mut Self, val: bool) {
         unsafe {
-            let val: u8 = val as _;
+            let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 2usize],
             >>::raw_set_const::<
@@ -838,6 +911,7 @@ impl Weird {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn new_bitfield_2(
         mFillOpacitySource: nsStyleSVGOpacitySource,
         mStrokeOpacitySource: nsStyleSVGOpacitySource,
@@ -851,7 +925,9 @@ impl Weird {
                 0usize,
                 3u8,
             >({
-                let mFillOpacitySource: u32 = mFillOpacitySource as _;
+                let mFillOpacitySource: u32 = unsafe {
+                    ::std::mem::transmute(mFillOpacitySource)
+                };
                 mFillOpacitySource as u64
             });
         __bindgen_bitfield_unit
@@ -859,7 +935,9 @@ impl Weird {
                 3usize,
                 3u8,
             >({
-                let mStrokeOpacitySource: u32 = mStrokeOpacitySource as _;
+                let mStrokeOpacitySource: u32 = unsafe {
+                    ::std::mem::transmute(mStrokeOpacitySource)
+                };
                 mStrokeOpacitySource as u64
             });
         __bindgen_bitfield_unit
@@ -867,7 +945,9 @@ impl Weird {
                 6usize,
                 1u8,
             >({
-                let mStrokeDasharrayFromObject: u8 = mStrokeDasharrayFromObject as _;
+                let mStrokeDasharrayFromObject: u8 = unsafe {
+                    ::std::mem::transmute(mStrokeDasharrayFromObject)
+                };
                 mStrokeDasharrayFromObject as u64
             });
         __bindgen_bitfield_unit
@@ -875,7 +955,9 @@ impl Weird {
                 7usize,
                 1u8,
             >({
-                let mStrokeDashoffsetFromObject: u8 = mStrokeDashoffsetFromObject as _;
+                let mStrokeDashoffsetFromObject: u8 = unsafe {
+                    ::std::mem::transmute(mStrokeDashoffsetFromObject)
+                };
                 mStrokeDashoffsetFromObject as u64
             });
         __bindgen_bitfield_unit
@@ -883,7 +965,9 @@ impl Weird {
                 8usize,
                 1u8,
             >({
-                let mStrokeWidthFromObject: u8 = mStrokeWidthFromObject as _;
+                let mStrokeWidthFromObject: u8 = unsafe {
+                    ::std::mem::transmute(mStrokeWidthFromObject)
+                };
                 mStrokeWidthFromObject as u64
             });
         __bindgen_bitfield_unit

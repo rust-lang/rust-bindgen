@@ -519,27 +519,39 @@ const _: () = {
 };
 impl HasBigBitfield {
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn x(&self) -> i128 {
-        self._bitfield_1.get_const::<0usize, 128u8>() as u128 as _
-    }
-    #[inline]
-    pub fn set_x(&mut self, val: i128) {
-        let val: u128 = val as _;
-        self._bitfield_1.set_const::<0usize, 128u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn x_raw(this: *const Self) -> i128 {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 16usize],
-            >>::raw_get_const::<0usize, 128u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u128 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 128u8>() as u128)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_x(&mut self, val: i128) {
+        unsafe {
+            let val: u128 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<0usize, 128u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn x_raw(this: *const Self) -> i128 {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 16usize],
+                >>::raw_get_const::<
+                    0usize,
+                    128u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u128,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_x_raw(this: *mut Self, val: i128) {
         unsafe {
-            let val: u128 = val as _;
+            let val: u128 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 16usize],
             >>::raw_set_const::<
@@ -549,6 +561,7 @@ impl HasBigBitfield {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn new_bitfield_1(x: i128) -> __BindgenBitfieldUnit<[u8; 16usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = Default::default();
         __bindgen_bitfield_unit
@@ -556,7 +569,7 @@ impl HasBigBitfield {
                 0usize,
                 128u8,
             >({
-                let x: u128 = x as _;
+                let x: u128 = unsafe { ::std::mem::transmute(x) };
                 x as u64
             });
         __bindgen_bitfield_unit
@@ -579,27 +592,39 @@ const _: () = {
 };
 impl HasTwoBigBitfields {
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn x(&self) -> i128 {
-        self._bitfield_1.get_const::<0usize, 80u8>() as u128 as _
-    }
-    #[inline]
-    pub fn set_x(&mut self, val: i128) {
-        let val: u128 = val as _;
-        self._bitfield_1.set_const::<0usize, 80u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn x_raw(this: *const Self) -> i128 {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 16usize],
-            >>::raw_get_const::<0usize, 80u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u128 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 80u8>() as u128)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_x(&mut self, val: i128) {
+        unsafe {
+            let val: u128 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<0usize, 80u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn x_raw(this: *const Self) -> i128 {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 16usize],
+                >>::raw_get_const::<
+                    0usize,
+                    80u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u128,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_x_raw(this: *mut Self, val: i128) {
         unsafe {
-            let val: u128 = val as _;
+            let val: u128 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 16usize],
             >>::raw_set_const::<
@@ -609,27 +634,39 @@ impl HasTwoBigBitfields {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn y(&self) -> i128 {
-        self._bitfield_1.get_const::<80usize, 48u8>() as u128 as _
-    }
-    #[inline]
-    pub fn set_y(&mut self, val: i128) {
-        let val: u128 = val as _;
-        self._bitfield_1.set_const::<80usize, 48u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn y_raw(this: *const Self) -> i128 {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 16usize],
-            >>::raw_get_const::<80usize, 48u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u128 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<80usize, 48u8>() as u128)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_y(&mut self, val: i128) {
+        unsafe {
+            let val: u128 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<80usize, 48u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn y_raw(this: *const Self) -> i128 {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 16usize],
+                >>::raw_get_const::<
+                    80usize,
+                    48u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u128,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_y_raw(this: *mut Self, val: i128) {
         unsafe {
-            let val: u128 = val as _;
+            let val: u128 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 16usize],
             >>::raw_set_const::<
@@ -639,6 +676,7 @@ impl HasTwoBigBitfields {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn new_bitfield_1(x: i128, y: i128) -> __BindgenBitfieldUnit<[u8; 16usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = Default::default();
         __bindgen_bitfield_unit
@@ -646,7 +684,7 @@ impl HasTwoBigBitfields {
                 0usize,
                 80u8,
             >({
-                let x: u128 = x as _;
+                let x: u128 = unsafe { ::std::mem::transmute(x) };
                 x as u64
             });
         __bindgen_bitfield_unit
@@ -654,7 +692,7 @@ impl HasTwoBigBitfields {
                 80usize,
                 48u8,
             >({
-                let y: u128 = y as _;
+                let y: u128 = unsafe { ::std::mem::transmute(y) };
                 y as u64
             });
         __bindgen_bitfield_unit

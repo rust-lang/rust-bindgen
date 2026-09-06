@@ -531,32 +531,44 @@ const _: () = {
 };
 impl RenameMe {
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn bitfield_less_ugly_name(&self) -> ::std::os::raw::c_int {
-        self._bitfield_1.get_const::<0usize, 1u8>() as u32 as _
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 1u8>() as u32)
+        }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn set_bitfield_less_ugly_name(&mut self, val: ::std::os::raw::c_int) {
-        let val: u32 = val as _;
-        self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
+        unsafe {
+            let val: u32 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
+        }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn bitfield_less_ugly_name_raw(
         this: *const Self,
     ) -> ::std::os::raw::c_int {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 1usize],
-            >>::raw_get_const::<0usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u32 as _
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 1usize],
+                >>::raw_get_const::<
+                    0usize,
+                    1u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
+            )
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_bitfield_less_ugly_name_raw(
         this: *mut Self,
         val: ::std::os::raw::c_int,
     ) {
         unsafe {
-            let val: u32 = val as _;
+            let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -566,30 +578,42 @@ impl RenameMe {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn bitfield_better_name(&self) -> ::std::os::raw::c_int {
-        self._bitfield_1.get_const::<1usize, 1u8>() as u32 as _
-    }
-    #[inline]
-    pub fn set_bitfield_better_name(&mut self, val: ::std::os::raw::c_int) {
-        let val: u32 = val as _;
-        self._bitfield_1.set_const::<1usize, 1u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn bitfield_better_name_raw(this: *const Self) -> ::std::os::raw::c_int {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 1usize],
-            >>::raw_get_const::<1usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u32 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<1usize, 1u8>() as u32)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_bitfield_better_name(&mut self, val: ::std::os::raw::c_int) {
+        unsafe {
+            let val: u32 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<1usize, 1u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn bitfield_better_name_raw(this: *const Self) -> ::std::os::raw::c_int {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 1usize],
+                >>::raw_get_const::<
+                    1usize,
+                    1u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_bitfield_better_name_raw(
         this: *mut Self,
         val: ::std::os::raw::c_int,
     ) {
         unsafe {
-            let val: u32 = val as _;
+            let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -599,6 +623,7 @@ impl RenameMe {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn new_bitfield_1(
         bitfield_less_ugly_name: ::std::os::raw::c_int,
         bitfield_better_name: ::std::os::raw::c_int,
@@ -609,7 +634,9 @@ impl RenameMe {
                 0usize,
                 1u8,
             >({
-                let bitfield_less_ugly_name: u32 = bitfield_less_ugly_name as _;
+                let bitfield_less_ugly_name: u32 = unsafe {
+                    ::std::mem::transmute(bitfield_less_ugly_name)
+                };
                 bitfield_less_ugly_name as u64
             });
         __bindgen_bitfield_unit
@@ -617,7 +644,9 @@ impl RenameMe {
                 1usize,
                 1u8,
             >({
-                let bitfield_better_name: u32 = bitfield_better_name as _;
+                let bitfield_better_name: u32 = unsafe {
+                    ::std::mem::transmute(bitfield_better_name)
+                };
                 bitfield_better_name as u64
             });
         __bindgen_bitfield_unit

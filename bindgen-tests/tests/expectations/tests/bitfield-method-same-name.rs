@@ -530,32 +530,44 @@ unsafe extern "C" {
 }
 impl Foo {
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn type__bindgen_bitfield(&self) -> ::std::os::raw::c_char {
-        self._bitfield_1.get_const::<0usize, 3u8>() as u8 as _
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 3u8>() as u8)
+        }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn set_type__bindgen_bitfield(&mut self, val: ::std::os::raw::c_char) {
-        let val: u8 = val as _;
-        self._bitfield_1.set_const::<0usize, 3u8>(val as u64)
+        unsafe {
+            let val: u8 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<0usize, 3u8>(val as u64)
+        }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn type__bindgen_bitfield_raw(
         this: *const Self,
     ) -> ::std::os::raw::c_char {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 1usize],
-            >>::raw_get_const::<0usize, 3u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u8 as _
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 1usize],
+                >>::raw_get_const::<
+                    0usize,
+                    3u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u8,
+            )
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_type__bindgen_bitfield_raw(
         this: *mut Self,
         val: ::std::os::raw::c_char,
     ) {
         unsafe {
-            let val: u8 = val as _;
+            let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -565,6 +577,7 @@ impl Foo {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn new_bitfield_1(
         type__bindgen_bitfield: ::std::os::raw::c_char,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
@@ -574,7 +587,9 @@ impl Foo {
                 0usize,
                 3u8,
             >({
-                let type__bindgen_bitfield: u8 = type__bindgen_bitfield as _;
+                let type__bindgen_bitfield: u8 = unsafe {
+                    ::std::mem::transmute(type__bindgen_bitfield)
+                };
                 type__bindgen_bitfield as u64
             });
         __bindgen_bitfield_unit

@@ -520,27 +520,39 @@ const _: () = {
 };
 impl my_struct1 {
     #[inline]
+    #[allow(unnecessary_transmutes)]
     fn a(&self) -> ::std::os::raw::c_int {
-        self._bitfield_1.get_const::<0usize, 1u8>() as u32 as _
-    }
-    #[inline]
-    fn set_a(&mut self, val: ::std::os::raw::c_int) {
-        let val: u32 = val as _;
-        self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
-    }
-    #[inline]
-    unsafe fn a_raw(this: *const Self) -> ::std::os::raw::c_int {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 1usize],
-            >>::raw_get_const::<0usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u32 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 1u8>() as u32)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    fn set_a(&mut self, val: ::std::os::raw::c_int) {
+        unsafe {
+            let val: u32 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    unsafe fn a_raw(this: *const Self) -> ::std::os::raw::c_int {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 1usize],
+                >>::raw_get_const::<
+                    0usize,
+                    1u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     unsafe fn set_a_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = val as _;
+            let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -550,6 +562,7 @@ impl my_struct1 {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     fn new_bitfield_1(a: ::std::os::raw::c_int) -> __BindgenBitfieldUnit<[u8; 1usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
         __bindgen_bitfield_unit
@@ -557,7 +570,7 @@ impl my_struct1 {
                 0usize,
                 1u8,
             >({
-                let a: u32 = a as _;
+                let a: u32 = unsafe { ::std::mem::transmute(a) };
                 a as u64
             });
         __bindgen_bitfield_unit
@@ -577,27 +590,39 @@ const _: () = {
 };
 impl my_struct2 {
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn a(&self) -> ::std::os::raw::c_int {
-        self._bitfield_1.get_const::<0usize, 1u8>() as u32 as _
-    }
-    #[inline]
-    pub fn set_a(&mut self, val: ::std::os::raw::c_int) {
-        let val: u32 = val as _;
-        self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
-    }
-    #[inline]
-    pub unsafe fn a_raw(this: *const Self) -> ::std::os::raw::c_int {
         unsafe {
-            <__BindgenBitfieldUnit<
-                [u8; 1usize],
-            >>::raw_get_const::<0usize, 1u8>(::std::ptr::addr_of!((*this)._bitfield_1))
-                as u32 as _
+            ::std::mem::transmute(self._bitfield_1.get_const::<0usize, 1u8>() as u32)
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub fn set_a(&mut self, val: ::std::os::raw::c_int) {
+        unsafe {
+            let val: u32 = ::std::mem::transmute(val);
+            self._bitfield_1.set_const::<0usize, 1u8>(val as u64)
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
+    pub unsafe fn a_raw(this: *const Self) -> ::std::os::raw::c_int {
+        unsafe {
+            ::std::mem::transmute(
+                <__BindgenBitfieldUnit<
+                    [u8; 1usize],
+                >>::raw_get_const::<
+                    0usize,
+                    1u8,
+                >(::std::ptr::addr_of!((*this)._bitfield_1)) as u32,
+            )
+        }
+    }
+    #[inline]
+    #[allow(unnecessary_transmutes)]
     pub unsafe fn set_a_raw(this: *mut Self, val: ::std::os::raw::c_int) {
         unsafe {
-            let val: u32 = val as _;
+            let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
                 [u8; 1usize],
             >>::raw_set_const::<
@@ -607,6 +632,7 @@ impl my_struct2 {
         }
     }
     #[inline]
+    #[allow(unnecessary_transmutes)]
     pub fn new_bitfield_1(
         a: ::std::os::raw::c_int,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
@@ -616,7 +642,7 @@ impl my_struct2 {
                 0usize,
                 1u8,
             >({
-                let a: u32 = a as _;
+                let a: u32 = unsafe { ::std::mem::transmute(a) };
                 a as u64
             });
         __bindgen_bitfield_unit
