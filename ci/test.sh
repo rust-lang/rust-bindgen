@@ -105,7 +105,7 @@ if [ "$BINDGEN_RUST_FOR_LINUX_TEST" == "1" ]; then
   mkdir -p linux
   git -C linux init
   git -C linux remote add origin https://github.com/torvalds/linux.git
-  git -C linux fetch --depth 1 origin ${LINUX_VERSION}
+  git -C linux fetch origin ${LINUX_VERSION}
   git -C linux checkout FETCH_HEAD
 
   # Configure Rust for Linux
