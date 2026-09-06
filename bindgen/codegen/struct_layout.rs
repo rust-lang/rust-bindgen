@@ -206,9 +206,8 @@ impl<'a> StructLayoutTracker<'a> {
             let force_padding = self.ctx.options().force_explicit_padding;
 
             // Otherwise the padding is useless.
-            let need_padding = force_padding ||
-                padding_bytes >= field_layout.align ||
-                field_layout.align > MAX_GUARANTEED_ALIGN;
+            let need_padding =
+                force_padding || padding_bytes >= field_layout.align;
 
             debug!(
                 "Offset: <padding>: {} -> {}",
