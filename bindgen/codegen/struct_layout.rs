@@ -108,8 +108,6 @@ impl<'a> StructLayoutTracker<'a> {
     pub(crate) fn saw_base(&mut self, base_ty: &Type) {
         debug!("saw base for {}", self.name);
         if let Some(layout) = base_ty.layout(self.ctx) {
-            self.align_to_latest_field(layout);
-
             self.latest_offset += self.padding_bytes(layout) + layout.size;
             self.latest_field_layout = Some(layout);
             self.max_field_align = cmp::max(self.max_field_align, layout.align);
@@ -118,8 +116,6 @@ impl<'a> StructLayoutTracker<'a> {
 
     pub(crate) fn saw_bitfield_unit(&mut self, layout: Layout) {
         debug!("saw bitfield unit for {}: {layout:?}", self.name);
-
-        self.align_to_latest_field(layout);
 
         self.latest_offset += layout.size;
 
@@ -172,7 +168,8 @@ impl<'a> StructLayoutTracker<'a> {
         field_layout: Layout,
         field_offset: Option<usize>,
     ) -> Option<proc_macro2::TokenStream> {
-        let will_merge_with_bitfield = self.align_to_latest_field(field_layout);
+        let will_merge_with_bitfield =
+            self.will_merge_with_bitfield(field_layout);
 
         let is_union = self.comp.is_union();
         let padding_bytes = match field_offset {
@@ -386,12 +383,9 @@ impl<'a> StructLayoutTracker<'a> {
         }
     }
 
-    /// Returns whether the new field is known to merge with a bitfield.
-    ///
-    /// This is just to avoid doing the same check also in `pad_field`.
-    fn align_to_latest_field(&mut self, new_field_layout: Layout) -> bool {
-        if self.is_packed {
-            // Skip to align fields when packed.
+    /// Returns whether the new field is known to merge with a previous bitfield.
+    fn will_merge_with_bitfield(&self, new_field_layout: Layout) -> bool {
+        if !self.last_field_was_bitfield {
             return false;
         }
 
@@ -399,29 +393,13 @@ impl<'a> StructLayoutTracker<'a> {
             return false;
         };
 
-        // If it was, we may or may not need to align, depending on what the
-        // current field alignment and the bitfield size and alignment are.
-        debug!(
-            "align_to_bitfield? {}: {layout:?} {new_field_layout:?}",
-            self.last_field_was_bitfield,
-        );
+        debug!("will_merge_with_bitfield: {layout:?} {new_field_layout:?}");
 
         // Avoid divide-by-zero errors if align is 0.
         let align = cmp::max(1, layout.align);
 
-        if self.last_field_was_bitfield &&
-            new_field_layout.align <= layout.size % align &&
+        // FIXME(emilio): I think this may not catch everything?
+        new_field_layout.align <= layout.size % align &&
             new_field_layout.size <= layout.size % align
-        {
-            // The new field will be coalesced into some of the remaining bits.
-            //
-            // FIXME(emilio): I think this may not catch everything?
-            debug!("Will merge with bitfield");
-            return true;
-        }
-
-        // Else, just align the obvious way.
-        self.latest_offset += self.padding_bytes(layout);
-        false
     }
 }
