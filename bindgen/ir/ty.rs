@@ -15,6 +15,7 @@ use super::traversal::{EdgeKind, Trace, Tracer};
 use crate::clang::{self, Cursor};
 use crate::parse::{ParseError, ParseResult};
 use std::borrow::Cow;
+use std::cell::Cell;
 use std::io;
 
 pub use super::int::IntKind;
@@ -28,12 +29,15 @@ pub use super::int::IntKind;
 pub(crate) struct Type {
     /// The name of the type, or None if it was an unnamed struct or union.
     name: Option<String>,
-    /// The layout of the type, if known.
-    layout: Option<Layout>,
+    /// This is, originally, the layout clang tells us about, if known. But we might clobber it
+    /// before returning it out if we are a typedef or so, see the `layout()` function.
+    layout: Cell<Option<Layout>>,
     /// The inner kind of the type
     kind: TypeKind,
     /// Whether this type is const-qualified.
     is_const: bool,
+    /// Avoids checking the nested type layout over and over.
+    checked_inner_layout: Cell<bool>,
 }
 
 /// The maximum number of items in an array for which Rust implements common
@@ -61,9 +65,10 @@ impl Type {
     ) -> Self {
         Type {
             name,
-            layout,
+            layout: Cell::new(layout),
             kind,
             is_const,
+            checked_inner_layout: Cell::new(false),
         }
     }
 
@@ -216,36 +221,38 @@ impl Type {
         }
     }
 
+    // HACK(emilio): Rust can't represent over-aligned typedefs / enums, so prefer the inner type's
+    // layout if available, to get struct layout correct at least...
+    fn check_inner_layout(&self, ctx: &BindgenContext) -> Option<Layout> {
+        debug_assert!(!self.checked_inner_layout.get());
+        let has_layout = self.layout.get().is_some();
+        match self.kind {
+            TypeKind::Enum(ref e) => ctx.resolve_type(e.repr()?).layout(ctx),
+            TypeKind::Alias(inner) | TypeKind::ResolvedTypeRef(inner) => {
+                ctx.resolve_type(inner).layout(ctx)
+            }
+            TypeKind::Comp(ref ci) if !has_layout => ci.layout(ctx),
+            TypeKind::Pointer(..) if !has_layout => Some(Layout::new(
+                ctx.target_pointer_size(),
+                ctx.target_pointer_size(),
+            )),
+            TypeKind::Array(inner, len) => {
+                let layout = ctx.resolve_type(inner).layout(ctx)?;
+                Some(Layout::new(len * layout.size, layout.align))
+            }
+            _ => None,
+        }
+    }
+
     /// What is the layout of this type?
     pub(crate) fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
-        if let TypeKind::Alias(inner) | TypeKind::ResolvedTypeRef(inner) =
-            self.kind
-        {
-            // HACK(emilio): Rust can't represent over-aligned typedefs, so prefer the inner type's
-            // layout if available, to get struct layout correct at least...
-            if let Some(l) = ctx.resolve_type(inner).layout(ctx) {
-                return Some(l);
+        if !self.checked_inner_layout.get() {
+            if let Some(inner) = self.check_inner_layout(ctx) {
+                self.layout.set(Some(inner));
             }
+            self.checked_inner_layout.set(true);
         }
-        self.layout.or_else(|| {
-            match self.kind {
-                TypeKind::Comp(ref ci) => ci.layout(ctx),
-                TypeKind::Array(inner, 0) => Some(Layout::new(
-                    0,
-                    ctx.resolve_type(inner).layout(ctx)?.align,
-                )),
-                // FIXME(emilio): This is a hack for anonymous union templates.
-                // Use the actual pointer size!
-                TypeKind::Pointer(..) => Some(Layout::new(
-                    ctx.target_pointer_size(),
-                    ctx.target_pointer_size(),
-                )),
-                TypeKind::ResolvedTypeRef(inner) => {
-                    ctx.resolve_type(inner).layout(ctx)
-                }
-                _ => None,
-            }
-        })
+        self.layout.get()
     }
 
     /// Whether this named type is an invalid C++ identifier. This is done to
@@ -371,7 +378,7 @@ impl IsOpaque for Type {
             TypeKind::TemplateInstantiation(ref inst) => {
                 inst.is_opaque(ctx, item)
             }
-            TypeKind::Comp(ref comp) => comp.is_opaque(ctx, &self.layout),
+            TypeKind::Comp(ref comp) => comp.is_opaque(ctx, &self.layout(ctx)),
             TypeKind::ResolvedTypeRef(to) => to.is_opaque(ctx, &()),
             _ => false,
         }
@@ -415,7 +422,7 @@ impl DotAttributes for Type {
     where
         W: io::Write,
     {
-        if let Some(ref layout) = self.layout {
+        if let Some(ref layout) = self.layout(ctx) {
             writeln!(
                 out,
                 "<tr><td>size</td><td>{}</td></tr>
