@@ -47,3 +47,19 @@ struct Date3 {
    unsigned short nYear     : 8;    // 0..100 (8 bits)
    unsigned char byte;
 };
+
+struct Gap {
+    char a;
+    int b : 30;
+    char c;
+};
+
+typedef unsigned int U __attribute__((aligned(2)));
+
+struct UnderAligned {
+    char before;
+    U bits : 31;
+    char mid;
+    U inner;
+    char tail;
+};

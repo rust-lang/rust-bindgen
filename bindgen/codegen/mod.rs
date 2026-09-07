@@ -1995,6 +1995,12 @@ impl FieldCodegen<'_> for BitfieldUnit {
 
         let access_spec = access_specifier(unit_visibility);
 
+        if let Some(padding_field) =
+            struct_layout.saw_bitfield_unit(layout, self.offset())
+        {
+            fields.extend(Some(padding_field));
+        }
+
         let field = quote! {
             #access_spec #unit_field_ident : #field_ty ,
         };
@@ -2011,8 +2017,6 @@ impl FieldCodegen<'_> for BitfieldUnit {
                 }
             }));
         }
-
-        struct_layout.saw_bitfield_unit(layout);
     }
 }
 
