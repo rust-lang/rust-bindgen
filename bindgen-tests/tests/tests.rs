@@ -124,6 +124,17 @@ fn compare_generated_header(
     builder: BuilderState,
     check_roundtrip: bool,
 ) -> Result<(), Error> {
+    let skip_for_clang_version = if let Some(minimum) =
+        builder.minimum_clang_version
+    {
+        matches!(clang_version().parsed, Some((major, _)) if major < minimum)
+    } else {
+        false
+    };
+    if skip_for_clang_version {
+        return Ok(());
+    }
+
     let file_name = header.file_name().ok_or_else(|| {
         Error::new(ErrorKind::Other, "compare_generated_header expects a file")
     })?;
@@ -241,6 +252,7 @@ fn builder() -> Builder {
 struct BuilderState {
     builder: Builder,
     parse_callbacks: Option<String>,
+    minimum_clang_version: Option<u32>,
 }
 
 impl BuilderState {
@@ -259,6 +271,7 @@ impl BuilderState {
             Some(BuilderState {
                 builder,
                 parse_callbacks: self.parse_callbacks,
+                minimum_clang_version: self.minimum_clang_version,
             })
         } else {
             None
@@ -277,6 +290,7 @@ fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
     // Scoop up bindgen-flags from test header
     let mut flags = Vec::with_capacity(2);
     let mut parse_callbacks = None;
+    let mut minimum_clang_version = None;
 
     for line in reader.lines() {
         let line = line?;
@@ -302,6 +316,17 @@ fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
             let parse_cb =
                 line.split("bindgen-parse-callbacks: ").last().unwrap();
             parse_callbacks = Some(parse_cb.to_owned());
+        } else if line.contains("bindgen-min-clang-version: ") {
+            let version =
+                line.split("bindgen-min-clang-version: ").last().unwrap();
+            minimum_clang_version = Some(version.parse().map_err(|err| {
+                Error::new(
+                    ErrorKind::InvalidData,
+                    format!(
+                        "Invalid minimum libclang version '{version}': {err}"
+                    ),
+                )
+            })?);
         }
     }
 
@@ -349,6 +374,7 @@ fn create_bindgen_builder(header: &Path) -> Result<BuilderState, Error> {
     Ok(BuilderState {
         builder,
         parse_callbacks,
+        minimum_clang_version,
     })
 }
 

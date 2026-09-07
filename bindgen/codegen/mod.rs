@@ -3164,6 +3164,7 @@ impl Method {
                 MethodKind::Destructor |
                 MethodKind::VirtualDestructor { .. } => cc.destructors(),
                 MethodKind::Static |
+                MethodKind::ExplicitObject |
                 MethodKind::Normal |
                 MethodKind::Virtual { .. } => cc.methods(),
             }
@@ -3237,7 +3238,10 @@ impl Method {
         let mut args = utils::fnsig_arguments(ctx, signature);
         let mut ret = utils::fnsig_return_ty(ctx, signature);
 
-        if !self.is_static() && !self.is_constructor() {
+        if !self.is_static() &&
+            !self.is_explicit_object() &&
+            !self.is_constructor()
+        {
             args[0] = if self.is_const() {
                 quote! { &self }
             } else {
@@ -3271,7 +3275,7 @@ impl Method {
                 let mut __bindgen_tmp = ::#prefix::mem::MaybeUninit::uninit()
             };
             stmts.push(tmp_variable_decl);
-        } else if !self.is_static() {
+        } else if !self.is_static() && !self.is_explicit_object() {
             assert!(!exprs.is_empty());
             exprs[0] = quote! {
                 self

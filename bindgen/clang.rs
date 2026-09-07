@@ -907,6 +907,20 @@ impl Cursor {
         unsafe { clang_CXXMethod_isStatic(self.x) != 0 }
     }
 
+    /// Is this cursor's referent a C++23 explicit-object member function?
+    pub(crate) fn method_is_explicit_object(&self) -> bool {
+        debug_assert_eq!(self.kind(), CXCursor_CXXMethod);
+
+        // libclang has no direct API for this. The first parameter's extent
+        // starts at `this`, even when attributes precede the parameter.
+        self.args()
+            .and_then(|args| args.into_iter().next())
+            .and_then(|arg| arg.tokens().iter().next())
+            .is_some_and(|token| {
+                token.kind == CXToken_Keyword && token.spelling() == b"this"
+            })
+    }
+
     /// Is this cursor's referent a member function that is declared `const`?
     pub(crate) fn method_is_const(&self) -> bool {
         unsafe { clang_CXXMethod_isConst(self.x) != 0 }
