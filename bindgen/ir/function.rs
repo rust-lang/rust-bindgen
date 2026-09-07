@@ -52,6 +52,8 @@ impl FunctionKind {
                     })
                 } else if cursor.method_is_static() {
                     FunctionKind::Method(MethodKind::Static)
+                } else if cursor.method_is_explicit_object() {
+                    FunctionKind::Method(MethodKind::ExplicitObject)
                 } else {
                     FunctionKind::Method(MethodKind::Normal)
                 }
@@ -528,8 +530,10 @@ impl FunctionSig {
         if is_method || is_constructor || is_destructor {
             let is_const = is_method && cursor.method_is_const();
             let is_virtual = is_method && cursor.method_is_virtual();
-            let is_static = is_method && cursor.method_is_static();
-            if !is_static &&
+            let has_implicit_object = is_method &&
+                !cursor.method_is_static() &&
+                !cursor.method_is_explicit_object();
+            if (!is_method || has_implicit_object) &&
                 (!is_virtual ||
                     ctx.options().use_specific_virtual_function_receiver)
             {

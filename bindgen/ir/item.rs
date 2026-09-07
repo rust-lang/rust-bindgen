@@ -1039,6 +1039,7 @@ impl Item {
                 ) => cc.destructors(),
                 FunctionKind::Method(
                     MethodKind::Static |
+                    MethodKind::ExplicitObject |
                     MethodKind::Normal |
                     MethodKind::Virtual { .. },
                 ) => cc.methods(),

@@ -44,6 +44,8 @@ pub(crate) enum MethodKind {
     },
     /// A static method.
     Static,
+    /// A method with an explicit object parameter.
+    ExplicitObject,
     /// A normal method.
     Normal,
     /// A virtual method.
@@ -72,7 +74,7 @@ impl MethodKind {
     }
 }
 
-/// A struct representing a C++ method, either static, normal, or virtual.
+/// A struct representing a C++ method.
 #[derive(Debug)]
 pub(crate) struct Method {
     kind: MethodKind,
@@ -119,6 +121,11 @@ impl Method {
     /// Is this a static method?
     pub(crate) fn is_static(&self) -> bool {
         self.kind == MethodKind::Static
+    }
+
+    /// Does this method have an explicit object parameter?
+    pub(crate) fn is_explicit_object(&self) -> bool {
+        self.kind == MethodKind::ExplicitObject
     }
 
     /// Get the ID for the `Function` signature for this method.
@@ -1590,6 +1597,8 @@ impl CompInfo {
                                 MethodKind::Virtual {
                                     pure_virtual: cur.method_is_pure_virtual(),
                                 }
+                            } else if cur.method_is_explicit_object() {
+                                MethodKind::ExplicitObject
                             } else {
                                 MethodKind::Normal
                             };
