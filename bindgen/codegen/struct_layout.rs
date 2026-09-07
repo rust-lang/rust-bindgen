@@ -114,24 +114,20 @@ impl<'a> StructLayoutTracker<'a> {
         }
     }
 
-    pub(crate) fn saw_bitfield_unit(&mut self, layout: Layout) {
-        debug!("saw bitfield unit for {}: {layout:?}", self.name);
-
-        self.latest_offset += layout.size;
-
+    /// Returns a padding field if necessary for a given bitfield unit _before_ adding that unit.
+    pub(crate) fn saw_bitfield_unit(
+        &mut self,
+        layout: Layout,
+        offset: Option<usize>,
+    ) -> Option<proc_macro2::TokenStream> {
         debug!(
-            "Offset: <bitfield>: {} -> {}",
-            self.latest_offset - layout.size,
-            self.latest_offset
+            "saw bitfield unit for {}: {layout:?} at {offset:?}",
+            self.name
         );
-
-        self.latest_field_layout = Some(layout);
-        self.last_field_was_bitfield = true;
-        self.max_field_align = cmp::max(self.max_field_align, layout.align);
+        self.pad_to_offset(layout, offset, /* is_bitfield = */ true)
     }
 
-    /// Returns a padding field if necessary for a given new field _before_
-    /// adding that field.
+    /// Returns a padding field if necessary for a given new field _before_ adding that field.
     pub(crate) fn saw_field(
         &mut self,
         field_name: &str,
@@ -148,8 +144,22 @@ impl<'a> StructLayoutTracker<'a> {
         field_layout: Layout,
         field_offset: Option<usize>,
     ) -> Option<proc_macro2::TokenStream> {
+        debug!("saw_field_with_layout({field_name}, offset = {field_offset:?}, layout = {field_layout:?}");
+        self.pad_to_offset(
+            field_layout,
+            field_offset,
+            /* is_bitfield = */ false,
+        )
+    }
+
+    fn pad_to_offset(
+        &mut self,
+        field_layout: Layout,
+        field_offset: Option<usize>,
+        is_bitfield: bool,
+    ) -> Option<proc_macro2::TokenStream> {
         let will_merge_with_bitfield =
-            self.will_merge_with_bitfield(field_layout);
+            !is_bitfield && self.will_merge_with_bitfield(field_layout);
 
         let is_union = self.comp.is_union();
         let padding_bytes = match field_offset {
@@ -177,7 +187,9 @@ impl<'a> StructLayoutTracker<'a> {
 
         self.latest_offset += padding_bytes;
 
-        let padding_layout = if self.is_packed || is_union {
+        // Bitfield units are always byte-aligned, so packed(N) can't move them into place like it
+        // does for regular fields.
+        let padding_layout = if (self.is_packed && !is_bitfield) || is_union {
             None
         } else {
             let force_padding = self.ctx.options().force_explicit_padding;
@@ -193,7 +205,7 @@ impl<'a> StructLayoutTracker<'a> {
             );
 
             debug!(
-                "align field {field_name} to {}/{} with {padding_bytes} padding bytes {field_layout:?}",
+                "align field to {}/{} with {padding_bytes} padding bytes {field_layout:?}",
                 self.latest_offset,
                 field_offset.unwrap_or(0) / 8,
             );
@@ -215,10 +227,10 @@ impl<'a> StructLayoutTracker<'a> {
         self.latest_field_layout = Some(field_layout);
         self.max_field_align =
             cmp::max(self.max_field_align, field_layout.align);
-        self.last_field_was_bitfield = false;
+        self.last_field_was_bitfield = is_bitfield;
 
         debug!(
-            "Offset: {field_name}: {} -> {}",
+            "Offset: {} -> {}",
             self.latest_offset - field_layout.size,
             self.latest_offset
         );

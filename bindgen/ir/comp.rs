@@ -165,6 +165,8 @@ pub(crate) trait FieldMethods {
 pub(crate) struct BitfieldUnit {
     nth: usize,
     layout: Layout,
+    /// The offset of this unit within the struct, in bits, if known.
+    offset: Option<usize>,
     bitfields: Vec<Bitfield>,
 }
 
@@ -179,6 +181,11 @@ impl BitfieldUnit {
     /// Get the layout within which these bitfields reside.
     pub(crate) fn layout(&self) -> Layout {
         self.layout
+    }
+
+    /// Get the offset of this unit within the struct, in bits, if known.
+    pub(crate) fn offset(&self) -> Option<usize> {
+        self.offset
     }
 
     /// Get the bitfields within this unit.
@@ -560,6 +567,7 @@ where
         fields: &mut E,
         bitfield_unit_count: &mut usize,
         unit_size_in_bits: usize,
+        offset: Option<usize>,
         bitfields: Vec<Bitfield>,
     ) where
         E: Extend<Field>,
@@ -571,13 +579,14 @@ where
         fields.extend(Some(Field::Bitfields(BitfieldUnit {
             nth: *bitfield_unit_count,
             layout,
+            offset,
             bitfields,
         })));
     }
 
     // The offset we're in inside the struct, if we know it (we might not know it in presence of
     // templates).
-    let mut start_offset_in_struct = 0;
+    let mut known_start_offset = None;
     let mut max_align = 0;
     let mut unit_size_in_bits = 0;
     let mut bitfields_in_unit = vec![];
@@ -591,7 +600,7 @@ where
         let bitfield_size = bitfield_layout.size;
 
         if unit_size_in_bits == 0 {
-            start_offset_in_struct = bitfield.offset().unwrap_or(0);
+            known_start_offset = bitfield.offset();
         }
 
         let mut offset_in_struct =
@@ -599,6 +608,7 @@ where
 
         // A zero-width field serves as alignment / padding.
         if !packed &&
+            bitfield.offset().is_none() &&
             offset_in_struct != 0 &&
             (bitfield_width == 0 ||
                 (offset_in_struct & (bitfield_align * 8 - 1)) +
@@ -621,12 +631,10 @@ where
         // bitfields over their types size cause weird allocation size behavior from clang.
         // Therefore, all bitfields needed to be kept around in order to check for this
         // and make the struct opaque in this case
-        bitfields_in_unit.push(Bitfield::new(
-            offset_in_struct - start_offset_in_struct,
-            bitfield,
-        ));
-        unit_size_in_bits =
-            offset_in_struct - start_offset_in_struct + bitfield_width;
+        let bitfield_offset =
+            offset_in_struct - known_start_offset.unwrap_or(0);
+        bitfields_in_unit.push(Bitfield::new(bitfield_offset, bitfield));
+        unit_size_in_bits = bitfield_offset + bitfield_width;
     }
 
     if unit_size_in_bits != 0 {
@@ -635,6 +643,7 @@ where
             fields,
             bitfield_unit_count,
             unit_size_in_bits,
+            known_start_offset,
             bitfields_in_unit,
         );
     }
