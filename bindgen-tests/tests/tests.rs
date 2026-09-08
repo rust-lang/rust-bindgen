@@ -356,12 +356,17 @@ macro_rules! test_header {
     ($function:ident, $header:expr) => {
         #[test]
         fn $function() {
+            let tmpdir = tempfile::tempdir().unwrap();
             let header = PathBuf::from($header);
-            let result = create_bindgen_builder(&header).and_then(|builder| {
-                let check_roundtrip =
-                    env::var_os("BINDGEN_DISABLE_ROUNDTRIP_TEST").is_none();
-                compare_generated_header(&header, builder, check_roundtrip)
-            });
+            let result =
+                create_bindgen_builder(&header).and_then(|mut builder| {
+                    builder.builder = builder
+                        .builder
+                        .clang_macro_fallback_build_dir(tmpdir.path());
+                    let check_roundtrip =
+                        env::var_os("BINDGEN_DISABLE_ROUNDTRIP_TEST").is_none();
+                    compare_generated_header(&header, builder, check_roundtrip)
+                });
 
             if let Err(err) = result {
                 panic!("{err}");
