@@ -4919,19 +4919,25 @@ impl CodeGenerator for Function {
         };
         let ret = utils::fnsig_return_ty(ctx, signature);
 
-        let ident = ctx.rust_ident(ident);
-
         let safety = ctx
             .options()
             .rust_features
             .unsafe_extern_blocks
             .then(|| quote!(unsafe));
 
+        let mark_fn_safe = ctx
+            .options()
+            .safe_functions
+            .matches(ident)
+            .then(|| quote!(safe));
+
+        let ident = ctx.rust_ident(ident);
+
         let tokens = quote! {
             #block_attributes
             #safety extern #abi {
                 #(#attributes)*
-                pub fn #ident ( #( #args ),* ) #ret;
+                pub #mark_fn_safe fn #ident ( #( #args ),* ) #ret;
             }
         };
 

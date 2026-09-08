@@ -471,7 +471,7 @@ impl Builder {
 
 impl BindgenOptions {
     fn build(&mut self) {
-        const REGEX_SETS_LEN: usize = 29;
+        const REGEX_SETS_LEN: usize = 30;
 
         let regex_sets: [_; REGEX_SETS_LEN] = [
             &mut self.blocklisted_types,
@@ -503,6 +503,7 @@ impl BindgenOptions {
             &mut self.no_default_types,
             &mut self.no_hash_types,
             &mut self.must_use_types,
+            &mut self.safe_functions,
         ];
 
         let record_matches = self.record_matches;
@@ -540,6 +541,7 @@ impl BindgenOptions {
                     "--no-default",
                     "--no-hash",
                     "--must-use",
+                    "--safe-functions",
                 ])
                 .chain((0..self.abi_overrides.len()).map(|_| "--override-abi"))
                 .map(Some)
