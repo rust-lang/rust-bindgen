@@ -496,6 +496,9 @@ struct BindgenCommand {
     /// Wrap unsafe operations in unsafe blocks.
     #[arg(long)]
     wrap_unsafe_ops: bool,
+    /// Mark functions matching REGEX as `safe`.
+    #[arg(long, value_name = "REGEX")]
+    safe_functions: Vec<String>,
     /// Enable fallback for clang macro parsing.
     #[arg(long)]
     clang_macro_fallback: bool,
@@ -694,6 +697,7 @@ where
         merge_extern_blocks,
         override_abi,
         wrap_unsafe_ops,
+        safe_functions,
         clang_macro_fallback,
         clang_macro_fallback_build_dir,
         flexarray_dst,
@@ -1000,6 +1004,7 @@ where
             merge_extern_blocks,
             override_abi => |b, (abi, regex)| b.override_abi(abi, regex),
             wrap_unsafe_ops,
+            safe_functions => Builder::safe_function,
             clang_macro_fallback => |b, _| b.clang_macro_fallback(),
             clang_macro_fallback_build_dir,
             flexarray_dst,

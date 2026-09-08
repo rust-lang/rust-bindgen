@@ -2107,6 +2107,19 @@ options! {
         },
         as_args: "--wrap-unsafe-ops",
     },
+    /// Functions that should be marked as `safe`.
+    safe_functions: RegexSet {
+        methods: {
+            regex_option! {
+                /// Mark the matching function as `safe`.
+                pub fn safe_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
+                    self.options.safe_functions.insert(arg);
+                    self
+                }
+            }
+        },
+        as_args: "--safe-functions",
+    },
     /// Use DSTs to represent structures with flexible array members.
     flexarray_dst: bool {
         methods: {
