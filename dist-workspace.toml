@@ -19,6 +19,8 @@ pr-run-mode = "plan"
 install-updater = false
 # Path that installers should place binaries in
 install-path = "CARGO_HOME"
+# Publish jobs to run in CI
+publish-jobs = ["./publish"]
 
 [dist.github-custom-runners]
 global = "ubuntu-22.04"
