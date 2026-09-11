@@ -1,11 +1,13 @@
 //! Intermediate representation of variables.
 
 use super::super::codegen::MacroTypeVariation;
-use super::context::{BindgenContext, TypeId};
+use super::annotations::Annotations;
+use super::context::{BindgenContext, ItemId, TypeId};
 use super::dot::DotAttributes;
 use super::function::cursor_mangling;
 use super::int::IntKind;
 use super::item::Item;
+use super::item_kind::ItemKind as IrItemKind;
 use super::ty::{FloatKind, TypeKind};
 use crate::callbacks::{ItemInfo, ItemKind, MacroParsingBehavior};
 use crate::clang;
@@ -28,6 +30,27 @@ pub(crate) enum VarType {
     Char(u8),
     /// A string, not necessarily well-formed utf-8.
     String(Vec<u8>),
+    /// A pointer represented as an integer constant.
+    Pointer(u64),
+}
+
+/// The value obtained when parsing a macro.
+enum MacroValue {
+    /// A value parsed using `cexpr` or evaluated by Clang as an integer.
+    Expr(cexpr::expr::EvalResult),
+    /// A data pointer value recognized by Clang.
+    Pointer,
+}
+
+/// A pointer-valued macro waiting to have its type materialized.
+#[derive(Debug)]
+pub(crate) struct PendingPointerMacro {
+    /// The item ID reserved at the macro's source position.
+    id: ItemId,
+    /// The macro name.
+    name: String,
+    /// The original macro cursor in the primary translation unit.
+    cursor: clang::Cursor,
 }
 
 /// A `Var` is our intermediate representation of a variable.
@@ -207,10 +230,13 @@ impl ClangSubItemParser for Var {
 
                 let previously_defined = ctx.parsed_macro(&id);
 
-                // NB: It's important to "note" the macro even if the result is
-                // not an integer, otherwise we might loose other kind of
-                // derived macros.
-                ctx.note_parsed_macro(id.clone(), value.clone());
+                // Keep pointer macros unknown to `cexpr`: derived expressions
+                // must still be eligible for Clang fallback evaluation.
+                let cexpr_value = match &value {
+                    MacroValue::Expr(value) => Some(value.clone()),
+                    MacroValue::Pointer => None,
+                };
+                ctx.note_parsed_macro(id.clone(), cexpr_value);
 
                 if previously_defined {
                     let name = String::from_utf8(id).unwrap();
@@ -223,6 +249,18 @@ impl ClangSubItemParser for Var {
                 // enforce utf8 there, so we should have already panicked at
                 // this point.
                 let name = String::from_utf8(id).unwrap();
+                let value =
+                    match value {
+                        MacroValue::Expr(value) => value,
+                        MacroValue::Pointer => {
+                            let id = ctx.next_item_id();
+                            ctx.note_pending_pointer_macro(
+                                PendingPointerMacro { id, name, cursor },
+                            );
+                            return Err(ParseError::Continue);
+                        }
+                    };
+
                 let (type_kind, val) = match value {
                     EvalResult::Invalid => return Err(ParseError::Continue),
                     EvalResult::Float(f) => {
@@ -390,13 +428,18 @@ impl ClangSubItemParser for Var {
 fn parse_macro_clang_fallback(
     ctx: &mut BindgenContext,
     cursor: &clang::Cursor,
-) -> Option<(Vec<u8>, cexpr::expr::EvalResult)> {
+) -> Option<(Vec<u8>, MacroValue)> {
+    use clang_sys::{
+        CXType_FunctionNoProto, CXType_FunctionProto, CXType_Pointer,
+    };
+
     if !ctx.options().clang_macro_fallback {
         return None;
     }
 
     let ftu = ctx.try_ensure_fallback_translation_unit()?;
-    let contents = format!("int main() {{ {}; }}", cursor.spelling());
+    let name = cursor.spelling();
+    let contents = format!("int main() {{ {name}; }}");
     ftu.reparse(&contents).ok()?;
     // Children of root node of AST
     let root_children = ftu.translation_unit().cursor().collect_children();
@@ -413,18 +456,33 @@ fn parse_macro_clang_fallback(
     // First child in all_exprs is the expression utilizing the given macro to be evaluated
     // Should  be ParenExpr
     let paren = paren_exprs.first()?;
+    let canonical_ty = paren.cur_type().canonical_type();
 
-    Some((
-        cursor.spelling().into_bytes(),
-        cexpr::expr::EvalResult::Int(Wrapping(paren.evaluate()?.as_int()?)),
-    ))
+    if canonical_ty.kind() != CXType_Pointer {
+        return Some((
+            name.into_bytes(),
+            MacroValue::Expr(cexpr::expr::EvalResult::Int(Wrapping(
+                paren.evaluate()?.as_int()?,
+            ))),
+        ));
+    }
+
+    let pointee = canonical_ty.pointee_type()?;
+    if matches!(
+        pointee.kind(),
+        CXType_FunctionNoProto | CXType_FunctionProto
+    ) {
+        return None;
+    }
+
+    Some((name.into_bytes(), MacroValue::Pointer))
 }
 
 /// Try and parse a macro using all the macros parsed until now.
 fn parse_macro(
     ctx: &mut BindgenContext,
     cursor: &clang::Cursor,
-) -> Option<(Vec<u8>, cexpr::expr::EvalResult)> {
+) -> Option<(Vec<u8>, MacroValue)> {
     use cexpr::expr;
 
     let mut cexpr_tokens = cursor.cexpr_tokens();
@@ -436,8 +494,102 @@ fn parse_macro(
     let parser = expr::IdentifierParser::new(ctx.parsed_macros());
 
     match parser.macro_definition(&cexpr_tokens) {
-        Ok((_, (id, val))) => Some((id.into(), val)),
-        _ => parse_macro_clang_fallback(ctx, cursor),
+        Ok((_, (id, value))) => Some((id.into(), MacroValue::Expr(value))),
+        Err(_) => parse_macro_clang_fallback(ctx, cursor),
+    }
+}
+
+/// Materialize all pointer macro types from one final fallback translation
+/// unit, which remains valid throughout deferred type resolution.
+pub(crate) fn finish_pending_pointer_macros(ctx: &mut BindgenContext) {
+    use clang_sys::{CXChildVisit_Break, CXChildVisit_Recurse, CXType_Pointer};
+
+    let pending = ctx.take_pending_pointer_macros();
+    if pending.is_empty() {
+        return;
+    }
+
+    let statements = pending
+        .iter()
+        .map(|pointer_macro| {
+            format!("{{ (unsigned long long)({}); }}", pointer_macro.name)
+        })
+        .collect::<Vec<_>>()
+        .join(" ");
+    let contents = format!("int main() {{ {statements} }}");
+    let expressions = {
+        let Some(ftu) = ctx.try_ensure_fallback_translation_unit() else {
+            return;
+        };
+        if ftu.reparse(&contents).is_err() {
+            return;
+        }
+        let root_children = ftu.translation_unit().cursor().collect_children();
+        let Some(main_func) = root_children.last() else {
+            return;
+        };
+        let all_stmts = main_func.collect_children();
+        let Some(macro_stmt) = all_stmts.first() else {
+            return;
+        };
+        macro_stmt
+            .collect_children()
+            .into_iter()
+            .map(|statement| {
+                let value_expression = *statement.collect_children().first()?;
+                let value = value_expression.evaluate()?.as_int()? as u64;
+                let mut pointer_expression = None;
+                value_expression.visit(|child| {
+                    if child.cur_type().canonical_type().kind() ==
+                        CXType_Pointer
+                    {
+                        pointer_expression = Some(child);
+                        CXChildVisit_Break
+                    } else {
+                        CXChildVisit_Recurse
+                    }
+                });
+                Some((pointer_expression?, value))
+            })
+            .collect::<Vec<_>>()
+    };
+    if expressions.len() != pending.len() {
+        return;
+    }
+
+    for (pointer_macro, expression) in pending.into_iter().zip(expressions) {
+        let Some((expression, value)) = expression else {
+            continue;
+        };
+        let Ok(ty) = Item::from_ty(
+            &expression.cur_type().canonical_type(),
+            expression,
+            None,
+            ctx,
+        ) else {
+            continue;
+        };
+        let cursor = pointer_macro.cursor;
+        let var = Var::new(
+            pointer_macro.name,
+            None,
+            None,
+            ty,
+            Some(VarType::Pointer(value)),
+            true,
+        );
+        ctx.add_item(
+            Item::new(
+                pointer_macro.id,
+                cursor.raw_comment(),
+                Annotations::new(&cursor),
+                ctx.root_module().into(),
+                IrItemKind::Var(var),
+                Some(cursor.location()),
+            ),
+            Some(cursor),
+            Some(cursor),
+        );
     }
 }
 
