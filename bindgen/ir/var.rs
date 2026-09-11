@@ -12,6 +12,7 @@ use crate::clang;
 use crate::clang::ClangToken;
 use crate::parse::{ClangSubItemParser, ParseError, ParseResult};
 
+use std::collections::HashMap;
 use std::io;
 use std::num::Wrapping;
 
@@ -149,6 +150,62 @@ fn default_macro_constant_type(ctx: &BindgenContext, value: i64) -> IntKind {
     }
 }
 
+/// Build a map of macro constant names to their Rust type strings by
+/// examining the `parsed_macros` in the context.
+pub(crate) fn build_constant_type_map(
+    ctx: &BindgenContext,
+) -> HashMap<String, String> {
+    let mut map = HashMap::new();
+    for (name_bytes, eval_result) in ctx.parsed_macros() {
+        if let cexpr::expr::EvalResult::Int(Wrapping(value)) = eval_result {
+            let kind = ctx
+                .options()
+                .last_callback(|c| {
+                    let name = String::from_utf8_lossy(name_bytes);
+                    c.int_macro(&name, *value)
+                })
+                .unwrap_or_else(|| default_macro_constant_type(ctx, *value));
+            let type_str = match kind {
+                IntKind::Bool => "bool",
+                IntKind::I8 => "i8",
+                IntKind::U8 => "u8",
+                IntKind::I16 => "i16",
+                IntKind::U16 => "u16",
+                IntKind::I32 => "i32",
+                IntKind::U32 => "u32",
+                IntKind::I64 => "i64",
+                IntKind::U64 => "u64",
+                _ => "i64",
+            };
+            if let Ok(name) = String::from_utf8(name_bytes.clone()) {
+                map.insert(name, type_str.to_owned());
+            }
+        }
+    }
+    map
+}
+
+/// Collect a raw function-like macro definition for deferred translation.
+fn collect_raw_function_macro(
+    ctx: &mut BindgenContext,
+    cursor: &clang::Cursor,
+    tokens: &[ClangToken],
+) {
+    let source_file = {
+        let (file, _, _, _) = cursor.location().location();
+        file.name()
+    };
+    let owned_tokens = tokens
+        .iter()
+        .map(super::func_macro::OwnedToken::from_clang)
+        .collect();
+    ctx.add_raw_function_macro(super::func_macro::RawFunctionMacro {
+        name: cursor.spelling(),
+        tokens: owned_tokens,
+        source_file,
+    });
+}
+
 /// Parses tokens from a `CXCursor_MacroDefinition` pointing into a function-like
 /// macro, and calls the `func_macro` callback.
 fn handle_function_macro(
@@ -192,9 +249,23 @@ impl ClangSubItemParser for Var {
 
                     if cursor.is_macro_function_like() {
                         handle_function_macro(&cursor, callbacks.as_ref());
-                        // We handled the macro, skip macro processing below.
+                        if ctx.options().translate_function_macros {
+                            let tokens: Vec<_> =
+                                cursor.tokens().iter().collect();
+                            collect_raw_function_macro(ctx, &cursor, &tokens);
+                        }
                         return Err(ParseError::Continue);
                     }
+                }
+
+                // If this is a function-like macro and we have no callbacks
+                // (the loop above didn't run), handle it here.
+                if cursor.is_macro_function_like() {
+                    if ctx.options().translate_function_macros {
+                        let tokens: Vec<_> = cursor.tokens().iter().collect();
+                        collect_raw_function_macro(ctx, &cursor, &tokens);
+                    }
+                    return Err(ParseError::Continue);
                 }
 
                 let value = parse_macro(ctx, &cursor);

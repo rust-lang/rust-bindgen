@@ -28,4 +28,5 @@
 - [Using Unions](./using-unions.md)
 - [Using Bitfields](./using-bitfields.md)
 - [Using Flexible Array Members](./using-fam.md)
+- [Translating Function-Like Macros](./function-like-macros.md)
 - [FAQ](./faq.md)
