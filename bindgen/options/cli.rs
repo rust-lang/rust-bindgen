@@ -181,6 +181,9 @@ struct BindgenCommand {
     /// Mark any enum whose name matches REGEX as a set of bitfield flags.
     #[arg(long, value_name = "REGEX")]
     bitfield_enum: Vec<String>,
+    /// Mark any enum whose name matches REGEX as a set of global bitfield flags.
+    #[arg(long, value_name = "REGEX")]
+    bitfield_global_enum: Vec<String>,
     /// Mark any enum whose name matches REGEX as a newtype.
     #[arg(long, value_name = "REGEX")]
     newtype_enum: Vec<String>,
@@ -590,6 +593,7 @@ where
         depfile,
         default_enum_style,
         bitfield_enum,
+        bitfield_global_enum,
         newtype_enum,
         newtype_global_enum,
         rustified_enum,
@@ -902,6 +906,7 @@ where
             rust_edition,
             default_enum_style,
             bitfield_enum,
+            bitfield_global_enum,
             newtype_enum,
             newtype_global_enum,
             rustified_enum,
