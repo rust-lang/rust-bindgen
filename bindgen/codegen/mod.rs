@@ -1025,7 +1025,11 @@ impl CodeGenerator for Type {
                 let is_opaque = item.is_opaque(ctx, &());
                 let inner_rust_type = if is_opaque {
                     outer_params = vec![];
-                    self.to_opaque(ctx, item)
+                    if ctx.options().opaque_type_alias_as_c_void {
+                        helpers::ast_ty::c_void(ctx)
+                    } else {
+                        self.to_opaque(ctx, item)
+                    }
                 } else {
                     // Its possible that we have better layout information than
                     // the inner type does, so fall back to an opaque blob based

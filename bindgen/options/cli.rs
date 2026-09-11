@@ -358,6 +358,9 @@ struct BindgenCommand {
     /// Mark TYPE as opaque.
     #[arg(long, value_name = "TYPE")]
     opaque_type: Vec<String>,
+    /// Emit opaque type aliases as `c_void` instead of a sized byte blob.
+    #[arg(long)]
+    opaque_type_alias_as_c_void: bool,
     ///  Write Rust bindings to OUTPUT.
     #[arg(long, short, value_name = "OUTPUT")]
     output: Option<String>,
@@ -649,6 +652,7 @@ where
         no_include_path_detection,
         fit_macro_constant_types,
         opaque_type,
+        opaque_type_alias_as_c_void,
         output,
         raw_line,
         module_raw_line,
@@ -964,6 +968,7 @@ where
             generate_cstr,
             block_extern_crate,
             opaque_type,
+            opaque_type_alias_as_c_void,
             raw_line,
             use_core => |b, _| b.use_core(),
             distrust_clang_mangling => |b, _| b.trust_clang_mangling(false),
