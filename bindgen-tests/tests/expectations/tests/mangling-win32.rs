@@ -18,9 +18,11 @@ const _: () = {
     ["Alignment of Foo"][::std::mem::align_of::<Foo>() - 1usize];
 };
 unsafe extern "fastcall" {
+    #[link_name = "\u{1}@fast_call_func_no_args@0"]
     pub fn fast_call_func_no_args() -> ::std::os::raw::c_int;
 }
 unsafe extern "fastcall" {
+    #[link_name = "\u{1}@fast_call_func_many_args@12"]
     pub fn fast_call_func_many_args(
         arg1: ::std::os::raw::c_int,
         arg2: ::std::os::raw::c_int,
@@ -28,9 +30,11 @@ unsafe extern "fastcall" {
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "stdcall" {
+    #[link_name = "\u{1}_std_call_func_no_args@0"]
     pub fn std_call_func_no_args() -> ::std::os::raw::c_int;
 }
 unsafe extern "stdcall" {
+    #[link_name = "\u{1}_std_call_func_many_args@12"]
     pub fn std_call_func_many_args(
         arg1: ::std::os::raw::c_int,
         arg2: ::std::os::raw::c_int,

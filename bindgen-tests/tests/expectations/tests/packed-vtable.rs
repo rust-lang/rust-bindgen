@@ -21,6 +21,6 @@ impl Default for PackedVtable {
     }
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN12PackedVtableD1Ev"]
+    #[link_name = "_ZN12PackedVtableD1Ev"]
     pub fn PackedVtable_PackedVtable_destructor(this: *mut PackedVtable);
 }

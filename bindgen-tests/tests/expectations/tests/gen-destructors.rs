@@ -11,7 +11,7 @@ const _: () = {
     ["Offset of field: Foo::bar"][::std::mem::offset_of!(Foo, bar) - 0usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN3FooD1Ev"]
+    #[link_name = "_ZN3FooD1Ev"]
     pub fn Foo_Foo_destructor(this: *mut Foo);
 }
 impl Foo {
