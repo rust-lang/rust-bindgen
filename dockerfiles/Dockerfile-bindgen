@@ -1,0 +1,10 @@
+ARG	LLVM_VERSION=13
+
+FROM clang:${LLVM_VERSION}-ubuntu
+
+RUN	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly
+
+COPY	.	/project
+WORKDIR	/project
+
+CMD	["/root/.cargo/bin/cargo", "test", "-p", "bindgen-tests", "--features", "__testing_only_extra_assertions"]
