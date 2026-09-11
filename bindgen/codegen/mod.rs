@@ -546,6 +546,36 @@ impl Item {
             return false;
         }
 
+        // Skip duplicate type aliases.
+        // If this item is a type alias or resolved ref, and its ultimate target
+        // has the same canonical path and will also be generated, skip this one.
+        if let ItemKind::Type(ty) = self.kind() {
+            match ty.kind() {
+                TypeKind::Alias(target_id) |
+                TypeKind::ResolvedTypeRef(target_id) => {
+                    let direct_target = ctx.resolve_item(*target_id);
+                    // Check if the direct target has the same path and will be generated.
+                    // If so, skip generating this alias/ref because the direct target
+                    // will either be generated or skipped in favour of its target.
+                    if direct_target.id() != self.id() &&
+                        direct_target.canonical_path(ctx) ==
+                            self.canonical_path(ctx) &&
+                        ctx.codegen_items().contains(&direct_target.id())
+                    {
+                        debug!(
+                            "<Item as CodeGenerator>::process_before_codegen: Skipping duplicate alias {:?} because its direct target {:?} has the same path and will be generated",
+                            self.id(),
+                            direct_target.id()
+                        );
+                        // Mark as seen so we don't process it again if reachable through another path
+                        result.set_seen(self.id());
+                        return false;
+                    }
+                }
+                _ => {}
+            }
+        }
+
         if !ctx.codegen_items().contains(&self.id()) {
             // TODO(emilio, #453): Figure out what to do when this happens
             // legitimately, we could track the opaque stuff and disable the
