@@ -11,7 +11,7 @@ pub(crate) mod struct_layout;
 #[cfg(test)]
 #[allow(warnings)]
 pub(crate) mod bitfield_unit;
-#[cfg(all(test, target_endian = "little"))]
+#[cfg(test)]
 mod bitfield_unit_tests;
 
 use self::dyngen::DynamicItems;
