@@ -2199,6 +2199,21 @@ options! {
         },
         as_args: "--wrap-static-fns-path",
     },
+    /// The path of the file where the layout tests are placed.
+    separate_layout_tests_path: Option<PathBuf> {
+        methods: {
+            /// Set the path for the source code file that would be created if any
+            /// layout tests must be generated.
+            ///
+            /// If `None`, layout tests are generated in the same file as the
+            /// bindings.
+            pub fn separate_layout_tests_path<T: AsRef<Path>>(mut self, path: Option<T>) -> Self {
+                self.options.separate_layout_tests_path = path.map(|p| p.as_ref().to_owned());
+                self
+            }
+        },
+        as_args: "--separate-layout-tests-path",
+    },
     /// Default visibility of fields.
     default_visibility: FieldVisibilityKind {
         methods: {

@@ -216,6 +216,19 @@ fn compare_generated_header(
         Err(_) => "/* error generating bindings */\n".into(),
     };
 
+    // Generated layout tests are tested separately, for test cases that
+    // specify that the layout tests should be put in a different file they
+    // create this directory
+    if Path::new("generated/").exists() {
+        match fs::remove_dir_all("generated/") {
+            Ok(_) => (),
+            // Support race conditions when running `cargo test` and another
+            // thread already deleted it
+            Err(e) if e.kind() == ErrorKind::NotFound => (),
+            Err(e) => return Err(e),
+        }
+    }
+
     if actual.is_empty() {
         return Err(Error::new(
             ErrorKind::Other,
@@ -803,58 +816,137 @@ fn commandline_multiple_headers() {
     build_flags_output_helper(&bindings);
 }
 
+fn test_with_extra_generated_file<F>(
+    expect_file: &str,
+    generated_file: Option<&str>,
+    builder_cb: F,
+) where
+    F: Fn(&PathBuf) -> Builder,
+{
+    let expect_path =
+        PathBuf::from("tests/expectations/tests/generated").join(expect_file);
+    println!("In path is ::: {}", expect_path.display());
+
+    let generated_path = PathBuf::from(env::var("OUT_DIR").unwrap())
+        .join(generated_file.unwrap_or(expect_file));
+    println!("Out path is ::: {}", generated_path.display());
+
+    let builder = builder_cb(&generated_path);
+
+    builder.generate().expect("Failed to generate bindings");
+
+    let expected_code = fs::read_to_string(&expect_path)
+        .expect("Could not read generated file");
+
+    let actual_code = match generated_file {
+        Some(_) => fs::read_to_string(generated_path)
+            .expect("Could not read actual file"),
+        None => "Expected to be empty\n".into(),
+    };
+
+    if expected_code != actual_code {
+        error_diff_mismatch(&actual_code, &expected_code, None, &expect_path)
+            .unwrap();
+    }
+}
+
 #[test]
 fn test_wrap_static_fns() {
     // This test is for testing diffs of the generated C source and header files
-    // TODO: If another such feature is added, convert this test into a more generic
-    //      test that looks at `tests/headers/generated` directory.
 
     // aarch64-linux has a bug, remove custom source when it is solved:
     // https://github.com/rust-lang/rust-bindgen/issues/3234
     let wrap_static_fns_c_name =
         if cfg!(all(target_arch = "aarch64", target_os = "linux")) {
-            "wrap_static_fns_aarch64_linux"
+            "wrap_static_fns_aarch64_linux.c"
         } else {
-            "wrap_static_fns"
+            "wrap_static_fns.c"
         };
 
-    let expect_path = PathBuf::from("tests/expectations/tests/generated")
-        .join(wrap_static_fns_c_name);
-    println!("In path is ::: {}", expect_path.display());
+    test_with_extra_generated_file(
+        wrap_static_fns_c_name,
+        Some("wrap_static_fns.c"),
+        |generated_path| {
+            #[allow(unused_mut)]
+            let mut builder = Builder::default()
+                .header("tests/headers/wrap-static-fns.h")
+                .wrap_static_fns(true)
+                .wrap_static_fns_path(generated_path.display().to_string())
+                .parse_callbacks(Box::new(parse_callbacks::WrapAsVariadicFn));
 
-    let generated_path =
-        PathBuf::from(env::var("OUT_DIR").unwrap()).join("wrap_static_fns");
-    println!("Out path is ::: {}", generated_path.display());
+            // aarch64-linux has a bug, remove when it is solved:
+            // https://github.com/rust-lang/rust-bindgen/issues/3234
+            #[cfg(all(target_arch = "aarch64", target_os = "linux"))]
+            {
+                builder = builder.clang_arg("-DDISABLE_VA");
+            }
+            builder
+        },
+    );
+}
 
-    #[allow(unused_mut)]
-    let mut builder = Builder::default()
-        .header("tests/headers/wrap-static-fns.h")
-        .wrap_static_fns(true)
-        .wrap_static_fns_path(generated_path.display().to_string())
-        .parse_callbacks(Box::new(parse_callbacks::WrapAsVariadicFn));
+#[test]
+fn test_cpp_layout_tests() {
+    test_with_extra_generated_file(
+        "namespace_layout_tests.rs",
+        // None - C++ modules shouldn't create separate layout tests
+        None,
+        |generated_path| {
+            Builder::default()
+                .header("tests/headers/namespace.hpp")
+                .enable_cxx_namespaces()
+                .module_raw_line(
+                    "root::whatever",
+                    "pub type whatever_other_thing_t = whatever_int_t;",
+                )
+                .separate_layout_tests_path(Some(generated_path))
+        },
+    );
+}
 
-    // aarch64-linux has a bug, remove when it is solved:
-    // https://github.com/rust-lang/rust-bindgen/issues/3234
-    #[cfg(all(target_arch = "aarch64", target_os = "linux"))]
-    {
-        builder = builder.clang_arg("-DDISABLE_VA");
-    }
+#[test]
+fn test_layout_align_layout_tests() {
+    test_with_extra_generated_file(
+        "layout_align_layout_tests.rs",
+        Some("layout_align_layout_tests.rs"),
+        |generated_path| {
+            Builder::default()
+                .header("tests/headers/layout_align_separate_tests.h")
+                .separate_layout_tests_path(Some(generated_path))
+        },
+    );
+}
 
-    builder.generate().expect("Failed to generate bindings");
+#[test]
+fn test_layout_array_too_long_layout_tests() {
+    test_with_extra_generated_file(
+        "layout_array_too_long_layout_tests.rs",
+        Some("layout_array_too_long_layout_tests.rs"),
+        |generated_path| {
+            Builder::default()
+                .header("tests/headers/layout_array_too_long_separate_tests.h")
+                .derive_hash(true)
+                .derive_partialeq(true)
+                .derive_eq(true)
+                .impl_partialeq(true)
+                .rustified_enum(".*")
+                .separate_layout_tests_path(Some(generated_path))
+        },
+    );
+}
 
-    let expected_c = fs::read_to_string(expect_path.with_extension("c"))
-        .expect("Could not read generated wrap_static_fns.c");
-
-    let actual_c = fs::read_to_string(generated_path.with_extension("c"))
-        .expect("Could not read actual wrap_static_fns.c");
-
-    if expected_c != actual_c {
-        error_diff_mismatch(
-            &actual_c,
-            &expected_c,
-            None,
-            &expect_path.with_extension("c"),
-        )
-        .unwrap();
-    }
+#[test]
+fn test_layout_align_field_layout_tests() {
+    test_with_extra_generated_file(
+        "layout_large_align_field_layout_tests.rs",
+        Some("layout_large_align_field_layout_tests.rs"),
+        |generated_path| {
+            Builder::default()
+                .header(
+                    "tests/headers/layout_large_align_field_separate_tests.h",
+                )
+                .rustified_enum(".*")
+                .separate_layout_tests_path(Some(generated_path))
+        },
+    );
 }
