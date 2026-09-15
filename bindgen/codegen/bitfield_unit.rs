@@ -92,47 +92,16 @@ where
 
     #[inline]
     pub fn get(&self, bit_offset: usize, bit_width: u8) -> u64 {
-        debug_assert!(bit_width <= 64);
-        debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!(
-            (bit_offset + (bit_width as usize) + 7) / 8 <=
-                self.storage.as_ref().len()
-        );
-
-        if bit_width == 0 {
-            return 0;
+        let Self { storage } = self;
+        let storage = storage.as_ref();
+        unsafe {
+            Self::get_bits(
+                storage.as_ptr(),
+                storage.len(),
+                bit_offset,
+                bit_width,
+            )
         }
-
-        let mut val = 0u64;
-        let storage = self.storage.as_ref();
-        let start_byte = bit_offset / 8;
-        let bit_shift = bit_offset % 8;
-        let bytes_needed = (bit_width as usize + bit_shift + 7) / 8;
-
-        if cfg!(target_endian = "big") {
-            for i in 0..bytes_needed {
-                val |=
-                    (storage[start_byte + i].reverse_bits() as u64) << (i * 8);
-            }
-        } else {
-            for i in 0..bytes_needed {
-                val |= (storage[start_byte + i] as u64) << (i * 8);
-            }
-        }
-
-        val >>= bit_shift;
-
-        // Mask to bit_width
-        if bit_width < 64 {
-            val &= (1u64 << bit_width) - 1;
-        }
-
-        if cfg!(target_endian = "big") {
-            // Reverse bits within the field width
-            val = val.reverse_bits() >> (64 - bit_width as usize);
-        }
-
-        val
     }
 
     #[inline]
@@ -141,103 +110,28 @@ where
         bit_offset: usize,
         bit_width: u8,
     ) -> u64 {
-        debug_assert!(bit_width <= 64);
-        debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
-        debug_assert!(
-            (bit_offset + (bit_width as usize) + 7) / 8 <=
-                core::mem::size_of::<Storage>()
-        );
-
-        if bit_width == 0 {
-            return 0;
+        unsafe {
+            Self::get_bits(
+                core::ptr::addr_of!((*this).storage).cast(),
+                core::mem::size_of::<Storage>(),
+                bit_offset,
+                bit_width,
+            )
         }
-
-        let mut val = 0u64;
-        let start_byte = bit_offset / 8;
-        let bit_shift = bit_offset % 8;
-        let bytes_needed = (bit_width as usize + bit_shift + 7) / 8;
-
-        let storage_ptr =
-            unsafe { core::ptr::addr_of!((*this).storage) as *const u8 };
-
-        if cfg!(target_endian = "big") {
-            for i in 0..bytes_needed {
-                let byte = unsafe { *storage_ptr.add(start_byte + i) };
-                val |= (byte.reverse_bits() as u64) << (i * 8);
-            }
-        } else {
-            for i in 0..bytes_needed {
-                let byte = unsafe { *storage_ptr.add(start_byte + i) };
-                val |= (byte as u64) << (i * 8);
-            }
-        }
-
-        val >>= bit_shift;
-
-        if bit_width < 64 {
-            val &= (1u64 << bit_width) - 1;
-        }
-
-        if cfg!(target_endian = "big") {
-            val = val.reverse_bits() >> (64 - bit_width as usize);
-        }
-
-        val
     }
 
     #[inline]
     pub fn set(&mut self, bit_offset: usize, bit_width: u8, val: u64) {
-        debug_assert!(bit_width <= 64);
-        debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!(
-            (bit_offset + (bit_width as usize) + 7) / 8 <=
-                self.storage.as_ref().len()
-        );
-
-        if bit_width == 0 {
-            return;
-        }
-
-        let mut val = val;
-
-        // Mask to bit_width
-        if bit_width < 64 {
-            val &= (1u64 << bit_width) - 1;
-        }
-
-        if cfg!(target_endian = "big") {
-            // Reverse bits to match storage layout
-            val = val.reverse_bits() >> (64 - bit_width as usize);
-        }
-
-        let storage = self.storage.as_mut();
-        let start_byte = bit_offset / 8;
-        let bit_shift = bit_offset % 8;
-        let bytes_needed = (bit_width as usize + bit_shift + 7) / 8;
-
-        // Shift val to align with byte boundary
-        val <<= bit_shift;
-
-        // Create mask for the bits we're writing
-        let field_mask = if bit_width as usize + bit_shift >= 64 {
-            !0u64 << bit_shift
-        } else {
-            ((1u64 << bit_width) - 1) << bit_shift
-        };
-
-        for i in 0..bytes_needed {
-            let byte_val = (val >> (i * 8)) as u8;
-            let byte_mask = (field_mask >> (i * 8)) as u8;
-
-            if cfg!(target_endian = "big") {
-                let byte = storage[start_byte + i].reverse_bits();
-                let new_byte = (byte & !byte_mask) | (byte_val & byte_mask);
-                storage[start_byte + i] = new_byte.reverse_bits();
-            } else {
-                storage[start_byte + i] = (storage[start_byte + i] &
-                    !byte_mask) |
-                    (byte_val & byte_mask);
-            }
+        let Self { storage } = self;
+        let storage = storage.as_mut();
+        unsafe {
+            Self::set_bits(
+                storage.as_mut_ptr(),
+                storage.len(),
+                bit_offset,
+                bit_width,
+                val,
+            );
         }
     }
 
@@ -248,243 +142,180 @@ where
         bit_width: u8,
         val: u64,
     ) {
-        debug_assert!(bit_width <= 64);
-        debug_assert!(bit_offset / 8 < core::mem::size_of::<Storage>());
-        debug_assert!(
-            (bit_offset + (bit_width as usize) + 7) / 8 <=
-                core::mem::size_of::<Storage>()
-        );
-
-        if bit_width == 0 {
-            return;
-        }
-
-        let mut val = val;
-
-        if bit_width < 64 {
-            val &= (1u64 << bit_width) - 1;
-        }
-
-        if cfg!(target_endian = "big") {
-            val = val.reverse_bits() >> (64 - bit_width as usize);
-        }
-
-        let start_byte = bit_offset / 8;
-        let bit_shift = bit_offset % 8;
-        let bytes_needed = (bit_width as usize + bit_shift + 7) / 8;
-
-        val <<= bit_shift;
-
-        let field_mask = if bit_width as usize + bit_shift >= 64 {
-            !0u64 << bit_shift
-        } else {
-            ((1u64 << bit_width) - 1) << bit_shift
-        };
-
-        let storage_ptr =
-            unsafe { core::ptr::addr_of_mut!((*this).storage) as *mut u8 };
-
-        for i in 0..bytes_needed {
-            let byte_val = (val >> (i * 8)) as u8;
-            let byte_mask = (field_mask >> (i * 8)) as u8;
-            let byte_ptr = unsafe { storage_ptr.add(start_byte + i) };
-
-            if cfg!(target_endian = "big") {
-                let byte = unsafe { (*byte_ptr).reverse_bits() };
-                let new_byte = (byte & !byte_mask) | (byte_val & byte_mask);
-                unsafe { *byte_ptr = new_byte.reverse_bits() };
-            } else {
-                unsafe {
-                    *byte_ptr =
-                        (*byte_ptr & !byte_mask) | (byte_val & byte_mask)
-                };
-            }
+        unsafe {
+            Self::set_bits(
+                core::ptr::addr_of_mut!((*this).storage).cast(),
+                core::mem::size_of::<Storage>(),
+                bit_offset,
+                bit_width,
+                val,
+            );
         }
     }
 }
 
-/// Const-generic methods for efficient bitfield access when offset and width
-/// are known at compile time.
+impl<Storage> __BindgenBitfieldUnit<Storage> {
+    // Bounds checks must remain enabled in release builds: the safe accessors
+    // pass slice pointers to the shared raw implementation.
+    #[inline]
+    const fn field_layout(
+        storage_len: usize,
+        bit_offset: usize,
+        bit_width: u8,
+    ) -> (usize, usize, usize) {
+        debug_assert!(bit_width <= 64);
+        let start_byte = bit_offset / 8;
+        let bit_shift = bit_offset % 8;
+        debug_assert!(start_byte < storage_len);
+        let bytes_needed = (bit_width as usize + bit_shift + 7) / 8;
+        assert!(start_byte + bytes_needed <= storage_len);
+        (start_byte, bit_shift, bytes_needed)
+    }
+
+    // The caller must provide initialized storage for the accessed bytes.
+    // Work with byte pointers so raw access never creates a reference to Self
+    // or to storage outside the field.
+    #[inline]
+    const unsafe fn get_bits(
+        storage: *const u8,
+        storage_len: usize,
+        bit_offset: usize,
+        bit_width: u8,
+    ) -> u64 {
+        let (start_byte, bit_shift, bytes_needed) =
+            Self::field_layout(storage_len, bit_offset, bit_width);
+        if bit_width == 0 {
+            return 0;
+        }
+
+        let mut val = 0u64;
+        let mut i = 0;
+        while i < bytes_needed && i < 8 {
+            let byte = unsafe { *storage.add(start_byte + i) };
+            let byte = if cfg!(target_endian = "big") {
+                byte.reverse_bits()
+            } else {
+                byte
+            };
+            val |= (byte as u64) << (i * 8);
+            i += 1;
+        }
+        val >>= bit_shift;
+
+        // An unaligned field can span nine bytes. Its final byte must be
+        // shifted into the result after making room for it in the first word.
+        if bytes_needed == 9 {
+            let byte = unsafe { *storage.add(start_byte + 8) };
+            let byte = if cfg!(target_endian = "big") {
+                byte.reverse_bits()
+            } else {
+                byte
+            };
+            val |= (byte as u64) << (64 - bit_shift);
+        }
+
+        if bit_width < 64 {
+            val &= (1u64 << bit_width) - 1;
+        }
+        if cfg!(target_endian = "big") {
+            val = val.reverse_bits() >> (64 - bit_width as usize);
+        }
+        val
+    }
+
+    // The caller must provide writable, initialized storage for the accessed
+    // bytes. Bits outside the field are preserved.
+    #[inline]
+    unsafe fn set_bits(
+        storage: *mut u8,
+        storage_len: usize,
+        bit_offset: usize,
+        bit_width: u8,
+        mut val: u64,
+    ) {
+        let (start_byte, bit_shift, bytes_needed) =
+            Self::field_layout(storage_len, bit_offset, bit_width);
+        if bit_width == 0 {
+            return;
+        }
+
+        // A full, byte-aligned field needs no read-modify-write. Store it
+        // directly so byte-loop vectorization cannot obscure the word store.
+        if bit_width == 64 && bit_shift == 0 {
+            unsafe {
+                storage.add(start_byte).cast::<u64>().write_unaligned(val)
+            };
+            return;
+        }
+
+        let field_mask = if bit_width == 64 {
+            !0u64
+        } else {
+            (1u64 << bit_width) - 1
+        };
+        val &= field_mask;
+        if cfg!(target_endian = "big") {
+            val = val.reverse_bits() >> (64 - bit_width as usize);
+        }
+
+        // Save the bits belonging to the ninth byte before shifting the
+        // value and mask into the first word.
+        if bytes_needed == 9 {
+            let shift = 64 - bit_shift;
+            unsafe {
+                Self::set_byte(
+                    storage.add(start_byte + 8),
+                    (val >> shift) as u8,
+                    (field_mask >> shift) as u8,
+                );
+            }
+        }
+        let val = val << bit_shift;
+        let field_mask = field_mask << bit_shift;
+        for i in 0..bytes_needed.min(8) {
+            unsafe {
+                Self::set_byte(
+                    storage.add(start_byte + i),
+                    (val >> (i * 8)) as u8,
+                    (field_mask >> (i * 8)) as u8,
+                );
+            }
+        }
+    }
+
+    #[inline]
+    unsafe fn set_byte(byte: *mut u8, val: u8, mask: u8) {
+        let (val, mask) = if cfg!(target_endian = "big") {
+            (val.reverse_bits(), mask.reverse_bits())
+        } else {
+            (val, mask)
+        };
+        unsafe { *byte = (*byte & !mask) | (val & mask) };
+    }
+}
+
+/// Const-generic methods for bitfield access when offset and width are known
+/// at compile time. Inlining exposes these constants to the shared implementation.
 impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
     /// Get a field using const generics for compile-time optimization.
-    /// Uses native word size operations when the field fits in usize.
     #[inline]
     pub const fn get_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(
         &self,
     ) -> u64 {
-        debug_assert!(BIT_WIDTH <= 64);
-        debug_assert!(BIT_OFFSET / 8 < N);
-        debug_assert!((BIT_OFFSET + (BIT_WIDTH as usize) + 7) / 8 <= N);
-
-        if BIT_WIDTH == 0 {
-            return 0;
-        }
-
-        let start_byte = BIT_OFFSET / 8;
-        let bit_shift = BIT_OFFSET % 8;
-        let bytes_needed = (BIT_WIDTH as usize + bit_shift + 7) / 8;
-
-        // Use usize for fields that fit, u64 only when necessary.
-        // The compiler eliminates the unused branch since BIT_WIDTH is const.
-        if BIT_WIDTH as usize + bit_shift <= usize::BITS as usize {
-            let mut val = 0usize;
-
-            if cfg!(target_endian = "big") {
-                let mut i = 0;
-                while i < bytes_needed {
-                    val |= (self.storage[start_byte + i].reverse_bits()
-                        as usize) <<
-                        (i * 8);
-                    i += 1;
-                }
-            } else {
-                let mut i = 0;
-                while i < bytes_needed {
-                    val |= (self.storage[start_byte + i] as usize) << (i * 8);
-                    i += 1;
-                }
-            }
-
-            val >>= bit_shift;
-            if (BIT_WIDTH as u32) < usize::BITS {
-                val &= (1usize << BIT_WIDTH) - 1;
-            }
-
-            if cfg!(target_endian = "big") {
-                val = val.reverse_bits() >>
-                    (usize::BITS as usize - BIT_WIDTH as usize);
-            }
-
-            val as u64
-        } else {
-            let mut val = 0u64;
-
-            if cfg!(target_endian = "big") {
-                let mut i = 0;
-                while i < bytes_needed {
-                    val |= (self.storage[start_byte + i].reverse_bits() as u64) <<
-                        (i * 8);
-                    i += 1;
-                }
-            } else {
-                let mut i = 0;
-                while i < bytes_needed {
-                    val |= (self.storage[start_byte + i] as u64) << (i * 8);
-                    i += 1;
-                }
-            }
-
-            val >>= bit_shift;
-
-            if BIT_WIDTH < 64 {
-                val &= (1u64 << BIT_WIDTH) - 1;
-            }
-
-            if cfg!(target_endian = "big") {
-                val = val.reverse_bits() >> (64 - BIT_WIDTH as usize);
-            }
-
-            val
-        }
+        let Self { storage } = self;
+        unsafe { Self::get_bits(storage.as_ptr(), N, BIT_OFFSET, BIT_WIDTH) }
     }
 
     /// Set a field using const generics for compile-time optimization.
-    /// Uses native word size operations when the field fits in usize.
     #[inline]
     pub fn set_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(
         &mut self,
         val: u64,
     ) {
-        debug_assert!(BIT_WIDTH <= 64);
-        debug_assert!(BIT_OFFSET / 8 < N);
-        debug_assert!((BIT_OFFSET + (BIT_WIDTH as usize) + 7) / 8 <= N);
-
-        if BIT_WIDTH == 0 {
-            return;
-        }
-
-        let start_byte = BIT_OFFSET / 8;
-        let bit_shift = BIT_OFFSET % 8;
-        let bytes_needed = (BIT_WIDTH as usize + bit_shift + 7) / 8;
-
-        // Use usize for fields that fit, u64 only when necessary.
-        // The compiler eliminates the unused branch since BIT_WIDTH is const.
-        if BIT_WIDTH as usize + bit_shift <= usize::BITS as usize {
-            let mut val = val as usize;
-            if (BIT_WIDTH as u32) < usize::BITS {
-                val &= (1usize << BIT_WIDTH) - 1;
-            }
-
-            if cfg!(target_endian = "big") {
-                val = val.reverse_bits() >>
-                    (usize::BITS as usize - BIT_WIDTH as usize);
-            }
-
-            val <<= bit_shift;
-
-            let field_mask =
-                if BIT_WIDTH as usize + bit_shift >= usize::BITS as usize {
-                    !0usize << bit_shift
-                } else {
-                    ((1usize << BIT_WIDTH) - 1) << bit_shift
-                };
-
-            let mut i = 0;
-            while i < bytes_needed {
-                let byte_val = (val >> (i * 8)) as u8;
-                let byte_mask = (field_mask >> (i * 8)) as u8;
-
-                if cfg!(target_endian = "big") {
-                    let byte = self.storage[start_byte + i].reverse_bits();
-                    let new_byte = (byte & !byte_mask) | (byte_val & byte_mask);
-                    self.storage[start_byte + i] = new_byte.reverse_bits();
-                } else {
-                    self.storage[start_byte + i] =
-                        (self.storage[start_byte + i] & !byte_mask) |
-                            (byte_val & byte_mask);
-                }
-                i += 1;
-            }
-        } else {
-            let mut val = val;
-
-            if BIT_WIDTH < 64 {
-                val &= (1u64 << BIT_WIDTH) - 1;
-            }
-
-            if cfg!(target_endian = "big") {
-                val = val.reverse_bits() >> (64 - BIT_WIDTH as usize);
-            }
-
-            val <<= bit_shift;
-
-            let field_mask = if BIT_WIDTH as usize + bit_shift >= 64 {
-                !0u64 << bit_shift
-            } else {
-                ((1u64 << BIT_WIDTH) - 1) << bit_shift
-            };
-
-            let mut i = 0;
-            while i < bytes_needed {
-                let byte_val = (val >> (i * 8)) as u8;
-                let byte_mask = (field_mask >> (i * 8)) as u8;
-
-                if cfg!(target_endian = "big") {
-                    let byte = self.storage[start_byte + i].reverse_bits();
-                    let new_byte = (byte & !byte_mask) | (byte_val & byte_mask);
-                    self.storage[start_byte + i] = new_byte.reverse_bits();
-                } else {
-                    self.storage[start_byte + i] =
-                        (self.storage[start_byte + i] & !byte_mask) |
-                            (byte_val & byte_mask);
-                }
-                i += 1;
-            }
-        }
+        self.set(BIT_OFFSET, BIT_WIDTH, val);
     }
 
     /// Raw pointer get using const generics for compile-time optimization.
-    /// Uses native word size operations when the field fits in usize.
     #[inline]
     pub const unsafe fn raw_get_const<
         const BIT_OFFSET: usize,
@@ -492,87 +323,17 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
     >(
         this: *const Self,
     ) -> u64 {
-        debug_assert!(BIT_WIDTH <= 64);
-        debug_assert!(BIT_OFFSET / 8 < N);
-        debug_assert!((BIT_OFFSET + (BIT_WIDTH as usize) + 7) / 8 <= N);
-
-        if BIT_WIDTH == 0 {
-            return 0;
-        }
-
-        let start_byte = BIT_OFFSET / 8;
-        let bit_shift = BIT_OFFSET % 8;
-        let bytes_needed = (BIT_WIDTH as usize + bit_shift + 7) / 8;
-
-        let storage_ptr =
-            unsafe { core::ptr::addr_of!((*this).storage) as *const u8 };
-
-        // Use usize for fields that fit, u64 only when necessary.
-        if BIT_WIDTH as usize + bit_shift <= usize::BITS as usize {
-            let mut val = 0usize;
-
-            if cfg!(target_endian = "big") {
-                let mut i = 0;
-                while i < bytes_needed {
-                    let byte = unsafe { *storage_ptr.add(start_byte + i) };
-                    val |= (byte.reverse_bits() as usize) << (i * 8);
-                    i += 1;
-                }
-            } else {
-                let mut i = 0;
-                while i < bytes_needed {
-                    let byte = unsafe { *storage_ptr.add(start_byte + i) };
-                    val |= (byte as usize) << (i * 8);
-                    i += 1;
-                }
-            }
-
-            val >>= bit_shift;
-            if (BIT_WIDTH as u32) < usize::BITS {
-                val &= (1usize << BIT_WIDTH) - 1;
-            }
-
-            if cfg!(target_endian = "big") {
-                val = val.reverse_bits() >>
-                    (usize::BITS as usize - BIT_WIDTH as usize);
-            }
-
-            val as u64
-        } else {
-            let mut val = 0u64;
-
-            if cfg!(target_endian = "big") {
-                let mut i = 0;
-                while i < bytes_needed {
-                    let byte = unsafe { *storage_ptr.add(start_byte + i) };
-                    val |= (byte.reverse_bits() as u64) << (i * 8);
-                    i += 1;
-                }
-            } else {
-                let mut i = 0;
-                while i < bytes_needed {
-                    let byte = unsafe { *storage_ptr.add(start_byte + i) };
-                    val |= (byte as u64) << (i * 8);
-                    i += 1;
-                }
-            }
-
-            val >>= bit_shift;
-
-            if BIT_WIDTH < 64 {
-                val &= (1u64 << BIT_WIDTH) - 1;
-            }
-
-            if cfg!(target_endian = "big") {
-                val = val.reverse_bits() >> (64 - BIT_WIDTH as usize);
-            }
-
-            val
+        unsafe {
+            Self::get_bits(
+                core::ptr::addr_of!((*this).storage).cast(),
+                N,
+                BIT_OFFSET,
+                BIT_WIDTH,
+            )
         }
     }
 
     /// Raw pointer set using const generics for compile-time optimization.
-    /// Uses native word size operations when the field fits in usize.
     #[inline]
     pub unsafe fn raw_set_const<
         const BIT_OFFSET: usize,
@@ -581,97 +342,6 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
         this: *mut Self,
         val: u64,
     ) {
-        debug_assert!(BIT_WIDTH <= 64);
-        debug_assert!(BIT_OFFSET / 8 < N);
-        debug_assert!((BIT_OFFSET + (BIT_WIDTH as usize) + 7) / 8 <= N);
-
-        if BIT_WIDTH == 0 {
-            return;
-        }
-
-        let start_byte = BIT_OFFSET / 8;
-        let bit_shift = BIT_OFFSET % 8;
-        let bytes_needed = (BIT_WIDTH as usize + bit_shift + 7) / 8;
-
-        // Cast through pointer types instead of using addr_of_mut! for const compatibility
-        let storage_ptr = this.cast::<[u8; N]>().cast::<u8>();
-
-        // Use usize for fields that fit, u64 only when necessary.
-        if BIT_WIDTH as usize + bit_shift <= usize::BITS as usize {
-            let mut val = val as usize;
-            if (BIT_WIDTH as u32) < usize::BITS {
-                val &= (1usize << BIT_WIDTH) - 1;
-            }
-
-            if cfg!(target_endian = "big") {
-                val = val.reverse_bits() >>
-                    (usize::BITS as usize - BIT_WIDTH as usize);
-            }
-
-            val <<= bit_shift;
-
-            let field_mask =
-                if BIT_WIDTH as usize + bit_shift >= usize::BITS as usize {
-                    !0usize << bit_shift
-                } else {
-                    ((1usize << BIT_WIDTH) - 1) << bit_shift
-                };
-
-            let mut i = 0;
-            while i < bytes_needed {
-                let byte_val = (val >> (i * 8)) as u8;
-                let byte_mask = (field_mask >> (i * 8)) as u8;
-                let byte_ptr = unsafe { storage_ptr.add(start_byte + i) };
-
-                if cfg!(target_endian = "big") {
-                    let byte = unsafe { (*byte_ptr).reverse_bits() };
-                    let new_byte = (byte & !byte_mask) | (byte_val & byte_mask);
-                    unsafe { *byte_ptr = new_byte.reverse_bits() };
-                } else {
-                    unsafe {
-                        *byte_ptr =
-                            (*byte_ptr & !byte_mask) | (byte_val & byte_mask)
-                    };
-                }
-                i += 1;
-            }
-        } else {
-            let mut val = val;
-
-            if BIT_WIDTH < 64 {
-                val &= (1u64 << BIT_WIDTH) - 1;
-            }
-
-            if cfg!(target_endian = "big") {
-                val = val.reverse_bits() >> (64 - BIT_WIDTH as usize);
-            }
-
-            val <<= bit_shift;
-
-            let field_mask = if BIT_WIDTH as usize + bit_shift >= 64 {
-                !0u64 << bit_shift
-            } else {
-                ((1u64 << BIT_WIDTH) - 1) << bit_shift
-            };
-
-            let mut i = 0;
-            while i < bytes_needed {
-                let byte_val = (val >> (i * 8)) as u8;
-                let byte_mask = (field_mask >> (i * 8)) as u8;
-                let byte_ptr = unsafe { storage_ptr.add(start_byte + i) };
-
-                if cfg!(target_endian = "big") {
-                    let byte = unsafe { (*byte_ptr).reverse_bits() };
-                    let new_byte = (byte & !byte_mask) | (byte_val & byte_mask);
-                    unsafe { *byte_ptr = new_byte.reverse_bits() };
-                } else {
-                    unsafe {
-                        *byte_ptr =
-                            (*byte_ptr & !byte_mask) | (byte_val & byte_mask)
-                    };
-                }
-                i += 1;
-            }
-        }
+        unsafe { Self::raw_set(this, BIT_OFFSET, BIT_WIDTH, val) };
     }
 }
