@@ -103,7 +103,8 @@ where
             return 0;
         }
 
-        let mut val = 0u64;
+        // The byte window can span up to 71 bits even for a 64-bit field.
+        let mut val = 0u128;
         let storage = self.storage.as_ref();
         let start_byte = bit_offset / 8;
         let bit_shift = bit_offset % 8;
@@ -112,11 +113,11 @@ where
         if cfg!(target_endian = "big") {
             for i in 0..bytes_needed {
                 val |=
-                    (storage[start_byte + i].reverse_bits() as u64) << (i * 8);
+                    (storage[start_byte + i].reverse_bits() as u128) << (i * 8);
             }
         } else {
             for i in 0..bytes_needed {
-                val |= (storage[start_byte + i] as u64) << (i * 8);
+                val |= (storage[start_byte + i] as u128) << (i * 8);
             }
         }
 
@@ -124,15 +125,15 @@ where
 
         // Mask to bit_width
         if bit_width < 64 {
-            val &= (1u64 << bit_width) - 1;
+            val &= (1u128 << bit_width) - 1;
         }
 
         if cfg!(target_endian = "big") {
             // Reverse bits within the field width
-            val = val.reverse_bits() >> (64 - bit_width as usize);
+            val = val.reverse_bits() >> (128 - bit_width as usize);
         }
 
-        val
+        val as u64
     }
 
     #[inline]
@@ -152,7 +153,7 @@ where
             return 0;
         }
 
-        let mut val = 0u64;
+        let mut val = 0u128;
         let start_byte = bit_offset / 8;
         let bit_shift = bit_offset % 8;
         let bytes_needed = (bit_width as usize + bit_shift + 7) / 8;
@@ -163,26 +164,26 @@ where
         if cfg!(target_endian = "big") {
             for i in 0..bytes_needed {
                 let byte = unsafe { *storage_ptr.add(start_byte + i) };
-                val |= (byte.reverse_bits() as u64) << (i * 8);
+                val |= (byte.reverse_bits() as u128) << (i * 8);
             }
         } else {
             for i in 0..bytes_needed {
                 let byte = unsafe { *storage_ptr.add(start_byte + i) };
-                val |= (byte as u64) << (i * 8);
+                val |= (byte as u128) << (i * 8);
             }
         }
 
         val >>= bit_shift;
 
         if bit_width < 64 {
-            val &= (1u64 << bit_width) - 1;
+            val &= (1u128 << bit_width) - 1;
         }
 
         if cfg!(target_endian = "big") {
-            val = val.reverse_bits() >> (64 - bit_width as usize);
+            val = val.reverse_bits() >> (128 - bit_width as usize);
         }
 
-        val
+        val as u64
     }
 
     #[inline]
@@ -198,16 +199,16 @@ where
             return;
         }
 
-        let mut val = val;
+        let mut val = val as u128;
 
         // Mask to bit_width
         if bit_width < 64 {
-            val &= (1u64 << bit_width) - 1;
+            val &= (1u128 << bit_width) - 1;
         }
 
         if cfg!(target_endian = "big") {
             // Reverse bits to match storage layout
-            val = val.reverse_bits() >> (64 - bit_width as usize);
+            val = val.reverse_bits() >> (128 - bit_width as usize);
         }
 
         let storage = self.storage.as_mut();
@@ -219,11 +220,7 @@ where
         val <<= bit_shift;
 
         // Create mask for the bits we're writing
-        let field_mask = if bit_width as usize + bit_shift >= 64 {
-            !0u64 << bit_shift
-        } else {
-            ((1u64 << bit_width) - 1) << bit_shift
-        };
+        let field_mask = ((1u128 << bit_width) - 1) << bit_shift;
 
         for i in 0..bytes_needed {
             let byte_val = (val >> (i * 8)) as u8;
@@ -259,14 +256,14 @@ where
             return;
         }
 
-        let mut val = val;
+        let mut val = val as u128;
 
         if bit_width < 64 {
-            val &= (1u64 << bit_width) - 1;
+            val &= (1u128 << bit_width) - 1;
         }
 
         if cfg!(target_endian = "big") {
-            val = val.reverse_bits() >> (64 - bit_width as usize);
+            val = val.reverse_bits() >> (128 - bit_width as usize);
         }
 
         let start_byte = bit_offset / 8;
@@ -275,11 +272,7 @@ where
 
         val <<= bit_shift;
 
-        let field_mask = if bit_width as usize + bit_shift >= 64 {
-            !0u64 << bit_shift
-        } else {
-            ((1u64 << bit_width) - 1) << bit_shift
-        };
+        let field_mask = ((1u128 << bit_width) - 1) << bit_shift;
 
         let storage_ptr =
             unsafe { core::ptr::addr_of_mut!((*this).storage) as *mut u8 };
@@ -357,19 +350,20 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
 
             val as u64
         } else {
-            let mut val = 0u64;
+            let mut val = 0u128;
 
             if cfg!(target_endian = "big") {
                 let mut i = 0;
                 while i < bytes_needed {
-                    val |= (self.storage[start_byte + i].reverse_bits() as u64) <<
+                    val |= (self.storage[start_byte + i].reverse_bits()
+                        as u128) <<
                         (i * 8);
                     i += 1;
                 }
             } else {
                 let mut i = 0;
                 while i < bytes_needed {
-                    val |= (self.storage[start_byte + i] as u64) << (i * 8);
+                    val |= (self.storage[start_byte + i] as u128) << (i * 8);
                     i += 1;
                 }
             }
@@ -377,14 +371,14 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
             val >>= bit_shift;
 
             if BIT_WIDTH < 64 {
-                val &= (1u64 << BIT_WIDTH) - 1;
+                val &= (1u128 << BIT_WIDTH) - 1;
             }
 
             if cfg!(target_endian = "big") {
-                val = val.reverse_bits() >> (64 - BIT_WIDTH as usize);
+                val = val.reverse_bits() >> (128 - BIT_WIDTH as usize);
             }
 
-            val
+            val as u64
         }
     }
 
@@ -446,23 +440,19 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
                 i += 1;
             }
         } else {
-            let mut val = val;
+            let mut val = val as u128;
 
             if BIT_WIDTH < 64 {
-                val &= (1u64 << BIT_WIDTH) - 1;
+                val &= (1u128 << BIT_WIDTH) - 1;
             }
 
             if cfg!(target_endian = "big") {
-                val = val.reverse_bits() >> (64 - BIT_WIDTH as usize);
+                val = val.reverse_bits() >> (128 - BIT_WIDTH as usize);
             }
 
             val <<= bit_shift;
 
-            let field_mask = if BIT_WIDTH as usize + bit_shift >= 64 {
-                !0u64 << bit_shift
-            } else {
-                ((1u64 << BIT_WIDTH) - 1) << bit_shift
-            };
+            let field_mask = ((1u128 << BIT_WIDTH) - 1) << bit_shift;
 
             let mut i = 0;
             while i < bytes_needed {
@@ -539,20 +529,20 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
 
             val as u64
         } else {
-            let mut val = 0u64;
+            let mut val = 0u128;
 
             if cfg!(target_endian = "big") {
                 let mut i = 0;
                 while i < bytes_needed {
                     let byte = unsafe { *storage_ptr.add(start_byte + i) };
-                    val |= (byte.reverse_bits() as u64) << (i * 8);
+                    val |= (byte.reverse_bits() as u128) << (i * 8);
                     i += 1;
                 }
             } else {
                 let mut i = 0;
                 while i < bytes_needed {
                     let byte = unsafe { *storage_ptr.add(start_byte + i) };
-                    val |= (byte as u64) << (i * 8);
+                    val |= (byte as u128) << (i * 8);
                     i += 1;
                 }
             }
@@ -560,14 +550,14 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
             val >>= bit_shift;
 
             if BIT_WIDTH < 64 {
-                val &= (1u64 << BIT_WIDTH) - 1;
+                val &= (1u128 << BIT_WIDTH) - 1;
             }
 
             if cfg!(target_endian = "big") {
-                val = val.reverse_bits() >> (64 - BIT_WIDTH as usize);
+                val = val.reverse_bits() >> (128 - BIT_WIDTH as usize);
             }
 
-            val
+            val as u64
         }
     }
 
@@ -636,23 +626,19 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
                 i += 1;
             }
         } else {
-            let mut val = val;
+            let mut val = val as u128;
 
             if BIT_WIDTH < 64 {
-                val &= (1u64 << BIT_WIDTH) - 1;
+                val &= (1u128 << BIT_WIDTH) - 1;
             }
 
             if cfg!(target_endian = "big") {
-                val = val.reverse_bits() >> (64 - BIT_WIDTH as usize);
+                val = val.reverse_bits() >> (128 - BIT_WIDTH as usize);
             }
 
             val <<= bit_shift;
 
-            let field_mask = if BIT_WIDTH as usize + bit_shift >= 64 {
-                !0u64 << bit_shift
-            } else {
-                ((1u64 << BIT_WIDTH) - 1) << bit_shift
-            };
+            let field_mask = ((1u128 << BIT_WIDTH) - 1) << bit_shift;
 
             let mut i = 0;
             while i < bytes_needed {
