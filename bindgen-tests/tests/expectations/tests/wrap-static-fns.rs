@@ -1,4 +1,10 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
+#[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
+#[repr(C)]
+pub struct __BindgenComplex<T> {
+    pub re: T,
+    pub im: T,
+}
 unsafe extern "C" {
     #[link_name = "foo__extern"]
     pub fn foo() -> ::std::os::raw::c_int;
@@ -10,6 +16,14 @@ unsafe extern "C" {
 unsafe extern "C" {
     #[link_name = "takes_ptr__extern"]
     pub fn takes_ptr(arg: *mut ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    #[link_name = "takes_float_complex__extern"]
+    pub fn takes_float_complex(arg: __BindgenComplex<f32>) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    #[link_name = "takes_double_complex__extern"]
+    pub fn takes_double_complex(arg: __BindgenComplex<f64>) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
     #[link_name = "takes_fn_ptr__extern"]

@@ -5,6 +5,8 @@
 int foo__extern(void) { return foo(); }
 int bar__extern(void) { return bar(); }
 int takes_ptr__extern(int *arg) { return takes_ptr(arg); }
+int takes_float_complex__extern(float _Complex arg) { return takes_float_complex(arg); }
+int takes_double_complex__extern(double _Complex arg) { return takes_double_complex(arg); }
 int takes_fn_ptr__extern(int (*f) (int)) { return takes_fn_ptr(f); }
 int takes_fn__extern(int (f) (int)) { return takes_fn(f); }
 int takes_alias__extern(func f) { return takes_alias(f); }
