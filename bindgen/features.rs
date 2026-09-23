@@ -319,6 +319,9 @@ define_rust_targets! {
         ptr_metadata: #81513,
         layout_for_ptr: #69835,
     },
+    Stable_1_83(83) => {
+        const_mut_refs: #129195,
+    },
     Stable_1_82(82) => {
         unsafe_extern_blocks: #127921,
     },
