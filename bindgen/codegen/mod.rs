@@ -944,8 +944,11 @@ impl CodeGenerator for Type {
                     return;
                 }
 
-                let inner_item =
-                    inner.into_resolver().through_type_refs().resolve(ctx);
+                let inner_item = inner
+                    .into_resolver()
+                    .through_type_refs()
+                    .through_type_aliases()
+                    .resolve(ctx);
                 let name = item.canonical_name(ctx);
 
                 let inner_rust_type = {
