@@ -5601,6 +5601,14 @@ pub(crate) mod utils {
     ) {
         let prefix = ctx.trait_prefix();
 
+        // If the target supports &mut types in const contexts,
+        // declare eligible functions as `const`.
+        let maybe_const = if ctx.options().rust_features().const_mut_refs {
+            quote! { const }
+        } else {
+            quote! {}
+        };
+
         // TODO(emilio): The fmt::Debug impl could be way nicer with
         // std::intrinsics::type_name, but...
         let union_field_decl = quote! {
@@ -5623,7 +5631,7 @@ pub(crate) mod utils {
                 }
 
                 #[inline]
-                pub const unsafe fn as_mut(&mut self) -> &mut T {
+                pub #maybe_const unsafe fn as_mut(&mut self) -> &mut T {
                     #transmute
                 }
             }
