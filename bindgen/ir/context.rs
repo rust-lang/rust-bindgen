@@ -2260,24 +2260,11 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let mut looking_for_name = false;
         let mut attribute_depth = 0;
         for token in cursor.tokens().iter() {
-            let spelling = token.spelling();
-            if looking_for_name {
+            match token.spelling() {
                 // Skip C++ attributes before the namespace name or `{`.
-                match spelling {
-                    b"[" => {
-                        attribute_depth += 1;
-                        continue;
-                    }
-                    b"]" if attribute_depth > 0 => {
-                        attribute_depth -= 1;
-                        continue;
-                    }
-                    _ if attribute_depth > 0 => continue,
-                    _ => {}
-                }
-            }
-
-            match spelling {
+                b"[" if looking_for_name => attribute_depth += 1,
+                b"]" if attribute_depth > 0 => attribute_depth -= 1,
+                _ if attribute_depth > 0 => {}
                 b"inline" => {
                     debug_assert!(
                         kind != ModuleKind::Inline,
