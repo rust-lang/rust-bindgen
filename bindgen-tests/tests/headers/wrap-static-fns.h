@@ -22,6 +22,14 @@ static inline int takes_ptr(int* arg) {
     return *arg + 1;
 }
 
+static inline int takes_float_complex(float _Complex arg) {
+    return (int)__real__(arg);
+}
+
+static inline int takes_double_complex(double _Complex arg) {
+    return (int)__real__(arg);
+}
+
 static inline int takes_fn_ptr(int (*f)(int)) {
     return f(1);
 }
