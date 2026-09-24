@@ -543,6 +543,10 @@ struct BindgenCommand {
     /// inline` functions.
     #[arg(long, value_name = "SUFFIX")]
     wrap_static_fns_suffix: Option<String>,
+    /// Sets the PATH for the source file that must be created for layout tests;
+    /// otherwise, tests will be in the same file as the bindings.
+    #[arg(long, value_name = "PATH")]
+    separate_layout_tests_path: Option<PathBuf>,
     /// Set the default VISIBILITY of fields, including bitfields and accessor methods for
     /// bitfields. This flag is ignored if the `--respect-cxx-access-specs` flag is used.
     #[arg(long, value_name = "VISIBILITY")]
@@ -712,6 +716,7 @@ where
         wrap_static_fns,
         wrap_static_fns_path,
         wrap_static_fns_suffix,
+        separate_layout_tests_path,
         default_visibility,
         generate_deleted_functions,
         generate_pure_virtual_functions,
@@ -1011,6 +1016,7 @@ where
             wrap_static_fns,
             wrap_static_fns_path,
             wrap_static_fns_suffix,
+            separate_layout_tests_path => |b, p| b.separate_layout_tests_path(Some(p)),
             default_visibility,
             generate_deleted_functions,
             generate_pure_virtual_functions,

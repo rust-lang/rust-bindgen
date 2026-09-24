@@ -976,7 +976,7 @@ impl Bindings {
             writer.write_all(NL.as_bytes())?;
         }
 
-        match self.format_tokens(&self.module) {
+        match Self::format_tokens(&self.options, &self.module) {
             Ok(formatted_bindings) => {
                 writer.write_all(formatted_bindings.as_bytes())?;
             }
@@ -991,9 +991,9 @@ impl Bindings {
     }
 
     /// Gets the rustfmt path to rustfmt the generated bindings.
-    fn rustfmt_path(&self) -> Cow<'_, Path> {
-        debug_assert!(matches!(self.options.formatter, Formatter::Rustfmt));
-        if let Some(ref p) = self.options.rustfmt_path {
+    fn rustfmt_path(options: &BindgenOptions) -> Cow<'_, Path> {
+        debug_assert!(matches!(options.formatter, Formatter::Rustfmt));
+        if let Some(ref p) = options.rustfmt_path {
             Cow::Borrowed(p)
         } else if let Ok(rustfmt) = env::var("RUSTFMT") {
             Cow::Owned(rustfmt.into())
@@ -1005,14 +1005,14 @@ impl Bindings {
     }
 
     /// Formats a token stream with the formatter set up in `BindgenOptions`.
-    fn format_tokens(
-        &self,
+    pub(crate) fn format_tokens(
+        options: &BindgenOptions,
         tokens: &proc_macro2::TokenStream,
     ) -> io::Result<String> {
         let _t = time::Timer::new("rustfmt_generated_string")
-            .with_output(self.options.time_phases);
+            .with_output(options.time_phases);
 
-        match self.options.formatter {
+        match options.formatter {
             Formatter::None => return Ok(tokens.to_string()),
             #[cfg(feature = "prettyplease")]
             Formatter::Prettyplease => {
@@ -1021,13 +1021,12 @@ impl Bindings {
             Formatter::Rustfmt => (),
         }
 
-        let rustfmt = self.rustfmt_path();
+        let rustfmt = Self::rustfmt_path(options);
         let mut cmd = Command::new(&*rustfmt);
 
         cmd.stdin(Stdio::piped()).stdout(Stdio::piped());
 
-        if let Some(path) = self
-            .options
+        if let Some(path) = options
             .rustfmt_configuration_file
             .as_ref()
             .and_then(|f| f.to_str())
@@ -1035,10 +1034,9 @@ impl Bindings {
             cmd.args(["--config-path", path]);
         }
 
-        let edition = self
-            .options
+        let edition = options
             .rust_edition
-            .unwrap_or_else(|| self.options.rust_target.latest_edition());
+            .unwrap_or_else(|| options.rust_target.latest_edition());
         cmd.args(["--edition", &format!("{edition}")]);
 
         let mut child = cmd.spawn()?;
@@ -1074,7 +1072,7 @@ impl Bindings {
                 Some(3) => {
                     rustfmt_non_fatal_error_diagnostic(
                         "Rustfmt could not format some lines",
-                        &self.options,
+                        options,
                     );
                     Ok(bindings)
                 }
