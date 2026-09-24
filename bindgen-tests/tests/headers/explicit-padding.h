@@ -15,3 +15,8 @@ union dont_pad_me {
         uint32_t second;
         uint16_t third;
 };
+
+struct also_pad_me {
+        uint16_t first;
+        uint8_t bits: 1;
+};
