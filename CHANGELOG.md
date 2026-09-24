@@ -285,6 +285,8 @@
 - Allow renaming struct and union fields (#3358).
 - Add a `libcpp` feature to link `libclang` against `libc++` (#3375).
 - Prebuilt binaries for aarch64 Linux (#3217).
+- Add option in CLI to use rustified repr-C enums (`--rustified-repr-c-enum`,
+  #3265).
 ## Changed
 - Guarantee opaque type layout across all architectures (#3280).
 - Use `NonNull` for C++ references (#3292).
