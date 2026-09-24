@@ -11,7 +11,7 @@ const _: () = {
 };
 unsafe extern "C" {
     /// Calling this should use `mem::unintialized()` and not `MaybeUninit()` as only rust 1.36 includes that.
-    #[link_name = "\u{1}_ZN12TestOverloadC1Ei"]
+    #[link_name = "_ZN12TestOverloadC1Ei"]
     pub fn TestOverload_TestOverload(
         this: *mut TestOverload,
         arg1: ::std::os::raw::c_int,
@@ -19,7 +19,7 @@ unsafe extern "C" {
 }
 unsafe extern "C" {
     /// Calling this should use `mem::unintialized()` and not `MaybeUninit()` as only rust 1.36 includes that.
-    #[link_name = "\u{1}_ZN12TestOverloadC1Ed"]
+    #[link_name = "_ZN12TestOverloadC1Ed"]
     pub fn TestOverload_TestOverload1(this: *mut TestOverload, arg1: f64);
 }
 impl TestOverload {
@@ -49,7 +49,7 @@ const _: () = {
     ][::std::mem::align_of::<TestPublicNoArgs>() - 1usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN16TestPublicNoArgsC1Ev"]
+    #[link_name = "_ZN16TestPublicNoArgsC1Ev"]
     pub fn TestPublicNoArgs_TestPublicNoArgs(this: *mut TestPublicNoArgs);
 }
 impl TestPublicNoArgs {

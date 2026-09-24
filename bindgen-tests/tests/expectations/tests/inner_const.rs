@@ -5,11 +5,11 @@ pub struct Foo {
     pub bar: ::std::os::raw::c_int,
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN3Foo3BOOE"]
+    #[link_name = "_ZN3Foo3BOOE"]
     pub static mut Foo_BOO: ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN3Foo8whateverE"]
+    #[link_name = "_ZN3Foo8whateverE"]
     pub static mut Foo_whatever: Foo;
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]

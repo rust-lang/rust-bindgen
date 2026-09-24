@@ -41,11 +41,11 @@ const _: () = {
     ["Alignment of Opaque"][::std::mem::align_of::<Opaque>() - 1usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN6Opaque17eleven_out_of_tenEv"]
+    #[link_name = "_ZN6Opaque17eleven_out_of_tenEv"]
     pub fn Opaque_eleven_out_of_ten(this: *mut Opaque) -> SuchWow;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN6OpaqueC1E6Pupper"]
+    #[link_name = "_ZN6OpaqueC1E6Pupper"]
     pub fn Opaque_Opaque(this: *mut Opaque, pup: Pupper);
 }
 impl Opaque {
@@ -61,7 +61,7 @@ impl Opaque {
     }
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN6Opaque11MAJESTIC_AFE"]
+    #[link_name = "_ZN6Opaque11MAJESTIC_AFE"]
     pub static mut Opaque_MAJESTIC_AF: Doggo;
 }
 #[repr(C)]

@@ -22,19 +22,19 @@ const _: () = {
     ["Offset of field: C::other_ptr"][::std::mem::offset_of!(C, other_ptr) - 64usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN1C6methodEi"]
+    #[link_name = "_ZN1C6methodEi"]
     pub fn C_method(this: *mut C, c: C_MyInt);
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN1C9methodRefERi"]
+    #[link_name = "_ZN1C9methodRefERi"]
     pub fn C_methodRef(this: *mut C, c: *mut C_MyInt);
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN1C16complexMethodRefERPKc"]
+    #[link_name = "_ZN1C16complexMethodRefERPKc"]
     pub fn C_complexMethodRef(this: *mut C, c: *mut C_Lookup);
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN1C13anotherMethodEi"]
+    #[link_name = "_ZN1C13anotherMethodEi"]
     pub fn C_anotherMethod(this: *mut C, c: AnotherInt);
 }
 impl Default for C {
