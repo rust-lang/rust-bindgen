@@ -1,11 +1,14 @@
 # This is triggered after the Release workflow successfully completes its run
 name: Publish on crates.io
 on:
-  workflow_run:
-    workflows:
-      - Release
-    types:
-      - completed
+  workflow_call:
+    # dist exposes the plan from the plan step, as a JSON string,
+    # to your job if it needs it
+    inputs:
+      plan:
+        required: true
+        type: string
+
 env:
   CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 jobs:
