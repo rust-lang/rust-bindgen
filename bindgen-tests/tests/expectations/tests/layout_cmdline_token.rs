@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-/** Stores a pointer to the ops struct, and the offset: the place to
- write the parsed result in the destination structure.*/
+/// Stores a pointer to the ops struct, and the offset: the place to
+/// write the parsed result in the destination structure.
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cmdline_token_hdr {
@@ -29,26 +29,26 @@ impl Default for cmdline_token_hdr {
         }
     }
 }
-/** Stores a pointer to the ops struct, and the offset: the place to
- write the parsed result in the destination structure.*/
+/// Stores a pointer to the ops struct, and the offset: the place to
+/// write the parsed result in the destination structure.
 pub type cmdline_parse_token_hdr_t = cmdline_token_hdr;
-/** A token is defined by this structure.
-
- parse() takes the token as first argument, then the source buffer
- starting at the token we want to parse. The 3rd arg is a pointer
- where we store the parsed data (as binary). It returns the number of
- parsed chars on success and a negative value on error.
-
- complete_get_nb() returns the number of possible values for this
- token if completion is possible. If it is NULL or if it returns 0,
- no completion is possible.
-
- complete_get_elt() copy in dstbuf (the size is specified in the
- parameter) the i-th possible completion for this token.  returns 0
- on success or and a negative value on error.
-
- get_help() fills the dstbuf with the help for the token. It returns
- -1 on error and 0 on success.*/
+/// A token is defined by this structure.
+///
+/// parse() takes the token as first argument, then the source buffer
+/// starting at the token we want to parse. The 3rd arg is a pointer
+/// where we store the parsed data (as binary). It returns the number of
+/// parsed chars on success and a negative value on error.
+///
+/// complete_get_nb() returns the number of possible values for this
+/// token if completion is possible. If it is NULL or if it returns 0,
+/// no completion is possible.
+///
+/// complete_get_elt() copy in dstbuf (the size is specified in the
+/// parameter) the i-th possible completion for this token.  returns 0
+/// on success or and a negative value on error.
+///
+/// get_help() fills the dstbuf with the help for the token. It returns
+/// -1 on error and 0 on success.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct cmdline_token_ops {
