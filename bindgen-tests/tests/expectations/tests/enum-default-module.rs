@@ -56,3 +56,24 @@ pub mod Debug {
     pub const Debug1: Type = 0;
     pub const Debug2: Type = 1;
 }
+pub mod should_be_u8 {
+    #[allow(unused_imports)]
+    use super::*;
+    pub type Type = u8;
+    pub const FirstU8: Type = 0;
+    pub const SecondU8: Type = 1;
+}
+pub mod should_be_u16 {
+    #[allow(unused_imports)]
+    use super::*;
+    pub type Type = u16;
+    pub const FirstU16: Type = 0;
+    pub const SecondU16: Type = 1;
+}
+pub mod should_be_i32 {
+    #[allow(unused_imports)]
+    use super::*;
+    pub type Type = i32;
+    pub const FirstI32: Type = 0;
+    pub const SecondI32: Type = 1;
+}
