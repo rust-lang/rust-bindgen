@@ -807,6 +807,7 @@ impl CodeGenerator for Var {
                 }
                 VarType::Float(f) => helpers::ast_ty::float_expr(f).ok(),
                 VarType::Char(c) => Some(c.to_token_stream()),
+                VarType::Pointer(val) => Some(quote! { #val as usize as #ty }),
             };
 
             if let Some(mut val) = const_expr {
