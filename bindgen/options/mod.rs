@@ -479,6 +479,22 @@ options! {
         },
         as_args: "--bitfield-enum",
     },
+    /// `enum`s marked as bitfield-like. This is, global newtypes with bitwise operations.
+    bitfield_global_enums: RegexSet {
+        methods: {
+            regex_option! {
+                /// Mark the given `enum` as being bitfield-like.
+                ///
+                /// This is similar to the [`Builder::newtype_global_enum`] style, but with the bitwise
+                /// operators implemented.
+                pub fn bitfield_global_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+                    self.options.bitfield_global_enums.insert(arg);
+                    self
+                }
+            }
+        },
+        as_args: "--bitfield-global-enum",
+    },
     /// `enum`s marked as newtypes.
     newtype_enums: RegexSet {
         methods: {
