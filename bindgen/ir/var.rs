@@ -97,6 +97,13 @@ impl Var {
     pub fn link_name(&self) -> Option<&str> {
         self.link_name.as_deref()
     }
+
+    /// Overwrite this variable's type and value, e.g. when a macro that
+    /// backs it has been redefined to a new value.
+    fn set_val(&mut self, ty: TypeId, val: Option<VarType>) {
+        self.ty = ty;
+        self.val = val;
+    }
 }
 
 impl DotAttributes for Var {
@@ -212,12 +219,6 @@ impl ClangSubItemParser for Var {
                 // derived macros.
                 ctx.note_parsed_macro(id.clone(), value.clone());
 
-                if previously_defined {
-                    let name = String::from_utf8(id).unwrap();
-                    duplicated_macro_diagnostic(&name, cursor.location(), ctx);
-                    return Err(ParseError::Continue);
-                }
-
                 // NOTE: Unwrapping, here and above, is safe, because the
                 // identifier of a token comes straight from clang, and we
                 // enforce utf8 there, so we should have already panicked at
@@ -263,6 +264,28 @@ impl ClangSubItemParser for Var {
                 };
 
                 let ty = Item::builtin_type(type_kind, true, ctx);
+
+                if previously_defined {
+                    let existing_id = ctx.items().find_map(|(id, item)| {
+                        let var = item.kind().as_var()?;
+                        (var.name() == name).then_some(id)
+                    });
+
+                    if let Some(existing_id) = existing_id {
+                        duplicated_macro_diagnostic(
+                            &name,
+                            cursor.location(),
+                            ctx,
+                        );
+                        if let Some(existing_var) = ctx
+                            .resolve_item_mut(existing_id)
+                            .and_then(|item| item.kind_mut().as_var_mut())
+                        {
+                            existing_var.set_val(ty, Some(val));
+                        }
+                        return Ok(ParseResult::AlreadyResolved(existing_id));
+                    }
+                }
 
                 Ok(ParseResult::New(
                     Var::new(name, None, None, ty, Some(val), true),
@@ -481,7 +504,7 @@ fn duplicated_macro_diagnostic(
     _location: clang::SourceLocation,
     _ctx: &BindgenContext,
 ) {
-    warn!("Duplicated macro definition: {macro_name}");
+    warn!("Macro '{macro_name}' redefined; using the latest definition");
 
     #[cfg(feature = "experimental")]
     // FIXME (pvdrz & amanjeev): This diagnostic message shows way too often to be actually
