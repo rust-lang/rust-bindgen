@@ -1184,6 +1184,24 @@ options! {
             }
         },
     },
+    /// The set of raw lines to be prepended to every module of the generated Rust code.
+    every_module_raw_lines: Vec<Box<str>> {
+        methods: {
+            /// Add a line of Rust code at the beginning of each module (i.e.
+            /// C++ namespace) in the generated code. The string is
+            /// passed through without any modification.
+            pub fn every_module_raw_line<T: Into<String>>(mut self, arg: T) -> Self {
+                self.options.every_module_raw_lines.push(arg.into().into_boxed_str());
+                self
+            }
+        },
+        as_args: |every_module_raw_lines, args| {
+            for line in every_module_raw_lines {
+                args.push("--every-module-raw-line".to_owned());
+                args.push(line.clone().into());
+            }
+        },
+    },
     /// The set of raw lines to prepend to different modules.
     module_lines: HashMap<Box<str>, Vec<Box<str>>> {
         methods: {
