@@ -720,6 +720,11 @@ fn rust_to_clang_target(rust_target: &str) -> Box<str> {
         triple[2] = "elf";
     }
 
+    // Windows gnullvm
+    if triple[3] == "gnullvm" {
+        triple[3] = "gnu";
+    }
+
     triple
         .iter()
         .skip(1)
@@ -1413,6 +1418,18 @@ fn test_rust_to_clang_target_espidf() {
     assert_eq!(
         rust_to_clang_target("xtensa-esp32-espidf").as_ref(),
         "xtensa-esp32-elf"
+    );
+}
+
+#[test]
+fn test_rust_to_clang_target_gnullvm() {
+    assert_eq!(
+        rust_to_clang_target("x86_64-pc-windows-gnullvm").as_ref(),
+        "x86_64-pc-windows-gnu"
+    );
+    assert_eq!(
+        rust_to_clang_target("aarch64-pc-windows-gnullvm").as_ref(),
+        "aarch64-pc-windows-gnu"
     );
 }
 
