@@ -557,7 +557,7 @@ important fix) you can skip this.
 Once you're in `main`. Remember to install `doctoc` by running:
 
 ```sh
-npm install doctoc
+npm ci
 ```
 
 And then run:
