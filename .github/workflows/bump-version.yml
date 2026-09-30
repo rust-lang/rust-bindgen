@@ -41,7 +41,7 @@ jobs:
         uses: actions/setup-node@v4
 
       - name: Install doctoc
-        run: npm install doctoc
+        run: npm ci
 
       - name: Bump version 
         run: |

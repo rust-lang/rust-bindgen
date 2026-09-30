@@ -21,5 +21,3 @@ csmith-fuzzing/platform.info
 
 # node.js files
 node_modules
-package-lock.json
-package.json
