@@ -1217,6 +1217,18 @@ impl Type {
                         ctx,
                     );
                 }
+                // TODO(emilio): Replace by `CXType_PredefinedSugar` once clang-sys exposes it.
+                // Also, it seems we could move this to the builtin handling (it only deals with
+                // (s)size_t/ptrdiff_t) right now, but we'd need to propagate that more thoroughly.
+                182 => {
+                    return Self::from_clang_ty(
+                        potential_id,
+                        &canonical_ty,
+                        location,
+                        parent_id,
+                        ctx,
+                    );
+                }
                 CXType_ObjCId => TypeKind::ObjCId,
                 CXType_ObjCSel => TypeKind::ObjCSel,
                 CXType_ObjCClass | CXType_ObjCInterface => {
