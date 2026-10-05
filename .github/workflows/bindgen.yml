@@ -105,6 +105,7 @@ jobs:
   test:
     runs-on: ${{matrix.platform.os}}
     strategy:
+      fail-fast: false
       matrix:
         platform:
           - os: ubuntu-latest
