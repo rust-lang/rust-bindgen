@@ -16,6 +16,6 @@ pub struct Bar {
     pub _address: u8,
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z5Test2v"]
+    #[link_name = "_Z5Test2v"]
     pub fn Test2() -> ::std::os::raw::c_uint;
 }

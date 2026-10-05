@@ -21,7 +21,7 @@ impl<T> Default for Foo_InnerType<T> {
 }
 pub type Bar = InnerType;
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z4funcv"]
+    #[link_name = "_Z4funcv"]
     pub fn func() -> Bar;
 }
 #[repr(C)]

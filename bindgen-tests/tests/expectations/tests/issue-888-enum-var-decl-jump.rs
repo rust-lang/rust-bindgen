@@ -12,7 +12,7 @@ pub mod root {
             pub _address: u8,
         }
         unsafe extern "C" {
-            #[link_name = "\u{1}_ZN6Halide4Type1bE"]
+            #[link_name = "_ZN6Halide4Type1bE"]
             pub static mut Type_b: root::a;
         }
         #[allow(clippy::unnecessary_operation, clippy::identity_op)]

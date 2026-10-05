@@ -12,7 +12,7 @@ pub mod root {
     }
     pub use self::super::root::ns::AB as AB;
     unsafe extern "C" {
-        #[link_name = "\u{1}_ZL2kA"]
+        #[link_name = "_ZL2kA"]
         pub static kA: root::AB;
     }
 }

@@ -10,7 +10,7 @@ const _: () = {
     ["Alignment of SomeClass"][::std::mem::align_of::<SomeClass>() - 1usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN9SomeClassaSERKS_"]
+    #[link_name = "_ZN9SomeClassaSERKS_"]
     pub fn SomeClass_operatorequals(
         this: *mut SomeClass,
         another: *const SomeClass,

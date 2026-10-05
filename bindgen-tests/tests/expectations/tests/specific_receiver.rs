@@ -23,6 +23,6 @@ impl Default for Fish {
     }
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN4Fish4swimEv"]
+    #[link_name = "_ZN4Fish4swimEv"]
     pub fn Fish_swim(this: *mut Fish);
 }
