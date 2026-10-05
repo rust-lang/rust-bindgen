@@ -307,10 +307,10 @@ const _: () = {
 pub struct Templated {
     pub m_untemplated: Untemplated,
 }
-/** If the replacement doesn't happen at the parse level the container would be
- copy and the replacement wouldn't, so this wouldn't compile.
-
- <div rustbindgen replaces="ReplacedWithoutDestructor"></div>*/
+/// If the replacement doesn't happen at the parse level the container would be
+/// copy and the replacement wouldn't, so this wouldn't compile.
+///
+/// <div rustbindgen replaces="ReplacedWithoutDestructor"></div>
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct ReplacedWithoutDestructor<T> {
@@ -356,10 +356,10 @@ impl<U> Default for ShouldNotBeCopiableAsWell<U> {
         }
     }
 }
-/** If the replacement doesn't happen at the parse level the container would be
- copy and the replacement wouldn't, so this wouldn't compile.
-
- <div rustbindgen replaces="ReplacedWithoutDestructorFwd"></div>*/
+/// If the replacement doesn't happen at the parse level the container would be
+/// copy and the replacement wouldn't, so this wouldn't compile.
+///
+/// <div rustbindgen replaces="ReplacedWithoutDestructorFwd"></div>
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct ReplacedWithoutDestructorFwd<T> {

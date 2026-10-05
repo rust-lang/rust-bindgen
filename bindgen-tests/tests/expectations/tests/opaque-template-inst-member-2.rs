@@ -1,6 +1,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-/** This is like `opaque-template-inst-member.hpp` except exercising the cases
- where we are OK to derive Debug/Hash/PartialEq.*/
+/// This is like `opaque-template-inst-member.hpp` except exercising the cases
+/// where we are OK to derive Debug/Hash/PartialEq.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct OpaqueTemplate {

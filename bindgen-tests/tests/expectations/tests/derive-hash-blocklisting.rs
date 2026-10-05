@@ -5,8 +5,8 @@ pub struct Blocklisted<T> {
     t: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-/** This would derive(Hash, Eq, PartialEq) if it didn't contain a blocklisted type,
- causing us to conservatively avoid deriving hash/Eq/PartialEq for it.*/
+/// This would derive(Hash, Eq, PartialEq) if it didn't contain a blocklisted type,
+/// causing us to conservatively avoid deriving hash/Eq/PartialEq for it.
 #[repr(C)]
 pub struct AllowlistedOne {
     pub a: Blocklisted<::std::os::raw::c_int>,
