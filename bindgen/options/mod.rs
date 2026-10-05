@@ -447,7 +447,11 @@ options! {
             /// To set the style for individual `enum`s, use [`Builder::bitfield_enum`],
             /// [`Builder::newtype_enum`], [`Builder::newtype_global_enum`],
             /// [`Builder::rustified_enum`], [`Builder::rustified_non_exhaustive_enum`],
-            /// [`Builder::constified_enum_module`] or [`Builder::constified_enum`].
+            /// [`Builder::rustified_repr_c_enum`], [`Builder::constified_enum_module`],
+            /// or [`Builder::constified_enum`].
+            ///
+            /// The `repr(C)` rustified styles share the layout caveats described in
+            /// [`Builder::rustified_repr_c_enum`].
             pub fn default_enum_style(
                 mut self,
                 arg: EnumVariation,
@@ -553,6 +557,27 @@ options! {
             }
         },
         as_args: "--rustified-non-exhaustive-enum",
+    },
+    /// `enum`s marked as `repr(C)` Rust `enum`s.
+    rustified_repr_c_enums: RegexSet {
+        methods: {
+            regex_option! {
+                /// Mark the given `enum` as a `repr(C)` Rust `enum`.
+                ///
+                /// This is similar to the [`Builder::rustified_enum`] style, but the `enum` is
+                /// tagged with the `#[repr(C)]` attribute, as required for cross-language CFI.
+                ///
+                /// **Use this with caution**, Rust's `#[repr(C)]` does not match the layout of
+                /// every C/C++ `enum`, e.g. ones using `-fshort-enums`, an explicit underlying
+                /// type, or values outside the `c_int` range. A mismatch makes the `enum` and
+                /// any type containing it ABI-incompatible.
+                pub fn rustified_repr_c_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+                    self.options.rustified_repr_c_enums.insert(arg);
+                    self
+                }
+            }
+        },
+        as_args: "--rustified-repr-c-enum",
     },
     /// `enum`s marked as modules of constants.
     constified_enum_modules: RegexSet {
