@@ -23,3 +23,21 @@ csmith-fuzzing/platform.info
 node_modules
 package-lock.json
 package.json
+
+# Common IDE settings and temporary files
+*.swp
+*.swo
+Session.vim
+.cproject
+.idea
+*.iml
+.vscode
+.project
+.vim/
+.helix/
+.zed/
+.favorites.json
+.settings/
+.vs/
+.dir-locals.el
+
