@@ -29,3 +29,18 @@ enum Debug {
     Debug1,
     Debug2,
 };
+
+enum should_be_u8 {
+    FirstU8,
+    SecondU8,
+};
+
+enum should_be_u16 {
+    FirstU16,
+    SecondU16,
+};
+
+enum should_be_i32 {
+    FirstI32,
+    SecondI32,
+};
