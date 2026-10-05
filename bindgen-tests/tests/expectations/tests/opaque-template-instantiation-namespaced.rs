@@ -86,16 +86,16 @@ pub mod root {
                 "Offset of field: ContainsOpaqueInstantiation::opaque",
             ][::std::mem::offset_of!(ContainsOpaqueInstantiation, opaque) - 0usize];
         };
+        #[allow(clippy::unnecessary_operation, clippy::identity_op)]
+        const _: () = {
+            [
+                "Size of template specialization: Template_open0_Foo_close0",
+            ][::std::mem::size_of::<root::zoidberg::Template<root::zoidberg::Foo>>()
+                - 1usize];
+            [
+                "Align of template specialization: Template_open0_Foo_close0",
+            ][::std::mem::align_of::<root::zoidberg::Template<root::zoidberg::Foo>>()
+                - 1usize];
+        };
     }
-    #[allow(clippy::unnecessary_operation, clippy::identity_op)]
-    const _: () = {
-        [
-            "Size of template specialization: Template_open0_Foo_close0",
-        ][::std::mem::size_of::<root::zoidberg::Template<root::zoidberg::Foo>>()
-            - 1usize];
-        [
-            "Align of template specialization: Template_open0_Foo_close0",
-        ][::std::mem::align_of::<root::zoidberg::Template<root::zoidberg::Foo>>()
-            - 1usize];
-    };
 }
