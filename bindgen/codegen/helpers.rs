@@ -219,6 +219,8 @@ pub(crate) mod ast_ty {
             IntKind::U32 => syn::parse_quote! { u32 },
             IntKind::I64 => syn::parse_quote! { i64 },
             IntKind::U64 => syn::parse_quote! { u64 },
+            IntKind::Isize => syn::parse_quote! { isize },
+            IntKind::Usize => syn::parse_quote! { usize },
             IntKind::Custom { name, .. } => {
                 syn::parse_str(name).expect("Invalid integer type.")
             }
