@@ -57,7 +57,7 @@ impl Var {
         val: Option<VarType>,
         is_const: bool,
     ) -> Var {
-        assert!(!name.is_empty());
+        assert_ne!("", name);
         Var {
             name,
             mangled_name,
