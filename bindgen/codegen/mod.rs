@@ -5992,7 +5992,7 @@ pub(crate) mod utils {
                     format!("arg{unnamed_arguments}")
                 };
 
-                assert!(!arg_name.is_empty());
+                assert_ne!("", arg_name);
                 let arg_name = ctx.rust_ident(arg_name);
 
                 quote! {
@@ -6035,7 +6035,7 @@ pub(crate) mod utils {
                     format!("arg{unnamed_arguments}")
                 };
 
-                assert!(!arg_name.is_empty());
+                assert_ne!("", arg_name);
                 let arg_name = ctx.rust_ident(arg_name);
 
                 quote! {
