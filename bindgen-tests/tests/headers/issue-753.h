@@ -1,4 +1,4 @@
-// bindgen-flags: --clang-macro-fallback
+// bindgen-flags: --clang-macro-fallback .*
 
 #ifndef ISSUE_753_H
 #define ISSUE_753_H
