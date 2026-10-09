@@ -2255,17 +2255,19 @@ options! {
         },
         as_args: "--emit-diagnostics",
     },
-    /// Whether to use Clang evaluation on temporary files as a fallback for macros that fail to
-    /// parse.
-    clang_macro_fallback: bool {
+    /// Which macrsos for which to use Clang evaluation on temporary files as a
+    /// fallback for macros that fail to parse.
+    clang_macro_fallback: RegexSet {
         methods: {
-            /// Use Clang as a fallback for macros that fail to parse using `CExpr`.
-            ///
-            /// This uses a workaround to evaluate each macro in a temporary file. Because this
-            /// results in slower compilation, this option is opt-in.
-            pub fn clang_macro_fallback(mut self) -> Self {
-                self.options.clang_macro_fallback = true;
-                self
+            regex_option! {
+                /// Use Clang as a fallback for macros matching that fail to parse using `CExpr`.
+                ///
+                /// This uses a workaround to evaluate each macro in a temporary file. Because this
+                /// results in slower compilation, this option is opt-in.
+                pub fn clang_macro_fallback<T: AsRef<str>>(mut self, arg: T) -> Builder {
+                    self.options.clang_macro_fallback.insert(arg);
+                    self
+                }
             }
         },
         as_args: "--clang-macro-fallback",
