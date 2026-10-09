@@ -391,7 +391,11 @@ fn parse_macro_clang_fallback(
     ctx: &mut BindgenContext,
     cursor: &clang::Cursor,
 ) -> Option<(Vec<u8>, cexpr::expr::EvalResult)> {
-    if !ctx.options().clang_macro_fallback {
+    if !ctx
+        .options()
+        .clang_macro_fallback
+        .matches(cursor.spelling())
+    {
         return None;
     }
 
