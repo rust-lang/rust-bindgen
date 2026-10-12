@@ -790,7 +790,7 @@ impl Cursor {
                     // `attr.name` and` attr.token_kind` are checked against unexposed attributes only.
                     if attr.kind == Some(kind) ||
                         (kind == CXCursor_UnexposedAttr &&
-                            cur.tokens().iter().any(|t| {
+                            cur.first_token().is_some_and(|t| {
                                 t.kind == attr.token_kind &&
                                     t.spelling() == attr.name
                             }))
@@ -960,7 +960,19 @@ impl Cursor {
 
     /// Gets the tokens that correspond to that cursor.
     pub(crate) fn tokens(&self) -> RawTokens<'_> {
-        RawTokens::new(self)
+        RawTokens::new(self, self.extent())
+    }
+
+    /// Gets the first token of this cursor.
+    ///
+    /// Unlike `tokens()`, this also works for cursors that come from a macro
+    /// expansion. The extent of those starts inside the macro definition but
+    /// ends at the expansion site, so tokenizing it yields everything in
+    /// between, or nothing at all if the macro is defined in another file.
+    pub(crate) fn first_token(&self) -> Option<ClangToken> {
+        let start = unsafe { clang_getRangeStart(self.extent()) };
+        let range = unsafe { clang_getRange(start, start) };
+        RawTokens::new(self, range).iter().next()
     }
 
     /// Gets the tokens that correspond to that cursor as  `cexpr` tokens.
@@ -998,10 +1010,9 @@ pub(crate) struct RawTokens<'a> {
 }
 
 impl<'a> RawTokens<'a> {
-    fn new(cursor: &'a Cursor) -> Self {
+    fn new(cursor: &'a Cursor, range: CXSourceRange) -> Self {
         let mut tokens = ptr::null_mut();
         let mut token_count = 0;
-        let range = cursor.extent();
         let tu = unsafe { clang_Cursor_getTranslationUnit(cursor.x) };
         unsafe { clang_tokenize(tu, range, &mut tokens, &mut token_count) };
         Self {
