@@ -822,8 +822,7 @@ fn test_wrap_static_fns() {
         .join(wrap_static_fns_c_name);
     println!("In path is ::: {}", expect_path.display());
 
-    let generated_path =
-        PathBuf::from(env::var("OUT_DIR").unwrap()).join("wrap_static_fns");
+    let generated_path = PathBuf::from(env!("OUT_DIR")).join("wrap_static_fns");
     println!("Out path is ::: {}", generated_path.display());
 
     #[allow(unused_mut)]
