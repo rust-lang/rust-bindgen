@@ -323,10 +323,17 @@ struct CodegenResult<'a> {
     /// List of items to serialize. With optionally the argument for the wrap as
     /// variadic transformation to be applied.
     items_to_serialize: Vec<(ItemId, Option<WrapAsVariadic>)>,
+
+    /// Whether layout test items should be tracked separately
+    separate_layout_tests: bool,
+
+    /// Items to add to layout tests, only used when `separate_layout_tests` is
+    /// true.
+    layout_test_items: Vec<proc_macro2::TokenStream>,
 }
 
 impl<'a> CodegenResult<'a> {
-    fn new(codegen_id: &'a Cell<usize>) -> Self {
+    fn new(codegen_id: &'a Cell<usize>, separate_layout_tests: bool) -> Self {
         CodegenResult {
             items: vec![],
             dynamic_items: DynamicItems::new(),
@@ -341,6 +348,8 @@ impl<'a> CodegenResult<'a> {
             vars_seen: Default::default(),
             overload_counters: Default::default(),
             items_to_serialize: Default::default(),
+            separate_layout_tests,
+            layout_test_items: Default::default(),
         }
     }
 
@@ -402,11 +411,15 @@ impl<'a> CodegenResult<'a> {
         self.vars_seen.insert(name.into());
     }
 
+    /// For inner module codegen, layout tests are included in the same file,
+    /// so that we don't need to deal with resolving the type names in those
+    /// tests. Supporting separate layout tests for CPP modules is left for a
+    /// future improvement.
     fn inner<F>(&mut self, cb: F) -> Vec<proc_macro2::TokenStream>
     where
         F: FnOnce(&mut Self),
     {
-        let mut new = Self::new(self.codegen_id);
+        let mut new = Self::new(self.codegen_id, false);
 
         cb(&mut new);
 
@@ -416,7 +429,21 @@ impl<'a> CodegenResult<'a> {
         self.saw_bitfield_unit |= new.saw_bitfield_unit;
         self.saw_bindgen_union |= new.saw_bindgen_union;
 
+        assert!(
+            new.layout_test_items.is_empty(),
+            "Layout tests are in the main items"
+        );
+
         new.items
+    }
+
+    /// Add a new layout test, either to `self.items` or `self.layout_test_items`
+    fn push_layout_test(&mut self, test: proc_macro2::TokenStream) {
+        if self.separate_layout_tests {
+            self.layout_test_items.push(test);
+        } else {
+            self.items.push(test);
+        }
     }
 }
 
@@ -633,6 +660,9 @@ impl CodeGenerator for Module {
                 }
                 if result.saw_bitfield_unit {
                     utils::prepend_bitfield_unit_type(ctx, &mut *result);
+                }
+                if !result.layout_test_items.is_empty() {
+                    utils::prepend_layout_tests(ctx, &mut *result);
                 }
             }
         };
@@ -1456,7 +1486,7 @@ impl CodeGenerator for TemplateInstantiation {
                 // If #size_of_expr > #size, this will index OOB, and if
                 // #size_of_expr < #size, the subtraction will overflow, both
                 // of which print enough information to see what has gone wrong.
-                result.push(quote! {
+                result.push_layout_test(quote! {
                     #[allow(clippy::unnecessary_operation, clippy::identity_op)]
                     const _: () = {
                         [#size_of_err][#size_of_expr - #size];
@@ -1464,7 +1494,7 @@ impl CodeGenerator for TemplateInstantiation {
                     };
                 });
             } else {
-                result.push(quote! {
+                result.push_layout_test(quote! {
                     #[test]
                     fn #fn_name() {
                         assert_eq!(#size_of_expr, #size, #size_of_err);
@@ -2838,7 +2868,7 @@ impl CodeGenerator for CompInfo {
                     };
 
                     if compile_time {
-                        result.push(quote! {
+                        result.push_layout_test(quote! {
                             #[allow(clippy::unnecessary_operation, clippy::identity_op)]
                             const _: () = {
                                 [#size_of_err][#size_of_expr - #size];
@@ -2847,7 +2877,7 @@ impl CodeGenerator for CompInfo {
                             };
                         });
                     } else {
-                        result.push(quote! {
+                        result.push_layout_test(quote! {
                             #[test]
                             fn #fn_name() {
                                 #uninit_decl
@@ -5341,7 +5371,10 @@ pub(crate) fn codegen(
     context.gen(|context| {
         let _t = context.timer("codegen");
         let counter = Cell::new(0);
-        let mut result = CodegenResult::new(&counter);
+        let mut result = CodegenResult::new(
+            &counter,
+            context.options().separate_layout_tests_path.is_some(),
+        );
 
         debug!("codegen: {:?}", context.options());
 
@@ -5387,6 +5420,7 @@ pub(crate) fn codegen(
         }
 
         utils::serialize_items(&result, context)?;
+        utils::write_layout_tests(&result, context)?;
 
         Ok(postprocessing::postprocessing(
             result.items,
@@ -5398,14 +5432,16 @@ pub(crate) fn codegen(
 pub(crate) mod utils {
     use super::helpers::BITFIELD_UNIT;
     use super::serialize::CSerialize;
-    use super::{error, CodegenError, CodegenResult, ToRustTyOrOpaque};
+    use super::{
+        error, postprocessing, CodegenError, CodegenResult, ToRustTyOrOpaque,
+    };
     use crate::callbacks::DiscoveredItemId;
     use crate::ir::context::BindgenContext;
     use crate::ir::context::TypeId;
     use crate::ir::function::{Abi, ClangAbi, FunctionSig};
     use crate::ir::item::{Item, ItemCanonicalPath};
     use crate::ir::ty::TypeKind;
-    use crate::{args_are_cpp, file_is_cpp};
+    use crate::{args_are_cpp, file_is_cpp, Bindings};
     use std::borrow::Cow;
     use std::io::Write;
     use std::mem;
@@ -5467,6 +5503,66 @@ pub(crate) mod utils {
 
         std::fs::write(source_path, code)?;
 
+        Ok(())
+    }
+
+    pub(super) fn write_layout_tests(
+        result: &CodegenResult,
+        context: &BindgenContext,
+    ) -> Result<(), CodegenError> {
+        if result.layout_test_items.is_empty() {
+            return Ok(());
+        }
+
+        // The unwrap here is intentional, layout_test_items will be empty if
+        // the path is not set
+        let path = PathBuf::from(
+            context
+                .options()
+                .separate_layout_tests_path
+                .as_ref()
+                .unwrap(),
+        );
+
+        let dir = path.parent().unwrap();
+
+        if !dir.exists() {
+            std::fs::create_dir_all(dir)?;
+        }
+
+        let tokens = postprocessing::postprocessing(
+            result.layout_test_items.clone(),
+            context.options(),
+        );
+
+        let mut writer = std::fs::OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .create(true)
+            .open(path)?;
+        const NL: &str = if cfg!(windows) { "\r\n" } else { "\n" };
+
+        if !context.options().disable_header_comment {
+            let version =
+                option_env!("CARGO_PKG_VERSION").unwrap_or("(unknown version)");
+            write!(
+                writer,
+                "/* layout tests automatically generated by rust-bindgen {version} */{NL}{NL}",
+            )?;
+        }
+
+        // Bindings is used to apply formatting
+        match Bindings::format_tokens(context.options(), &tokens) {
+            Ok(formatted_bindings) => {
+                writer.write_all(formatted_bindings.as_bytes())?;
+            }
+            Err(err) => {
+                eprintln!(
+                    "Failed to run rustfmt: {err} (non-fatal, continuing)"
+                );
+                writer.write_all(tokens.to_string().as_bytes())?;
+            }
+        }
         Ok(())
     }
 
@@ -5547,6 +5643,23 @@ pub(crate) mod utils {
         let bitfield_unit_type = quote!(#bitfield_unit_type);
 
         let items = vec![bitfield_unit_type];
+        let old_items = mem::replace(result, items);
+        result.extend(old_items);
+    }
+
+    pub(crate) fn prepend_layout_tests(
+        ctx: &BindgenContext,
+        result: &mut Vec<proc_macro2::TokenStream>,
+    ) {
+        let include_src = format!(
+            "include!(\"{}\");",
+            ctx.options().separate_layout_tests_path.as_ref().expect("Layout tests are only separate when there is a path to save them to").display()
+        );
+        let include_code =
+            proc_macro2::TokenStream::from_str(&include_src).unwrap();
+        let include_item = quote!(#include_code);
+
+        let items = vec![include_item];
         let old_items = mem::replace(result, items);
         result.extend(old_items);
     }
