@@ -107,7 +107,8 @@ impl C {
         b1: ::std::os::raw::c_uint,
         b2: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        type UFT = __BindgenBitfieldUnit<[u8; 1usize]>;
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = UFT::default_const();
         __bindgen_bitfield_unit
             .set_const::<
                 0usize,

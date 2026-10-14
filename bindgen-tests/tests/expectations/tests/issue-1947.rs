@@ -243,6 +243,11 @@ impl<Storage> __BindgenBitfieldUnit<Storage> {
 /// Const-generic methods for bitfield access when offset and width are known
 /// at compile time. Inlining exposes these constants to the shared implementation.
 impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
+    /// Create a default instance with zeroed storage.
+    #[inline]
+    pub const fn default_const() -> Self {
+        Self { storage: [0; N] }
+    }
     /// Get a field using const generics for compile-time optimization.
     #[inline]
     pub const fn get_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(&self) -> u64 {
@@ -478,7 +483,8 @@ impl V56AMDY {
         MAI1: U16,
         MAI2: U16,
     ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
+        type UFT = __BindgenBitfieldUnit<[u8; 2usize]>;
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = UFT::default_const();
         __bindgen_bitfield_unit
             .set_const::<
                 0usize,
@@ -775,7 +781,8 @@ impl V56AMDY {
         MABW: U8,
         MAXN: U8,
     ) -> __BindgenBitfieldUnit<[u8; 3usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> = Default::default();
+        type UFT = __BindgenBitfieldUnit<[u8; 3usize]>;
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> = UFT::default_const();
         __bindgen_bitfield_unit
             .set_const::<
                 0usize,

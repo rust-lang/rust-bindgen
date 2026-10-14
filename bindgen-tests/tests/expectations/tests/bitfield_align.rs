@@ -243,6 +243,11 @@ impl<Storage> __BindgenBitfieldUnit<Storage> {
 /// Const-generic methods for bitfield access when offset and width are known
 /// at compile time. Inlining exposes these constants to the shared implementation.
 impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
+    /// Create a default instance with zeroed storage.
+    #[inline]
+    pub const fn default_const() -> Self {
+        Self { storage: [0; N] }
+    }
     /// Get a field using const generics for compile-time optimization.
     #[inline]
     pub const fn get_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(&self) -> u64 {
@@ -731,7 +736,8 @@ impl A {
         b9: ::std::os::raw::c_uint,
         b10: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
+        type UFT = __BindgenBitfieldUnit<[u8; 2usize]>;
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = UFT::default_const();
         __bindgen_bitfield_unit
             .set_const::<
                 0usize,
@@ -917,7 +923,8 @@ impl B {
         foo: ::std::os::raw::c_uint,
         bar: ::std::os::raw::c_uchar,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+        type UFT = __BindgenBitfieldUnit<[u8; 4usize]>;
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = UFT::default_const();
         __bindgen_bitfield_unit
             .set_const::<
                 0usize,
@@ -1042,7 +1049,8 @@ impl C {
         b1: ::std::os::raw::c_uint,
         b2: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        type UFT = __BindgenBitfieldUnit<[u8; 1usize]>;
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = UFT::default_const();
         __bindgen_bitfield_unit
             .set_const::<
                 0usize,
@@ -1251,7 +1259,8 @@ impl Date1 {
         nMonth: ::std::os::raw::c_ushort,
         nYear: ::std::os::raw::c_ushort,
     ) -> __BindgenBitfieldUnit<[u8; 3usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> = Default::default();
+        type UFT = __BindgenBitfieldUnit<[u8; 3usize]>;
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> = UFT::default_const();
         __bindgen_bitfield_unit
             .set_const::<
                 0usize,
@@ -1518,7 +1527,8 @@ impl Date2 {
         nYear: ::std::os::raw::c_ushort,
         byte: ::std::os::raw::c_uchar,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+        type UFT = __BindgenBitfieldUnit<[u8; 4usize]>;
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = UFT::default_const();
         __bindgen_bitfield_unit
             .set_const::<
                 0usize,
@@ -1752,7 +1762,8 @@ impl Date3 {
         nMonth: ::std::os::raw::c_ushort,
         nYear: ::std::os::raw::c_ushort,
     ) -> __BindgenBitfieldUnit<[u8; 3usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> = Default::default();
+        type UFT = __BindgenBitfieldUnit<[u8; 3usize]>;
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> = UFT::default_const();
         __bindgen_bitfield_unit
             .set_const::<
                 0usize,
@@ -1852,7 +1863,8 @@ impl Gap {
     pub fn new_bitfield_1(
         b: ::std::os::raw::c_int,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+        type UFT = __BindgenBitfieldUnit<[u8; 4usize]>;
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = UFT::default_const();
         __bindgen_bitfield_unit
             .set_const::<
                 0usize,
@@ -1938,7 +1950,8 @@ impl UnderAligned {
     #[inline]
     #[allow(unnecessary_transmutes)]
     pub fn new_bitfield_1(bits: U) -> __BindgenBitfieldUnit<[u8; 4usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+        type UFT = __BindgenBitfieldUnit<[u8; 4usize]>;
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = UFT::default_const();
         __bindgen_bitfield_unit
             .set_const::<
                 0usize,

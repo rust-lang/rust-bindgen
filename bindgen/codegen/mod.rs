@@ -2014,7 +2014,8 @@ impl FieldCodegen<'_> for BitfieldUnit {
                 #[inline]
                 #[allow(unnecessary_transmutes)]
                 #access_spec fn #ctor_name ( #( #ctor_params ),* ) -> #unit_field_ty {
-                    let mut __bindgen_bitfield_unit: #unit_field_ty = Default::default();
+                    type UFT = #unit_field_ty;
+                    let mut __bindgen_bitfield_unit: #unit_field_ty = UFT::default_const();
                     #ctor_impl
                     __bindgen_bitfield_unit
                 }
