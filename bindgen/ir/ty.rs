@@ -1254,9 +1254,7 @@ impl Type {
 
         name = name.filter(|n| !n.is_empty());
 
-        let is_const = ty.is_const() ||
-            (ty.kind() == CXType_ConstantArray &&
-                ty.elem_type().is_some_and(|element| element.is_const()));
+        let is_const = ty.is_const();
 
         let ty = Type::new(name, layout, kind, is_const);
         // TODO: maybe declaration.canonical()?
