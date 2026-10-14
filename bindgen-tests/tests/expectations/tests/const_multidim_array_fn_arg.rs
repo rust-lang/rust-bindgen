@@ -2,3 +2,6 @@
 unsafe extern "C" {
     pub fn f(a: *const [::std::os::raw::c_int; 1usize]);
 }
+unsafe extern "C" {
+    pub fn g(a: *const [[::std::os::raw::c_int; 1usize]; 1usize]);
+}

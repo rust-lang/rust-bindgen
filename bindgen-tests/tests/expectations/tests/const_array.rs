@@ -5,3 +5,9 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub static mut bar: [::std::os::raw::c_int; 1usize];
 }
+unsafe extern "C" {
+    pub static baz: [[::std::os::raw::c_int; 1usize]; 1usize];
+}
+unsafe extern "C" {
+    pub static qux: [[::std::os::raw::c_int; 1usize]; 0usize];
+}

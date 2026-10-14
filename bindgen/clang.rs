@@ -1285,7 +1285,15 @@ impl Type {
 
     /// Is this type const qualified?
     pub(crate) fn is_const(&self) -> bool {
-        unsafe { clang_isConstQualifiedType(self.x) != 0 }
+        let mut ty = *self;
+        while matches!(ty.kind(), CXType_ConstantArray | CXType_IncompleteArray)
+        {
+            match ty.elem_type() {
+                Some(elem) => ty = elem,
+                None => return false,
+            }
+        }
+        unsafe { clang_isConstQualifiedType(ty.x) != 0 }
     }
 
     #[inline]
