@@ -136,7 +136,7 @@ where
     }
 
     #[inline]
-    pub unsafe fn raw_set(
+    pub const unsafe fn raw_set(
         this: *mut Self,
         bit_offset: usize,
         bit_width: u8,
@@ -226,7 +226,7 @@ impl<Storage> __BindgenBitfieldUnit<Storage> {
     // The caller must provide writable, initialized storage for the accessed
     // bytes. Bits outside the field are preserved.
     #[inline]
-    unsafe fn set_bits(
+    const unsafe fn set_bits(
         storage: *mut u8,
         storage_len: usize,
         bit_offset: usize,
@@ -272,7 +272,16 @@ impl<Storage> __BindgenBitfieldUnit<Storage> {
         }
         let val = val << bit_shift;
         let field_mask = field_mask << bit_shift;
-        for i in 0..bytes_needed.min(8) {
+
+        // bytes_needed.min(8) in const context.
+        let limit = if bytes_needed > 8 { 8 } else { bytes_needed };
+
+        let mut i = 0;
+        loop {
+            if i >= limit {
+                break;
+            }
+
             unsafe {
                 Self::set_byte(
                     storage.add(start_byte + i),
@@ -280,11 +289,13 @@ impl<Storage> __BindgenBitfieldUnit<Storage> {
                     (field_mask >> (i * 8)) as u8,
                 );
             }
+
+            i = i + 1;
         }
     }
 
     #[inline]
-    unsafe fn set_byte(byte: *mut u8, val: u8, mask: u8) {
+    const unsafe fn set_byte(byte: *mut u8, val: u8, mask: u8) {
         let (val, mask) = if cfg!(target_endian = "big") {
             (val.reverse_bits(), mask.reverse_bits())
         } else {
@@ -308,11 +319,12 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
 
     /// Set a field using const generics for compile-time optimization.
     #[inline]
-    pub fn set_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(
+    pub const fn set_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(
         &mut self,
         val: u64,
     ) {
-        self.set(BIT_OFFSET, BIT_WIDTH, val);
+        let Self { storage } = self;
+        unsafe { Self::set_bits(storage.as_mut_ptr(), N, BIT_OFFSET, BIT_WIDTH, val) }
     }
 
     /// Raw pointer get using const generics for compile-time optimization.
@@ -335,7 +347,7 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
 
     /// Raw pointer set using const generics for compile-time optimization.
     #[inline]
-    pub unsafe fn raw_set_const<
+    pub const unsafe fn raw_set_const<
         const BIT_OFFSET: usize,
         const BIT_WIDTH: u8,
     >(
