@@ -494,7 +494,7 @@ impl jsval_layout__bindgen_ty_1 {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         payload47: u64,
         tag: JSValueTag,
     ) -> __BindgenBitfieldUnit<[u8; 8usize]> {

@@ -400,7 +400,7 @@ impl PrivateBitFields {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    fn new_bitfield_1(
+    const fn new_bitfield_1(
         a: ::std::os::raw::c_uint,
         b: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
@@ -524,7 +524,7 @@ impl PublicBitFields {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         a: ::std::os::raw::c_uint,
         b: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
@@ -648,7 +648,7 @@ impl MixedBitFields {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    fn new_bitfield_1(
+    const fn new_bitfield_1(
         a: ::std::os::raw::c_uint,
         d: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
@@ -944,7 +944,7 @@ impl Override {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    fn new_bitfield_1(
+    const fn new_bitfield_1(
         bf_a: ::std::os::raw::c_uint,
         bf_b: ::std::os::raw::c_uint,
         private_bf_c: ::std::os::raw::c_uint,

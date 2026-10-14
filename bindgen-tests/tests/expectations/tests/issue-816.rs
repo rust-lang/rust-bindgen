@@ -2022,7 +2022,7 @@ impl capabilities {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         bit_1: ::std::os::raw::c_uint,
         bit_2: ::std::os::raw::c_uint,
         bit_3: ::std::os::raw::c_uint,

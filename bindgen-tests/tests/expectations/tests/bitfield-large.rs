@@ -342,7 +342,7 @@ impl HasBigBitfield {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(x: i128) -> __BindgenBitfieldUnit<[u8; 16usize]> {
+    pub const fn new_bitfield_1(x: i128) -> __BindgenBitfieldUnit<[u8; 16usize]> {
         type UFT = __BindgenBitfieldUnit<[u8; 16usize]>;
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = UFT::default_const();
         __bindgen_bitfield_unit
@@ -458,7 +458,10 @@ impl HasTwoBigBitfields {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(x: i128, y: i128) -> __BindgenBitfieldUnit<[u8; 16usize]> {
+    pub const fn new_bitfield_1(
+        x: i128,
+        y: i128,
+    ) -> __BindgenBitfieldUnit<[u8; 16usize]> {
         type UFT = __BindgenBitfieldUnit<[u8; 16usize]>;
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = UFT::default_const();
         __bindgen_bitfield_unit

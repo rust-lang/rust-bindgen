@@ -505,7 +505,7 @@ impl rte_eth_link {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         link_duplex: u16,
         link_autoneg: u16,
         link_status: u16,

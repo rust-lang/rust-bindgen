@@ -527,7 +527,7 @@ impl A {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         firmness: ::std::os::raw::c_uchar,
         color: ::std::os::raw::c_uchar,
         weedsBonus: ::std::os::raw::c_ushort,
@@ -664,7 +664,7 @@ impl A {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_2(
+    pub const fn new_bitfield_2(
         minYield: ::std::os::raw::c_uchar,
         waterBonus: ::std::os::raw::c_uchar,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {

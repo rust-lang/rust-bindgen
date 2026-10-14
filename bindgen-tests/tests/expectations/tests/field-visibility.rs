@@ -343,7 +343,9 @@ impl my_struct1 {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    fn new_bitfield_1(a: ::std::os::raw::c_int) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+    const fn new_bitfield_1(
+        a: ::std::os::raw::c_int,
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
         type UFT = __BindgenBitfieldUnit<[u8; 1usize]>;
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = UFT::default_const();
         __bindgen_bitfield_unit
@@ -414,7 +416,7 @@ impl my_struct2 {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         a: ::std::os::raw::c_int,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
         type UFT = __BindgenBitfieldUnit<[u8; 1usize]>;

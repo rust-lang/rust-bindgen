@@ -711,7 +711,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         l2_type: u32,
         l3_type: u32,
         l4_type: u32,
@@ -1261,7 +1261,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         l2_len: u64,
         l3_len: u64,
         l4_len: u64,

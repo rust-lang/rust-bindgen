@@ -1685,7 +1685,7 @@ impl MuchBitfield {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         m0: ::std::os::raw::c_char,
         m1: ::std::os::raw::c_char,
         m2: ::std::os::raw::c_char,

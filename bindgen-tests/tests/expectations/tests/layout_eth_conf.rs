@@ -756,7 +756,7 @@ impl rte_eth_rxmode {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         header_split: u16,
         hw_ip_checksum: u16,
         hw_vlan_filter: u16,
@@ -1025,7 +1025,7 @@ impl rte_eth_txmode {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         hw_vlan_reject_tagged: u8,
         hw_vlan_reject_untagged: u8,
         hw_vlan_insert_pvid: u8,

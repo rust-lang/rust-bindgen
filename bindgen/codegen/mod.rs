@@ -2013,7 +2013,7 @@ impl FieldCodegen<'_> for BitfieldUnit {
             methods.extend(Some(quote! {
                 #[inline]
                 #[allow(unnecessary_transmutes)]
-                #access_spec fn #ctor_name ( #( #ctor_params ),* ) -> #unit_field_ty {
+                #access_spec const fn #ctor_name ( #( #ctor_params ),* ) -> #unit_field_ty {
                     type UFT = #unit_field_ty;
                     let mut __bindgen_bitfield_unit: #unit_field_ty = UFT::default_const();
                     #ctor_impl

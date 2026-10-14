@@ -477,7 +477,7 @@ impl V56AMDY {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         MADZ: U16,
         MAI0: U16,
         MAI1: U16,
@@ -773,7 +773,7 @@ impl V56AMDY {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_2(
+    pub const fn new_bitfield_2(
         MATH: U16,
         MATE: U16,
         MATW: U16,

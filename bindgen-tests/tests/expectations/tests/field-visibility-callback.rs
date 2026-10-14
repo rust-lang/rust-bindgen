@@ -390,7 +390,7 @@ impl my_struct {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    fn new_bitfield_1(
+    const fn new_bitfield_1(
         c: ::std::os::raw::c_int,
         private_d: ::std::os::raw::c_int,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {

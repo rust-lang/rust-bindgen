@@ -355,7 +355,7 @@ impl S {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         u: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
         type UFT = __BindgenBitfieldUnit<[u8; 2usize]>;

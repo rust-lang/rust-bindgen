@@ -449,7 +449,7 @@ impl Weird {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         bitTest: ::std::os::raw::c_uint,
         bitTest2: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
@@ -693,7 +693,7 @@ impl Weird {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_2(
+    pub const fn new_bitfield_2(
         mFillOpacitySource: nsStyleSVGOpacitySource,
         mStrokeOpacitySource: nsStyleSVGOpacitySource,
         mStrokeDasharrayFromObject: bool,

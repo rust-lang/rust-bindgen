@@ -404,7 +404,7 @@ impl RenameMe {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         bitfield_less_ugly_name: ::std::os::raw::c_int,
         bitfield_better_name: ::std::os::raw::c_int,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {

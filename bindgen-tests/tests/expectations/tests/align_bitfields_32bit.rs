@@ -338,7 +338,7 @@ impl StructWithBitfieldAndDouble {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         bitfield: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
         type UFT = __BindgenBitfieldUnit<[u8; 4usize]>;

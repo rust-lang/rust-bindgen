@@ -295,7 +295,7 @@ pub struct WithBitfield {
 impl WithBitfield {
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 1usize]> {
+    pub const fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 1usize]> {
         type UFT = __BindgenBitfieldUnit<[u8; 1usize]>;
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = UFT::default_const();
         __bindgen_bitfield_unit
@@ -310,7 +310,7 @@ pub struct WithBitfieldAndAttrPacked {
 impl WithBitfieldAndAttrPacked {
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 1usize]> {
+    pub const fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 1usize]> {
         type UFT = __BindgenBitfieldUnit<[u8; 1usize]>;
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = UFT::default_const();
         __bindgen_bitfield_unit
@@ -325,7 +325,7 @@ pub struct WithBitfieldAndPacked {
 impl WithBitfieldAndPacked {
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 1usize]> {
+    pub const fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 1usize]> {
         type UFT = __BindgenBitfieldUnit<[u8; 1usize]>;
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = UFT::default_const();
         __bindgen_bitfield_unit

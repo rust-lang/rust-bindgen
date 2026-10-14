@@ -509,7 +509,7 @@ impl Struct {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         a: ::std::os::raw::c_uchar,
         b: ::std::os::raw::c_uchar,
         c: ::std::os::raw::c_uchar,
@@ -659,7 +659,7 @@ impl Inner {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         a: ::std::os::raw::c_ushort,
         b: ::std::os::raw::c_ushort,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {

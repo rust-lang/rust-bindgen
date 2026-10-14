@@ -724,7 +724,7 @@ impl A {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         b1: ::std::os::raw::c_uint,
         b2: ::std::os::raw::c_uint,
         b3: ::std::os::raw::c_uint,
@@ -919,7 +919,7 @@ impl B {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         foo: ::std::os::raw::c_uint,
         bar: ::std::os::raw::c_uchar,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
@@ -1045,7 +1045,7 @@ impl C {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         b1: ::std::os::raw::c_uint,
         b2: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
@@ -1253,7 +1253,7 @@ impl Date1 {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         nWeekDay: ::std::os::raw::c_ushort,
         nMonthDay: ::std::os::raw::c_ushort,
         nMonth: ::std::os::raw::c_ushort,
@@ -1520,7 +1520,7 @@ impl Date2 {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         nWeekDay: ::std::os::raw::c_ushort,
         nMonthDay: ::std::os::raw::c_ushort,
         nMonth: ::std::os::raw::c_ushort,
@@ -1756,7 +1756,7 @@ impl Date3 {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         nWeekDay: ::std::os::raw::c_ushort,
         nMonthDay: ::std::os::raw::c_ushort,
         nMonth: ::std::os::raw::c_ushort,
@@ -1860,7 +1860,7 @@ impl Gap {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         b: ::std::os::raw::c_int,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
         type UFT = __BindgenBitfieldUnit<[u8; 4usize]>;
@@ -1949,7 +1949,7 @@ impl UnderAligned {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(bits: U) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+    pub const fn new_bitfield_1(bits: U) -> __BindgenBitfieldUnit<[u8; 4usize]> {
         type UFT = __BindgenBitfieldUnit<[u8; 4usize]>;
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = UFT::default_const();
         __bindgen_bitfield_unit

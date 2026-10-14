@@ -407,7 +407,7 @@ impl pipe_resource {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         compression_rate: ::std::os::raw::c_uint,
         usage: pipe_resource_usage,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {

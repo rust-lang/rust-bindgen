@@ -426,7 +426,7 @@ impl Color {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub(crate) fn new_bitfield_1(
+    pub(crate) const fn new_bitfield_1(
         r: ::std::os::raw::c_char,
         g: ::std::os::raw::c_char,
         b: ::std::os::raw::c_char,

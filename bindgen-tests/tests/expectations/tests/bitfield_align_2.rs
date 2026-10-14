@@ -402,7 +402,7 @@ impl TaggedPtr {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         tag: MyEnum,
         ptr: ::std::os::raw::c_long,
     ) -> __BindgenBitfieldUnit<[u8; 8usize]> {

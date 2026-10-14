@@ -392,7 +392,7 @@ impl foo__bindgen_ty_1 {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         b: ::std::os::raw::c_int,
         c: ::std::os::raw::c_int,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {

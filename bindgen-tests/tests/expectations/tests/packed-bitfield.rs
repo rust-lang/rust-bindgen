@@ -425,7 +425,7 @@ impl Date {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         day: ::std::os::raw::c_uchar,
         month: ::std::os::raw::c_uchar,
         year: ::std::os::raw::c_short,

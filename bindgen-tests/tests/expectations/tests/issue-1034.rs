@@ -299,7 +299,7 @@ const _: () = {
 impl S2 {
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 2usize]> {
+    pub const fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 2usize]> {
         type UFT = __BindgenBitfieldUnit<[u8; 2usize]>;
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = UFT::default_const();
         __bindgen_bitfield_unit

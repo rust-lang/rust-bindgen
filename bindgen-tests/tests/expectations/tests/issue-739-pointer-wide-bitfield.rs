@@ -469,7 +469,7 @@ impl Foo {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         m_bitfield: ::std::os::raw::c_ulong,
         m_bar: ::std::os::raw::c_ulong,
         foo: ::std::os::raw::c_ulong,

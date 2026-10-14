@@ -388,7 +388,7 @@ impl mach_msg_type_descriptor_t {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(
+    pub const fn new_bitfield_1(
         pad3: ::std::os::raw::c_uint,
         type_: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
