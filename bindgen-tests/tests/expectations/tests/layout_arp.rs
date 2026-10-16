@@ -7,15 +7,15 @@ pub const ARP_OP_REVREQUEST: u32 = 3;
 pub const ARP_OP_REVREPLY: u32 = 4;
 pub const ARP_OP_INVREQUEST: u32 = 8;
 pub const ARP_OP_INVREPLY: u32 = 9;
-/** Ethernet address:
- A universally administered address is uniquely assigned to a device by its
- manufacturer. The first three octets (in transmission order) contain the
- Organizationally Unique Identifier (OUI). The following three (MAC-48 and
- EUI-48) octets are assigned by that organization with the only constraint
- of uniqueness.
- A locally administered address is assigned to a device by a network
- administrator and does not contain OUIs.
- See http://standards.ieee.org/regauth/groupmac/tutorial.html*/
+/// Ethernet address:
+/// A universally administered address is uniquely assigned to a device by its
+/// manufacturer. The first three octets (in transmission order) contain the
+/// Organizationally Unique Identifier (OUI). The following three (MAC-48 and
+/// EUI-48) octets are assigned by that organization with the only constraint
+/// of uniqueness.
+/// A locally administered address is assigned to a device by a network
+/// administrator and does not contain OUIs.
+/// See http://standards.ieee.org/regauth/groupmac/tutorial.html
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct ether_addr {

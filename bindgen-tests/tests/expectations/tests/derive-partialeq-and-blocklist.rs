@@ -1,7 +1,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub struct BlocklistMe(u8);
-/** Because this type contains a blocklisted type, it should not derive
- PartialEq.*/
+/// Because this type contains a blocklisted type, it should not derive
+/// PartialEq.
 #[repr(C)]
 pub struct ShouldNotDerivePartialEq {
     pub a: BlocklistMe,
