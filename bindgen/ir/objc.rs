@@ -242,11 +242,15 @@ impl ObjCMethod {
         self.is_class_method
     }
 
-    /// Formats the method call
+    /// Formats the method call.
+    ///
+    /// Returns `None` when the method cannot be represented as a `msg_send!` call, which happens
+    /// when the selector and the declared arguments disagree; the method is then skipped with a
+    /// warning.
     pub(crate) fn format_method_call(
         &self,
         args: &[TokenStream],
-    ) -> TokenStream {
+    ) -> Option<TokenStream> {
         let split_name: Vec<Option<Ident>> = self
             .name
             .split(':')
@@ -288,13 +292,24 @@ impl ObjCMethod {
         // No arguments
         if args.is_empty() && split_name.len() == 1 {
             let name = &split_name[0];
-            return quote! {
+            return Some(quote! {
                 #name
-            };
+            });
         }
 
-        // Check right amount of arguments
-        assert_eq!(args.len(), split_name.len() - 1, "Incorrect method name or arguments for objc method, {args:?} vs {split_name:?}");
+        // Check right amount of arguments. C-style parameters in Objective-C method declarations
+        // put parameters into clang's ParmDecl list without adding a matching selector part, and
+        // such a method cannot be represented by `msg_send!`, so skip it instead of panicking.
+        let expected_args = split_name.len() - 1;
+        if args.len() != expected_args {
+            let name = &self.name;
+            let declared = args.len();
+            warn!(
+                "Skipping Objective-C method `{name}`: selector takes {expected_args} \
+                 argument(s) but {declared} were declared"
+            );
+            return None;
+        }
 
         // Get arguments without type signatures to pass to `msg_send!`
         let mut args_without_types = vec![];
@@ -315,9 +330,9 @@ impl ObjCMethod {
             },
         );
 
-        quote! {
+        Some(quote! {
             #( #args )*
-        }
+        })
     }
 }
 
