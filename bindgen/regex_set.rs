@@ -59,23 +59,8 @@ impl RegexSet {
         self.build_inner(record_matches, None);
     }
 
-    #[cfg(all(feature = "__cli", feature = "experimental"))]
+    #[cfg(feature = "experimental")]
     /// Construct a `RegexSet` from the set of entries we've accumulated and emit diagnostics if the
-    /// name of the regex set is passed to it.
-    ///
-    /// Must be called before calling `matches()`, or it will always return
-    /// false.
-    #[inline]
-    pub(crate) fn build_with_diagnostics(
-        &mut self,
-        record_matches: bool,
-        name: Option<&'static str>,
-    ) {
-        self.build_inner(record_matches, name);
-    }
-
-    #[cfg(all(not(feature = "__cli"), feature = "experimental"))]
-    /// Construct a RegexSet from the set of entries we've accumulated and emit diagnostics if the
     /// name of the regex set is passed to it.
     ///
     /// Must be called before calling `matches()`, or it will always return
