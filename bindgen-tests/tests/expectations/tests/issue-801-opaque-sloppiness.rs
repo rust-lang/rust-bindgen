@@ -16,7 +16,7 @@ const _: () = {
     ["Alignment of B"][::std::mem::align_of::<B>() - 1usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN1B1aE"]
+    #[link_name = "_ZN1B1aE"]
     pub static mut B_a: A;
 }
 #[repr(C)]

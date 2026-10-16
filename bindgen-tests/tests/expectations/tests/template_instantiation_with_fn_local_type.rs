@@ -5,7 +5,7 @@ pub struct Foo {
     pub _address: u8,
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z1fv"]
+    #[link_name = "_Z1fv"]
     pub fn f();
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
