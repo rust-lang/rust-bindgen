@@ -95,6 +95,20 @@ impl ParseCallbacks for StructFieldRename {
 }
 
 #[derive(Debug)]
+struct EnumTypeChanger;
+
+impl ParseCallbacks for EnumTypeChanger {
+    fn enum_type_override(&self, enum_name: &str) -> Option<IntKind> {
+        match enum_name {
+            "should_be_u8" => Some(IntKind::U8),
+            "should_be_u16" => Some(IntKind::U16),
+            "should_be_i32" => Some(IntKind::I32),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Debug)]
 struct BlocklistedTypeImplementsTrait;
 
 impl ParseCallbacks for BlocklistedTypeImplementsTrait {
@@ -191,6 +205,7 @@ pub fn lookup(cb: &str) -> Box<dyn ParseCallbacks> {
         "wrap-as-variadic-fn" => Box::new(WrapAsVariadicFn),
         "type-visibility" => Box::new(TypeVisibility),
         "operator-rename" => Box::new(OperatorRename),
+        "enum-type-changer" => Box::new(EnumTypeChanger),
         call_back => {
             if let Some(prefix) =
                 call_back.strip_prefix("remove-function-prefix-")
