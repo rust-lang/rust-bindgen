@@ -250,6 +250,9 @@
 ## Changed
 ## Removed
 ## Fixed
+
+- Fixed a panic when generating bindings for Objective-C methods that declare C-style parameters (#3488).
+
 ## Security
 
 # 0.73.2 (2026-09-08)

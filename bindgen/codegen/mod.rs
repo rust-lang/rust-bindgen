@@ -5102,7 +5102,9 @@ fn objc_method_codegen(
         }
     };
 
-    let methods_and_args = method.format_method_call(&fn_args);
+    let Some(methods_and_args) = method.format_method_call(&fn_args) else {
+        return;
+    };
 
     let body = {
         let body = if method.is_class_method() {
