@@ -247,6 +247,7 @@ impl<'ctx> MonotoneFramework for SizednessAnalysis<'ctx> {
             TypeKind::Reference(..) |
             TypeKind::NullPtr |
             TypeKind::ObjCId |
+            TypeKind::ObjCClass |
             TypeKind::ObjCSel |
             TypeKind::Pointer(..) => {
                 trace!("    {:?} is known not to be zero-sized", ty.kind());

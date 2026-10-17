@@ -153,6 +153,7 @@ impl<'a> ImplDebug<'a> for Item {
             TypeKind::UnresolvedTypeRef(..) |
             TypeKind::ObjCInterface(..) |
             TypeKind::ObjCId |
+            TypeKind::ObjCClass |
             TypeKind::Comp(..) |
             TypeKind::ObjCSel => debug_print(name, &quote! { #name_ident }),
 
