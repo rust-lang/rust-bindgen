@@ -15,7 +15,5 @@
 #define INDENTED_CLOSE (1 + \
     2 \
     )
-#define SPLIT_LITERAL 1\
-2
 #define SPLIT_IDENTIFIER ZEND_ACC_INTER\
 FACE
