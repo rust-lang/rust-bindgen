@@ -123,6 +123,7 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
             TypeKind::UnresolvedTypeRef(..) |
             TypeKind::ObjCInterface(..) |
             TypeKind::ObjCId |
+            TypeKind::ObjCClass |
             TypeKind::ObjCSel => {
                 trace!("    simple type that do not have float");
                 ConstrainResult::Same

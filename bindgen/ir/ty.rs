@@ -337,6 +337,7 @@ impl Type {
             TypeKind::Pointer(..) |
             TypeKind::BlockPointer(..) |
             TypeKind::ObjCId |
+            TypeKind::ObjCClass |
             TypeKind::ObjCSel |
             TypeKind::ObjCInterface(..) => Some(self),
 
@@ -490,6 +491,7 @@ impl TypeKind {
             TypeKind::TypeParam => "TypeParam",
             TypeKind::ObjCInterface(..) => "ObjCInterface",
             TypeKind::ObjCId => "ObjCId",
+            TypeKind::ObjCClass => "ObjCClass",
             TypeKind::ObjCSel => "ObjCSel",
         }
     }
@@ -576,6 +578,7 @@ impl TemplateParameters for TypeKind {
             TypeKind::TypeParam |
             TypeKind::Alias(_) |
             TypeKind::ObjCId |
+            TypeKind::ObjCClass |
             TypeKind::ObjCSel |
             TypeKind::ObjCInterface(_) => vec![],
         }
@@ -680,6 +683,9 @@ pub(crate) enum TypeKind {
 
     /// Objective C 'id' type, points to any object
     ObjCId,
+
+    /// Objective C 'Class' type, points to any class object
+    ObjCClass,
 
     /// Objective C selector type
     ObjCSel,
@@ -1231,7 +1237,8 @@ impl Type {
                 }
                 CXType_ObjCId => TypeKind::ObjCId,
                 CXType_ObjCSel => TypeKind::ObjCSel,
-                CXType_ObjCClass | CXType_ObjCInterface => {
+                CXType_ObjCClass => TypeKind::ObjCClass,
+                CXType_ObjCInterface => {
                     let interface = ObjCInterface::from_ty(&location, ctx)
                         .expect("Not a valid objc interface?");
                     if !is_anonymous {
@@ -1320,6 +1327,7 @@ impl Trace for Type {
             TypeKind::Float(_) |
             TypeKind::Complex(_) |
             TypeKind::ObjCId |
+            TypeKind::ObjCClass |
             TypeKind::ObjCSel => {}
         }
     }

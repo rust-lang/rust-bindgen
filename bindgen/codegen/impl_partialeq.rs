@@ -88,6 +88,7 @@ fn gen_field(
         TypeKind::Reference(..) |
         TypeKind::ObjCInterface(..) |
         TypeKind::ObjCId |
+        TypeKind::ObjCClass |
         TypeKind::ObjCSel |
         TypeKind::Comp(..) |
         TypeKind::Pointer(_) |

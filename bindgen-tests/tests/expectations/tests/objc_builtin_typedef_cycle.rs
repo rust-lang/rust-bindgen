@@ -7,27 +7,10 @@ pub type id = *mut objc::runtime::Object;
 pub struct objc_class {
     _unused: [u8; 0],
 }
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone)]
-pub struct Class(pub id);
-impl std::ops::Deref for Class {
-    type Target = objc::runtime::Object;
-    fn deref(&self) -> &Self::Target {
-        unsafe { &*self.0 }
-    }
-}
-unsafe impl objc::Message for Class {}
-impl Class {
-    pub fn alloc() -> Self {
-        Self(unsafe { msg_send!(class!(Class), alloc) })
-    }
-}
-impl IClass for Class {}
-pub trait IClass: Sized + std::ops::Deref {}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct objc_object {
-    pub isa: Class,
+    pub isa: *mut objc::runtime::Class,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
