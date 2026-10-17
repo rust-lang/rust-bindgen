@@ -489,6 +489,7 @@ impl WithImplicitTemplateParams for syn::Type {
             TypeKind::Function(..) |
             TypeKind::Enum(..) |
             TypeKind::ObjCId |
+            TypeKind::ObjCClass |
             TypeKind::ObjCSel |
             TypeKind::TemplateInstantiation(..) => None,
             _ => {
@@ -1266,7 +1267,7 @@ impl CodeGenerator for Type {
                 result.push(tokens);
             }
             TypeKind::Enum(ref ei) => ei.codegen(ctx, result, item),
-            TypeKind::ObjCId | TypeKind::ObjCSel => {
+            TypeKind::ObjCId | TypeKind::ObjCClass | TypeKind::ObjCSel => {
                 result.saw_objc();
             }
             TypeKind::ObjCInterface(ref interface) => {
@@ -4588,6 +4589,9 @@ impl TryToRustTy for Type {
             }
             TypeKind::ObjCSel => Ok(syn::parse_quote! { objc::runtime::Sel }),
             TypeKind::ObjCId => Ok(syn::parse_quote! { id }),
+            TypeKind::ObjCClass => {
+                Ok(syn::parse_quote! { *mut objc::runtime::Class })
+            }
             TypeKind::ObjCInterface(ref interface) => {
                 let name = ctx.rust_ident(interface.name());
                 Ok(syn::parse_quote! { #name })

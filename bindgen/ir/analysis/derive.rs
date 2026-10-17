@@ -199,6 +199,7 @@ impl CannotDerive<'_> {
             TypeKind::Reference(..) |
             TypeKind::ObjCInterface(..) |
             TypeKind::ObjCId |
+            TypeKind::ObjCClass |
             TypeKind::ObjCSel => self.derive_trait.can_derive_simple(ty.kind()),
             TypeKind::Pointer(inner) => {
                 let inner_type =
@@ -540,6 +541,7 @@ impl DeriveTrait {
                 TypeKind::TypeParam |
                 TypeKind::ObjCInterface(..) |
                 TypeKind::ObjCId |
+                TypeKind::ObjCClass |
                 TypeKind::ObjCSel,
             ) => {
                 trace!("    types that always cannot derive Default");

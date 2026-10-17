@@ -252,6 +252,7 @@
 ## Fixed
 
 - Fixed a panic when generating bindings for Objective-C methods that declare C-style parameters (#3488).
+- Fixed a panic when an Objective-C method returns `Class`. The `Class` type is now generated as `*mut objc::runtime::Class` instead of an interface named after the enclosing declaration (#3484).
 
 ## Security
 
