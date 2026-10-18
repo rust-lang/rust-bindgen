@@ -1642,8 +1642,12 @@ impl Item {
             return Ok(ty);
         }
 
-        // First, check we're not recursing.
-        let mut valid_decl = decl.kind() != CXCursor_NoDeclFound;
+        // First, check we're not recursing. Instantiations of an alias
+        // template share the template's declaration, so `U<int>` inside
+        // `U<U<int>>` would be mistaken for the outer type. Alias templates
+        // can't be recursive, so skip them.
+        let mut valid_decl = decl.kind() != CXCursor_NoDeclFound &&
+            decl.kind() != CXCursor_TypeAliasTemplateDecl;
         let declaration_to_look_for = if valid_decl {
             decl.canonical()
         } else if location.kind() == CXCursor_ClassTemplate {
