@@ -252,6 +252,7 @@
 ## Fixed
 
 - Fixed a panic when generating bindings for Objective-C methods that declare C-style parameters (#3488).
+- Fixed a stack overflow when generating bindings for nested alias template instantiations such as `U<U<int>>` (#3478).
 
 ## Security
 
