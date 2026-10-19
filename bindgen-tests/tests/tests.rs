@@ -627,7 +627,7 @@ fn test_macro_fallback_non_system_dir() {
             env!("CARGO_MANIFEST_DIR"),
             "/tests/macro_fallback_test_headers/another_header.h"
         ))
-        .clang_macro_fallback()
+        .clang_macro_fallback(".*")
         .clang_arg(format!("-I{}/tests/headers", env!("CARGO_MANIFEST_DIR")))
         .generate()
         .unwrap()
@@ -671,7 +671,7 @@ fn test_macro_fallback_cross_target() {
         let actual = builder()
             .disable_header_comment()
             .header(header.to_str().unwrap())
-            .clang_macro_fallback()
+            .clang_macro_fallback(".*")
             .clang_macro_fallback_build_dir(tmpdir.path())
             .generate()
             .unwrap()
