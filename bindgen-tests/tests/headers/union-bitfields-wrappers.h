@@ -1,0 +1,11 @@
+// bindgen-flags: --bindgen-wrapper-union 'WithBindgenWrapper' --no-copy 'NonCopyType' --raw-line '#![cfg(target_env = "msvc")]' -- --target=x86_64-pc-windows-msvc
+
+struct NonCopyType {
+    unsigned char byte;
+};
+
+union WithBindgenWrapper {
+    struct NonCopyType non_copy;
+    unsigned int wide : 24;
+    unsigned int narrow : 1;
+};
