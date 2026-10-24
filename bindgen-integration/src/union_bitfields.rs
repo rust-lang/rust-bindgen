@@ -1,5 +1,3 @@
-#![allow(non_snake_case, non_camel_case_types, dead_code)]
-
 mod bindings {
     include!(concat!(env!("OUT_DIR"), "/union-bitfields.rs"));
 }
@@ -9,7 +7,7 @@ use std::mem::{size_of, zeroed};
 use std::ptr::addr_of_mut;
 
 #[test]
-fn issue_3184_overlapping_bitfields() {
+fn overlapping_bitfields_share_storage() {
     unsafe {
         assert_eq!(size_of::<Union>(), union_bits_size() as usize);
         let mut value: Union = zeroed();
