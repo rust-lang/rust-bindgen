@@ -2478,7 +2478,9 @@ impl CodeGenerator for CompInfo {
                 if struct_layout.requires_explicit_align(layout) {
                     explicit_align = Some(layout.align);
                 }
-                if !struct_layout.is_rust_union() {
+                if struct_layout.is_rust_union() {
+                    fields.extend(struct_layout.pad_union(layout));
+                } else {
                     let ty = helpers::blob(ctx, layout, false);
                     fields.push(quote! {
                         pub bindgen_union_field: #ty,
