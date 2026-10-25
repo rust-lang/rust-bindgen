@@ -11,6 +11,7 @@
         - [Write a Smoke Test](./tutorial-5.md)
         - [Publish Your Crate!](./tutorial-6.md)
     - [Bindings for Non-System Libraries](./non-system-libraries.md)
+    - [Finding Libraries with `pkg-config`](./pkg-config.md)
 - [Command Line Usage](./command-line-usage.md)
 - [Customizing the Generated Bindings](./customizing-generated-bindings.md)
     - [Allowlisting](./allowlisting.md)
