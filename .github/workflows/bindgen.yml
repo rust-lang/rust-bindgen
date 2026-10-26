@@ -167,8 +167,10 @@ jobs:
       - name: Install libtinfo
         if: startsWith(matrix.platform.os, 'ubuntu')
         run: |
-          wget https://old-releases.ubuntu.com/ubuntu/pool/universe/n/ncurses/${{matrix.platform.libtinfo}}
-          sudo dpkg -i ${{matrix.platform.libtinfo}}
+          wget "https://old-releases.ubuntu.com/ubuntu/pool/universe/n/ncurses/${LIBTINFO}"
+          sudo dpkg -i ${LIBTINFO}
+        env:
+          LIBTINFO: ${{matrix.platform.libtinfo}}
       - name: Install LLVM and Clang
         # TODO: Switch back to KyleMayes/install-llvm-action once
         # https://github.com/KyleMayes/install-llvm-action/pull/103 is merged
