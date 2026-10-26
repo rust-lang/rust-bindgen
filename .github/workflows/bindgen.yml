@@ -152,6 +152,7 @@ jobs:
       - name: Install LLVM and Clang
         # TODO: Switch back to KyleMayes/install-llvm-action once
         # https://github.com/KyleMayes/install-llvm-action/pull/103 is merged
+        # zizmor: ignore[stale-action-refs] There are no tags or releases for this temporary fork. Remove this when you switch back!
         uses: momo5502/install-llvm-action@7372aab026498959cff47c82953ba378477d4b00
         with:
           version: ${{matrix.llvm_version}}
