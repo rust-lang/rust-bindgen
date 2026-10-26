@@ -29,12 +29,13 @@ jobs:
       - name: Compute the commit
         run: |
           if [[ -z "${INPUTS_COMMIT}" ]]; then
-            COMMIT=$(git rev-parse ${{ github.sha }}^@ | grep -Fvx ${{ github.event.pull_request.head.sha }})
+            COMMIT=$(git rev-parse ${GH_SHA}^@ | grep -Fvx ${{ github.event.pull_request.head.sha }})
           else
             COMMIT="${INPUTS_COMMIT}"
           fi
           echo "commit=$COMMIT" >> $GITHUB_ENV
         env:
+          GH_SHA: ${{ github.sha }}
           INPUTS_COMMIT: ${{ inputs.commit }}
 
       - name: Install rust toolchain
