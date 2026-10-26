@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Install nightly
         uses: dtolnay/rust-toolchain@master
@@ -30,6 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Run clippy
         run: cargo clippy --all-targets --workspace --exclude bindgen-integration --exclude tests_expectations -- -D warnings
@@ -38,6 +42,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Read crate metadata
         id: metadata
@@ -65,6 +71,8 @@ jobs:
       RUSTFLAGS: -D warnings
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Check without default features
         run: cargo check -p bindgen --no-default-features --features=runtime
@@ -75,6 +83,8 @@ jobs:
       RUSTDOCFLAGS: -D warnings
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Generate documentation for `bindgen`
         run: cargo doc --document-private-items --no-deps -p bindgen
@@ -86,6 +96,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       # TODO: Actually run quickchecks once `bindgen` is reliable enough.
       - name: Build quickcheck tests
@@ -98,6 +110,8 @@ jobs:
         os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Test expectations
         run: cd bindgen-tests/tests/expectations && cargo test
@@ -139,6 +153,8 @@ jobs:
             feature_extra_asserts: 0
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Install stable
         uses: dtolnay/rust-toolchain@master
@@ -170,6 +186,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       # NOTE(emilio): Change deploy-book as well if you change this.
       - name: Test book
@@ -183,6 +201,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Test `--help`
         run: cargo run -- --help
