@@ -28,12 +28,12 @@ jobs:
         uses: chainguard-dev/actions/setup-gitsign@main
 
       - name: Install cargo-release
-        uses: taiki-e/install-action@v1
+        uses: taiki-e/install-action@9a29ce630c67077a359246f3e4f84941e05f28b5 # v1.17.3
         with:
           tool: cargo-release
 
       - name: Install sd
-        uses: taiki-e/install-action@v1
+        uses: taiki-e/install-action@9a29ce630c67077a359246f3e4f84941e05f28b5 # v1.17.3
         with:
           tool: sd
       
