@@ -242,4 +242,6 @@ jobs:
     steps:
       # Manually check the status of all dependencies. `if: failure()` does not work.
       - name: check if any dependency failed
-        run: jq --exit-status 'all(.result == "success")' <<< '${{ toJson(needs) }}'
+        run: jq --exit-status 'all(.result == "success")' <<< "${JSON_NEEDS}"
+        env:
+          JSON_NEEDS: ${{ toJson(needs) }}
