@@ -47,7 +47,9 @@ jobs:
 
       - name: Bump version 
         run: |
-          cargo release version ${{ inputs.level }} --execute --no-confirm
+          cargo release version ${INPUTS_LEVEL} --execute --no-confirm
+        env:
+          INPUTS_LEVEL: ${{ inputs.level }}
 
       - name: Extract version
         run: |
