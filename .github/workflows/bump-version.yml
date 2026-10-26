@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Configure gitsign
-        uses: chainguard-dev/actions/setup-gitsign@main
+        uses: chainguard-dev/actions/setup-gitsign@8f31e9482b447ff2c69eca944a09b4b31a4a85d0 # v1.7.2
 
       - name: Install cargo-release
         uses: taiki-e/install-action@9a29ce630c67077a359246f3e4f84941e05f28b5 # v1.17.3
