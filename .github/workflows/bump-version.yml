@@ -57,7 +57,7 @@ jobs:
 
       - name: Update changelog
         run: |
-          sd "# Unreleased" "# Unreleased\n## Added\n## Changed\n## Removed\n## Fixed\n## Security\n\n# ${{ env.version }} ($(date -I))" CHANGELOG.md
+          sd "# Unreleased" "# Unreleased\n## Added\n## Changed\n## Removed\n## Fixed\n## Security\n\n# ${version} ($(date -I))" CHANGELOG.md
           ./node_modules/doctoc/doctoc.js CHANGELOG.md
 
       - name: Create PR 
