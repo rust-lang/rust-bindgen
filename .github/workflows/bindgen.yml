@@ -55,7 +55,9 @@ jobs:
           toolchain: ${{ steps.metadata.outputs.rust-version }}
 
       - name: Test lib with msrv
-        run: cargo +${{ steps.metadata.outputs.rust-version }} test --package bindgen
+        run: cargo +${STEPS_METADATA_OUTPUTS_RUST_VERSION} test --package bindgen
+        env:
+          STEPS_METADATA_OUTPUTS_RUST_VERSION: ${{ steps.metadata.outputs.rust-version }}
 
       - name: Install msrv for cli
         uses: dtolnay/rust-toolchain@master
@@ -63,7 +65,9 @@ jobs:
           toolchain: ${{ steps.metadata.outputs.rust-version }}
 
       - name: Test cli with msrv
-        run: cargo +${{ steps.metadata.outputs.rust-version }} build --package bindgen-cli
+        run: cargo +${STEPS_METADATA_OUTPUTS_RUST_VERSION} build --package bindgen-cli
+        env:
+          STEPS_METADATA_OUTPUTS_RUST_VERSION: ${{ steps.metadata.outputs.rust-version }}
 
   minimal:
     runs-on: ubuntu-latest
