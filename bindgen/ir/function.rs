@@ -771,7 +771,13 @@ impl ClangSubItemParser for Function {
         }
 
         // Grab the signature using Item::from_ty.
-        let sig = Item::from_ty(&cursor.cur_type(), cursor, None, context)?;
+        let mut ty = cursor.cur_type();
+        // Parse the signature at the function cursor so that methods declared
+        // through a function typedef still get their implicit receiver.
+        if matches!(ty.kind(), CXType_Typedef | CXType_Elaborated) {
+            ty = ty.canonical_type();
+        }
+        let sig = Item::from_ty(&ty, cursor, None, context)?;
 
         let mut name = cursor.spelling();
         assert!(!name.is_empty(), "Empty function name?");
