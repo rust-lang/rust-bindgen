@@ -59,14 +59,12 @@ impl<T> Default for StylePoint<T> {
     }
 }
 #[repr(C)]
-#[repr(align(1))]
 pub struct StyleFoo<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub __bindgen_anon_1: __BindgenUnionField<StyleFoo__bindgen_ty_1>,
     pub foo: __BindgenUnionField<StyleFoo_Foo_Body<T>>,
     pub bar: __BindgenUnionField<StyleFoo_Bar_Body<T>>,
     pub baz: __BindgenUnionField<StyleFoo_Baz_Body<T>>,
-    pub bindgen_union_field: [u8; 0usize],
 }
 pub const StyleFoo_Tag_Foo: StyleFoo_Tag = 0;
 pub const StyleFoo_Tag_Bar: StyleFoo_Tag = 0;
