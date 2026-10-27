@@ -5,8 +5,8 @@
 pub struct my_type {
     pub a: ::std::os::raw::c_int,
 }
-/** <div rustbindgen derive="Debug"></div>
- <div rustbindgen derive="Clone"></div>*/
+/// <div rustbindgen derive="Debug"></div>
+/// <div rustbindgen derive="Clone"></div>
 #[repr(C)]
 #[derive(Default, Debug, Clone)]
 pub struct my_type2 {

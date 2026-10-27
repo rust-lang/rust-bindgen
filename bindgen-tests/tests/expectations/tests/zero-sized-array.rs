@@ -61,8 +61,8 @@ const _: () = {
         "Offset of field: ContainsZeroSizedArray::zsa",
     ][::std::mem::offset_of!(ContainsZeroSizedArray, zsa) - 0usize];
 };
-/** Inheriting from ZeroSizedArray shouldn't cause an `_address` to be inserted
- either.*/
+/// Inheriting from ZeroSizedArray shouldn't cause an `_address` to be inserted
+/// either.
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct InheritsZeroSizedArray {
