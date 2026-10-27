@@ -996,7 +996,14 @@ impl CodeGenerator for Type {
                     // typedef struct foo { ... } foo;
                     //
                     // here, and also other more complex cases like #946.
-                    if through_type_aliases.canonical_path(ctx) == path {
+                    // Unlike a named record, the nullptr builtin does not emit
+                    // its own definition, so its same-named typedef is needed.
+                    if through_type_aliases.canonical_path(ctx) == path &&
+                        !matches!(
+                            through_type_aliases.expect_type().kind(),
+                            TypeKind::NullPtr
+                        )
+                    {
                         return;
                     }
                 }
