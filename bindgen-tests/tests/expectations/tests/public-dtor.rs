@@ -10,7 +10,7 @@ const _: () = {
     ["Alignment of cv_Foo"][::std::mem::align_of::<cv_Foo>() - 1usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN2cv3FooD1Ev"]
+    #[link_name = "_ZN2cv3FooD1Ev"]
     pub fn cv_Foo_Foo_destructor(this: *mut cv_Foo);
 }
 impl cv_Foo {

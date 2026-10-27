@@ -1,9 +1,9 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z11my_functioni"]
+    #[link_name = "_Z11my_functioni"]
     pub fn my_function(a: ::std::os::raw::c_int);
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z11my_functionPKc"]
+    #[link_name = "_Z11my_functionPKc"]
     pub fn my_function1(a: *const ::std::os::raw::c_char);
 }

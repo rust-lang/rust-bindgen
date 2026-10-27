@@ -10,7 +10,7 @@ const _: () = {
     ["Alignment of BitStream"][::std::mem::align_of::<BitStream>() - 1usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN9BitStream5WriteEPKcj"]
+    #[link_name = "_ZN9BitStream5WriteEPKcj"]
     pub fn BitStream_Write(
         this: *mut BitStream,
         inputByteArray: *const ::std::os::raw::c_char,
@@ -18,7 +18,7 @@ unsafe extern "C" {
     );
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN9BitStream5WriteEPS_j"]
+    #[link_name = "_ZN9BitStream5WriteEPS_j"]
     pub fn BitStream_Write1(
         this: *mut BitStream,
         bitStream: *mut BitStream,
@@ -26,7 +26,7 @@ unsafe extern "C" {
     );
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN9BitStream6Write1Ev"]
+    #[link_name = "_ZN9BitStream6Write1Ev"]
     pub fn BitStream_Write11(this: *mut BitStream);
 }
 impl BitStream {
