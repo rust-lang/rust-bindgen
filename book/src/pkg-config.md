@@ -83,42 +83,6 @@ A few things to note:
 - Use [`pkg_config::Config`][pkg-config-config] instead of `probe_library` to
   require a minimum version, prefer static linking, and so on.
 
-## Using `system-deps`
-
-The [`system-deps` crate][system-deps] wraps `pkg-config` and lets us declare
-the required libraries and versions in `Cargo.toml` instead:
-
-```toml
-[build-dependencies]
-bindgen = "0.73.2"
-system-deps = "9"
-
-[package.metadata.system-deps]
-libpng = "1.6"
-```
-
-In `build.rs`, `system_deps::Config::new().probe()` finds all the declared
-libraries and prints the linker flags for them. The include paths are passed to
-`bindgen` just like before:
-
-```rust,ignore
-let deps = system_deps::Config::new()
-    .probe()
-    .expect("Unable to find system dependencies");
-
-let bindings = bindgen::Builder::default()
-    .header("wrapper.h")
-    .clang_args(
-        deps.all_include_paths()
-            .iter()
-            .map(|path| format!("-I{}", path.display())),
-    )
-    .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
-    .generate()
-    .expect("Unable to generate bindings");
-```
-
 [pkg-config]: https://www.freedesktop.org/wiki/Software/pkg-config/
 [pkg-config-crate]: https://docs.rs/pkg-config
 [pkg-config-config]: https://docs.rs/pkg-config/latest/pkg_config/struct.Config.html
-[system-deps]: https://docs.rs/system-deps
