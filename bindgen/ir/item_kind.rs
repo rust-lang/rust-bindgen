@@ -108,6 +108,15 @@ impl ItemKind {
         }
     }
 
+    /// Get a mutable reference to this `ItemKind`'s underlying `Var`, or
+    /// `None` if it is some other kind.
+    pub(crate) fn as_var_mut(&mut self) -> Option<&mut Var> {
+        match *self {
+            ItemKind::Var(ref mut v) => Some(v),
+            _ => None,
+        }
+    }
+
     /// Is this a variable?
     pub(crate) fn is_var(&self) -> bool {
         self.as_var().is_some()
