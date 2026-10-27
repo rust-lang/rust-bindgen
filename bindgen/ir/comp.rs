@@ -8,7 +8,7 @@ use super::item::{IsOpaque, Item};
 use super::layout::Layout;
 use super::template::TemplateParameters;
 use super::traversal::{EdgeKind, Trace, Tracer};
-use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
+use super::ty::{TypeKind, RUST_DERIVE_IN_ARRAY_LIMIT};
 use crate::callbacks::FieldInfo;
 use crate::clang;
 use crate::codegen::struct_layout::align_to;
@@ -874,8 +874,7 @@ impl CompFields {
 
                 // Check if it's a compound type with a FAM (need to resolve through type refs)
                 let canonical_ty = resolved_ty.canonical_type(ctx);
-                if let super::ty::TypeKind::Comp(ref comp) = canonical_ty.kind()
-                {
+                if let TypeKind::Comp(ref comp) = canonical_ty.kind() {
                     return comp.flex_array_member(ctx);
                 }
 
@@ -1171,6 +1170,12 @@ impl CompInfo {
 
         // empty union case
         if !self.has_fields() {
+            return None;
+        }
+
+        if self.kind == CompKind::Union && !self.template_params.is_empty() {
+            // Uninstantiated template unions do not have layout in C++ and can
+            // cause infinite layout recursion.
             return None;
         }
 
@@ -1808,7 +1813,8 @@ impl CompInfo {
 
         let all_can_copy = self.fields().iter().all(|f| match *f {
             Field::DataMember(ref field_data) => {
-                field_data.ty().can_derive_copy(ctx)
+                field_data.ty().can_derive_copy(ctx) &&
+                    !ctx.uses_any_template_parameters(field_data.ty().into())
             }
             Field::Bitfields(_) => true,
         });
