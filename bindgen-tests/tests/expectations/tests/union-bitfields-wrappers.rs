@@ -1,5 +1,4 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-#![cfg(target_env = "msvc")]
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct __BindgenBitfieldUnit<Storage> {
@@ -325,16 +324,17 @@ const _: () = {
 };
 #[repr(C)]
 pub struct WithBindgenWrapper {
+    pub _bindgen_align: [u32; 0],
     pub non_copy: __BindgenUnionField<NonCopyType>,
     pub _bitfield_1: __BindgenUnionField<__BindgenBitfieldUnit<[u8; 3usize]>>,
-    pub bindgen_union_field: [u8; 4usize],
+    pub bindgen_union_field: u32,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of WithBindgenWrapper"][::std::mem::size_of::<WithBindgenWrapper>() - 4usize];
     [
         "Alignment of WithBindgenWrapper",
-    ][::std::mem::align_of::<WithBindgenWrapper>() - 1usize];
+    ][::std::mem::align_of::<WithBindgenWrapper>() - 4usize];
     [
         "Offset of field: WithBindgenWrapper::non_copy",
     ][::std::mem::offset_of!(WithBindgenWrapper, non_copy) - 0usize];
