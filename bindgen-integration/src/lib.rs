@@ -1,5 +1,8 @@
 #![allow(warnings)]
 
+#[cfg(test)]
+mod union_bitfields;
+
 mod bindings {
     include!(concat!(env!("OUT_DIR"), "/test.rs"));
 }

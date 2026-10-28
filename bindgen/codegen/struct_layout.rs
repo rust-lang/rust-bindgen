@@ -273,6 +273,19 @@ impl<'a> StructLayoutTracker<'a> {
         Some(self.padding_field(Layout::new(size, 0)))
     }
 
+    pub(crate) fn pad_union(
+        &mut self,
+        layout: Layout,
+    ) -> Option<proc_macro2::TokenStream> {
+        if align_to(self.latest_offset, layout.align) >= layout.size {
+            return None;
+        }
+
+        // Bitfields can occupy fewer bytes than their C allocation unit. Union
+        // members overlap, so this field must cover the full size, not the gap.
+        Some(self.padding_field(Layout::new(layout.size, 1)))
+    }
+
     pub(crate) fn pad_struct(
         &mut self,
         layout: Layout,
