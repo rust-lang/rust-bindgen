@@ -580,8 +580,7 @@ The `patch` and `minor` refer to semver concepts:
 - `minor` would bump **v0.68.2** to **v0.69.0**
 
 > NOTE:
-> We use the `--no-publish` so that the crates are only published after the release is complete.
-> This is automatic, provided the release CI job is successful.
+> We use the `--no-publish`, because the crates are published to crates.io via a separate [CI workflow](#create-a-new-cratesio-release).
 
 ### Create a new release on Github
 
@@ -615,11 +614,9 @@ by running `git tag -d`. Once all the extra changes are in the `main` branch,
 you can trigger a release by creating a new tag using `git tag` and push it
 using `git push --tag`.
 
-### Create a new crates.io release
+### Creating a new crates.io release
 
-Go to [the Publish
-workflow](https://github.com/rust-lang/rust-bindgen/actions/workflows/publish.yml)
-and run a new workflow using the "Run Workflow" button.
+The bindgen crates are automatically published to crates.io when a tag is pushed to the repository.
 
 Remember that crates.io releases cannot be deleted!
 
