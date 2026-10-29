@@ -501,6 +501,21 @@ impl FunctionSig {
         // Check if the type contains __attribute__((noreturn)) outside of parentheses. This is
         // somewhat fragile, but it seems to be the only way to get at this information as of
         // libclang 9.
+        //
+        // When the return type is spelled as a function pointer, as in
+        // `void (*(int) __attribute__((noreturn)))(int)`, this function's own
+        // attributes follow its parameters inside the `(*...)` group, and an
+        // attribute at depth 0 belongs to the pointed-to function type.
+        let returns_fn_ptr = ty.ret_type().is_some_and(|ret| {
+            ret.kind() == CXType_Pointer &&
+                ret.pointee_type().is_some_and(|pointee| {
+                    matches!(
+                        pointee.canonical_type().kind(),
+                        CXType_FunctionProto | CXType_FunctionNoProto
+                    )
+                })
+        });
+        let own_depth = isize::from(returns_fn_ptr);
         let ty_spelling = ty.spelling();
         let has_attribute_noreturn = ty_spelling
             .match_indices("__attribute__((noreturn))")
@@ -513,7 +528,7 @@ impl FunctionSig {
                         _ => None,
                     })
                     .sum::<isize>();
-                depth == 0
+                depth == own_depth
             });
         is_divergent = is_divergent || has_attribute_noreturn;
 
