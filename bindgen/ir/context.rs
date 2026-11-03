@@ -2024,6 +2024,17 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             }
             CXType_Char16 => TypeKind::Int(IntKind::U16),
             CXType_Char32 => TypeKind::Int(IntKind::U32),
+            // libclang has no CXType_Char8, so char8_t shows up as unexposed.
+            CXType_Unexposed
+                if ty
+                    .canonical_type()
+                    .spelling()
+                    .split_whitespace()
+                    .filter(|part| !matches!(*part, "const" | "volatile"))
+                    .eq(["char8_t"]) =>
+            {
+                TypeKind::Int(IntKind::U8)
+            }
             CXType_Long => TypeKind::Int(IntKind::Long),
             CXType_ULong => TypeKind::Int(IntKind::ULong),
             CXType_LongLong => TypeKind::Int(IntKind::LongLong),

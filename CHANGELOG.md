@@ -254,6 +254,7 @@
 - Fixed a panic when generating bindings for Objective-C methods that declare C-style parameters (#3488).
 - Fixed a panic when an Objective-C method returns `Class`. The `Class` type is now generated as `*mut objc::runtime::Class` instead of an interface named after the enclosing declaration (#3484).
 - Fixed a stack overflow when generating bindings for nested alias template instantiations such as `U<U<int>>` (#3478).
+- Fixed a panic when generating bindings for C++20 `char8_t` arrays. `char8_t` is now always generated as `u8`, so enums with a `char8_t` underlying type are unsigned too (#3474, #3464).
 
 ## Security
 
