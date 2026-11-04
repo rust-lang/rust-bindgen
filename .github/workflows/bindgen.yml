@@ -20,10 +20,10 @@ jobs:
           persist-credentials: false
 
       - name: Install nightly
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: nightly
-          components: rustfmt
+        run: rustup install ${TOOLCHAIN} -c ${COMPONENTS} && rustup default ${TOOLCHAIN}
+        env:
+          TOOLCHAIN: nightly
+          COMPONENTS: rustfmt
 
       - name: Run rustfmt
         run: cargo +nightly fmt -- --check
@@ -50,9 +50,9 @@ jobs:
         run: echo "rust-version=$(sed -ne 's/rust-version *= *\"\(.*\)\"/\1/p' Cargo.toml)" >> $GITHUB_OUTPUT
 
       - name: Install msrv for lib
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ steps.metadata.outputs.rust-version }}
+        run: rustup install ${TOOLCHAIN} && rustup default ${TOOLCHAIN}
+        env:
+          TOOLCHAIN: ${{ steps.metadata.outputs.rust-version }}
 
       - name: Test lib with msrv
         run: cargo +${STEPS_METADATA_OUTPUTS_RUST_VERSION} test --package bindgen
@@ -60,9 +60,9 @@ jobs:
           STEPS_METADATA_OUTPUTS_RUST_VERSION: ${{ steps.metadata.outputs.rust-version }}
 
       - name: Install msrv for cli
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ steps.metadata.outputs.rust-version }}
+        run: rustup install ${TOOLCHAIN} && rustup default ${TOOLCHAIN}
+        env:
+          TOOLCHAIN: ${{ steps.metadata.outputs.rust-version }}
 
       - name: Test cli with msrv
         run: cargo +${STEPS_METADATA_OUTPUTS_RUST_VERSION} build --package bindgen-cli
@@ -161,9 +161,9 @@ jobs:
           persist-credentials: false
 
       - name: Install stable
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
+        run: rustup install ${TOOLCHAIN} && rustup default ${TOOLCHAIN}
+        env:
+          TOOLCHAIN: stable
       - name: Install libtinfo
         if: startsWith(matrix.platform.os, 'ubuntu')
         run: |

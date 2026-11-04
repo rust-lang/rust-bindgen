@@ -40,7 +40,9 @@ jobs:
           INPUTS_COMMIT: ${{ inputs.commit }}
 
       - name: Install rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        run: rustup install ${TOOLCHAIN} && rustup default ${TOOLCHAIN}
+        env:
+          TOOLCHAIN: stable
 
       - name: Extract version
         run: |
