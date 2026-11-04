@@ -22,6 +22,8 @@ jobs:
        github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name &&
        startsWith(github.event.pull_request.head.ref, 'bump-version') )
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required by `mathieudutour/github-tag-action`
     steps:
       - name: Checkout code
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0

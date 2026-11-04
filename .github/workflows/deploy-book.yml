@@ -10,6 +10,8 @@ permissions: {}
 jobs:
   deploy-book:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required by `JamesIves/github-pages-deploy-action` to `git push`
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
