@@ -12,6 +12,8 @@ on:
           - minor
           - patch   
 
+permissions: {}
+
 jobs:
   bump-version:
     permissions:

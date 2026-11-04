@@ -11,6 +11,8 @@ on:
     branches:
       - main
 
+permissions: {}
+
 jobs:
   rustfmt:
     runs-on: ubuntu-latest
