@@ -345,7 +345,9 @@ impl<'a> CSerialize<'a> for Type {
                 }
             }
             TypeKind::ResolvedTypeRef(type_id) => {
-                if self.is_const() {
+                // If the resolved type is already const it serializes its own
+                // qualifier, which for pointers has to come after the `*`.
+                if self.is_const() && !ctx.resolve_type(*type_id).is_const() {
                     write!(writer, "const ")?;
                 }
                 type_id.serialize(ctx, (), stack, writer)?;

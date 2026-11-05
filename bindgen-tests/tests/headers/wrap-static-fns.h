@@ -48,6 +48,10 @@ static inline int takes_qualified(const int *const *arg) {
     return **arg;
 }
 
+static inline int takes_const_ptr(int *const arg, const int *const carg) {
+    return *arg + *carg;
+}
+
 enum foo {
     BAR = 0x0,
 };
