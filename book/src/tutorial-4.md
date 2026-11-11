@@ -7,12 +7,31 @@ crate's main entry point, `src/lib.rs`:
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
+#![allow(unsafe_op_in_unsafe_fn)]
+#![allow(clippy::useless_transmute)]
+#![allow(clippy::manual_div_ceil)]
+#![allow(clippy::missing_safety_doc)]
+#![allow(clippy::ptr_offset_with_cast)]
+#![allow(clippy::unreadable_literal)]
+#![allow(clippy::pub_underscore_fields)]
+#![allow(clippy::doc_markdown)]
+#![allow(clippy::cast_lossless)]
+#![allow(clippy::default_trait_access)]
+#![allow(clippy::must_use_candidate)]
+#![allow(clippy::used_underscore_binding)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::semicolon_if_nothing_returned)]
+#![allow(clippy::ref_as_ptr)]
+#![allow(clippy::ptr_as_ptr)]
+#![allow(clippy::cast_possible_wrap)]
 
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 ```
 
 Because `bzip2`'s symbols do not follow Rust's style conventions, we suppress a
-bunch of warnings with a few `#![allow(...)]` pragmas.
+bunch of warnings with a few `#![allow(...)]` pragmas. The generated code for 
+bitfields also do a lot of pointer arithmetic, which can trigger the clippy
+lints.
 
 We can run `cargo build` again to check that the bindings themselves compile:
 
