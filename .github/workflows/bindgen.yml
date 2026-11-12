@@ -149,6 +149,10 @@ jobs:
         run: |
           wget https://old-releases.ubuntu.com/ubuntu/pool/universe/n/ncurses/${{matrix.platform.libtinfo}}
           sudo dpkg -i ${{matrix.platform.libtinfo}}
+      - name: Install libxml
+        run: |
+          apt update
+          apt install -y libxml2
       - name: Install LLVM and Clang
         # TODO: Switch back to KyleMayes/install-llvm-action once
         # https://github.com/KyleMayes/install-llvm-action/pull/103 is merged
