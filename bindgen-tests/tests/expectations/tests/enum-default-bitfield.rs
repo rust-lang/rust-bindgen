@@ -158,3 +158,102 @@ impl ::std::ops::BitAndAssign for Debug {
 /// <div rustbindgen derive="Debug"></div>
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Debug(pub ::std::os::raw::c_uint);
+impl should_be_u8 {
+    pub const FirstU8: should_be_u8 = should_be_u8(0);
+    pub const SecondU8: should_be_u8 = should_be_u8(1);
+}
+impl ::std::ops::BitOr<should_be_u8> for should_be_u8 {
+    type Output = Self;
+    #[inline]
+    fn bitor(self, other: Self) -> Self {
+        should_be_u8(self.0 | other.0)
+    }
+}
+impl ::std::ops::BitOrAssign for should_be_u8 {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: should_be_u8) {
+        self.0 |= rhs.0;
+    }
+}
+impl ::std::ops::BitAnd<should_be_u8> for should_be_u8 {
+    type Output = Self;
+    #[inline]
+    fn bitand(self, other: Self) -> Self {
+        should_be_u8(self.0 & other.0)
+    }
+}
+impl ::std::ops::BitAndAssign for should_be_u8 {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: should_be_u8) {
+        self.0 &= rhs.0;
+    }
+}
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct should_be_u8(pub u8);
+impl should_be_u16 {
+    pub const FirstU16: should_be_u16 = should_be_u16(0);
+    pub const SecondU16: should_be_u16 = should_be_u16(1);
+}
+impl ::std::ops::BitOr<should_be_u16> for should_be_u16 {
+    type Output = Self;
+    #[inline]
+    fn bitor(self, other: Self) -> Self {
+        should_be_u16(self.0 | other.0)
+    }
+}
+impl ::std::ops::BitOrAssign for should_be_u16 {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: should_be_u16) {
+        self.0 |= rhs.0;
+    }
+}
+impl ::std::ops::BitAnd<should_be_u16> for should_be_u16 {
+    type Output = Self;
+    #[inline]
+    fn bitand(self, other: Self) -> Self {
+        should_be_u16(self.0 & other.0)
+    }
+}
+impl ::std::ops::BitAndAssign for should_be_u16 {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: should_be_u16) {
+        self.0 &= rhs.0;
+    }
+}
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct should_be_u16(pub u16);
+impl should_be_i32 {
+    pub const FirstI32: should_be_i32 = should_be_i32(0);
+    pub const SecondI32: should_be_i32 = should_be_i32(1);
+}
+impl ::std::ops::BitOr<should_be_i32> for should_be_i32 {
+    type Output = Self;
+    #[inline]
+    fn bitor(self, other: Self) -> Self {
+        should_be_i32(self.0 | other.0)
+    }
+}
+impl ::std::ops::BitOrAssign for should_be_i32 {
+    #[inline]
+    fn bitor_assign(&mut self, rhs: should_be_i32) {
+        self.0 |= rhs.0;
+    }
+}
+impl ::std::ops::BitAnd<should_be_i32> for should_be_i32 {
+    type Output = Self;
+    #[inline]
+    fn bitand(self, other: Self) -> Self {
+        should_be_i32(self.0 & other.0)
+    }
+}
+impl ::std::ops::BitAndAssign for should_be_i32 {
+    #[inline]
+    fn bitand_assign(&mut self, rhs: should_be_i32) {
+        self.0 &= rhs.0;
+    }
+}
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct should_be_i32(pub i32);

@@ -54,3 +54,21 @@ pub enum Debug {
     Debug1 = 0,
     Debug2 = 1,
 }
+#[repr(u8)]
+#[derive(Copy, Clone, Hash, PartialEq, Eq)]
+pub enum should_be_u8 {
+    FirstU8 = 0,
+    SecondU8 = 1,
+}
+#[repr(u16)]
+#[derive(Copy, Clone, Hash, PartialEq, Eq)]
+pub enum should_be_u16 {
+    FirstU16 = 0,
+    SecondU16 = 1,
+}
+#[repr(i32)]
+#[derive(Copy, Clone, Hash, PartialEq, Eq)]
+pub enum should_be_i32 {
+    FirstI32 = 0,
+    SecondI32 = 1,
+}
