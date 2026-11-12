@@ -1094,9 +1094,39 @@ impl ClangToken {
 
         Some(token::Token {
             kind,
-            raw: self.spelling().to_vec().into_boxed_slice(),
+            raw: remove_leading_line_continuations(self.spelling())
+                .to_vec()
+                .into_boxed_slice(),
         })
     }
+}
+
+// Libclang can include leading escaped newlines in token spellings when the
+// next line starts with a token. Strip these before callbacks or cexpr see them.
+fn remove_leading_line_continuations(mut spelling: &[u8]) -> &[u8] {
+    while let Some(rest) = spelling
+        .strip_prefix(b"\\\n")
+        .or_else(|| spelling.strip_prefix(b"\\\r\n"))
+    {
+        spelling = rest;
+    }
+    spelling
+}
+
+#[test]
+fn token_line_continuations() {
+    assert_eq!(remove_leading_line_continuations(b"\\\n)"), b")");
+    assert_eq!(remove_leading_line_continuations(b"\\\r\n)"), b")");
+    assert_eq!(remove_leading_line_continuations(b"\\\n\\\r\n)"), b")");
+    assert_eq!(remove_leading_line_continuations(b"\\\n )"), b" )");
+    assert_eq!(
+        remove_leading_line_continuations(b" \t\n\\n\\"),
+        b" \t\n\\n\\"
+    );
+    assert_eq!(
+        remove_leading_line_continuations(b"\"a\\\nb\""),
+        b"\"a\\\nb\""
+    );
 }
 
 impl Drop for ClangToken {
