@@ -107,7 +107,7 @@ jobs:
     strategy:
       matrix:
         platform:
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             libtinfo: libtinfo5_6.3+20220423-2ubuntu0.1_amd64.deb
           - os: ubuntu-24.04-arm
             libtinfo: libtinfo5_6.3+20220423-2ubuntu0.1_arm64.deb
@@ -149,10 +149,6 @@ jobs:
         run: |
           wget https://old-releases.ubuntu.com/ubuntu/pool/universe/n/ncurses/${{matrix.platform.libtinfo}}
           sudo dpkg -i ${{matrix.platform.libtinfo}}
-      - name: Install libxml
-        run: |
-          apt update
-          apt install -y libxml2
       - name: Install LLVM and Clang
         # TODO: Switch back to KyleMayes/install-llvm-action once
         # https://github.com/KyleMayes/install-llvm-action/pull/103 is merged
