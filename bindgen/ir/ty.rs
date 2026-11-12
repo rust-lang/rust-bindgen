@@ -227,9 +227,11 @@ impl Type {
         debug_assert!(!self.checked_inner_layout.get());
         let has_layout = self.layout.get().is_some();
         match self.kind {
-            TypeKind::Enum(ref e) => ctx.resolve_type(e.repr()?).layout(ctx),
+            TypeKind::Enum(ref e) => {
+                ctx.safe_resolve_type(e.repr()?)?.layout(ctx)
+            }
             TypeKind::Alias(inner) | TypeKind::ResolvedTypeRef(inner) => {
-                ctx.resolve_type(inner).layout(ctx)
+                ctx.safe_resolve_type(inner)?.layout(ctx)
             }
             TypeKind::Comp(ref ci) if !has_layout => ci.layout(ctx),
             TypeKind::Pointer(..) if !has_layout => Some(Layout::new(
@@ -237,7 +239,7 @@ impl Type {
                 ctx.target_pointer_size(),
             )),
             TypeKind::Array(inner, len) => {
-                let layout = ctx.resolve_type(inner).layout(ctx)?;
+                let layout = ctx.safe_resolve_type(inner)?.layout(ctx)?;
                 Some(Layout::new(len * layout.size, layout.align))
             }
             _ => None,
