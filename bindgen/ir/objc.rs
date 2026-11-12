@@ -245,12 +245,28 @@ impl ObjCMethod {
     /// Formats the method call.
     ///
     /// Returns `None` when the method cannot be represented as a `msg_send!` call, which happens
-    /// when the selector and the declared arguments disagree; the method is then skipped with a
-    /// warning.
+    /// when the selector and the declared arguments disagree, or when a selector part is not a
+    /// valid Rust identifier (e.g. it contains `$`); the method is then skipped with a warning.
     pub(crate) fn format_method_call(
         &self,
         args: &[TokenStream],
     ) -> Option<TokenStream> {
+        // `msg_send!` builds the selector from identifier tokens, so a selector part such as
+        // `take$foo` cannot be spelled. Mangling it would make the generated code send a
+        // different selector, so skip the method instead of panicking.
+        if self
+            .name
+            .chars()
+            .any(|c| c != ':' && c != '_' && !c.is_alphanumeric())
+        {
+            let name = &self.name;
+            warn!(
+                "Skipping Objective-C method `{name}`: selector is not a valid \
+                 Rust identifier"
+            );
+            return None;
+        }
+
         let split_name: Vec<Option<Ident>> = self
             .name
             .split(':')
