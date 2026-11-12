@@ -363,7 +363,26 @@ fn setup_wrap_static_fns_test() {
         .expect("Could not write bindings to the Rust file");
 }
 
+fn setup_union_bitfields_test() {
+    println!("cargo:rerun-if-changed=union-bitfields.c");
+    cc::Build::new()
+        .file("union-bitfields.c")
+        .compile("union_bitfields");
+
+    Builder::default()
+        .header("union-bitfields.h")
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
+        .generate()
+        .expect("Unable to generate union bitfield bindings")
+        .write_to_file(
+            PathBuf::from(env::var("OUT_DIR").unwrap())
+                .join("union-bitfields.rs"),
+        )
+        .expect("Unable to write union bitfield bindings");
+}
+
 fn main() {
     setup_macro_test();
     setup_wrap_static_fns_test();
+    setup_union_bitfields_test();
 }

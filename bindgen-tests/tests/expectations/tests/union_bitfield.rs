@@ -350,7 +350,7 @@ impl U4 {
 #[derive(Copy, Clone)]
 pub union B {
     pub _bindgen_align: [u32; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
@@ -388,7 +388,7 @@ impl B {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 1usize],
+                    [u8; 4usize],
                 >>::raw_get_const::<
                     0usize,
                     31u8,
@@ -402,7 +402,7 @@ impl B {
         unsafe {
             let val: u32 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 1usize],
+                [u8; 4usize],
             >>::raw_set_const::<
                 0usize,
                 31u8,
@@ -430,7 +430,7 @@ impl B {
         unsafe {
             ::std::mem::transmute(
                 <__BindgenBitfieldUnit<
-                    [u8; 1usize],
+                    [u8; 4usize],
                 >>::raw_get_const::<
                     0usize,
                     1u8,
@@ -444,7 +444,7 @@ impl B {
         unsafe {
             let val: u8 = ::std::mem::transmute(val);
             <__BindgenBitfieldUnit<
-                [u8; 1usize],
+                [u8; 4usize],
             >>::raw_set_const::<
                 0usize,
                 1u8,
@@ -456,8 +456,8 @@ impl B {
     pub fn new_bitfield_1(
         foo: ::std::os::raw::c_uint,
         bar: ::std::os::raw::c_uchar,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
         __bindgen_bitfield_unit
             .set_const::<
                 0usize,

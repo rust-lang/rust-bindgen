@@ -641,7 +641,10 @@ where
         let bitfield_offset =
             offset_in_struct - known_start_offset.unwrap_or(0);
         bitfields_in_unit.push(Bitfield::new(bitfield_offset, bitfield));
-        unit_size_in_bits = bitfield_offset + bitfield_width;
+        // Union members overlap, so a later, narrower bitfield must not shrink
+        // the storage needed by an earlier member.
+        unit_size_in_bits =
+            cmp::max(unit_size_in_bits, bitfield_offset + bitfield_width);
     }
 
     if unit_size_in_bits != 0 {
