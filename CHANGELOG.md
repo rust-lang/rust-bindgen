@@ -247,6 +247,7 @@
 --------------------------------------------------------------------------------
 # Unreleased
 ## Added
+- Added `--bitfield-global-enum` for parity with `--newtype-global-enum`
 ## Changed
 ## Removed
 ## Fixed
