@@ -1109,17 +1109,20 @@ options! {
         },
         as_args: "--ctypes-prefix",
     },
-    /// Use C platform-specific types for generated macro constants.
-    macro_const_use_ctypes: bool {
+    /// Which macros for which to use C platform-specific types for generated
+    /// macro constants.
+    macro_const_use_ctypes: RegexSet {
         methods: {
-            /// Use C platform-specific types for generated macro constants.
-            ///
-            /// This implies `clang_macro_fallback` and takes precedence over
-            /// `default_macro_constant_type`.
-            pub fn macro_const_use_ctypes(mut self) -> Builder {
-                self.options.macro_const_use_ctypes = true;
-                self.options.clang_macro_fallback = true;
-                self
+            regex_option! {
+                /// Use C platform-specific types for generated macro constants
+                /// for matching macros.
+                ///
+                /// This implies `clang_macro_fallback` and takes precedence over
+                /// `default_macro_constant_type`.
+                pub fn macro_const_use_ctypes<T: AsRef<str>>(mut self, arg: T) -> Builder {
+                    self.options.macro_const_use_ctypes.insert(&arg);
+                    self.clang_macro_fallback(arg)
+                }
             }
         },
         as_args: "--macro-const-use-ctypes",
@@ -2270,17 +2273,19 @@ options! {
         },
         as_args: "--emit-diagnostics",
     },
-    /// Whether to use Clang evaluation on temporary files as a fallback for macros that fail to
-    /// parse.
-    clang_macro_fallback: bool {
+    /// Which macrsos for which to use Clang evaluation on temporary files as a
+    /// fallback for macros that fail to parse.
+    clang_macro_fallback: RegexSet {
         methods: {
-            /// Use Clang as a fallback for macros that fail to parse using `CExpr`.
-            ///
-            /// This uses a workaround to evaluate each macro in a temporary file. Because this
-            /// results in slower compilation, this option is opt-in.
-            pub fn clang_macro_fallback(mut self) -> Self {
-                self.options.clang_macro_fallback = true;
-                self
+            regex_option! {
+                /// Use Clang as a fallback for matching macros that fail to parse using `CExpr`.
+                ///
+                /// This uses a workaround to evaluate each macro in a temporary file. Because this
+                /// results in slower compilation, this option is opt-in.
+                pub fn clang_macro_fallback<T: AsRef<str>>(mut self, arg: T) -> Builder {
+                    self.options.clang_macro_fallback.insert(arg);
+                    self
+                }
             }
         },
         as_args: "--clang-macro-fallback",

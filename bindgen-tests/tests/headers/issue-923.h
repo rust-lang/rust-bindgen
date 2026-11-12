@@ -1,4 +1,4 @@
-// bindgen-flags: --macro-const-use-ctypes
+// bindgen-flags: --macro-const-use-ctypes .*
 
 #ifndef ISSUE_923_H
 #define ISSUE_923_H

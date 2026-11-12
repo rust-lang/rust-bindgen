@@ -487,7 +487,7 @@ fn eval_result_to_macro_result(
         return None;
     }
     if let Some(int_lit) = result.as_int() {
-        if !ctx.options().macro_const_use_ctypes {
+        if !ctx.options().macro_const_use_ctypes.matches(name) {
             return Some(MacroEvalResult::Int(int_lit, MacroIntType::Fit));
         }
         return Some(match value_type.kind() {
@@ -572,7 +572,11 @@ fn parse_macro_clang_fallback(
     ctx: &mut BindgenContext,
     cursor: &clang::Cursor,
 ) -> Option<(Vec<u8>, MacroEvalResult)> {
-    if !ctx.options().clang_macro_fallback {
+    if !ctx
+        .options()
+        .clang_macro_fallback
+        .matches(cursor.spelling())
+    {
         return None;
     }
 
@@ -647,7 +651,11 @@ fn parse_macro(
             .map(|(name, result)| (name, ClangOrCexprMacroEval::Clang(result)))
     };
 
-    if ctx.options().macro_const_use_ctypes {
+    if ctx
+        .options()
+        .macro_const_use_ctypes
+        .matches(cursor.spelling())
+    {
         return clang_fallback(ctx);
     }
 
