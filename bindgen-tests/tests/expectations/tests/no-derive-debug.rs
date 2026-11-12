@@ -4,9 +4,9 @@
 pub struct foo {
     bar: ::std::os::raw::c_int,
 }
-/** bar should compile. It will normally derive debug, but our blocklist of foo
- and replacement for another type that doesn't implement it would prevent it
- from building if --no-derive-debug didn't work.*/
+/// bar should compile. It will normally derive debug, but our blocklist of foo
+/// and replacement for another type that doesn't implement it would prevent it
+/// from building if --no-derive-debug didn't work.
 #[repr(C)]
 pub struct bar {
     pub foo: foo,

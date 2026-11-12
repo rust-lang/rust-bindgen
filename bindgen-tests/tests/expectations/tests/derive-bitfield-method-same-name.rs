@@ -266,9 +266,9 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
         unsafe { Self::raw_set(this, BIT_OFFSET, BIT_WIDTH, val) };
     }
 }
-/** Because this struct have array larger than 32 items
- and --with-derive-partialeq --impl-partialeq --impl-debug is provided,
- this struct should manually implement `Debug` and `PartialEq`.*/
+/// Because this struct have array larger than 32 items
+/// and --with-derive-partialeq --impl-partialeq --impl-debug is provided,
+/// this struct should manually implement `Debug` and `PartialEq`.
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Foo {
