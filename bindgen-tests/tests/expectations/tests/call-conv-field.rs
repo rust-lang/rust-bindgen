@@ -26,5 +26,6 @@ const _: () = {
     ][::std::mem::offset_of!(JNINativeInterface_, __hack) - 8usize];
 };
 unsafe extern "stdcall" {
+    #[link_name = "\u{1}_bar@0"]
     pub fn bar();
 }

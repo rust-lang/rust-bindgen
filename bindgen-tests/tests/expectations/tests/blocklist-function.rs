@@ -11,7 +11,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         unsafe extern "C" {
-            #[link_name = "\u{1}_ZN3bar18NamespacedFunctionEv"]
+            #[link_name = "_ZN3bar18NamespacedFunctionEv"]
             pub fn NamespacedFunction();
         }
     }

@@ -11,7 +11,7 @@ const _: () = {
     ["Offset of field: Bar::m_baz"][::std::mem::offset_of!(Bar, m_baz) - 0usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN3BarC1Ei"]
+    #[link_name = "_ZN3BarC1Ei"]
     pub fn Bar_Bar(this: *mut Bar, baz: ::std::os::raw::c_int);
 }
 impl Bar {
@@ -28,7 +28,7 @@ pub struct Baz {
     pub _address: u8,
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN3Baz3FOOE"]
+    #[link_name = "_ZN3Baz3FOOE"]
     pub static Baz_FOO: [Bar; 0usize];
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]

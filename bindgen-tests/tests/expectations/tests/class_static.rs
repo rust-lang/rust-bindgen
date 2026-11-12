@@ -5,11 +5,11 @@ pub struct MyClass {
     pub _address: u8,
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN7MyClass7exampleE"]
+    #[link_name = "_ZN7MyClass7exampleE"]
     pub static mut MyClass_example: *const ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZN7MyClass26example_check_no_collisionE"]
+    #[link_name = "_ZN7MyClass26example_check_no_collisionE"]
     pub static mut MyClass_example_check_no_collision: *const ::std::os::raw::c_int;
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
@@ -18,6 +18,6 @@ const _: () = {
     ["Alignment of MyClass"][::std::mem::align_of::<MyClass>() - 1usize];
 };
 unsafe extern "C" {
-    #[link_name = "\u{1}_ZL26example_check_no_collision"]
+    #[link_name = "_ZL26example_check_no_collision"]
     pub static mut example_check_no_collision: *const ::std::os::raw::c_int;
 }
