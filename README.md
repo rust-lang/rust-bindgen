@@ -1,5 +1,5 @@
 [![crates.io](https://img.shields.io/crates/v/bindgen.svg)](https://crates.io/crates/bindgen)
-[![docs.rs](https://docs.rs/bindgen/badge.svg)](https://docs.rs/bindgen/)
+[![docs.rs](https://img.shields.io/docsrs/bindgen/latest)](https://docs.rs/bindgen/)
 
 # `bindgen`
 
