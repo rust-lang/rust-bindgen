@@ -10,6 +10,9 @@ on:
         description: 'Commit hash'
         required: true
         type: string
+
+permissions: {}
+
 jobs:
   create-tag:
     if: >-
@@ -19,30 +22,39 @@ jobs:
        github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name &&
        startsWith(github.event.pull_request.head.ref, 'bump-version') )
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required by `mathieudutour/github-tag-action`
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
+          persist-credentials: false
       
       - name: Compute the commit
         run: |
-          if [[ -z "${{ inputs.commit }}" ]]; then
-            COMMIT=$(git rev-parse ${{ github.sha }}^@ | grep -Fvx ${{ github.event.pull_request.head.sha }})
+          if [[ -z "${INPUTS_COMMIT}" ]]; then
+            COMMIT=$(git rev-parse ${GH_SHA}^@ | grep -Fvx ${GH_PR_HEAD_SHA})
           else
-            COMMIT="${{ inputs.commit }}"
+            COMMIT="${INPUTS_COMMIT}"
           fi
           echo "commit=$COMMIT" >> $GITHUB_ENV
+        env:
+          GH_SHA: ${{ github.sha }}
+          GH_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }})
+          INPUTS_COMMIT: ${{ inputs.commit }}
 
       - name: Install rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        run: rustup install ${TOOLCHAIN} && rustup default ${TOOLCHAIN}
+        env:
+          TOOLCHAIN: stable
 
       - name: Extract version
         run: |
           echo "version=$(cargo pkgid -p bindgen | cut -d '#' -f 2)" >> $GITHUB_ENV
  
       - name: Create tag
-        uses: mathieudutour/github-tag-action@v6.2
+        uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           commit_sha: ${{ env.commit }} 

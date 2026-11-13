@@ -11,17 +11,21 @@ on:
     branches:
       - main
 
+permissions: {}
+
 jobs:
   rustfmt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Install nightly
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: nightly
-          components: rustfmt
+        run: rustup install ${TOOLCHAIN} -c ${COMPONENTS} && rustup default ${TOOLCHAIN}
+        env:
+          TOOLCHAIN: nightly
+          COMPONENTS: rustfmt
 
       - name: Run rustfmt
         run: cargo +nightly fmt -- --check
@@ -29,7 +33,9 @@ jobs:
   clippy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Run clippy
         run: cargo clippy --all-targets --workspace --exclude bindgen-integration --exclude tests_expectations -- -D warnings
@@ -37,34 +43,42 @@ jobs:
   msrv:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Read crate metadata
         id: metadata
         run: echo "rust-version=$(sed -ne 's/rust-version *= *\"\(.*\)\"/\1/p' Cargo.toml)" >> $GITHUB_OUTPUT
 
       - name: Install msrv for lib
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ steps.metadata.outputs.rust-version }}
+        run: rustup install ${TOOLCHAIN} && rustup default ${TOOLCHAIN}
+        env:
+          TOOLCHAIN: ${{ steps.metadata.outputs.rust-version }}
 
       - name: Test lib with msrv
-        run: cargo +${{ steps.metadata.outputs.rust-version }} test --package bindgen
+        run: cargo +${STEPS_METADATA_OUTPUTS_RUST_VERSION} test --package bindgen
+        env:
+          STEPS_METADATA_OUTPUTS_RUST_VERSION: ${{ steps.metadata.outputs.rust-version }}
 
       - name: Install msrv for cli
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ steps.metadata.outputs.rust-version }}
+        run: rustup install ${TOOLCHAIN} && rustup default ${TOOLCHAIN}
+        env:
+          TOOLCHAIN: ${{ steps.metadata.outputs.rust-version }}
 
       - name: Test cli with msrv
-        run: cargo +${{ steps.metadata.outputs.rust-version }} build --package bindgen-cli
+        run: cargo +${STEPS_METADATA_OUTPUTS_RUST_VERSION} build --package bindgen-cli
+        env:
+          STEPS_METADATA_OUTPUTS_RUST_VERSION: ${{ steps.metadata.outputs.rust-version }}
 
   minimal:
     runs-on: ubuntu-latest
     env:
       RUSTFLAGS: -D warnings
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Check without default features
         run: cargo check -p bindgen --no-default-features --features=runtime
@@ -74,7 +88,9 @@ jobs:
     env:
       RUSTDOCFLAGS: -D warnings
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Generate documentation for `bindgen`
         run: cargo doc --document-private-items --no-deps -p bindgen
@@ -85,7 +101,9 @@ jobs:
   quickchecking:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       # TODO: Actually run quickchecks once `bindgen` is reliable enough.
       - name: Build quickcheck tests
@@ -97,7 +115,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Test expectations
         run: cd bindgen-tests/tests/expectations && cargo test
@@ -138,20 +158,25 @@ jobs:
             no_default_features: 0
             feature_extra_asserts: 0
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Install stable
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
+        run: rustup install ${TOOLCHAIN} && rustup default ${TOOLCHAIN}
+        env:
+          TOOLCHAIN: stable
       - name: Install libtinfo
         if: startsWith(matrix.platform.os, 'ubuntu')
         run: |
-          wget https://old-releases.ubuntu.com/ubuntu/pool/universe/n/ncurses/${{matrix.platform.libtinfo}}
-          sudo dpkg -i ${{matrix.platform.libtinfo}}
+          wget "https://old-releases.ubuntu.com/ubuntu/pool/universe/n/ncurses/${LIBTINFO}"
+          sudo dpkg -i ${LIBTINFO}
+        env:
+          LIBTINFO: ${{matrix.platform.libtinfo}}
       - name: Install LLVM and Clang
         # TODO: Switch back to KyleMayes/install-llvm-action once
         # https://github.com/KyleMayes/install-llvm-action/pull/103 is merged
+        # zizmor: ignore[stale-action-refs] There are no tags or releases for this temporary fork. Remove this when you switch back!
         uses: momo5502/install-llvm-action@7372aab026498959cff47c82953ba378477d4b00
         with:
           version: ${{matrix.llvm_version}}
@@ -168,7 +193,9 @@ jobs:
   test-book:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       # NOTE(emilio): Change deploy-book as well if you change this.
       - name: Test book
@@ -181,7 +208,9 @@ jobs:
   test-no-headers:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Test `--help`
         run: cargo run -- --help
@@ -217,4 +246,6 @@ jobs:
     steps:
       # Manually check the status of all dependencies. `if: failure()` does not work.
       - name: check if any dependency failed
-        run: jq --exit-status 'all(.result == "success")' <<< '${{ toJson(needs) }}'
+        run: jq --exit-status 'all(.result == "success")' <<< "${JSON_NEEDS}"
+        env:
+          JSON_NEEDS: ${{ toJson(needs) }}
