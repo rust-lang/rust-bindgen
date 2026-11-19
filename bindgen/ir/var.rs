@@ -342,7 +342,21 @@ impl ClangSubItemParser for Var {
                     })
                 });
 
-                let ty = cursor.cur_type();
+                let mut ty = cursor.cur_type();
+
+                // An array declared without a bound can be completed by a
+                // later redeclaration, e.g.:
+                //
+                //   extern int array[];
+                //   extern int array[3];
+                //
+                // Only the later declaration has the complete type, so use it
+                // if there is one.
+                if ty.kind() == CXType_IncompleteArray {
+                    if let Some(complete_ty) = completed_array_type(&cursor) {
+                        ty = complete_ty;
+                    }
+                }
 
                 let is_const = ty.is_const();
 
@@ -694,6 +708,25 @@ fn get_integer_literal_from_cursor(cursor: &clang::Cursor) -> Option<i64> {
         }
     });
     value
+}
+
+/// Look for a redeclaration of the variable declared at `cursor` that completes
+/// its array type, and return that complete type.
+fn completed_array_type(cursor: &clang::Cursor) -> Option<clang::Type> {
+    use clang_sys::*;
+    let canonical = cursor.canonical();
+    let mut complete_ty = None;
+    cursor.fallible_semantic_parent()?.visit(|c| {
+        if c.kind() == CXCursor_VarDecl && c.canonical() == canonical {
+            let ty = c.cur_type();
+            if ty.kind() == CXType_ConstantArray {
+                complete_ty = Some(ty);
+                return CXChildVisit_Break;
+            }
+        }
+        CXChildVisit_Continue
+    });
+    complete_ty
 }
 
 fn duplicated_macro_diagnostic(
