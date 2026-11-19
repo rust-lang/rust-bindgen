@@ -378,6 +378,14 @@ impl<'a> CSerialize<'a> for Type {
                 let name = item.canonical_name(ctx);
                 write!(writer, "enum {name}")?;
             }
+            // Some named types end up opaque, e.g. `__builtin_va_list` on
+            // aarch64-linux. The C side can still refer to them by name.
+            TypeKind::Opaque if self.name().is_some() => {
+                if self.is_const() {
+                    write!(writer, "const ")?;
+                }
+                write!(writer, "{}", self.name().unwrap())?;
+            }
             ty => {
                 return Err(CodegenError::Serialize {
                     msg: format!("Cannot serialize type kind {ty:?}"),
