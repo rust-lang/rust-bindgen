@@ -59,6 +59,13 @@ impl ItemKind {
         }
     }
 
+    pub(crate) fn as_function_mut(&mut self) -> Option<&mut Function> {
+        match *self {
+            ItemKind::Function(ref mut func) => Some(func),
+            _ => None,
+        }
+    }
+
     /// Is this a function?
     pub(crate) fn is_function(&self) -> bool {
         self.as_function().is_some()
