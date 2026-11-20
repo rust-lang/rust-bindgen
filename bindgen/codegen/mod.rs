@@ -2472,6 +2472,16 @@ impl CodeGenerator for CompInfo {
                     }
                 }
             }
+        } else if !is_union && zero_sized && !forward_decl {
+            // An empty struct can still be over-aligned, e.g. with
+            // `__attribute__((aligned(N)))`.
+            if let Some(layout) = layout {
+                if layout.align > 1 &&
+                    struct_layout.requires_explicit_align(layout)
+                {
+                    explicit_align = Some(layout.align);
+                }
+            }
         } else if is_union && !forward_decl {
             if let Some(layout) = layout {
                 // TODO(emilio): It'd be nice to unify this with the struct path above somehow.
