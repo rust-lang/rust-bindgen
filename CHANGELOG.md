@@ -254,6 +254,7 @@
 - Fixed a panic when generating bindings for Objective-C methods that declare C-style parameters (#3488).
 - Fixed a panic when an Objective-C method returns `Class`. The `Class` type is now generated as `*mut objc::runtime::Class` instead of an interface named after the enclosing declaration (#3484).
 - Fixed a stack overflow when generating bindings for nested alias template instantiations such as `U<U<int>>` (#3478).
+- Fixed alias template instantiations losing their template arguments when used as the return type of a function that has parameters (`Quux<Foo> f(int x)` was emitted as `-> Quux`), or when an argument is qualified with a namespace (`Quux<baz::Foo>`) (#3548).
 
 ## Security
 
