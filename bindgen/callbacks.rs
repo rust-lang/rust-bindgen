@@ -202,7 +202,7 @@ pub trait ParseCallbacks: fmt::Debug {
         None
     }
 
-    /// This will get called everytime an item (currently struct, union, and alias) is found with some information about it
+    /// This will get called every time an item (currently struct, union, and alias) is found with some information about it
     fn new_item_found(
         &self,
         _id: DiscoveredItemId,
