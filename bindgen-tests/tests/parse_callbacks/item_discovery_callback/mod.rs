@@ -433,10 +433,7 @@ pub fn compare_enum_info(
         unreachable!()
     };
 
-    if !compare_names(expected_final_name, generated_final_name) {
-        return false;
-    }
-    true
+    compare_names(expected_final_name, generated_final_name)
 }
 
 pub fn compare_alias_info(
@@ -501,10 +498,7 @@ pub fn compare_function_info(
         unreachable!()
     };
 
-    if !compare_names(expected_final_name, generated_final_name) {
-        return false;
-    }
-    true
+    compare_names(expected_final_name, generated_final_name)
 }
 
 pub fn compare_method_info(
@@ -555,10 +549,7 @@ pub fn compare_constant_info(
         unreachable!()
     };
 
-    if !compare_names(expected_final_name, generated_final_name) {
-        return false;
-    }
-    true
+    compare_names(expected_final_name, generated_final_name)
 }
 
 pub fn compare_variable_info(
@@ -579,8 +570,5 @@ pub fn compare_variable_info(
         unreachable!()
     };
 
-    if !compare_names(expected_final_name, generated_final_name) {
-        return false;
-    }
-    true
+    compare_names(expected_final_name, generated_final_name)
 }

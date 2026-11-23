@@ -839,13 +839,8 @@ impl Bindings {
                             return false;
                         }
 
-                        if arg.starts_with("-I") ||
-                            arg.starts_with("--include-directory=")
-                        {
-                            return false;
-                        }
-
-                        true
+                        !(arg.starts_with("-I") ||
+                            arg.starts_with("--include-directory="))
                     })
                     .map(|arg| arg.clone().into())
                     .collect::<Vec<_>>()
