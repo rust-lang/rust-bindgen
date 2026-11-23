@@ -29,16 +29,16 @@ pub mod root {
             ["Offset of field: Point::x"][::std::mem::offset_of!(Point, x) - 0usize];
         };
         extern "C" {
-            #[link_name = "\u{1}_ZN2ns3fooEv"]
+            #[link_name = "_ZN2ns3fooEv"]
             pub fn foo() -> ::std::os::raw::c_int;
-            #[link_name = "\u{1}_ZN2ns3barEv"]
+            #[link_name = "_ZN2ns3barEv"]
             pub fn bar() -> ::std::os::raw::c_int;
         }
     }
     extern "C" {
-        #[link_name = "\u{1}_Z3foov"]
+        #[link_name = "_Z3foov"]
         pub fn foo() -> ::std::os::raw::c_int;
-        #[link_name = "\u{1}_Z3barv"]
+        #[link_name = "_Z3barv"]
         pub fn bar() -> ::std::os::raw::c_int;
     }
 }

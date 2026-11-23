@@ -68,7 +68,7 @@ impl Default for b {
     }
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z25Servo_Element_GetSnapshotv"]
+    #[link_name = "_Z25Servo_Element_GetSnapshotv"]
     pub fn Servo_Element_GetSnapshot() -> A;
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]

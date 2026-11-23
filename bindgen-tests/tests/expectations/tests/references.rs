@@ -42,11 +42,11 @@ impl Default for Container {
     }
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z20refReturningFunctionv"]
+    #[link_name = "_Z20refReturningFunctionv"]
     pub fn refReturningFunction() -> ::std::ptr::NonNull<::std::os::raw::c_int>;
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z20functionConsumingRefRifRKi"]
+    #[link_name = "_Z20functionConsumingRefRifRKi"]
     pub fn functionConsumingRef(
         someRef: ::std::ptr::NonNull<::std::os::raw::c_int>,
         normalArgument: f32,
@@ -54,7 +54,7 @@ unsafe extern "C" {
     );
 }
 unsafe extern "C" {
-    #[link_name = "\u{1}_Z27functionConsumingPointerRefRPi"]
+    #[link_name = "_Z27functionConsumingPointerRefRPi"]
     pub fn functionConsumingPointerRef(
         pointerRef: ::std::ptr::NonNull<*mut ::std::os::raw::c_int>,
     );
