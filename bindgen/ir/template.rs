@@ -215,6 +215,7 @@ impl TemplateInstantiation {
     /// Parse a `TemplateInstantiation` from a clang `Type`.
     pub(crate) fn from_ty(
         ty: &clang::Type,
+        parent_id: Option<ItemId>,
         ctx: &mut BindgenContext,
     ) -> Option<TemplateInstantiation> {
         use clang_sys::*;
@@ -228,13 +229,15 @@ impl TemplateInstantiation {
                 args.chain(canonical_args.skip(arg_count))
                     .filter(|t| t.kind() != CXType_Invalid)
                     .map(|t| {
-                        Item::from_ty_or_ref(t, t.declaration(), None, ctx)
+                        Item::from_ty_or_ref(t, t.declaration(), parent_id, ctx)
                     })
                     .collect()
             }
             None => args
                 .filter(|t| t.kind() != CXType_Invalid)
-                .map(|t| Item::from_ty_or_ref(t, t.declaration(), None, ctx))
+                .map(|t| {
+                    Item::from_ty_or_ref(t, t.declaration(), parent_id, ctx)
+                })
                 .collect(),
         });
 
