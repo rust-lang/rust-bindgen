@@ -1496,6 +1496,15 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         }
     }
 
+    /// Resolve the given `ItemId` into a mutable reference to an `Item`, or
+    /// `None` if no such item exists.
+    pub(crate) fn resolve_item_mut<Id: Into<ItemId>>(
+        &mut self,
+        id: Id,
+    ) -> Option<&mut Item> {
+        self.items.get_mut(id.into().0)?.as_mut()
+    }
+
     /// Get the current module.
     pub(crate) fn current_module(&self) -> ModuleId {
         self.current_module
