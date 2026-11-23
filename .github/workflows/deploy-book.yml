@@ -5,11 +5,15 @@ on:
     branches:
       - main
 
+permissions: {}
+
 jobs:
   deploy-book:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required by `JamesIves/github-pages-deploy-action` to `git push`
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
 
@@ -20,7 +24,7 @@ jobs:
           ./mdbook test book
 
       - name: Deploy book
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@132898c54c57c7cc6b80eb3a89968de8fc283505 # 3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages

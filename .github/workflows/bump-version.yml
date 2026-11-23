@@ -12,40 +12,46 @@ on:
           - minor
           - patch   
 
+permissions: {}
+
 jobs:
   bump-version:
     permissions:
-      id-token: write 
-      pull-requests: write
-      contents: write
+      id-token: write # Required to sign commits with sigstore
+      pull-requests: write # Required by `peter-evans/create-pull-request` to open a PR
+      contents: write # Required by `peter-evans/create-pull-request` to push to a branch
 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Configure gitsign
-        uses: chainguard-dev/actions/setup-gitsign@main
+        uses: chainguard-dev/actions/setup-gitsign@8f31e9482b447ff2c69eca944a09b4b31a4a85d0 # v1.7.2
 
       - name: Install cargo-release
-        uses: taiki-e/install-action@v1
+        uses: taiki-e/install-action@9a29ce630c67077a359246f3e4f84941e05f28b5 # v1.17.3
         with:
           tool: cargo-release
 
       - name: Install sd
-        uses: taiki-e/install-action@v1
+        uses: taiki-e/install-action@9a29ce630c67077a359246f3e4f84941e05f28b5 # v1.17.3
         with:
           tool: sd
       
       - name: Install npm
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
 
       - name: Install doctoc
         run: npm ci
 
       - name: Bump version 
         run: |
-          cargo release version ${{ inputs.level }} --execute --no-confirm
+          cargo release version ${INPUTS_LEVEL} --execute --no-confirm
+        env:
+          INPUTS_LEVEL: ${{ inputs.level }}
 
       - name: Extract version
         run: |
@@ -53,11 +59,11 @@ jobs:
 
       - name: Update changelog
         run: |
-          sd "# Unreleased" "# Unreleased\n## Added\n## Changed\n## Removed\n## Fixed\n## Security\n\n# ${{ env.version }} ($(date -I))" CHANGELOG.md
+          sd "# Unreleased" "# Unreleased\n## Added\n## Changed\n## Removed\n## Fixed\n## Security\n\n# ${version} ($(date -I))" CHANGELOG.md
           ./node_modules/doctoc/doctoc.js CHANGELOG.md
 
       - name: Create PR 
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@4e1beaa7521e8b457b572c090b25bd3db56bf1c5 # v5.0.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: bump-version/${{ env.version }}
