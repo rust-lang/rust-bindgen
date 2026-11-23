@@ -1911,7 +1911,7 @@ impl IsOpaque for CompInfo {
         // Bitfields with a width that is larger than their unit's width have
         // some strange things going on, and the best we can do is make the
         // whole struct opaque.
-        if self.fields().iter().any(|f| match *f {
+        self.fields().iter().any(|f| match *f {
             Field::DataMember(_) => false,
             Field::Bitfields(ref unit) => unit.bitfields().iter().any(|bf| {
                 let bitfield_layout = ctx
@@ -1920,11 +1920,7 @@ impl IsOpaque for CompInfo {
                     .expect("Bitfield without layout? Gah!");
                 bf.width() / 8 > bitfield_layout.size as u32
             }),
-        }) {
-            return true;
-        }
-
-        false
+        })
     }
 }
 
