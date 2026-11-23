@@ -233,7 +233,7 @@ fn setup_macro_test() {
     let out_dep_file = out_path.join("test.d");
 
     let bindings = Builder::default()
-        .formatter(Formatter::None)
+        .formatter(Formatter::Rustfmt)
         .enable_cxx_namespaces()
         .default_enum_style(EnumVariation::Rust {
             non_exhaustive: false,
