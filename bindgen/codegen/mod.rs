@@ -5170,7 +5170,7 @@ impl CodeGenerator for ObjCInterface {
                 ctx,
                 class_method,
                 &mut impl_items,
-                Some(self.name()),
+                Some(self.runtime_name()),
                 &rust_class_name,
                 prefix,
             );
@@ -5201,6 +5201,7 @@ impl CodeGenerator for ObjCInterface {
         };
 
         let class_name = ctx.rust_ident(self.name());
+        let runtime_class_name = ctx.rust_ident(self.runtime_name());
         if !self.is_category() && !self.is_protocol() {
             let struct_block = quote! {
                 #[repr(transparent)]
@@ -5218,7 +5219,7 @@ impl CodeGenerator for ObjCInterface {
                 impl #class_name {
                     pub fn alloc() -> Self {
                         Self(unsafe {
-                            msg_send!(class!(#class_name), alloc)
+                            msg_send!(class!(#runtime_class_name), alloc)
                         })
                     }
                 }
@@ -5302,7 +5303,7 @@ impl CodeGenerator for ObjCInterface {
                         impl std::convert::TryFrom<#parent_struct> for #class_name {
                             type Error = &'static str;
                             fn try_from(parent: #parent_struct) -> Result<#class_name, Self::Error> {
-                                let is_kind_of : bool = unsafe { msg_send!(parent, isKindOfClass:class!(#class_name))};
+                                let is_kind_of : bool = unsafe { msg_send!(parent, isKindOfClass:class!(#runtime_class_name))};
                                 if is_kind_of {
                                     Ok(#class_name(parent.0))
                                 } else {

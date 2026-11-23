@@ -15,6 +15,7 @@ use clang_sys::CXCursor_ObjCProtocolDecl;
 use clang_sys::CXCursor_ObjCProtocolRef;
 use clang_sys::CXCursor_ObjCSuperClassRef;
 use clang_sys::CXCursor_TemplateTypeParameter;
+use clang_sys::CXCursor_UnexposedAttr;
 use proc_macro2::{Ident, Span, TokenStream};
 
 /// Objective-C interface as used in `TypeKind`
@@ -25,6 +26,9 @@ pub(crate) struct ObjCInterface {
     /// The name
     /// like, `NSObject`
     name: String,
+
+    /// The name the class has at runtime, from `objc_runtime_name`, if any
+    runtime_name: Option<String>,
 
     category: Option<String>,
 
@@ -66,6 +70,7 @@ impl ObjCInterface {
     fn new(name: &str) -> ObjCInterface {
         ObjCInterface {
             name: name.to_owned(),
+            runtime_name: None,
             category: None,
             is_protocol: false,
             template_names: Vec::new(),
@@ -80,6 +85,12 @@ impl ObjCInterface {
     /// like, `NSObject`
     pub(crate) fn name(&self) -> &str {
         self.name.as_ref()
+    }
+
+    /// The name to look the class up by at runtime (`class!`), which differs
+    /// from `name` when the interface has an `objc_runtime_name` attribute.
+    pub(crate) fn runtime_name(&self) -> &str {
+        self.runtime_name.as_deref().unwrap_or(&self.name)
     }
 
     /// Formats the name for rust
@@ -191,6 +202,17 @@ impl ObjCInterface {
                 CXCursor_ObjCSuperClassRef => {
                     let item = Item::from_ty_or_ref(c.cur_type(), c, None, ctx);
                     interface.parent_class = Some(item.into());
+                }
+                CXCursor_UnexposedAttr => {
+                    // `objc_runtime_name("Name")` has no cursor kind of its own.
+                    let tokens: Vec<_> = c.tokens().iter().collect();
+                    if let [attr, _, name, ..] = &tokens[..] {
+                        if attr.spelling() == b"objc_runtime_name" {
+                            let name = String::from_utf8_lossy(name.spelling());
+                            interface.runtime_name =
+                                Some(name.trim_matches('"').to_owned());
+                        }
+                    }
                 }
                 _ => {}
             }
