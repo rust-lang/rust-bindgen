@@ -777,7 +777,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Ensure that every item (other than the root module) is in a module's
-    /// children list. This is to make sure that every allowlisted item get's
+    /// children list. This is to make sure that every allowlisted item gets
     /// codegen'd, even if its parent is not allowlisted. See issue #769 for
     /// details.
     fn add_item_to_module(&mut self, item: &Item) {
