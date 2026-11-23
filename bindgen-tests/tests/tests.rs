@@ -804,6 +804,28 @@ fn commandline_multiple_headers() {
 }
 
 #[test]
+fn test_wrap_static_function_typedef() {
+    let directory = tempfile::tempdir().unwrap();
+    let header = directory.path().join("function-typedef.h");
+    fs::write(
+        &header,
+        "typedef int Function(int);\nstatic Function take;\nstatic int take(int value) { return value + 10; }\n",
+    )
+    .unwrap();
+    let wrapper = directory.path().join("wrapper.c");
+    Builder::default()
+        .header(header.to_str().unwrap())
+        .wrap_static_fns(true)
+        .wrap_static_fns_path(&wrapper)
+        .generate()
+        .expect(
+            "Function typedefs must be resolved before serializing a wrapper",
+        );
+    let wrapper = fs::read_to_string(wrapper).unwrap();
+    assert!(wrapper.contains("return take("));
+}
+
+#[test]
 fn test_wrap_static_fns() {
     // This test is for testing diffs of the generated C source and header files
     // TODO: If another such feature is added, convert this test into a more generic
