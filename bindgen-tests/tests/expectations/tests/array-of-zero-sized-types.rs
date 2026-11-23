@@ -10,8 +10,8 @@ const _: () = {
     ["Size of Empty"][::std::mem::size_of::<Empty>() - 1usize];
     ["Alignment of Empty"][::std::mem::align_of::<Empty>() - 1usize];
 };
-/** This should not get an `_address` byte, since each `Empty` gets one, meaning
- that this object is addressable.*/
+/// This should not get an `_address` byte, since each `Empty` gets one, meaning
+/// that this object is addressable.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct HasArrayOfEmpty {

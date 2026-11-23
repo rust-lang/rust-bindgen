@@ -69,8 +69,8 @@ const _: () = {
         "Offset of field: ip_frag_key::key_len",
     ][::std::mem::offset_of!(ip_frag_key, key_len) - 36usize];
 };
-/** @internal Fragmented packet to reassemble.
- First two entries in the frags[] array are for the last and first fragments.*/
+/// @internal Fragmented packet to reassemble.
+/// First two entries in the frags[] array are for the last and first fragments.
 #[repr(C)]
 #[repr(align(64))]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
