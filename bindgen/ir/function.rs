@@ -146,6 +146,15 @@ impl Function {
     pub(crate) fn linkage(&self) -> Linkage {
         self.linkage
     }
+
+    pub(crate) fn replace_mangled_name(
+        &mut self,
+        name: String,
+    ) -> Option<String> {
+        let old_name = self.mangled_name.take();
+        self.mangled_name = Some(name);
+        old_name
+    }
 }
 
 impl DotAttributes for Function {
@@ -800,6 +809,33 @@ impl ClangSubItemParser for Function {
         assert!(!name.is_empty(), "Empty function name.");
 
         let mangled_name = cursor_mangling(context, &cursor);
+
+        // GNU C allows explicit mangling of symbol names via it's asm label feature.
+        // This retroactively applies to any previous declarations.
+        let mut has_asm_label = false;
+        cursor.visit(|n| {
+            if n.kind() == CXCursor_AsmLabelAttr {
+                has_asm_label = true;
+                return CXChildVisit_Break;
+            }
+            CXChildVisit_Continue
+        });
+
+        // If this a subsequent declaration, the initial declaration needs to be updated.
+        if has_asm_label {
+            if let Some(name) =
+                context.function_mangle(&cursor, mangled_name.as_deref())
+            {
+                debug!("remangled {name} to {mangled_name:?}");
+                return Err(ParseError::Continue);
+            }
+        }
+
+        // Avoid to duplicate function declarations, this interferes with asm label
+        // renaming.
+        if context.function_declared(&cursor) {
+            return Err(ParseError::Continue);
+        }
 
         let link_name = context.options().last_callback(|callbacks| {
             callbacks.generated_link_name_override(ItemInfo {

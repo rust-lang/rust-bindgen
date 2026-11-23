@@ -323,6 +323,10 @@ pub(crate) struct BindgenContext {
     /// A cursor to module map. Similar reason than above.
     modules: HashMap<Cursor, ModuleId>,
 
+    /// A map from Clang USR to a function item. Helpful for retroactively
+    /// updating declarations.
+    functions: HashMap<TypeKey, ItemId>,
+
     /// The root module, this is guaranteed to be an item of kind Module.
     root_module: ModuleId,
 
@@ -583,6 +587,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             types: Default::default(),
             type_params: Default::default(),
             modules: Default::default(),
+            functions: Default::default(),
             root_module: root_module_id,
             current_module: root_module_id,
             semantic_parents: Default::default(),
@@ -716,6 +721,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let is_unnamed = is_type && item.expect_type().name().is_none();
         let is_template_instantiation =
             is_type && item.expect_type().is_template_instantiation();
+        let is_function = item.kind().is_function();
 
         if item.id() != self.root_module {
             self.add_item_to_module(&item);
@@ -723,6 +729,16 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         if is_type && item.expect_type().is_comp() {
             self.need_bitfield_allocation.push(id);
+        }
+
+        if is_function {
+            if let Some(usr) = declaration.and_then(|x| x.usr()) {
+                let old_item = self.functions.insert(TypeKey::Usr(usr), id);
+                assert!(
+                    old_item.is_none(),
+                    "should be none, this is a duplicate function declaration"
+                );
+            }
         }
 
         let old_item = self.items[id.0].replace(item);
@@ -967,6 +983,37 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             // if let Some(parent_id) = parent_id {
             //     assert_eq!(self.items[&resolved].parent_id(), parent_id);
             // }
+        }
+    }
+
+    /// Remangle an existing function name. Subsequent redeclarations of
+    /// the same function can change the mangled name.
+    pub(crate) fn function_mangle(
+        &mut self,
+        cur: &Cursor,
+        name: Option<&str>,
+    ) -> Option<String> {
+        let mut old_name = None;
+        if let Some(item) =
+            cur.usr().and_then(|x| self.functions.get(&TypeKey::Usr(x)))
+        {
+            self.with_loaned_item(*item, |_ctxt, item| {
+                old_name = item
+                    .kind_mut()
+                    .as_function_mut()
+                    .unwrap()
+                    .replace_mangled_name(name.unwrap().to_string())
+            });
+        }
+        old_name
+    }
+
+    /// Check if a function has already been declared
+    pub(crate) fn function_declared(&self, cur: &Cursor) -> bool {
+        if let Some(usr) = cur.usr() {
+            self.functions.contains_key(&TypeKey::Usr(usr))
+        } else {
+            false
         }
     }
 
