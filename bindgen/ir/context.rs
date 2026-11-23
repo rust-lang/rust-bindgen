@@ -1639,7 +1639,25 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         let mut args = vec![];
         let mut found_const_arg = false;
-        let mut children = location.collect_children();
+        // `location` is not necessarily a bare type reference. When the
+        // instantiation is the return type of a function, for instance, it is
+        // the function declaration itself, and its children also include the
+        // parameters and the body. Those, along with the namespace qualifiers
+        // in front of a type argument (`Foo<ns::Bar>`), are never template
+        // arguments, so drop them rather than mistaking them for const-value
+        // arguments and giving up on the whole instantiation.
+        let mut children: Vec<_> = location
+            .collect_children()
+            .into_iter()
+            .filter(|c| {
+                !matches!(
+                    c.kind(),
+                    clang_sys::CXCursor_ParmDecl |
+                        clang_sys::CXCursor_NamespaceRef |
+                        clang_sys::CXCursor_CompoundStmt
+                )
+            })
+            .collect();
 
         if children.iter().all(|c| !c.has_children()) {
             // This is insanity... If clang isn't giving us a properly nested
