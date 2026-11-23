@@ -73,6 +73,12 @@ pub trait ParseCallbacks: fmt::Debug {
     /// the expansion of the macro as a sequence of tokens.
     fn func_macro(&self, _name: &str, _value: &[&[u8]]) {}
 
+    /// The integer kind an enum should have, given the name of the enum type,
+    /// or `None` if you want the default to be chosen.
+    fn enum_type_override(&self, _enum_name: &str) -> Option<IntKind> {
+        None
+    }
+
     /// This function should return whether, given an enum variant
     /// name, and value, this enum variant will forcibly be a constant.
     fn enum_variant_behavior(
