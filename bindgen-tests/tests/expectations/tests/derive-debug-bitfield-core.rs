@@ -101,7 +101,12 @@ where
         }
     }
     #[inline]
-    pub unsafe fn raw_set(this: *mut Self, bit_offset: usize, bit_width: u8, val: u64) {
+    pub const unsafe fn raw_set(
+        this: *mut Self,
+        bit_offset: usize,
+        bit_width: u8,
+        val: u64,
+    ) {
         unsafe {
             Self::set_bits(
                 core::ptr::addr_of_mut!((*this).storage).cast(),
@@ -174,7 +179,7 @@ impl<Storage> __BindgenBitfieldUnit<Storage> {
         val
     }
     #[inline]
-    unsafe fn set_bits(
+    const unsafe fn set_bits(
         storage: *mut u8,
         storage_len: usize,
         bit_offset: usize,
@@ -210,7 +215,12 @@ impl<Storage> __BindgenBitfieldUnit<Storage> {
         }
         let val = val << bit_shift;
         let field_mask = field_mask << bit_shift;
-        for i in 0..bytes_needed.min(8) {
+        let limit = if bytes_needed > 8 { 8 } else { bytes_needed };
+        let mut i = 0;
+        loop {
+            if i >= limit {
+                break;
+            }
             unsafe {
                 Self::set_byte(
                     storage.add(start_byte + i),
@@ -218,10 +228,11 @@ impl<Storage> __BindgenBitfieldUnit<Storage> {
                     (field_mask >> (i * 8)) as u8,
                 );
             }
+            i = i + 1;
         }
     }
     #[inline]
-    unsafe fn set_byte(byte: *mut u8, val: u8, mask: u8) {
+    const unsafe fn set_byte(byte: *mut u8, val: u8, mask: u8) {
         let (val, mask) = if cfg!(target_endian = "big") {
             (val.reverse_bits(), mask.reverse_bits())
         } else {
@@ -233,6 +244,11 @@ impl<Storage> __BindgenBitfieldUnit<Storage> {
 /// Const-generic methods for bitfield access when offset and width are known
 /// at compile time. Inlining exposes these constants to the shared implementation.
 impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
+    /// Create a default instance with zeroed storage.
+    #[inline]
+    pub const fn default_const() -> Self {
+        Self { storage: [0; N] }
+    }
     /// Get a field using const generics for compile-time optimization.
     #[inline]
     pub const fn get_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(&self) -> u64 {
@@ -241,8 +257,12 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
     }
     /// Set a field using const generics for compile-time optimization.
     #[inline]
-    pub fn set_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(&mut self, val: u64) {
-        self.set(BIT_OFFSET, BIT_WIDTH, val);
+    pub const fn set_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(
+        &mut self,
+        val: u64,
+    ) {
+        let Self { storage } = self;
+        unsafe { Self::set_bits(storage.as_mut_ptr(), N, BIT_OFFSET, BIT_WIDTH, val) }
     }
     /// Raw pointer get using const generics for compile-time optimization.
     #[inline]
@@ -260,7 +280,7 @@ impl<const N: usize> __BindgenBitfieldUnit<[u8; N]> {
     }
     /// Raw pointer set using const generics for compile-time optimization.
     #[inline]
-    pub unsafe fn raw_set_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(
+    pub const unsafe fn raw_set_const<const BIT_OFFSET: usize, const BIT_WIDTH: u8>(
         this: *mut Self,
         val: u64,
     ) {
@@ -377,8 +397,12 @@ impl C {
     }
     #[inline]
     #[allow(unnecessary_transmutes)]
-    pub fn new_bitfield_1(a: bool, b: bool) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+    pub const fn new_bitfield_1(
+        a: bool,
+        b: bool,
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        type UFT = __BindgenBitfieldUnit<[u8; 1usize]>;
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = UFT::default_const();
         __bindgen_bitfield_unit
             .set_const::<
                 0usize,
