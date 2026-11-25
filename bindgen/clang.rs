@@ -891,6 +891,109 @@ impl Cursor {
         unsafe { clang_CXXField_isMutable(self.x) != 0 }
     }
 
+    /// Recover the bit offset at which this (anonymous) declaration sits inside
+    /// `parent`, by walking its members.
+    ///
+    /// A leaf reachable as `parent.leaf` sits at `parent`'s offset of that leaf;
+    /// subtracting the leaf's own offset inside the composite yields the
+    /// composite's start. Recursion is needed because a union of anonymous
+    /// structs has no named member of its own, and the type-based field
+    /// visitor does not expose those nested declarations.
+    pub(crate) fn composite_offset_in(&self, parent: &Type) -> Option<usize> {
+        fn walk(cur: Cursor, base: usize, depth: u32, parent: &Type) -> Option<usize> {
+            if depth > 8 {
+                return None;
+            }
+            let mut found = None;
+            cur.visit(|child| {
+                if child.kind() != CXCursor_FieldDecl {
+                    return CXChildVisit_Continue;
+                }
+                let Ok(own) = child.offset_of_field() else {
+                    return CXChildVisit_Continue;
+                };
+                let name = child.spelling();
+                if name.is_empty() {
+                    // anonymous composite: descend into its definition
+                    let inner = child.cur_type().declaration();
+                    if let Some(result) = walk(inner, base + own, depth + 1, parent)
+                    {
+                        found = Some(result);
+                        return CXChildVisit_Break;
+                    }
+                } else if let Some(parent_offset) =
+                    parent.offset_of_named_field(&name)
+                {
+                    found = Some(parent_offset.saturating_sub(base + own));
+                    return CXChildVisit_Break;
+                }
+                CXChildVisit_Continue
+            });
+            found
+        }
+
+        let decl = self.cur_type().declaration();
+        let result = walk(decl, 0, 0, parent);
+        if std::env::var_os("BINDGEN_DEBUG_ANON").is_some() {
+            eprintln!(
+                "[anon] composite={:?} kind={} parent={:?} -> {:?}",
+                self.spelling(),
+                self.kind() as u32,
+                parent.spelling(),
+                result
+            );
+        }
+        result
+    }
+
+    /// Byte ranges (in bits) occupied by this record's named fields, sorted
+    /// and merged.
+    ///
+    /// Anonymous composites have no field cursor of their own, so their place
+    /// is the gap these ranges leave behind.
+    pub(crate) fn occupied_ranges(&self) -> Vec<(usize, usize)> {
+        struct Data {
+            ranges: Vec<(usize, usize)>,
+        }
+
+        extern "C" fn visit(
+            cursor: CXCursor,
+            _parent: CXCursor,
+            data: CXClientData,
+        ) -> CXChildVisitResult {
+            unsafe {
+                if clang_getCursorKind(cursor) == CXCursor_FieldDecl {
+                    let data = &mut *data.cast::<Data>();
+                    let offset = clang_Cursor_getOffsetOfField(cursor);
+                    let size = clang_Type_getSizeOf(clang_getCursorType(cursor));
+                    if offset >= 0 && size > 0 {
+                        let start = offset as usize;
+                        data.ranges.push((start, start + size as usize * 8));
+                    }
+                }
+            }
+            CXChildVisit_Continue
+        }
+
+        let mut data = Data { ranges: Vec::new() };
+        unsafe {
+            clang_visitChildren(
+                self.x,
+                visit,
+                std::ptr::addr_of_mut!(data).cast::<std::ffi::c_void>(),
+            );
+        }
+        data.ranges.sort_unstable();
+        let mut merged: Vec<(usize, usize)> = Vec::new();
+        for (start, end) in data.ranges {
+            match merged.last_mut() {
+                Some(last) if start <= last.1 => last.1 = last.1.max(end),
+                _ => merged.push((start, end)),
+            }
+        }
+        merged
+    }
+
     /// Get the offset of the field represented by the Cursor.
     pub(crate) fn offset_of_field(&self) -> Result<usize, LayoutError> {
         let offset = unsafe { clang_Cursor_getOffsetOfField(self.x) };
@@ -1176,6 +1279,73 @@ pub(crate) struct Type {
 impl PartialEq for Type {
     fn eq(&self, other: &Self) -> bool {
         unsafe { clang_equalTypes(self.x, other.x) != 0 }
+    }
+}
+
+impl Type {
+    /// Get the offset, in bits, of the named field within this record type.
+    ///
+    /// Unlike [`Cursor::offset_of_field`], this resolves members that are
+    /// reachable only through an anonymous struct or union (`parent.member`),
+    /// which is how the offset of an anonymous composite has to be recovered
+    /// once the compiler has randomized the record layout and no longer keeps
+    /// the unnamed `FieldDecl` next to its nested declaration.
+    pub(crate) fn offset_of_named_field(&self, field: &str) -> Option<usize> {
+        let field = CString::new(field).ok()?;
+        let offset = unsafe { clang_Type_getOffsetOf(self.x, field.as_ptr()) };
+        if offset < 0 {
+            None
+        } else {
+            Some(offset as usize)
+        }
+    }
+
+
+    /// First named member of this record type, if it has one.
+    ///
+    /// Used to recover the position of an anonymous struct or union: its own
+    /// members stay reachable as `parent.member`, so any one of them yields the
+    /// offset the composite occupies inside the parent record.
+    pub(crate) fn first_field_name(&self) -> Option<String> {
+        struct Data {
+            name: Option<String>,
+        }
+
+        extern "C" fn visit(
+            cursor: CXCursor,
+            data: CXClientData,
+        ) -> CXChildVisitResult {
+            unsafe {
+                if clang_getCursorKind(cursor) == CXCursor_FieldDecl {
+                    let data = &mut *data.cast::<Data>();
+                    let spelling = clang_getCursorSpelling(cursor);
+                    let name = clang_getCString(spelling);
+                    let mut done = false;
+                    if !name.is_null() {
+                        let name = CStr::from_ptr(name).to_string_lossy().into_owned();
+                        if !name.is_empty() {
+                            data.name = Some(name);
+                            done = true;
+                        }
+                    }
+                    clang_disposeString(spelling);
+                    if done {
+                        return CXChildVisit_Break;
+                    }
+                }
+            }
+            CXChildVisit_Continue
+        }
+
+        let mut data = Data { name: None };
+        unsafe {
+            clang_Type_visitFields(
+                self.x,
+                visit,
+                std::ptr::addr_of_mut!(data).cast::<std::ffi::c_void>(),
+            );
+        }
+        data.name
     }
 }
 

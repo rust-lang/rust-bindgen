@@ -351,12 +351,17 @@ impl<'a> StructLayoutTracker<'a> {
         true
     }
 
+    /// Whether this record is emitted as `#[repr(packed)]`.
+    pub(crate) fn packed(&self) -> bool {
+        self.is_packed
+    }
+
     fn padding_bytes(&self, layout: Layout) -> usize {
         align_to(self.latest_offset, layout.align) - self.latest_offset
     }
 
     fn padding_field(&mut self, layout: Layout) -> proc_macro2::TokenStream {
-        let ty = helpers::blob(self.ctx, layout, false);
+        let ty = helpers::blob(self.ctx, layout, false, self.is_packed);
         let padding_count = self.padding_count;
 
         self.padding_count += 1;

@@ -2445,7 +2445,7 @@ impl CodeGenerator for CompInfo {
             match layout {
                 Some(l) => {
                     explicit_align = Some(l.align);
-                    let ty = helpers::blob(ctx, l, false);
+                    let ty = helpers::blob(ctx, l, false, false);
                     fields.push(quote! {
                         pub _bindgen_opaque_blob: #ty ,
                     });
@@ -2481,7 +2481,7 @@ impl CodeGenerator for CompInfo {
                 if struct_layout.is_rust_union() {
                     fields.extend(struct_layout.pad_union(layout));
                 } else {
-                    let ty = helpers::blob(ctx, layout, false);
+                    let ty = helpers::blob(ctx, layout, false, struct_layout.packed());
                     fields.push(quote! {
                         pub bindgen_union_field: #ty,
                     });
@@ -4258,7 +4258,7 @@ pub(crate) trait TryToOpaque {
         extra: &Self::Extra,
     ) -> error::Result<syn::Type> {
         self.try_get_layout(ctx, extra)
-            .map(|layout| helpers::blob(ctx, layout, true))
+            .map(|layout| helpers::blob(ctx, layout, true, false))
     }
 }
 
@@ -4284,7 +4284,7 @@ pub(crate) trait ToOpaque: TryToOpaque {
         extra: &Self::Extra,
     ) -> syn::Type {
         let layout = self.get_layout(ctx, extra);
-        helpers::blob(ctx, layout, true)
+        helpers::blob(ctx, layout, true, false)
     }
 }
 
@@ -4335,7 +4335,7 @@ where
     ) -> error::Result<syn::Type> {
         self.try_to_rust_ty(ctx, extra).or_else(|_| {
             if let Ok(layout) = self.try_get_layout(ctx, extra) {
-                Ok(helpers::blob(ctx, layout, true))
+                Ok(helpers::blob(ctx, layout, true, false))
             } else {
                 Err(Error::NoLayoutForOpaqueBlob)
             }
