@@ -684,6 +684,11 @@ impl Default for CompFields {
     }
 }
 
+/// An anonymous composite that clang hoisted away from the field that stores
+/// it: its type, whether it is a union, its resolved offset in bits, and the
+/// name of the member that holds it.
+type PendingAnonField = (TypeId, clang::Type, bool, Option<usize>, Option<String>);
+
 impl CompFields {
     fn append_raw_field(&mut self, raw: RawField) {
         match *self {
@@ -693,6 +698,50 @@ impl CompFields {
             _ => {
                 panic!(
                     "Must not append new fields after computing bitfield allocation units"
+                );
+            }
+        }
+    }
+
+    /// Offsets (in bits) already known for the raw fields collected so far.
+    fn raw_offsets(&self) -> Vec<usize> {
+        match *self {
+            CompFields::Before(ref raws) => {
+                raws.iter().filter_map(|f| f.0.offset).collect()
+            }
+            _ => Vec::new(),
+        }
+    }
+
+    /// Insert a raw field so that the resulting order matches the offsets the
+    /// compiler reported, or append it if no offset is known.
+    ///
+    /// Anonymous structs and unions have to be placed by offset rather than by
+    /// declaration order: with a randomized layout (`RANDSTRUCT`) the compiler
+    /// moves the nested declaration itself to the top of the record while the
+    /// unnamed field that carries it stays in the shuffled body, so walking
+    /// the AST in declaration order puts the anonymous composite first and
+    /// every following field lands at the wrong offset in the generated
+    /// bindings.
+    fn insert_raw_field_ordered(&mut self, raw: RawField, offset: Option<usize>) {
+        match *self {
+            CompFields::Before(ref mut raws) => {
+                match offset {
+                    Some(offset) => {
+                        let pos = raws
+                            .iter()
+                            .position(|f| {
+                                matches!(f.0.offset, Some(field_offset) if field_offset > offset)
+                            })
+                            .unwrap_or(raws.len());
+                        raws.insert(pos, raw);
+                    }
+                    None => raws.push(raw),
+                }
+            }
+            _ => {
+                panic!(
+                    "Must not insert new fields after computing bitfield allocation units"
                 );
             }
         }
@@ -1355,10 +1404,18 @@ impl CompInfo {
                 _ => false,
             });
 
-        let mut maybe_anonymous_struct_field = None;
+        let record_clang_type = cursor.cur_type();
+        // (inner type, clang type, public, offset, member name)
+        let mut maybe_anonymous_struct_field: Option<PendingAnonField> = None;
+        // Anonymous composites are not flushed in declaration order: with a
+        // randomized record layout the nested declaration sits at the top of
+        // the AST while the field that carries it stays in the shuffled body,
+        // so they are collected here and inserted by offset after the walk.
+        let mut deferred_anon_fields: Vec<(RawField, Option<usize>, clang::Type)> =
+            Vec::new();
         cursor.visit(|cur| {
             if cur.kind() != CXCursor_FieldDecl {
-                if let Some((ty, clang_ty, public, offset)) =
+                if let Some((ty, clang_ty, public, offset, member_name)) =
                     maybe_anonymous_struct_field.take()
                 {
                     if cur.kind() == CXCursor_TypedefDecl &&
@@ -1373,14 +1430,17 @@ impl CompInfo {
                         let field = RawField::new(
                             None, ty, None, None, None, public, offset,
                         );
-                        ci.fields.append_raw_field(field);
+                        let anon_offset = member_name.as_deref().and_then(|name| {
+                            record_clang_type.offset_of_named_field(name)
+                        });
+                        deferred_anon_fields.push((field, anon_offset, clang_ty));
                     }
                 }
             }
 
             match cur.kind() {
                 CXCursor_FieldDecl => {
-                    if let Some((ty, clang_ty, public, offset)) =
+                    if let Some((ty, clang_ty, public, offset, member_name)) =
                         maybe_anonymous_struct_field.take()
                     {
                         let mut used = false;
@@ -1391,11 +1451,23 @@ impl CompInfo {
                             CXChildVisit_Continue
                         });
 
-                        if !used {
+                        // A *named* field whose type is the anonymous
+                        // declaration is not an anonymous member: the field
+                        // itself carries the storage and the name, so
+                        // deferring it would emit the same storage twice
+                        // (e.g. `struct { struct { ... } lru_gen; }`).
+                        let named_field_of_anon_type = !cur.spelling().is_empty()
+                            && cur.cur_type().canonical_type()
+                                == clang_ty.canonical_type();
+
+                        if !used && !named_field_of_anon_type {
                             let field = RawField::new(
                                 None, ty, None, None, None, public, offset,
                             );
-                            ci.fields.append_raw_field(field);
+                            let anon_offset = member_name.as_deref().and_then(|name| {
+                                record_clang_type.offset_of_named_field(name)
+                            });
+                            deferred_anon_fields.push((field, anon_offset, clang_ty));
                         }
                     }
 
@@ -1505,8 +1577,21 @@ impl CompInfo {
                             let public = cur.public_accessible();
                             let offset = cur.offset_of_field().ok();
 
+                            // Members of an anonymous composite stay reachable
+                            // as `parent.member`, so remember one: its offset is
+                            // the position the composite must occupy once the
+                            // record layout has been randomized.
+                                            let mut member_name = None;
+                            cur.visit(|child| {
+                                if child.kind() == CXCursor_FieldDecl {
+                                    member_name = Some(child.spelling());
+                                    return CXChildVisit_Break;
+                                }
+                                CXChildVisit_Continue
+                            });
+
                             maybe_anonymous_struct_field =
-                                Some((inner, ty, public, offset));
+                                Some((inner, ty, public, offset, member_name));
                         }
                     }
                 }
@@ -1658,10 +1743,113 @@ impl CompInfo {
             CXChildVisit_Continue
         });
 
-        if let Some((ty, _, public, offset)) = maybe_anonymous_struct_field {
+        if let Some((ty, clang_ty, public, offset, member_name)) = maybe_anonymous_struct_field {
             let field =
                 RawField::new(None, ty, None, None, None, public, offset);
-            ci.fields.append_raw_field(field);
+            let anon_offset = member_name
+                .as_deref()
+                .and_then(|name| record_clang_type.offset_of_named_field(name));
+            deferred_anon_fields.push((field, anon_offset, clang_ty));
+        }
+
+        // Drop composites that are really the type of a named field: clang
+        // hoists the declaration of such an anonymous struct to the top of the
+        // record, so it is seen before the field carrying it and would
+        // otherwise be emitted a second time (`struct { struct {...} x; }`).
+        {
+            let mut named_types: Vec<clang::Type> = Vec::new();
+            cursor.visit(|child| {
+                if child.kind() == CXCursor_FieldDecl && !child.spelling().is_empty()
+                {
+                    let ty = child.cur_type().canonical_type();
+                    if !named_types.contains(&ty) {
+                        named_types.push(ty);
+                    }
+                }
+                CXChildVisit_Continue
+            });
+            deferred_anon_fields.retain(|(_, _, anon_ty)| {
+                let canonical = anon_ty.canonical_type();
+                !named_types.contains(&canonical)
+            });
+        }
+
+        // Place the anonymous composites where the compiler actually put them.
+        //
+        // An anonymous composite has no field cursor, so its position has to be
+        // inferred from the layout: take the ranges the named fields occupy and
+        // find the gap that is exactly the composite's size.
+        let clang_ty_size_of_record = ty.size(ctx);
+        let mut placed: Vec<(RawField, Option<usize>)> = Vec::new();
+        let mut ranges = cursor.occupied_ranges();
+        let mut known: Vec<usize> = ci.fields.raw_offsets();
+        for (field, offset, clang_ty) in deferred_anon_fields {
+            let size_bits = clang_ty.size(ctx) * 8;
+            let align_bits = clang_ty.align(ctx).max(1) * 8;
+            // A zero-sized composite occupies no storage; inserting it by
+            // offset would displace fields that the compiler packed around it
+            // (typically a bitfield unit the parent synthesises later), so
+            // keep it out of the way at the end.
+            // The name-based offset can resolve to an unrelated field that
+            // merely shares the name (or shares storage with the composite),
+            // so it is only used when it is actually consistent with the
+            // layout; otherwise the hole the named fields leave is used.
+            let offset = if size_bits == 0 {
+                None
+            } else {
+                let aligned_and_free = |start: usize| {
+                    start % align_bits == 0
+                        && !known.iter().any(|&other| {
+                            start < other && other < start + size_bits
+                        })
+                };
+                let from_name = offset.filter(|start| aligned_and_free(*start));
+                from_name.or_else(|| {
+                    let record_bits = clang_ty_size_of_record * 8;
+                    let mut previous_end = 0usize;
+                    let mut holes: Vec<(usize, usize)> = Vec::new();
+                    for (start, end) in ranges.iter().copied() {
+                        holes.push((previous_end, start));
+                        previous_end = end;
+                    }
+                    holes.push((previous_end, record_bits));
+
+                    let align_up = |value: usize| {
+                        (value + align_bits - 1) / align_bits * align_bits
+                    };
+                    holes.into_iter().find_map(|(lower, upper)| {
+                        let candidate = align_up(lower);
+                        if candidate + size_bits <= upper {
+                            Some(candidate)
+                        } else {
+                            None
+                        }
+                    })
+                })
+            };
+            placed.push((field, offset));
+            if let Some(offset) = offset {
+                known.push(offset);
+                ranges.push((offset, offset + size_bits));
+                ranges.sort_unstable();
+                let mut merged: Vec<(usize, usize)> = Vec::new();
+                for (start, end) in ranges.drain(..) {
+                    match merged.last_mut() {
+                        Some(last) if start <= last.1 => last.1 = last.1.max(end),
+                        _ => merged.push((start, end)),
+                    }
+                }
+                ranges = merged;
+            }
+        }
+
+        // Insert from the lowest offset upwards: the ordered insert compares
+        // against fields already in the list, so a later, higher-offset
+        // composite would otherwise act as a wall and the lower one would be
+        // appended after it.
+        placed.sort_by_key(|(_, offset)| offset.unwrap_or(usize::MAX));
+        for (field, offset) in placed {
+            ci.fields.insert_raw_field_ordered(field, offset);
         }
 
         Ok(ci)

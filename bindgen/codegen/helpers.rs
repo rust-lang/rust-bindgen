@@ -85,8 +85,16 @@ pub(crate) fn blob(
     ctx: &BindgenContext,
     layout: Layout,
     ffi_safe: bool,
+    packed: bool,
 ) -> syn::Type {
     let align = layout.align.max(1);
+    // A packed record may not transitively contain a `#[repr(align)]` type
+    // (E0588), and inside one the alignment is 1 anyway, so a plain byte array
+    // is both legal and correct there.
+    if packed {
+        let size = layout.size;
+        return syn::parse_quote! { [u8; #size] };
+    }
     // For alignments <= 4, it holds that the integer type of the same size aligns to that same
     // size. For bigger alignments that's not guaranteed, e.g. on x86 u64 is aligned to 4 bytes.
     if align <= 4 {
